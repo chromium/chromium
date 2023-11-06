@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.home_button;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.content.Context;
 import android.view.View;
@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
@@ -160,7 +161,7 @@ public class HomeButtonCoordinator {
                             ID_SETTINGS,
                             R.drawable.ic_edit_24dp));
             BasicListMenu listMenu =
-                    new BasicListMenu(
+                    BrowserUiListMenuUtils.getBasicListMenu(
                             mContext,
                             mMenuList,
                             (model) -> mOnMenuClickCallback.onResult(mContext));

@@ -8,7 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.Image
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.payments.CurrencyFormatter;
@@ -193,7 +193,8 @@ public class ImprovedBookmarkRowRenderTest {
         listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0));
 
         ListMenu.Delegate delegate = item -> {};
-        return new BasicListMenu(mActivityTestRule.getActivity(), listItems, delegate);
+        return BrowserUiListMenuUtils.getBasicListMenu(
+                mActivityTestRule.getActivity(), listItems, delegate);
     }
 
     @Test

@@ -15,6 +15,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorActionViewLayout.ActionViewLayoutDelegate;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -95,9 +96,13 @@ public class TabSelectionEditorMenu implements ListMenu, OnItemClickListener,
 
     private ListItem buildListItem(int menuItemId) {
         // Model values are populated while configuring the TabSelectionEditorMenuItem.
-        return new ListItem(ListItemType.MENU_ITEM,
+        return new ListItem(
+                ListItemType.MENU_ITEM,
                 new PropertyModel.Builder(TabSelectionEditorActionProperties.MENU_ITEM_KEYS)
                         .with(TabSelectionEditorActionProperties.MENU_ITEM_ID, menuItemId)
+                        .with(
+                                TabSelectionEditorActionProperties.TEXT_APPEARANCE_ID,
+                                BrowserUiListMenuUtils.getDefaultTextAppearanceStyle())
                         .build());
     }
 

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.download.home.list.holder;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
@@ -21,8 +21,8 @@ import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
 import org.chromium.chrome.browser.download.home.view.SelectionView;
 import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
@@ -164,7 +164,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
                 if (mRenameCallback != null) mRenameCallback.run();
             }
         };
-        return new BasicListMenu(mMore.getContext(), listItems, delegate);
+        return BrowserUiListMenuUtils.getBasicListMenu(mMore.getContext(), listItems, delegate);
     }
 
     /**

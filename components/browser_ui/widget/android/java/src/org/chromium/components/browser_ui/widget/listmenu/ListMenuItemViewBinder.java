@@ -90,16 +90,20 @@ public class ListMenuItemViewBinder {
             textView.setEnabled(model.get(ListMenuItemProperties.ENABLED));
             startIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
             endIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
-        } else if (propertyKey == ListMenuItemProperties.TINT_COLOR_ID) {
+        } else if (propertyKey == ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID) {
             @ColorRes
-            int tintColorId = model.get(ListMenuItemProperties.TINT_COLOR_ID);
+            int tintColorId = model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
             if (tintColorId != 0) {
-                ImageViewCompat.setImageTintList(startIcon,
-                        AppCompatResources.getColorStateList(view.getContext(),
-                                model.get(ListMenuItemProperties.TINT_COLOR_ID)));
-                ImageViewCompat.setImageTintList(endIcon,
-                        AppCompatResources.getColorStateList(view.getContext(),
-                                model.get(ListMenuItemProperties.TINT_COLOR_ID)));
+                ImageViewCompat.setImageTintList(
+                        startIcon,
+                        AppCompatResources.getColorStateList(
+                                view.getContext(),
+                                model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID)));
+                ImageViewCompat.setImageTintList(
+                        endIcon,
+                        AppCompatResources.getColorStateList(
+                                view.getContext(),
+                                model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID)));
             } else {
                 // No tint.
                 ImageViewCompat.setImageTintList(startIcon, null);

@@ -23,8 +23,8 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu.Delegate;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
@@ -297,19 +297,14 @@ public class TrackingProtectionNoticeController {
             menuItems.add(settingsItem);
             menuItems.add(learnMoreItem);
 
-            BasicListMenu listMenu = new BasicListMenu(mContext, menuItems, onClickDelegate());
+            BasicListMenu listMenu =
+                    BrowserUiListMenuUtils.getBasicListMenu(mContext, menuItems, onClickDelegate());
 
             return listMenu;
         }
 
         private ListItem getMenuItem(int itemID, String title) {
-            PropertyModel.Builder settingsModel =
-                    new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                            .with(ListMenuItemProperties.ENABLED, true)
-                            .with(ListMenuItemProperties.MENU_ITEM_ID, itemID)
-                            .with(ListMenuItemProperties.TITLE, title);
-            ListItem settingsItem = new ListItem(ListMenuItemType.MENU_ITEM, settingsModel.build());
-            return settingsItem;
+            return BrowserUiListMenuUtils.buildMenuListItem(title, itemID, 0, true);
         }
 
         private Delegate onClickDelegate() {

@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/widget/AlwaysDismissedDialog.java",
     "java/src/org/chromium/components/browser_ui/widget/BoundedLinearLayout.java",
+    "java/src/org/chromium/components/browser_ui/widget/BrowserUiListMenuUtils.java",
     "java/src/org/chromium/components/browser_ui/widget/CheckBoxWithDescription.java",
     "java/src/org/chromium/components/browser_ui/widget/ChromeDialog.java",
     "java/src/org/chromium/components/browser_ui/widget/ChromeTransitionDrawable.java",

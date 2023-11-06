@@ -36,12 +36,12 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -220,17 +220,11 @@ public class MessageBannerViewTest {
                 () -> {
                     MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
                     menuItems.add(
-                            new MVCListAdapter.ListItem(
-                                    BasicListMenu.ListMenuItemType.MENU_ITEM,
-                                    new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                            .with(
-                                                    ListMenuItemProperties.TITLE,
-                                                    SECONDARY_BUTTON_MENU_TEXT)
-                                            .with(ListMenuItemProperties.ENABLED, true)
-                                            .build()));
+                            BrowserUiListMenuUtils.buildMenuListItem(
+                                    SECONDARY_BUTTON_MENU_TEXT, 0, 0, true));
 
                     BasicListMenu listMenu =
-                            new BasicListMenu(
+                            BrowserUiListMenuUtils.getBasicListMenu(
                                     sActivity,
                                     menuItems,
                                     (PropertyModel menuItem) -> {

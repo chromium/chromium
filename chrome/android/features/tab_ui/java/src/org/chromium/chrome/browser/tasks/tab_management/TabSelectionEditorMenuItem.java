@@ -13,14 +13,17 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.TextViewCompat;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
 import java.util.List;
@@ -30,11 +33,11 @@ import java.util.List;
  * TabSelectionEditorMenu}.
  */
 public class TabSelectionEditorMenuItem {
-    private Context mContext;
+    private final Context mContext;
 
     private int mMenuId;
-    private ListItem mListItem;
-    private Button mActionView;
+    private final ListItem mListItem;
+    private @Nullable Button mActionView;
     private boolean mShowText;
     private boolean mShowIcon;
     private boolean mEnabled;
@@ -146,6 +149,12 @@ public class TabSelectionEditorMenuItem {
         }
     }
 
+    public void setTextAppearance(@StyleRes int textAppearanceId) {
+        if (mActionView != null) {
+            ApiCompatibilityUtils.setTextAppearance(mActionView, textAppearanceId);
+        }
+    }
+
     public void setTextTint(ColorStateList colorStateList) {
         // mListItem uses the default text tint.
         if (mActionView != null) {
@@ -156,9 +165,10 @@ public class TabSelectionEditorMenuItem {
     public void setIconTint(@Nullable ColorStateList colorStateList) {
         // mListItem uses the default icon tint whenever shown. Cache the tint to restore it when
         // the action view shown state is toggled.
-        mListItem.model.set(TabSelectionEditorActionProperties.ICON_TINT,
+        mListItem.model.set(
+                TabSelectionEditorActionProperties.ICON_TINT,
                 AppCompatResources.getColorStateList(
-                        mContext, R.color.default_icon_color_secondary_tint_list));
+                        mContext, BrowserUiListMenuUtils.getDefaultIconTintColorStateListId()));
         mIconTint = colorStateList;
         if (mActionView != null && mActionViewShowing) {
             TextViewCompat.setCompoundDrawableTintList(mActionView, colorStateList);

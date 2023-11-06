@@ -29,6 +29,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import org.chromium.base.SysUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
@@ -36,7 +37,6 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -380,24 +380,21 @@ public class MessageBannerView extends BoundedLinearLayout {
     }
 
     private ListMenuButtonDelegate buildDelegateForSingleMenuItem() {
-        final PropertyModel menuItemPropertyModel =
-                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                        .with(ListMenuItemProperties.TITLE, mSecondaryButtonMenuText)
-                        .with(ListMenuItemProperties.ENABLED, true)
-                        .build();
-
+        MVCListAdapter.ListItem listItem =
+                BrowserUiListMenuUtils.buildMenuListItem(mSecondaryButtonMenuText, 0, 0, true);
         MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
-        menuItems.add(new MVCListAdapter.ListItem(
-                BasicListMenu.ListMenuItemType.MENU_ITEM, menuItemPropertyModel));
+        menuItems.add(listItem);
 
-        ListMenu.Delegate listMenuDelegate = (PropertyModel menuItem) -> {
-            assert menuItem == menuItemPropertyModel;
-            // There is only one menu item in the menu.
-            if (mSecondaryActionCallback != null) {
-                mSecondaryActionCallback.run();
-            }
-        };
-        BasicListMenu listMenu = new BasicListMenu(getContext(), menuItems, listMenuDelegate);
+        ListMenu.Delegate listMenuDelegate =
+                (PropertyModel menuItem) -> {
+                    assert menuItem == listItem.model;
+                    // There is only one menu item in the menu.
+                    if (mSecondaryActionCallback != null) {
+                        mSecondaryActionCallback.run();
+                    }
+                };
+        BasicListMenu listMenu =
+                BrowserUiListMenuUtils.getBasicListMenu(getContext(), menuItems, listMenuDelegate);
 
         return new ListMenuButtonDelegate() {
             @Override

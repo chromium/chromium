@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -566,7 +567,8 @@ public class SectionHeaderView extends LinearLayout {
         }
 
         BasicListMenu listMenu =
-                new BasicListMenu(mMenuView.getContext(), listItems, listMenuDelegate);
+                BrowserUiListMenuUtils.getBasicListMenu(
+                        mMenuView.getContext(), listItems, listMenuDelegate);
 
         ListMenuButtonDelegate delegate = new ListMenuButtonDelegate() {
             @Override

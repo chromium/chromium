@@ -6,18 +6,14 @@ package org.chromium.components.browser_ui.widget.listmenu;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import androidx.annotation.ColorRes;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 
@@ -47,57 +43,6 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
     }
 
     /**
-     * Helper function to build a list menu item. Pass 0 for attributes that aren't
-     * applicable to the menu item (e.g. if there is no icon or text).
-     * @param titleId The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param startIconId The icon on the start of the menu item.
-     * @param enabled Whether or not this menu item should be enabled.
-     * @return ListItem Representing an item with text or icon.
-     */
-    public static ListItem buildMenuListItem(@StringRes int titleId, @IdRes int menuId,
-            @DrawableRes int startIconId, boolean enabled) {
-        return new ListItem(ListMenuItemType.MENU_ITEM,
-                buildPropertyModel(titleId, menuId, startIconId, enabled));
-    }
-
-    /**
-     * Helper function to build a list menu item. Pass 0 for attributes that aren't
-     * applicable to the menu item (e.g. if there is no icon or text).
-     * @param titleId The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param endIconId The icon on the end of the menu item.
-     * @param enabled Whether or not this menu item should be enabled.
-     * @return ListItem Representing an item with text or icon.
-     */
-    public static ListItem buildMenuListItemWithEndIcon(@StringRes int titleId, @IdRes int menuId,
-            @DrawableRes int endIconId, boolean enabled) {
-        return new ListItem(ListMenuItemType.MENU_ITEM,
-                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                        .with(ListMenuItemProperties.TITLE_ID, titleId)
-                        .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
-                        .with(ListMenuItemProperties.END_ICON_ID, endIconId)
-                        .with(ListMenuItemProperties.ENABLED, enabled)
-                        .with(ListMenuItemProperties.TINT_COLOR_ID,
-                                R.color.default_icon_color_secondary_tint_list)
-                        .build());
-    }
-
-    /**
-     * Helper function to build a list menu item. Set 0 if there is no icon or text.
-     * This ListItem is set enabled as default.
-     * @param titleId The text on the menu item.
-     * @param menuId Id of the menu item.
-     * @param startIconId The icon on the start of the menu item.
-     * @return ListItem Representing an item with text or icon.
-     */
-    public static ListItem buildMenuListItem(
-            @StringRes int titleId, @IdRes int menuId, @DrawableRes int startIconId) {
-        return new ListItem(ListMenuItemType.MENU_ITEM,
-                buildPropertyModel(titleId, menuId, startIconId, true /* enabled */));
-    }
-
-    /**
      * Helper function to build a ListItem of a divider.
      * @return ListItem Representing a divider.
      */
@@ -105,51 +50,51 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
         return new ListItem(ListMenuItemType.DIVIDER, new PropertyModel());
     }
 
-    private final ListView mListView;
-    private final Context mContext;
-    private final ModelListAdapter mAdapter;
-    private final View mContentView;
-    private final List<Runnable> mClickRunnables;
-    private final Delegate mDelegate;
+    private final @NonNull ListView mListView;
+    private final @NonNull ModelListAdapter mAdapter;
+    private final @NonNull View mContentView;
+    private final @NonNull List<Runnable> mClickRunnables;
+    private final @NonNull Delegate mDelegate;
 
     /**
      * @param context The {@link Context} to inflate the layout.
-     * @param data Data representing the list items.
-     *             All items in data are assumed to be enabled.
+     * @param data Data representing the list items. All items in data are assumed to be enabled.
+     * @param contentView The background of the list menu.
+     * @param listView The {@link ListView} of the list menu.
      * @param delegate The {@link Delegate} that would be called when the menu is clicked.
+     * @param backgroundTintColor The background tint color of the menu.
      */
-    public BasicListMenu(@NonNull Context context, ModelList data, Delegate delegate) {
-        mContext = context;
+    public BasicListMenu(
+            @NonNull Context context,
+            @NonNull ModelList data,
+            @NonNull View contentView,
+            @NonNull ListView listView,
+            @NonNull Delegate delegate,
+            @ColorRes int backgroundTintColor) {
         mAdapter = new ListMenuItemAdapter(data);
-        mContentView = LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
-        mListView = mContentView.findViewById(R.id.app_menu_list);
+        mContentView = contentView;
+        mListView = listView;
         mListView.setAdapter(mAdapter);
         mListView.setDivider(null);
         mListView.setOnItemClickListener(this);
         mDelegate = delegate;
         mClickRunnables = new LinkedList<>();
         registerListItemTypes();
+
+        if (backgroundTintColor != 0) {
+            ViewCompat.setBackgroundTintList(
+                    mContentView,
+                    ColorStateList.valueOf(ContextCompat.getColor(context, backgroundTintColor)));
+        }
     }
 
-    /**
-     * @param context The {@link Context} to inflate the layout.
-     * @param data Data representing the list items.
-     *             All items in data are assumed to be enabled.
-     * @param delegate The {@link Delegate} that would be called when the menu is clicked.
-     * @param backgroundTintColor The background tint color of the menu.
-     */
-    public BasicListMenu(@NonNull Context context, ModelList data, Delegate delegate,
-            @ColorRes int backgroundTintColor) {
-        this(context, data, delegate);
-        ViewCompat.setBackgroundTintList(mContentView,
-                ColorStateList.valueOf(ContextCompat.getColor(mContext, backgroundTintColor)));
-    }
-
+    @NonNull
     @Override
     public View getContentView() {
         return mContentView;
     }
 
+    @NonNull
     public ListView getListView() {
         return mListView;
     }
@@ -180,18 +125,5 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
                 ListMenuItemType.DIVIDER,
                 new LayoutViewBuilder(R.layout.list_section_divider),
                 (m, v, p) -> {});
-    }
-
-    // Internal helper function to build a property model of list menu item.
-    private static PropertyModel buildPropertyModel(
-            @StringRes int titleId, @IdRes int menuId, @DrawableRes int iconId, boolean enabled) {
-        return new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                .with(ListMenuItemProperties.TITLE_ID, titleId)
-                .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
-                .with(ListMenuItemProperties.START_ICON_ID, iconId)
-                .with(ListMenuItemProperties.ENABLED, enabled)
-                .with(ListMenuItemProperties.TINT_COLOR_ID,
-                        R.color.default_icon_color_secondary_tint_list)
-                .build();
     }
 }

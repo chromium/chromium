@@ -24,6 +24,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -64,31 +65,37 @@ public class ListMenuRenderTest extends BlankUiTestActivityTestCase {
                     Activity activity = getActivity();
                     ModelList data = new ModelList();
                     data.add(
-                            BasicListMenu.buildMenuListItem(
+                            BrowserUiListMenuUtils.buildMenuListItem(
                                     R.string.test_primary_1, 0, R.drawable.ic_check_googblue_24dp));
                     data.add(
-                            BasicListMenu.buildMenuListItem(
+                            BrowserUiListMenuUtils.buildMenuListItem(
                                     R.string.test_primary_1,
                                     0,
                                     R.drawable.ic_check_googblue_24dp,
                                     false));
                     data.add(
-                            BasicListMenu.buildMenuListItemWithEndIcon(
+                            BrowserUiListMenuUtils.buildMenuListItemWithEndIcon(
                                     R.string.test_primary_1,
                                     0,
                                     R.drawable.ic_check_googblue_24dp,
                                     true));
                     data.add(
-                            BasicListMenu.buildMenuListItemWithEndIcon(
+                            BrowserUiListMenuUtils.buildMenuListItemWithEndIcon(
                                     R.string.test_primary_1,
                                     0,
                                     R.drawable.ic_check_googblue_24dp,
                                     false));
-                    data.add(BasicListMenu.buildMenuListItem(R.string.test_primary_1, 0, 0));
-                    data.add(BasicListMenu.buildMenuListItem(R.string.test_primary_1, 0, 0, false));
+                    data.add(
+                            BrowserUiListMenuUtils.buildMenuListItem(
+                                    R.string.test_primary_1, 0, 0));
+                    data.add(
+                            BrowserUiListMenuUtils.buildMenuListItem(
+                                    R.string.test_primary_1, 0, 0, false));
                     data.add(BasicListMenu.buildMenuDivider());
 
-                    BasicListMenu listMenu = new BasicListMenu(activity, data, null);
+                    ListMenu.Delegate delegate = item -> {};
+                    BasicListMenu listMenu =
+                            BrowserUiListMenuUtils.getBasicListMenu(activity, data, delegate);
                     mView = listMenu.getContentView();
                     mView.setBackground(
                             AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));
