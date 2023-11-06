@@ -99,6 +99,10 @@ views::Widget* ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
 views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
                             content::WebContents* web_contents);
 
+// True if the platform supports global screen coordinates. This is typically
+// supported by most platforms except linux-wayland.
+bool SupportsGlobalScreenCoordinates();
+
 }  // namespace constrained_window
 
 #endif  // COMPONENTS_CONSTRAINED_WINDOW_CONSTRAINED_WINDOW_VIEWS_H_

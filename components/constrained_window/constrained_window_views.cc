@@ -123,31 +123,36 @@ void UpdateModalDialogPosition(views::Widget* widget,
   position.set_y(position.y() -
                  widget->non_client_view()->frame_view()->GetInsets().top());
 
-  const bool supports_global_screen_coordinates =
-#if !BUILDFLAG(IS_OZONE)
-      true;
-#else
-      ui::OzonePlatform::GetInstance()
-          ->GetPlatformProperties()
-          .supports_global_screen_coordinates;
-#endif
+  gfx::Rect dialog_bounds(position, size);
 
-  if (widget->is_top_level() && supports_global_screen_coordinates) {
-    position += host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
-    // If the dialog extends partially off any display, clamp its position to
-    // be fully visible within that display. If the dialog doesn't intersect
-    // with any display clamp its position to be fully on the nearest display.
-    gfx::Rect display_rect = gfx::Rect(position, size);
-    const display::Display display =
-        display::Screen::GetScreen()->GetDisplayNearestView(
-            dialog_host->GetHostView());
-    const gfx::Rect work_area = display.work_area();
-    if (!work_area.Contains(display_rect))
-      display_rect.AdjustToFit(work_area);
-    position = display_rect.origin();
+  if (widget->is_top_level() && SupportsGlobalScreenCoordinates()) {
+    const gfx::Rect initial_dialog_bounds =
+        dialog_bounds +
+        host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
+    const gfx::Rect initial_host_bounds =
+        host_widget->GetWindowBoundsInScreen();
+
+    // TODO(crbug.com/1341530): The requested dialog bounds should never fall
+    // outside the bounds of the transient parent.
+    DCHECK(initial_dialog_bounds.Intersects(initial_host_bounds));
+
+    // We should not show a window-modal dialog for a window that exists outside
+    // the bounds of the screen. This risks the modal window becoming
+    // effectively deadlocked as controls to dismiss the dialog may become
+    // inaccessible.
+    // It is also insufficient to reposition only the dialog but not the host
+    // window as many systems will clip child dialogs to their transient
+    // parents. Further, if the window-constrained dialog is visually
+    // disassociated with its parent window it may be difficult to discern which
+    // window the dialog is modal to.
+    host_widget->SetBoundsConstrained(initial_host_bounds);
+    const gfx::Rect adjusted_host_bounds =
+        host_widget->GetClientAreaBoundsInScreen();
+    dialog_bounds += adjusted_host_bounds.OffsetFromOrigin();
+    dialog_bounds.AdjustToFit(adjusted_host_bounds);
   }
 
-  widget->SetBounds(gfx::Rect(position, size));
+  widget->SetBounds(dialog_bounds);
 }
 
 }  // namespace
@@ -288,6 +293,16 @@ views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
                                                 ui::MODAL_TYPE_CHILD)
           .release(),
       web_contents);
+}
+
+bool SupportsGlobalScreenCoordinates() {
+#if !BUILDFLAG(IS_OZONE)
+  return true;
+#else
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .supports_global_screen_coordinates;
+#endif
 }
 
 }  // namespace constrained_window
