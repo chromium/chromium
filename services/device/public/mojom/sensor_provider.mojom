@@ -65,28 +65,14 @@ union GetVirtualSensorInformationResult {
   GetVirtualSensorInformationError error;
 };
 
-// TODO(crbug.com/657632): Mojo does not allow primitive types to be nullable,
-// so we need to define a few wrapper structs.
-// Optional double field.
-struct NullableDouble {
-  // The value of the double.
-  double value;
-};
-
-// Optional ReportingMode field.
-struct NullableReportingMode {
-  // The value of the enum.
-  ReportingMode value;
-};
-
 struct VirtualSensorMetadata {
   bool available = true;
 
-  NullableDouble? maximum_frequency;
-  NullableDouble? minimum_frequency;
+  double? maximum_frequency;
+  double? minimum_frequency;
 
   // Only used by unit tests.
-  NullableReportingMode? reporting_mode;
+  ReportingMode? reporting_mode;
 };
 
 struct VirtualSensorInformation {

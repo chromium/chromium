@@ -245,11 +245,11 @@ ParseSensorMetadata(Maybe<Emulation::SensorMetadata>& metadata) {
   }
   if (metadata->HasMinimumFrequency()) {
     virtual_sensor_metadata->minimum_frequency =
-        device::mojom::NullableDouble::New(metadata->GetMinimumFrequency(0));
+        metadata->GetMinimumFrequency(0);
   }
   if (metadata->HasMaximumFrequency()) {
     virtual_sensor_metadata->maximum_frequency =
-        device::mojom::NullableDouble::New(metadata->GetMaximumFrequency(0));
+        metadata->GetMaximumFrequency(0);
   }
   return virtual_sensor_metadata;
 }
