@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
+#include "base/test/test.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,6 +36,15 @@ class OnDeviceModelExecutionConfigInterpeterTest : public testing::Test {
     std::string serialized_config;
     ASSERT_TRUE(config.SerializeToString(&serialized_config));
     ASSERT_TRUE(base::WriteFile(file_path, serialized_config));
+  }
+
+  void UpdateInterpreterWithConfig(
+      const proto::OnDeviceModelExecutionConfig& config) {
+    WriteConfigToFile(temp_dir().Append(FILE_PATH_LITERAL(
+                          "on_device_model_execution_config.pb")),
+                      config);
+    interpreter()->UpdateConfigWithFileDir(temp_dir());
+    RunUntilIdle();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -112,6 +122,107 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest, ValidConfig) {
     EXPECT_FALSE(interpreter()->HasConfigForFeature(
         proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   }
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructInputStringNoOnDeviceConfig) {
+  base::test::TestMessage test;
+  test.set_test("some test");
+  auto maybe_string = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+
+  EXPECT_FALSE(maybe_string.has_value());
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructInputStringNoOnDeviceConfigForFeature) {
+  proto::OnDeviceModelExecutionConfig config;
+  config.add_feature_configs()->set_feature(
+      proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION);
+  UpdateInterpreterWithConfig(config);
+
+  base::test::TestMessage test;
+  test.set_test("some test");
+  auto maybe_string = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+
+  EXPECT_FALSE(maybe_string.has_value());
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructInputStringFeatureConfigExistsButNoInputConfig) {
+  proto::OnDeviceModelExecutionConfig config;
+  config.add_feature_configs()->set_feature(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  UpdateInterpreterWithConfig(config);
+
+  base::test::TestMessage test;
+  test.set_test("some test");
+  auto maybe_string = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+
+  EXPECT_FALSE(maybe_string.has_value());
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructInputStringFeatureConfigExistsMismatchRequest) {
+  proto::OnDeviceModelExecutionConfig config;
+  auto* fc = config.add_feature_configs();
+  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  auto* input_config = fc->mutable_input_config();
+  input_config->set_request_base_name("wrong name");
+  UpdateInterpreterWithConfig(config);
+
+  base::test::TestMessage test;
+  test.set_test("some test");
+  auto maybe_string = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+
+  EXPECT_FALSE(maybe_string.has_value());
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructInputStringFeatureConfigExistsUnexpectedArgsEvaluated) {
+  proto::OnDeviceModelExecutionConfig config;
+  auto* fc = config.add_feature_configs();
+  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  auto* input_config = fc->mutable_input_config();
+  input_config->set_request_base_name("base.test.TestMessage");
+  auto* substitution = input_config->add_execute_substitutions();
+  substitution->set_string_template("hello this is a %s");
+  substitution->set_expected_num_args(1);
+  substitution->add_args()->set_raw_string("test");
+  substitution->add_args()->set_raw_string("test2");
+  UpdateInterpreterWithConfig(config);
+
+  base::test::TestMessage test;
+  test.set_test("some test");
+  auto maybe_string = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+
+  EXPECT_FALSE(maybe_string.has_value());
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructInputStringFeatureConfigExistsSimpleRawString) {
+  proto::OnDeviceModelExecutionConfig config;
+  auto* fc = config.add_feature_configs();
+  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  auto* input_config = fc->mutable_input_config();
+  input_config->set_request_base_name("base.test.TestMessage");
+  auto* substitution = input_config->add_execute_substitutions();
+  substitution->set_string_template("hello this is a %s");
+  substitution->set_expected_num_args(1);
+  substitution->add_args()->set_raw_string("test");
+  UpdateInterpreterWithConfig(config);
+
+  base::test::TestMessage test;
+  test.set_test("some test");
+  auto maybe_string = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test);
+
+  ASSERT_TRUE(maybe_string);
+  EXPECT_EQ(*maybe_string, "hello this is a test");
 }
 
 }  // namespace

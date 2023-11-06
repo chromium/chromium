@@ -5,6 +5,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_EXECUTION_CONFIG_INTERPRETER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -13,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -27,6 +29,13 @@ class OnDeviceModelExecutionConfigInterpreter {
 
   // Whether there is an on-device model execution config for `feature`.
   bool HasConfigForFeature(proto::ModelExecutionFeature feature) const;
+
+  // Constructs the input string for `feature` and `request`. Will return
+  // absl::nullopt if there is not a valid config for the feature or the request
+  // could not be fulfilled for any reason.
+  absl::optional<std::string> ConstructInputString(
+      proto::ModelExecutionFeature feature,
+      const google::protobuf::MessageLite& request) const;
 
  private:
   // Populates `feature_configs_` based on `config`.

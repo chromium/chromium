@@ -6,12 +6,18 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 
 namespace optimization_guide {
 
 namespace {
+
+// The maximum number of args that can be substituted in the string template.
+static constexpr int kMaxArgs = 32;
 
 std::unique_ptr<proto::OnDeviceModelExecutionConfig>
 ReadOnDeviceModelExecutionConfig(const base::FilePath& path) {
@@ -29,6 +35,23 @@ ReadOnDeviceModelExecutionConfig(const base::FilePath& path) {
   }
 
   return std::make_unique<proto::OnDeviceModelExecutionConfig>(config);
+}
+
+std::string StringPrintfVector(const std::string& string_template,
+                               std::vector<std::string> args) {
+  CHECK(args.size() <= kMaxArgs);
+
+  args.resize(kMaxArgs, "");
+  return base::StringPrintfNonConstexpr(
+      string_template.c_str(), args[0].c_str(), args[1].c_str(),
+      args[2].c_str(), args[3].c_str(), args[4].c_str(), args[5].c_str(),
+      args[6].c_str(), args[7].c_str(), args[8].c_str(), args[9].c_str(),
+      args[10].c_str(), args[11].c_str(), args[12].c_str(), args[13].c_str(),
+      args[14].c_str(), args[15].c_str(), args[16].c_str(), args[17].c_str(),
+      args[18].c_str(), args[19].c_str(), args[20].c_str(), args[21].c_str(),
+      args[22].c_str(), args[23].c_str(), args[24].c_str(), args[25].c_str(),
+      args[26].c_str(), args[27].c_str(), args[28].c_str(), args[29].c_str(),
+      args[30].c_str(), args[31].c_str());
 }
 
 }  // namespace
@@ -81,6 +104,52 @@ void OnDeviceModelExecutionConfigInterpreter::ClearState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   feature_configs_.clear();
+}
+
+absl::optional<std::string>
+OnDeviceModelExecutionConfigInterpreter::ConstructInputString(
+    proto::ModelExecutionFeature feature,
+    const google::protobuf::MessageLite& request) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Get the config to construct the input string.
+  if (!HasConfigForFeature(feature)) {
+    return absl::nullopt;
+  }
+  auto feature_config = feature_configs_.at(feature);
+  if (!feature_config.has_input_config()) {
+    return absl::nullopt;
+  }
+  const auto input_config = feature_config.input_config();
+  if (input_config.request_base_name() != request.GetTypeName()) {
+    return absl::nullopt;
+  }
+
+  // TODO(b/302402959): Make sure we have the type mapping?
+
+  // Construct string.
+  std::vector<std::string> substitutions;
+  for (const auto& substitution : input_config.execute_substitutions()) {
+    // TODO(b/302402959): See if conditions apply.
+
+    std::vector<std::string> args;
+    for (const auto& arg : substitution.args()) {
+      // TODO(b/302402959): See if conditions apply.
+
+      if (arg.has_raw_string()) {
+        args.push_back(arg.raw_string());
+      }
+      // TODO(b/302402959): Add support for proto field.
+    }
+    if (static_cast<size_t>(substitution.expected_num_args()) != args.size()) {
+      return absl::nullopt;
+    }
+
+    substitutions.push_back(
+        StringPrintfVector(substitution.string_template(), std::move(args)));
+  }
+
+  return base::StrCat(substitutions);
 }
 
 }  // namespace optimization_guide
