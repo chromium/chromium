@@ -2521,7 +2521,7 @@
           Downloading the screen saver
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_PAGE_DESCRIPTION" desc="Description for the ambient mode settings page.">
-          When your screen is idle, show photos, time, weather, and media info.
+          When your screen is idle, show photos, time, weather, and media info
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ON" desc="Label for the toggle row in ambient mode settings page when it is enabled.">
           On
