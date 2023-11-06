@@ -10,5 +10,4 @@ assert(is_chromeos_ash)
 mojom("borealis_installer_types_mojom") {
   webui_module_path = "/"
   sources = [ "borealis_types.mojom" ]
-  use_typescript_sources = true
 }
