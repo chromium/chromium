@@ -101,7 +101,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   // Convert TabOrganizations data to mojo serialized objects.
   tab_search::mojom::TabPtr GetMojoForTabData(TabData* tab_data) const;
   tab_search::mojom::TabOrganizationPtr GetMojoForTabOrganization(
-      const TabOrganization& organization) const;
+      const TabOrganization* organization) const;
   tab_search::mojom::TabOrganizationSessionPtr GetMojoForTabOrganizationSession(
       const TabOrganizationSession& session) const;
 

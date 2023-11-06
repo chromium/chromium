@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 
+#include <string>
 #include <vector>
 
 #include "chrome/browser/ui/browser.h"
@@ -52,18 +53,18 @@ TabOrganizationSession::CreateSessionForBrowser(
 }
 
 const TabOrganization* TabOrganizationSession::GetNextTabOrganization() const {
-  for (const TabOrganization& tab_organization : tab_organizations_) {
-    if (!tab_organization.choice().has_value()) {
-      return &tab_organization;
+  for (auto& tab_organization : tab_organizations_) {
+    if (!tab_organization->choice().has_value()) {
+      return tab_organization.get();
     }
   }
   return nullptr;
 }
 
 TabOrganization* TabOrganizationSession::GetNextTabOrganization() {
-  for (TabOrganization& tab_organization : tab_organizations_) {
-    if (!tab_organization.choice().has_value()) {
-      return &tab_organization;
+  for (auto& tab_organization : tab_organizations_) {
+    if (!tab_organization->choice().has_value()) {
+      return tab_organization.get();
     }
   }
   return nullptr;
@@ -134,9 +135,13 @@ void TabOrganizationSession::PopulateOrganizations(
       tab_datas_for_org.emplace_back(std::move(tab_data_for_org));
     }
 
-    TabOrganization tab_organization(std::move(tab_datas_for_org),
-                                     {response_organization.label}, 0,
-                                     absl::nullopt);
-    tab_organizations_.emplace_back(std::move(tab_organization));
+    std::vector<std::u16string> names;
+    names.emplace_back(response_organization.label);
+
+    std::unique_ptr<TabOrganization> organization =
+        std::make_unique<TabOrganization>(std::move(tab_datas_for_org),
+                                          std::move(names), 0, absl::nullopt);
+
+    tab_organizations_.emplace_back(std::move(organization));
   }
 }

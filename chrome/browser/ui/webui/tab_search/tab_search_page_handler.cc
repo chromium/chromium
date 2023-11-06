@@ -711,18 +711,18 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetMojoForTabData(
 
 tab_search::mojom::TabOrganizationPtr
 TabSearchPageHandler::GetMojoForTabOrganization(
-    const TabOrganization& organization) const {
+    const TabOrganization* organization) const {
   tab_search::mojom::TabOrganizationPtr mojo_organization =
       tab_search::mojom::TabOrganization::New();
 
   std::vector<tab_search::mojom::TabPtr> tabs;
-  for (const std::unique_ptr<TabData>& tab_data : organization.tab_datas()) {
+  for (const std::unique_ptr<TabData>& tab_data : organization->tab_datas()) {
     tabs.emplace_back(GetMojoForTabData(tab_data.get()));
   }
 
-  mojo_organization->organization_id = organization.organization_id();
+  mojo_organization->organization_id = organization->organization_id();
   mojo_organization->tabs = std::move(tabs);
-  mojo_organization->name = organization.GetDisplayName();
+  mojo_organization->name = organization->GetDisplayName();
 
   return mojo_organization;
 }
@@ -752,9 +752,9 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
     case TabOrganizationRequest::State::COMPLETED: {
       if (session.tab_organizations().size() > 0) {
         mojo_session->state = tab_search::mojom::TabOrganizationState::kSuccess;
-        for (const TabOrganization& organization :
-             session.tab_organizations()) {
-          organizations.emplace_back(GetMojoForTabOrganization(organization));
+        for (const auto& organization : session.tab_organizations()) {
+          organizations.emplace_back(
+              GetMojoForTabOrganization(organization.get()));
         }
       } else {
         mojo_session->state = tab_search::mojom::TabOrganizationState::kFailure;

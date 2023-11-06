@@ -21,6 +21,7 @@ class TabOrganizationSession {
  public:
   // TODO(dpenning): make this a base::Token.
   using ID = int;
+  using TabOrganizations = std::vector<std::unique_ptr<TabOrganization>>;
 
   TabOrganizationSession();
   explicit TabOrganizationSession(
@@ -29,7 +30,7 @@ class TabOrganizationSession {
   ~TabOrganizationSession();
 
   const TabOrganizationRequest* request() const { return request_.get(); }
-  const std::vector<TabOrganization>& tab_organizations() const {
+  const TabOrganizations& tab_organizations() const {
     return tab_organizations_;
   }
   ID session_id() const { return session_id_; }
@@ -43,7 +44,8 @@ class TabOrganizationSession {
 
   void StartRequest();
 
-  void AddOrganizationForTesting(TabOrganization tab_organization) {
+  void AddOrganizationForTesting(
+      std::unique_ptr<TabOrganization> tab_organization) {
     tab_organizations_.emplace_back(std::move(tab_organization));
   }
 
@@ -61,7 +63,7 @@ class TabOrganizationSession {
 
   raw_ptr<const TabOrganizationService> service_;
   std::unique_ptr<TabOrganizationRequest> request_;
-  std::vector<TabOrganization> tab_organizations_;
+  TabOrganizations tab_organizations_;
   ID session_id_;
 };
 

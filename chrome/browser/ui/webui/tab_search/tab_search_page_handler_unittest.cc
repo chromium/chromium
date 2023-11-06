@@ -837,12 +837,15 @@ TEST_F(TabSearchPageHandlerTest, TabDataToMojo) {
 }
 
 TEST_F(TabSearchPageHandlerTest, TabOrganizationToMojo) {
-  TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
+  std::unique_ptr<TabOrganization> organization =
+      std::make_unique<TabOrganization>(
+          std::vector<std::unique_ptr<TabData>>{},
+          std::vector<std::u16string>{u"default_name"}, 0, absl::nullopt);
   tab_search::mojom::TabOrganizationPtr mojo_tab_org_ptr =
-      handler()->GetMojoForTabOrganization(organization);
+      handler()->GetMojoForTabOrganization(organization.get());
 
-  EXPECT_EQ(mojo_tab_org_ptr->name, organization.GetDisplayName());
-  EXPECT_EQ(mojo_tab_org_ptr->organization_id, organization.organization_id());
+  EXPECT_EQ(mojo_tab_org_ptr->name, organization->GetDisplayName());
+  EXPECT_EQ(mojo_tab_org_ptr->organization_id, organization->organization_id());
 }
 
 TEST_F(TabSearchPageHandlerTest, TabOrganizationSessionToMojo) {
