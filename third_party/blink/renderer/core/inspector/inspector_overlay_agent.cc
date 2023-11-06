@@ -528,6 +528,7 @@ protocol::Response InspectorOverlayAgent::disable() {
   }
 
   persistent_tool_ = nullptr;
+  hinge_ = nullptr;
   PickTheRightTool();
   SetNeedsUnbufferedInput(false);
   document_to_ax_context_.clear();
