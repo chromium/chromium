@@ -129,25 +129,6 @@ TEST_F(TouchToFillPasswordGenerationControllerTest,
   controller.reset();
 }
 
-TEST_F(TouchToFillPasswordGenerationControllerTest,
-       TriggersKeyboardAccessoryWhenGeneratedPasswordRejected) {
-  auto controller = std::make_unique<TouchToFillPasswordGenerationController>(
-      password_mananger_driver(), web_contents(),
-      PasswordGenerationElementData(),
-      std::make_unique<MockTouchToFillPasswordGenerationBridge>(),
-      on_dismissed_callback_.Get(),
-      mock_manual_filling_controller_.AsWeakPtr());
-
-  controller->ShowTouchToFill(
-      test_user_account_, PasswordGenerationType::kAutomatic, pref_service());
-
-  EXPECT_CALL(mock_manual_filling_controller_,
-              OnAccessoryActionAvailabilityChanged(
-                  ShouldShowAction(true),
-                  autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
-  controller->OnGeneratedPasswordRejected();
-}
-
 class TouchToFillPasswordGenerationControllerMetricsTest
     : public TouchToFillPasswordGenerationControllerTest,
       public testing::WithParamInterface<

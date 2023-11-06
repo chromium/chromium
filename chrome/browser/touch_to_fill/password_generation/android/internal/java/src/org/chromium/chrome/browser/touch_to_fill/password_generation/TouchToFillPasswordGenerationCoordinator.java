@@ -166,17 +166,6 @@ class TouchToFillPasswordGenerationCoordinator {
     private void onGeneratedPasswordRejected() {
         mTouchToFillPasswordGenerationDelegate.onGeneratedPasswordRejected();
         onDismissed(InteractionResult.REJECTED_GENERATED_PASSWORD);
-        restoreKeyboardFocus();
-    }
-
-    private void restoreKeyboardFocus() {
-        if (mWebContents.getViewAndroidDelegate() == null) return;
-        if (mWebContents.getViewAndroidDelegate().getContainerView() == null) return;
-
-        View webContentView = mWebContents.getViewAndroidDelegate().getContainerView();
-        if (webContentView.requestFocus()) {
-            mKeyboardVisibilityDelegate.showKeyboard(webContentView);
-        }
     }
 
     private void hideKeyboard() {
