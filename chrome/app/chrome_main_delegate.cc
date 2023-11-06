@@ -364,7 +364,7 @@ bool HandleCreditsSwitch(const base::CommandLine& command_line) {
   // re-packed into resources.pak.
   base::FilePath resource_dir;
   bool result = base::PathService::Get(base::DIR_ASSETS, &resource_dir);
-  DCHECK(result);
+  DUMP_WILL_BE_CHECK(result);
 
   // Ensure there is an instance of ResourceBundle that is initialized for
   // localized string resource accesses.
@@ -571,7 +571,7 @@ struct MainFunction {
 
 // Initializes the user data dir. Must be called before InitializeLocalState().
 void InitializeUserDataDir(base::CommandLine* command_line) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && DCHECK_IS_ON()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // In debug builds of Lacros, we keep track of when the user data dir
   // is initialized, to ensure the cryptohome is not accessed before login
   // when prelaunching at login screen.
@@ -675,7 +675,7 @@ void RecordMainStartupMetrics(base::TimeTicks application_start_time) {
   const base::TimeTicks now = base::TimeTicks::Now();
 
 #if BUILDFLAG(IS_WIN)
-  DCHECK(!application_start_time.is_null());
+  DUMP_WILL_BE_CHECK(!application_start_time.is_null());
   startup_metric_utils::GetCommon().RecordApplicationStartTime(
       application_start_time);
 #elif BUILDFLAG(IS_ANDROID)
@@ -751,7 +751,7 @@ ChromeMainDelegate::~ChromeMainDelegate() = default;
 
 absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
-  DCHECK(base::ThreadPoolInstance::Get());
+  DUMP_WILL_BE_CHECK(base::ThreadPoolInstance::Get());
   const auto* invoked_in_browser =
       absl::get_if<InvokedInBrowserProcess>(&invoked_in);
   if (!invoked_in_browser) {
@@ -1256,7 +1256,7 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       } else if (format_str == "log") {
         format = diagnostics::DiagnosticsWriter::LOG;
       } else {
-        DCHECK_EQ("human", format_str);
+        DUMP_WILL_BE_CHECK_EQ("human", format_str);
       }
     }
 
@@ -1304,7 +1304,7 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       } else if (format_str == "human") {
         format = diagnostics::DiagnosticsWriter::HUMAN;
       } else {
-        DCHECK_EQ("log", format_str);
+        DUMP_WILL_BE_CHECK_EQ("log", format_str);
       }
     }
 
@@ -1445,7 +1445,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // In Lacros, when prelaunching at login screen, we postpone the
   // initialization of the user data directory.
-  // We verify that no access happens before login via DCHECKs.
+  // We verify that no access happens before login via CHECKs.
   initialize_user_data_dir &= !chromeos::IsLaunchedWithPostLoginParams();
 #endif
   if (initialize_user_data_dir) {
@@ -1541,16 +1541,16 @@ void ChromeMainDelegate::PreSandboxStartup() {
     // sources.  The language should have been passed in to us from the
     // browser process as a command line flag.
 #if !BUILDFLAG(ENABLE_NACL)
-    DCHECK(command_line.HasSwitch(switches::kLang) ||
-           process_type == switches::kZygoteProcess ||
-           process_type == switches::kGpuProcess ||
-           process_type == switches::kPpapiPluginProcess);
+    DUMP_WILL_BE_CHECK(command_line.HasSwitch(switches::kLang) ||
+                       process_type == switches::kZygoteProcess ||
+                       process_type == switches::kGpuProcess ||
+                       process_type == switches::kPpapiPluginProcess);
 #else
-    DCHECK(command_line.HasSwitch(switches::kLang) ||
-           process_type == switches::kZygoteProcess ||
-           process_type == switches::kGpuProcess ||
-           process_type == switches::kNaClLoaderProcess ||
-           process_type == switches::kPpapiPluginProcess);
+    DUMP_WILL_BE_CHECK(command_line.HasSwitch(switches::kLang) ||
+                       process_type == switches::kZygoteProcess ||
+                       process_type == switches::kGpuProcess ||
+                       process_type == switches::kNaClLoaderProcess ||
+                       process_type == switches::kPpapiPluginProcess);
 #endif
 
     // TODO(markusheintz): The command line flag --lang is actually processed
@@ -1561,7 +1561,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
     std::string locale = command_line.GetSwitchValueASCII(switches::kLang);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (process_type == switches::kZygoteProcess) {
-      DCHECK(locale.empty());
+      DUMP_WILL_BE_CHECK(locale.empty());
       // See comment at ReadAppLocale() for why we do this.
       locale = ash::startup_settings_cache::ReadAppLocale();
     }
