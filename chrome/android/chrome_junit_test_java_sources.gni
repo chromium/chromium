@@ -365,8 +365,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/webapps/WebappRegistryTest.java",
   "junit/src/org/chromium/chrome/browser/webauth/BarrierTest.java",
   "junit/src/org/chromium/chrome/browser/webauth/CredManHelperRobolectricTest.java",
-  "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredManCreateRequest.java",
-  "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredManCreateResponse.java",
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredManException.java",
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredManGetRequest.java",
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredManGetResponse.java",
@@ -377,5 +375,9 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidPasswordCredential.java",
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidPublicKeyCredential.java",
   "junit/src/org/chromium/chrome/browser/webauth/Fido2CredentialRequestRobolectricTest.java",
+  "junit/src/org/chromium/chrome/browser/webauth/ShadowCreateCredentialException.java",
+  "junit/src/org/chromium/chrome/browser/webauth/ShadowCreateCredentialRequest.java",
+  "junit/src/org/chromium/chrome/browser/webauth/ShadowCreateCredentialResponse.java",
+  "junit/src/org/chromium/chrome/browser/webauth/ShadowCredentialManager.java",
   "junit/src/org/chromium/chrome/browser/webauth/ShadowWebContentStatics.java",
 ]

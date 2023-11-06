@@ -14,8 +14,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.credentials.CreateCredentialException;
+import android.credentials.CreateCredentialRequest;
+import android.credentials.CreateCredentialResponse;
+import android.credentials.CredentialManager;
 import android.os.Build;
 
 import androidx.test.filters.SmallTest;
@@ -30,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -55,7 +61,14 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowWebContentStatics.class})
+        shadows = {
+            ShadowCreateCredentialRequest.class,
+            ShadowCreateCredentialRequest.ShadowBuilder.class,
+            ShadowCreateCredentialResponse.class,
+            ShadowCreateCredentialException.class,
+            ShadowCredentialManager.class,
+            ShadowWebContentStatics.class
+        })
 public class CredManHelperRobolectricTest {
     private CredManHelper mCredManHelper;
     private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
@@ -65,6 +78,7 @@ public class CredManHelperRobolectricTest {
     private String mOriginString = "https://subdomain.coolwebsitekayserispor.com";
     private byte[] mMaybeClientDataHash = new byte[] {1, 2, 3};
 
+    private CredentialManager mCredentialManager2 = Shadow.newInstanceOf(CredentialManager.class);
     @Mock private Context mContext;
     @Mock private RenderFrameHost mFrameHost;
     @Mock private WebContents mWebContents;
@@ -105,10 +119,10 @@ public class CredManHelperRobolectricTest {
         mCredManHelper = new CredManHelper(mBridgeProvider, /* playServicesAvailable= */ true);
         mCredManHelper.setCredManClassesForTesting(
                 mCredentialManager,
-                FakeAndroidCredManCreateRequest.Builder.class,
                 FakeAndroidCredManGetRequest.Builder.class,
                 FakeAndroidCredentialOption.Builder.class,
                 mMetricsHelper);
+        when(mContext.getSystemService(Context.CREDENTIAL_SERVICE)).thenReturn(mCredentialManager2);
     }
 
     @Test
@@ -126,20 +140,28 @@ public class CredManHelperRobolectricTest {
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
 
-        FakeAndroidCredManCreateRequest credManRequest = mCredentialManager.getCreateRequest();
-        assertThat(credManRequest).isNotNull();
-        assertThat(credManRequest.getOrigin()).isEqualTo(mOriginString);
-        assertThat(credManRequest.getType())
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager2);
+        CreateCredentialRequest createCredentialRequest =
+                shadowCredentialManager.getCreateCredentialRequest();
+        assertThat(createCredentialRequest).isNotNull();
+        assertThat(createCredentialRequest.getOrigin()).isEqualTo(mOriginString);
+        assertThat(createCredentialRequest.getType())
                 .isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
         assertThat(
-                        credManRequest
+                        createCredentialRequest
                                 .getCredentialData()
                                 .getString("androidx.credentials.BUNDLE_KEY_REQUEST_JSON"))
                 .isEqualTo("{serialized_make_request}");
-        assertThat(credManRequest.getAlwaysSendAppInfoToProvider()).isTrue();
-        assertThat(credManRequest.getCandidateQueryData().containsKey("com.android.chrome.CHANNEL"))
+        assertThat(createCredentialRequest.alwaysSendAppInfoToProvider()).isTrue();
+        assertThat(
+                        createCredentialRequest
+                                .getCandidateQueryData()
+                                .containsKey("com.android.chrome.CHANNEL"))
                 .isTrue();
 
+        shadowCredentialManager
+                .getCreateCredentialCallback()
+                .onResult(Shadow.newInstanceOf(CreateCredentialResponse.class));
         assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
 
         verify(mMetricsHelper, times(1))
@@ -160,25 +182,27 @@ public class CredManHelperRobolectricTest {
                         mErrorCallback);
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
-        FakeAndroidCredManCreateRequest credManRequest = mCredentialManager.getCreateRequest();
-        assertThat(credManRequest).isNotNull();
-        assertThat(credManRequest.getOrigin()).isEqualTo(mOriginString);
+
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager2);
+        CreateCredentialRequest createCredentialRequest =
+                shadowCredentialManager.getCreateCredentialRequest();
+        assertThat(createCredentialRequest).isNotNull();
+        assertThat(createCredentialRequest.getOrigin()).isEqualTo(mOriginString);
         assertThat(
-                        credManRequest
+                        createCredentialRequest
                                 .getCredentialData()
                                 .getByteArray("androidx.credentials.BUNDLE_KEY_CLIENT_DATA_HASH"))
                 .isEqualTo(mMaybeClientDataHash);
+
+        shadowCredentialManager
+                .getCreateCredentialCallback()
+                .onResult(Shadow.newInstanceOf(CreateCredentialResponse.class));
         assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
     }
 
     @Test
     @SmallTest
     public void testStartMakeRequest_userCancel_notAllowedError() {
-        mCredentialManager.setErrorResponse(
-                new FakeAndroidCredManException(
-                        "android.credentials.CreateCredentialException.TYPE_USER_CANCELED",
-                        "Message"));
-
         int result =
                 mCredManHelper.startMakeRequest(
                         mContext,
@@ -190,6 +214,13 @@ public class CredManHelperRobolectricTest {
                         mErrorCallback);
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
+
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager2);
+        CreateCredentialException exception = Shadow.newInstanceOf(CreateCredentialException.class);
+        ShadowCreateCredentialException shadowException = Shadow.extract(exception);
+        shadowException.setType("android.credentials.CreateCredentialException.TYPE_USER_CANCELED");
+        shadowCredentialManager.getCreateCredentialCallback().onError(exception);
+
         verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
         verify(mMetricsHelper, times(1))
                 .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.CANCELLED);
@@ -198,11 +229,6 @@ public class CredManHelperRobolectricTest {
     @Test
     @SmallTest
     public void testStartMakeRequest_invalidStateError_credentialExcluded() {
-        mCredentialManager.setErrorResponse(
-                new FakeAndroidCredManException(
-                        CredManHelper.CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR,
-                        "Message"));
-
         int result =
                 mCredManHelper.startMakeRequest(
                         mContext,
@@ -214,6 +240,14 @@ public class CredManHelperRobolectricTest {
                         mErrorCallback);
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
+
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager2);
+        CreateCredentialException exception = Shadow.newInstanceOf(CreateCredentialException.class);
+        ShadowCreateCredentialException shadowException = Shadow.extract(exception);
+        shadowException.setType(
+                CredManHelper.CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR);
+        shadowCredentialManager.getCreateCredentialCallback().onError(exception);
+
         verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.CREDENTIAL_EXCLUDED);
         verify(mMetricsHelper, times(1))
                 .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.SUCCESS);
@@ -222,10 +256,6 @@ public class CredManHelperRobolectricTest {
     @Test
     @SmallTest
     public void testStartMakeRequest_unknownError_unknownError() {
-        mCredentialManager.setErrorResponse(
-                new FakeAndroidCredManException(
-                        "android.credentials.CreateCredentialException.TYPE_UNKNOWN", "Message"));
-
         int result =
                 mCredManHelper.startMakeRequest(
                         mContext,
@@ -237,6 +267,13 @@ public class CredManHelperRobolectricTest {
                         mErrorCallback);
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
+
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager2);
+        CreateCredentialException exception = Shadow.newInstanceOf(CreateCredentialException.class);
+        ShadowCreateCredentialException shadowException = Shadow.extract(exception);
+        shadowException.setType("android.credentials.CreateCredentialException.TYPE_UNKNOWN");
+        shadowCredentialManager.getCreateCredentialCallback().onError(exception);
+
         verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.UNKNOWN_ERROR);
         verify(mMetricsHelper, times(1))
                 .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.FAILURE);

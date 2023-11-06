@@ -6,6 +6,10 @@ package org.chromium.components.webauthn;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.credentials.CreateCredentialException;
+import android.credentials.CreateCredentialRequest;
+import android.credentials.CreateCredentialResponse;
+import android.credentials.CredentialManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.OutcomeReceiver;
@@ -79,7 +83,6 @@ public class CredManHelper {
     private boolean mRequestPasswords;
     private BridgeProvider mBridgeProvider;
     private byte[] mClientDataJson;
-    private Class mCredManCreateRequestBuilderClassForTesting;
     private Class mCredManGetRequestBuilderClassForTesting;
     private Class mCredManCredentialOptionBuilderClassForTesting;
     private ConditionalUiState mConditionalUiState = ConditionalUiState.NONE;
@@ -140,103 +143,86 @@ public class CredManHelper {
                 CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_DISPLAY_INFO", displayInfoBundle);
         requestBundle.putString(CHANNEL_KEY, getChannel());
 
-        // The Android 14 APIs have to be called via reflection until Chromium
-        // builds with the Android 14 SDK by default.
-        OutcomeReceiver receiver = new OutcomeReceiver<Object, Throwable>() {
-            @Override
-            public void onError(Throwable e) {
-                String errorType = getCredManExceptionType(e);
-                Log.e(TAG, "CredMan CreateCredential call failed: %s",
-                        errorType + " (" + e.getMessage() + ")");
-                if (errorType.equals(CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_USER_CANCEL)) {
-                    errorCallback.onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
-                    mMetricsHelper.recordCredManCreateRequestHistogram(
-                            CredManCreateRequestEnum.CANCELLED);
-                } else if (errorType.equals(
-                                   CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR)) {
-                    errorCallback.onResult(AuthenticatorStatus.CREDENTIAL_EXCLUDED);
-                    // This is successful from the point of view of the user.
-                    mMetricsHelper.recordCredManCreateRequestHistogram(
-                            CredManCreateRequestEnum.SUCCESS);
-                } else {
-                    // Includes:
-                    //  * CreateCredentialException.TYPE_UNKNOWN
-                    //  * CreateCredentialException.TYPE_NO_CREATE_OPTIONS
-                    //  * CreateCredentialException.TYPE_INTERRUPTED
-                    errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
-                    mMetricsHelper.recordCredManCreateRequestHistogram(
-                            CredManCreateRequestEnum.FAILURE);
-                }
-            }
+        OutcomeReceiver<CreateCredentialResponse, CreateCredentialException> receiver =
+                new OutcomeReceiver<>() {
+                    @Override
+                    public void onError(CreateCredentialException exception) {
+                        String errorType = exception.getType();
+                        Log.e(
+                                TAG,
+                                "CredMan CreateCredential call failed: %s",
+                                errorType + " (" + exception.getMessage() + ")");
+                        if (errorType.equals(
+                                CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_USER_CANCEL)) {
+                            errorCallback.onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                            mMetricsHelper.recordCredManCreateRequestHistogram(
+                                    CredManCreateRequestEnum.CANCELLED);
+                        } else if (errorType.equals(
+                                CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR)) {
+                            errorCallback.onResult(AuthenticatorStatus.CREDENTIAL_EXCLUDED);
+                            // This is successful from the point of view of the user.
+                            mMetricsHelper.recordCredManCreateRequestHistogram(
+                                    CredManCreateRequestEnum.SUCCESS);
+                        } else {
+                            // Includes:
+                            //  * CreateCredentialException.TYPE_UNKNOWN
+                            //  * CreateCredentialException.TYPE_NO_CREATE_OPTIONS
+                            //  * CreateCredentialException.TYPE_INTERRUPTED
+                            errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
+                            mMetricsHelper.recordCredManCreateRequestHistogram(
+                                    CredManCreateRequestEnum.FAILURE);
+                        }
+                    }
 
-            @Override
-            public void onResult(Object createCredentialResponse) {
-                Bundle data;
-                try {
-                    data = (Bundle) createCredentialResponse.getClass().getMethod("getData").invoke(
-                            createCredentialResponse);
-                } catch (ReflectiveOperationException e) {
-                    Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
-                    errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
-                    mMetricsHelper.recordCredManCreateRequestHistogram(
-                            CredManCreateRequestEnum.FAILURE);
-                    return;
-                }
+                    @Override
+                    public void onResult(CreateCredentialResponse createCredentialResponse) {
+                        Bundle data;
+                        data = createCredentialResponse.getData();
+                        String json =
+                                data.getString(
+                                        CRED_MAN_PREFIX + "BUNDLE_KEY_REGISTRATION_RESPONSE_JSON");
+                        byte[] responseSerialized =
+                                Fido2CredentialRequestJni.get()
+                                        .makeCredentialResponseFromJson(json);
+                        if (responseSerialized == null) {
+                            Log.e(
+                                    TAG,
+                                    "Failed to convert response from CredMan to Mojo object: %s",
+                                    json);
+                            errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
+                            mMetricsHelper.recordCredManCreateRequestHistogram(
+                                    CredManCreateRequestEnum.FAILURE);
+                            return;
+                        }
+                        MakeCredentialAuthenticatorResponse response;
+                        try {
+                            response =
+                                    MakeCredentialAuthenticatorResponse.deserialize(
+                                            ByteBuffer.wrap(responseSerialized));
+                        } catch (org.chromium.mojo.bindings.DeserializationException e) {
+                            logDeserializationException(e);
+                            errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
+                            mMetricsHelper.recordCredManCreateRequestHistogram(
+                                    CredManCreateRequestEnum.FAILURE);
+                            return;
+                        }
+                        response.info.clientDataJson = mClientDataJson;
+                        response.echoCredProps = options.credProps;
+                        makeCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS, response);
+                        mMetricsHelper.recordCredManCreateRequestHistogram(
+                                CredManCreateRequestEnum.SUCCESS);
+                    }
+                };
 
-                String json =
-                        data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_REGISTRATION_RESPONSE_JSON");
-                byte[] responseSerialized =
-                        Fido2CredentialRequestJni.get().makeCredentialResponseFromJson(json);
-                if (responseSerialized == null) {
-                    Log.e(TAG, "Failed to convert response from CredMan to Mojo object: %s", json);
-                    errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
-                    mMetricsHelper.recordCredManCreateRequestHistogram(
-                            CredManCreateRequestEnum.FAILURE);
-                    return;
-                }
-                MakeCredentialAuthenticatorResponse response;
-                try {
-                    response = MakeCredentialAuthenticatorResponse.deserialize(
-                            ByteBuffer.wrap(responseSerialized));
-                } catch (org.chromium.mojo.bindings.DeserializationException e) {
-                    logDeserializationException(e);
-                    errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
-                    mMetricsHelper.recordCredManCreateRequestHistogram(
-                            CredManCreateRequestEnum.FAILURE);
-                    return;
-                }
-                response.info.clientDataJson = mClientDataJson;
-                response.echoCredProps = options.credProps;
-                makeCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS, response);
-                mMetricsHelper.recordCredManCreateRequestHistogram(
-                        CredManCreateRequestEnum.SUCCESS);
-            }
-        };
-
-        try {
-            final Class createCredentialRequestBuilder = credManCreateRequestBuilderClass();
-            final Object builder = createCredentialRequestBuilder
-                                           .getConstructor(String.class, Bundle.class, Bundle.class)
-                                           .newInstance(TYPE_PASSKEY, requestBundle, requestBundle);
-            final Class builderClass = builder.getClass();
-            builderClass.getMethod("setAlwaysSendAppInfoToProvider", boolean.class)
-                    .invoke(builder, true);
-            builderClass.getMethod("setOrigin", String.class).invoke(builder, originString);
-            final Object request = builderClass.getMethod("build").invoke(builder);
-            final Object manager = credentialManagerService(mContext);
-            manager.getClass()
-                    .getMethod("createCredential", Context.class, request.getClass(),
-                            android.os.CancellationSignal.class,
-                            java.util.concurrent.Executor.class, OutcomeReceiver.class)
-                    .invoke(manager, mContext, request, null, mContext.getMainExecutor(), receiver);
-            mMetricsHelper.recordCredManCreateRequestHistogram(
-                    CredManCreateRequestEnum.SENT_REQUEST);
-        } catch (ReflectiveOperationException e) {
-            Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
-            mMetricsHelper.recordCredManCreateRequestHistogram(
-                    CredManCreateRequestEnum.COULD_NOT_SEND_REQUEST);
-            return AuthenticatorStatus.UNKNOWN_ERROR;
-        }
+        final CreateCredentialRequest request =
+                new CreateCredentialRequest.Builder(TYPE_PASSKEY, requestBundle, requestBundle)
+                        .setAlwaysSendAppInfoToProvider(true)
+                        .setOrigin(originString)
+                        .build();
+        final CredentialManager manager =
+                (CredentialManager) mContext.getSystemService(Context.CREDENTIAL_SERVICE);
+        manager.createCredential(mContext, request, null, mContext.getMainExecutor(), receiver);
+        mMetricsHelper.recordCredManCreateRequestHistogram(CredManCreateRequestEnum.SENT_REQUEST);
         return AuthenticatorStatus.SUCCESS;
     }
 
@@ -590,11 +576,12 @@ public class CredManHelper {
         }
     }
 
-    public void setCredManClassesForTesting(Object credentialManager, Class createRequestBuilder,
-            Class getRequestBuilder, Class credentialOptionBuilder,
+    public void setCredManClassesForTesting(
+            Object credentialManager,
+            Class getRequestBuilder,
+            Class credentialOptionBuilder,
             CredManMetricsHelper metricsHelper) {
         mCredentialManagerServiceForTesting = credentialManager;
-        mCredManCreateRequestBuilderClassForTesting = createRequestBuilder;
         mCredManGetRequestBuilderClassForTesting = getRequestBuilder;
         mCredManCredentialOptionBuilderClassForTesting = credentialOptionBuilder;
         mMetricsHelper = metricsHelper;
@@ -609,13 +596,6 @@ public class CredManHelper {
             return mCredentialManagerServiceForTesting;
         }
         return context.getSystemService(Context.CREDENTIAL_SERVICE);
-    }
-
-    Class credManCreateRequestBuilderClass() throws ClassNotFoundException {
-        if (mCredManCreateRequestBuilderClassForTesting != null) {
-            return mCredManCreateRequestBuilderClassForTesting;
-        }
-        return Class.forName("android.credentials.CreateCredentialRequest$Builder");
     }
 
     Class credManGetRequestBuilderClass() throws ClassNotFoundException {

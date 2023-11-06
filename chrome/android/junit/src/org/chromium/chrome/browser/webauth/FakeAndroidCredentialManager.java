@@ -12,29 +12,12 @@ import java.util.concurrent.Executor;
 
 /** Fake implementation of the Android Credential Manager Service. */
 public final class FakeAndroidCredentialManager {
-    FakeAndroidCredManCreateRequest mCreateRequest;
     FakeAndroidCredManGetRequest mGetRequest;
     FakeAndroidCredManException mErrorResponse;
     FakeAndroidCredential mCredential;
 
     public FakeAndroidCredentialManager() {
         mCredential = new FakeAndroidPublicKeyCredential();
-    }
-
-    /** Fake implementation of CredentialManager.createCredential(). */
-    public void createCredential(
-            Context context,
-            FakeAndroidCredManCreateRequest request,
-            CancellationSignal cancellationSignal,
-            Executor executor,
-            OutcomeReceiver<FakeAndroidCredManCreateResponse, Throwable> callback) {
-        mCreateRequest = request;
-
-        if (mErrorResponse != null) {
-            callback.onError(mErrorResponse);
-            return;
-        }
-        callback.onResult(new FakeAndroidCredManCreateResponse());
     }
 
     /** Fake implementation of CredentialManager.getCredential(). */
@@ -69,11 +52,6 @@ public final class FakeAndroidCredentialManager {
             return;
         }
         callback.onResult(new FakeAndroidCredManPrepareGetCredentialResponse());
-    }
-
-    /** Returns the received Create Request for inspection by tests. */
-    public FakeAndroidCredManCreateRequest getCreateRequest() {
-        return mCreateRequest;
     }
 
     /** Returns the received Get Request for inspection by tests. */
