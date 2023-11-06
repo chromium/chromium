@@ -4207,8 +4207,12 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
     return false;
   }
 
-  // We should not need style updates at this point.
+  // We should not need layout/style updates at this point.
   CHECK(!elem->NeedsStyleRecalc())
+      << "\n* Element: " << elem << "\n* Object: " << ToString(true, true)
+      << "\n* LayoutObject: " << GetLayoutObject();
+  CHECK(
+      !GetDocument()->NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*elem))
       << "\n* Element: " << elem << "\n* Object: " << ToString(true, true)
       << "\n* LayoutObject: " << GetLayoutObject();
 
@@ -4222,13 +4226,13 @@ bool AXObject::IsKeyboardFocusable() const {
   }
 
   Element& element = *GetElement();
+  Document& document = *GetDocument();
   CHECK(!element.NeedsStyleRecalc())
       << "\n* Element: " << element << "\n* Object: " << ToString(true, true)
       << "\n* LayoutObject: " << GetLayoutObject();
-  if (!element.IsFocusable(
-          /*disallow_layout_updates_for_accessibility_only*/ true)) {
-    return false;
-  }
+  CHECK(!document.NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(element))
+      << "\n* Element: " << element << "\n* Object: " << ToString(true, true)
+      << "\n* LayoutObject: " << GetLayoutObject();
   return element.IsKeyboardFocusable();
 }
 

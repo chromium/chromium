@@ -189,11 +189,9 @@ bool HTMLAreaElement::IsKeyboardFocusable() const {
   return Element::IsKeyboardFocusable();
 }
 
-bool HTMLAreaElement::IsFocusable(
-    bool disallow_layout_updates_for_accessibility_only) const {
+bool HTMLAreaElement::IsFocusable() const {
   // Explicitly skip over the HTMLAnchorElement's mouse focus behavior.
-  return HTMLElement::IsFocusable(
-      disallow_layout_updates_for_accessibility_only);
+  return HTMLElement::IsFocusable();
 }
 
 bool HTMLAreaElement::IsFocusableStyle() const {
