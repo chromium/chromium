@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.incognito.reauth;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;

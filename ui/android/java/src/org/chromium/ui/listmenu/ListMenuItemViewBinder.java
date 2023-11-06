@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.widget.listmenu;
+package org.chromium.ui.listmenu;
 
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -17,7 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;

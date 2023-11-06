@@ -41,8 +41,8 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for the "Languages" settings screen. */

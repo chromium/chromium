@@ -23,10 +23,10 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableListAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
 
 import java.util.ArrayList;
 import java.util.Collection;

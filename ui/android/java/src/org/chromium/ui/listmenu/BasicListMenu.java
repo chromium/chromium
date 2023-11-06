@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.widget.listmenu;
+package org.chromium.ui.listmenu;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -44,6 +44,7 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
 
     /**
      * Helper function to build a ListItem of a divider.
+     *
      * @return ListItem Representing a divider.
      */
     public static ListItem buildMenuDivider() {
@@ -118,9 +119,10 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
     }
 
     private void registerListItemTypes() {
-        mAdapter.registerType(ListMenuItemType.MENU_ITEM,
-            new LayoutViewBuilder(R.layout.list_menu_item),
-            ListMenuItemViewBinder::binder);
+        mAdapter.registerType(
+                ListMenuItemType.MENU_ITEM,
+                new LayoutViewBuilder(R.layout.list_menu_item),
+                ListMenuItemViewBinder::binder);
         mAdapter.registerType(
                 ListMenuItemType.DIVIDER,
                 new LayoutViewBuilder(R.layout.list_section_divider),

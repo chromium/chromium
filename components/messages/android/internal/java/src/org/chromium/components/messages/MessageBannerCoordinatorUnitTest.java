@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
+import org.chromium.ui.listmenu.ListMenuButton.PopupMenuShownListener;
 
 /** Unit tests for MessageBannerCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)

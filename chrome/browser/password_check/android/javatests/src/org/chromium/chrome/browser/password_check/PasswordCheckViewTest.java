@@ -90,8 +90,8 @@ import org.chromium.chrome.browser.password_manager.settings.ReauthenticationMan
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.ReauthScope;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;

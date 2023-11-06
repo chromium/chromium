@@ -8,7 +8,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuButton;
 
 /** The home button. */
 public class HomeButton extends ListMenuButton {

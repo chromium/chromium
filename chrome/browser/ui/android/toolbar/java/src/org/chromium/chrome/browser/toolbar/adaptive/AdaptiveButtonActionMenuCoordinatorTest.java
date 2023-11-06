@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
 /** Unit tests for the {@link AdaptiveButtonActionMenuCoordinator}. */

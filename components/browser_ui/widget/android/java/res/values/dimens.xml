@@ -41,13 +41,6 @@ found in the LICENSE file.
     <dimen name="radio_button_with_description_and_aux_button_aux_button_length"
         tools:ignore="UnusedResources">61dp</dimen>
 
-    <!-- List menu item dimensions -->
-    <dimen name="list_menu_width">180dp</dimen>
-    <dimen name="list_menu_item_icon_size">24dp</dimen>
-
-    <!-- Custom Menu dimensions -->
-    <dimen name="menu_padding_start">16dp</dimen>
-
     <!-- Drag-Reorderable List dimensions -->
     <dimen name="list_item_dragged_elevation">6dp</dimen>
 
@@ -108,9 +101,6 @@ found in the LICENSE file.
     <dimen name="iph_pulse_baseline_radius">16dp</dimen>
     <dimen name="text_bubble_with_snooze_padding_horizontal">24dp</dimen>
     <dimen name="text_bubble_with_snooze_padding_end">4dp</dimen>
-
-    <!-- Default list dimensions -->
-    <dimen name="default_list_row_padding">16dp</dimen>
 
     <!-- Swipe gesture listener dimensions -->
     <dimen name="swipe_vertical_drag_threshold">5dp</dimen>

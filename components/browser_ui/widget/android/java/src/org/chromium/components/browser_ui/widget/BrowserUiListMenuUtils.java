@@ -17,10 +17,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.ListMenuItemType;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -164,8 +164,7 @@ public class BrowserUiListMenuUtils {
         if (contentDescription != null) {
             builder.with(ListMenuItemProperties.CONTENT_DESCRIPTION, contentDescription);
         }
-        return new MVCListAdapter.ListItem(
-                BasicListMenu.ListMenuItemType.MENU_ITEM, builder.build());
+        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, builder.build());
     }
 
     /**

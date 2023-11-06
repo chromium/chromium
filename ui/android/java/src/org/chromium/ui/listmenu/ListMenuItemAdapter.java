@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.widget.listmenu;
+package org.chromium.ui.listmenu;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.ListMenuItemType;
+import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.modelutil.ModelListAdapter;
 
 /**

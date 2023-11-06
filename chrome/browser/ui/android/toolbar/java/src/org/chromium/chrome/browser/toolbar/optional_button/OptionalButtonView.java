@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuButton;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

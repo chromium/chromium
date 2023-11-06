@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

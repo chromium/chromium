@@ -323,9 +323,6 @@
         Provided by Google
       </message>
 
-      <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button.">
-        Customize and control Google Chrome
-      </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_FORWARD" desc="Content description for the forward navigation button.">
         Go forward
       </message>
@@ -334,9 +331,6 @@
       </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_DELETE_URL" desc="Content description for the clear text input button.">
         Clear input
-      </message>
-      <message name="IDS_ACCESSIBILITY_LIST_MENU_BUTTON" desc="Content description for the button that shows option menu for a list item.">
-        <ph name="NAME_OF_LIST_ITEM">%1$s<ex>Movie Title</ex></ph> Options
       </message>
       <message name="IDS_ACCESSIBILITY_LIST_REMOVE_BUTTON" desc="Content description for the button that removes a list item.">
         <ph name="NAME_OF_LIST_ITEM">%1$s<ex>Movie Title</ex></ph> Remove

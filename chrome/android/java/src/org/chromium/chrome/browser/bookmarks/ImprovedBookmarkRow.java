@@ -22,10 +22,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuButton.PopupMenuShownListener;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** Common logic for improved bookmark and folder rows. */

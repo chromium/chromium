@@ -12,7 +12,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;

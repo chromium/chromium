@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.widget.listmenu;
+package org.chromium.ui.listmenu;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import org.chromium.base.ObserverList;
-import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -261,7 +261,7 @@ public class ListMenuButton
         }
     }
 
-    void setAttachedToWindowForTesting() {
+    public void setAttachedToWindowForTesting() {
         mIsAttachedToWindow = true;
     }
 }
