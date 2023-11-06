@@ -295,6 +295,10 @@ void EnrollmentScreenHandler::Shutdown() {
   shutdown_ = true;
 }
 
+base::WeakPtr<EnrollmentScreenView> EnrollmentScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void EnrollmentScreenHandler::ShowEnrollmentStatus(
     policy::EnrollmentStatus status) {
   switch (status.enrollment_code()) {
