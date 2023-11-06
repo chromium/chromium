@@ -25,6 +25,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -181,7 +182,7 @@ bool WaylandWindowDragController::Drag(WaylandToplevelWindow* window,
   }
 
   auto state = state_;
-  HandleDropAndResetState();
+  HandleDropAndResetState(EventTimeForNow());
 
   return state != State::kCancelled;
 }
@@ -222,6 +223,7 @@ void WaylandWindowDragController::OnDragOffer(
 
 void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
                                               const gfx::PointF& location,
+                                              base::TimeTicks timestamp,
                                               uint32_t serial) {
   // Drag-and-drop sessions may be terminated by the client while drag-and-drop
   // server events are still in-flight. No-op if this is the case.
@@ -245,7 +247,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   // Check if this is necessary.
   if (*drag_source_ == DragEventSource::kMouse) {
     pointer_delegate_->OnPointerFocusChanged(
-        window, location, wl::EventDispatchPolicy::kImmediate);
+        window, location, timestamp, wl::EventDispatchPolicy::kImmediate);
   } else {
     touch_delegate_->OnTouchFocusChanged(window);
   }
@@ -265,7 +267,8 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   data_offer_->Accept(serial, kMimeTypeChromiumWindow);
 }
 
-void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
+void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location,
+                                               base::TimeTicks timestamp) {
   // Drag-and-drop sessions may be terminated by the client while drag-and-drop
   // server events are still in-flight. No-op if this is the case.
   if (!IsActiveDragAndDropSession()) {
@@ -293,21 +296,21 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
 
   if (*drag_source_ == DragEventSource::kMouse) {
     pointer_delegate_->OnPointerMotionEvent(
-        location, wl::EventDispatchPolicy::kImmediate);
+        location, timestamp, wl::EventDispatchPolicy::kImmediate);
   } else {
     const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
     LOG_IF(WARNING, touch_pointer_ids.size() != 1u)
         << "Unexpected touch drag motion. Active touch_points: "
         << touch_pointer_ids.size();
     if (!touch_pointer_ids.empty()) {
-      touch_delegate_->OnTouchMotionEvent(location, base::TimeTicks::Now(),
+      touch_delegate_->OnTouchMotionEvent(location, timestamp,
                                           touch_pointer_ids[0],
                                           wl::EventDispatchPolicy::kImmediate);
     }
   }
 }
 
-void WaylandWindowDragController::OnDragLeave() {
+void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
   // Drag and drop sessions may be terminated by the client while drag-and-drop
   // server events may still be in-flight. No-op if this is the case.
   if (!IsActiveDragAndDropSession()) {
@@ -354,7 +357,8 @@ void WaylandWindowDragController::OnDragLeave() {
 
   if (*drag_source_ == DragEventSource::kMouse) {
     pointer_delegate_->OnPointerMotionEvent(
-        {pointer_location_.x(), -1}, wl::EventDispatchPolicy::kImmediate);
+        {pointer_location_.x(), -1}, timestamp,
+        wl::EventDispatchPolicy::kImmediate);
   } else {
     const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
     if (!touch_pointer_ids.empty()) {
@@ -364,14 +368,13 @@ void WaylandWindowDragController::OnDragLeave() {
       // to work around the threshold in ScrollSnapController otherwise,
       // the drag event is discarded.
       touch_delegate_->OnTouchMotionEvent(
-          {pointer_location_.x(), kHorizontalRailExitThreshold},
-          base::TimeTicks::Now(), touch_pointer_ids[0],
-          wl::EventDispatchPolicy::kImmediate);
+          {pointer_location_.x(), kHorizontalRailExitThreshold}, timestamp,
+          touch_pointer_ids[0], wl::EventDispatchPolicy::kImmediate);
     }
   }
 }
 
-void WaylandWindowDragController::OnDragDrop() {
+void WaylandWindowDragController::OnDragDrop(base::TimeTicks timestamp) {
   // Drag-and-drop sessions may be terminated by the client while drag-and-drop
   // server events are still in-flight. No-op if this is the case.
   if (!IsActiveDragAndDropSession()) {
@@ -397,6 +400,7 @@ const WaylandWindow* WaylandWindowDragController::GetDragTarget() const {
 // when drop happens, since it is the only event sent by the server regardless
 // where it happens, inside or outside toplevel surfaces.
 void WaylandWindowDragController::OnDataSourceFinish(WaylandDataSource* source,
+                                                     base::TimeTicks timestamp,
                                                      bool completed) {
   CHECK_GE(state_, State::kAttached);
   CHECK_EQ(data_source_.get(), source);
@@ -421,7 +425,7 @@ void WaylandWindowDragController::OnDataSourceFinish(WaylandDataSource* source,
       // TODO: check if this usage is correct.
 
       pointer_delegate_->OnPointerFocusChanged(
-          dragged_window_, pointer_location_,
+          dragged_window_, pointer_location_, timestamp,
           wl::EventDispatchPolicy::kImmediate);
     } else {
       touch_delegate_->OnTouchFocusChanged(dragged_window_);
@@ -439,7 +443,7 @@ void WaylandWindowDragController::OnDataSourceFinish(WaylandDataSource* source,
     VLOG(1) << "Quiting Loop : Detached";
     QuitLoop();
   } else {
-    HandleDropAndResetState();
+    HandleDropAndResetState(timestamp);
   }
 
   data_device_->ResetDragDelegate();
@@ -526,7 +530,8 @@ void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {
 
   if (should_cancel_drag) {
     LOG(ERROR) << "OnDataSourceFinish";
-    OnDataSourceFinish(data_source_.get(), /*completed=*/false);
+    OnDataSourceFinish(data_source_.get(), EventTimeForNow(),
+                       /*completed=*/false);
   }
 }
 
@@ -553,7 +558,8 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
 // Dispatch mouse release event (to tell clients that the drop just happened)
 // clear focus and reset internal state. Must be called when the session is
 // about to finish.
-void WaylandWindowDragController::HandleDropAndResetState() {
+void WaylandWindowDragController::HandleDropAndResetState(
+    base::TimeTicks timestamp) {
   DCHECK(state_ == State::kDropped || state_ == State::kCancelled);
   VLOG(1) << "Notifying drop. window=" << pointer_grab_owner_;
 
@@ -569,14 +575,13 @@ void WaylandWindowDragController::HandleDropAndResetState() {
   if (*drag_source_ == DragEventSource::kMouse) {
     if (pointer_grab_owner_) {
       pointer_delegate_->OnPointerButtonEvent(
-          ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, pointer_grab_owner_,
-          wl::EventDispatchPolicy::kImmediate);
+          ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, timestamp,
+          pointer_grab_owner_, wl::EventDispatchPolicy::kImmediate);
     }
   } else {
     const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
     if (!touch_pointer_ids.empty()) {
-      touch_delegate_->OnTouchReleaseEvent(base::TimeTicks::Now(),
-                                           touch_pointer_ids[0],
+      touch_delegate_->OnTouchReleaseEvent(timestamp, touch_pointer_ids[0],
                                            wl::EventDispatchPolicy::kImmediate);
     }
   }

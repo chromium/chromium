@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/version.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -60,7 +61,7 @@ WaylandPointer::~WaylandPointer() {
   // Even though, WaylandPointer::Leave is always called when Wayland destroys
   // wl_pointer, it's better to be explicit as some Wayland compositors may have
   // bugs.
-  delegate_->OnPointerFocusChanged(nullptr, {},
+  delegate_->OnPointerFocusChanged(nullptr, {}, EventTimeForNow(),
                                    wl::EventDispatchPolicy::kImmediate);
   delegate_->OnResetPointerFlags();
 }
@@ -72,6 +73,8 @@ void WaylandPointer::OnEnter(void* data,
                              wl_surface* surface,
                              wl_fixed_t surface_x,
                              wl_fixed_t surface_y) {
+  // enter event doesn't have timestamp. Use EventTimeForNow().
+  const auto timestamp = EventTimeForNow();
   auto* self = static_cast<WaylandPointer*>(data);
 
   if (self->connection_->IsDragInProgress()) {
@@ -92,7 +95,7 @@ void WaylandPointer::OnEnter(void* data,
 
   self->delegate_->OnPointerFocusChanged(
       window, self->connection_->MaybeConvertLocation(location, window),
-      EventDispatchPolicyForPlatform());
+      timestamp, EventDispatchPolicyForPlatform());
 }
 
 // static
@@ -100,6 +103,8 @@ void WaylandPointer::OnLeave(void* data,
                              wl_pointer* pointer,
                              uint32_t serial,
                              wl_surface* surface) {
+  // leave event doesn't have timestamp. Use EventTimeForNow().
+  const auto timestamp = EventTimeForNow();
   auto* self = static_cast<WaylandPointer*>(data);
 
   if (self->connection_->IsDragInProgress()) {
@@ -111,8 +116,9 @@ void WaylandPointer::OnLeave(void* data,
 
   auto event_dispatch_policy = EventDispatchPolicyForPlatform();
 
-  self->delegate_->OnPointerFocusChanged(
-      nullptr, self->delegate_->GetPointerLocation(), event_dispatch_policy);
+  self->delegate_->OnPointerFocusChanged(nullptr,
+                                         self->delegate_->GetPointerLocation(),
+                                         timestamp, event_dispatch_policy);
 }
 
 // static
@@ -134,7 +140,7 @@ void WaylandPointer::OnMotion(void* data,
 
   self->delegate_->OnPointerMotionEvent(
       self->connection_->MaybeConvertLocation(location, target),
-      EventDispatchPolicyForPlatform());
+      wl::EventMillisecondsToTimeTicks(time), EventDispatchPolicyForPlatform());
 }
 
 // static
@@ -174,9 +180,9 @@ void WaylandPointer::OnButton(void* data,
     self->connection_->serial_tracker().UpdateSerial(
         wl::SerialType::kMousePress, serial);
   }
-  self->delegate_->OnPointerButtonEvent(type, changed_button,
-                                        /*window=*/nullptr,
-                                        EventDispatchPolicyForPlatform());
+  self->delegate_->OnPointerButtonEvent(
+      type, changed_button, wl::EventMillisecondsToTimeTicks(time),
+      /*window=*/nullptr, EventDispatchPolicyForPlatform());
 }
 
 // static
@@ -205,10 +211,11 @@ void WaylandPointer::OnAxis(void* data,
   // If we did not receive the axis event source explicitly, set it to the mouse
   // wheel so far.  Should this be a part of some complex event coming from the
   // different source, the compositor will let us know sooner or later.
+  auto timestamp = wl::EventMillisecondsToTimeTicks(time);
   if (!self->axis_source_received_) {
     self->delegate_->OnPointerAxisSourceEvent(WL_POINTER_AXIS_SOURCE_WHEEL);
   }
-  self->delegate_->OnPointerAxisEvent(offset);
+  self->delegate_->OnPointerAxisEvent(offset, timestamp);
 }
 
 // ---- Version 5 ----
@@ -237,7 +244,8 @@ void WaylandPointer::OnAxisStop(void* data,
                                 uint32_t time,
                                 uint32_t axis) {
   auto* self = static_cast<WaylandPointer*>(data);
-  self->delegate_->OnPointerAxisStopEvent(axis);
+  self->delegate_->OnPointerAxisStopEvent(
+      axis, wl::EventMillisecondsToTimeTicks(time));
 }
 
 // static

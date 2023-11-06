@@ -8,6 +8,10 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
+namespace base {
+class TimeTicks;
+}
+
 namespace gfx {
 class Vector2dF;
 }  // namespace gfx
@@ -63,7 +67,8 @@ class WaylandZwpRelativePointerManager
 class WaylandZwpRelativePointerManager::Delegate {
  public:
   virtual void SetRelativePointerMotionEnabled(bool enabled) = 0;
-  virtual void OnRelativePointerMotion(const gfx::Vector2dF& delta) = 0;
+  virtual void OnRelativePointerMotion(const gfx::Vector2dF& delta,
+                                       base::TimeTicks timestamp) = 0;
 };
 
 }  // namespace ui

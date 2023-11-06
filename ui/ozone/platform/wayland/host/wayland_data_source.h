@@ -17,6 +17,10 @@ struct wl_data_source;
 struct gtk_primary_selection_source;
 struct zwp_primary_selection_source_v1;
 
+namespace base {
+class TimeTicks;
+}
+
 namespace wl {
 template <typename T>
 class DataSource;
@@ -54,7 +58,9 @@ class DataSource {
  public:
   class Delegate {
    public:
-    virtual void OnDataSourceFinish(DataSource<T>* source, bool completed) = 0;
+    virtual void OnDataSourceFinish(DataSource<T>* source,
+                                    base::TimeTicks timestamp,
+                                    bool completed) = 0;
     virtual void OnDataSourceSend(DataSource<T>* source,
                                   const std::string& mime_type,
                                   std::string* contents) = 0;

@@ -42,10 +42,12 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
     virtual void OnDragOffer(std::unique_ptr<WaylandDataOffer> offer) = 0;
     virtual void OnDragEnter(WaylandWindow* window,
                              const gfx::PointF& location,
+                             base::TimeTicks timestamp,
                              uint32_t serial) = 0;
-    virtual void OnDragMotion(const gfx::PointF& location) = 0;
-    virtual void OnDragLeave() = 0;
-    virtual void OnDragDrop() = 0;
+    virtual void OnDragMotion(const gfx::PointF& location,
+                              base::TimeTicks timestamp) = 0;
+    virtual void OnDragLeave(base::TimeTicks timestamp) = 0;
+    virtual void OnDragDrop(base::TimeTicks timestamp) = 0;
 
     virtual const WaylandWindow* GetDragTarget() const = 0;
 

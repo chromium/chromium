@@ -12,6 +12,10 @@
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
+namespace base {
+class TimeTicks;
+}
+
 namespace gfx {
 class PointF;
 class Vector2dF;
@@ -122,24 +126,30 @@ class WaylandPointer::Delegate {
   virtual void OnPointerFocusChanged(
       WaylandWindow* window,
       const gfx::PointF& location,
+      base::TimeTicks timestamp,
       wl::EventDispatchPolicy dispatch_policy) = 0;
   virtual void OnPointerButtonEvent(
       EventType evtype,
       int changed_button,
+      base::TimeTicks timestamp,
       WaylandWindow* window,
       wl::EventDispatchPolicy dispatch_policy) = 0;
   virtual void OnPointerButtonEvent(EventType evtype,
                                     int changed_button,
+                                    base::TimeTicks timestamp,
                                     WaylandWindow* window,
                                     wl::EventDispatchPolicy dispatch_policy,
                                     bool allow_release_of_unpressed_button) = 0;
   virtual void OnPointerMotionEvent(
       const gfx::PointF& location,
+      base::TimeTicks timestamp,
       wl::EventDispatchPolicy dispatch_policy) = 0;
-  virtual void OnPointerAxisEvent(const gfx::Vector2dF& offset) = 0;
+  virtual void OnPointerAxisEvent(const gfx::Vector2dF& offset,
+                                  base::TimeTicks timestamp) = 0;
   virtual void OnPointerFrameEvent() = 0;
   virtual void OnPointerAxisSourceEvent(uint32_t axis_source) = 0;
-  virtual void OnPointerAxisStopEvent(uint32_t axis) = 0;
+  virtual void OnPointerAxisStopEvent(uint32_t axis,
+                                      base::TimeTicks timestamp) = 0;
   virtual void OnResetPointerFlags() = 0;
   virtual const gfx::PointF& GetPointerLocation() const = 0;
   virtual bool IsPointerButtonPressed(EventFlags button) const = 0;

@@ -1523,7 +1523,7 @@ TEST_P(WaylandWindowDragControllerTest,
   // drop handling code at window drag controller does not call into the above
   // destroyed dragged window.
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
-  drag_controller()->OnDragDrop();
+  drag_controller()->OnDragDrop(EventTimeForNow());
 
   // 6. Verifies that related state is correctly reset after drop.
   EXPECT_EQ(State::kIdle, drag_controller()->state());
@@ -1583,7 +1583,7 @@ TEST_P(WaylandWindowDragControllerTest,
     EXPECT_CALL(delegate_2, DispatchEvent(_)).Times(0);
     EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(0);
     SendDndMotionForWindowDrag({12, 10});
-    drag_controller()->OnDragDrop();
+    drag_controller()->OnDragDrop(EventTimeForNow());
     Mock::VerifyAndClearExpectations(&delegate_2);
 
     // Verify that internal "last cursor position" is not updated after the
@@ -1808,7 +1808,7 @@ TEST_P(WaylandWindowDragControllerTest,
     EXPECT_CALL(delegate_2, DispatchEvent(_)).Times(0);
     EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(0);
     SendDndMotionForWindowDrag({12, 10});
-    drag_controller()->OnDragDrop();
+    drag_controller()->OnDragDrop(EventTimeForNow());
 
     // Verify that internal "last cursor position" is not updated after the
     // grab owner is destroyed.
@@ -1867,7 +1867,7 @@ TEST_P(WaylandWindowDragControllerTest,
   // ended.
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
   SendDndMotionForWindowDrag({13, 10});
-  drag_controller()->OnDragDrop();
+  drag_controller()->OnDragDrop(EventTimeForNow());
 
   // Verifies that related state is correctly reset.
   EXPECT_EQ(State::kIdle, drag_controller()->state());
