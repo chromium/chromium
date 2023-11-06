@@ -667,6 +667,7 @@ class TestDialogController
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
+      IdentityRequestDialogController::SigninToIdPCallback on_add_account,
       IdentityRequestDialogController::DismissCallback dismiss_callback)
       override {
     if (!state_) {
@@ -2942,6 +2943,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
       SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
+      IdentityRequestDialogController::SigninToIdPCallback on_add_account,
       IdentityRequestDialogController::DismissCallback dismiss_callback)
       override {
     // Disable FedCM API
@@ -2953,7 +2955,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
         top_frame_for_display, iframe_for_display,
         std::move(identity_provider_data), sign_in_mode,
         show_auto_reauthn_checkbox, std::move(on_selected),
-        std::move(dismiss_callback));
+        std::move(on_add_account), std::move(dismiss_callback));
   }
 
  private:

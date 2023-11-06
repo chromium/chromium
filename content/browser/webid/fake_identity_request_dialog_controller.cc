@@ -26,6 +26,7 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
     IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
     AccountSelectionCallback on_selected,
+    SigninToIdPCallback on_add_account,
     DismissCallback dismiss_callback) {
   // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to
   // support multiple IDPs.

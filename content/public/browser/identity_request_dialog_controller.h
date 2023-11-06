@@ -131,6 +131,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
+      SigninToIdPCallback on_add_account,
       DismissCallback dismiss_callback);
 
   // Shows a failure UI when the accounts fetch is failed such that it is

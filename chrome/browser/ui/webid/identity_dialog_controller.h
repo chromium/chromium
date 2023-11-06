@@ -46,6 +46,7 @@ class IdentityDialogController
       content::IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
+      SigninToIdPCallback on_add_account,
       DismissCallback dismiss_callback) override;
   void ShowFailureDialog(const std::string& top_frame_for_display,
                          const absl::optional<std::string>& iframe_for_display,

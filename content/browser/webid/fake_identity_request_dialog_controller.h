@@ -35,6 +35,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
+      SigninToIdPCallback on_add_account,
       DismissCallback dismmiss_callback) override;
 
   void ShowFailureDialog(const std::string& top_frame_for_display,

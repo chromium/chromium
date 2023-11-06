@@ -1482,6 +1482,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FederatedAuthRequestImpl::SignInToIdP,
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
   devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());

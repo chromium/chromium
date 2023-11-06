@@ -31,8 +31,10 @@ void IdentityDialogController::ShowAccountsDialog(
     content::IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
     AccountSelectionCallback on_selected,
+    SigninToIdPCallback on_add_account,
     DismissCallback dismiss_callback) {
   on_account_selection_ = std::move(on_selected);
+  on_signin_ = std::move(on_add_account);
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
