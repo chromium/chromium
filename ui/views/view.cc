@@ -3698,6 +3698,14 @@ int View::DefaultFillLayout::GetPreferredHeightForWidth(const View* host,
   return preferred_height;
 }
 
+template <>
+void ActionViewController<View, ActionController>::ActionItemChangedImpl(
+    View* action_view,
+    actions::ActionItem* action_item) {
+  action_view->SetEnabled(action_item->GetEnabled());
+  action_view->SetVisible(action_item->GetVisible());
+}
+
 // This block requires the existence of METADATA_HEADER(View) in the class
 // declaration for View.
 BEGIN_METADATA_BASE(View)

@@ -50,6 +50,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/action_view_controller.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory.h"
@@ -2421,6 +2422,16 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
   LifeCycleState life_cycle_state_ = LifeCycleState::kAlive;
 };
+
+template <>
+struct ActionViewControllerSuperClassT<View> {
+  using SuperClass = ActionController;
+};
+
+template <>
+void ActionViewController<View, ActionController>::ActionItemChangedImpl(
+    View* action_view,
+    actions::ActionItem* action_item);
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, BaseView)
 template <typename LayoutManager>

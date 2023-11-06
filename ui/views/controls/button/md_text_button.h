@@ -9,11 +9,16 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/action_view_controller.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/typography.h"
 
 namespace views {
+
+// TODO(crbug.com/147023): Remove when ActionViewController implementation adds
+// LabelButton.
+class Button;
 
 // A button class that implements the Material Design text button spec.
 class VIEWS_EXPORT MdTextButton : public LabelButton {
@@ -89,6 +94,20 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   // Used to override default padding.
   absl::optional<gfx::Insets> custom_padding_;
 };
+
+template <>
+struct VIEWS_EXPORT ActionViewControllerSuperClassT<MdTextButton> {
+  using SuperClass = ActionViewController<Button>;
+};
+
+template <>
+void ActionViewController<MdTextButton, ActionViewController<Button>>::
+    ActionItemChangedImpl(MdTextButton* action_view,
+                          actions::ActionItem* action_item);
+
+template <>
+void ActionViewController<MdTextButton, ActionViewController<Button>>::
+    SetActionViewImpl(MdTextButton* action_view);
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)
 VIEW_BUILDER_PROPERTY(bool, Prominent)

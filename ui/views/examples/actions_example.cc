@@ -14,7 +14,9 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
@@ -27,6 +29,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/action_view_controller.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -49,93 +52,6 @@
 #include "ui/views/view_utils.h"
 
 namespace views::examples {
-
-class ActionButton : public MdTextButton {
- public:
-  METADATA_HEADER(ActionButton);
-  explicit ActionButton(actions::ActionItem* action_item = nullptr,
-                        int button_context = style::CONTEXT_BUTTON_MD);
-  ActionButton(const ActionButton&) = delete;
-  ActionButton& operator=(const ActionButton&) = delete;
-  ~ActionButton() override = default;
-  actions::ActionItem* GetActionItem() const;
-  void SetActionItem(actions::ActionItem* action_item);
-  std::u16string GetName() const;
-  void SetName(const std::u16string& name);
-
- private:
-  void ActionItemChanged();
-  void TriggerAction();
-  std::u16string name_;
-  raw_ptr<actions::ActionItem> action_item_ = nullptr;
-  base::CallbackListSubscription action_changed_subscription_;
-};
-
-ActionButton::ActionButton(actions::ActionItem* action_item, int button_context)
-    : MdTextButton(base::BindRepeating(&ActionButton::TriggerAction,
-                                       base::Unretained(this)),
-                   std::u16string(),
-                   button_context) {
-  SetActionItem(action_item);
-}
-
-actions::ActionItem* ActionButton::GetActionItem() const {
-  return action_item_.get();
-}
-
-void ActionButton::SetActionItem(actions::ActionItem* action_item) {
-  if (action_item_.get() == action_item) {
-    return;
-  }
-  action_item_ = action_item;
-  action_changed_subscription_ = {};
-  if (action_item_) {
-    action_changed_subscription_ =
-        action_item_->AddActionChangedCallback(base::BindRepeating(
-            &ActionButton::ActionItemChanged, base::Unretained(this)));
-    ActionItemChanged();
-  }
-  OnPropertyChanged(&action_item_,
-                    static_cast<PropertyEffects>(kPropertyEffectsLayout |
-                                                 kPropertyEffectsPaint));
-}
-
-std::u16string ActionButton::GetName() const {
-  return name_;
-}
-
-void ActionButton::SetName(const std::u16string& name) {
-  if (name == name_) {
-    return;
-  }
-  name_ = name;
-  if (GetText().empty()) {
-    SetText(name_);
-  }
-  OnPropertyChanged(&name, kPropertyEffectsNone);
-}
-
-void ActionButton::ActionItemChanged() {
-  SetText(action_item_->GetText());
-  SetEnabled(action_item_->GetEnabled());
-  SetVisible(action_item_->GetVisible());
-  SetTooltipText(action_item_->GetTooltipText());
-  SetImageModel(Button::ButtonState::STATE_NORMAL, action_item_->GetImage());
-}
-
-void ActionButton::TriggerAction() {
-  if (action_item_.get()) {
-    action_item_->InvokeAction();
-  }
-}
-
-BEGIN_METADATA(ActionButton, MdTextButton)
-END_METADATA
-
-BEGIN_VIEW_BUILDER(, ActionButton, MdTextButton)
-VIEW_BUILDER_PROPERTY(actions::ActionItem*, ActionItem)
-VIEW_BUILDER_PROPERTY(std::u16string, Name)
-END_VIEW_BUILDER
 
 class ActionCheckbox : public Checkbox {
  public:
@@ -223,7 +139,6 @@ END_VIEW_BUILDER
 
 }  // namespace views::examples
 
-DEFINE_VIEW_BUILDER(, views::examples::ActionButton)
 DEFINE_VIEW_BUILDER(, views::examples::ActionCheckbox)
 
 namespace views::examples {
@@ -285,8 +200,10 @@ size_t ViewsComboboxModel::GetItemCount() const {
 std::u16string ViewsComboboxModel::GetItemAt(size_t index) const {
   if (container_->children().size()) {
     View* view = container_->children()[index];
-    if (IsViewClass<ActionButton>(view)) {
-      return AsViewClass<ActionButton>(view)->GetName();
+    if (IsViewClass<MdTextButton>(view)) {
+      std::stringstream ss;
+      ss << index;
+      return base::ASCIIToUTF16(base::StringPiece("Button: " + ss.str()));
     }
     if (IsViewClass<ActionCheckbox>(view)) {
       return AsViewClass<ActionCheckbox>(view)->GetName();
@@ -486,13 +403,17 @@ void ActionsExample::CreateExampleView(View* container) {
 
   auto add_combobox_and_button = [&add_combobox_row](
                                      std::unique_ptr<ui::ComboboxModel> model,
+                                     ActionViewController<MdTextButton>*
+                                         action_button_view_controller,
                                      int label_text,
                                      actions::ActionId action_id) {
     auto pair = add_combobox_row(std::move(model), label_text);
+    views::MdTextButton* action_button;
     pair.first->AddChildView(
-        Builder<ActionButton>()
-            .SetActionItem(actions::ActionManager::Get().FindAction(action_id))
-            .Build());
+        Builder<MdTextButton>().CopyAddressTo(&action_button).Build());
+    action_button_view_controller->SetActionView(action_button);
+    action_button_view_controller->SetActionItem(
+        actions::ActionManager::Get().FindAction(action_id)->GetAsWeakPtr());
     return pair.second;
   };
 
@@ -538,10 +459,16 @@ void ActionsExample::CreateExampleView(View* container) {
     return textfield;
   };
 
+  auto available_controls_view_controller =
+      std::make_unique<ActionViewController<MdTextButton>>();
+
   available_controls_ =
       add_combobox_and_button(std::make_unique<ControlTypeComboboxModel>(),
+                              available_controls_view_controller.get(),
                               IDS_AVAILABLE_CONTROLS, kActionCreateControl);
 
+  action_view_controllers_.push_back(
+      std::move(available_controls_view_controller));
   control_panel_->AddChildView(
       Builder<Separator>().SetProperty(kMarginsKey, kSeparatorPadding).Build());
 
@@ -550,9 +477,14 @@ void ActionsExample::CreateExampleView(View* container) {
                   IDS_CONTROLS)
                   .second;
 
+  auto available_actions_view_controller =
+      std::make_unique<ActionViewController<MdTextButton>>();
   available_actions_ = add_combobox_and_button(
       std::make_unique<ActionItemComboboxModel>(example_actions_.get()),
-      IDS_AVAILABLE_ACTIONS, kActionAssignAction);
+      available_actions_view_controller.get(), IDS_AVAILABLE_ACTIONS,
+      kActionAssignAction);
+  action_view_controllers_.push_back(
+      std::move(available_actions_view_controller));
   subscriptions_.push_back(
       available_actions_->AddSelectedIndexChangedCallback(base::BindRepeating(
           &ActionsExample::ActionSelected, base::Unretained(this))));
@@ -664,10 +596,12 @@ void ActionsExample::AssignAction(actions::ActionItem* action,
   }
   ViewsComboboxModel* model =
       static_cast<ViewsComboboxModel*>(controls_->GetModel());
-  View* view = model->GetViewItemAt(index.value());
-  if (IsViewClass<ActionButton>(view)) {
-    ActionButton* button = AsViewClass<ActionButton>(view);
-    button->SetActionItem(GetSelectedAction());
+  size_t index_val = index.value();
+  View* view = model->GetViewItemAt(index_val);
+  if (IsViewClass<MdTextButton>(view)) {
+    auto mdtextbutton_vc = std::make_unique<ActionViewController<MdTextButton>>(
+        static_cast<MdTextButton*>(view), GetSelectedAction()->GetAsWeakPtr());
+    action_view_controllers_.push_back(std::move(mdtextbutton_vc));
   } else if (IsViewClass<ActionCheckbox>(view)) {
     ActionCheckbox* checkbox = AsViewClass<ActionCheckbox>(view);
     checkbox->SetActionItem(GetSelectedAction());
@@ -682,8 +616,8 @@ void ActionsExample::CreateControl(actions::ActionItem* action,
       available_controls_->GetSelectedIndex();
   switch (selected_index.value_or(0)) {
     case 0:
-      new_view = Builder<ActionButton>()
-                     .SetName(u"Button " + base::NumberToString16(control_num))
+      new_view = Builder<MdTextButton>()
+                     .SetText(u"Button " + base::NumberToString16(control_num))
                      .Build();
       break;
     case 1:

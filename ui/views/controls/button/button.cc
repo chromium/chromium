@@ -20,6 +20,7 @@
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/action_view_controller.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -776,6 +777,13 @@ void Button::ReleaseAnchorHighlight() {
     SetHighlighted(false);
   }
 }
+
+// TOOD(crbug.com/147023): Implement ActionItemChangedImpl for
+// ButtonActionViewController.
+template <>
+void ActionViewController<Button, ActionViewController<View>>::
+    ActionItemChangedImpl(Button* action_view,
+                          actions::ActionItem* action_item) {}
 
 BEGIN_METADATA(Button)
 ADD_PROPERTY_METADATA(PressedCallback, Callback)

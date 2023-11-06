@@ -21,6 +21,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/action_view_controller.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -343,6 +344,25 @@ void MdTextButton::UpdateColors() {
     UpdateBackgroundColor();
     UpdateIconColor();
     SchedulePaint();
+  }
+}
+
+template <>
+void ActionViewController<MdTextButton, ActionViewController<Button>>::
+    ActionItemChangedImpl(MdTextButton* action_view,
+                          actions::ActionItem* action_item) {
+  action_view->SetText(action_item->GetText());
+  action_view->SetTooltipText(action_item->GetTooltipText());
+  action_view->SetImageModel(Button::ButtonState::STATE_NORMAL,
+                             action_item->GetImage());
+}
+
+template <>
+void ActionViewController<MdTextButton, ActionViewController<Button>>::
+    SetActionViewImpl(MdTextButton* action_view) {
+  if (action_view) {
+    action_view->SetCallback(base::BindRepeating(
+        &ActionViewController::TriggerAction, base::Unretained(this)));
   }
 }
 
