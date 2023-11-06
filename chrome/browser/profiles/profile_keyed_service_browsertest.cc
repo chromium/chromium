@@ -11,6 +11,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -174,6 +175,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           net::features::kTpcdMetadataGrants,
           net::features::kTpcdSupportSettings,
           features::kPersistentOriginTrials,
+          features::kSidePanelPinning,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           omnibox::kOnDeviceTailModel,
           omnibox::kOnDeviceHeadProviderNonIncognito,
@@ -254,6 +256,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(ENABLE_PDF)
     "PdfViewerPrivateEventRouter",
 #endif  // BUILDFLAG(ENABLE_PDF)
+    "PinnedToolbarActionsModel",
     "PlatformNotificationService",
     "PredictionModelHandlerProvider",
     "PrefWatcher",
@@ -457,6 +460,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PermissionsUpdaterShutdownFactory",
     "PersonalDataManager",
     "PinnedTabService",
+    "PinnedToolbarActionsModel",
     "PlatformNotificationService",
     "PluginManager",
     "PluginPrefs",
