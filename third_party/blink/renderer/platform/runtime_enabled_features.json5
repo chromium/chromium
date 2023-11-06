@@ -952,11 +952,6 @@
       status: "stable",
     },
     {
-      name: "CSSIndependentTransformProperties",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "CSSLayoutAPI",
       status: "experimental",
       base_feature: "none",

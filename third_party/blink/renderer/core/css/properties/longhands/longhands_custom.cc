@@ -6684,8 +6684,6 @@ void Right::ApplyValue(StyleResolverState& state,
 const CSSValue* Rotate::ParseSingleValue(CSSParserTokenRange& range,
                                          const CSSParserContext& context,
                                          const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSIndependentTransformPropertiesEnabled());
-
   CSSValueID id = range.Peek().Id();
   if (id == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(range);
@@ -6789,8 +6787,6 @@ const CSSValue* Ry::CSSValueFromComputedStyleInternal(
 const CSSValue* Scale::ParseSingleValue(CSSParserTokenRange& range,
                                         const CSSParserContext& context,
                                         const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSIndependentTransformPropertiesEnabled());
-
   CSSValueID id = range.Peek().Id();
   if (id == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(range);
@@ -8569,7 +8565,6 @@ const CSSValue* Translate::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSIndependentTransformPropertiesEnabled());
   CSSValueID id = range.Peek().Id();
   if (id == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(range);
