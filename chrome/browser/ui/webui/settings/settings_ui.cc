@@ -19,6 +19,8 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/preloading/preloading_features.h"
@@ -553,6 +555,40 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "autoPictureInPictureEnabled",
       base::FeatureList::IsEnabled(
           blink::features::kMediaSessionEnterPictureInPicture));
+
+  // AI
+  optimization_guide::proto::ModelExecutionFeature
+      optimization_guide_features[3] = {
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_COMPOSE,
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
+      };
+
+  auto* optimization_guide_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  bool optimization_guide_feature_visible[4] = {false, false, false, false};
+
+  for (size_t i = 0; i < 3; i++) {
+    const bool& visible = optimization_guide_service->IsSettingVisible(
+        optimization_guide_features[i]);
+    optimization_guide_feature_visible[i + 1] = visible;
+
+    // The main toggle is visible only if at least one of the sub toggles is
+    // visible.
+    optimization_guide_feature_visible[0] |= visible;
+  }
+
+  html_source->AddBoolean("showAdvancedFeaturesMainControl",
+                          optimization_guide_feature_visible[0]);
+  html_source->AddBoolean("showComposeControl",
+                          optimization_guide_feature_visible[1]);
+  html_source->AddBoolean("showTabOrganizationControl",
+                          optimization_guide_feature_visible[2]);
+  html_source->AddBoolean("showWallpaperSearchControl",
+                          optimization_guide_feature_visible[3]);
 
   TryShowHatsSurveyWithTimeout();
 }

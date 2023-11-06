@@ -129,6 +129,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, EditDictionaryPage) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, ExperimentalAdvancedPage) {
+  RunTest("settings/ai_page_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ExtensionControlledIndicator) {
   RunTest("settings/extension_controlled_indicator_test.js", "mocha.run()");
 }

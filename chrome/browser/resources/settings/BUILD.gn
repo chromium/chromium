@@ -74,6 +74,7 @@ build_webui("build") {
   web_component_files = [
     "a11y_page/a11y_page.ts",
     "about_page/about_page.ts",
+    "ai_page/ai_page.ts",
     "appearance_page/appearance_fonts_page.ts",
     "appearance_page/appearance_page.ts",
     "appearance_page/home_url_input.ts",

@@ -214,9 +214,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #endif
     {"remove", IDS_REMOVE},
     {"restart", IDS_SETTINGS_RESTART},
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
     {"restartToApplyChanges", IDS_SETTINGS_RESTART_TO_APPLY_CHANGES},
-#endif
     {"retry", IDS_SETTINGS_RETRY},
     {"save", IDS_SAVE},
     {"searchResultBubbleText", IDS_SEARCH_RESULT_BUBBLE_TEXT},
