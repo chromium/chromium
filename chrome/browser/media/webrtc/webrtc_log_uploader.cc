@@ -89,6 +89,10 @@ void ResizeForNextOutput(std::string* compressed_log, z_stream* stream) {
 
 }  // namespace
 
+BASE_FEATURE(kWebRTCLogUploadSuffix,
+             "WebRTCLogUploadSuffix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 WebRtcLogUploader::UploadDoneData::UploadDoneData() = default;
 WebRtcLogUploader::UploadDoneData::UploadDoneData(
     WebRtcLogUploader::UploadDoneData&& other) = default;
@@ -377,11 +381,18 @@ void WebRtcLogUploader::SetupMultipart(
 #else
 #error Platform not supported.
 #endif
-  net::AddMultipartValueForUpload("prod", product, kWebrtcLogMultipartBoundary,
-                                  "", post_data);
   net::AddMultipartValueForUpload(
-      "ver", base::StrCat({version_info::GetVersionNumber(), "-webrtc"}),
+      "prod",
+      (base::FeatureList::IsEnabled(kWebRTCLogUploadSuffix)
+           ? base::StrCat({product, "_webrtc"})
+           : product),
       kWebrtcLogMultipartBoundary, "", post_data);
+  std::string version(
+      base::FeatureList::IsEnabled(kWebRTCLogUploadSuffix)
+          ? version_info::GetVersionNumber()
+          : base::StrCat({version_info::GetVersionNumber(), "-webrtc"}));
+  net::AddMultipartValueForUpload("ver", version, kWebrtcLogMultipartBoundary,
+                                  "", post_data);
   net::AddMultipartValueForUpload("guid", "0", kWebrtcLogMultipartBoundary, "",
                                   post_data);
   net::AddMultipartValueForUpload("type", "webrtc_log",

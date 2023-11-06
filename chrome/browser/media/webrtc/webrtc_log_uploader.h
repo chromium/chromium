@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -45,6 +46,8 @@ struct WebRtcLogUploadFailureReason {
     kNetworkError = 2,
   };
 };
+
+BASE_DECLARE_FEATURE(kWebRTCLogUploadSuffix);
 
 // WebRtcLogUploader uploads WebRTC logs, keeps count of how many logs have
 // been started and denies further logs if a limit is reached. It also adds
