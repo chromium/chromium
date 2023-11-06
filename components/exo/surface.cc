@@ -326,8 +326,8 @@ Surface::Surface()
   window_->Init(ui::LAYER_NOT_DRAWN);
   window_->SetEventTargeter(std::make_unique<CustomWindowTargeter>());
   window_->set_owned_by_parent(false);
-  WMHelper::GetInstance()->SetDragDropDelegate(window_.get());
 }
+
 Surface::~Surface() {
   for (SurfaceObserver& observer : observers_)
     observer.OnSurfaceDestroying(this);

@@ -15,12 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "components/exo/data_device_delegate.h"
 #include "components/exo/data_exchange_delegate.h"
-#include "components/exo/data_offer.h"
-#include "components/exo/data_offer_delegate.h"
-#include "components/exo/data_source.h"
-#include "components/exo/data_source_delegate.h"
 #include "components/exo/extended_drag_source.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface.h"
@@ -28,9 +23,8 @@
 #include "components/exo/surface_delegate.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
-#include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/shell_surface_builder.h"
-#include "ui/aura/client/focus_client.h"
+#include "components/exo/test/test_data_device_delegate.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
@@ -42,86 +36,6 @@ namespace exo {
 namespace {
 
 using ::ui::mojom::DragOperation;
-
-enum class DataEvent {
-  kOffer,
-  kEnter,
-  kLeave,
-  kMotion,
-  kDrop,
-  kDestroy,
-  kSelection
-};
-
-class TestDataOfferDelegate : public DataOfferDelegate {
- public:
-  ~TestDataOfferDelegate() override {}
-
-  // Overridden from DataOfferDelegate:
-  void OnDataOfferDestroying(DataOffer* offer) override { delete this; }
-  void OnOffer(const std::string& mime_type) override {}
-  void OnSourceActions(
-      const base::flat_set<DndAction>& source_actions) override {}
-  void OnAction(DndAction action) override {}
-};
-
-class TestDataDeviceDelegate : public DataDeviceDelegate {
- public:
-  TestDataDeviceDelegate() {}
-
-  TestDataDeviceDelegate(const TestDataDeviceDelegate&) = delete;
-  TestDataDeviceDelegate& operator=(const TestDataDeviceDelegate&) = delete;
-
-  size_t PopEvents(std::vector<DataEvent>* out) {
-    out->swap(events_);
-    events_.clear();
-    return out->size();
-  }
-  Surface* entered_surface() const { return entered_surface_; }
-  void DeleteDataOffer(bool finished) {
-    if (finished)
-      data_offer_->Finish();
-    data_offer_.reset();
-  }
-  void set_can_accept_data_events_for_surface(bool value) {
-    can_accept_data_events_for_surface_ = value;
-  }
-
-  // Overridden from DataDeviceDelegate:
-  void OnDataDeviceDestroying(DataDevice* data_device) override {
-    events_.push_back(DataEvent::kDestroy);
-  }
-  DataOffer* OnDataOffer() override {
-    events_.push_back(DataEvent::kOffer);
-    data_offer_ = std::make_unique<DataOffer>(new TestDataOfferDelegate);
-    return data_offer_.get();
-  }
-  void OnEnter(Surface* surface,
-               const gfx::PointF& location,
-               const DataOffer& data_offer) override {
-    events_.push_back(DataEvent::kEnter);
-    entered_surface_ = surface;
-  }
-  void OnLeave() override { events_.push_back(DataEvent::kLeave); }
-  void OnMotion(base::TimeTicks time_stamp,
-                const gfx::PointF& location) override {
-    events_.push_back(DataEvent::kMotion);
-  }
-  void OnDrop() override { events_.push_back(DataEvent::kDrop); }
-  void OnSelection(const DataOffer& data_offer) override {
-    events_.push_back(DataEvent::kSelection);
-  }
-  bool CanAcceptDataEventsForSurface(Surface* surface) const override {
-    return can_accept_data_events_for_surface_;
-  }
-
- private:
-  std::vector<DataEvent> events_;
-  std::unique_ptr<DataOffer> data_offer_;
-  raw_ptr<Surface, DanglingUntriaged | ExperimentalAsh> entered_surface_ =
-      nullptr;
-  bool can_accept_data_events_for_surface_ = true;
-};
 
 class TestSeat : public Seat {
  public:
@@ -157,18 +71,22 @@ class DataDeviceTest : public test::ExoTestBase {
   }
 
  protected:
-  TestDataDeviceDelegate delegate_;
+  test::TestDataDeviceDelegate delegate_;
   std::unique_ptr<TestSeat> seat_;
   std::unique_ptr<DataDevice> device_;
   ui::OSExchangeData data_;
   std::unique_ptr<Surface> surface_;
+
+  const ui::OSExchangeData unused_data_;
+  const ui::DropTargetEvent unused_drop_target_event_{
+      unused_data_, gfx::PointF(), gfx::PointF(), 0};
 };
 
 TEST_F(DataDeviceTest, Destroy) {
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   device_.reset();
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kDestroy, events[0]);
+  EXPECT_EQ(test::DataEvent::kDestroy, events[0]);
 }
 
 TEST_F(DataDeviceTest, DataEventsDrop) {
@@ -176,27 +94,27 @@ TEST_F(DataDeviceTest, DataEventsDrop) {
                             ui::DragDropTypes::DRAG_MOVE);
   ui::Event::DispatcherApi(&event).set_target(surface_->window());
 
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   device_->OnDragEntered(event);
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kOffer, events[0]);
-  EXPECT_EQ(DataEvent::kEnter, events[1]);
+  EXPECT_EQ(test::DataEvent::kOffer, events[0]);
+  EXPECT_EQ(test::DataEvent::kEnter, events[1]);
 
   EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
             device_->OnDragUpdated(event).drag_operation);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kMotion, events[0]);
+  EXPECT_EQ(test::DataEvent::kMotion, events[0]);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&TestDataDeviceDelegate::DeleteDataOffer,
+      FROM_HERE, base::BindOnce(&test::TestDataDeviceDelegate::DeleteDataOffer,
                                 base::Unretained(&delegate_), true));
-
-  auto drop_cb = device_->GetDropCallback();
+  auto drop_cb = device_->GetDropCallback(unused_drop_target_event_);
   DragOperation output_drag_op;
-  std::move(drop_cb).Run(output_drag_op);
+  std::move(drop_cb).Run(/*data=*/nullptr, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ(DragOperation::kLink, output_drag_op);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kDrop, events[0]);
+  EXPECT_EQ(test::DataEvent::kDrop, events[0]);
 }
 
 TEST_F(DataDeviceTest, DataEventsExit) {
@@ -204,20 +122,20 @@ TEST_F(DataDeviceTest, DataEventsExit) {
                             ui::DragDropTypes::DRAG_MOVE);
   ui::Event::DispatcherApi(&event).set_target(surface_->window());
 
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   device_->OnDragEntered(event);
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kOffer, events[0]);
-  EXPECT_EQ(DataEvent::kEnter, events[1]);
+  EXPECT_EQ(test::DataEvent::kOffer, events[0]);
+  EXPECT_EQ(test::DataEvent::kEnter, events[1]);
 
   EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
             device_->OnDragUpdated(event).drag_operation);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kMotion, events[0]);
+  EXPECT_EQ(test::DataEvent::kMotion, events[0]);
 
   device_->OnDragExited();
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kLeave, events[0]);
+  EXPECT_EQ(test::DataEvent::kLeave, events[0]);
 }
 
 TEST_F(DataDeviceTest, DeleteDataDeviceDuringDrop) {
@@ -227,9 +145,10 @@ TEST_F(DataDeviceTest, DeleteDataDeviceDuringDrop) {
   device_->OnDragEntered(event);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() { device_.reset(); }));
-  auto drop_cb = device_->GetDropCallback();
+  auto drop_cb = device_->GetDropCallback(unused_drop_target_event_);
   DragOperation output_drag_op;
-  std::move(drop_cb).Run(output_drag_op);
+  std::move(drop_cb).Run(/*data=*/nullptr, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ(DragOperation::kNone, output_drag_op);
 }
 
@@ -238,11 +157,11 @@ TEST_F(DataDeviceTest, DeleteDataOfferDuringDrag) {
                             ui::DragDropTypes::DRAG_MOVE);
   ui::Event::DispatcherApi(&event).set_target(surface_->window());
 
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   device_->OnDragEntered(event);
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kOffer, events[0]);
-  EXPECT_EQ(DataEvent::kEnter, events[1]);
+  EXPECT_EQ(test::DataEvent::kOffer, events[0]);
+  EXPECT_EQ(test::DataEvent::kEnter, events[1]);
 
   delegate_.DeleteDataOffer(false);
 
@@ -250,9 +169,10 @@ TEST_F(DataDeviceTest, DeleteDataOfferDuringDrag) {
             device_->OnDragUpdated(event).drag_operation);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 
-  auto drop_cb = device_->GetDropCallback();
+  auto drop_cb = device_->GetDropCallback(unused_drop_target_event_);
   DragOperation output_drag_op;
-  std::move(drop_cb).Run(output_drag_op);
+  std::move(drop_cb).Run(/*data=*/nullptr, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 }
 
@@ -261,27 +181,28 @@ TEST_F(DataDeviceTest, DataOfferNotFinished) {
                             ui::DragDropTypes::DRAG_MOVE);
   ui::Event::DispatcherApi(&event).set_target(surface_->window());
 
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   device_->OnDragEntered(event);
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kOffer, events[0]);
-  EXPECT_EQ(DataEvent::kEnter, events[1]);
+  EXPECT_EQ(test::DataEvent::kOffer, events[0]);
+  EXPECT_EQ(test::DataEvent::kEnter, events[1]);
 
   EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
             device_->OnDragUpdated(event).drag_operation);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kMotion, events[0]);
+  EXPECT_EQ(test::DataEvent::kMotion, events[0]);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&TestDataDeviceDelegate::DeleteDataOffer,
+      FROM_HERE, base::BindOnce(&test::TestDataDeviceDelegate::DeleteDataOffer,
                                 base::Unretained(&delegate_), false));
 
-  auto drop_cb = device_->GetDropCallback();
+  auto drop_cb = device_->GetDropCallback(unused_drop_target_event_);
   DragOperation output_drag_op;
-  std::move(drop_cb).Run(output_drag_op);
+  std::move(drop_cb).Run(/*data=*/nullptr, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ(DragOperation::kNone, output_drag_op);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kDrop, events[0]);
+  EXPECT_EQ(test::DataEvent::kDrop, events[0]);
 }
 
 TEST_F(DataDeviceTest, NotAcceptDataEventsForSurface) {
@@ -289,7 +210,7 @@ TEST_F(DataDeviceTest, NotAcceptDataEventsForSurface) {
                             ui::DragDropTypes::DRAG_MOVE);
   ui::Event::DispatcherApi(&event).set_target(surface_->window());
 
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   delegate_.set_can_accept_data_events_for_surface(false);
 
   device_->OnDragEntered(event);
@@ -299,9 +220,10 @@ TEST_F(DataDeviceTest, NotAcceptDataEventsForSurface) {
             device_->OnDragUpdated(event).drag_operation);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 
-  auto drop_cb = device_->GetDropCallback();
+  auto drop_cb = device_->GetDropCallback(unused_drop_target_event_);
   DragOperation output_drag_op;
-  std::move(drop_cb).Run(output_drag_op);
+  std::move(drop_cb).Run(/*data=*/nullptr, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 }
 
@@ -310,29 +232,30 @@ TEST_F(DataDeviceTest, DropCallback_Run) {
                             ui::DragDropTypes::DRAG_MOVE);
   ui::Event::DispatcherApi(&event).set_target(surface_->window());
 
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   device_->OnDragEntered(event);
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kOffer, events[0]);
-  EXPECT_EQ(DataEvent::kEnter, events[1]);
+  EXPECT_EQ(test::DataEvent::kOffer, events[0]);
+  EXPECT_EQ(test::DataEvent::kEnter, events[1]);
 
   EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
             device_->OnDragUpdated(event).drag_operation);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kMotion, events[0]);
+  EXPECT_EQ(test::DataEvent::kMotion, events[0]);
 
-  auto drop_cb = device_->GetDropCallback();
+  auto drop_cb = device_->GetDropCallback(unused_drop_target_event_);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&TestDataDeviceDelegate::DeleteDataOffer,
+      FROM_HERE, base::BindOnce(&test::TestDataDeviceDelegate::DeleteDataOffer,
                                 base::Unretained(&delegate_), true));
 
   DragOperation output_drag_op = DragOperation::kNone;
-  std::move(drop_cb).Run(output_drag_op);
+  std::move(drop_cb).Run(/*data=*/nullptr, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
 
   EXPECT_EQ(DragOperation::kLink, output_drag_op);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kDrop, events[0]);
+  EXPECT_EQ(test::DataEvent::kDrop, events[0]);
 }
 
 TEST_F(DataDeviceTest, DropCallback_Invalidated) {
@@ -340,23 +263,24 @@ TEST_F(DataDeviceTest, DropCallback_Invalidated) {
                             ui::DragDropTypes::DRAG_MOVE);
   ui::Event::DispatcherApi(&event).set_target(surface_->window());
 
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   device_->OnDragEntered(event);
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kOffer, events[0]);
-  EXPECT_EQ(DataEvent::kEnter, events[1]);
+  EXPECT_EQ(test::DataEvent::kOffer, events[0]);
+  EXPECT_EQ(test::DataEvent::kEnter, events[1]);
 
   EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
             device_->OnDragUpdated(event).drag_operation);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kMotion, events[0]);
+  EXPECT_EQ(test::DataEvent::kMotion, events[0]);
 
-  auto drop_cb = device_->GetDropCallback();
+  auto drop_cb = device_->GetDropCallback(unused_drop_target_event_);
 
   delegate_.DeleteDataOffer(false);
 
   DragOperation output_drag_op = DragOperation::kNone;
-  std::move(drop_cb).Run(output_drag_op);
+  std::move(drop_cb).Run(/*data=*/nullptr, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
 
   EXPECT_EQ(DragOperation::kNone, output_drag_op);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
@@ -367,31 +291,31 @@ TEST_F(DataDeviceTest, DropCallback_Reset) {
                             ui::DragDropTypes::DRAG_MOVE);
   ui::Event::DispatcherApi(&event).set_target(surface_->window());
 
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   device_->OnDragEntered(event);
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kOffer, events[0]);
-  EXPECT_EQ(DataEvent::kEnter, events[1]);
+  EXPECT_EQ(test::DataEvent::kOffer, events[0]);
+  EXPECT_EQ(test::DataEvent::kEnter, events[1]);
 
   EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
             device_->OnDragUpdated(event).drag_operation);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kMotion, events[0]);
+  EXPECT_EQ(test::DataEvent::kMotion, events[0]);
 
-  auto drop_cb = device_->GetDropCallback();
+  auto drop_cb = device_->GetDropCallback(unused_drop_target_event_);
   drop_cb.Reset();
 
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kLeave, events[0]);
+  EXPECT_EQ(test::DataEvent::kLeave, events[0]);
 }
 
 TEST_F(DataDeviceTest, ClipboardCopy) {
   // Selection event sent when getting a focus.
   device_->OnSurfaceFocused(surface_.get(), nullptr, true);
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kOffer, events[0]);
-  EXPECT_EQ(DataEvent::kSelection, events[1]);
+  EXPECT_EQ(test::DataEvent::kOffer, events[0]);
+  EXPECT_EQ(test::DataEvent::kSelection, events[1]);
 
   // Next focus does not send selection.
   device_->OnSurfaceFocused(surface_.get(), nullptr, true);
@@ -400,8 +324,8 @@ TEST_F(DataDeviceTest, ClipboardCopy) {
   // Clipboard change
   device_->OnClipboardDataChanged();
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kOffer, events[0]);
-  EXPECT_EQ(DataEvent::kSelection, events[1]);
+  EXPECT_EQ(test::DataEvent::kOffer, events[0]);
+  EXPECT_EQ(test::DataEvent::kSelection, events[1]);
 
   // Losing focus does not create events.
   device_->OnSurfaceFocused(nullptr, nullptr, true);
@@ -410,27 +334,27 @@ TEST_F(DataDeviceTest, ClipboardCopy) {
 
 TEST_F(DataDeviceTest, ClipboardCopyWithoutFocus) {
   device_->OnClipboardDataChanged();
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 }
 
 TEST_F(DataDeviceTest, ClipboardDeviceCreatedAfterFocus) {
   seat_->set_focused_surface(surface_.get());
   device_.reset();
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   delegate_.PopEvents(&events);
 
   device_ = std::make_unique<DataDevice>(&delegate_, seat_.get());
 
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
-  EXPECT_EQ(DataEvent::kOffer, events[0]);
-  EXPECT_EQ(DataEvent::kSelection, events[1]);
+  EXPECT_EQ(test::DataEvent::kOffer, events[0]);
+  EXPECT_EQ(test::DataEvent::kSelection, events[1]);
 }
 
 TEST_F(DataDeviceTest, ClipboardFocusedSurfaceDestroyed) {
   device_->OnSurfaceFocused(surface_.get(), nullptr, true);
   surface_.reset();
-  std::vector<DataEvent> events;
+  std::vector<test::DataEvent> events;
   delegate_.PopEvents(&events);
 
   device_->OnClipboardDataChanged();
