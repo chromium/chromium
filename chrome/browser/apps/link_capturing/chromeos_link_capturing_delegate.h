@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_CHROMEOS_LINK_CAPTURING_DELEGATE_H_
 
 #include "base/auto_reset.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "components/webapps/common/web_app_id.h"
@@ -43,6 +44,11 @@ class ChromeOsLinkCapturingDelegate
   // Set clock used for timing to enable manipulation during tests.
   static base::AutoReset<const base::TickClock*> SetClockForTesting(
       const base::TickClock* tick_clock);
+
+  // Override the allowlist of Workspace app IDs, used for tests which can't
+  // install/interact with the real versions of these apps.
+  static base::AutoReset<base::flat_set<std::string>>
+  SetWorkspaceAppAllowlistForTesting(base::flat_set<std::string> allowlist);
 
   // apps::LinkCapturingNavigationThrottle::Delegate:
   bool ShouldCancelThrottleCreation(content::NavigationHandle* handle) override;

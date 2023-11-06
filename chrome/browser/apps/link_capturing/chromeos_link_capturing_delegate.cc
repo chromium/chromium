@@ -8,11 +8,11 @@
 
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/auto_reset.h"
-#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/values_equivalent.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -116,6 +116,17 @@ IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
   }
 }
 
+base::flat_set<std::string>* GetWorkspaceAppAllowlist() {
+  static base::NoDestructor<base::flat_set<std::string>> g_workspace_allowlist(
+      {web_app::kGoogleDriveAppId, web_app::kGoogleDocsAppId,
+       web_app::kGoogleSheetsAppId, web_app::kGoogleSlidesAppId});
+  return g_workspace_allowlist.get();
+}  // namespace
+
+bool IsWorkspaceApp(const std::string& app_id) {
+  return base::Contains(*GetWorkspaceAppAllowlist(), app_id);
+}
+
 // Returns the ID of the app window where the link click originated. Returns
 // nullopt if the link was not clicked in an app window.
 absl::optional<webapps::AppId> GetSourceAppId(
@@ -208,19 +219,12 @@ absl::optional<std::string> ChromeOsLinkCapturingDelegate::GetLaunchAppId(
   // both source and destination are Workspace apps.
   if (base::FeatureList::IsEnabled(
           apps::features::kAppToAppLinkCapturingWorkspaceApps)) {
-    constexpr auto kWorkspaceApps = base::MakeFixedFlatSet<std::string_view>(
-        {web_app::kGoogleDriveAppId, web_app::kGoogleDocsAppId,
-         web_app::kGoogleSheetsAppId, web_app::kGoogleSlidesAppId});
-
-    if (!kWorkspaceApps.contains(source_app_id.value())) {
+    if (!IsWorkspaceApp(source_app_id.value())) {
       return absl::nullopt;
     }
 
     auto dest_app =
-        base::ranges::find_if(app_ids_to_launch.candidates,
-                              [&kWorkspaceApps](const std::string& app_id) {
-                                return kWorkspaceApps.contains(app_id);
-                              });
+        base::ranges::find_if(app_ids_to_launch.candidates, &IsWorkspaceApp);
     if (dest_app != app_ids_to_launch.candidates.end()) {
       return *dest_app;
     }
@@ -234,6 +238,14 @@ base::AutoReset<const base::TickClock*>
 ChromeOsLinkCapturingDelegate::SetClockForTesting(
     const base::TickClock* tick_clock) {
   return base::AutoReset<const base::TickClock*>(&GetTickClock(), tick_clock);
+}
+
+// static
+base::AutoReset<base::flat_set<std::string>>
+ChromeOsLinkCapturingDelegate::SetWorkspaceAppAllowlistForTesting(
+    base::flat_set<std::string> allowlist) {
+  return base::AutoReset<base::flat_set<std::string>>(
+      GetWorkspaceAppAllowlist(), allowlist);
 }
 
 ChromeOsLinkCapturingDelegate::ChromeOsLinkCapturingDelegate() = default;
