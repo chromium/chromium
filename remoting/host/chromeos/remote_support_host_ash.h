@@ -67,12 +67,12 @@ class RemoteSupportHostAsh {
   void StartSession(
       const mojom::SupportSessionParams& params,
       const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
-      const absl::optional<ConnectionDetails>& reconnect_params,
+      const absl::optional<ReconnectParams>& reconnect_params,
       StartSessionCallback callback);
 
   void OnHostStateConnected(mojom::SupportSessionParams,
                             absl::optional<ChromeOsEnterpriseParams>,
-                            ConnectionDetails details);
+                            ReconnectParams);
   void OnHostStateDisconnected();
   void OnSessionDisconnected();
 

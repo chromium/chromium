@@ -27,7 +27,7 @@ class ChromotingHostContext;
 class It2MeHostFactory;
 class PolicyWatcher;
 struct ChromeOsEnterpriseParams;
-struct ConnectionDetails;
+struct ReconnectParams;
 
 // This class wraps the It2MeNativeMessageHost instance used on other platforms
 // and provides a way to interact with it using Mojo IPC.  This instance
@@ -44,8 +44,7 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
       delete;
   ~It2MeNativeMessageHostAsh() override;
 
-  using HostStateConnectedCallback =
-      base::OnceCallback<void(ConnectionDetails)>;
+  using HostStateConnectedCallback = base::OnceCallback<void(ReconnectParams)>;
 
   // Creates a new NMH instance, creates a new SupportHostObserver remote and
   // returns the pending_remote.  Start() must be called before the first call
@@ -65,7 +64,7 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
   void Connect(
       const mojom::SupportSessionParams& params,
       const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
-      const absl::optional<ConnectionDetails>& reconnect_params,
+      const absl::optional<ReconnectParams>& reconnect_params,
       base::OnceClosure connected_callback,
       HostStateConnectedCallback host_state_connected_callback,
       base::OnceClosure host_state_disconnected_callback,

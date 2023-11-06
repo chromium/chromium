@@ -16,8 +16,8 @@
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromoting_host_context.h"
-#include "remoting/host/it2me/connection_details.h"
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
+#include "remoting/host/it2me/reconnect_params.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/policy_watcher.h"
 
@@ -154,7 +154,7 @@ It2MeNativeMessageHostAsh::Start(
 void It2MeNativeMessageHostAsh::Connect(
     const mojom::SupportSessionParams& params,
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
-    const absl::optional<ConnectionDetails>& reconnect_params,
+    const absl::optional<ReconnectParams>& reconnect_params,
     base::OnceClosure connected_callback,
     HostStateConnectedCallback host_state_connected_callback,
     base::OnceClosure host_state_disconnected_callback,
@@ -335,9 +335,9 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
 
     // TODO(b/283091055): Update the client connected response to contain
     // reconnection information (if the session is reconnectable), and add
-    // this information to `ConnectionDetail`.
+    // this information to `ReconnectParams`.
     std::move(host_state_connected_callback_)
-        .Run(ConnectionDetails(*remote_username));
+        .Run(ReconnectParams(*remote_username));
 
   } else if (*new_state == kHostStateError) {
     const std::string* error_code_string =

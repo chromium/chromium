@@ -19,10 +19,10 @@
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/session_storage.h"
 #include "remoting/host/chromoting_host_context.h"
-#include "remoting/host/it2me/connection_details.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_host.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
+#include "remoting/host/it2me/reconnect_params.h"
 #include "remoting/host/policy_watcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -95,11 +95,11 @@ mojom::SupportSessionParams SessionParamsFromDict(
   return result;
 }
 
-base::Value::Dict ConnectionDetailsToDict(const ConnectionDetails& details) {
-  return base::Value::Dict().Set(kRemoteUsernameKey, details.remote_username);
+base::Value::Dict ReconnectParamsToDict(const ReconnectParams& params) {
+  return base::Value::Dict().Set(kRemoteUsernameKey, params.remote_username);
 }
 
-ConnectionDetails ConnectionDetailsFromDict(const base::Value::Dict& dict) {
+ReconnectParams ReconnectParamsFromDict(const base::Value::Dict& dict) {
   return {.remote_username = *dict.FindString(kRemoteUsernameKey)};
 }
 
@@ -139,7 +139,7 @@ void RemoteSupportHostAsh::StartSession(
 void RemoteSupportHostAsh::StartSession(
     const mojom::SupportSessionParams& params,
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
-    const absl::optional<ConnectionDetails>& reconnect_params,
+    const absl::optional<ReconnectParams>& reconnect_params,
     StartSessionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -215,7 +215,7 @@ void RemoteSupportHostAsh::ReconnectToSession(SessionId session_id,
             SessionParamsFromDict(*session->EnsureDict(kSessionParamsDictKey)),
             EnterpriseParamsFromDict(
                 *session->EnsureDict(kEnterpriseParamsDictKey)),
-            ConnectionDetailsFromDict(
+            ReconnectParamsFromDict(
                 *session->EnsureDict(kReconnectParamsDictKey)),
             std::move(callback));
       },
@@ -230,9 +230,9 @@ mojom::SupportHostDetailsPtr RemoteSupportHostAsh::GetHostDetails() {
 }
 
 void RemoteSupportHostAsh::OnHostStateConnected(
-    mojom::SupportSessionParams params,
+    mojom::SupportSessionParams session_params,
     absl::optional<ChromeOsEnterpriseParams> enterprise_params,
-    ConnectionDetails details) {
+    ReconnectParams reconnect_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
@@ -243,10 +243,11 @@ void RemoteSupportHostAsh::OnHostStateConnected(
     LOG(INFO) << "CRD: Storing information for reconnectable session";
     session_storage_->StoreSession(
         base::Value::Dict()
-            .Set(kReconnectParamsDictKey, ConnectionDetailsToDict(details))
-            .Set(kSessionParamsDictKey, SessionParamsToDict(params))
+            .Set(kSessionParamsDictKey, SessionParamsToDict(session_params))
             .Set(kEnterpriseParamsDictKey,
-                 EnterpriseParamsToDict(*enterprise_params)),
+                 EnterpriseParamsToDict(*enterprise_params))
+            .Set(kReconnectParamsDictKey,
+                 ReconnectParamsToDict(reconnect_params)),
         base::DoNothing());
     return;
   }
