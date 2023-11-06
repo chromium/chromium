@@ -639,9 +639,6 @@ as required builders.
 * [linux-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-siso-rel""))
   * Experiment percentage: 10.0
 
-* [linux-wayland-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-wayland-siso-rel""))
-  * Experiment percentage: 10.0
-
 * [linux_chromium_asan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_asan_siso_rel_ng""))
   * Experiment percentage: 10.0
 

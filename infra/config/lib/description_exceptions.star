@@ -885,7 +885,6 @@ exempted_from_description_builders = {
         "linux-viz-rel",
         "linux-wayland-rel",
         "linux-wayland-rel-compilator",
-        "linux-wayland-siso-rel-compilator",
         "linux-webkit-asan-rel",
         "linux-webkit-msan-rel",
         "linux-wpt-content-shell-fyi-rel",

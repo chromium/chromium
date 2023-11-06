@@ -333,32 +333,6 @@ try_.compilator_builder(
     siso_enabled = True,
 )
 
-try_.orchestrator_builder(
-    name = "linux-wayland-siso-rel",
-    description_html = """\
-This builder shadows linux-wayland-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating linux-wayland-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/linux-wayland-rel"),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    compilator = "linux-wayland-siso-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-    use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "linux-wayland-siso-rel-compilator",
-    ssd = True,
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
 try_.builder(
     name = "linux-viz-rel",
     mirrors = ["ci/Linux Viz"],

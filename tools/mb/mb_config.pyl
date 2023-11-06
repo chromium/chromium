@@ -1263,7 +1263,6 @@
       'linux-v4l2-codec-rel': 'v4l2_codec_chrome_with_codecs_release_trybot_reclient',
       'linux-viz-rel': 'release_trybot_reclient',
       'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
-      'linux-wayland-siso-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
       'linux-webkit-asan-rel': 'asan_lsan_release_bot_blink',
       'linux-webkit-msan-rel': 'msan_release_bot_reclient',
       'linux-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
