@@ -460,8 +460,8 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
 
     auto result_topic = blink::mojom::EpochTopic::New();
     result_topic->topic = candidate_topic.topic().value();
-    result_topic->config_version =
-        base::StrCat({"chrome.", base::NumberToString(CurrentConfigVersion())});
+    result_topic->config_version = base::StrCat(
+        {"chrome.", base::NumberToString(candidate_topic.config_version())});
     result_topic->model_version =
         base::NumberToString(candidate_topic.model_version());
     result_topic->taxonomy_version =
