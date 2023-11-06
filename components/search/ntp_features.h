@@ -31,6 +31,7 @@ BASE_DECLARE_FEATURE(kIframeOneGoogleBar);
 BASE_DECLARE_FEATURE(kOneGoogleBarModalOverlays);
 BASE_DECLARE_FEATURE(kRealboxCr23All);
 BASE_DECLARE_FEATURE(kRealboxCr23ExpandedStateIcons);
+BASE_DECLARE_FEATURE(kRealboxCr23ExpandedStateLayout);
 BASE_DECLARE_FEATURE(kRealboxMatchOmniboxTheme);
 BASE_DECLARE_FEATURE(kRealboxMatchSearchboxTheme);
 BASE_DECLARE_FEATURE(kRealboxUseGoogleGIcon);

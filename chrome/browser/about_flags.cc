@@ -6918,6 +6918,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23ExpandedStateIcons)},
 
+    {"ntp-realbox-cr23-expanded-state-layout",
+     flag_descriptions::kNtpRealboxCr23ExpandedStateLayoutName,
+     flag_descriptions::kNtpRealboxCr23ExpandedStateLayoutDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23ExpandedStateLayout)},
+
     {"ntp-realbox-match-searchbox-theme",
      flag_descriptions::kNtpRealboxMatchSearchboxThemeName,
      flag_descriptions::kNtpRealboxMatchSearchboxThemeDescription, kOsDesktop,

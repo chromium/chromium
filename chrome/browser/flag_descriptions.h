@@ -2850,6 +2850,9 @@ extern const char kNtpRealboxCr23AllDescription[];
 extern const char kNtpRealboxCr23ExpandedStateIconsName[];
 extern const char kNtpRealboxCr23ExpandedStateIconsDescription[];
 
+extern const char kNtpRealboxCr23ExpandedStateLayoutName[];
+extern const char kNtpRealboxCr23ExpandedStateLayoutDescription[];
+
 extern const char kNtpRealboxMatchSearchboxThemeName[];
 extern const char kNtpRealboxMatchSearchboxThemeDescription[];
 

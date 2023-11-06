@@ -4906,6 +4906,11 @@ const char kNtpRealboxCr23ExpandedStateIconsDescription[] =
     "CR23 Icons, AiS and Pedal backgrounds, CR23 entity rounded corner radii "
     "in Realbox expanded state";
 
+const char kNtpRealboxCr23ExpandedStateLayoutName[] =
+    "Realbox Chrome Refresh Expanded State Layout";
+const char kNtpRealboxCr23ExpandedStateLayoutDescription[] =
+    "CR23 layout for Realbox in expanded state";
+
 const char kNtpRealboxMatchSearchboxThemeName[] =
     "NTP Realbox Matches Searchbox Theme";
 const char kNtpRealboxMatchSearchboxThemeDescription[] =

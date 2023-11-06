@@ -64,6 +64,12 @@ BASE_FEATURE(kRealboxCr23ExpandedStateIcons,
              "NtpRealboxCr23ExpandedStateIcons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, NTP "realbox" expanded state layout CR23 updates will
+// appear.
+BASE_FEATURE(kRealboxCr23ExpandedStateLayout,
+             "NtpRealboxCr23ExpandedStateLayout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the NTP "realbox" will have same border/drop shadow in hover
 // state as searchbox.
 BASE_FEATURE(kRealboxMatchSearchboxTheme,
