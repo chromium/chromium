@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">На сайце, які вы наведваеце, можа быць убудаванае змесціва з іншых сайтаў (напрыклад, відарысы, рэклама або тэкст). Файлы cookie, зададзеныя такімі сайтамі, называюцца староннімі файламі cookie.</translation>
 <translation id="2434158240863470628">Спампоўванне завершана <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Вы часова дазволілі гэтаму сайту выкарыстоўваць староннія файлы cookie. Гэта знізіць вашу абароненасць падчас прагляду вэб-старонак, але функцыі сайта з большай імавернасцю будуць працаваць правільна. <ph name="BEGIN_LINK" />Адправіць водгук<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">На некаторых сайтах у рэжыме інкогніта можа не працаваць частка функцый</translation>
 <translation id="2442870161001914531">Заўсёды запытваць версію сайта для настольнага камп'ютара</translation>
 <translation id="2469312991797799607">Будуць выдалены ўсе даныя і файлы cookie дамена <ph name="ORIGIN" /> і сайтаў, якія да яго належаць.</translation>
@@ -208,6 +209,7 @@
 <translation id="4644713492825682049">Выдаліць і скінуць</translation>
 <translation id="4645575059429386691">Пад кіраваннем бацькоў</translation>
 <translation id="4670064810192446073">Віртуальная рэальнасць</translation>
+<translation id="4673958474310291465">Паспрабуйце часова дазволіць староннія файлы cookie. Гэта знізіць вашу абароненасць, але функцыі сайта з большай імавернасцю будуць працаваць правільна</translation>
 <translation id="4751476147751820511">Датчыкі руху або святла</translation>
 <translation id="4779083564647765204">Маштаб</translation>
 <translation id="4811450222531576619">Даведайцеся пра яе крыніцу і тэму</translation>
@@ -345,6 +347,7 @@
 <translation id="7053983685419859001">Заблакіраваць</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Выбраны 1 элемент}one{Выбраны # элемент}few{Выбрана # элементы}many{Выбрана # элементаў}other{Выбрана # элемента}}</translation>
 <translation id="7087918508125750058">Выбрана: <ph name="ITEM_COUNT" />.  Параметры знаходзяцца ўверсе экрана</translation>
+<translation id="7137403271056944713">Кіраванне/перапраграмаванне MIDI</translation>
 <translation id="7141896414559753902">Заблакіраваць сайтам паказ выплыўных вокнаў і перанакіраванні (рэкамендуецца)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Абнавіць</translation>

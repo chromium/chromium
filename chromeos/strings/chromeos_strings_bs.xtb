@@ -134,6 +134,7 @@
 <translation id="1852934301711881861">Instaliraj ChromeOS Flex</translation>
 <translation id="1856388568474281774">Strelica nadolje</translation>
 <translation id="1858620243986915808">Priloži snimak ekrana</translation>
+<translation id="1871413952174074704">APN ne može imati više od sljedećeg broja znakova: <ph name="CHAR_LIMIT" /></translation>
 <translation id="1871569928317311284">Isključi tamnu temu</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Isključi tamni način rada</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Svijetloružičasto</translation>
 <translation id="982713511914535780">Pokreni test pražnjenja</translation>
 <translation id="987264212798334818">Opće</translation>
+<translation id="995062385528875723">Ne možete koristiti slova s dijakritičkim znakovima, pismo koje nije latinično ili simbole</translation>
 </translationbundle>
