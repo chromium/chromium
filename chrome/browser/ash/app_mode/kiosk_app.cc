@@ -5,16 +5,23 @@
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace ash {
 
 KioskApp::KioskApp(const KioskAppId& id,
-                   const std::string& name,
-                   gfx::ImageSkia icon)
-    : id_(id), name_(name), icon_(icon) {}
+                   std::string_view name,
+                   gfx::ImageSkia icon,
+                   absl::optional<GURL> url)
+    : id_(id), name_(name), icon_(icon), url_(std::move(url)) {
+  bool should_have_url = id_.type == KioskAppType::kWebApp;
+  CHECK_EQ(should_have_url, url.has_value());
+}
 
 KioskApp::KioskApp(const KioskApp&) = default;
 KioskApp::KioskApp(KioskApp&&) = default;

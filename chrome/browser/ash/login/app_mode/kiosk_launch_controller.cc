@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
+#include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -54,6 +55,8 @@
 #include "chrome/common/chrome_features.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/network_service_instance.h"
+#include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -324,7 +327,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
 
   network_ui_controller_->Start();
 
-  splash_screen_view_->Show(GetAppData());
+  splash_screen_view_->Show(GetSplashScreenAppData());
 
   splash_wait_timer_.Start(FROM_HERE, GetSplashScreenMinTime(),
                            base::BindOnce(&KioskLaunchController::OnTimerFire,
@@ -460,39 +463,21 @@ void KioskLaunchController::OnCancelAppLaunch() {
   chrome::AttemptUserExit();
 }
 
-KioskAppManagerBase::App KioskLaunchController::GetAppData() {
-  DCHECK(kiosk_app_id_.account_id.has_value());
-  switch (kiosk_app_id_.type) {
-    case KioskAppType::kChromeApp: {
-      KioskAppManagerBase::App app;
-      if (KioskAppManager::Get()->GetApp(*kiosk_app_id_.app_id, &app)) {
-        return app;
-      }
-      break;
-    }
-    case KioskAppType::kArcApp: {
-      const ArcKioskAppData* arc_app =
-          ArcKioskAppManager::Get()->GetAppByAccountId(
-              *kiosk_app_id_.account_id);
-      if (arc_app) {
-        return KioskAppManagerBase::App(*arc_app);
-      }
-      break;
-    }
-    case KioskAppType::kWebApp: {
-      const WebKioskAppData* web_app =
-          WebKioskAppManager::Get()->GetAppByAccountId(
-              *kiosk_app_id_.account_id);
-      if (web_app) {
-        return WebKioskAppManager::CreateAppByData(*web_app);
-      }
-      break;
-    }
-  }
+AppLaunchSplashScreenView::Data
+KioskLaunchController::GetSplashScreenAppData() {
+  // TODO(b/306117645) upgrade to CHECK.
+  DUMP_WILL_BE_CHECK(kiosk_app_id_.account_id.has_value());
 
-  LOG(WARNING) << "Cannot get a valid kiosk app. App type: "
-               << (int)kiosk_app_id_.type;
-  return KioskAppManagerBase::App();
+  absl::optional<KioskApp> app =
+      KioskController::Get().GetAppById(kiosk_app_id_);
+  DUMP_WILL_BE_CHECK(app.has_value());
+
+  if (!app.has_value()) {
+    return AppLaunchSplashScreenView::Data(
+        /*name=*/std::string(), /*icon=*/gfx::ImageSkia(), /*url=*/GURL());
+  }
+  return AppLaunchSplashScreenView::Data(app->name(), app->icon(),
+                                         /*url=*/app->url().value_or(GURL()));
 }
 
 void KioskLaunchController::CleanUp() {
@@ -549,7 +534,7 @@ void KioskLaunchController::OnAppInstalling() {
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kInstallingApplication);
 
-  splash_screen_view_->Show(GetAppData());
+  splash_screen_view_->Show(GetSplashScreenAppData());
 }
 
 void KioskLaunchController::OnAppPrepared() {
@@ -563,7 +548,7 @@ void KioskLaunchController::OnAppPrepared() {
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension);
-  splash_screen_view_->Show(GetAppData());
+  splash_screen_view_->Show(GetSplashScreenAppData());
 
   force_install_observer_ = std::make_unique<app_mode::ForceInstallObserver>(
       profile_,
@@ -632,7 +617,7 @@ void KioskLaunchController::HandleWebAppInstallFailed() {
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::
           kWaitingAppWindowInstallFailed);
-  splash_screen_view_->Show(GetAppData());
+  splash_screen_view_->Show(GetSplashScreenAppData());
   if (launch_on_install_ || g_skip_splash_wait_for_testing) {
     LaunchApp();
   }
@@ -661,7 +646,7 @@ void KioskLaunchController::FinishForcedExtensionsInstall(
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
-  splash_screen_view_->Show(GetAppData());
+  splash_screen_view_->Show(GetSplashScreenAppData());
 
   if (launch_on_install_ || g_skip_splash_wait_for_testing) {
     LaunchApp();
@@ -674,7 +659,7 @@ void KioskLaunchController::OnAppLaunched() {
   if (splash_screen_view_) {
     splash_screen_view_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
-    splash_screen_view_->Show(GetAppData());
+    splash_screen_view_->Show(GetSplashScreenAppData());
   }
   session_manager::SessionManager::Get()->SessionStarted();
 }
@@ -697,7 +682,7 @@ void KioskLaunchController::OnAppWindowCreated(
 void KioskLaunchController::OnAppDataUpdated() {
   // Invokes Show() to update the app title and icon.
   if (splash_screen_view_) {
-    splash_screen_view_->Show(GetAppData());
+    splash_screen_view_->Show(GetSplashScreenAppData());
   }
 }
 
@@ -749,7 +734,7 @@ void KioskLaunchController::OnNetworkConfigureUiFinished() {
   if (splash_screen_view_) {
     splash_screen_view_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kPreparingProfile);
-    splash_screen_view_->Show(GetAppData());
+    splash_screen_view_->Show(GetSplashScreenAppData());
   }
 
   InitializeLauncher();

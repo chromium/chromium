@@ -311,9 +311,9 @@ testing::AssertionResult ExtensionServiceTestBase::ValidateBooleanPref(
     const std::string& extension_id,
     const std::string& pref_path,
     bool expected_val) {
-  std::string msg = base::StringPrintf("while checking: %s %s == %s",
-                                       extension_id.c_str(), pref_path.c_str(),
-                                       expected_val ? "true" : "false");
+  std::string msg =
+      base::StringPrintf("while checking: %s %s == %s", extension_id.c_str(),
+                         pref_path.c_str(), expected_val ? "true" : "false");
 
   PrefService* prefs = profile()->GetPrefs();
   const base::Value::Dict& dict = prefs->GetDict(pref_names::kExtensions);
@@ -321,13 +321,13 @@ testing::AssertionResult ExtensionServiceTestBase::ValidateBooleanPref(
   const base::Value::Dict* pref = dict.FindDict(extension_id);
   if (!pref) {
     return testing::AssertionFailure()
-        << "extension pref does not exist " << msg;
+           << "extension pref does not exist " << msg;
   }
 
   absl::optional<bool> val = pref->FindBoolByDottedPath(pref_path);
   if (!val.has_value()) {
     return testing::AssertionFailure()
-        << pref_path << " pref not found " << msg;
+           << pref_path << " pref not found " << msg;
   }
 
   return expected_val == val.value() ? testing::AssertionSuccess()
@@ -382,7 +382,11 @@ void ExtensionServiceTestBase::SetUp() {
       base::CommandLine::ForCurrentProcess());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  kiosk_app_manager_ = std::make_unique<ash::KioskAppManager>();
+  // TODO(b/308107135) own KioskController instead of KioskAppManager.
+  // A test might have initialized a `KioskAppManager` already.
+  if (!ash::KioskAppManager::IsInitialized()) {
+    kiosk_app_manager_ = std::make_unique<ash::KioskAppManager>();
+  }
 #endif
 }
 
@@ -392,8 +396,9 @@ void ExtensionServiceTestBase::TearDown() {
         content::StoragePartitionConfig::CreateDefault(profile());
     auto* partition = profile_->GetStoragePartition(
         default_storage_partition_config, /*can_create=*/false);
-    if (partition)
+    if (partition) {
       partition->WaitForDeletionTasksForTesting();
+    }
   }
   policy_provider_.Shutdown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -416,8 +421,9 @@ Profile* ExtensionServiceTestBase::profile() {
 // TODO(crbug.com/1414225): Refactor this convenience upstream to test callers.
 // Possibly just BuiltInAppTest.BuildGuestMode.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (profile_->IsGuestSession())
+  if (profile_->IsGuestSession()) {
     return profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return profile_.get();
@@ -432,8 +438,9 @@ void ExtensionServiceTestBase::CreateExtensionService(
     const ExtensionServiceInitParams& params) {
   TestExtensionSystem* system =
       static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
-  if (!params.is_first_run)
+  if (!params.is_first_run) {
     ExtensionPrefs::Get(profile())->SetAlertSystemFirstRun();
+  }
 
   service_ = system->CreateExtensionService(
       base::CommandLine::ForCurrentProcess(), extensions_install_dir_,
@@ -453,8 +460,9 @@ void ExtensionServiceTestBase::CreateExtensionService(
                                 service_->shared_module_service());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!params.enable_install_limiter)
+  if (!params.enable_install_limiter) {
     InstallLimiter::Get(profile())->DisableForTest();
+  }
 #endif
 }
 

@@ -30,6 +30,7 @@ class KioskController {
   ~KioskController();
 
   std::vector<KioskApp> GetApps() const;
+  absl::optional<KioskApp> GetAppById(const KioskAppId& app_id) const;
   absl::optional<KioskApp> GetAutoLaunchApp() const;
 
  private:

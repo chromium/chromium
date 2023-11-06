@@ -179,7 +179,8 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void OnOldEncryptionDetected(
       std::unique_ptr<UserContext> user_context) override;
 
-  KioskAppManagerBase::App GetAppData();
+  // Returns the `Data` struct used to populate the splash screen.
+  AppLaunchSplashScreenView::Data GetSplashScreenAppData();
 
   void HandleWebAppInstallFailed();
 

@@ -6,16 +6,22 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_H_
 
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace ash {
 
 // Metadata relevant to identify and display a Kiosk app.
 class KioskApp {
  public:
-  KioskApp(const KioskAppId& id, const std::string& name, gfx::ImageSkia icon);
+  KioskApp(const KioskAppId& id,
+           std::string_view name,
+           gfx::ImageSkia icon,
+           absl::optional<GURL> url = absl::nullopt);
   KioskApp(const KioskApp&);
   KioskApp(KioskApp&&);
   ~KioskApp();
@@ -26,14 +32,17 @@ class KioskApp {
   // The Kiosk id used to identify the app, and determine its type.
   KioskAppId id() const { return id_; }
   // The application name as displayed in the UI.
-  std::string name() const { return name_; }
+  std::string_view name() const { return name_; }
   // The application icon as displayed in the UI.
   gfx::ImageSkia icon() const { return icon_; }
+  // The application URL as displayed in the UI. Only present in web apps.
+  const absl::optional<GURL>& url() const { return url_; }
 
  private:
   KioskAppId id_;
   std::string name_;
   gfx::ImageSkia icon_;
+  absl::optional<GURL> url_;
 };
 
 }  // namespace ash

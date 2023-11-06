@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/move_migrator.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
@@ -36,6 +37,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -434,13 +436,13 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorForKiosk, MigrateOnKioskLaunch) {
   SetLacrosAvailability(
       ash::standalone_browser::LacrosAvailability::kUserChoice);
 
-  // Call this so that the test app is registered with `KioskAppManager` and
-  // thus the `AccountId` can be retrieved.
+  // Register app in `KioskController` so its `AccountId` can be retrieved.
   PrepareAppLaunch();
-  KioskAppManager::App app;
-  CHECK(KioskAppManager::Get());
-  CHECK(KioskAppManager::Get()->GetApp(test_app_id(), &app));
-  CreatePreferenceFileForProfile(app.account_id);
+  absl::optional<KioskApp> app = KioskController::Get().GetAppById(
+      KioskAppId::ForChromeApp(test_app_id()));
+  ASSERT_TRUE(app.has_value());
+  ASSERT_TRUE(app->id().account_id.has_value());
+  CreatePreferenceFileForProfile(app->id().account_id.value());
 
   base::RunLoop run_loop;
   ScopedRestartAttemptForTesting scoped_restart_attempt(
