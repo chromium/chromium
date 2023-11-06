@@ -557,13 +557,6 @@ void InputMethodEngine::Blur() {
   observer_->OnBlur(active_component_id_, context_id);
 }
 
-void InputMethodEngine::OnTouch(ui::EventPointerType pointerType) {
-  if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
-    return;
-
-  observer_->OnTouch(pointerType);
-}
-
 void InputMethodEngine::Enable(const std::string& component_id) {
   active_component_id_ = component_id;
   observer_->OnActivate(component_id);

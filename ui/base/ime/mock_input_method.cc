@@ -65,8 +65,6 @@ void MockInputMethod::OnFocus() {
     observer.OnFocus();
 }
 
-void MockInputMethod::OnTouch(ui::EventPointerType pointerType) {}
-
 void MockInputMethod::OnBlur() {
   for (InputMethodObserver& observer : observer_list_)
     observer.OnBlur();

@@ -63,7 +63,6 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   void OnFocus(const std::string& engine_id,
                int context_id,
                const TextInputMethod::InputContext& context) override;
-  void OnTouch(ui::EventPointerType pointerType) override;
   void OnBlur(const std::string& engine_id, int context_id) override;
   void OnKeyEvent(const std::string& engine_id,
                   const ui::KeyEvent& event,

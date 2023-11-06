@@ -20,8 +20,6 @@ void DummyInputMethod::SetImeKeyEventDispatcher(
 void DummyInputMethod::OnFocus() {
 }
 
-void DummyInputMethod::OnTouch(ui::EventPointerType pointerType) {}
-
 void DummyInputMethod::OnBlur() {
 }
 

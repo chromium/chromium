@@ -38,7 +38,6 @@ class DummyInputMethodEngineObserver
   void OnFocus(const std::string& engine_id,
                int context_id,
                const ash::TextInputMethod::InputContext& context) override {}
-  void OnTouch(ui::EventPointerType pointerType) override {}
   void OnBlur(const std::string& engine_id, int context_id) override {}
   void OnKeyEvent(
       const std::string& engine_id,

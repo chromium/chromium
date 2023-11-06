@@ -110,9 +110,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
   // Informs the input method that focus has been lost.
   virtual void Blur() = 0;
 
-  // Called on touch inside an input field which already has focus.
-  virtual void OnTouch(ui::EventPointerType pointerType) = 0;
-
   // Called when the IME is enabled.
   virtual void Enable(const std::string& component_id) = 0;
 

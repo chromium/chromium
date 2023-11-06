@@ -63,9 +63,6 @@ class InputMethod {
   // Called when the top-level system window gets keyboard focus.
   virtual void OnFocus() = 0;
 
-  // Called when there is a touch within a text field that has focus.
-  virtual void OnTouch(ui::EventPointerType pointerType) = 0;
-
   // Called when the top-level system window loses keyboard focus.
   virtual void OnBlur() = 0;
 

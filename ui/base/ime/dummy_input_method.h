@@ -25,7 +25,6 @@ class DummyInputMethod : public InputMethod {
   void SetImeKeyEventDispatcher(
       ImeKeyEventDispatcher* ime_key_event_dispatcher) override;
   void OnFocus() override;
-  void OnTouch(ui::EventPointerType pointerType) override;
   void OnBlur() override;
 
 #if BUILDFLAG(IS_WIN)
