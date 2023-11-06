@@ -17,7 +17,7 @@ import copy
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_SHARED_ID, execute_command, goto_url,
+from test_helpers import (ANY_SHARED_ID, ANY_UUID, execute_command, goto_url,
                           read_JSON_message, send_JSON_command, subscribe)
 
 
@@ -354,7 +354,7 @@ async def test_serialization_deserialization(websocket, context_id,
          " })()", {
              "type": "object",
              "handle": ANY_STR,
-             "internalId": "3",
+             "internalId": ANY_UUID,
              "value": [[
                  '1', {
                      "type": "object",
@@ -362,11 +362,11 @@ async def test_serialization_deserialization(websocket, context_id,
                          "type": "array",
                          "value": []
                      }]],
-                     "internalId": "1"
+                     "internalId": ANY_UUID
                  }
              ], ['2', {
                  "type": "object",
-                 "internalId": "1"
+                 "internalId": ANY_UUID
              }],
                        [
                            '3', {
@@ -378,14 +378,15 @@ async def test_serialization_deserialization(websocket, context_id,
                                    "type": "number",
                                    "value": 2
                                }],
-                               "internalId": "2"
+                               "internalId": ANY_UUID
                            }
                        ], ['4', {
                            "type": "array",
-                           "internalId": "2"
-                       }], ["self", {
+                           "internalId": ANY_UUID
+                       }],
+                       ["self", {
                            "type": "object",
-                           "internalId": "3"
+                           "internalId": ANY_UUID
                        }]],
          })
     ])
@@ -393,6 +394,75 @@ async def test_serialization_function(websocket, context_id, js_string,
                                       expected_serialized):
     await assert_serialization(websocket, context_id, js_string,
                                expected_serialized)
+
+
+@pytest.mark.asyncio
+async def test_serialization_internal_id(websocket, context_id):
+    """
+    Test that internalId is mapped properly. Required, as generic
+    `test_serialization_function` does not check it.
+    """
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "(()=>{"
+                              " const foo={a: []};"
+                              " const bar=[1,2];"
+                              " const result={1: foo, 2: foo, 3: bar, 4: bar};"
+                              " result.self=result;"
+                              " return result;"
+                              "})()",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+                "resultOwnership": "root"
+            }
+        })
+
+    internal_id_1 = result["result"]["internalId"]
+    internal_id_2 = result["result"]["value"][0][1]["internalId"]
+    internal_id_3 = result["result"]["value"][2][1]["internalId"]
+
+    assert result["result"] == {
+        "type": "object",
+        "handle": ANY_STR,
+        "internalId": internal_id_1,
+        "value": [[
+            '1', {
+                "type": "object",
+                "value": [["a", {
+                    "type": "array",
+                    "value": []
+                }]],
+                "internalId": internal_id_2
+            }
+        ], ['2', {
+            "type": "object",
+            "internalId": internal_id_2
+        }],
+                  [
+                      '3', {
+                          "type": "array",
+                          "value": [{
+                              "type": "number",
+                              "value": 1
+                          }, {
+                              "type": "number",
+                              "value": 2
+                          }],
+                          "internalId": internal_id_3
+                      }
+                  ], ['4', {
+                      "type": "array",
+                      "internalId": internal_id_3
+                  }],
+                  ["self", {
+                      "type": "object",
+                      "internalId": internal_id_1
+                  }]],
+    }
 
 
 @pytest.mark.asyncio

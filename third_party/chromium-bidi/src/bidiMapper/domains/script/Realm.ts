@@ -27,6 +27,7 @@ import {
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
+import {uuidv4} from '../../../utils/uuid.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../events/EventManager.js';
 
@@ -92,7 +93,8 @@ export class Realm {
     resultOwnership: Script.ResultOwnership
   ): Script.RemoteValue {
     const bidiValue = this.#deepSerializedToBiDi(
-      cdpValue.result.deepSerializedValue!
+      cdpValue.result.deepSerializedValue!,
+      new Map()
     );
 
     if (cdpValue.result.objectId) {
@@ -127,16 +129,30 @@ export class Realm {
   }
 
   /**
-   * Relies on the CDP to implement proper BiDi serialization, except
-   * backendNodeId/sharedId and `platformobject`.
+   * Relies on the CDP to implement proper BiDi serialization, except:
+   * * CDP integer property `backendNodeId` is replaced with `sharedId` of
+   * `{documentId}_element_{backendNodeId}`;
+   * * CDP integer property `weakLocalObjectReference` is replaced with UUID `internalId`
+   * using unique-per serialization `internalIdMap`.
+   * * CDP type `platformobject` is replaced with `object`.
+   * @param deepSerializedValue - CDP value to be converted to BiDi.
+   * @param internalIdMap - Map from CDP integer `weakLocalObjectReference` to BiDi UUID
+   * `internalId`.
    */
   #deepSerializedToBiDi(
-    deepSerializedValue: Protocol.Runtime.DeepSerializedValue
+    deepSerializedValue: Protocol.Runtime.DeepSerializedValue,
+    internalIdMap: Map<number, string>
   ): Script.RemoteValue {
     if (Object.hasOwn(deepSerializedValue, 'weakLocalObjectReference')) {
-      (
-        deepSerializedValue as any
-      ).internalId = `${deepSerializedValue.weakLocalObjectReference}`;
+      const weakLocalObjectReference =
+        deepSerializedValue.weakLocalObjectReference!;
+      if (!internalIdMap.has(weakLocalObjectReference)) {
+        internalIdMap.set(weakLocalObjectReference, uuidv4());
+      }
+
+      (deepSerializedValue as any).internalId = internalIdMap.get(
+        weakLocalObjectReference
+      );
       delete deepSerializedValue['weakLocalObjectReference'];
     }
 
@@ -161,7 +177,8 @@ export class Realm {
       if (Object.hasOwn(bidiValue, 'children')) {
         for (const i in bidiValue.children) {
           bidiValue.children[i] = this.#deepSerializedToBiDi(
-            bidiValue.children[i]
+            bidiValue.children[i],
+            internalIdMap
           );
         }
       }
@@ -169,7 +186,10 @@ export class Realm {
         Object.hasOwn(bidiValue, 'shadowRoot') &&
         bidiValue.shadowRoot !== null
       ) {
-        bidiValue.shadowRoot = this.#deepSerializedToBiDi(bidiValue.shadowRoot);
+        bidiValue.shadowRoot = this.#deepSerializedToBiDi(
+          bidiValue.shadowRoot,
+          internalIdMap
+        );
       }
       // `namespaceURI` can be is either `null` or non-empty string.
       if (bidiValue.namespaceURI === '') {
@@ -184,14 +204,14 @@ export class Realm {
       )
     ) {
       for (const i in bidiValue) {
-        bidiValue[i] = this.#deepSerializedToBiDi(bidiValue[i]);
+        bidiValue[i] = this.#deepSerializedToBiDi(bidiValue[i], internalIdMap);
       }
     }
     if (['object', 'map'].includes(deepSerializedValue.type)) {
       for (const i in bidiValue) {
         bidiValue[i] = [
-          this.#deepSerializedToBiDi(bidiValue[i][0]),
-          this.#deepSerializedToBiDi(bidiValue[i][1]),
+          this.#deepSerializedToBiDi(bidiValue[i][0], internalIdMap),
+          this.#deepSerializedToBiDi(bidiValue[i][1], internalIdMap),
         ];
       }
     }
