@@ -231,20 +231,25 @@ struct ObjectAttributes {
 struct PassedData {
   // Controls whether ChapsSlotSessionFactory::CreateChapsSlotSession succeeds.
   bool factory_success = true;
+
   // Assigns results to operations. The key is the operation index, i.e. the
   // sequence number of an operation performed on the ChapsSlotSession.
   // The value is the operation result. CKR_INVALID_SESSION_HANDLE and
   // CKR_SESSION_CLOSED have special meaning.
   std::map<int, CK_RV> operation_results;
+
   // If set to false, calls to ChapsSlotSession::ReopenSession will fail.
   bool reopen_session_success = true;
 
-  // Counts how often teh code under test called
+  // Counts how often the code under test called
   // ChapsSlotSession::ReopenSession.
   int reopen_session_call_count = 0;
 
   // The slot_id passed into FakeChapsSlotSessionFactory.
   absl::optional<CK_SLOT_ID> slot_id;
+
+  // Attributes passed for the secret key template to GenerateKey.
+  ObjectAttributes secret_key_gen_attributes;
 
   // Attributes passed for the public key template to GenerateKeyPair.
   ObjectAttributes public_key_gen_attributes;
@@ -272,9 +277,9 @@ struct PassedData {
   std::vector<ObjectAttributes> pkcs12_cert_attributes;
 };
 
-// The FakeChapsSlotSession actually generating a key pair on a NSS slot.
-// This is useful so it's possible to test whether the CKA_ID that the code
-// under test would assign matches the CKA_ID that NSS computed for the key.
+// FakeChapsSlotSession actually generates a key pair on a NSS slot. This is
+// useful so it's possible to test whether the CKA_ID that the code under test
+// would assign matches the CKA_ID that NSS computed for the key.
 class FakeChapsSlotSession : public ChapsSlotSession {
  public:
   explicit FakeChapsSlotSession(PK11SlotInfo* slot, PassedData* passed_data)
@@ -292,6 +297,49 @@ class FakeChapsSlotSession : public ChapsSlotSession {
       return true;
     }
     return false;
+  }
+
+  CK_RV CreateObject(CK_ATTRIBUTE_PTR pTemplate,
+                     CK_ULONG ulCount,
+                     CK_OBJECT_HANDLE_PTR phObject) override {
+    EXPECT_TRUE(session_ok_);
+    CK_RV configured_result = ApplyConfiguredResult();
+    if (configured_result != CKR_OK) {
+      return configured_result;
+    }
+
+    ObjectAttributes parsing_result =
+        ObjectAttributes::ParseFrom(pTemplate, ulCount);
+
+    AttributeData parsed_object_type =
+        parsing_result.parsed_attributes_map[CKA_CLASS];
+    if (parsed_object_type.CkULong() == CKO_PRIVATE_KEY) {
+      passed_data_->pkcs12_key_attributes = parsing_result;
+    }
+    if (parsed_object_type.CkULong() == CKO_CERTIFICATE) {
+      passed_data_->pkcs12_cert_attributes.push_back(parsing_result);
+    }
+
+    return CKR_OK;
+  }
+
+  CK_RV GenerateKey(CK_MECHANISM_PTR pMechanism,
+                    CK_ATTRIBUTE_PTR pTemplate,
+                    CK_ULONG ulCount,
+                    CK_OBJECT_HANDLE_PTR phKey) override {
+    EXPECT_TRUE(session_ok_);
+    CK_RV configured_result = ApplyConfiguredResult();
+    if (configured_result != CKR_OK) {
+      return configured_result;
+    }
+
+    passed_data_->secret_key_gen_attributes =
+        ObjectAttributes::ParseFrom(pTemplate, ulCount);
+
+    // TODO(b/288880151): Finish fake implementation of `GenerateKey()`, when it
+    // becomes necessary for testing `ChapsUtilImpl`.
+
+    return CKR_OK;
   }
 
   CK_RV GenerateKeyPair(CK_MECHANISM_PTR pMechanism,
@@ -388,30 +436,6 @@ class FakeChapsSlotSession : public ChapsSlotSession {
     return CKR_OBJECT_HANDLE_INVALID;
   }
 
-  CK_RV CreateObject(CK_ATTRIBUTE_PTR pTemplate,
-                     CK_ULONG ulCount,
-                     CK_OBJECT_HANDLE_PTR phObject) override {
-    EXPECT_TRUE(session_ok_);
-    CK_RV configured_result = ApplyConfiguredResult();
-    if (configured_result != CKR_OK) {
-      return configured_result;
-    }
-
-    ObjectAttributes parsing_result =
-        ObjectAttributes::ParseFrom(pTemplate, ulCount);
-
-    AttributeData parsed_object_type =
-        parsing_result.parsed_attributes_map[CKA_CLASS];
-    if (parsed_object_type.CkULong() == CKO_PRIVATE_KEY) {
-      passed_data_->pkcs12_key_attributes = parsing_result;
-    }
-    if (parsed_object_type.CkULong() == CKO_CERTIFICATE) {
-      passed_data_->pkcs12_cert_attributes.push_back(parsing_result);
-    }
-
-    return CKR_OK;
-  }
-
  private:
   // Applies a result configured for the current operation, if any.
   CK_RV ApplyConfiguredResult() {
@@ -472,8 +496,8 @@ class FakeChapsSlotSessionFactory : public ChapsSlotSessionFactory {
   const raw_ptr<PassedData, ExperimentalAsh> passed_data_;
 };
 
-// FakePkcs12Reader helper, by default it will call methods for the
-// original object.
+// FakePkcs12Reader helper, by default it will call methods for the original
+// object.
 class FakePkcs12Reader : public Pkcs12Reader {
  public:
   FakePkcs12Reader() = default;
@@ -611,8 +635,8 @@ class FakePkcs12Reader : public Pkcs12Reader {
     }
 
     // By default nothing is returned from PK11_FindCertsFromNickname() and
-    // is_nickname_present will be false, this will override
-    // is_nickname_present to true for tests.
+    // is_nickname_present will be false, this will override is_nickname_present
+    // to true for tests.
     if (is_certs_nickname_used_) {
       is_nickname_present = is_certs_nickname_used_;
       return Pkcs12ReaderStatusCode::kSuccess;
@@ -1187,8 +1211,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, GetKeyDataFailedPKCS12ImportFailed) {
   EXPECT_TRUE(KeyImportNeverDone());
 }
 
-// CheckRelation between cert and key failed, validation failed.
-// Import failed.
+// CheckRelation between cert and key failed, validation failed. Import failed.
 TEST_F(ChapsUtilPKCS12ImportTest, CheckRelationFailedPKCS12ImportFailed) {
   fake_pkcs12_reader_.check_relation_status_ =
       Pkcs12ReaderStatusCode::kKeyDataMissed;
@@ -1202,8 +1225,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, CheckRelationFailedPKCS12ImportFailed) {
   EXPECT_TRUE(KeyImportNeverDone());
 }
 
-// Cert is not related to key, validation failed.
-// Import failed.
+// Cert is not related to key, validation failed. Import failed.
 TEST_F(ChapsUtilPKCS12ImportTest, CertNotRelatedToKeyPKCS12ImportFailed) {
   fake_pkcs12_reader_.check_relation_status_ =
       Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound;
@@ -1217,8 +1239,8 @@ TEST_F(ChapsUtilPKCS12ImportTest, CertNotRelatedToKeyPKCS12ImportFailed) {
   EXPECT_TRUE(KeyImportNeverDone());
 }
 
-// Cert has no DER subject name, GetNickname failed, validation failed.
-// Import failed.
+// Cert has no DER subject name, GetNickname failed, validation failed. Import
+// failed.
 TEST_F(ChapsUtilPKCS12ImportTest, CertHasNoDERSubjectNamePKCS12ImportFailed) {
   fake_pkcs12_reader_.get_subject_name_der_status_ =
       Pkcs12ReaderStatusCode::kPkcs12CertSubjectNameMissed;
@@ -1232,8 +1254,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, CertHasNoDERSubjectNamePKCS12ImportFailed) {
 }
 
 // FindRawCertsWithSubject failed during searching for cert with required
-// subject in slot. GetNickname failed, validation failed.
-// Import failed.
+// subject in slot. GetNickname failed, validation failed. Import failed.
 TEST_F(ChapsUtilPKCS12ImportTest,
        FindRawCertsWithSubjectFailedPKCS12ImportFailed) {
   fake_pkcs12_reader_.find_raw_certs_with_subject_ =
@@ -1249,8 +1270,7 @@ TEST_F(ChapsUtilPKCS12ImportTest,
 }
 
 // There is one certificate with the same subject in slot, but GetLabel for it
-// failed.
-// Import successful with the currents cert's nickname.
+// failed. Import successful with the currents cert's nickname.
 TEST_F(ChapsUtilPKCS12ImportTest,
        GetLabelForFoundCertFailedPKCS12ImportSucess) {
   fake_pkcs12_reader_.fake_some_certs_in_slot_ = true;
@@ -1265,8 +1285,8 @@ TEST_F(ChapsUtilPKCS12ImportTest,
   EXPECT_TRUE(import_result);
 }
 
-// There is one certificate with the same subject in slot.
-// Import successful with already stored test cert's nickname.
+// There is one certificate with the same subject in slot. Import successful
+// with already stored test cert's nickname.
 TEST_F(ChapsUtilPKCS12ImportTest,
        CertWithSameSubjectInSlotPKCS12ImportSuccess) {
   fake_pkcs12_reader_.fake_some_certs_in_slot_ = true;
@@ -1346,8 +1366,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, MakeNicknameUniqueFailedPKCS12ImportFailed) {
 }
 
 // No certificate with same subject exists, MakeNicknameUnique is called, but
-// isCertsWithNicknamesInSlot has failed.
-// Import failed.
+// isCertsWithNicknamesInSlot has failed.  Import failed.
 TEST_F(ChapsUtilPKCS12ImportTest, CertsSearchInSlotFailedPKCS12ImportFailed) {
   fake_pkcs12_reader_.is_certs_with_nickname_in_slot_status_ =
       Pkcs12ReaderStatusCode::kPkcs12MissedNickname;
@@ -1377,8 +1396,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, CertsSearchInSlot20TimesPKCS12ImportFailed) {
   EXPECT_TRUE(KeyImportDone());
 }
 
-// GetScopedCert is failed in CanFindInstalledKey/GetScopedCert.
-// Import failed.
+// GetScopedCert is failed in CanFindInstalledKey/GetScopedCert. Import failed.
 TEST_F(ChapsUtilPKCS12ImportTest, GetScopedCertFailedPKCS12ImportFailed) {
   fake_pkcs12_reader_.get_der_encoded_cert_status_ =
       Pkcs12ReaderStatusCode::kPkcs12CertDerMissed;
@@ -1405,8 +1423,8 @@ TEST_F(ChapsUtilPKCS12ImportTest,
   EXPECT_TRUE(KeyImportNeverDone());
 }
 
-// Private key found by cert in CanFindInstalledKey.
-// Key import is never happened, but cert is imported.
+// Private key found by cert in CanFindInstalledKey. Key import is never
+// happened, but cert is imported.
 TEST_F(ChapsUtilPKCS12ImportTest, FindPrivateKeyFromCertSuccPKCS12ImportSucc) {
   fake_pkcs12_reader_.find_key_by_cert_status_ =
       Pkcs12ReaderStatusCode::kSuccess;
@@ -1432,8 +1450,8 @@ TEST_F(ChapsUtilPKCS12ImportTest, FindKeyByDERCertFailedPKCS12ImportFailed) {
   EXPECT_TRUE(KeyImportNeverDone());
 }
 
-// Private key found in slot by DER cert inside CanFindInstalledKey.
-// Key import is never happened, but cert is imported.
+// Private key found in slot by DER cert inside CanFindInstalledKey. Key import
+// is never happened, but cert is imported.
 TEST_F(ChapsUtilPKCS12ImportTest, FindKeyByDERCertSuccPKCS12ImportSucc) {
   fake_pkcs12_reader_.find_key_by_der_cert_status_ =
       Pkcs12ReaderStatusCode::kSuccess;
