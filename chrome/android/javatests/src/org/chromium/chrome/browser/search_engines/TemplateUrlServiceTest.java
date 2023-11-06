@@ -193,7 +193,8 @@ public class TemplateUrlServiceTest {
         List<TemplateUrl> searchEngines = getSearchEngines(mTemplateUrlService);
         // Ensure known state of default search index before running test.
         TemplateUrl defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
-        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(searchEngines, defaultSearchEngine);
+        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
+                searchEngines, defaultSearchEngine, false);
         Assert.assertEquals(searchEngines.get(0), defaultSearchEngine);
 
         // Set search engine index and verified it stuck.

@@ -31,7 +31,12 @@ generate_jni("jni_headers") {
 
 android_library("test_utils_java") {
   testonly = true
-  sources =
-      [ "java/src/org/chromium/components/search_engines/FakeTemplateUrl.java" ]
-  deps = [ ":java" ]
+  sources = [
+    "java/src/org/chromium/components/search_engines/FakeTemplateUrl.java",
+    "java/src/org/chromium/components/search_engines/TemplateUrlTestHelpers.java",
+  ]
+  deps = [
+    ":java",
+    "//third_party/mockito:mockito_java",
+  ]
 }

@@ -42,6 +42,7 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
+    "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
@@ -78,6 +79,8 @@ android_resources("java_resources") {
     "java/res/layout/search_engine_choice_item.xml",
     "java/res/layout/search_engine_choice_view.xml",
     "java/res/layout/search_engine_recent_title.xml",
+    "java/res/layout/search_engine_with_logo.xml",
+    "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
   ]
   deps = [

@@ -78,6 +78,10 @@ public class TemplateUrl {
         return TemplateUrlJni.get().getNewTabURL(mTemplateUrlPtr);
     }
 
+    public long getNativePtr() {
+        return mTemplateUrlPtr;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof TemplateUrl)) return false;
