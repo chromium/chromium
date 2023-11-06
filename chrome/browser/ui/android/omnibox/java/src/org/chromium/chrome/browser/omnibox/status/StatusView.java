@@ -110,8 +110,9 @@ public class StatusView extends LinearLayout {
         mIconView.setOutlineProvider(
                 new RoundedCornerOutlineProvider(
                         getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.omnibox_search_engine_logo_composed_size)));
+                                        .getDimensionPixelSize(
+                                                R.dimen.omnibox_search_engine_logo_composed_size)
+                                / 2));
         mIconView.setClipToOutline(true);
 
         configureAccessibilityDescriptions();
