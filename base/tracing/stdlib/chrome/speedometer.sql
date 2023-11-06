@@ -33,7 +33,7 @@
 -- @column suite_name    Suite name
 -- @column test_name     Test name
 -- @column mark_type     Type of mark (start, sync-end, async-end)
-CREATE VIEW internal_chrome_speedometer_mark
+CREATE PERFETTO VIEW internal_chrome_speedometer_mark
 AS
 WITH
   speedometer_21_suite_name(suite_name) AS (
@@ -98,14 +98,20 @@ WHERE category = 'blink.user_timing';
 -- There are two intervals that are measured for every test: sync and async
 -- sync is the time between the start and sync-end marks, async is the time
 -- between the sync-end and async-end marks.
---
--- @column iteration     Speedometer iteration the mark belongs to.
--- @column suite_name    Suite name
--- @column test_name     Test name
--- @column measure_type  Type of the measure (sync or async)
--- @column ts            Start timestamp of the measure
--- @column dur           Duration of the measure
-CREATE VIEW chrome_speedometer_measure
+CREATE PERFETTO TABLE chrome_speedometer_measure(
+  -- Speedometer iteration the mark belongs to.
+  iteration INT,
+  -- Suite name
+  suite_name STRING,
+  -- Test name
+  test_name STRING,
+  -- Type of the measure (sync or async)
+  measure_type STRING,
+  -- Start timestamp of the measure
+  ts INT,
+  -- Duration of the measure
+  dur INT
+)
 AS
 WITH
   -- Get the 3 test timestamps (start, sync-end, async-end) in one row. Using a
@@ -161,17 +167,22 @@ FROM filtered;
 -- Speedometer would output, but note we use ns precision (Speedometer uses
 -- ~100us) so the actual values might differ a bit. Also note Speedometer
 -- returns the values in ms these here and in ns.
---
--- @column iteration Speedometer iteration.
--- @column ts        Start timestamp of the iteration
--- @column dur       Duration of the iteration
--- @column total     Total duration of the measures in this iteration
--- @column mean      Average suite duration for this iteration.
--- @column geomean   Geometric mean of the suite durations for this iteration.
--- @column score     Speedometer score for this iteration (The total score for a
---                   run in the average of all iteration scores).
-CREATE VIEW chrome_speedometer_iteration
-AS
+CREATE PERFETTO TABLE chrome_speedometer_iteration(
+  -- Speedometer iteration.
+  iteration INT,
+  -- Start timestamp of the iteration
+  ts INT,
+  -- Duration of the iteration
+  dur INT,
+  -- Total duration of the measures in this iteration
+  total INT,
+  -- Average suite duration for this iteration.
+  mean INT,
+  -- Geometric mean of the suite durations for this iteration.
+  geomean INT,
+  -- Speedometer score for this iteration (The total score for a run in the average of all iteration scores).
+  score INT
+) AS
 SELECT
   iteration,
   MIN(start) AS ts,

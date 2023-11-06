@@ -10,6 +10,5 @@ import("perfetto_sql_files.gni")
 # work in the Perfetto repository but does not make sense here.
 import("../../../../../gn/perfetto_sql.gni")
 perfetto_sql_source_set("chrome_sql") {
-  deps = [ "scroll_jank" ]
   sources = chrome_stdlib_sql_files
 }

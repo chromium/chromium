@@ -6,17 +6,26 @@ DROP VIEW IF EXISTS chrome_histograms;
 
 -- A helper view on top of the histogram events emitted by Chrome.
 -- Requires "disabled-by-default-histogram_samples" Chrome category.
---
--- @column name          The name of the histogram.
--- @column value         The value of the histogram sample.
--- @column ts            Alias of |slice.ts|.
--- @column thread_name   Thread name.
--- @column utid          Utid of the thread.
--- @column tid           Tid of the thread.
--- @column process_name  Process name.
--- @column upid          Upid of the process.
--- @column pid           Pid of the process.
-CREATE VIEW chrome_histograms AS
+CREATE PERFETTO TABLE chrome_histograms(
+  -- The name of the histogram.
+  name STRING,
+  -- The value of the histogram sample.
+  value INT,
+  -- Alias of |slice.ts|.
+  ts INT,
+  -- Thread name.
+  thread_name STRING,
+  -- Utid of the thread.
+  utid INT,
+  -- Tid of the thread.
+  tid INT,
+  -- Process name.
+  process_name STRING,
+  -- Upid of the process.
+  upid INT,
+  -- Pid of the process.
+  pid INT
+) AS
 SELECT
   extract_arg(slice.arg_set_id, "chrome_histogram_sample.name") as name,
   extract_arg(slice.arg_set_id, "chrome_histogram_sample.sample") as value,
