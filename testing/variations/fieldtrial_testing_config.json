@@ -8182,6 +8182,21 @@
             ]
         }
     ],
+    "HideDelegatedFrameHostMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HideDelegatedFrameHostMac"
+                    ]
+                }
+            ]
+        }
+    ],
     "HideIncognitoMediaMetadata": [
         {
             "platforms": [
