@@ -401,6 +401,22 @@ void HTMLAnchorElement::SetRel(const AtomicString& value) {
   if (new_link_relations.Contains(AtomicString("opener"))) {
     link_relations_ |= kRelationOpener;
   }
+
+  // These don't currently have web-facing behavior, but embedders may wish to
+  // expose their presence to users:
+  if (new_link_relations.Contains(AtomicString("privacy-policy"))) {
+    link_relations_ |= kRelationPrivacyPolicy;
+    UseCounter::Count(GetDocument(), WebFeature::kLinkRelPrivacyPolicy);
+  }
+  if (new_link_relations.Contains(AtomicString("terms-of-service"))) {
+    link_relations_ |= kRelationTermsOfService;
+    UseCounter::Count(GetDocument(), WebFeature::kLinkRelTermsOfService);
+  }
+
+  // Adding or removing a value here whose processing model is web-visible
+  // (e.g. if the value is listed as a "supported token" for `<a>`'s `rel`
+  // attribute in HTML) also requires you to update the list of tokens in
+  // RelList::SupportedTokensAnchorAndAreaAndForm().
 }
 
 const AtomicString& HTMLAnchorElement::GetName() const {

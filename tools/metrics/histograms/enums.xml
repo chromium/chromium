@@ -33609,6 +33609,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4717" label="ElementCheckVisibilityOptionOpacityProperty"/>
   <int value="4718" label="ElementCheckVisibilityOptionVisibilityProperty"/>
   <int value="4719" label="AdClickMainFrameNavigation"/>
+  <int value="4720" label="LinkRelPrivacyPolicy"/>
+  <int value="4721" label="LinkRelTermsOfService"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

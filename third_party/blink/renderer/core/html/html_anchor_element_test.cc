@@ -25,5 +25,35 @@ TEST_F(HTMLAnchorElementTest, UnchangedHrefDoesNotInvalidateStyle) {
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 }
 
+// This tests whether `rel=privacy-policy` is properly counted.
+TEST_F(HTMLAnchorElementTest, PrivacyPolicyCounter) {
+  // <a rel="privacy-policy"> is not counted when absent
+  SetBodyInnerHTML(R"HTML(
+    <a rel="not-privacy-policy" href="/">Test</a>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelPrivacyPolicy));
+
+  // <a rel="privacy-policy"> is counted when present.
+  SetBodyInnerHTML(R"HTML(
+    <a rel="privacy-policy" href="/">Test</a>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelPrivacyPolicy));
+}
+
+// This tests whether `rel=terms-of-service` is properly counted.
+TEST_F(HTMLAnchorElementTest, TermsOfServiceCounter) {
+  // <a rel="terms-of-service"> is not counted when absent
+  SetBodyInnerHTML(R"HTML(
+    <a rel="not-terms-of-service" href="/">Test</a>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelTermsOfService));
+
+  // <a rel="terms-of-service"> is counted when present.
+  SetBodyInnerHTML(R"HTML(
+    <a rel="terms-of-service" href="/">Test</a>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelTermsOfService));
+}
+
 }  // namespace
 }  // namespace blink

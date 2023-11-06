@@ -61,6 +61,8 @@ class CORE_EXPORT LinkRelAttribute {
   bool IsCanonical() const { return is_canonical_; }
   bool IsMonetization() const { return is_monetization_; }
   bool IsDictionary() const { return is_dictionary_; }
+  bool IsPrivacyPolicy() const { return is_privacy_policy_; }
+  bool IsTermsOfService() const { return is_terms_of_service_; }
 
  private:
   mojom::blink::FaviconIconType icon_type_;
@@ -78,6 +80,8 @@ class CORE_EXPORT LinkRelAttribute {
   bool is_canonical_ : 1;
   bool is_monetization_ : 1;
   bool is_dictionary_ : 1;
+  bool is_privacy_policy_ : 1;
+  bool is_terms_of_service_ : 1;
 };
 
 }  // namespace blink

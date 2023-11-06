@@ -84,6 +84,12 @@ void HTMLLinkElement::ParseAttribute(
         GetDocument().IsInOutermostMainFrame()) {
       UseCounter::Count(&GetDocument(), WebFeature::kLinkRelCanonical);
     }
+    if (rel_attribute_.IsPrivacyPolicy()) {
+      UseCounter::Count(&GetDocument(), WebFeature::kLinkRelPrivacyPolicy);
+    }
+    if (rel_attribute_.IsTermsOfService()) {
+      UseCounter::Count(&GetDocument(), WebFeature::kLinkRelTermsOfService);
+    }
     rel_list_->DidUpdateAttributeValue(params.old_value, value);
     Process();
   } else if (name == html_names::kBlockingAttr) {
