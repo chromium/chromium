@@ -27342,6 +27342,8 @@ Called by update_extension_permission.py.-->
   <int value="6" label="Chrome apps page"/>
   <int value="7" label="Chrome extensions page"/>
   <int value="8" label="Extension"/>
+  <int value="9" label="Chrome Webstore"/>
+  <int value="10" label="Hosted app menu"/>
 </enum>
 
 <enum name="ExtensionUnpackFailureReason">
