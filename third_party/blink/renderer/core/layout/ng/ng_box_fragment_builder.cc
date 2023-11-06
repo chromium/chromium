@@ -559,6 +559,7 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
 
 LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
     const LayoutObject* object) const {
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled());
   DCHECK(object);
 
   if (const FragmentItemsBuilder* items_builder = items_builder_) {

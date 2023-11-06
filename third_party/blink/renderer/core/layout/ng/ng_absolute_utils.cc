@@ -626,6 +626,7 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
 void AdjustOffsetForSplitInline(const NGBlockNode& node,
                                 const NGBoxFragmentBuilder* container_builder,
                                 LogicalOffset& offset) {
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled());
   // Special case: oof css container is a split inline.
   // When css container spans multiple anonymous blocks, its dimensions can
   // only be computed by a block that is an ancestor of all fragments

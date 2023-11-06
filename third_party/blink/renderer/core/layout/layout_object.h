@@ -2334,7 +2334,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // or null if there is none.
   LayoutObject* NearestAncestorForElement() const;
 
-  const LayoutBlock* InclusiveContainingBlock() const;
+  LayoutBlock* InclusiveContainingBlock(AncestorSkipInfo* = nullptr);
 
   const LayoutBox* ContainingScrollContainer(
       bool ignore_layout_view_for_fixed_pos = false) const;

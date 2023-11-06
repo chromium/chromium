@@ -221,7 +221,10 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (old_style && Parent()) {
-    LayoutBlock* block = FindNonAnonymousContainingBlock(this);
+    LayoutBlock* block =
+        RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled()
+            ? InclusiveContainingBlock()
+            : FindNonAnonymousContainingBlock(this);
 
     if ((could_contain_fixed && !can_contain_fixed) ||
         (could_contain_absolute && !can_contain_absolute)) {

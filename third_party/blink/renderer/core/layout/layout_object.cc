@@ -1685,6 +1685,9 @@ LayoutBlock* LayoutObject::ContainingBlockForAbsolutePosition(
     AncestorSkipInfo* skip_info) const {
   NOT_DESTROYED();
   auto* container = ContainerForAbsolutePosition(skip_info);
+  if (RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled()) {
+    return container ? container->InclusiveContainingBlock(skip_info) : nullptr;
+  }
   return FindNonAnonymousContainingBlock(container, skip_info);
 }
 
@@ -1692,13 +1695,17 @@ LayoutBlock* LayoutObject::ContainingBlockForFixedPosition(
     AncestorSkipInfo* skip_info) const {
   NOT_DESTROYED();
   auto* container = ContainerForFixedPosition(skip_info);
+  if (RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled()) {
+    return container ? container->InclusiveContainingBlock(skip_info) : nullptr;
+  }
   return FindNonAnonymousContainingBlock(container, skip_info);
 }
 
-const LayoutBlock* LayoutObject::InclusiveContainingBlock() const {
+LayoutBlock* LayoutObject::InclusiveContainingBlock(
+    AncestorSkipInfo* skip_info) {
   NOT_DESTROYED();
   auto* layout_block = DynamicTo<LayoutBlock>(this);
-  return layout_block ? layout_block : ContainingBlock();
+  return layout_block ? layout_block : ContainingBlock(skip_info);
 }
 
 const PaintLayer* LayoutObject::ContainingScrollContainerLayer(
@@ -1735,6 +1742,7 @@ const LayoutBox* LayoutObject::ContainingScrollContainer(
 
 LayoutObject* LayoutObject::NonAnonymousAncestor() const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled());
   LayoutObject* ancestor = Parent();
   while (ancestor && ancestor->IsAnonymous())
     ancestor = ancestor->Parent();
@@ -1752,6 +1760,7 @@ LayoutObject* LayoutObject::NearestAncestorForElement() const {
 
 bool LayoutObject::IsAnonymousNGMulticolInlineWrapper() const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled());
   if (!IsLayoutNGBlockFlow() || !IsAnonymousBlock())
     return false;
 
@@ -1765,6 +1774,7 @@ bool LayoutObject::IsAnonymousNGMulticolInlineWrapper() const {
 LayoutBlock* LayoutObject::FindNonAnonymousContainingBlock(
     LayoutObject* container,
     AncestorSkipInfo* skip_info) {
+  DCHECK(!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled());
   // For inlines, we return the nearest non-anonymous enclosing
   // block. We don't try to return the inline itself. This allows us to avoid
   // having a positioned objects list in all LayoutInlines and lets us return a

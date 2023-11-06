@@ -2301,6 +2301,10 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
+      name: "LayoutNewContainingBlock",
+      status: "stable",
+    },
+    {
       name: "LayoutNewOverflowLogic",
       status: "stable",
     },

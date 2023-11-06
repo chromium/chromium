@@ -1981,7 +1981,8 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
       insets_to_store.ConvertToPhysical(candidate_writing_direction)
           .ConvertToLogical(node_info.default_writing_direction);
 
-  if (!container_builder_->IsBlockFragmentationContextRoot()) {
+  if (!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled() &&
+      !container_builder_->IsBlockFragmentationContextRoot()) {
     // OOFs contained by an inline that's been split into continuations are
     // special, as their offset is relative to a fragment that's not the same as
     // their containing NG fragment; take a look inside

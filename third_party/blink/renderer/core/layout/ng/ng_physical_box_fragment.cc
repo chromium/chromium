@@ -1403,7 +1403,8 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
 
   if (ShouldIncludeBlockVisualOverflowForAnchorOnly(outline_type) &&
       !HasNonVisibleOverflow() && !HasControlClip(*this)) {
-    if (container->IsAnonymousBlock()) {
+    if (!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled() &&
+        container->IsAnonymousBlock()) {
       const auto* container_box = DynamicTo<LayoutBox>(
           container->GetLayoutObject()->NonAnonymousAncestor());
       if (!container_box)
