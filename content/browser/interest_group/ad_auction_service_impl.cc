@@ -469,9 +469,9 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     const url::Origin& seller,
     blink::mojom::AdAuctionCoordinator coordinator,
     GetInterestGroupAdAuctionDataCallback callback) {
-  // If the interest group API is not allowed for this origin do nothing.
+  // If the interest group API is not allowed for this seller do nothing.
   if (!IsInterestGroupAPIAllowed(
-          ContentBrowserClient::InterestGroupApiOperation::kSell, origin())) {
+          ContentBrowserClient::InterestGroupApiOperation::kSell, seller)) {
     std::move(callback).Run({}, {});
     return;
   }

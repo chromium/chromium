@@ -8960,10 +8960,12 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
 TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
   base::HistogramTester hist;
   ProvideKeys();
-  NavigateAndCommit(GURL("https://not.allowed.test/"));
-  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  content_browser_client_.SetAllowList({kOriginA});
+  url::Origin test_origin =
+      url::Origin::Create(GURL("http://not.attested.test/"));
+  NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
-      blink::TestInterestGroupBuilder(test_origin, "cars")
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
           .SetAds(
               {{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
                  /*size_group=*/absl::nullopt,
