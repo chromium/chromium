@@ -32,32 +32,15 @@ namespace {
 
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
-constexpr char kEnterpriseParamsDictKey[] = "enterprise-params";
-constexpr char kSuppressUserDialogsKey[] = "suppress-user-dialogs";
-constexpr char kSuppressNotificationsKey[] = "suppress-notifications";
-constexpr char kTerminateUponInputKey[] = "terminate-upon-input";
-constexpr char kCurtainLocalUserSessionKey[] = "curtain-local-user-session";
-constexpr char kShowTroubleshootingToolsKey[] = "show-troubleshooting-tools";
-constexpr char kAllowTroubleshootingToolsKey[] = "allow-troubleshooting-tools";
-constexpr char kAllowReconnections[] = "allow-reconnections";
-constexpr char kAllowFileTransfer[] = "allow-file-transfer";
-
-constexpr char kSessionParamsDictKey[] = "session-params";
-constexpr char kUserNameKey[] = "user-name";
-constexpr char kOauthTokenKey[] = "oauth-token";
-
-constexpr char kReconnectParamsDictKey[] = "reconnect-params";
-constexpr char kRemoteUsernameKey[] = "remote-username";
-
 base::Value::Dict EnterpriseParamsToDict(
     const ChromeOsEnterpriseParams& params) {
   return base::Value::Dict()
-      .Set(kSuppressUserDialogsKey, params.suppress_user_dialogs)
-      .Set(kSuppressNotificationsKey, params.suppress_notifications)
-      .Set(kTerminateUponInputKey, params.terminate_upon_input)
-      .Set(kCurtainLocalUserSessionKey, params.curtain_local_user_session)
-      .Set(kShowTroubleshootingToolsKey, params.show_troubleshooting_tools)
-      .Set(kAllowTroubleshootingToolsKey, params.allow_troubleshooting_tools)
+      .Set(kSuppressUserDialogs, params.suppress_user_dialogs)
+      .Set(kSuppressNotifications, params.suppress_notifications)
+      .Set(kTerminateUponInput, params.terminate_upon_input)
+      .Set(kCurtainLocalUserSession, params.curtain_local_user_session)
+      .Set(kShowTroubleshootingTools, params.show_troubleshooting_tools)
+      .Set(kAllowTroubleshootingTools, params.allow_troubleshooting_tools)
       .Set(kAllowReconnections, params.allow_reconnections)
       .Set(kAllowFileTransfer, params.allow_file_transfer);
 }
@@ -65,16 +48,15 @@ base::Value::Dict EnterpriseParamsToDict(
 ChromeOsEnterpriseParams EnterpriseParamsFromDict(
     const base::Value::Dict& dict) {
   return ChromeOsEnterpriseParams{
-      .suppress_user_dialogs = dict.FindBool(kSuppressUserDialogsKey).value(),
-      .suppress_notifications =
-          dict.FindBool(kSuppressNotificationsKey).value(),
-      .terminate_upon_input = dict.FindBool(kTerminateUponInputKey).value(),
+      .suppress_user_dialogs = dict.FindBool(kSuppressUserDialogs).value(),
+      .suppress_notifications = dict.FindBool(kSuppressNotifications).value(),
+      .terminate_upon_input = dict.FindBool(kTerminateUponInput).value(),
       .curtain_local_user_session =
-          dict.FindBool(kCurtainLocalUserSessionKey).value(),
+          dict.FindBool(kCurtainLocalUserSession).value(),
       .show_troubleshooting_tools =
-          dict.FindBool(kShowTroubleshootingToolsKey).value(),
+          dict.FindBool(kShowTroubleshootingTools).value(),
       .allow_troubleshooting_tools =
-          dict.FindBool(kAllowTroubleshootingToolsKey).value(),
+          dict.FindBool(kAllowTroubleshootingTools).value(),
       .allow_reconnections = dict.FindBool(kAllowReconnections).value(),
       .allow_file_transfer = dict.FindBool(kAllowFileTransfer).value(),
   };
@@ -82,28 +64,23 @@ ChromeOsEnterpriseParams EnterpriseParamsFromDict(
 
 base::Value::Dict SessionParamsToDict(
     const mojom::SupportSessionParams& params) {
-  return base::Value::Dict()
-      .Set(kUserNameKey, params.user_name)
-      .Set(kOauthTokenKey, params.oauth_access_token);
+  auto session_params = base::Value::Dict()
+                            .Set(kUserName, params.user_name)
+                            .Set(kAuthorizedHelper, *params.authorized_helper);
+
+  return session_params;
 }
 
 mojom::SupportSessionParams SessionParamsFromDict(
     const base::Value::Dict& dict) {
   mojom::SupportSessionParams result;
-  result.user_name = *dict.FindString(kUserNameKey);
-  result.oauth_access_token = *dict.FindString(kOauthTokenKey);
+  result.user_name = *dict.FindString(kUserName);
+  result.authorized_helper = *dict.FindString(kAuthorizedHelper);
   return result;
 }
 
-base::Value::Dict ReconnectParamsToDict(const ReconnectParams& params) {
-  return base::Value::Dict().Set(kRemoteUsernameKey, params.remote_username);
-}
-
-ReconnectParams ReconnectParamsFromDict(const base::Value::Dict& dict) {
-  return {.remote_username = *dict.FindString(kRemoteUsernameKey)};
-}
-
 mojom::StartSupportSessionResponsePtr GetUnableToReconnectError() {
+  // TODO(joedow): Add better error messages.
   return mojom::StartSupportSessionResponse::NewSupportSessionError(
       mojom::StartSupportSessionError::kUnknown);
 }
@@ -212,11 +189,11 @@ void RemoteSupportHostAsh::ReconnectToSession(SessionId session_id,
 
         LOG(INFO) << "CRD: Reconnectable session found - starting connection";
         self->StartSession(
-            SessionParamsFromDict(*session->EnsureDict(kSessionParamsDictKey)),
+            SessionParamsFromDict(*session->EnsureDict(kSessionParamsDict)),
             EnterpriseParamsFromDict(
-                *session->EnsureDict(kEnterpriseParamsDictKey)),
-            ReconnectParamsFromDict(
-                *session->EnsureDict(kReconnectParamsDictKey)),
+                *session->EnsureDict(kEnterpriseParamsDict)),
+            ReconnectParams::FromDict(
+                *session->EnsureDict(kReconnectParamsDict)),
             std::move(callback));
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -232,22 +209,25 @@ mojom::SupportHostDetailsPtr RemoteSupportHostAsh::GetHostDetails() {
 void RemoteSupportHostAsh::OnHostStateConnected(
     mojom::SupportSessionParams session_params,
     absl::optional<ChromeOsEnterpriseParams> enterprise_params,
-    ReconnectParams reconnect_params) {
+    absl::optional<ReconnectParams> reconnect_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
     return;
   }
 
-  if (enterprise_params.has_value() && enterprise_params->allow_reconnections) {
+  if (reconnect_params.has_value()) {
+    CHECK(enterprise_params.has_value());
+    CHECK(enterprise_params->allow_reconnections);
+
     LOG(INFO) << "CRD: Storing information for reconnectable session";
     session_storage_->StoreSession(
         base::Value::Dict()
-            .Set(kSessionParamsDictKey, SessionParamsToDict(session_params))
-            .Set(kEnterpriseParamsDictKey,
+            .Set(kSessionParamsDict, SessionParamsToDict(session_params))
+            .Set(kEnterpriseParamsDict,
                  EnterpriseParamsToDict(*enterprise_params))
-            .Set(kReconnectParamsDictKey,
-                 ReconnectParamsToDict(reconnect_params)),
+            .Set(kReconnectParamsDict,
+                 ReconnectParams::ToDict(*reconnect_params)),
         base::DoNothing());
     return;
   }

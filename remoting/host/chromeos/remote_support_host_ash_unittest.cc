@@ -33,6 +33,8 @@ namespace {
 using base::test::TestFuture;
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
+constexpr char kRemoteAdminEmail[] = "admin@domain.com";
+
 // Matcher that checks if the result of a `StartSupportSession` request
 // indicates we failed to start the session
 auto IsError() {
@@ -68,10 +70,6 @@ class FakeIt2MeHost : public It2MeHost {
     connect_waiter_.SetValue();
   }
   void Disconnect() override {}
-  void set_chrome_os_enterprise_params(
-      ChromeOsEnterpriseParams value) override {
-    enterprise_params_ = value;
-  }
 
   bool WaitForConnectCall() {
     bool success = connect_waiter_.Wait();
@@ -80,8 +78,8 @@ class FakeIt2MeHost : public It2MeHost {
   }
 
   std::string user_name() const { return user_name_; }
-  ChromeOsEnterpriseParams enterprise_params() const {
-    return enterprise_params_;
+  const ChromeOsEnterpriseParams& enterprise_params() const {
+    return chrome_os_enterprise_params();
   }
 
   It2MeHost::Observer& observer() {
@@ -96,7 +94,6 @@ class FakeIt2MeHost : public It2MeHost {
 
   base::WeakPtr<It2MeHost::Observer> observer_;
   std::string user_name_;
-  ChromeOsEnterpriseParams enterprise_params_;
   TestFuture<void> connect_waiter_;
 };
 
@@ -216,6 +213,8 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
   mojom::SupportSessionParams GetSupportSessionParams() {
     mojom::SupportSessionParams params;
     params.user_name = "<the-user>";
+    params.oauth_access_token = "oauth2: VALID_ACCESS_TOKEN";
+    params.authorized_helper = kRemoteAdminEmail;
     return params;
   }
 
@@ -260,10 +259,9 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
 
   bool StoreReconnectableSessionInformation(
       mojom::SupportSessionParams params,
-      ChromeOsEnterpriseParams enterprise_params = {.allow_reconnections =
-                                                        true},
-      std::string remote_user_email = "remote-user@email.com") {
-    // Only reconnectable sessions can be stored as reconnectable sessions.
+      ChromeOsEnterpriseParams enterprise_params = {
+          .allow_reconnections = true}) {
+    // Reconnectable sessions can only be stored if reconnections are allowed.
     CHECK(enterprise_params.allow_reconnections);
 
     // We do not want our test to make any assumptions about how the
@@ -278,7 +276,7 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
 
     support_host.StartSession(params, enterprise_params, base::DoNothing());
     EXPECT_TRUE(it2me_host->WaitForConnectCall());
-    it2me_host->observer().OnClientAuthenticated(remote_user_email);
+    it2me_host->observer().OnClientAuthenticated(kRemoteAdminEmail);
     it2me_host->observer().OnStateChanged(It2MeHostState::kConnected,
                                           protocol::ErrorCode::OK);
 
@@ -641,12 +639,11 @@ TEST_F(RemoteSupportHostAshTest,
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
 
   ASSERT_TRUE(StoreReconnectableSessionInformation(
-      GetSupportSessionParams(), {.allow_reconnections = true},
-      "the-remote-user@domain.com"));
+      GetSupportSessionParams(), {.allow_reconnections = true}));
 
   ReconnectToSession(kEnterpriseSessionId);
 
-  EXPECT_EQ(it2me_host().authorized_helper(), "the-remote-user@domain.com");
+  EXPECT_EQ(it2me_host().authorized_helper(), kRemoteAdminEmail);
 }
 
 TEST_F(RemoteSupportHostAshTest,

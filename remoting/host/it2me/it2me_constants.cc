@@ -64,4 +64,15 @@ const char kNatPolicyChangedMessageRelayEnabled[] = "relayConnectionsAllowed";
 
 const char kPolicyErrorMessage[] = "policyError";
 
+const char kSessionParamsDict[] = "sessionParamsDict";
+
+const char kEnterpriseParamsDict[] = "enterpriseParamsDict";
+
+const char kReconnectParamsDict[] = "reconnectParamsDict";
+const char kReconnectSupportId[] = "reconnectSupportId";
+const char kReconnectHostSecret[] = "reconnectHostSecret";
+const char kReconnectPrivateKey[] = "reconnectPrivateKey";
+const char kReconnectFtlDeviceRegistrationId[] =
+    "reconnectFtlDeviceRegistrationId";
+
 }  // namespace remoting

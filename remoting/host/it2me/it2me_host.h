@@ -93,8 +93,12 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   // Session parameters provided by the remote command infrastructure when the
   // session is started from the admin console for a managed Chrome OS device.
-  virtual void set_chrome_os_enterprise_params(ChromeOsEnterpriseParams params);
-
+  void set_chrome_os_enterprise_params(ChromeOsEnterpriseParams params);
+  // Callers should call is_enterprise_session() first to ensure the params are
+  // present and retrievable.
+  const ChromeOsEnterpriseParams& chrome_os_enterprise_params() const {
+    return *chrome_os_enterprise_params_;
+  }
   // Indicates whether this support session was initiated by the admin console
   // for a managed Chrome OS device.
   bool is_enterprise_session() const {

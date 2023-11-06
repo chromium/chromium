@@ -110,6 +110,15 @@ extern const char kNatPolicyChangedMessageRelayEnabled[];
 // Sent from the host when there is a problem reading the local policy.
 extern const char kPolicyErrorMessage[];
 
+// Keys used for storing and retrieving params used for reconnectable sessions.
+extern const char kSessionParamsDict[];
+extern const char kEnterpriseParamsDict[];
+extern const char kReconnectParamsDict[];
+extern const char kReconnectSupportId[];
+extern const char kReconnectHostSecret[];
+extern const char kReconnectPrivateKey[];
+extern const char kReconnectFtlDeviceRegistrationId[];
+
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_IT2ME_IT2ME_CONSTANTS_H_

@@ -495,10 +495,24 @@ void It2MeNativeMessagingHost::OnStateChanged(It2MeHostState state,
                   static_cast<int>(access_code_lifetime_.InSeconds()));
       break;
 
-    case It2MeHostState::kConnected:
+    case It2MeHostState::kConnected: {
       message.Set(kClient, client_username_);
-      break;
 
+      if (it2me_host_->is_enterprise_session() &&
+          it2me_host_->chrome_os_enterprise_params().allow_reconnections) {
+        // These test values are needed so the impl CL can be broken up into
+        // smaller patchsets.
+        // TODO(joedow): Replace them with real values.
+        message.Set(kReconnectParamsDict,
+                    base::Value::Dict()
+                        .Set(kReconnectSupportId, "1234567")
+                        .Set(kReconnectHostSecret, "12345")
+                        .Set(kReconnectPrivateKey, std::string(384, 'a'))
+                        .Set(kReconnectFtlDeviceRegistrationId,
+                             "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"));
+      }
+      break;
+    }
     case It2MeHostState::kDisconnected:
       message.Set(kDisconnectReason, ErrorCodeToString(error_code));
       client_username_.clear();

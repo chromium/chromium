@@ -72,7 +72,7 @@ class RemoteSupportHostAsh {
 
   void OnHostStateConnected(mojom::SupportSessionParams,
                             absl::optional<ChromeOsEnterpriseParams>,
-                            ReconnectParams);
+                            absl::optional<ReconnectParams>);
   void OnHostStateDisconnected();
   void OnSessionDisconnected();
 

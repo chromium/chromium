@@ -44,7 +44,8 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
       delete;
   ~It2MeNativeMessageHostAsh() override;
 
-  using HostStateConnectedCallback = base::OnceCallback<void(ReconnectParams)>;
+  using HostStateConnectedCallback =
+      base::OnceCallback<void(absl::optional<ReconnectParams>)>;
 
   // Creates a new NMH instance, creates a new SupportHostObserver remote and
   // returns the pending_remote.  Start() must be called before the first call

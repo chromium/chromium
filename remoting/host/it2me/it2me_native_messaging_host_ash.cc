@@ -195,15 +195,9 @@ void It2MeNativeMessageHostAsh::Connect(
   }
 
   if (reconnect_params.has_value()) {
-    // We pass the previously connected user as the `authorized_helper`, to
+    // We persist the previously connected user as the `authorized_helper`, to
     // prevent anyone else from snooping in and connecting to the session.
-    message.Set(kAuthorizedHelper, reconnect_params.value().remote_username);
-
-    if (params.authorized_helper.has_value()) {
-      // Check we did not receive conflicting information.
-      CHECK_EQ(params.authorized_helper.value(),
-               reconnect_params.value().remote_username);
-    }
+    CHECK(params.authorized_helper.has_value());
 
     // TODO(b/283091055): Send the reconnection params in the connect message,
     // and use them to reconnect to an existing client.
@@ -333,11 +327,20 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     }
     remote_->OnHostStateConnected(*remote_username);
 
-    // TODO(b/283091055): Update the client connected response to contain
-    // reconnection information (if the session is reconnectable), and add
-    // this information to `ReconnectParams`.
-    std::move(host_state_connected_callback_)
-        .Run(ReconnectParams(*remote_username));
+    absl::optional<ReconnectParams> reconnect_params;
+    const auto* reconnect_params_ptr = message.FindDict(kReconnectParamsDict);
+    if (reconnect_params_ptr) {
+      reconnect_params.emplace();
+      reconnect_params->support_id =
+          *reconnect_params_ptr->FindString(kReconnectSupportId);
+      reconnect_params->host_secret =
+          *reconnect_params_ptr->FindString(kReconnectHostSecret);
+      reconnect_params->private_key =
+          *reconnect_params_ptr->FindString(kReconnectPrivateKey);
+      reconnect_params->ftl_device_registration_id =
+          *reconnect_params_ptr->FindString(kReconnectFtlDeviceRegistrationId);
+    }
+    std::move(host_state_connected_callback_).Run(std::move(reconnect_params));
 
   } else if (*new_state == kHostStateError) {
     const std::string* error_code_string =
