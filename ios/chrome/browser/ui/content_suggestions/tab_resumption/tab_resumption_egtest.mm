@@ -173,11 +173,13 @@ NSString* HostnameFromGURL(GURL URL) {
 
 // Tests that the tab resumption tile is correctly displayed for a local tab.
 - (void)testTabResumptionTileDisplayedForLocalTab {
-  // TODO(crbug.com/1494006): Test is flaky on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iPad.");
+#if TARGET_IPHONE_SIMULATOR
+    // TODO(crbug.com/1494006): Test is flaky on iPad device. Re-enable the
+    // test.
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad device.");
+#endif
   }
-
   // Check that the tile is not displayed when there is no local tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(false);
 
