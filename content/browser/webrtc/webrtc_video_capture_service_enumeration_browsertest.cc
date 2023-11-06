@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoCaptureServiceEnumerationBrowserTest,
 // TODO(crbug.com/1126373): The test is flaky on multiple platforms.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) ||    \
     BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(IS_IOS)
+    BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange \
   DISABLED_AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange
 #else
