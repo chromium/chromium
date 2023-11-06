@@ -37,7 +37,6 @@ rootWebArea
 ++++++link expanded
 ++++++list
 ++++++listBox expanded
-++++++++listBoxOption
 ++++++listItem
 ++++++log
 ++++++main
@@ -51,6 +50,7 @@ rootWebArea
 ++++++meter
 ++++++navigation
 ++++++note
+++++++listBoxOption
 ++++++paragraph
 ++++++progressIndicator
 ++++++radioButton
