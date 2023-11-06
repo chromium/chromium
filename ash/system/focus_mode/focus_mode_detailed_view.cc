@@ -74,6 +74,8 @@ constexpr int kTimerSettingViewBetweenChildSpacing = 8;
 constexpr auto kTimerAdjustmentButtonSize = gfx::Size(63, 36);
 constexpr auto kTimerCountdownViewInsets = gfx::Insets::TLBR(0, 24, 12, 16);
 
+constexpr int kToggleButtonLeftPadding = 8;
+
 // Creates an `IconButton` with the formatting needed for the
 // `timer_setting_view_`'s timer adjustment buttons.
 std::unique_ptr<IconButton> CreateTimerAdjustmentButton(
@@ -512,10 +514,13 @@ void FocusModeDetailedView::CreateDoNotDisturbContainer() {
           RoundedContainer::Behavior::kAllRounded));
   do_not_disturb_view_->SetProperty(views::kMarginsKey,
                                     kDisconnectedContainerMargins);
+  // `RoundedContainer` adds extra insets, so we need to remove those.
+  do_not_disturb_view_->SetBorderInsets(gfx::Insets());
 
   HoverHighlightView* toggle_row = do_not_disturb_view_->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
   toggle_row->SetFocusBehavior(View::FocusBehavior::NEVER);
+  toggle_row->SetPreferredSize(gfx::Size(0, kToggleViewHeight));
 
   // Create the do not disturb icon and its label.
   auto icon = std::make_unique<views::ImageView>();
@@ -538,10 +543,17 @@ void FocusModeDetailedView::CreateDoNotDisturbContainer() {
 
   toggle->SetIsOn(controller->turn_on_do_not_disturb());
   do_not_disturb_toggle_button_ = toggle.get();
-  toggle_row->AddRightView(toggle.release());
+  toggle_row->AddRightView(toggle.release(),
+                           views::CreateEmptyBorder(gfx::Insets::TLBR(
+                               0, kToggleButtonLeftPadding, 0, 0)));
 
-  // TODO(hongyulong): Add insets for the tri_view of the toggle row.
   toggle_row->SetExpandable(true);
+  toggle_row->tri_view()->SetInsets(kToggleViewInsets);
+  views::BoxLayout* toggle_view_tri_view_layout =
+      toggle_row->tri_view()->box_layout();
+  toggle_view_tri_view_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  toggle_view_tri_view_layout->InvalidateLayout();
 }
 
 void FocusModeDetailedView::OnDoNotDisturbToggleClicked() {
