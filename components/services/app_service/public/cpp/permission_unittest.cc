@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {

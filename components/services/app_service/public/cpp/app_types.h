@@ -236,7 +236,11 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   absl::optional<std::string> selected_locale;
 
   // When adding new fields to the App type, the `Clone` function, the
-  // `operator==` function, and the `AppUpdate` class should also be updated.
+  // `operator==` function, and the `AppUpdate` class should also be updated. If
+  // the new fields should be saved, below functions should be updated:
+  // `AppStorage::IsAppChanged`
+  // `AppStorageFileHandler::ConvertAppsToValue`
+  // `AppStorageFileHandler::ConvertValueToApps`
 };
 
 using AppPtr = std::unique_ptr<App>;

@@ -10,18 +10,18 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/values.h"
 #include "components/services/app_service/public/cpp/macros.h"
 
 namespace apps {
 
-ENUM_FOR_COMPONENT(APP_TYPES,
-                   RunOnOsLoginMode,
-                   // kUnknown to be used for app_update.cc.
-                   kUnknown,
-                   // App won't run on OS Login.
-                   kNotRun,
-                   // App runs in windowed mode on OS Login.
-                   kWindowed)
+ENUM(RunOnOsLoginMode,
+     // kUnknown to be used for app_update.cc.
+     kUnknown,
+     // App won't run on OS Login.
+     kNotRun,
+     // App runs in windowed mode on OS Login.
+     kWindowed)
 
 struct COMPONENT_EXPORT(APP_TYPES) RunOnOsLogin {
   RunOnOsLogin();
@@ -47,6 +47,20 @@ struct COMPONENT_EXPORT(APP_TYPES) RunOnOsLogin {
 };
 
 using RunOnOsLoginPtr = std::unique_ptr<RunOnOsLogin>;
+
+// Converts `run_on_os_login` to base::Value::Dict, e.g.:
+// {
+//   "login_mode": 2,
+//   "is_managed": false,
+// }
+COMPONENT_EXPORT(APP_TYPES)
+base::Value::Dict ConvertRunOnOsLoginToDict(
+    const RunOnOsLogin& run_on_os_login);
+
+// Converts base::Value::Dict to RunOnOsLoginPtr.
+COMPONENT_EXPORT(APP_TYPES)
+absl::optional<RunOnOsLogin> ConvertDictToRunOnOsLogin(
+    const base::Value::Dict* dict);
 
 }  // namespace apps
 

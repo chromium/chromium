@@ -168,6 +168,7 @@ class AppStorageTest : public testing::Test {
     app2->readiness = kReadiness2;
     app2->name = kAppName2;
     app2->short_name = kAppShortName1;
+    app2->publisher_id = "publisher_id";
     app2->description = "description";
     app2->version = "version";
     app2->additional_search_terms = {"term1", "term2"};
@@ -199,6 +200,10 @@ class AppStorageTest : public testing::Test {
     app2->paused = false;
     app2->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(
         GURL("https://www.google.com/abc")));
+    app2->window_mode = WindowMode::kBrowser;
+    app2->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kNotRun,
+                                         /*is_managed=*/false);
+
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
@@ -208,6 +213,7 @@ class AppStorageTest : public testing::Test {
   MODIFY_FIELD(name, kAppName2)
   MODIFY_FIELD(short_name, kAppShortName2)
   MODIFY_FIELD(description, "description")
+  MODIFY_FIELD(publisher_id, "publisher_id")
   MODIFY_FIELD(version, "version")
   MODIFY_FIELD(additional_search_terms, {"term1"})
   MODIFY_FIELD(last_launch_time, base::Time() + base::Days(2))
@@ -224,6 +230,9 @@ class AppStorageTest : public testing::Test {
   MODIFY_FIELD(show_in_management, true)
   MODIFY_FIELD(handles_intents, false)
   MODIFY_FIELD(allow_uninstall, false)
+  MODIFY_FIELD(window_mode, WindowMode::kWindow)
+  MODIFY_FIELD(run_on_os_login,
+               RunOnOsLogin(RunOnOsLoginMode::kNotRun, /*is_managed=*/false))
 
   void ModifyIconKey(absl::optional<IconKey> icon_key) {
     AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
@@ -369,6 +378,7 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
 
   VERIFY_MODIFY_FIELD(name, kAppName2);
   VERIFY_MODIFY_FIELD(short_name, kAppShortName2);
+  VERIFY_MODIFY_FIELD(publisher_id, "publisher_id");
   VERIFY_MODIFY_FIELD(description, "description");
   VERIFY_MODIFY_FIELD(version, "version");
   VERIFY_MODIFY_FIELD(additional_search_terms, {"term1"});
@@ -386,6 +396,9 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
   VERIFY_MODIFY_FIELD(show_in_management, true);
   VERIFY_MODIFY_FIELD(handles_intents, false);
   VERIFY_MODIFY_FIELD(allow_uninstall, false);
+  VERIFY_MODIFY_FIELD(window_mode, WindowMode::kWindow);
+  VERIFY_MODIFY_FIELD(run_on_os_login, RunOnOsLogin(RunOnOsLoginMode::kNotRun,
+                                                    /*is_managed=*/false));
 
   // Verify for the none icon effect.
   IconKey icon_key1(IconEffects::kNone);
