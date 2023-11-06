@@ -218,7 +218,7 @@ const WebContentsProxy& PageNodeImpl::GetContentsProxy() const {
 const absl::optional<freezing::FreezingVote>& PageNodeImpl::GetFreezingVote()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return freezing_vote();
+  return freezing_vote_.value();
 }
 
 PageState PageNodeImpl::GetPageState() const {
@@ -519,12 +519,6 @@ bool PageNodeImpl::had_form_interaction() const {
 bool PageNodeImpl::had_user_edits() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return had_user_edits_.value();
-}
-
-const absl::optional<freezing::FreezingVote>& PageNodeImpl::freezing_vote()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return freezing_vote_.value();
 }
 
 PageNode::PageState PageNodeImpl::page_state() const {

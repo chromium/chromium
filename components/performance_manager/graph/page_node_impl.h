@@ -169,7 +169,6 @@ class PageNodeImpl
   const std::string& contents_mime_type() const;
   bool had_form_interaction() const;
   bool had_user_edits() const;
-  const absl::optional<freezing::FreezingVote>& freezing_vote() const;
   PageState page_state() const;
 
   // Invoked to set/clear the opener of this page.

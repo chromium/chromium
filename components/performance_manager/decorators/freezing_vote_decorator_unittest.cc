@@ -36,7 +36,7 @@ class FreezingVoteDecoratorTest : public GraphTestHarness {
 
 TEST_F(FreezingVoteDecoratorTest, VotesAreForwarded) {
   auto page_node = CreateNode<PageNodeImpl>();
-  EXPECT_FALSE(page_node->freezing_vote());
+  EXPECT_FALSE(page_node->GetFreezingVote());
 
   freezing::FreezingVotingChannel voter =
       graph()
@@ -44,19 +44,19 @@ TEST_F(FreezingVoteDecoratorTest, VotesAreForwarded) {
           ->GetVotingChannel();
 
   voter.SubmitVote(page_node.get(), kCannotFreezeVote);
-  ASSERT_TRUE(page_node->freezing_vote().has_value());
-  EXPECT_EQ(kCannotFreezeVote, page_node->freezing_vote().value());
+  ASSERT_TRUE(page_node->GetFreezingVote().has_value());
+  EXPECT_EQ(kCannotFreezeVote, page_node->GetFreezingVote().value());
 
   voter.ChangeVote(page_node.get(), kCanFreezeVote);
-  ASSERT_TRUE(page_node->freezing_vote().has_value());
-  EXPECT_EQ(kCanFreezeVote, page_node->freezing_vote().value());
+  ASSERT_TRUE(page_node->GetFreezingVote().has_value());
+  EXPECT_EQ(kCanFreezeVote, page_node->GetFreezingVote().value());
 
   voter.ChangeVote(page_node.get(), kCannotFreezeVote);
-  ASSERT_TRUE(page_node->freezing_vote().has_value());
-  EXPECT_EQ(kCannotFreezeVote, page_node->freezing_vote().value());
+  ASSERT_TRUE(page_node->GetFreezingVote().has_value());
+  EXPECT_EQ(kCannotFreezeVote, page_node->GetFreezingVote().value());
 
   voter.InvalidateVote(page_node.get());
-  EXPECT_FALSE(page_node->freezing_vote());
+  EXPECT_FALSE(page_node->GetFreezingVote());
 }
 
 }  // namespace performance_manager

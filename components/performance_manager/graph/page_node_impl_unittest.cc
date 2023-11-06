@@ -244,14 +244,14 @@ TEST_F(PageNodeImplTest, GetFreezingVote) {
   auto* page_node = mock_graph.page.get();
 
   // This should be initialized to absl::nullopt.
-  EXPECT_FALSE(page_node->freezing_vote());
+  EXPECT_FALSE(page_node->GetFreezingVote());
 
   page_node->set_freezing_vote(kFreezingVote);
-  ASSERT_TRUE(page_node->freezing_vote().has_value());
-  EXPECT_EQ(kFreezingVote, page_node->freezing_vote().value());
+  ASSERT_TRUE(page_node->GetFreezingVote().has_value());
+  EXPECT_EQ(kFreezingVote, page_node->GetFreezingVote().value());
 
   page_node->set_freezing_vote(absl::nullopt);
-  EXPECT_FALSE(page_node->freezing_vote());
+  EXPECT_FALSE(page_node->GetFreezingVote());
 }
 
 namespace {
@@ -420,7 +420,6 @@ TEST_F(PageNodeImplTest, PublicInterface) {
   EXPECT_EQ(page_node->main_frame_url(), public_page_node->GetMainFrameUrl());
   EXPECT_EQ(page_node->contents_mime_type(),
             public_page_node->GetContentsMimeType());
-  EXPECT_EQ(page_node->freezing_vote(), public_page_node->GetFreezingVote());
 }
 
 TEST_F(PageNodeImplTest, GetMainFrameNodes) {
