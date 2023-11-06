@@ -17,6 +17,9 @@ window.addEventListener('load', () => {
       "availTop"    : window.screen.availTop,
       "left"        : window.screen.left,
       "top"         : window.screen.top
+    },
+    "Navigator": {
+      "doNotTrack"  : navigator.doNotTrack
     }
   }));
 });
