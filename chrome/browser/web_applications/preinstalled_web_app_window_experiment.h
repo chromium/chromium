@@ -24,6 +24,7 @@ namespace web_app {
 // the experiment ends (when `kPreinstalledWebAppWindowExperiment` is disabled).
 BASE_DECLARE_FEATURE(kWebAppWindowExperimentCleanup);
 
+// TODO(crbug.com/1499749): Experiment has completed, clean up experiment code.
 // Sets up and manages a CrOS-only experiment for opening preinstalled web apps
 // in windows with link capturing.
 // - Owned/started by the PreinstalledWebAppManager, and may set in-memory
