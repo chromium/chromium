@@ -5702,8 +5702,7 @@ class BrowserAutofillManagerWithLogEventsTest
   BrowserAutofillManagerWithLogEventsTest() {
     scoped_features_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillLogUKMEventsWithSampleRate,
-                              features::kAutofillParsingPatternProvider,
-                              features::kAutofillFeedback},
+                              features::kAutofillParsingPatternProvider},
         /*disabled_features=*/{});
   }
 

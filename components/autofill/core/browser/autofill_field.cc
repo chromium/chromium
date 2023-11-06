@@ -565,18 +565,6 @@ void AutofillField::AppendLogEventIfNotRepeated(
   // recording log events into |field_log_events_| to save memory when
   // |field_log_events_| reaches certain threshold, e.g. 1000.
 
-  // Disable it for now until we find a selection criterion to select forms to
-  // be recorded into UKM. Always enable for clients with
-  // `features::kAutofillFeedback` and
-  // `features::kAutofillGranularFillingAvailable` enabled.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillLogUKMEventsWithSampleRate) &&
-      !base::FeatureList::IsEnabled(features::kAutofillFeedback) &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillGranularFillingAvailable)) {
-    return;
-  }
-
   if (field_log_events_.empty() ||
       field_log_events_.back().index() != log_event.index() ||
       !AreCollapsibleLogEvents(field_log_events_.back(), log_event)) {

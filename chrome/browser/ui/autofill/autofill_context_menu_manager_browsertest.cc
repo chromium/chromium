@@ -332,8 +332,7 @@ class AutocompleteUnrecognizedFieldsTest
           {{"show_on_all_address_fields", "true"}}}},
         // Intentionally disable the Autofill feedback so that corresponding
         // entry doesn't appear in the context menu model.
-        {features::kAutofillFeedback,
-         features::kAutofillForUnclassifiedFieldsAvailable});
+        {features::kAutofillForUnclassifiedFieldsAvailable});
   }
 
  private:
@@ -510,8 +509,7 @@ class UnclassifiedFieldsTest : public BaseAutofillContextMenuManagerTest {
   UnclassifiedFieldsTest() {
     feature_.InitWithFeatures(
         {features::kAutofillForUnclassifiedFieldsAvailable},
-        {features::kAutofillFeedback,
-         features::kAutofillPredictionsForAutocompleteUnrecognized,
+        {features::kAutofillPredictionsForAutocompleteUnrecognized,
          features::kAutofillFallbackForAutocompleteUnrecognized});
   }
 

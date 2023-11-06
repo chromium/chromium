@@ -151,9 +151,7 @@ void AutofillContextMenuManager::AppendItems() {
   }
 
   // Includes the option of submitting feedback on Autofill.
-  if (personal_data_manager_->IsAutofillEnabled() &&
-      base::FeatureList::IsEnabled(features::kAutofillFeedback) &&
-      IsLikelyDogfoodClient()) {
+  if (personal_data_manager_->IsAutofillEnabled() && IsLikelyDogfoodClient()) {
     menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
         IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,

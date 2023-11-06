@@ -6,7 +6,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -125,11 +124,7 @@ FormData CreateFeedbackTestFormData() {
 
 class AutofillFeedbackDataUnitTest : public testing::Test {
  protected:
-  AutofillFeedbackDataUnitTest() {
-    feature_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillFeedback},
-        /*disabled_features=*/{});
-  }
+  AutofillFeedbackDataUnitTest() = default;
   void SetUp() override {
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
     browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
@@ -141,7 +136,6 @@ class AutofillFeedbackDataUnitTest : public testing::Test {
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
-  base::test::ScopedFeatureList feature_;
 };
 
 TEST_F(AutofillFeedbackDataUnitTest, CreatesCompleteReport) {

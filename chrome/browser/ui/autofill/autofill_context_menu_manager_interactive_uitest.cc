@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -66,11 +65,7 @@ class TestAutofillManager : public BrowserAutofillManager {
 class AutofillContextMenuManagerFeedbackUIBrowserTest
     : public InProcessBrowserTest {
  public:
-  AutofillContextMenuManagerFeedbackUIBrowserTest() {
-    feature_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillFeedback},
-        /*disabled_features=*/{});
-  }
+  AutofillContextMenuManagerFeedbackUIBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
@@ -103,7 +98,6 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
-  base::test::ScopedFeatureList feature_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
