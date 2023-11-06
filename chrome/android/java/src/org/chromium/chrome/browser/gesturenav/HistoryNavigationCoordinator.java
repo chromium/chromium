@@ -209,8 +209,13 @@ public class HistoryNavigationCoordinator
      * Initialize or reset {@link NavigationHandler} using the enabled state.
      */
     private void updateNavigationHandler() {
-        // Check against |mActivityLifecycleDisptacher| prevents the flow after the destruction.
-        if (!mEnabled || mActivityLifecycleDispatcher == null) return;
+        // Check against |mActivityLifecycleDisptacher|/|mTouchEventProvider| prevents the flow
+        // after the destruction.
+        if (!mEnabled
+                || mActivityLifecycleDispatcher == null
+                || mTouchEventProvider.get() == null) {
+            return;
+        }
 
         WebContents webContents = mTab != null ? mTab.getWebContents() : null;
 
