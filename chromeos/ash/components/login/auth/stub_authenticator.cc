@@ -9,6 +9,8 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 
@@ -220,6 +222,8 @@ UserContext StubAuthenticator::ExpectedUserContextWithTransformedKey() const {
   user_context.SetAuthFactorsConfiguration(
       AuthFactorsConfiguration{{password}, factors});
   user_context.SetAuthSessionIds("someauthsessionid", "broadcast");
+  user_context.SetSessionLifetime(base::Time::Now() +
+                                  cryptohome::kAuthsessionInitialLifetime);
   return user_context;
 }
 

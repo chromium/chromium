@@ -11,6 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,7 +88,8 @@ class CryptohomeRecoverySetupScreenTest : public OobeBaseTest {
     auto session_ids = cryptohome_.AddSession(user_context->GetAccountId(),
                                               /*authenticated=*/true);
     user_context->SetAuthSessionIds(session_ids.first, session_ids.second);
-
+    user_context->SetSessionLifetime(base::Time::Now() +
+                                     cryptohome::kAuthsessionInitialLifetime);
     if (ash::features::ShouldUseAuthSessionStorage()) {
       context->extra_factors_token =
           ash::AuthSessionStorage::Get()->Store(std::move(user_context));

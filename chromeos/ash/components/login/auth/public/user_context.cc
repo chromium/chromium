@@ -99,6 +99,8 @@ void UserContext::CryptohomeContext::SetAuthSessionIds(
 void UserContext::CryptohomeContext::ResetAuthSessionIds() {
   authsession_id_.clear();
   broadcast_id_.clear();
+  authorized_for_.Clear();
+  valid_until_ = base::Time();
 }
 
 base::Time UserContext::CryptohomeContext::GetSessionLifetime() const {

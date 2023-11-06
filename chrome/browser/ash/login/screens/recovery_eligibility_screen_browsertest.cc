@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -96,6 +97,8 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
     auto session_ids = cryptohome_.AddSession(user_context->GetAccountId(),
                                               /*authenticated=*/true);
     user_context->SetAuthSessionIds(session_ids.first, session_ids.second);
+    user_context->SetSessionLifetime(base::Time::Now() +
+                                     cryptohome::kAuthsessionInitialLifetime);
     if (ash::features::ShouldUseAuthSessionStorage()) {
       context->extra_factors_token =
           ash::AuthSessionStorage::Get()->Store(std::move(user_context));
