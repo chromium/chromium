@@ -157,6 +157,37 @@ std::vector<base::test::FeatureRefAndParams> HatsDelayedModeBPrimeFeatures() {
         {"tracking-protection-treatment-delayed-trigger-id", "trigger-1"}}}};
 }
 
+void ExpectSurveyGroupHistogramEmitted(
+    TrackingProtectionOnboarding::SentimentSurveyGroup group,
+    base::HistogramTester* histogram_tester) {
+  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics metric_group;
+  switch (group) {
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kNotSet:
+      return;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kControlImmediate:
+      metric_group = TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kControlImmediate;
+      break;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kControlDelayed:
+      metric_group = TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kControlDelayed;
+      break;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::
+        kTreatmentImmediate:
+      metric_group = TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kTreatmentImmediate;
+      break;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kTreatmentDelayed:
+      metric_group = TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kTreatmentDelayed;
+  }
+
+  histogram_tester->ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SentimentSurvey."
+      "HatsGroupRegisteredAndEligible",
+      metric_group, 1);
+}
+
 }  // namespace
 
 class TrackingProtectionBaseNoticeBrowserTest : public InProcessBrowserTest {
@@ -1112,6 +1143,7 @@ class TrackingProtectionHatsBrowserTest
  protected:
   TrackingProtectionHatsBrowserTest()
       : TrackingProtectionHatsBaseTest(EnabledFeaturesWithParams()) {}
+  base::HistogramTester histogram_tester_;
 
   std::vector<base::test::FeatureRefAndParams> EnabledFeaturesWithParams()
       override {
@@ -1195,6 +1227,8 @@ IN_PROC_BROWSER_TEST_P(TrackingProtectionHatsBrowserTest,
     // Navigation actually triggering the survey;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                              GURL(chrome::kChromeUINewTabURL)));
+
+    ExpectSurveyGroupHistogramEmitted(params.group, &histogram_tester_);
 
     testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
   }

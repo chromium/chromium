@@ -98814,6 +98814,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Payload is too large"/>
 </enum>
 
+<enum name="SentimentSurveyGroupMetrics">
+  <int value="0" label="kControlImmediate"/>
+  <int value="1" label="kTreatmentImmediate"/>
+  <int value="2" label="kControlDelayed"/>
+  <int value="3" label="kTreatmentDelayed"/>
+</enum>
+
 <enum name="SerialChooserOutcome">
   <int value="0" label="Chooser cancelled"/>
   <int value="1" label="Chooser cancelled, no options available"/>

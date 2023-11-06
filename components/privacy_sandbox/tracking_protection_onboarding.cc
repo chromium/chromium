@@ -105,6 +105,40 @@ void RecordActionMetrics(TrackingProtectionOnboarding::NoticeAction action) {
   }
 }
 
+void CreateHistogramSentimentSurveyRegistration(
+    TrackingProtectionOnboarding::SentimentSurveyGroupMetrics group) {
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered", group);
+}
+
+void EmitRegistrationHistogram(SentimentSurveyGroup group) {
+  switch (group) {
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kNotSet:
+      break;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kControlImmediate:
+      CreateHistogramSentimentSurveyRegistration(
+          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+              kControlImmediate);
+      break;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kControlDelayed:
+      CreateHistogramSentimentSurveyRegistration(
+          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+              kControlDelayed);
+      break;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::
+        kTreatmentImmediate:
+      CreateHistogramSentimentSurveyRegistration(
+          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+              kTreatmentImmediate);
+      break;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kTreatmentDelayed:
+      CreateHistogramSentimentSurveyRegistration(
+          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+              kTreatmentDelayed);
+      break;
+  }
+}
+
 void CreateHistogramOnboardingStartupState(
     TrackingProtectionOnboarding::OnboardingStartupState state) {
   base::UmaHistogramEnumeration(
@@ -261,6 +295,7 @@ void MaybeSetStartAndEndSurveyTime(PrefService* pref_service) {
                             anchor_time + kHatsImmediateStartTimeDelta);
       pref_service->SetTime(prefs::kTrackingProtectionSentimentSurveyEndTime,
                             anchor_time + kHatsImmediateEndTimeDelta);
+      EmitRegistrationHistogram(group);
       return;
     case SentimentSurveyGroup::kTreatmentDelayed:
     case SentimentSurveyGroup::kControlDelayed:
@@ -268,6 +303,7 @@ void MaybeSetStartAndEndSurveyTime(PrefService* pref_service) {
                             anchor_time + kHatsDelayedStartTimeDelta);
       pref_service->SetTime(prefs::kTrackingProtectionSentimentSurveyEndTime,
                             anchor_time + kHatsDelayedEndTimeDelta);
+      EmitRegistrationHistogram(group);
       return;
   }
 }
