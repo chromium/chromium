@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
+
 import {RESULTS_PER_PAGE} from './constants.js';
-import {ForeignSession, HistoryEntry, HistoryQuery} from './externs.js';
+import type {ForeignSession, HistoryEntry, HistoryQuery} from './externs.js';
 
 export type RemoveVisitsRequest = Array<{
   url: string,
