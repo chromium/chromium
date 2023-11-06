@@ -883,7 +883,7 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   combobox->SetBackgroundColorId(ui::kColorSidePanelComboboxBackground);
   if (features::IsChromeRefresh2023()) {
     combobox->SetForegroundColorId(kColorSidePanelEntryTitle);
-    combobox->SetForegroundIconColorId(kColorSidePanelEntryIcon);
+    combobox->SetForegroundIconColorId(kColorSidePanelComboboxEntryIcon);
     combobox->SetForegroundTextStyle(views::style::STYLE_HEADLINE_5);
   }
   combobox->SetEventHighlighting(true);

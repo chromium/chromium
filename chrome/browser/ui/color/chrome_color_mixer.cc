@@ -367,7 +367,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorShareThisTabSourceViewBorder] = {ui::kColorMidground};
   mixer[kColorSidePanelBackground] = {kColorToolbar};
   mixer[kColorSidePanelContentAreaSeparator] = {ui::kColorSeparator};
+  mixer[kColorSidePanelComboboxEntryIcon] = {ui::kColorIcon};
   mixer[kColorSidePanelEntryIcon] = {ui::kColorIcon};
+  mixer[kColorSidePanelEntryTitle] = {ui::kColorLabelForeground};
   mixer[kColorSidePanelEntryDropdownIcon] = {ui::kColorIcon};
   mixer[kColorSidePanelHeaderButtonIcon] = {ui::kColorIcon};
   mixer[kColorSidePanelHeaderButtonIconDisabled] = {ui::kColorIconDisabled};
