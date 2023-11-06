@@ -15,6 +15,7 @@ third_party/blink/tools/run_fuzzy_diff_analyzer.py \
 """
 
 import argparse
+import re
 
 from blinkpy.web_tests.fuzzy_diff_analyzer import analyzer
 from blinkpy.web_tests.fuzzy_diff_analyzer import queries
@@ -51,6 +52,12 @@ def ParseArgs() -> argparse.Namespace:
         '--test-path',
         help='The test path that contains the tests to do fuzzy diff analyzer.'
     )
+    parser.add_argument(
+        '--check-bugs-only',
+        action='store_true',
+        default=False,
+        help='Only checks the image diff tests result on existing bugs in the'
+        ' LUCI analysis database.')
     args = parser.parse_args()
     return args
 
@@ -60,20 +67,40 @@ def main() -> int:
 
     querier_instance = queries.FuzzyDiffAnalyzerQuerier(
         args.sample_period, args.project)
-    query_results = querier_instance.get_failed_image_comparison_ci_tests(
-        args.test_path)
-
     results_processor = results.ResultProcessor()
-    aggregated_results = results_processor.aggregate_results(query_results)
-
     matching_analyzer = analyzer.FuzzyMatchingAnalyzer(
         args.image_diff_num_threshold, args.distinct_diff_num_threshold)
-    for test_name, test_data in aggregated_results.items():
-        test_analysis_result = matching_analyzer.run_analyzer(test_data)
-        if test_analysis_result.is_analyzed:
-            print('')
-            print('test_name: %s' % test_name)
-            print('test_result: %s' % test_analysis_result.analysis_result)
-            print('')
+
+    # Find all bug ids or save empty id if it does not check all bugs.
+    if args.check_bugs_only:
+        bugs_info = querier_instance.get_web_test_flaky_bugs()
+        bugs = {}
+        for bug in bugs_info:
+            test_path_list = [
+                re.sub('ninja://:blink_w(eb|pt)_tests/', '', test_id)
+                for test_id in bug['test_ids']
+            ]
+            bugs[bug['bug_id']] = test_path_list
+    else:
+        bugs = {'': [args.test_path]}
+
+    for bug_id, test_list in bugs.items():
+        for test_path in test_list:
+            query_results = (querier_instance.
+                             get_failed_image_comparison_ci_tests(test_path))
+            aggregated_results = results_processor.aggregate_results(
+                query_results)
+
+            for test_name, test_data in aggregated_results.items():
+                test_analysis_result = matching_analyzer.run_analyzer(
+                    test_data)
+                if test_analysis_result.is_analyzed:
+                    print('')
+                    if bug_id:
+                        print('bug number: %s' % bug_id)
+                    print('test_name: %s' % test_name)
+                    print('test_result: %s' %
+                          test_analysis_result.analysis_result)
+                    print('')
 
     return 0
