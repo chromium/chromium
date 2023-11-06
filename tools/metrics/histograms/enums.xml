@@ -67,189 +67,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="17" label="kMissingMoreAbout">MoreAbout URL is missing.</int>
 </enum>
 
-<enum name="AbslErrorCode">
-  <int value="0" label="Ok"/>
-  <int value="1" label="Cancelled"/>
-  <int value="2" label="Unknown"/>
-  <int value="3" label="InvalidArgument"/>
-  <int value="4" label="DeadlineExceeded"/>
-  <int value="5" label="NotFound"/>
-  <int value="6" label="AlreadyExists"/>
-  <int value="7" label="PermissionDenied"/>
-  <int value="8" label="ResourceExhausted"/>
-  <int value="9" label="FailedPrecondition"/>
-  <int value="10" label="Aborted"/>
-  <int value="11" label="OutOfRange"/>
-  <int value="12" label="Unimplemented"/>
-  <int value="13" label="Internal"/>
-  <int value="14" label="Unavailable"/>
-  <int value="15" label="DataLoss"/>
-  <int value="16" label="Unauthenticated"/>
-  <int value="17" label="Reserved (17)"/>
-  <int value="18" label="Reserved (18)"/>
-  <int value="19" label="Reserved (19)"/>
-  <int value="20" label="Reserved (20)"/>
-</enum>
-
-<enum name="AcceleratorAction">
-  <int value="0" label="BrightnessDown"/>
-  <int value="1" label="BrightnessUp"/>
-  <int value="2" label="CycleBackwardMru"/>
-  <int value="3" label="CycleForwardMru"/>
-  <int value="4" label="CycleSameAppWindowsBackward"/>
-  <int value="5" label="CycleSameAppWindowsForward"/>
-  <int value="6" label="DesksActivateDeskLeft"/>
-  <int value="7" label="DesksActivateDeskRight"/>
-  <int value="8" label="DesksMoveActiveItemLeft"/>
-  <int value="9" label="DesksMoveActiveItemRight"/>
-  <int value="10" label="DesksNewDesk"/>
-  <int value="11" label="DesksRemoveCurrentDesk"/>
-  <int value="12" label="DesksActivate0"/>
-  <int value="13" label="DesksActivate1"/>
-  <int value="14" label="DesksActivate2"/>
-  <int value="15" label="DesksActivate3"/>
-  <int value="16" label="DesksActivate4"/>
-  <int value="17" label="DesksActivate5"/>
-  <int value="18" label="DesksActivate6"/>
-  <int value="19" label="DesksActivate7"/>
-  <int value="20" label="DesksToggleAssignToAllDesks"/>
-  <int value="21" label="DisableCapsLock"/>
-  <int value="22" label="EnableOrToggleDictation"/>
-  <int value="23" label="Exit"/>
-  <int value="24" label="FocusCameraPreview"/>
-  <int value="25" label="FocusNextPane"/>
-  <int value="26" label="FocusPreviousPane"/>
-  <int value="27" label="FocusShelf"/>
-  <int value="28" label="FocusPip"/>
-  <int value="29" label="KeyboardBacklightToggle"/>
-  <int value="30" label="KeyboardBrightnessDown"/>
-  <int value="31" label="KeyboardBrightnessUp"/>
-  <int value="32" label="LaunchApp0"/>
-  <int value="33" label="LaunchApp1"/>
-  <int value="34" label="LaunchApp2"/>
-  <int value="35" label="LaunchApp3"/>
-  <int value="36" label="LaunchApp4"/>
-  <int value="37" label="LaunchApp5"/>
-  <int value="38" label="LaunchApp6"/>
-  <int value="39" label="LaunchApp7"/>
-  <int value="40" label="LaunchLastApp"/>
-  <int value="41" label="LockPressed"/>
-  <int value="42" label="LockReleased"/>
-  <int value="43" label="LockScreen"/>
-  <int value="44" label="MagnifierZoomIn"/>
-  <int value="45" label="MagnifierZoomOut"/>
-  <int value="46" label="MediaFastForward"/>
-  <int value="47" label="MediaNextTrack"/>
-  <int value="48" label="MediaPause"/>
-  <int value="49" label="MediaPlay"/>
-  <int value="50" label="MediaPlayPause"/>
-  <int value="51" label="MediaPrevTrack"/>
-  <int value="52" label="MediaRewind"/>
-  <int value="53" label="MediaStop"/>
-  <int value="54" label="MicrophoneMuteToggle"/>
-  <int value="55" label="MoveActiveWindowBetweenDisplays"/>
-  <int value="56" label="NewIncognitoWindow"/>
-  <int value="57" label="NewTab"/>
-  <int value="58" label="NewWindow"/>
-  <int value="59" label="OpenCalculator"/>
-  <int value="60" label="OpenCrosh"/>
-  <int value="61" label="OpenDiagnostics"/>
-  <int value="62" label="OpenFeedbackPage"/>
-  <int value="63" label="OpenFileManager"/>
-  <int value="64" label="OpenGetHelp"/>
-  <int value="65" label="PasteClipboardHistoryPlainText"/>
-  <int value="66" label="PowerPressed"/>
-  <int value="67" label="PowerReleased"/>
-  <int value="68" label="PrintUiHierarchies"/>
-  <int value="69" label="PrivacyScreenToggle"/>
-  <int value="70" label="RestoreTab"/>
-  <int value="71" label="RotateScreen"/>
-  <int value="72" label="RotateWindow"/>
-  <int value="73" label="ScaleUiDown"/>
-  <int value="74" label="ScaleUiReset"/>
-  <int value="75" label="ScaleUiUp"/>
-  <int value="76" label="ShowEmojiPicker"/>
-  <int value="77" label="ToggleImeMenuBubble"/>
-  <int value="78" label="ShowShortcutViewer"/>
-  <int value="79" label="ShowTaskManager"/>
-  <int value="80" label="StartAssistant"/>
-  <int value="81" label="StopScreenRecording"/>
-  <int value="82" label="Suspend"/>
-  <int value="83" label="SwapPrimaryDisplay"/>
-  <int value="84" label="SwitchIme"/>
-  <int value="85" label="SwitchToLastUsedIme"/>
-  <int value="86" label="SwitchToNextIme"/>
-  <int value="87" label="SwitchToNextUser"/>
-  <int value="88" label="SwitchToPreviousUser"/>
-  <int value="89" label="TakePartialScreenshot"/>
-  <int value="90" label="TakeScreenshot"/>
-  <int value="91" label="TakeWindowScreenshot"/>
-  <int value="92" label="ToggleAppList"/>
-  <int value="93" label="ToggleCalendar"/>
-  <int value="94" label="ToggleCapsLock"/>
-  <int value="95" label="ToggleClipboardHistory"/>
-  <int value="96" label="ToggleDockedMagnifier"/>
-  <int value="97" label="ToggleFloating"/>
-  <int value="98" label="ToggleFullscreen"/>
-  <int value="99" label="ToggleFullscreenMagnifier"/>
-  <int value="100" label="ToggleGameDashboard"/>
-  <int value="101" label="ToggleHighContrast"/>
-  <int value="102" label="ToggleMaximized"/>
-  <int value="103" label="ToggleMessageCenterBubble"/>
-  <int value="104" label="ToggleMirrorMode"/>
-  <int value="105" label="ToggleMultitaskMenu"/>
-  <int value="106" label="ToggleOverview"/>
-  <int value="107" label="ToggleProjectorMarker"/>
-  <int value="108" label="ToggleResizeLockMenu"/>
-  <int value="109" label="ToggleSnapGroupWindowsGroupAndUngroup"/>
-  <int value="110" label="ToggleSnapGroupWindowsMinimizeAndRestore"/>
-  <int value="111" label="ToggleSpokenFeedback"/>
-  <int value="112" label="ToggleStylusTools"/>
-  <int value="113" label="ToggleSystemTrayBubble"/>
-  <int value="114" label="ToggleWifi"/>
-  <int value="115" label="TouchHudClear"/>
-  <int value="116" label="TouchHudModeChange"/>
-  <int value="117" label="TouchFingerprintSensor111"/>
-  <int value="118" label="TouchFingerprintSensor2"/>
-  <int value="119" label="TouchFingerprintSensor3"/>
-  <int value="120" label="Unpin"/>
-  <int value="121" label="VolumeDown"/>
-  <int value="122" label="VolumeMute"/>
-  <int value="123" label="VolumeUp"/>
-  <int value="124" label="WindowCycleSnapLeft"/>
-  <int value="125" label="WindowCycleSnapRight"/>
-  <int value="126" label="WindowMinimize"/>
-  <int value="127" label="MinimizeTopWindowOnBack"/>
-  <int value="128" label="VolumeMuteToggle"/>
-  <int value="129" label="DebugClearUseKMeansPref"/>
-  <int value="130" label="DebugKeyboardBacklightToggle"/>
-  <int value="131" label="DebugMicrophoneMuteToggle"/>
-  <int value="132" label="DebugPrintLayerHierarchy"/>
-  <int value="133" label="DebugPrintViewHierarchy"/>
-  <int value="134" label="DebugPrintWindowHierarchy"/>
-  <int value="135" label="DebugShowInformedRestore"/>
-  <int value="136" label="DebugShowToast"/>
-  <int value="137" label="DebugShowSystemNudge"/>
-  <int value="138" label="DebugSystemUiStyleViewer"/>
-  <int value="139" label="DebugToggleDarkMode"/>
-  <int value="140" label="DebugToggleDynamicColor"/>
-  <int value="141" label="DebugTogglePowerButtonMenu"/>
-  <int value="142" label="DebugToggleShowDebugBorders"/>
-  <int value="143" label="DebugToggleShowFpsCounter"/>
-  <int value="144" label="DebugToggleShowPaintRects"/>
-  <int value="145" label="DebugToggleTouchPad"/>
-  <int value="146" label="DebugToggleTouchScreen"/>
-  <int value="147" label="DebugToggleTabletMode"/>
-  <int value="148" label="DebugToggleVideoConferenceCameraTrayIcon"/>
-  <int value="149" label="DebugToggleWallpaperMode"/>
-  <int value="150" label="DebugTriggerCrash"/>
-  <int value="151" label="DebugToggleHudDisplay"/>
-  <int value="152" label="DebugToggleVirtualTrackpad"/>
-  <int value="153" label="DevAddRemoveDisplay"/>
-  <int value="154" label="DevToggleAppList"/>
-  <int value="155" label="DevToggleUnifiedDesktop"/>
-</enum>
-
 <enum name="AcceptChEntries">
   <int value="0" label="no entries"/>
   <int value="1" label="only valid entries"/>
@@ -2928,17 +2745,6 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Snapped"/>
 </enum>
 
-<enum name="ArcIntentHandlerDestinationPlatform">
-  <summary>
-    Defines ARC intent handler platforms to continue the navigation.
-  </summary>
-  <int value="0" label="ARC"/>
-  <int value="1" label="Chrome"/>
-  <int value="2" label="Progressive web app"/>
-  <int value="3" label="External device"/>
-  <int value="4" label="Mac OS app"/>
-</enum>
-
 <!-- These values must be in sync with ProvisionConstants in CloudDPC code -->
 
 <enum name="ArcTosScreenUserActions">
@@ -3188,60 +2994,11 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="FINISHED">AsyncTask is done.</int>
 </enum>
 
-<enum name="AttachmentForm">
-  <int value="0" label="Mouse"/>
-  <int value="1" label="Pointing Stick"/>
-  <int value="2" label="Touchpad"/>
-  <int value="3" label="Touchscreen"/>
-  <int value="4" label="Stylus"/>
-  <int value="5" label="Gamepad"/>
-  <int value="6" label="Keyboard"/>
-</enum>
-
-<enum name="AttachmentType">
-  <int value="0" label="Internal"/>
-  <int value="1" label="USB"/>
-  <int value="2" label="Bluetooth"/>
-  <int value="3" label="Unknown"/>
-</enum>
-
 <enum name="AttemptingMultipleOverlays">
   <int value="0" label="Yes"/>
   <int value="1" label="No, feature is disabled"/>
   <int value="2" label="No, candidate requires an overlay"/>
   <int value="3" label="No, candidate uses an unsupported strategy"/>
-</enum>
-
-<enum name="AttestationFlowStatus">
-<!--
-  Uninteresting/unused values are not labeled.
-  See "ChromeOS.Attestation.AttestationFlowStatus" histogram
--->
-
-  <int value="10" label="Failure w/o proxy"/>
-  <int value="11" label="Fallback w/o proxy"/>
-  <int value="12" label="Success w/o proxy"/>
-  <int value="34" label="Failure w/ default flow being skipped w/ proxy"/>
-  <int value="35" label="Success w/ default flow being skipped w/ proxy"/>
-</enum>
-
-<enum name="AttestationStatus">
-<!--
-  The alias of `enum AttestationStatus` defined in
-  `system_api/dbus/attestation/interface.proto` in
-  `chromiumos/platform2` repository.
--->
-
-  <int value="0" label="STATUS_SUCCESS"/>
-  <int value="1" label="STATUS_UNEXPECTED_DEVICE_ERROR"/>
-  <int value="2" label="STATUS_NOT_AVAILABLE"/>
-  <int value="3" label="STATUS_NOT_READY"/>
-  <int value="4" label="STATUS_NOT_ALLOWED"/>
-  <int value="5" label="STATUS_INVALID_PARAMETER"/>
-  <int value="6" label="STATUS_REQUEST_DENIED_BY_CA"/>
-  <int value="7" label="STATUS_CA_NOT_AVAILABLE"/>
-  <int value="8" label="STATUS_NOT_SUPPORTED"/>
-  <int value="9" label="STATUS_DBUS_ERROR"/>
 </enum>
 
 <enum name="AttributionDestinationRateLimitResult">
@@ -6869,17 +6626,6 @@ Called by update_autofill_enums.py.-->
   <int value="273" label="ClearLocalCvcs: Failure"/>
 </enum>
 
-<enum name="AutoFramingError">
-  <int value="0" label="No error"/>
-  <int value="1" label="Initialization error"/>
-  <int value="2" label="Configuration error"/>
-  <int value="3" label="Processing capture request error"/>
-  <int value="4" label="Processing capture result error"/>
-  <int value="5" label="Auto Framing pipeline initialization error"/>
-  <int value="6" label="Auto Framing pipeline input error"/>
-  <int value="7" label="Auto Framing pipeline output error"/>
-</enum>
-
 <enum name="AutomaticBeaconOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="No transient user activation"/>
@@ -9495,17 +9241,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Channel rollback required"/>
 </enum>
 
-<enum name="CableSpeedMetric">
-  <int value="0" label="Other"/>
-  <int value="1" label="USB 2.0"/>
-  <int value="2" label="USB 3.2 - Gen1"/>
-  <int value="3" label="USB 3.2 / USB4 - Gen2"/>
-  <int value="4" label="USB 3.1 - Gen1"/>
-  <int value="5" label="USB 3.1 - Gen1,Gen2"/>
-  <int value="6" label="USB4 - Gen3"/>
-  <int value="7" label="Thunderbolt Only - 10G,20G"/>
-</enum>
-
 <enum name="CachedMetadataHandlerState">
   <int value="0" label="Present"/>
   <int value="1" label="DataType mismatch"/>
@@ -9653,26 +9388,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="By Gesture"/>
   <int value="2" label="By Fling"/>
   <int value="3" label="By Stylus"/>
-</enum>
-
-<enum name="CameraEffectError">
-  <int value="0" label="kNoError"/>
-  <int value="1" label="kGPUInitializationError"/>
-  <int value="2" label="kBufferAllocationError"/>
-  <int value="3" label="kReceivedFailedBuffer"/>
-  <int value="4" label="kSyncWaitTimeout"/>
-  <int value="5" label="kBufferRegistrationFailed"/>
-  <int value="6" label="kBufferUnregistrationFailed"/>
-  <int value="7" label="kGPUImageInitializationFailed"/>
-  <int value="8" label="kYUVConversionFailed"/>
-  <int value="9" label="kPipelineFailed"/>
-</enum>
-
-<enum name="CameraEffectType">
-  <int value="0" label="kNone"/>
-  <int value="1" label="kBlur"/>
-  <int value="2" label="kRelight"/>
-  <int value="3" label="kBlurAndRelight"/>
 </enum>
 
 <enum name="CameraOpenEntryPoint">
@@ -10682,36 +10397,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="Dropped or ignored"/>
 </enum>
 
-<enum name="CertProvisioningEvent">
-  <int value="0" label="kRegisteredToInvalidationTopic"/>
-  <int value="1" label="kInvalidationReceived"/>
-  <int value="2" label="kWorkerRetryWithoutInvalidation"/>
-  <int value="3" label="kWorkerRetrySucceededWithoutInvalidation"/>
-  <int value="4" label="kProfileRetriedManually"/>
-  <int value="5" label="kWorkerCreated"/>
-  <int value="6" label="kWorkerDeserialized"/>
-  <int value="7" label="kWorkerDeserializationFailed"/>
-</enum>
-
-<enum name="CertProvisioningWorkerState">
-  <int value="0" label="kInitState"/>
-  <int value="1" label="kKeypairGenerated"/>
-  <int value="2" label="kStartCsrResponseReceived"/>
-  <int value="3" label="kVaChallengeFinished"/>
-  <int value="4" label="kKeyRegistered"/>
-  <int value="5" label="kKeypairMarked"/>
-  <int value="6" label="kSignCsrFinished"/>
-  <int value="7" label="kFinishCsrResponseReceived"/>
-  <int value="8" label="kSucceeded"/>
-  <int value="9" label="kInconsistentDataError"/>
-  <int value="10" label="kFailed"/>
-  <int value="11" label="kCanceled"/>
-  <int value="12" label="kReadyForNextOperation"/>
-  <int value="13" label="kAuthorizeInstructionReceived"/>
-  <int value="14" label="kProofOfPossessionInstructionReceived"/>
-  <int value="15" label="kImportCertificateInstructionReceived"/>
-</enum>
-
 <enum name="ChannelLayout">
   <int value="0" label="CHANNEL_LAYOUT_NONE"/>
   <int value="1" label="CHANNEL_LAYOUT_UNSUPPORTED"/>
@@ -11012,44 +10697,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="4" label="kEFI"/>
 </enum>
 
-<enum name="ChromeOSCameraClientType">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Testing"/>
-  <int value="2" label="Chrome"/>
-  <int value="3" label="Android"/>
-  <int value="4" label="PluginVM"/>
-  <int value="5" label="AshChrome"/>
-  <int value="6" label="LacrosChrome"/>
-</enum>
-
-<enum name="ChromeOSCameraErrorType">
-  <int value="1" label="Device"/>
-  <int value="2" label="Request"/>
-  <int value="3" label="Result"/>
-  <int value="4" label="Buffer"/>
-</enum>
-
-<enum name="ChromeOSCameraFaceAutoExposureFunctionStatus">
-  <int value="0" label="Unsupported"/>
-  <int value="1" label="NotEnabled"/>
-  <int value="2" label="Enabled"/>
-  <int value="3" label="ForceDisabled"/>
-</enum>
-
-<enum name="ChromeOSCameraFacing">
-  <int value="0" label="Back"/>
-  <int value="1" label="Front"/>
-  <int value="2" label="External"/>
-</enum>
-
-<enum name="ChromeOSChannel">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Canary"/>
-  <int value="2" label="Dev"/>
-  <int value="3" label="Beta"/>
-  <int value="4" label="Stable"/>
-</enum>
-
 <enum name="ChromeOSEfiManagementEvent">
   <int value="0" label="RequiredEntryManagementFailed"/>
   <int value="1" label="OptionalEntryManagementFailed"/>
@@ -11060,211 +10707,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="0" label="Enabled"/>
   <int value="1" label="Blocked by time limit expired"/>
   <int value="2" label="Blocked by invalid sync token"/>
-</enum>
-
-<enum name="ChromeOSIioServiceSensorUsage">
-  <int value="0" label="ACCEL_base"/>
-  <int value="1" label="ACCEL_lid"/>
-  <int value="2" label="ACCEL_camera"/>
-  <int value="3" label="ACCEL_others"/>
-  <int value="4" label="ANGLVEL_base"/>
-  <int value="5" label="ANGLVEL_lid"/>
-  <int value="6" label="ANGLVEL_camera"/>
-  <int value="7" label="ANGLVEL_others"/>
-  <int value="8" label="LIGHT_base"/>
-  <int value="9" label="LIGHT_lid"/>
-  <int value="10" label="LIGHT_camera"/>
-  <int value="11" label="LIGHT_others"/>
-  <int value="12" label="COUNT_base"/>
-  <int value="13" label="COUNT_lid"/>
-  <int value="14" label="COUNT_camera"/>
-  <int value="15" label="COUNT_others"/>
-  <int value="16" label="MAGN_base"/>
-  <int value="17" label="MAGN_lid"/>
-  <int value="18" label="MAGN_camera"/>
-  <int value="19" label="MAGN_others"/>
-  <int value="20" label="ANGL_base"/>
-  <int value="21" label="ANGL_lid"/>
-  <int value="22" label="ANGL_camera"/>
-  <int value="23" label="ANGL_others"/>
-  <int value="24" label="BARO_base"/>
-  <int value="25" label="BARO_lid"/>
-  <int value="26" label="BARO_camera"/>
-  <int value="27" label="BARO_others"/>
-  <int value="28" label="ACCEL_UNCALIBRATED_base"/>
-  <int value="29" label="ACCEL_UNCALIBRATED_lid"/>
-  <int value="30" label="ACCEL_UNCALIBRATED_camera"/>
-  <int value="31" label="ACCEL_UNCALIBRATED_others"/>
-  <int value="32" label="ANGLVEL_UNCALIBRATED_base"/>
-  <int value="33" label="ANGLVEL_UNCALIBRATED_lid"/>
-  <int value="34" label="ANGLVEL_UNCALIBRATED_camera"/>
-  <int value="35" label="ANGLVEL_UNCALIBRATED_others"/>
-  <int value="36" label="MAGN_UNCALIBRATED_base"/>
-  <int value="37" label="MAGN_UNCALIBRATED_lid"/>
-  <int value="38" label="MAGN_UNCALIBRATED_camera"/>
-  <int value="39" label="MAGN_UNCALIBRATED_others"/>
-  <int value="40" label="GRAVITY_base"/>
-  <int value="41" label="GRAVITY_lid"/>
-  <int value="42" label="GRAVITY_camera"/>
-  <int value="43" label="GRAVITY_others"/>
-  <int value="44" label="PROXIMITY_base"/>
-  <int value="45" label="PROXIMITY_lid"/>
-  <int value="46" label="PROXIMITY_camera"/>
-  <int value="47" label="PROXIMITY_others"/>
-</enum>
-
-<enum name="ChromeOSJankinessTriggerStatus">
-  <int value="0" label="CollectionAttempted"/>
-  <int value="1" label="Throttled"/>
-</enum>
-
-<enum name="ChromeOSMachineIdReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Network"/>
-  <int value="2" label="Periodic"/>
-</enum>
-
-<enum name="ChromeOSMessageCenterScrollActionReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="By mouse wheel"/>
-  <int value="2" label="By touch"/>
-  <int value="3" label="By arrow key"/>
-</enum>
-
-<enum name="ChromeOSParseCPUFrequencyStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Zero logical CPUs"/>
-  <int value="2" label="Some CPUs have zero frequencies"/>
-  <int value="3" label="All CPUs have zero frequencies"/>
-  <int value="4" label="Success after retry"/>
-</enum>
-
-<enum name="ChromeOSParseLacrosPath">
-  <int value="0" label="Rootfs"/>
-  <int value="1" label="Stateful"/>
-  <int value="2" label="Unrecognized"/>
-</enum>
-
-<enum name="ChromeOSParsePSICPUStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Fail to read file /proc/pressure/cpu"/>
-  <int value="2" label="Unexpected data format in PSI CPU file"/>
-  <int value="3" label="Fail to parse PSI CPU values"/>
-</enum>
-
-<enum name="ChromeOSParsePSIMemStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Fail to read file /proc/pressure/memory"/>
-  <int value="2" label="Unexpected data format in PSI Memory file"/>
-  <int value="3" label="Unexpected numeric format in PSI Memory file"/>
-  <int value="4" label="Fail to parse PSI Memory values"/>
-</enum>
-
-<enum name="ChromeOSPlatformVerificationResult2">
-  <summary>
-    Possible results of a platform verification attempt. See
-    chrome/browser/ash/attestation/platform_verification.h.
-  </summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="Internal Error"/>
-  <int value="2" label="Platform Not Verified"/>
-  <int value="3" label="Rejected by Policy"/>
-  <int value="4" label="Timeout"/>
-</enum>
-
-<enum name="ChromeOSProcessTypeCollectionStatus">
-  <int value="0" label="PS command errored during process types collection">
-    Process types couldn't be collected as PS command errored.
-  </int>
-  <int value="1" label="PS command errored during thread types collection">
-    Thread types couldn't be collected as PS command errored.
-  </int>
-  <int value="2" label="Empty process type output">
-    Process type parsing returned empty output.
-  </int>
-  <int value="3" label="Empty thread type output">
-    Thread type parsing returned empty output.
-  </int>
-  <int value="4" label="Truncated process type output">
-    Process types were partially collected.
-  </int>
-  <int value="5" label="Truncated thread type output">
-    Thread types were partially collected.
-  </int>
-  <int value="6" label="Complete process type output">
-    Process types were completely collected.
-  </int>
-  <int value="7" label="Complete thread type output">
-    Thread types were completely collected.
-  </int>
-</enum>
-
-<enum name="ChromeOSProfileCollectionStatus">
-  <int value="0" label="Success">Profile was collected successfully.</int>
-  <int value="1" label="Collection timer triggered but buffer is full">
-    Profile timer triggered but the collector's buffer is full.
-  </int>
-  <int value="2" label="Collection timer triggered but incognito window active">
-    Profile timer triggered but an incognito window was open.
-  </int>
-  <int value="3" label="Incognito window launched during collection">
-    Profile was collected but an incognito window was opened during the
-    collection.
-  </int>
-  <int value="4" label="Protobuf cannot be deserialized">
-    Profile data was collected and sent to Chrome as a serialized protobuf but
-    it could not be deserialized by Chrome.
-  </int>
-  <int value="5" label="Illegal data returned by collector">
-    The profile data sent back to Chrome is invalid.
-  </int>
-  <int value="6" label="Already collecting">
-    Another profile collection was already active.
-  </int>
-  <int value="7" label="Failed to start collection">
-    Collection could not start due to failing prerequisites.
-  </int>
-  <int value="8" label="Data collection failure">
-    Failure while collecting data.
-  </int>
-  <int value="9" label="Session has zero samples">
-    The profile session has zero samples.
-  </int>
-</enum>
-
-<enum name="ChromeOSProfileRecordStatus">
-  <int value="0" label="Metrics recording is disabled">
-    Profile data was not recorded since metric recording is disabled.
-  </int>
-  <int value="1" label="Profile manager is unset">
-    Profile data was redacted since the profile manager used to obtain user
-    profile(s) is unset.
-  </int>
-  <int value="2" label="No loaded user profile is found">
-    Profile data was redacted since there is no user profile initialized. When
-    looking at user profile(s), the Default profile in Chrome OS is skipped.
-  </int>
-  <int value="3" label="App sync is disabled">
-    Profile data was redacted since App Sync is disabled.
-  </int>
-  <int value="4" label="App sync is enabled">
-    Profile data was recorded in full since App Sync is enabled.
-  </int>
-  <int value="5" label="Sync service is unavailable">
-    Profile data was redacted since sync service is unavailable.
-  </int>
-  <int value="6" label="Chrome sync feature is disabled">
-    Profile data was redacted since Chrome sync feature is disabled.
-  </int>
-  <int value="7" label="Chrome App Sync is disabled">
-    Profile data was redacted since Chrome App Sync is disabled.
-  </int>
-  <int value="8" label="Chrome OS sync feature is disabled">
-    Profile data was redacted since Chrome OS sync feature is disabled.
-  </int>
-  <int value="9" label="Chrome OS App Sync is disabled">
-    Profile data was redacted since Chrome OS App Sync is disabled.
-  </int>
 </enum>
 
 <enum name="ChromeOSRecoveryReason">
@@ -11378,116 +10820,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="8" label="kDiskWriteError"/>
   <int value="9" label="kRootPartitionUnexpectedSize"/>
   <int value="10" label="kMigrationNotAllowed"/>
-</enum>
-
-<enum name="ChromeOSSamlApiUsed">
-  <summary>
-    ChromeOS login flow by Identity Provider. Can be either GAIA-based, SAML
-    with API or pure SAML with password scraping.
-  </summary>
-  <int value="0" label="Default GAIA authentication"/>
-  <int value="1" label="SAML Chrome Credentials Passing API used"/>
-  <int value="2" label="SAML Chrome Credentials Passing API not used"/>
-</enum>
-
-<enum name="ChromeOSSamlProvider">
-  <summary>
-    Different SAML providers that uses SAML login flow in ChromeOS.
-  </summary>
-  <int value="0" label="unknown"/>
-  <int value="1" label="failure"/>
-  <int value="2" label="adfs"/>
-  <int value="3" label="azure"/>
-  <int value="4" label="okta"/>
-  <int value="5" label="ping"/>
-  <int value="6" label="onelogin"/>
-  <int value="7" label="microsoft"/>
-  <int value="8" label="clever"/>
-  <int value="9" label="cloudgate"/>
-  <int value="10" label="windows"/>
-  <int value="11" label="salesforce"/>
-</enum>
-
-<enum name="ChromeOSSharesheetAction">
-  <summary>Defines Chrome OS sharesheet actions.</summary>
-  <int value="0" label="Cancelled by user clicking outside bubble"/>
-  <int value="1" label="Launch ARC app"/>
-  <int value="2" label="Launch Nearby Share action"/>
-  <int value="3" label="Cancelled by user pressing Esc key"/>
-  <int value="4" label="Launch Web app"/>
-  <int value="5" label="Launch Drive share action"/>
-  <int value="6" label="Launch Copy share action"/>
-</enum>
-
-<enum name="ChromeOSSharesheetFormFactor">
-  <summary>Different form factors.</summary>
-  <int value="0" label="Tablet form factor"/>
-  <int value="1" label="Clamshell form factor"/>
-</enum>
-
-<enum name="ChromeOSSharesheetLaunchSource">
-  <summary>The source from which sharesheet is invoked.</summary>
-  <int value="0" label="Invoked from an unknown source"/>
-  <int value="1" label="Invoked from the share button in the Files app"/>
-  <int value="2" label="Invoked from the context menu in the Files app"/>
-  <int value="3" label="Invoked through WebShare"/>
-  <int value="4" label="Invoked from ARC++ to directly trigger Nearby Share"/>
-  <int value="5" label="Invoked through the omnibox entry point"/>
-</enum>
-
-<enum name="ChromeOSSharesheetMimeType">
-  <summary>
-    The mime types of the content the user is trying to share from the
-    sharesheet.
-  </summary>
-  <int value="0" label="Unknown mime type"/>
-  <int value="1" label="Text"/>
-  <int value="2" label="Url"/>
-  <int value="3" label="Text file"/>
-  <int value="4" label="Image file"/>
-  <int value="5" label="Video file"/>
-  <int value="6" label="Audio file"/>
-  <int value="7" label="Pdf file"/>
-</enum>
-
-<enum name="ChromeOSUsbDeviceClass">
-  <summary>https://www.usb.org/defined-class-codes</summary>
-  <int value="0" label="Application Specific"/>
-  <int value="1" label="Audio"/>
-  <int value="2" label="Audio/Video"/>
-  <int value="3" label="Card"/>
-  <int value="4" label="Communication"/>
-  <int value="5" label="Healthcare"/>
-  <int value="6" label="HID"/>
-  <int value="7" label="Hub"/>
-  <int value="8" label="Image"/>
-  <int value="9" label="Miscellaneous"/>
-  <int value="10" label="Other"/>
-  <int value="11" label="Physical"/>
-  <int value="12" label="Printer"/>
-  <int value="13" label="Security"/>
-  <int value="14" label="Storage"/>
-  <int value="15" label="Vendor Specific"/>
-  <int value="16" label="Video"/>
-  <int value="17" label="Wireless"/>
-</enum>
-
-<enum name="ChromeOSUsbDeviceSpeed">
-  <int value="0" label="Other"/>
-  <int value="1" label="1.5 Mbps (USB 1.1)"/>
-  <int value="2" label="12 Mbps (USB 1.1)"/>
-  <int value="3" label="480 Mbps (USB 2.0)"/>
-  <int value="4"
-      label="480 Mbps fallback (USB 2.0 fallen back from SuperSpeed)"/>
-  <int value="5" label="5000 Mbps (USB 3.2 Gen 1)"/>
-  <int value="6" label="10000 Mbps (USB 3.2 Gen 2)"/>
-  <int value="7" label="20000 Mbps (USB 3.2 Gen 2x2)"/>
-</enum>
-
-<enum name="ChromeOSUsbEventTiming">
-  <int value="0" label="kLoggedOut"/>
-  <int value="1" label="kLoggedIn"/>
-  <int value="2" label="kLocked"/>
 </enum>
 
 <enum name="ChromeOSUserImageId2">
@@ -12220,13 +11552,6 @@ Called by update_net_error_codes.py.-->
   <int value="503" label="503: Service Unavailable"/>
   <int value="504" label="504: Gateway Timeout"/>
   <int value="505" label="505: HTTP Version Not Supported"/>
-</enum>
-
-<enum name="ComboDeviceClassification">
-  <int value="0" label="KnownKeyboardImposter"/>
-  <int value="1" label="KnownMouseImposter"/>
-  <int value="2" label="KnownComboDevice"/>
-  <int value="3" label="UnknownClassification"/>
 </enum>
 
 <enum name="CommerceHeuristicsDataSource">
@@ -15333,15 +14658,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="250477278" label="(Delphi exception)"/>
 </enum>
 
-<enum name="CrashSeverityProductType">
-  <int value="0" label="Unspecified"/>
-  <int value="1" label="UI"/>
-  <int value="2" label="Platform"/>
-  <int value="3" label="Arc"/>
-  <int value="4" label="Lacros"/>
-  <int value="5" label="Unknown Value"/>
-</enum>
-
 <enum name="CrashVisibility">
   <summary>
     This enum describes the timing of a renderer crash in relation to whether a
@@ -15537,13 +14853,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="0" label="NoData"/>
   <int value="1" label="NotANumber"/>
   <int value="2" label="ExpectationNotMet"/>
-</enum>
-
-<enum name="CrosDiagnosticsRoutineResult">
-  <int value="0" label="TestPassed"/>
-  <int value="1" label="TestFailed"/>
-  <int value="2" label="ExecutionError"/>
-  <int value="3" label="UnableToRun"/>
 </enum>
 
 <enum name="CrosDictationMacroName">
@@ -15996,42 +15305,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="34" label="Crostini.OomEvent"/>
 </enum>
 
-<enum name="CrosHealthdDiagnosticResult">
-  <int value="0" label="Passed"/>
-  <int value="1" label="Failed"/>
-  <int value="2" label="Error"/>
-  <int value="3" label="Cancelled"/>
-  <int value="4" label="FailedToStart"/>
-  <int value="5" label="Removed"/>
-  <int value="6" label="Unsupported"/>
-  <int value="7" label="NotRun"/>
-</enum>
-
-<enum name="CrosHealthdEventCategory">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Usb"/>
-  <int value="2" label="Thunderbolt"/>
-  <int value="3" label="Lid"/>
-  <int value="4" label="Bluetooth"/>
-  <int value="5" label="Power"/>
-  <int value="6" label="Audio"/>
-  <int value="7" label="AudioJack"/>
-  <int value="8" label="SdCard"/>
-  <int value="9" label="Network"/>
-  <int value="10" label="KeyboardDiagnostic"/>
-  <int value="11" label="Touchpad"/>
-  <int value="12" label="ExternalDisplay"/>
-  <int value="13" label="Touchscreen"/>
-  <int value="14" label="StylusGarage"/>
-  <int value="15" label="Stylus"/>
-  <int value="16" label="Crash"/>
-</enum>
-
-<enum name="CrosHealthdTelemetryResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Error"/>
-</enum>
-
 <enum name="CrosHibernateAbortReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Not enough free memory"/>
@@ -16145,21 +15418,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="13" label="Next invalid"/>
   <int value="14" label="Previous invalid"/>
   <int value="15" label="Invalid selection bounds"/>
-</enum>
-
-<enum name="CrosSystemTrayFirstInteraction">
-  <int value="0" label="Quick Settings"/>
-  <int value="1" label="Message Center"/>
-</enum>
-
-<enum name="CrosSystemTrayInteraction">
-  <int value="0" label="Tap"/>
-  <int value="1" label="Click"/>
-</enum>
-
-<enum name="CrosSystemTrayToggleExpanded">
-  <int value="0" label="Toggled by button"/>
-  <int value="1" label="Toggled by gesture"/>
 </enum>
 
 <enum name="CrostiniAppLaunchAppType">
@@ -18212,16 +17470,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="3" label="Compliance not evaluated, build not timely"/>
 </enum>
 
-<enum name="CustomizableButton">
-  <int value="0" label="Left"/>
-  <int value="1" label="Right"/>
-  <int value="2" label="Middle"/>
-  <int value="3" label="Forward"/>
-  <int value="4" label="Back"/>
-  <int value="5" label="Extra"/>
-  <int value="6" label="Side"/>
-</enum>
-
 <enum name="D3D11FeatureLevel">
   <int value="0" label="Unknown"/>
   <int value="1" label="No D3D11 DLL"/>
@@ -18894,14 +18142,6 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="RollbackDisallowed"/>
 </enum>
 
-<enum name="DetailedViewSection">
-  <int value="0" label="WiFi section shown"/>
-  <int value="1" label="Mobile section shown"/>
-  <int value="2" label="Ethernet section shown"/>
-  <int value="3" label="Detailed view shown"/>
-  <int value="4" label="Tether Hosts section shown"/>
-</enum>
-
 <enum name="DeviceAuthFinalResult">
   <int value="0" label="Success with unknown method"/>
   <int value="1" label="Success with biometrics"/>
@@ -19008,18 +18248,6 @@ Called by update_debug_scenarios.py.-->
   <int value="42" label="Unknown owner good key, no policy"/>
   <int value="43" label="Unknown owner malformed key, no policy"/>
   <int value="44" label="Unknown owner no key, no policy"/>
-</enum>
-
-<enum name="DeviceSettingsStaticShortcutAction">
-  <int value="0" label="Disable"/>
-  <int value="1" label="Copy"/>
-  <int value="2" label="Paste"/>
-  <int value="3" label="Undo"/>
-  <int value="4" label="Redo"/>
-  <int value="5" label="Zoom In"/>
-  <int value="6" label="Zoom Out"/>
-  <int value="7" label="Previous page"/>
-  <int value="8" label="Next Page"/>
 </enum>
 
 <enum name="DeviceSettingsStatus">
@@ -21598,12 +20826,6 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="BUBBLE_SUBPAGE"/>
   <int value="3" label="DOWNLOADS_PAGE"/>
   <int value="4" label="DOWNLOAD_PROMPT"/>
-</enum>
-
-<enum name="DpSuccessMetric">
-  <int value="0" label="Success with HotPlug Detect(HPD)"/>
-  <int value="1" label="Success without HotPlug Detect(HPD)"/>
-  <int value="2" label="Failure"/>
 </enum>
 
 <enum name="DriveFileError">
@@ -25076,13 +24298,6 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Store closing skipped">
     Store closing was skipped, because it was not opened at the time of closing.
   </int>
-</enum>
-
-<enum name="ExtendedFkeysModifier">
-  <int value="0" label="Disabled"/>
-  <int value="1" label="Alt"/>
-  <int value="3" label="Shift"/>
-  <int value="4" label="CtrlShift"/>
 </enum>
 
 <enum name="ExtensionActionInvocationSource">
@@ -33735,17 +32950,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="113" label="WebPrinting"/>
 </enum>
 
-<enum name="FeatureUsageEvent">
-  <int value="0"
-      label="Device is eligible for this feature. Recorded periodically."/>
-  <int value="1" label="Feature is enabled by user. Recorded periodically."/>
-  <int value="2"
-      label="Successful attempt to use the feature. Recorded on each event."/>
-  <int value="3"
-      label="Failed attempt to use the feature. Recorded on each event."/>
-  <int value="4" label="Feature is accessible to user. Recorded periodically."/>
-</enum>
-
 <enum name="FedCmAccountsResponseInvalidReason">
   <int value="0" label="Response is not JSON or dict"/>
   <int value="1" label="No accounts key"/>
@@ -35111,15 +34315,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Disabled, Conversion Window expired"/>
   <int value="4" label="Disabled, Legacy User upgraded"/>
   <int value="5" label="Disabled, First Open already recorded"/>
-</enum>
-
-<enum name="FirmwareUpdateInstallResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="InstallFailed"/>
-  <int value="2" label="FailedToCreateUpdateDirectory"/>
-  <int value="3" label="InvalidDestinationFile"/>
-  <int value="4" label="InvalidFileDescriptor"/>
-  <int value="5" label="FailedToDownloadToFile"/>
 </enum>
 
 <enum name="FirstPartySetsDatabaseInitStatus">
@@ -38170,18 +37365,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="5"/>
 </enum>
 
-<enum name="HardwareVerifierQualificationStatus">
-  <summary>
-    List of the possible qualification status of a component. This is defined in
-    https://chromium.googlesource.com/chromiumos/platform2/+/refs/heads/main/hardware_verifier/proto/hardware_verifier.proto
-    (enum QualificationStatus).
-  </summary>
-  <int value="0" label="UNQUALIFIED">Unqualified</int>
-  <int value="1" label="REJECTED">Rejected</int>
-  <int value="2" label="QUALIFIED">Qualified</int>
-  <int value="3" label="NO_MATCH">No_Match</int>
-</enum>
-
 <enum name="HasDiscreteGpu">
   <int value="0" label="No"/>
   <int value="1" label="Yes"/>
@@ -38203,43 +37386,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="User opened survey"/>
 </enum>
 
-<enum name="HaTSSurvey">
-  <summary>Possible survey states and answers for each question.</summary>
-  <int value="1" label="Survey Triggered"/>
-  <int value="2" label="Survey Displayed"/>
-  <int value="3" label="Survey Completed"/>
-  <int value="101" label="Question 1 - Answer 1"/>
-  <int value="102" label="Question 1 - Answer 2"/>
-  <int value="103" label="Question 1 - Answer 3"/>
-  <int value="104" label="Question 1 - Answer 4"/>
-  <int value="105" label="Question 1 - Answer 5"/>
-  <int value="106" label="Question 1 - Answer 6"/>
-  <int value="107" label="Question 1 - Answer 7"/>
-  <int value="108" label="Question 1 - Answer 8"/>
-  <int value="109" label="Question 1 - Answer 9"/>
-  <int value="110" label="Question 1 - Answer 10"/>
-  <int value="201" label="Question 2 - Answer 1"/>
-  <int value="202" label="Question 2 - Answer 2"/>
-  <int value="203" label="Question 2 - Answer 3"/>
-  <int value="204" label="Question 2 - Answer 4"/>
-  <int value="205" label="Question 2 - Answer 5"/>
-  <int value="206" label="Question 2 - Answer 6"/>
-  <int value="207" label="Question 2 - Answer 7"/>
-  <int value="208" label="Question 2 - Answer 8"/>
-  <int value="209" label="Question 2 - Answer 9"/>
-  <int value="210" label="Question 2 - Answer 10"/>
-  <int value="301" label="Question 3 - Answer 1"/>
-  <int value="302" label="Question 3 - Answer 2"/>
-  <int value="303" label="Question 3 - Answer 3"/>
-  <int value="304" label="Question 3 - Answer 4"/>
-  <int value="305" label="Question 3 - Answer 5"/>
-  <int value="306" label="Question 3 - Answer 6"/>
-  <int value="307" label="Question 3 - Answer 7"/>
-  <int value="308" label="Question 3 - Answer 8"/>
-  <int value="309" label="Question 3 - Answer 9"/>
-  <int value="310" label="Question 3 - Answer 10"/>
-</enum>
-
 <enum name="HdcpVersion">
   <int value="0" label="HdcpVersionNone"/>
   <int value="1" label="HdcpVersion1_0"/>
@@ -38251,27 +37397,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="HdcpVersion2_1"/>
   <int value="8" label="HdcpVersion2_2"/>
   <int value="9" label="HdcpVersion2_3"/>
-</enum>
-
-<enum name="HdrnetError">
-  <int value="0" label="No error"/>
-  <int value="1" label="Initialization error"/>
-  <int value="2" label="Sync wait error"/>
-  <int value="3" label="HDRnet processor error"/>
-  <int value="4" label="Pre-processing error"/>
-  <int value="5" label="RGB pipeline error"/>
-  <int value="6" label="Post-processing error"/>
-  <int value="7" label="Camera HAL3 error"/>
-</enum>
-
-<enum name="HdrnetStreamConfiguration">
-  <int value="0" label="Single YUV stream"/>
-  <int value="1" label="Single YUV stream with BLOB"/>
-  <int value="2" label="Multiple YUV streams"/>
-  <int value="3" label="Multiple YUV streams with BLOB"/>
-  <int value="4" label="Multiple YUV streams of different aspect ratio"/>
-  <int value="5"
-      label="Multiple YUV streams of different aspect ratio with BLOB"/>
 </enum>
 
 <enum name="HeadlessChromeAction">
@@ -41127,21 +40252,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="9" label="FMA3"/>
 </enum>
 
-<enum name="IntentPickerDialogAction">
-  <summary>
-    Defines actions taken by the user in the Intent Picker dialog
-  </summary>
-  <int value="0" label="Invalid"/>
-  <int value="1" label="Error"/>
-  <int value="2" label="Dialog deactivated"/>
-  <int value="3" label="Chrome selected"/>
-  <int value="4" label="Chrome selected and preferred"/>
-  <int value="5" label="ARC app selected"/>
-  <int value="6" label="ARC app selected and preferred"/>
-  <int value="7" label="PWA selected"/>
-  <int value="8" label="PWA selected and preferred"/>
-</enum>
-
 <enum name="IntentPickerIconEvent">
   <int value="0" label="Intent picker icon shown in Omnibox"/>
   <int value="1" label="Intent picker icon clicked in Omnibox"/>
@@ -42856,13 +41966,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="256" label="NONE"/>
 </enum>
 
-<enum name="KeyPermissionsManagerMigrationStatus">
-  <int value="0" label="kStarted"/>
-  <int value="1" label="kSucceeded"/>
-  <int value="2" label="kFailed"/>
-  <int value="3" label="kNecessary"/>
-</enum>
-
 <enum name="KioskBrowserWindowType">
   <int value="0" label="Settings Page"/>
   <int value="1" label="Closed regular browser"/>
@@ -43556,132 +42659,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="8026721" label="Zaza"/>
 </enum>
 
-<enum name="LanguagePackDlcErrorType">
-<!-- This enum needs to match DlcErrorTypeEnum in
-chromeos/ash/components/language/language_packs/language_pack_manager.h -->
-
-  <summary>List of all the error types that DLC Service returns.</summary>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="None"/>
-  <int value="2" label="Internal"/>
-  <int value="3" label="Busy"/>
-  <int value="4" label="Need reboot"/>
-  <int value="5" label="Invalid DLC"/>
-  <int value="6" label="Allocation"/>
-  <int value="7" label="No image found"/>
-</enum>
-
-<enum name="LanguagePackFeatureIds">
-<!-- This must be kept current with FeatureIdsEnum in
-chromeos/ash/components/language/language_packs/language_pack_manager.h -->
-
-  <summary>
-    List of all the Features that are supported by Language Packs. A Feature is
-    a synonym for client.
-  </summary>
-  <int value="0" label="UNKNOWN"/>
-  <int value="1" label="HANDWRITING"/>
-  <int value="2" label="TTS"/>
-</enum>
-
-<enum name="LanguagePackFeatureSuccess">
-<!-- This enum needs to match FeatureSuccessEnum in
-chromeos/ash/components/language/language_packs/language_pack_manager.h -->
-
-  <summary>
-    Multidimension Enum that captures success and failures broken down by
-    Feature ID. We use this approach based on the Histograms guidelines to
-    represent a MxN matrix.
-  </summary>
-  <int value="0" label="Unknown success"/>
-  <int value="1" label="Unknown failure"/>
-  <int value="2" label="Handwriting success"/>
-  <int value="3" label="Handwriting failure"/>
-  <int value="4" label="TTS success"/>
-  <int value="5" label="TTS failure"/>
-</enum>
-
-<enum name="LanguagePackLanguageCodes">
-  <summary>
-    Hash values of language codes that correspond to a Language Pack. The hash
-    is created by computing base::PersistentHash() of the label, then cast to
-    int32. To generate new values in a way that is consistent, use the unit test
-    at chromeos/ash/components/language/language_packs/metrics_unittest.cc.
-  </summary>
-  <int value="-1954182822" label="et"/>
-  <int value="-1902856059" label="tr"/>
-  <int value="-1858573686" label="ga"/>
-  <int value="-1840989837" label="ar"/>
-  <int value="-1823490855" label="be"/>
-  <int value="-1784800271" label="tl"/>
-  <int value="-1781321693" label="my"/>
-  <int value="-1760656795" label="kk"/>
-  <int value="-1728890006" label="kn"/>
-  <int value="-1722334576" label="sv"/>
-  <int value="-1667118147" label="bg"/>
-  <int value="-1660178764" label="bn"/>
-  <int value="-1391374456" label="ur"/>
-  <int value="-1340196252" label="en-gb"/>
-  <int value="-1339452358" label="hu"/>
-  <int value="-1319436779" label="lt"/>
-  <int value="-1142714117" label="nb"/>
-  <int value="-1060081087" label="te"/>
-  <int value="-1001508648" label="nl"/>
-  <int value="-854196551" label="ko"/>
-  <int value="-795149789" label="en-au"/>
-  <int value="-763755563" label="ru"/>
-  <int value="-703387832" label="ml"/>
-  <int value="-651240163" label="am"/>
-  <int value="-622454823" label="cs"/>
-  <int value="-554160101" label="es"/>
-  <int value="-468417265" label="ca"/>
-  <int value="-414170858" label="ne"/>
-  <int value="-344966328" label="en-us"/>
-  <int value="-232429543" label="fi"/>
-  <int value="-155273274" label="ka"/>
-  <int value="-132861449" label="or"/>
-  <int value="-103735858" label="is"/>
-  <int value="-100682548" label="hr"/>
-  <int value="-76675939" label="hy"/>
-  <int value="0" label="Unknown"/>
-  <int value="13936671" label="fa"/>
-  <int value="37698508" label="si"/>
-  <int value="76742708" label="mn"/>
-  <int value="126997093" label="sk"/>
-  <int value="202713180" label="ms"/>
-  <int value="218790103" label="es-us"/>
-  <int value="385084822" label="pt"/>
-  <int value="411897228" label="fr"/>
-  <int value="579959091" label="iw"/>
-  <int value="592207805" label="pl"/>
-  <int value="656523220" label="zh"/>
-  <int value="771718923" label="yue"/>
-  <int value="771844654" label="uk"/>
-  <int value="916296240" label="id"/>
-  <int value="934072607" label="ta"/>
-  <int value="942489058" label="gu"/>
-  <int value="943542304" label="sl"/>
-  <int value="1005034866" label="es-es"/>
-  <int value="1136549914" label="it"/>
-  <int value="1176966558" label="de"/>
-  <int value="1229318713" label="vi"/>
-  <int value="1242216658" label="el"/>
-  <int value="1256230022" label="km"/>
-  <int value="1299213554" label="mr"/>
-  <int value="1305993605" label="mt"/>
-  <int value="1347501577" label="lo"/>
-  <int value="1396205312" label="no"/>
-  <int value="1438566975" label="hi"/>
-  <int value="1445641954" label="lv"/>
-  <int value="1505395693" label="th"/>
-  <int value="1652267726" label="ja"/>
-  <int value="1840739667" label="ti"/>
-  <int value="1889238869" label="pa"/>
-  <int value="1938425968" label="ro"/>
-  <int value="2017029213" label="sr"/>
-  <int value="2026210505" label="da"/>
-</enum>
-
 <enum name="LanguagePackState">
   <int value="0" label="Error"/>
   <int value="1" label="Not installed"/>
@@ -44290,13 +43267,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="0" label="undefined"/>
   <int value="1" label="no"/>
   <int value="2" label="yes"/>
-</enum>
-
-<enum name="LinkCapturingEvent">
-  <summary>Defines events in the link capturing user flow</summary>
-  <int value="0" label="Entry point shown"/>
-  <int value="1" label="App opened"/>
-  <int value="2" label="Settings changed"/>
 </enum>
 
 <enum name="LinkGenerationCopiedLinkType">
@@ -56442,21 +55412,6 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Failure"/>
 </enum>
 
-<enum name="ModifierKeyDomCodes">
-  <int value="0" label="MetaLeft"/>
-  <int value="1" label="MetaRight"/>
-  <int value="2" label="ControlLeft"/>
-  <int value="3" label="ControlRight"/>
-  <int value="4" label="AltLeft"/>
-  <int value="5" label="AltRight"/>
-  <int value="6" label="ShiftLeft"/>
-  <int value="7" label="ShiftRight"/>
-  <int value="8" label="CapsLock"/>
-  <int value="9" label="Backspace"/>
-  <int value="10" label="Escape"/>
-  <int value="11" label="Assistant"/>
-</enum>
-
 <enum name="ModuleTypeOnStartAndNTP">
   <int value="0" label="Most visited tiles"/>
   <int value="1" label="Omnibox"/>
@@ -59551,13 +58506,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="DNS Failure"/>
 </enum>
 
-<enum name="NetworkRowClickedAction">
-  <int value="0" label="Connect to Network"/>
-  <int value="1" label="Open Network settings page"/>
-  <int value="2" label="Open SIM unlock dialog"/>
-  <int value="3" label="Open portal signin"/>
-</enum>
-
 <enum name="NetworkSandboxState">
   <summary>
     The possible states for the network service sandbox. See
@@ -62499,124 +61447,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="Entering overview with the faster split screen setup"/>
 </enum>
 
-<enum name="OwnerKeyUmaEvent">
-  <int value="0" label="DeviceSettingsServiceIsNull">
-    DeviceSettingsService was null, owner key was not loaded.
-  </int>
-  <int value="1" label="ManagedDeviceSuccess">
-    Managed device successfully loaded the public owner key.
-  </int>
-  <int value="2" label="ManagedDeviceFail">
-    Managed device failed to load the public owner key.
-  </int>
-  <int value="3" label="OwnerHasKeysSuccess">
-    Consumer owner user successfully loaded both public and private keys.
-  </int>
-  <int value="4" label="OwnerHasKeysFail">
-    Consumer owner received both public and private keys, but at least one of
-    them wasn't actually loaded.
-  </int>
-  <int value="5" label="EstablishingConsumerOwnershipSuccess">
-    ChromeOS decided to establish consumer ownership when there was no existing
-    public key.
-  </int>
-  <int value="6" label="EstablishingConsumerOwnershipFail">
-    ChromeOS decided to establish consumer ownership when there was an existing
-    public key.
-  </int>
-  <int value="7" label="RegeneratingOwnerKeyBasedOnPolicySuccess">
-    ChromeOS decided to re-generate the lost owner key based on the data from
-    device policies after the public key was found (the private part is what was
-    lost).
-  </int>
-  <int value="8" label="RegeneratingOwnerKeyBasedOnPolicyFail">
-    ChromeOS decided to re-generate the lost owner key based on the data from
-    device policies and the public key was also not found. (Strictly speaking
-    not a failure, but still an unusual situation).
-  </int>
-  <int value="9" label="UserNotAnOwnerBasedOnPolicySuccess">
-    A user was categorized as not an owner based on the data from device
-    policies, the public key was successfully loaded.
-  </int>
-  <int value="10" label="UserNotAnOwnerBasedOnPolicyFail">
-    A user was categorized as not an owner based on the data from device
-    policies, the public key failed to load.
-  </int>
-  <int value="11" label="RegeneratingOwnerKeyBasedOnLocalStateSuccess">
-    ChromeOS decided to re-generate the lost owner key based on the data from
-    local state and the public key was not present.
-  </int>
-  <int value="12" label="RegeneratingOwnerKeyBasedOnLocalStateFail">
-    ChromeOS decided to re-generate the lost owner key based on the data from
-    local state after the public key was found (in such a case device policies
-    should be used, relying on local state is unexpected).
-  </int>
-  <int value="13" label="UserNotAnOwnerBasedOnLocalStateSuccess">
-    A user was categorized as not an owner based on the data from local state,
-    the public key was successfully loaded.
-  </int>
-  <int value="14" label="UserNotAnOwnerBasedOnLocalStateFail">
-    A user was categorized as not an owner based on the data from local state,
-    the public key failed to load.
-  </int>
-  <int value="15" label="UnsureUserNotAnOwnerSuccess">
-    ChromeOS assumed that a user is not an owner based on the lack of data, the
-    public key was successfully loaded.
-  </int>
-  <int value="16" label="UnsureUserNotAnOwnerFail">
-    ChromeOS assumed that a user is not an owner based on the lack of data, the
-    public key failed to load.
-  </int>
-  <int value="17" label="OwnerKeyGeneratedSuccess">
-    New owner key was generated on the first attempt.
-  </int>
-  <int value="18" label="OwnerKeyGeneratedFail">
-    New owner key was generated after 1+ failures.
-  </int>
-  <int value="19" label="FailedToGenerateOwnerKeySuccess">
-    Failed to generate new owner key, at least the old public key was returned.
-  </int>
-  <int value="20" label="FailedToGenerateOwnerKeyFail">
-    Failed to generate new owner key, the old public key also failed to load (or
-    was not present).
-  </int>
-  <int value="21" label="StartSigningPolicySuccess">
-    Successfully started signing policies.
-  </int>
-  <int value="22" label="StartSigningPolicyFail">
-    Failed to start signing policies.
-  </int>
-  <int value="23" label="SignedPolicySuccess">
-    Successfully signed policies.
-  </int>
-  <int value="24" label="SignedPolicyFail">Failed to sign policies.</int>
-  <int value="25" label="StoredPolicySuccess">
-    Successfully stored policies.
-  </int>
-  <int value="26" label="StoredPolicyFail">Failed to store policies.</int>
-  <int value="27" label="UserNotAnOwnerBasedOnUserTypeSuccess">
-    A user was categorized as not an owner based on the user type, the public
-    key was successfully loaded.
-  </int>
-  <int value="28" label="UserNotAnOwnerBasedOnUserTypeFail">
-    A user was categorized as not an owner based on the user type, the public
-    key failed to load.
-  </int>
-  <int value="29" label="UserNotAnOwnerBasedOnEmptyUsernameSuccess">
-    A user was categorized as not an owner because the user name was empty, this
-    is not expected to happen, the public key was successfully loaded.
-  </int>
-  <int value="30" label="UserNotAnOwnerBasedOnEmptyUsernameFail">
-    A user was categorized as not an owner because the user name was empty, this
-    is not expected to happen, the public key failed to load.
-  </int>
-  <int value="31" label="UnsureTakeOwnership">
-    ChromeOS decided to establish consumer ownership when there was no
-    indication that it's the first user, but also no public key, no policies and
-    no local state entry.
-  </int>
-</enum>
-
 <enum name="OwnershipStatus">
   <int value="0" label="ownership unknown"/>
   <int value="1" label="not yet owned"/>
@@ -63138,22 +61968,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="PreloadApk: not system provider"/>
 </enum>
 
-<enum name="PartnerLocationMetric">
-  <int value="0" label="Other"/>
-  <int value="1"
-      label="User has no choice since all open ports are only on one side"/>
-  <int value="2" label="Left: first partner"/>
-  <int value="3" label="Left: second partner (same side with first)"/>
-  <int value="4" label="Left: second partner (opposite side to first)"/>
-  <int value="5" label="Left: third or later partner"/>
-  <int value="6" label="Left: coldplugged on boot"/>
-  <int value="7" label="Right: first partner"/>
-  <int value="8" label="Right: second partner (same side with first)"/>
-  <int value="9" label="Right: second partner (opposite side to first)"/>
-  <int value="10" label="Right: third or later partner"/>
-  <int value="11" label="Right: coldplugged on boot"/>
-</enum>
-
 <enum name="PartnerTaskCompletion">
   <int value="0" label="None valid"/>
   <int value="1" label="Completed in time for tab creation"/>
@@ -63161,27 +61975,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Cancelled - timeout"/>
   <int value="4" label="Exception thrown"/>
   <int value="5" label="Task skipped"/>
-</enum>
-
-<enum name="PartnerTypeMetric">
-  <int value="0" label="Other"/>
-  <int value="1" label="Thunderbolt + DisplayPort Alt Mode Hub"/>
-  <int value="2" label="Thunderbolt + DisplayPort Alt Mode Peripheral"/>
-  <int value="3" label="Thunderbolt Hub"/>
-  <int value="4" label="Thunderbolt Peripheral"/>
-  <int value="5" label="USB4 Hub"/>
-  <int value="6" label="USB4 Peripheral"/>
-  <int value="7" label="DisplayPort Alt Mode Hub"/>
-  <int value="8" label="DisplayPort Alt Mode Peripheral"/>
-  <int value="9" label="USB Hub"/>
-  <int value="10" label="USB Peripheral"/>
-  <int value="11" label="PD Power Source"/>
-  <int value="12" label="PD Sourcing Device"/>
-  <int value="13" label="Non-PD Power Source"/>
-  <int value="14" label="PD Sink"/>
-  <int value="15" label="PD Sinking Host"/>
-  <int value="16" label="Non-PD Sink"/>
-  <int value="17" label="Power Brick"/>
 </enum>
 
 <enum name="PasspointMatch">
@@ -64598,27 +63391,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Suppress"/>
 </enum>
 
-<enum name="PopularCamPeriphModuleID">
-  <int value="0" label="Others"/>
-  <int value="73271312" label="LifeCamHD3000_Microsoft"/>
-  <int value="74254373" label="C270_Logitech"/>
-  <int value="74254380" label="HDC615_Logitech"/>
-  <int value="74254381" label="HDProC920_Logitech"/>
-  <int value="74254403" label="C930e_Logitech"/>
-  <int value="74254427" label="C925e_Logitech"/>
-  <int value="74254428" label="C922ProStream_Logitech"/>
-  <int value="74254430" label="BRIOUltraHD_Logitech"/>
-  <int value="74254482" label="C920HDPro_Logitech"/>
-  <int value="74254565" label="C920PROHD_Logitech"/>
-  <int value="94606129" label="Cam_ARC"/>
-  <int value="130691386" label="LiveStreamer313_Sunplus"/>
-  <int value="205874022" label="VitadeAF_Microdia"/>
-  <int value="205874027" label="Cam_Sonix"/>
-  <int value="393793569" label="VZR_IPEVO"/>
-  <int value="457121794" label="808Camera9_Generalplus"/>
-  <int value="493617411" label="NexiGoN60FHD_2MUVC"/>
-</enum>
-
 <enum name="PopularOSErrno">
   <summary>
     Popular errno values. See the descriptions on &quot;*/*/*&quot; labels for
@@ -64753,14 +63525,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="10" label="HTTPS Failure"/>
   <int value="11" label="No Connectivity"/>
   <int value="12" label="Online"/>
-</enum>
-
-<enum name="PortraitModeError">
-  <int value="0" label="No error"/>
-  <int value="1" label="Initialization error"/>
-  <int value="2" label="Configuration error"/>
-  <int value="3" label="Processing capture request error"/>
-  <int value="4" label="Processing capture result error"/>
 </enum>
 
 <enum name="Ports">
@@ -64952,18 +63716,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="14" label="kSmallMainThreadAnimation"/>
   <int value="15" label="kMediumMainThreadAnimation"/>
   <int value="16" label="kScriptExecution"/>
-</enum>
-
-<enum name="PowerSourceLocationMetric">
-  <int value="0" label="Other"/>
-  <int value="1"
-      label="User has no choice since all ports are only on one side"/>
-  <int value="2" label="Left: first connection during a session"/>
-  <int value="3" label="Left: same side with previous connection"/>
-  <int value="4" label="Left: opposite side from previous connection"/>
-  <int value="5" label="Right: first connectoin during a session"/>
-  <int value="6" label="Right: same side with previous connection"/>
-  <int value="7" label="Right: opposite side with previous connection"/>
 </enum>
 
 <enum name="PowerwashDialogViewType">
@@ -66948,11 +65700,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="6" label="Cancelled due to client unauthorized"/>
 </enum>
 
-<enum name="PrintManagementLaunchSourceType">
-  <int value="0" label="Launch Printer settings from empty state button"/>
-  <int value="1" label="Launch Printer settings from header button"/>
-</enum>
-
 <enum name="PrintOopResult">
   <int value="0" label="Successful"/>
   <int value="1" label="Cancelled"/>
@@ -67087,17 +65834,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="DroppedMaxTrackedSources"/>
   <int value="2" label="DroppedMaxTrackedSurfaces"/>
   <int value="3" label="DroppedMaxTrackedPerSurfacePerSource"/>
-</enum>
-
-<enum name="PrivacyHubLearnMoreSensor">
-  <int value="0" label="Microphone"/>
-  <int value="1" label="Camera"/>
-  <int value="2" label="Geolocation"/>
-</enum>
-
-<enum name="PrivacyHubNavigationOrigin">
-  <int value="0" label="System settings"/>
-  <int value="1" label="Notification"/>
 </enum>
 
 <enum name="PrivacyIndicatorsSource">
@@ -70463,24 +69199,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="PreviouslyDeferredLoad"/>
 </enum>
 
-<enum name="RgbKeyboardBacklightChangeType">
-  <int value="0" label="StaticBackgroundColorChanged"/>
-  <int value="1" label="RainbowModeSelected"/>
-  <int value="2" label="StaticZoneColorChanged"/>
-</enum>
-
 <!--
   This must be kept current with RgbKeyboardCapabilities located in
   third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h.
 -->
-
-<enum name="RgbKeyboardCapabilityType">
-  <int value="0" label="None"/>
-  <int value="1" label="IndividualKey"/>
-  <int value="2" label="FourZoneFortyLed"/>
-  <int value="3" label="FourZoneTwelveLed"/>
-  <int value="4" label="FourZoneFourLed"/>
-</enum>
 
 <enum name="Rollback_OobeRestoreResult">
   <int value="0" label="Succeeded"/>
@@ -70682,43 +69404,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="No Restriction"/>
   <int value="1" label="Lax Mode"/>
   <int value="2" label="Strict Mode"/>
-</enum>
-
-<enum name="SamlInSessionPasswordChangeEvent">
-  <summary>
-    Track how often we try to guide users through the in-session flow to change
-    their SAML password, and how often they complete the flow.
-  </summary>
-  <int value="0" label="In-session PW-change manager enabled and created."/>
-  <int value="1" label="User notified that password will soon expire."/>
-  <int value="2" label="User notified urgently: password will soon expire."/>
-  <int value="3" label="User notified urgently: password already expired."/>
-  <int value="4" label="User acknowledges and begins change password flow."/>
-  <int value="5" label="SAML password is changed during in-session flow."/>
-  <int value="6" label="Password scraping succeeds during in-session change."/>
-  <int value="7" label="Password scraping partial success - 1 password only."/>
-  <int value="8" label="Password scraping fails - no passwords scraped."/>
-  <int value="9" label="Cryptohome password changed using scraped passwords."/>
-  <int value="10" label="Cryptohome password changed using retyped passwords."/>
-  <int value="11" label="Cryptohome change failed: wrong password scraped."/>
-  <int value="12" label="Cryptohome change failed: wrong password retyped."/>
-  <int value="13" label="In-session change password flow complete."/>
-</enum>
-
-<enum name="SamlInSessionPasswordSyncEvent">
-  <summary>
-    Track how often we call password sync token API and records its result.
-  </summary>
-  <int value="0" label="Start of sync token validation polling in-session."/>
-  <int value="1"
-      label="Start of sync token validation polling on the login screen."/>
-  <int value="2" label="Successful sync token validation."/>
-  <int value="3" label="Failed sync token validation."/>
-  <int value="4" label="API error: missing access token."/>
-  <int value="5" label="API error: wrong server response code."/>
-  <int value="6" label="API error: incorrect serlialized response data."/>
-  <int value="7" label="API error: no sync token in Create response."/>
-  <int value="8" label="API error: no sync token in Get response."/>
 </enum>
 
 <enum name="SamplingProfilerUnwindResult">
@@ -71421,75 +70106,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
              start)"/>
 </enum>
 
-<enum name="SecagentdBootmodeCros">
-  <int value="0" label="Bootmode successfully retrieved"/>
-  <int value="1" label="Bootmode manager did not respond"/>
-  <int value="2" label="Bootmode service unavailable"/>
-  <int value="3" label="Failed to retrieve bootmode"/>
-</enum>
-
-<enum name="SecagentdBootmodeUefi">
-  <int value="0" label="Bootmode successfully retrieved"/>
-  <int value="1" label="Boot params file not found"/>
-  <int value="2" label="Failed to read boot params file"/>
-  <int value="3" label="Boot params file invalid size"/>
-</enum>
-
-<enum name="SecagentdBpfAttachResult">
-  <int value="0" label="BPF loaded and attached successfully"/>
-  <int value="1" label="BPF failed to Open"/>
-  <int value="2" label="BPF failed to Load"/>
-  <int value="3" label="BPF failed to Attach"/>
-  <int value="4" label="BPF failed Ring Buffer creation"/>
-</enum>
-
-<enum name="SecagentdCache">
-  <int value="0" label="Cache hit"/>
-  <int value="1" label="Cache miss"/>
-  <int value="2" label="Cache miss but filled from procfs"/>
-</enum>
-
-<enum name="SecagentdPolicy">
-  <int value="0"
-      label="Device XDR reporting policy was checked at startup (baseline)"/>
-  <int value="1" label="XDR reporting was enabled by Device policy"/>
-</enum>
-
-<enum name="SecagentdProcessEvent">
-  <int value="0" label="Process hierarchy filled"/>
-  <int value="1" label="Spawn process not found"/>
-  <int value="2" label="Process not found"/>
-  <int value="3" label="Parent process not found"/>
-  <int value="4" label="Parent process still alive"/>
-</enum>
-
-<enum name="SecagentdSendMessageResult">
-  <int value="0" label="Message successfully sent"/>
-  <int value="1" label="CANCELLED"/>
-  <int value="2" label="UNKNOWN"/>
-  <int value="3" label="INVALID_ARGUMENT"/>
-  <int value="4" label="DEADLINE_EXCEEDED"/>
-  <int value="5" label="NOT_FOUND"/>
-  <int value="6" label="ALREADY_EXISTS"/>
-  <int value="7" label="PERMISSION_DENIED"/>
-  <int value="8" label="RESOURCE_EXHAUSTED"/>
-  <int value="9" label="FAILED_PRECONDITION"/>
-  <int value="10" label="ABORTED"/>
-  <int value="11" label="OUT_OF_RANGE"/>
-  <int value="12" label="UNIMPLEMENTED"/>
-  <int value="13" label="INTERNAL"/>
-  <int value="14" label="UNAVAILABLE"/>
-  <int value="15" label="DATA_LOSS"/>
-  <int value="16" label="UNAUTHENTICATED"/>
-</enum>
-
-<enum name="SecagentdTpm">
-  <int value="0" label="TPM info successfully retrieved"/>
-  <int value="1" label="TPM manager did not respond"/>
-  <int value="2" label="TPM service unavailable"/>
-  <int value="3" label="Failed to retrieve TPM"/>
-</enum>
-
 <enum name="SecondaryActivity">
   <int value="0" label="Download"/>
   <int value="1" label="Bookmark"/>
@@ -71585,23 +70201,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="SecurePaymentConfirmationSystemPromptResult">
   <int value="0" label="Canceled"/>
   <int value="1" label="Accepted"/>
-</enum>
-
-<enum name="SecurityAnomaly">
-  <int value="0"
-      label="Writable+executable mount found in the init mount namespace
-             (deprecated)"/>
-  <int value="1"
-      label="Writable+executable mount found in the init mount namespace, on
-             or under /usr/local (this suggests a dev image)"/>
-  <int value="2"
-      label="Writable+executable mount found in the init mount namespace, not
-             on, nor under, /usr/local"/>
-  <int value="3"
-      label="Successful create_memfd syscall detected in the audit log file.
-             (Baseline for memfd execution attempt)."/>
-  <int value="4"
-      label="Memfd execution attempt detected in the audit log file."/>
 </enum>
 
 <enum name="SecurityDomainId">
@@ -73775,12 +72374,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Fresh index with cache updated since backend start"/>
 </enum>
 
-<enum name="SimulateRightClickModifier">
-  <int value="0" label="None"/>
-  <int value="1" label="Alt"/>
-  <int value="2" label="Search"/>
-</enum>
-
 <enum name="SingleWebFeedEntryPoint">
   <int value="0" label="Menu"/>
   <int value="1" label="Attribtuion"/>
@@ -73878,12 +72471,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <summary>See Android.RequestDesktopSite.Changed</summary>
   <int value="0" label="Mobile"/>
   <int value="1" label="Desktop"/>
-</enum>
-
-<enum name="SixPackKeyModifier">
-  <int value="0" label="None"/>
-  <int value="1" label="Alt"/>
-  <int value="2" label="Search"/>
 </enum>
 
 <enum name="SlopBucketDisabledReason">
@@ -80493,33 +79080,6 @@ others/histograms.xml -->
   <int value="2" label="Other"/>
 </enum>
 
-<enum name="WebApkInstallResultChromeOS">
-  <int value="0" label="Success">Installed successfully.</int>
-  <int value="1" label="App invalid">
-    Installation failed because the app was in an invalid state (e.g., it had no
-    suitable icon).
-  </int>
-  <int value="2" label="ARC unavailable">
-    Installation failed because the ARC system was not available.
-  </int>
-  <int value="3" label="Update cancelled">
-    Update was cancelled because the existing WebAPK was found to be up-to-date.
-  </int>
-  <int value="4" label="Update failed during GetWebApkInfo">
-    Updating failed because there was an error while fetching information about
-    the existing WebAPK from ARC.
-  </int>
-  <int value="5" label="Network error">
-    The network request to the WebAPK server failed with an error.
-  </int>
-  <int value="6" label="Network timeout">
-    The network request to the WebAPK server timed out.
-  </int>
-  <int value="7" label="Google Play error">
-    Installing the WebAPK through Google Play failed with an error.
-  </int>
-</enum>
-
 <enum name="WebApkLifetimeLaunchCount">
   <int value="0" label="Never launched."/>
   <int value="1" label="Launched once."/>
@@ -84407,14 +82967,6 @@ Called by update_scheduler_enums.py.-->
   <int value="81" label="Show search companion"/>
   <int value="82" label="Show bookmark side panel"/>
   <int value="83" label="Show performance settings"/>
-</enum>
-
-<enum name="WrongConfigurationMetric">
-  <int value="0" label="Thunderbolt peripheral - wrong cable"/>
-  <int value="1" label="USB4 peripheral - wrong cable"/>
-  <int value="2" label="DisplayPort peripheral - wrong cable"/>
-  <int value="3" label="Cable Limiting Speed"/>
-  <int value="4" label="None"/>
 </enum>
 
 <enum name="XHRPageDismissalState">
