@@ -710,7 +710,10 @@
       "external/wpt/navigation-api/navigate-event/cross-window/open-crossdocument-crossorigin-sameorigindomain.sub.html",
       "external/wpt/navigation-api/navigate-event/cross-window/open-samedocument-crossorigin-sameorigindomain.sub.html",
       "external/wpt/navigation-api/navigate-event/cross-window/submit-crossdocument-crossorigin-sameorigindomain.sub.html",
-      "external/wpt/navigation-api/navigate-event/cross-window/submit-samedocument-crossorigin-sameorigindomain.sub.html"
+      "external/wpt/navigation-api/navigate-event/cross-window/submit-samedocument-crossorigin-sameorigindomain.sub.html",
+      "external/wpt/longtask-timing/longtask-in-childiframe-crossorigin.html",
+      "external/wpt/longtask-timing/longtask-in-sibling-iframe-crossorigin.html",
+      "http/tests/security/drag-drop-same-unique-origin.html"
     ],
     "exclusive_tests": "ALL",
     "args": ["--disable-site-isolation-trials",
