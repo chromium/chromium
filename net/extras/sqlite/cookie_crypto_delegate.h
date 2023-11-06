@@ -5,6 +5,8 @@
 #ifndef NET_EXTRAS_SQLITE_COOKIE_CRYPTO_DELEGATE_H_
 #define NET_EXTRAS_SQLITE_COOKIE_CRYPTO_DELEGATE_H_
 
+#include <string>
+
 #include "base/component_export.h"
 
 namespace net {
@@ -14,13 +16,13 @@ class COMPONENT_EXPORT(NET_EXTRAS) CookieCryptoDelegate {
  public:
   virtual ~CookieCryptoDelegate() = default;
 
-  // Encrypt |plaintext| string and store the result in |ciphertext|.  This
-  // method is always functional even if ShouldEncrypt() is false.
+  // Encrypt `plaintext` string and store the result in `ciphertext`. Returns
+  // true if the encryption succeeded.
   virtual bool EncryptString(const std::string& plaintext,
                              std::string* ciphertext) = 0;
 
-  // Decrypt |ciphertext| string and store the result in |plaintext|.  This
-  // method is always functional even if ShouldEncrypt() is false.
+  // Decrypt `ciphertext` string and store the result in `plaintext`. Returns
+  // true if the decryption succeeded.
   virtual bool DecryptString(const std::string& ciphertext,
                              std::string* plaintext) = 0;
 };
