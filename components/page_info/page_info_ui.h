@@ -91,6 +91,7 @@ class PageInfoUI {
   // cookies subpage implementation
   struct CookiesNewInfo {
     CookiesNewInfo();
+    CookiesNewInfo(CookiesNewInfo&&);
     ~CookiesNewInfo();
 
     // The number of third-party sites blocked.

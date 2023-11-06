@@ -46,7 +46,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   void SetInitializedCallbackForTesting(base::OnceClosure initialized_callback);
 
  private:
-  friend class PageInfoCookiesContentViewTest;
+  friend class PageInfoCookiesContentViewBaseTestClass;
   friend class PageInfoBubbleViewCookiesSubpageBrowserTest;
 
   // Ensures the allowed sites information UI is present, with placeholder
