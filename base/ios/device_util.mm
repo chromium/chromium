@@ -128,8 +128,8 @@ std::string GetRandomId() {
   base::apple::ScopedCFTypeRef<CFUUIDRef> uuid_object(
       CFUUIDCreate(kCFAllocatorDefault));
   base::apple::ScopedCFTypeRef<CFStringRef> uuid_string(
-      CFUUIDCreateString(kCFAllocatorDefault, uuid_object));
-  return base::SysCFStringRefToUTF8(uuid_string);
+      CFUUIDCreateString(kCFAllocatorDefault, uuid_object.get()));
+  return base::SysCFStringRefToUTF8(uuid_string.get());
 }
 
 std::string GetDeviceIdentifier(const char* salt) {
@@ -176,8 +176,8 @@ std::string GetSaltedString(const std::string& in_string,
   base::apple::ScopedCFTypeRef<CFUUIDRef> uuid_object(
       CFUUIDCreateFromUUIDBytes(kCFAllocatorDefault, *uuid_bytes));
   base::apple::ScopedCFTypeRef<CFStringRef> device_id(
-      CFUUIDCreateString(kCFAllocatorDefault, uuid_object));
-  return base::SysCFStringRefToUTF8(device_id);
+      CFUUIDCreateString(kCFAllocatorDefault, uuid_object.get()));
+  return base::SysCFStringRefToUTF8(device_id.get());
 }
 
 }  // namespace ios::device_util
