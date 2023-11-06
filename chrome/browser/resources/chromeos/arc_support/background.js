@@ -405,6 +405,27 @@ class TermsOfServicePage {
     this.nextButton_.hidden = false;
     this.updateTermsHeight_();
     this.nextButton_.focus();
+    if (!this.termsView_.src.startsWith(
+            'https://play.google.com/about/play-terms')) {
+      // This is reload due to language selection. Set focus on dropdown to pass
+      // GAR criteria(b/308537845)
+      const getDropDown = {code: 'getLangZoneSelect();'};
+      termsPage.termsView_.executeScript(
+          getDropDown, this.focusOnLangZoneSelect_.bind(this));
+    }
+  }
+
+  /** Callback for getDropDown in showContext_. */
+  focusOnLangZoneSelect_(results) {
+    if (results.length != 1) {
+      console.error('unexpected return value of the script');
+      return;
+    }
+    if (results[0]) {
+      this.termsView_.focus();
+      const details = {code: 'getLangZoneSelect().focus();'};
+      termsPage.termsView_.executeScript(details, function(results) {});
+    }
   }
 
   onNext_() {
