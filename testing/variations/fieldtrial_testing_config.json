@@ -12800,35 +12800,6 @@
             ]
         }
     ],
-    "Prerender2DUIConfidenceCutoff": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "ExperimentalConfidenceCutoff_20231011",
-                    "params": {
-                        "preconnect_dui_confidence_cutoff": "0.3",
-                        "prerender_dui_confidence_cutoff": "0.5"
-                    },
-                    "enable_features": [
-                        "AutocompleteActionPredictorConfidenceCutoff"
-                    ]
-                },
-                {
-                    "name": "Control_20231011",
-                    "disable_features": [
-                        "AutocompleteActionPredictorConfidenceCutoff"
-                    ]
-                }
-            ]
-        }
-    ],
     "Prerender2DesktopOmniboxTriggers": [
         {
             "platforms": [
