@@ -256,6 +256,9 @@ void Animation::ResumePlaying() {
 void Animation::Stop() {
   state_ = PlayState::kStopped;
   timer_control_.reset(nullptr);
+  for (AnimationObserver& obs : observers_) {
+    obs.AnimationStopped(this);
+  }
 }
 
 absl::optional<float> Animation::GetCurrentProgress() const {

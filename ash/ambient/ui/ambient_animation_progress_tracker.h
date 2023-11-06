@@ -77,6 +77,7 @@ class ASH_EXPORT AmbientAnimationProgressTracker
  private:
   // lottie::AnimationObserver implementation:
   void AnimationWillStartPlaying(const lottie::Animation* animation) override;
+  void AnimationStopped(const lottie::Animation* animation) override;
   void AnimationIsDeleting(const lottie::Animation* animation) override;
 
   void VerifyAnimationImmutableParams(const lottie::Animation& animation) const;
@@ -87,7 +88,7 @@ class ASH_EXPORT AmbientAnimationProgressTracker
   // Registered animations that have been Start()ed.
   base::flat_set<const lottie::Animation*> started_animations_;
   // Registered animations that have not been Start()ed yet.
-  base::flat_set<const lottie::Animation*> uninitialized_animations_;
+  base::flat_set<const lottie::Animation*> inactive_animations_;
 };
 
 }  // namespace ash

@@ -114,6 +114,10 @@ class TestAnimationObserver : public AnimationObserver {
     last_frame_painted_ = t;
   }
 
+  void AnimationStopped(const Animation* animation) override {
+    animation_stopped_ = true;
+  }
+
   void AnimationIsDeleting(const Animation* animation) override {
     animation_is_deleted_ = true;
     observation_.Reset();
@@ -130,6 +134,7 @@ class TestAnimationObserver : public AnimationObserver {
     return animation_will_start_playing_;
   }
   bool animation_resuming() const { return animation_resuming_; }
+  bool animation_stopped() const { return animation_stopped_; }
   bool animation_is_deleted() const { return animation_is_deleted_; }
   const absl::optional<float>& last_frame_painted() const {
     return last_frame_painted_;
@@ -141,6 +146,7 @@ class TestAnimationObserver : public AnimationObserver {
   bool animation_will_start_playing_ = false;
   bool animation_resuming_ = false;
   bool animation_is_deleted_ = false;
+  bool animation_stopped_ = false;
   absl::optional<float> last_frame_painted_;
 };
 
@@ -417,7 +423,9 @@ TEST_F(AnimationTest, StopLinearAnimation) {
   EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
                   kAdvance / kAnimationDuration);
 
+  EXPECT_FALSE(observer.animation_stopped());
   animation_->Stop();
+  EXPECT_TRUE(observer.animation_stopped());
   EXPECT_FALSE(animation_->GetCurrentProgress());
   EXPECT_TRUE(IsStopped());
 }
