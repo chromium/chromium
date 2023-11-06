@@ -2663,6 +2663,21 @@
             ]
         }
     ],
+    "CCTPageInsightsHub": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CCTPageInsightsHub"
+                    ]
+                }
+            ]
+        }
+    ],
     "CCTRealTimeEngagementSignalsAlternativeImpl": [
         {
             "platforms": [
