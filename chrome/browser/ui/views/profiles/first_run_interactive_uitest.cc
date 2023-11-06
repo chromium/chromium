@@ -12,6 +12,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -29,6 +30,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/consent_level.h"
@@ -71,6 +73,7 @@ const DeepQuery kDeclineManagementButton{"enterprise-profile-welcome-app",
                                          "#cancelButton"};
 const DeepQuery kOptInSyncButton{"sync-confirmation-app", "#confirmButton"};
 const DeepQuery kDontSyncButton{"sync-confirmation-app", "#notNowButton"};
+const DeepQuery kSettingsButton{"sync-confirmation-app", "#settingsButton"};
 const DeepQuery kConfirmDefaultBrowserButton{"default-browser-app",
                                              "#confirmButton"};
 const DeepQuery kSubmitSearchEngineChoiceButton{"search-engine-choice-app",
@@ -98,20 +101,20 @@ const TestParam kTestParams[] = {
     {.test_suffix = "WithDefaultBrowserAndSearchEngineChoiceSteps",
      .with_default_browser_step = true,
      .with_search_engine_choice_step = true},
-#endif
     {.test_suffix = "WithSearchEngineChoiceAndPrivacySandboxEnabled",
      .with_search_engine_choice_step = true,
      .with_privacy_sandbox_enabled = true},
+#endif
 };
 
 }  // namespace
 
-class FirstRunInteractiveUiTest
+class FirstRunInteractiveUiTestBase
     : public InteractiveBrowserTestT<FirstRunServiceBrowserTestBase>,
       public WithProfilePickerInteractiveUiTestHelpers {
  public:
-  FirstRunInteractiveUiTest() = default;
-  ~FirstRunInteractiveUiTest() override = default;
+  FirstRunInteractiveUiTestBase() = default;
+  ~FirstRunInteractiveUiTestBase() override = default;
 
  protected:
   const std::string kTestGivenName = "Joe";
@@ -238,7 +241,130 @@ class FirstRunInteractiveUiTest
   ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, CloseWindow) {
+class FirstRunParameterizedInteractiveUiTest
+    : public FirstRunInteractiveUiTestBase,
+      public testing::WithParamInterface<TestParam> {
+ public:
+  FirstRunParameterizedInteractiveUiTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features_and_params;
+    enabled_features_and_params.push_back(
+        {kForYouFre,
+         {{kForYouFreWithDefaultBrowserStep.name,
+           WithDefaultBrowserStep() ? "forced" : "no"}}});
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+    if (WithSearchEngineChoiceStep()) {
+      scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
+          SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
+              /*force_chrome_build=*/true));
+
+      enabled_features_and_params.push_back(
+          {switches::kSearchEngineChoiceFre, {}});
+      enabled_features_and_params.push_back(
+          {switches::kSearchEngineChoice, {}});
+    }
+#endif
+
+    if (WithPrivacySandboxEnabled()) {
+      enabled_features_and_params.push_back(
+          {privacy_sandbox::kPrivacySandboxSettings4,
+           {{privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting
+                 .name,
+             "true"}}});
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features_and_params, {});
+  }
+
+  // FirstRunInteractiveUiTestBase:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FirstRunInteractiveUiTestBase::SetUpCommandLine(command_line);
+
+    // Change the country to belgium so that the search engine choice test works
+    // as intended.
+    command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+  }
+
+  void SetUp() override {
+    if (WithPrivacySandboxEnabled()) {
+      ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    }
+    FirstRunInteractiveUiTestBase::SetUp();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    FirstRunInteractiveUiTestBase::SetUpInProcessBrowserTestFixture();
+    if (WithPrivacySandboxEnabled()) {
+      PrivacySandboxService::SetPromptDisabledForTests(false);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    FirstRunInteractiveUiTestBase::SetUpOnMainThread();
+
+    if (WithPrivacySandboxEnabled()) {
+      host_resolver()->AddRule("*", "127.0.0.1");
+      embedded_test_server()->StartAcceptingConnections();
+    }
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+    if (WithSearchEngineChoiceStep()) {
+      SearchEngineChoiceService::SetDialogDisabledForTests(
+          /*dialog_disabled=*/false);
+    }
+#endif
+  }
+
+  bool WithDefaultBrowserStep() const {
+    return GetParam().with_default_browser_step;
+  }
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  bool WithSearchEngineChoiceStep() const {
+    return GetParam().with_search_engine_choice_step;
+  }
+#endif
+
+  bool WithPrivacySandboxEnabled() const {
+    return GetParam().with_privacy_sandbox_enabled;
+  }
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  auto CompleteSearchEngineChoiceStep() {
+    const DeepQuery first_search_engine = {"search-engine-choice-app",
+                                           "cr-radio-button"};
+    return Steps(
+        WaitForWebContentsNavigation(
+            kWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
+        PressJsButton(kWebContentsId, first_search_engine),
+        WaitForButtonEnabled(kWebContentsId, kSubmitSearchEngineChoiceButton),
+        PressJsButton(kWebContentsId, kSubmitSearchEngineChoiceButton));
+  }
+#endif
+
+  auto CompleteDefaultBrowserStep() {
+    return Steps(
+        WaitForWebContentsNavigation(
+            kWebContentsId, GURL(chrome::kChromeUIIntroDefaultBrowserURL)),
+        EnsurePresent(kWebContentsId, kConfirmDefaultBrowserButton),
+        PressJsButton(kWebContentsId, kConfirmDefaultBrowserButton));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FirstRunParameterizedInteractiveUiTest,
+                         testing::ValuesIn(kTestParams),
+                         &ParamToTestSuffix);
+
+// This test doesn't check for the search engine choice and privacy sandbox
+// dialogs because the point of the test suite is to check what's happening in
+// the FRE and not after it is closed.
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, CloseWindow) {
   base::test::TestFuture<bool> proceed_future;
   base::HistogramTester histogram_tester;
 
@@ -254,6 +380,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, CloseWindow) {
       // Send "Close window" keyboard shortcut and wait for view to close.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_CLOSE_WINDOW))
           .SetMustRemainVisible(false));
+  WaitForPickerClosed();
 
   EXPECT_EQ(kForYouFreCloseShouldProceed.Get(), proceed_future.Get());
 
@@ -269,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, CloseWindow) {
 }
 
 #if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
                        CloseChromeWithKeyboardShortcut) {
   base::test::TestFuture<bool> proceed_future;
   base::HistogramTester histogram_tester;
@@ -296,98 +423,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest,
       ProfilePicker::FirstRunExitStatus::kAbandonedFlow, 1);
 }
 #endif
-
-class FirstRunParameterizedInteractiveUiTest
-    : public FirstRunInteractiveUiTest,
-      public testing::WithParamInterface<TestParam> {
- public:
-  FirstRunParameterizedInteractiveUiTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features_and_params;
-    enabled_features_and_params.push_back(
-        {kForYouFre,
-         {{kForYouFreWithDefaultBrowserStep.name,
-           WithDefaultBrowserStep() ? "forced" : "no"}}});
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-    if (WithSearchEngineChoiceStep()) {
-      scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
-          SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
-              /*force_chrome_build=*/true));
-
-      enabled_features_and_params.push_back(
-          {switches::kSearchEngineChoiceFre, {}});
-    }
-#endif
-
-    if (WithPrivacySandboxEnabled()) {
-      enabled_features_and_params.push_back(
-          {privacy_sandbox::kPrivacySandboxSettings4,
-           {{privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting
-                 .name,
-             "true"}}});
-    }
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        enabled_features_and_params, {});
-  }
-
-  // FirstRunInteractiveUiTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    FirstRunInteractiveUiTest::SetUpCommandLine(command_line);
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-    if (WithSearchEngineChoiceStep()) {
-      command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
-                                      "BE");
-    }
-#endif
-  }
-
-  void SetUp() override {
-    if (WithPrivacySandboxEnabled()) {
-      ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    }
-    FirstRunInteractiveUiTest::SetUp();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    FirstRunInteractiveUiTest::SetUpInProcessBrowserTestFixture();
-    if (WithPrivacySandboxEnabled()) {
-      PrivacySandboxService::SetPromptDisabledForTests(false);
-    }
-  }
-
-  void SetUpOnMainThread() override {
-    FirstRunInteractiveUiTest::SetUpOnMainThread();
-    if (WithPrivacySandboxEnabled()) {
-      host_resolver()->AddRule("*", "127.0.0.1");
-      embedded_test_server()->StartAcceptingConnections();
-    }
-  }
-
-  bool WithDefaultBrowserStep() const {
-    return GetParam().with_default_browser_step;
-  }
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-  bool WithSearchEngineChoiceStep() const {
-    return GetParam().with_search_engine_choice_step;
-  }
-#endif
-
-  bool WithPrivacySandboxEnabled() const {
-    return GetParam().with_privacy_sandbox_enabled;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         FirstRunParameterizedInteractiveUiTest,
-                         testing::ValuesIn(kTestParams),
-                         &ParamToTestSuffix);
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   base::test::TestFuture<bool> proceed_future;
@@ -461,21 +496,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
 
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
       If([&] { return WithSearchEngineChoiceStep(); },
-         Steps(
-             WaitForWebContentsNavigation(
-                 kWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
-             PressJsButton(kWebContentsId, first_search_engine),
-             WaitForButtonEnabled(kWebContentsId,
-                                  kSubmitSearchEngineChoiceButton),
-             PressJsButton(kWebContentsId, kSubmitSearchEngineChoiceButton))),
+         CompleteSearchEngineChoiceStep()),
 #endif
 
       If([&] { return WithDefaultBrowserStep(); },
-         Steps(
-             WaitForWebContentsNavigation(
-                 kWebContentsId, GURL(chrome::kChromeUIIntroDefaultBrowserURL)),
-             EnsurePresent(kWebContentsId, kConfirmDefaultBrowserButton),
-             PressJsButton(kWebContentsId, kConfirmDefaultBrowserButton))));
+         CompleteDefaultBrowserStep()));
 
   WaitForPickerClosed();
 
@@ -538,7 +563,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineSync) {
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
   base::test::TestFuture<bool> proceed_future;
   base::HistogramTester histogram_tester;
 
@@ -567,9 +592,15 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineSync) {
           AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
                                             SyncConfirmationStyle::kWindow)),
 
-      // Click "Don't sign in" to proceed to the browser.
       EnsurePresent(kWebContentsId, kDontSyncButton),
-      PressJsButton(kWebContentsId, kDontSyncButton));
+      PressJsButton(kWebContentsId, kDontSyncButton),
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+      If([&] { return WithSearchEngineChoiceStep(); },
+         CompleteSearchEngineChoiceStep()),
+#endif
+      If([&] { return WithDefaultBrowserStep(); },
+         CompleteDefaultBrowserStep()));
 
   // Wait for the picker to be closed and deleted.
   WaitForPickerClosed();
@@ -597,7 +628,76 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineSync) {
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, PeekAndDeclineSignIn) {
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
+  base::test::TestFuture<bool> proceed_future;
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(IsProfileNameDefault());
+
+  OpenFirstRun(proceed_future.GetCallback());
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+
+      // Wait for the profile picker to show the intro.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/true),
+      // Wait for switch to the Gaia sign-in page to complete.
+      // Note: kPickerWebContentsId now points to the new profile's WebContents.
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  // Pulled out of the test sequence because it waits using `RunLoop`s.
+  SimulateSignIn(kTestEmail, kTestGivenName);
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForWebContentsNavigation(
+          kWebContentsId,
+          AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
+                                            SyncConfirmationStyle::kWindow)),
+
+      // Click "Settings" to proceed to the browser.
+      EnsurePresent(kWebContentsId, kSettingsButton),
+      PressJsButton(kWebContentsId, kSettingsButton));
+
+  // Wait for the picker to be closed and deleted.
+  WaitForPickerClosed();
+  ASSERT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSyncSetupSubPage));
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  if (WithSearchEngineChoiceStep()) {
+    SearchEngineChoiceService* search_engine_choice_service =
+        SearchEngineChoiceServiceFactory::GetForProfile(profile());
+    EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(browser()));
+  }
+#endif
+
+  EXPECT_TRUE(proceed_future.Get());
+  EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), GetProfileName());
+
+  // Checking the expected metrics from this flow.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SyncOptIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kCompleted, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
+                       PeekAndDeclineSignIn) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> proceed_future;
 
@@ -627,7 +727,14 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, PeekAndDeclineSignIn) {
       EnsurePresent(kWebContentsId, kDontSignInButton),
       CheckJsResultAt(kWebContentsId, kSignInButton, "(e) => !e.disabled"),
       CheckJsResultAt(kWebContentsId, kDontSignInButton, "(e) => !e.disabled"),
-      PressJsButton(kWebContentsId, kDontSignInButton));
+      PressJsButton(kWebContentsId, kDontSignInButton),
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+      If([&] { return WithSearchEngineChoiceStep(); },
+         CompleteSearchEngineChoiceStep()),
+#endif
+      If([&] { return WithDefaultBrowserStep(); },
+         CompleteDefaultBrowserStep()));
 
   WaitForPickerClosed();
   EXPECT_EQ(kForYouFreCloseShouldProceed.Get(), proceed_future.Get());
@@ -646,7 +753,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, PeekAndDeclineSignIn) {
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineProfileManagement) {
+IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
+                       DeclineProfileManagement) {
   base::test::TestFuture<bool> proceed_future;
   base::HistogramTester histogram_tester;
 
@@ -691,9 +799,15 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineProfileManagement) {
       WaitForWebContentsNavigation(
           kWebContentsId, GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL)),
 
-      // Click "Don't sign in" to proceed to the browser.
       EnsurePresent(kWebContentsId, kDeclineManagementButton),
-      PressJsButton(kWebContentsId, kDeclineManagementButton));
+      PressJsButton(kWebContentsId, kDeclineManagementButton),
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+      If([&] { return WithSearchEngineChoiceStep(); },
+         CompleteSearchEngineChoiceStep()),
+#endif
+      If([&] { return WithDefaultBrowserStep(); },
+         CompleteDefaultBrowserStep()));
 
   // Wait for the picker to be closed and deleted.
   WaitForPickerClosed();
