@@ -1899,16 +1899,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Intent.OpenFileType" enum="AndroidUtilsMimeTypes"
-    expires_after="2023-09-18">
-  <owner>twellington@chromium.org</owner>
-  <owner>mthiesse@chromium.org</owner>
-  <summary>
-    When a user attempts to navigate a file: URI, records the mime type of the
-    file.
-  </summary>
-</histogram>
-
 <histogram name="Android.Intent.ShareIntentUrlCount" units="URLs"
     expires_after="2024-04-28">
   <owner>mthiesse@chromium.org</owner>
