@@ -1983,8 +1983,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         mNextTabPolicySupplier = new ChromeNextTabPolicySupplier(mLayoutStateProviderSupplier);
 
-        boolean tabModelWasCreated = mTabModelOrchestrator.createTabModels(
-                this, this, mNextTabPolicySupplier, mWindowId);
+        boolean tabModelWasCreated =
+                mTabModelOrchestrator.createTabModels(
+                        this,
+                        getProfileProviderSupplier(),
+                        this,
+                        mNextTabPolicySupplier,
+                        mWindowId);
         if (!tabModelWasCreated) {
             finishAndRemoveTask();
             return;

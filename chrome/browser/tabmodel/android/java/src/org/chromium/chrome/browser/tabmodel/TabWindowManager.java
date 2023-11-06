@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tabmodel;
 import android.app.Activity;
 import android.util.Pair;
 
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.ui.base.WindowAndroid;
@@ -36,20 +38,23 @@ public interface TabWindowManager {
     int getMaxSimultaneousSelectors();
 
     /**
-     * Called to request a {@link TabModelSelector} based on {@code index}. Note that the
-     * {@link TabModelSelector} returned might not actually be the one related to {@code index} and
-     * {@link #getIndexForWindow(Activity)} should be called to grab the actual index if required.
+     * Called to request a {@link TabModelSelector} based on {@code index}. Note that the {@link
+     * TabModelSelector} returned might not actually be the one related to {@code index} and {@link
+     * #getIndexForWindow(Activity)} should be called to grab the actual index if required.
      *
+     * @param profileProviderSupplier The provider of the Profiles used in the selector.
      * @param tabCreatorManager An instance of {@link TabCreatorManager}.
      * @param nextTabPolicySupplier An instance of {@link NextTabPolicySupplier}.
      * @param index The index of the requested {@link TabModelSelector}. Not guaranteed to be the
-     *              index of the {@link TabModelSelector} returned.
+     *     index of the {@link TabModelSelector} returned.
      * @return {@link Pair} of the index and the {@link TabModelSelector} assigned to that index, or
-     *         {@code null} if there are too many
-     *         {@link TabModelSelector}s already built.
+     *     {@code null} if there are too many {@link TabModelSelector}s already built.
      */
-    Pair<Integer, TabModelSelector> requestSelector(Activity activity,
-            TabCreatorManager tabCreatorManager, NextTabPolicySupplier nextTabPolicySupplier,
+    Pair<Integer, TabModelSelector> requestSelector(
+            Activity activity,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            TabCreatorManager tabCreatorManager,
+            NextTabPolicySupplier nextTabPolicySupplier,
             int index);
 
     /**

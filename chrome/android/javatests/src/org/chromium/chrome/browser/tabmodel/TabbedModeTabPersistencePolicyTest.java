@@ -25,6 +25,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
@@ -33,6 +35,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
@@ -62,6 +65,7 @@ public class TabbedModeTabPersistencePolicyTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock ProfileProvider mProfileProvider;
     @Mock Profile mProfile;
     @Mock Profile mIncognitoProfile;
 
@@ -75,6 +79,7 @@ public class TabbedModeTabPersistencePolicyTest {
                     @Override
                     public TabModelSelector buildSelector(
                             Activity activity,
+                            OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier,
                             int selectorIndex) {
@@ -95,6 +100,7 @@ public class TabbedModeTabPersistencePolicyTest {
                         TabStateDirectory.TABBED_MODE_DIRECTORY);
         TabStateDirectory.setBaseStateDirectoryForTests(mMockDirectory.getBaseDirectory());
 
+        Mockito.when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
     }
@@ -141,10 +147,17 @@ public class TabbedModeTabPersistencePolicyTest {
         TabbedModeTabModelOrchestrator orchestrator =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
+                            OneshotSupplierImpl<ProfileProvider> profileProviderSupplier =
+                                    new OneshotSupplierImpl<>();
+                            profileProviderSupplier.set(mProfileProvider);
                             TabbedModeTabModelOrchestrator tmpOrchestrator =
                                     new TabbedModeTabModelOrchestrator(false);
                             tmpOrchestrator.createTabModels(
-                                    new ChromeTabbedActivity(), null, null, 0);
+                                    new ChromeTabbedActivity(),
+                                    profileProviderSupplier,
+                                    null,
+                                    null,
+                                    0);
                             TabModelSelector selector = tmpOrchestrator.getTabModelSelector();
                             ((MockTabModelSelector) selector)
                                     .initializeTabModels(normalTabModel, incognitoTabModel);

@@ -9,8 +9,10 @@ import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -38,10 +40,14 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      * Creates the TabModelSelector and the TabPersistentStore.
      *
      * @return Whether the creation was successful. It may fail is we reached the limit of number of
-     *         windows.
+     *     windows.
      */
-    public boolean createTabModels(Activity activity, TabCreatorManager tabCreatorManager,
-            NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
+    public boolean createTabModels(
+            Activity activity,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            TabCreatorManager tabCreatorManager,
+            NextTabPolicySupplier nextTabPolicySupplier,
+            int selectorIndex) {
         boolean mergeTabsOnStartup = shouldMergeTabs(activity);
         if (mergeTabsOnStartup) {
             MultiInstanceManager.mergedOnStartup();
@@ -49,8 +55,13 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
         // Instantiate TabModelSelectorImpl
         Pair<Integer, TabModelSelector> selectorAssignment =
-                TabWindowManagerSingleton.getInstance().requestSelector(
-                        activity, tabCreatorManager, nextTabPolicySupplier, selectorIndex);
+                TabWindowManagerSingleton.getInstance()
+                        .requestSelector(
+                                activity,
+                                profileProviderSupplier,
+                                tabCreatorManager,
+                                nextTabPolicySupplier,
+                                selectorIndex);
         if (selectorAssignment == null) {
             mTabModelSelector = null;
         } else {

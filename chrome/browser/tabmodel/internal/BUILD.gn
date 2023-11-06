@@ -23,6 +23,7 @@ android_library("java") {
   ]
   deps = [
     "//base:base_java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//third_party/kotlin_stdlib:kotlin_stdlib_java",

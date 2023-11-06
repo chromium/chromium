@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import android.app.Activity;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -22,13 +24,23 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
     // Do not inline since this uses some APIs only available on Android N versions, which cause
     // verification errors.
     @Override
-    public TabModelSelector buildSelector(Activity activity, TabCreatorManager tabCreatorManager,
-            NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
+    public TabModelSelector buildSelector(
+            Activity activity,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            TabCreatorManager tabCreatorManager,
+            NextTabPolicySupplier nextTabPolicySupplier,
+            int selectorIndex) {
         TabModelFilterFactory tabModelFilterFactory = new ChromeTabModelFilterFactory(activity);
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
 
-        return new TabModelSelectorImpl(/*windowAndroidSupplier=*/null, tabCreatorManager,
-                tabModelFilterFactory, nextTabPolicySupplier, asyncTabParamsManager, true,
-                ActivityType.TABBED, false);
+        return new TabModelSelectorImpl(
+                profileProviderSupplier,
+                tabCreatorManager,
+                tabModelFilterFactory,
+                nextTabPolicySupplier,
+                asyncTabParamsManager,
+                true,
+                ActivityType.TABBED,
+                false);
     }
 }

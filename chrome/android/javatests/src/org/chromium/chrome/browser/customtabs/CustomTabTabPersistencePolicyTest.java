@@ -30,6 +30,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -71,6 +73,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Tests for the Custom Tab persistence logic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class CustomTabTabPersistencePolicyTest {
+    @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
 
@@ -509,9 +512,13 @@ public class CustomTabTabPersistencePolicyTest {
         ApplicationStatus.registerStateListenerForActivity(stateListener, customTabActivity);
         ApplicationStatus.onStateChangeForTesting(customTabActivity, ActivityState.STARTED);
 
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(mProfileProvider);
+        Mockito.when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+
         CustomTabsTabModelOrchestrator orchestrator = new CustomTabsTabModelOrchestrator();
         orchestrator.createTabModels(
-                customTabActivity::getWindowAndroid,
+                profileProviderSupplier,
                 customTabActivity,
                 new ChromeTabModelFilterFactory(customTabActivity),
                 buildTestPersistencePolicy(),

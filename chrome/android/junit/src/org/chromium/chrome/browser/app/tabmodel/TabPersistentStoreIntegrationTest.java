@@ -31,6 +31,7 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -99,6 +101,7 @@ public class TabPersistentStoreIntegrationTest {
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
     @Mock private TabContentManager mTabContentManager;
     @Mock private Profile mProfile;
+    @Mock private ProfileProvider mProfileProvider;
     @Mock private TabModelJniBridge.Natives mTabModelJniBridgeJni;
     @Mock private RecentlyClosedBridge.Natives mRecentlyClosedBridgeJni;
     @Mock private Resources mResources;
@@ -119,15 +122,22 @@ public class TabPersistentStoreIntegrationTest {
         when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket))
                 .thenReturn(1);
         when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mChromeTabCreator);
-        mOrchestrator = new TabbedModeTabModelOrchestrator(/* tabMergingEnabled= */ true);
-        mOrchestrator.createTabModels(
-                mChromeActivity, mTabCreatorManager, mNextTabPolicySupplier, 0);
-        mTabModelSelector = mOrchestrator.getTabModelSelector();
-        mTabPersistentStore = mOrchestrator.getTabPersistentStore();
 
         // Pretend native was loaded, creating TabModelImpls.
-        Profile.setLastUsedProfileForTesting(mProfile);
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(mProfileProvider);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+
+        mOrchestrator = new TabbedModeTabModelOrchestrator(/* tabMergingEnabled= */ true);
+        mOrchestrator.createTabModels(
+                mChromeActivity,
+                profileProviderSupplier,
+                mTabCreatorManager,
+                mNextTabPolicySupplier,
+                0);
+        mTabModelSelector = mOrchestrator.getTabModelSelector();
+        mTabPersistentStore = mOrchestrator.getTabPersistentStore();
 
         jniMocker.mock(TabModelJniBridgeJni.TEST_HOOKS, mTabModelJniBridgeJni);
         jniMocker.mock(RecentlyClosedBridgeJni.TEST_HOOKS, mRecentlyClosedBridgeJni);

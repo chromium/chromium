@@ -26,10 +26,12 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -57,6 +59,7 @@ public class TabModelSelectorImplTest {
     IncognitoTabModelObserver.IncognitoReauthDialogDelegate mIncognitoReauthDialogDelegateMock;
 
     @Mock TabModelSelectorObserver mTabModelSelectorObserverMock;
+    @Mock ProfileProvider mProfileProvider;
     @Mock Profile mProfile;
     @Mock Profile mIncognitoProfile;
 
@@ -75,16 +78,18 @@ public class TabModelSelectorImplTest {
 
         AsyncTabParamsManager realAsyncTabParamsManager =
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(mProfileProvider);
         mTabModelSelector =
                 new TabModelSelectorImpl(
-                        null,
+                        profileProviderSupplier,
                         mTabCreatorManager,
                         mMockTabModelFilterFactory,
                         mNextTabPolicySupplier,
-                        realAsyncTabParamsManager,
-                        /* supportUndo= */ false,
-                        NO_RESTORE_TYPE,
-                        /* startIncognito= */ false);
+                        /* supportUndo= */ realAsyncTabParamsManager,
+                        false,
+                        /* startIncognito= */ NO_RESTORE_TYPE,
+                        false);
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(
                 mMockTabContentManager,

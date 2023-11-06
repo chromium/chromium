@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -263,6 +264,7 @@ public class TabPersistentStoreTest {
                 @Override
                 public TabModelSelector buildSelector(
                         Activity activity,
+                        OneshotSupplier<ProfileProvider> profileProviderSupplier,
                         TabCreatorManager tabCreatorManager,
                         NextTabPolicySupplier nextTabPolicySupplier,
                         int selectorIndex) {
@@ -1073,7 +1075,13 @@ public class TabPersistentStoreTest {
                                         mChromeActivity, ActivityState.DESTROYED);
                                 return (TestTabModelSelector)
                                         sTabWindowManager.requestSelector(
-                                                        mChromeActivity, mChromeActivity, null, 0)
+                                                        mChromeActivity,
+                                                        new ActivityProfileProvider(
+                                                                mChromeActivity
+                                                                        .getLifecycleDispatcher()),
+                                                        mChromeActivity,
+                                                        null,
+                                                        0)
                                                 .second;
                             }
                         });
