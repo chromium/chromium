@@ -549,11 +549,6 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
     }
   }
 
-  if (!has_floating_descendants_for_paint_ && items_builder_) {
-    has_floating_descendants_for_paint_ =
-        items_builder_->HasFloatingDescendantsForPaint();
-  }
-
   const NGPhysicalBoxFragment* fragment =
       NGPhysicalBoxFragment::Create(this, block_or_line_writing_mode);
   fragment->CheckType();

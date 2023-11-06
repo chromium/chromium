@@ -41,12 +41,6 @@ class CORE_EXPORT FragmentItemsBuilder {
 
   wtf_size_t Size() const { return items_.size(); }
 
-  // Returns true if we have any floating descendants which need to be
-  // traversed during the float paint phase.
-  bool HasFloatingDescendantsForPaint() const {
-    return has_floating_descendants_for_paint_;
-  }
-
   const String& TextContent(bool first_line) const {
     return UNLIKELY(first_line && first_line_text_content_)
                ? first_line_text_content_
@@ -172,7 +166,6 @@ class CORE_EXPORT FragmentItemsBuilder {
 
   WritingDirectionMode writing_direction_;
 
-  bool has_floating_descendants_for_paint_ = false;
   bool is_converted_to_physical_ = false;
   bool is_line_items_pool_acquired_ = false;
 
