@@ -663,6 +663,116 @@
   </event>
 </project>
 
+<project name="DevTools">
+  <owner>dsv@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <key-rotation>120</key-rotation>
+  <summary>
+    Interaction metrics for the Chrome DevTools — debugging tools and
+    capabilities offered by Chrome.
+  </summary>
+
+  <event name="Impression">
+    <summary>
+      Recorded whenever a new visual element is first shown to the user
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="VeType" type="int">
+      <summary>
+        Visual Element type.
+      </summary>
+    </metric>
+    <metric name="VeParent" type="int">
+      <summary>
+        ID of a parent of the visual element.
+      </summary>
+    </metric>
+    <metric name="VeContext" type="int">
+      <summary>
+        Arbitrary contextual information for the visual element.
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last DevTools event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Click">
+    <summary>
+      Recorded whenever user clicks on a tracked visual element.
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="MouseButton" type="int">
+      <summary>
+        An index of a mouse button as defined in JavaScript MouseEvent.
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last DevTools event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Change">
+    <summary>
+      Recorded whenever user changes a value of a tracked visual element.
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last DevTools event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="KeyDown">
+    <summary>
+      Recorded presses key on a tracked visual element.
+    </summary>
+    <metric name="VeId" type="int">
+      <summary>
+        Visual Element ID
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Arbitrary contextual information for the event.
+      </summary>
+    </metric>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last DevTools event.
+      </summary>
+    </metric>
+  </event>
+</project>
+
 <project name="TestProjectOne">
   <owner>tby@chromium.org</owner>
   <id>per-project</id>

@@ -263,6 +263,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                        const std::vector<std::string>& file_paths);
   void ShowDevToolsInfoBar(const std::u16string& message,
                            DevToolsInfoBarDelegate::Callback callback);
+  base::TimeDelta GetTimeSinceLastAction();
 
   // Extensions support.
   void AddDevToolsExtensionsToClient();
@@ -308,6 +309,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   std::string initial_target_id_;
 
   DevToolsSettings settings_;
+  base::TimeTicks last_action_time_;
 
 #if defined(AIDA_SCOPE)
   std::unique_ptr<AidaClient> aida_client_;

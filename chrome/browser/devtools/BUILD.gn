@@ -170,6 +170,9 @@ static_library("devtools") {
     if (is_chromeos_ash) {
       deps += [ "//ash/constants" ]
     }
+    if (is_chromeos_ash || is_chromeos_lacros) {
+      deps += [ "//components/metrics/structured:structured_events" ]
+    }
     sources += [
       "chrome_devtools_manager_delegate.cc",
       "chrome_devtools_manager_delegate.h",
