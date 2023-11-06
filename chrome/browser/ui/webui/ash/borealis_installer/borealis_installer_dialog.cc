@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ui/views/borealis/borealis_disallowed_dialog.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -91,9 +92,8 @@ void BorealisInstallerDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   params->z_order = ui::ZOrderLevel::kNormal;
 
-  const ShelfID shelf_id(Id());
-  params->init_properties_container.SetProperty(kShelfIDKey,
-                                                shelf_id.Serialize());
+  params->init_properties_container.SetProperty(
+      kShelfIDKey, ash::ShelfID(borealis::kInstallerAppId).Serialize());
   params->init_properties_container.SetProperty<int>(kShelfItemTypeKey,
                                                      TYPE_DIALOG);
 
