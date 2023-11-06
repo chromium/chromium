@@ -14,8 +14,6 @@
 #include "content/public/browser/context_menu_params.h"
 #include "ui/base/models/simple_menu_model.h"
 
-class Browser;
-
 namespace autofill {
 
 class AutofillField;
@@ -39,8 +37,7 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
 
   AutofillContextMenuManager(PersonalDataManager* personal_data_manager,
                              RenderViewContextMenuBase* delegate,
-                             ui::SimpleMenuModel* menu_model,
-                             Browser* browser);
+                             ui::SimpleMenuModel* menu_model);
   ~AutofillContextMenuManager() override;
   AutofillContextMenuManager(const AutofillContextMenuManager&) = delete;
   AutofillContextMenuManager& operator=(const AutofillContextMenuManager&) =
@@ -99,7 +96,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   const raw_ptr<PersonalDataManager> personal_data_manager_;
   const raw_ptr<ui::SimpleMenuModel> menu_model_;
   const raw_ptr<RenderViewContextMenuBase> delegate_;
-  const raw_ptr<Browser> browser_;
   content::ContextMenuParams params_;
 };
 

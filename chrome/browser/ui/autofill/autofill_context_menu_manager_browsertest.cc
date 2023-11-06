@@ -173,8 +173,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     render_view_context_menu_->Init();
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
-            personal_data_, render_view_context_menu_.get(), menu_model_.get(),
-            nullptr);
+            personal_data_, render_view_context_menu_.get(), menu_model_.get());
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams());
   }

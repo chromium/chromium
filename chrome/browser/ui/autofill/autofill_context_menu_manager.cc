@@ -11,9 +11,11 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -118,12 +120,10 @@ bool AutofillContextMenuManager::IsAutofillCustomCommandId(
 AutofillContextMenuManager::AutofillContextMenuManager(
     PersonalDataManager* personal_data_manager,
     RenderViewContextMenuBase* delegate,
-    ui::SimpleMenuModel* menu_model,
-    Browser* browser)
+    ui::SimpleMenuModel* menu_model)
     : personal_data_manager_(personal_data_manager),
       menu_model_(menu_model),
-      delegate_(delegate),
-      browser_(browser) {
+      delegate_(delegate) {
   DCHECK(delegate_);
   params_ = delegate_->params();
 }
@@ -205,8 +205,11 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
     const LocalFrameToken& frame_token,
     AutofillManager& manager) {
+  // The cast is safe since the context menu is only available on Desktop.
+  auto& client = static_cast<ContentAutofillClient&>(manager.client());
+  Browser* browser = chrome::FindBrowserWithTab(&client.GetWebContents());
   chrome::ShowFeedbackPage(
-      browser_, chrome::kFeedbackSourceAutofillContextMenu,
+      browser, chrome::kFeedbackSourceAutofillContextMenu,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/kFeedbackPlaceholder,
       /*category_tag=*/"dogfood_autofill_feedback",
