@@ -85,6 +85,12 @@ void ExtensionWebContentsObserver::Initialize() {
 
   web_contents()->ForEachRenderFrameHost(
       [this](content::RenderFrameHost* render_frame_host) {
+        // ForEachRenderFrameHost descends into inner WebContents, so make sure
+        // the RenderFrameHost is actually one bound to this object.
+        if (content::WebContents::FromRenderFrameHost(render_frame_host) !=
+            web_contents()) {
+          return;
+        }
         // We only initialize the frame if the renderer counterpart is live;
         // otherwise we wait for the RenderFrameCreated notification.
         if (render_frame_host->IsRenderFrameLive())
@@ -135,8 +141,8 @@ void ExtensionWebContentsObserver::InitializeRenderFrame(
   security_policy->GrantRequestOrigin(process_id, frame_extension->origin());
 
   // Notify the render frame of the view type.
-  GetLocalFrame(render_frame_host)
-      ->NotifyRenderViewType(GetViewType(web_contents()));
+  GetLocalFrameChecked(render_frame_host)
+      .NotifyRenderViewType(GetViewType(web_contents()));
 
   ProcessManager::Get(browser_context_)
       ->RegisterRenderFrameHost(web_contents(), render_frame_host,
@@ -357,6 +363,14 @@ mojom::LocalFrame* ExtensionWebContentsObserver::GetLocalFrame(
   if (!render_frame_host->IsRenderFrameLive())
     return nullptr;
 
+  // Do not return a LocalFrame object for frames that do not immediately belong
+  // to this WebContents. For example frames belonging to inner WebContents will
+  // have their own ExtensionWebContentsObserver.
+  if (content::WebContents::FromRenderFrameHost(render_frame_host) !=
+      web_contents()) {
+    return nullptr;
+  }
+
   mojo::AssociatedRemote<mojom::LocalFrame>& remote =
       local_frame_map_[render_frame_host];
   if (!remote.is_bound()) {
@@ -364,6 +378,13 @@ mojom::LocalFrame* ExtensionWebContentsObserver::GetLocalFrame(
         remote.BindNewEndpointAndPassReceiver());
   }
   return remote.get();
+}
+
+mojom::LocalFrame& ExtensionWebContentsObserver::GetLocalFrameChecked(
+    content::RenderFrameHost* render_frame_host) {
+  auto* local_frame = GetLocalFrame(render_frame_host);
+  CHECK(local_frame);
+  return *local_frame;
 }
 
 void ExtensionWebContentsObserver::OnWindowIdChanged(SessionID id) {

@@ -404,9 +404,13 @@ void TabHelper::SetTabId(content::RenderFrameHost* render_frame_host) {
   if (render_frame_host->IsRenderFrameLive()) {
     SessionID id = sessions::SessionTabHelper::IdForTab(web_contents());
     CHECK(id.is_valid());
-    ExtensionWebContentsObserver::GetForWebContents(web_contents())
-        ->GetLocalFrame(render_frame_host)
-        ->SetTabId(id.id());
+    auto* local_frame =
+        ExtensionWebContentsObserver::GetForWebContents(web_contents())
+            ->GetLocalFrame(render_frame_host);
+    if (!local_frame) {
+      return;
+    }
+    local_frame->SetTabId(id.id());
   }
 }
 

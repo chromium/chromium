@@ -82,6 +82,7 @@
 #include "extensions/browser/api/file_system/file_system_api.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
@@ -3129,4 +3130,39 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfNavigationDuringProfileShutdown) {
   // The test succeeds if it doesn't crash when the posted PDF task attempts to
   // run (the task should be canceled/ignored), so wait for this to happen.
   base::RunLoop().RunUntilIdle();
+}
+
+// Ensure that extensions do not get multiple bound LocalMainFrames for guest
+// views. This is a regression test for crbug.com/1367582.
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, ExtensionsBindingLocalHost) {
+  // Load test PDF in first tab.
+  const GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
+
+  // Verify the PDF has loaded.
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
+
+  auto* web_contents_observer =
+      extensions::ExtensionWebContentsObserver::GetForWebContents(
+          GetActiveWebContents());
+  primary_main_frame->ForEachRenderFrameHost(
+      [web_contents_observer](content::RenderFrameHost* frame_host) {
+        web_contents_observer->GetLocalFrame(frame_host);
+      });
+  auto* guest_view_web_contents_observer =
+      extensions::ExtensionWebContentsObserver::GetForWebContents(
+          guest_view->web_contents());
+  guest_view->GetGuestMainFrame()->ForEachRenderFrameHost(
+      [guest_view_web_contents_observer](content::RenderFrameHost* frame_host) {
+        guest_view_web_contents_observer->GetLocalFrame(frame_host);
+      });
+
+  // Execute some script in each of the frames to ensure the above bindings
+  // have been executed in the renderer. They would previously have caused
+  // a process crash.
+  EXPECT_EQ(1, content::EvalJs(primary_main_frame, "1;").ExtractInt());
+  EXPECT_EQ(1, content::EvalJs(guest_view->web_contents(), "1;").ExtractInt());
 }

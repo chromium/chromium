@@ -1011,8 +1011,8 @@ void WebViewGuest::RenderFrameCreated(
 
   if (!render_frame_host->GetParentOrOuterDocument()) {
     ExtensionWebContentsObserver::GetForWebContents(web_contents())
-        ->GetLocalFrame(render_frame_host)
-        ->SetFrameName(name_);
+        ->GetLocalFrameChecked(render_frame_host)
+        .SetFrameName(name_);
     SetTransparency(render_frame_host);
   }
 }
@@ -1313,8 +1313,8 @@ void WebViewGuest::SetName(const std::string& name) {
     return;
   }
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrame(GetGuestMainFrame())
-      ->SetFrameName(name_);
+      ->GetLocalFrameChecked(GetGuestMainFrame())
+      .SetFrameName(name_);
 }
 
 void WebViewGuest::SetSpatialNavigationEnabled(bool enabled) {
@@ -1322,8 +1322,8 @@ void WebViewGuest::SetSpatialNavigationEnabled(bool enabled) {
     return;
   is_spatial_navigation_enabled_ = enabled;
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrame(web_contents()->GetPrimaryMainFrame())
-      ->SetSpatialNavigationEnabled(enabled);
+      ->GetLocalFrameChecked(web_contents()->GetPrimaryMainFrame())
+      .SetSpatialNavigationEnabled(enabled);
 }
 
 bool WebViewGuest::IsSpatialNavigationEnabled() const {

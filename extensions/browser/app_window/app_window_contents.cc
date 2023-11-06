@@ -74,9 +74,9 @@ void AppWindowContentsImpl::NativeWindowChanged(
     return;
   }
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrame(render_frame_host)
-      ->MessageInvoke(host_->extension_id(), "app.window",
-                      "updateAppWindowProperties", std::move(args));
+      ->GetLocalFrameChecked(render_frame_host)
+      .MessageInvoke(host_->extension_id(), "app.window",
+                     "updateAppWindowProperties", std::move(args));
 }
 
 void AppWindowContentsImpl::NativeWindowClosed(bool send_onclosed) {
@@ -84,8 +84,8 @@ void AppWindowContentsImpl::NativeWindowClosed(bool send_onclosed) {
   if (!web_contents_->GetPrimaryMainFrame()->IsRenderFrameLive())
     return;
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrame(web_contents_->GetPrimaryMainFrame())
-      ->AppWindowClosed(send_onclosed);
+      ->GetLocalFrameChecked(web_contents_->GetPrimaryMainFrame())
+      .AppWindowClosed(send_onclosed);
 }
 
 content::WebContents* AppWindowContentsImpl::GetWebContents() const {

@@ -249,12 +249,12 @@ class Handler : public content::WebContentsObserver {
                                               host_id_);
     }
     ExtensionWebContentsObserver::GetForWebContents(web_contents())
-        ->GetLocalFrame(frame)
-        ->ExecuteCode(std::move(params),
-                      base::BindOnce(&Handler::OnExecuteCodeFinished,
-                                     weak_ptr_factory_.GetWeakPtr(),
-                                     frame->GetProcess()->GetID(),
-                                     frame->GetRoutingID()));
+        ->GetLocalFrameChecked(frame)
+        .ExecuteCode(std::move(params),
+                     base::BindOnce(&Handler::OnExecuteCodeFinished,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    frame->GetProcess()->GetID(),
+                                    frame->GetRoutingID()));
   }
 
   // Handles the ExecuteCodeFinished message.

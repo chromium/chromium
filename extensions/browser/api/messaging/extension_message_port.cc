@@ -445,8 +445,8 @@ void ExtensionMessagePort::DispatchOnConnect(
 
     ExtensionWebContentsObserver::GetForWebContents(
         content::WebContents::FromRenderFrameHost(frame))
-        ->GetLocalFrame(frame)
-        ->DispatchOnConnect(
+        ->GetLocalFrameChecked(frame)
+        .DispatchOnConnect(
             port_id_, channel_type, channel_name, source.Clone(), info.Clone(),
             std::move(message_port), std::move(message_port_host),
             base::BindOnce(&ExtensionMessagePort::OnConnectResponse,
