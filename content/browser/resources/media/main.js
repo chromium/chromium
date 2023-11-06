@@ -29,7 +29,7 @@ window.media.updateGeneralAudioInformation = function(audioInfo) {
 };
 
 window.media.onReceiveAudioStreamData = function(audioStreamData) {
-  for (var component in audioStreamData) {
+  for (const component in audioStreamData) {
     window.media.updateAudioComponent(audioStreamData[component]);
   }
 };
@@ -56,7 +56,7 @@ window.media.updateRegisteredCdms = function(cdms) {
 };
 
 window.media.updateAudioComponent = function(component) {
-  var uniqueComponentId = component.owner_id + ':' + component.component_id;
+  const uniqueComponentId = component.owner_id + ':' + component.component_id;
   switch (component.status) {
     case 'closed':
       manager.removeAudioComponent(component.component_type, uniqueComponentId);
@@ -73,7 +73,7 @@ window.media.onPlayerOpen = function(id, timestamp) {
 };
 
 window.media.onMediaEvent = function(event) {
-  var source = event.renderer + ':' + event.player;
+  const source = event.renderer + ':' + event.player;
 
   // Although this gets called on every event, there is nothing we can do
   // because there is no onOpen event.
@@ -83,7 +83,7 @@ window.media.onMediaEvent = function(event) {
   manager.updatePlayerInfoNoRecord(
       source, event.ticksMillis, 'player_id', event.player);
 
-  var propertyCount = 0;
+  let propertyCount = 0;
   objectForEach(event.params, function(value, key) {
     key = key.trim();
     manager.updatePlayerInfo(source, event.ticksMillis, key, value);
