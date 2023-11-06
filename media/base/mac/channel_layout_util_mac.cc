@@ -109,13 +109,9 @@ std::unique_ptr<ScopedAudioChannelLayout> ChannelLayoutToAudioChannelLayout(
       new_layout->layout()->mChannelDescriptions;
 
   if (input_layout == CHANNEL_LAYOUT_DISCRETE) {
-    // For the discrete case just assume common input mappings; once we run out
-    // of known channels mark them as unknown.
+    // For the discrete case, mark all channels as unknown.
     for (int ch = 0; ch < input_channels; ++ch) {
-      descriptions[ch].mChannelLabel =
-          ch > CHANNELS_MAX
-              ? kAudioChannelLabel_Unknown
-              : ChannelToAudioChannelLabel(static_cast<Channels>(ch));
+      descriptions[ch].mChannelLabel = kAudioChannelLabel_Unknown;
       descriptions[ch].mChannelFlags = kAudioChannelFlags_AllOff;
     }
   } else if (input_layout == CHANNEL_LAYOUT_MONO) {
