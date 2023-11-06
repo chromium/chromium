@@ -36,6 +36,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -2161,7 +2162,8 @@ AuthenticatorRequestDialogModel::RecognizedCredentialsFor(
   return ret;
 }
 
-void AuthenticatorRequestDialogModel::OnPasskeysChanged() {
+void AuthenticatorRequestDialogModel::OnPasskeysChanged(
+    const std::vector<webauthn::PasskeyModelChange>& changes) {
   if (current_step_ != Step::kConditionalMediation) {
     // Updating an in flight request is only supported for conditional UI.
     return;

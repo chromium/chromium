@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
 
 namespace webauthn {
 
@@ -35,10 +36,10 @@ class TestPasskeyModel : public PasskeyModel {
       sync_pb::WebauthnCredentialSpecifics passkey) override;
   bool DeletePasskey(const std::string& credential_id) override;
   bool UpdatePasskey(const std::string& credential_id,
-                     PasskeyChange change) override;
+                     PasskeyUpdate change) override;
 
  private:
-  void NotifyPasskeysChanged();
+  void NotifyPasskeysChanged(const std::vector<PasskeyModelChange>& changes);
 
   std::vector<sync_pb::WebauthnCredentialSpecifics> credentials_;
   base::ObserverList<Observer> observers_;

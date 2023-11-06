@@ -15,6 +15,7 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
 
 namespace syncer {
 struct EntityData;
@@ -65,7 +66,7 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
   GetPasskeysForRelyingPartyId(const std::string& rp_id) const override;
   bool DeletePasskey(const std::string& credential_id) override;
   bool UpdatePasskey(const std::string& credential_id,
-                     PasskeyChange change) override;
+                     PasskeyUpdate change) override;
   std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) override;
 
@@ -80,7 +81,7 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
       const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void OnStoreCommitWriteBatch(const absl::optional<syncer::ModelError>& error);
-  void NotifyPasskeysChanged();
+  void NotifyPasskeysChanged(const std::vector<PasskeyModelChange>& changes);
 
   // Local view of the stored data. Indexes specifics protos by storage key.
   std::map<std::string, sync_pb::WebauthnCredentialSpecifics> data_;

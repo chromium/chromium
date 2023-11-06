@@ -33,6 +33,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/features.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
 #include "url/gurl.h"
 
 namespace {
@@ -465,7 +466,8 @@ void SavedPasswordsPresenter::OnLoginsRetained(
                           PasswordStoreChangeList()));
 }
 
-void SavedPasswordsPresenter::OnPasskeysChanged() {
+void SavedPasswordsPresenter::OnPasskeysChanged(
+    const std::vector<webauthn::PasskeyModelChange>& changes) {
   MaybeGroupCredentials(base::BindOnce(
       &SavedPasswordsPresenter::NotifySavedPasswordsChanged,
       weak_ptr_factory_.GetWeakPtr(), PasswordStoreChangeList()));

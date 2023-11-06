@@ -18,9 +18,12 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
+#include "components/webauthn/core/browser/passkey_sync_bridge.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -38,6 +41,8 @@ using webauthn_credentials_helper::LocalPasskeysMatchChecker;
 using webauthn_credentials_helper::MockPasskeyModelObserver;
 using webauthn_credentials_helper::NewPasskey;
 using webauthn_credentials_helper::NewShadowingPasskey;
+using webauthn_credentials_helper::PasskeyChangeObservationChecker;
+using webauthn_credentials_helper::PasskeyHasDisplayName;
 using webauthn_credentials_helper::PasskeyHasSyncId;
 using webauthn_credentials_helper::PasskeySyncActiveChecker;
 using webauthn_credentials_helper::ServerPasskeysMatchChecker;
@@ -98,7 +103,7 @@ class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
   base::test::ScopedFeatureList scoped_feature_list_{
       syncer::kSyncWebauthnCredentials};
 
-  webauthn::PasskeyModel& GetModel() {
+  webauthn::PasskeySyncBridge& GetModel() {
     return webauthn_credentials_helper::GetModel(kSingleProfile);
   }
 };
@@ -120,10 +125,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   const std::string sync_id = InjectPasskeyToFakeServer(NewPasskey());
-  EXPECT_TRUE(
-      LocalPasskeysMatchChecker(kSingleProfile,
-                                UnorderedElementsAre(PasskeyHasSyncId(sync_id)))
-          .Wait());
+  EXPECT_TRUE(PasskeyChangeObservationChecker(
+                  kSingleProfile,
+                  {{webauthn::PasskeyModelChange::ChangeType::ADD, sync_id}})
+                  .Wait());
 }
 
 // The model should retrieve individual passkeys by RP ID and credential ID.
@@ -214,10 +219,27 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
       ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))
           .Wait());
 
-  LocalPasskeysChangedChecker change_checker(kSingleProfile);
+  PasskeyChangeObservationChecker change_checker(
+      kSingleProfile,
+      {{webauthn::PasskeyModelChange::ChangeType::REMOVE, sync_id}});
   GetModel().DeletePasskey(passkey.credential_id());
   EXPECT_TRUE(ServerPasskeysMatchChecker(IsEmpty()).Wait());
   EXPECT_TRUE(change_checker.Wait());
+}
+
+// Downloading a deletion for a passkey that does not exist locally should not
+// crash.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DownloadDeletionOfNonExistingLocalPasskey) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  auto metadata_change_list =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+  syncer::EntityChangeList entity_changes;
+  entity_changes.emplace_back(
+      syncer::EntityChange::CreateDelete("unknown-sync-id"));
+  ASSERT_NO_FATAL_FAILURE(GetModel().ApplyIncrementalSyncChanges(
+      std::move(metadata_change_list), std::move(entity_changes)));
 }
 
 // Deleting a remote passkey should remove from the client.
@@ -231,7 +253,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
           .Wait());
 
   DeletePasskeyFromFakeServer(sync_id);
-  EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile, IsEmpty()).Wait());
+  PasskeyChangeObservationChecker change_checker(
+      kSingleProfile,
+      {{webauthn::PasskeyModelChange::ChangeType::REMOVE, sync_id}});
+  EXPECT_TRUE(change_checker.Wait());
 }
 
 // Attempting to delete a passkey that does not exist should return false.
@@ -406,7 +431,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
                                      EntityHasDisplayName(kDisplayName1))))
           .Wait());
 
-  LocalPasskeysChangedChecker change_checker(kSingleProfile);
+  PasskeyChangeObservationChecker change_checker(
+      kSingleProfile,
+      {{webauthn::PasskeyModelChange::ChangeType::UPDATE, passkey.sync_id()}});
   EXPECT_TRUE(GetModel().UpdatePasskey(passkey.credential_id(),
                                        {
                                            .user_name = kUsername2,
@@ -528,6 +555,27 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   ASSERT_TRUE(SetupSync());
   EXPECT_THAT(GetModel().GetAllSyncIds(),
               testing::UnorderedElementsAreArray(expected_sync_ids));
+}
+
+// Updating a remote passkey should sync to the client.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DownloadPasskeyUpdate) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
+  const std::string sync_id = InjectPasskeyToFakeServer(passkey);
+  EXPECT_TRUE(PasskeyChangeObservationChecker(
+                  kSingleProfile,
+                  {{webauthn::PasskeyModelChange::ChangeType::ADD, sync_id}})
+                  .Wait());
+
+  // Update the credential's display name.
+  passkey.set_user_display_name(kDisplayName2);
+  InjectPasskeyToFakeServer(passkey);
+  EXPECT_TRUE(PasskeyChangeObservationChecker(
+                  kSingleProfile,
+                  {{webauthn::PasskeyModelChange::ChangeType::UPDATE, sync_id}})
+                  .Wait());
 }
 
 // Tests that disabling sync before sync startup correctly clears the passkey

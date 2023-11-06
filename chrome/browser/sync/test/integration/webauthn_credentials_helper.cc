@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sync/test/integration/webauthn_credentials_helper.h"
 
+#include <vector>
+
 #include "base/rand_util.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -15,6 +17,8 @@
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
+#include "components/webauthn/core/browser/passkey_sync_bridge.h"
 
 namespace webauthn_credentials_helper {
 
@@ -63,7 +67,8 @@ bool LocalPasskeysChangedChecker::IsExitConditionSatisfied(std::ostream* os) {
   return satisfied_;
 }
 
-void LocalPasskeysChangedChecker::OnPasskeysChanged() {
+void LocalPasskeysChangedChecker::OnPasskeysChanged(
+    const std::vector<webauthn::PasskeyModelChange>& changes) {
   satisfied_ = true;
   CheckExitCondition();
 }
@@ -89,7 +94,8 @@ bool LocalPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   return matches;
 }
 
-void LocalPasskeysMatchChecker::OnPasskeysChanged() {
+void LocalPasskeysMatchChecker::OnPasskeysChanged(
+    const std::vector<webauthn::PasskeyModelChange>& changes) {
   CheckExitCondition();
 }
 
@@ -113,6 +119,49 @@ bool ServerPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   return matches;
 }
 
+PasskeyChangeObservationChecker::PasskeyChangeObservationChecker(
+    int profile,
+    ChangeList expected_changes)
+    : profile_(profile), expected_changes_(std::move(expected_changes)) {
+  observation_.Observe(&GetModel(profile_));
+}
+
+PasskeyChangeObservationChecker::~PasskeyChangeObservationChecker() = default;
+
+bool PasskeyChangeObservationChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting to observe change: ";
+
+  if (expected_changes_.size() != changes_observed_.size()) {
+    *os << "Size mismatch: " << expected_changes_.size() << " vs "
+        << changes_observed_.size();
+    return false;
+  }
+  for (const auto& change : changes_observed_) {
+    if (base::ranges::none_of(
+            expected_changes_, [&change](const auto& expected_change) {
+              return expected_change.first == change.type() &&
+                     expected_change.second == change.passkey().sync_id();
+            })) {
+      *os << "Unexpected change type " << static_cast<int>(change.type())
+          << ", id " << change.passkey().sync_id();
+      return false;
+    }
+  }
+  *os << "Match";
+  return true;
+}
+
+void PasskeyChangeObservationChecker::OnPasskeysChanged(
+    const std::vector<webauthn::PasskeyModelChange>& changes) {
+  changes_observed_ = changes;
+  CheckExitCondition();
+}
+
+void PasskeyChangeObservationChecker::OnPasskeyModelShuttingDown() {
+  observation_.Reset();
+}
+
 MockPasskeyModelObserver::MockPasskeyModelObserver(
     webauthn::PasskeyModel* model) {
   observation_.Observe(model);
@@ -120,8 +169,9 @@ MockPasskeyModelObserver::MockPasskeyModelObserver(
 
 MockPasskeyModelObserver::~MockPasskeyModelObserver() = default;
 
-webauthn::PasskeyModel& GetModel(int profile_idx) {
-  return *PasskeyModelFactory::GetForProfile(test()->GetProfile(profile_idx));
+webauthn::PasskeySyncBridge& GetModel(int profile_idx) {
+  return *static_cast<webauthn::PasskeySyncBridge*>(
+      PasskeyModelFactory::GetForProfile(test()->GetProfile(profile_idx)));
 }
 
 bool AwaitAllModelsMatch() {

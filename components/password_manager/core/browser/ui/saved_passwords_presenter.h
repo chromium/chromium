@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
 
 namespace password_manager {
 
@@ -203,7 +204,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
       const std::vector<PasswordForm>& retained_passwords) override;
 
   // PasskeyModel::Observer:
-  void OnPasskeysChanged() override;
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
 
   // PasswordStoreConsumer:
