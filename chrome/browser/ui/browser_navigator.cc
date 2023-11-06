@@ -58,6 +58,10 @@
 #include "ui/display/screen.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/link_capturing/link_capturing_tab_helper.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -861,6 +865,18 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
       (params->tabstrip_add_types & AddTabTypes::ADD_INHERIT_OPENER)) {
     params->source_contents->Focus();
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // When clicking a link inside an app browser that opens a new tab in a
+  // different browser, save the app ID of the source app. This allows the app
+  // ID to be used for link capturing policy decisions during navigation outside
+  // of the app.
+  if (contents_to_insert && source_browser &&
+      source_browser != params->browser && source_browser->app_controller()) {
+    apps::LinkCapturingTabHelper::CreateForWebContents(
+        contents_to_insert.get(), source_browser->app_controller()->app_id());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (params->source_contents == contents_to_navigate_or_insert) {
     // The navigation occurred in the source tab.
