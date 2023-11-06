@@ -166,8 +166,16 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand prelu(MLOperand x, MLOperand slope);
 
-  [RaisesException] MLOperand reduceSum(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceL1(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceL2(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceLogSum(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceLogSumExp(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceMax(MLOperand input, optional MLReduceOptions options = {});
   [RaisesException] MLOperand reduceMean(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceMin(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceProduct(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceSum(MLOperand input, optional MLReduceOptions options = {});
+  [RaisesException] MLOperand reduceSumSquare(MLOperand input, optional MLReduceOptions options = {});
 
   [RaisesException] MLOperand relu(MLOperand input);
   [RaisesException] MLActivation relu();

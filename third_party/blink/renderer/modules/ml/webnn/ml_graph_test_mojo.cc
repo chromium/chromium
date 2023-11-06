@@ -2845,6 +2845,155 @@ TEST_P(MLGraphTestMojo, TransposeTest) {
   }
 }
 
+struct ReduceTester {
+  OperandInfoBlink input;
+  absl::optional<Vector<uint32_t>> axes;
+  absl::optional<bool> keep_dimensions;
+  OperandInfoMojo expected_operand;
+  Vector<uint32_t> expected_axes;
+  bool expected_keep_dimensions;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    Test(helper, scope, builder, ReduceKind::kL1);
+    Test(helper, scope, builder, ReduceKind::kL2);
+    Test(helper, scope, builder, ReduceKind::kLogSum);
+    Test(helper, scope, builder, ReduceKind::kLogSumExp);
+    Test(helper, scope, builder, ReduceKind::kMax);
+    Test(helper, scope, builder, ReduceKind::kMean);
+    Test(helper, scope, builder, ReduceKind::kMin);
+    Test(helper, scope, builder, ReduceKind::kProduct);
+    Test(helper, scope, builder, ReduceKind::kSum);
+    Test(helper, scope, builder, ReduceKind::kSumSquare);
+  }
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder,
+            ReduceKind kind) {
+    // Build the graph.
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    MLReduceOptions* options = MLReduceOptions::Create();
+    if (axes.has_value()) {
+      options->setAxes(axes.value());
+    }
+    if (keep_dimensions.has_value()) {
+      options->setKeepDimensions(keep_dimensions.value());
+    }
+    auto* output_operand =
+        BuildReduce(scope, builder, kind, input_operand, options);
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_reduce());
+    auto& reduce = operation->get_reduce();
+
+    blink_mojom::Reduce::Kind reduce_kind;
+    switch (kind) {
+      case ReduceKind::kL1:
+        reduce_kind = blink_mojom::Reduce::Kind::kL1;
+        break;
+      case ReduceKind::kL2:
+        reduce_kind = blink_mojom::Reduce::Kind::kL2;
+        break;
+      case ReduceKind::kLogSum:
+        reduce_kind = blink_mojom::Reduce::Kind::kLogSum;
+        break;
+      case ReduceKind::kLogSumExp:
+        reduce_kind = blink_mojom::Reduce::Kind::kLogSumExp;
+        break;
+      case ReduceKind::kMax:
+        reduce_kind = blink_mojom::Reduce::Kind::kMax;
+        break;
+      case ReduceKind::kMean:
+        reduce_kind = blink_mojom::Reduce::Kind::kMean;
+        break;
+      case ReduceKind::kMin:
+        reduce_kind = blink_mojom::Reduce::Kind::kMin;
+        break;
+      case ReduceKind::kProduct:
+        reduce_kind = blink_mojom::Reduce::Kind::kProduct;
+        break;
+      case ReduceKind::kSum:
+        reduce_kind = blink_mojom::Reduce::Kind::kSum;
+        break;
+      case ReduceKind::kSumSquare:
+        reduce_kind = blink_mojom::Reduce::Kind::kSumSquare;
+        break;
+    }
+    EXPECT_EQ(reduce->kind, reduce_kind);
+    // Validate the axes of reduce operation.
+    EXPECT_EQ(reduce->axes, expected_axes);
+    // Validate the keep_dimensions of reduce operation.
+    EXPECT_EQ(reduce->keep_dimensions, expected_keep_dimensions);
+
+    // Validate the input operand.
+    EXPECT_EQ(graph_info->input_operands.size(), 1u);
+    auto input_operand_id = graph_info->input_operands[0];
+    EXPECT_EQ(reduce->input_operand_id, input_operand_id);
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
+
+    // Validate the output operand.
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    EXPECT_EQ(reduce->output_operand_id, output_operand_id);
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, ReduceTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test reduce operator with default options.
+    ReduceTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1}},
+        .expected_axes = {0, 1, 2, 3},
+        .expected_keep_dimensions = false}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test reduce operator with a given axes and keep_dimensions.
+    ReduceTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat16,
+                  .dimensions = {1, 2, 3, 4}},
+        .axes = Vector<uint32_t>{1},
+        .keep_dimensions = true,
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 1, 3, 4}},
+        .expected_axes = {1},
+        .expected_keep_dimensions = true}
+        .Test(*this, scope, builder);
+  }
+}
 template <typename T>
 struct ConstantTester {
   OperandInfo<T> constant;

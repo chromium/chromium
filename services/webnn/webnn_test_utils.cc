@@ -202,6 +202,21 @@ void GraphInfoBuilder::BuildPrelu(uint64_t input_operand_id,
       mojom::Operation::NewPrelu(std::move(prelu)));
 }
 
+void GraphInfoBuilder::BuildReduce(mojom::Reduce::Kind kind,
+                                   uint64_t input_operand_id,
+                                   uint64_t output_operand_id,
+                                   std::vector<uint32_t> axes,
+                                   bool keep_dimensions) {
+  mojom::ReducePtr reduce = mojom::Reduce::New();
+  reduce->kind = kind;
+  reduce->input_operand_id = input_operand_id;
+  reduce->output_operand_id = output_operand_id;
+  reduce->axes = std::move(axes);
+  reduce->keep_dimensions = keep_dimensions;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewReduce(std::move(reduce)));
+}
+
 void GraphInfoBuilder::BuildRelu(uint64_t input_operand_id,
                                  uint64_t output_operand_id) {
   mojom::ReluPtr relu = mojom::Relu::New();
