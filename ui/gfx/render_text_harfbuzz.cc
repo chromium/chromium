@@ -434,11 +434,11 @@ class ElideBehaviorBase {
 
   size_t ApplyWhitespaceElisionBackward(size_t index) {
     // This function removes unnecessary whitespace. For example, without
-    // this function, elide_tail could turn a string:"abc  x" to "abc  …".
+    // this function, elide_tail could turn a string:"abc  x" to "abc  ...".
     // While the result is valid if it fits the display rect, there
     // is no need to have whitespace between the elide codepoint and the rest of
     // the string. Enabling ApplyWhitespaceElisionBackward will reduce the index
-    // such that resulting string is "abc…".
+    // such that resulting string is "abc...".
     if (!render_text()->whitespace_elision().has_value() ||
         render_text()->whitespace_elision().value()) {
       while (index > 0 && render_text()->text()[index - 1] == ' ') {
