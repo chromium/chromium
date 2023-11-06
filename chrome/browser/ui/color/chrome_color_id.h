@@ -424,7 +424,6 @@
   E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkForeground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeSnapshotBackground) \
-  E_CPONLY(kColorSidePanelCustomizeChromeWallpaperSearchTileBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeWebStoreBorder) \
   E_CPONLY(kColorSidePanelDialogBackground) \
   E_CPONLY(kColorSidePanelDialogDivider) \
@@ -447,6 +446,9 @@
   E_CPONLY(kColorSidePanelResizeAreaHandle) \
   E_CPONLY(kColorSidePanelScrollbarThumb) \
   E_CPONLY(kColorSidePanelTextfieldBorder) \
+  E_CPONLY(kColorSidePanelWallpaperSearchTileBackground) \
+  E_CPONLY(kColorSidePanelWallpaperSearchErrorButtonBackground) \
+  E_CPONLY(kColorSidePanelWallpaperSearchErrorButtonText) \
   /* Status bubble colors. */ \
   E_CPONLY(kColorStatusBubbleBackgroundFrameActive) \
   E_CPONLY(kColorStatusBubbleBackgroundFrameInactive) \

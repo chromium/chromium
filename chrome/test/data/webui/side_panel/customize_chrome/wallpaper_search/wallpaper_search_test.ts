@@ -440,6 +440,50 @@ suite('WallpaperSearchTest', () => {
   });
 
   suite('Error', () => {
+    test(
+        'shows error ui if no descriptors are returned by the backend',
+        async () => {
+          createWallpaperSearchElement(/*descriptors=*/ null);
+          await flushTasks();
+
+          wallpaperSearchElement.$.submitButton.click();
+          await waitAfterNextRender(wallpaperSearchElement);
+
+          assertNotStyle(
+              $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+          assertStyle(
+              $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
+              'none');
+        });
+
+    test('reattempts failed descriptor fetch', async () => {
+      createWallpaperSearchElement();
+      await flushTasks();
+
+      assertEquals(1, handler.getCallCount('getDescriptors'));
+      assertNotStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+      assertStyle(
+          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+
+      handler.setResultFor('getDescriptors', Promise.resolve({
+        status: WallpaperSearchStatus.kOk,
+        descriptors: {
+          descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
+          descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
+          descriptorC: ['foo', 'bar', 'baz'],
+        },
+      }));
+      await flushTasks();
+
+      $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(2, handler.getCallCount('getDescriptors'));
+      assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+      assertNotStyle(
+          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+    });
+
     test('shows search ui if there are no errors', async () => {
       handler.setResultFor(
           'getWallpaperSearchResults',
@@ -458,22 +502,6 @@ suite('WallpaperSearchTest', () => {
       assertNotStyle(
           $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
     });
-
-    test(
-        'shows error ui if no descriptors are returned by the backend',
-        async () => {
-          createWallpaperSearchElement(/*descriptors=*/ null);
-          await flushTasks();
-
-          wallpaperSearchElement.$.submitButton.click();
-          await waitAfterNextRender(wallpaperSearchElement);
-
-          assertNotStyle(
-              $$(wallpaperSearchElement, '#error')!, 'display', 'none');
-          assertStyle(
-              $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
-              'none');
-        });
 
     test('shows error ui if search fails', async () => {
       handler.setResultFor(

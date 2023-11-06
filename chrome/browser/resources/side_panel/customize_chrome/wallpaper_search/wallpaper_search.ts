@@ -113,6 +113,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private descriptors_: Descriptors|null;
   private descriptorD_: string[];
   private emptyContainers_: number[];
+  private errorCallback_: (() => Promise<void>)|undefined;
   private errorState_: ErrorState|null = null;
   private loading_: boolean;
   private results_: WallpaperSearchResult[];
@@ -138,13 +139,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.callbackRouter_ = CustomizeChromeApiProxy.getInstance().callbackRouter;
     this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
     this.wallpaperSearchHandler_ = WallpaperSearchProxy.getHandler();
-    this.wallpaperSearchHandler_.getDescriptors().then(({descriptors}) => {
-      if (descriptors) {
-        this.descriptors_ = descriptors;
-      } else {
-        this.status_ = WallpaperSearchStatus.kError;
-      }
-    });
+    this.fetchDescriptors_();
   }
 
   override connectedCallback() {
@@ -184,6 +179,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         return {
           title: this.i18n('genericErrorTitle'),
           description: this.i18n('genericErrorDescription'),
+          callToAction: this.i18n('tryAgain'),
         };
     }
   }
@@ -192,6 +188,18 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return this.results_ && this.results_.length > 0 ?
         loadTimeData.getString('wallpaperSearchSubmitAgainBtn') :
         loadTimeData.getString('wallpaperSearchSubmitBtn');
+  }
+
+  private async fetchDescriptors_() {
+    this.wallpaperSearchHandler_.getDescriptors().then(({descriptors}) => {
+      if (descriptors) {
+        this.descriptors_ = descriptors;
+        this.errorCallback_ = undefined;
+      } else {
+        this.errorCallback_ = () => this.fetchDescriptors_();
+        this.status_ = WallpaperSearchStatus.kError;
+      }
+    });
   }
 
   /**
@@ -252,6 +260,13 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private onCustomColorClick_() {
     this.$.hueSlider.showAt(this.$.customColorContainer);
+  }
+
+  private onErrorClick_() {
+    this.status_ = WallpaperSearchStatus.kOk;
+    if (this.errorCallback_) {
+      this.errorCallback_();
+    }
   }
 
   private onDefaultColorClick_(e: DomRepeatEvent<string>) {

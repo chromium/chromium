@@ -106,10 +106,14 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnPrimary};
   mixer[kColorSidePanelCustomizeChromeThemeSnapshotBackground] = {
       ui::kColorSysTonalContainer};
-  mixer[kColorSidePanelCustomizeChromeWallpaperSearchTileBackground] = {
-      ui::kColorSysSurface2};
   mixer[kColorSidePanelCustomizeChromeWebStoreBorder] = {
       ui::kColorSysNeutralOutline};
+  /*Customize Chrome Wallpaper Search*/
+  mixer[kColorSidePanelWallpaperSearchErrorButtonBackground] = {
+      ui::kColorSysTonalContainer};
+  mixer[kColorSidePanelWallpaperSearchErrorButtonText] = {
+      ui::kColorSysOnTonalContainer};
+  mixer[kColorSidePanelWallpaperSearchTileBackground] = {ui::kColorSysSurface2};
 
   /* Commerce */
   mixer[kColorSidePanelCommerceGraphAxis] = {ui::kColorSysDivider};

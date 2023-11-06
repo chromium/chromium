@@ -15,6 +15,34 @@
     position: relative;
   }
 
+  #error {
+    height: 100px;
+    line-height: 20px;
+    width: 272px;
+  }
+
+  #errorTitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-side-panel-card-primary-foreground);
+    margin-block-end: 8px;
+  }
+
+  #errorDescription {
+    color: var(--color-side-panel-card-secondary-foreground);
+    font-size: 13px;
+    margin-block-end: 16px;
+  }
+
+  #errorCTA {
+    background-color: var(
+        --color-side-panel-wallpaper-search-error-button-background);
+    border: none;
+    color: var(
+        --color-side-panel-wallpaper-search-error-button-text);
+    float: right;
+  }
+
   customize-chrome-combobox {
     color: var(--color-side-panel-card-primary-foreground);
     font-size: 12px;
@@ -140,7 +168,7 @@
 
   .tile {
     background-color: var(
-        --color-side-panel-customize-chrome-wallpaper-search-tile-background);
+        --color-side-panel-wallpaper-search-tile-background);
     outline-width: 0;
     place-self: stretch;
   }
@@ -203,8 +231,11 @@
     <h2 slot="heading">$i18n{wallpaperSearchHeader}</h2>
   </sp-heading>
   <div class="content" id="error" hidden$="[[!errorState_]]">
-    <div>[[errorState_.title]]</div>
-    <div>[[errorState_.description]]</div>
+    <div id="errorTitle">[[errorState_.title]]</div>
+    <div id="errorDescription">[[errorState_.description]]</div>
+    <cr-button id="errorCTA" on-click="onErrorClick_">
+      [[errorState_.callToAction]]
+    </cr-button>
   </div>
   <div class="content" id="wallpaperSearch" hidden$="[[errorState_]]">
     <customize-chrome-combobox id="descriptorComboboxA" label="Descriptor A"
