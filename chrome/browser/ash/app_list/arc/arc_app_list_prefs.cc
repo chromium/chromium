@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
@@ -1861,7 +1862,11 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
     package_dict.Remove(kWebAppInfo);
   }
 
-  if (package.locale_info) {
+  if (package.locale_info &&
+      base::FeatureList::IsEnabled(arc::kPerAppLanguage)) {
+    // TODO(nergi): For on-boot package refresh, conditionally accepts package
+    // locale info from ARC. Accept if current pref is null, else reject and
+    // sends back CrOS prefs to ARC.
     const arc::mojom::PackageLocaleInfo& package_locale_info =
         *package.locale_info;
     base::Value::List supported_locales;

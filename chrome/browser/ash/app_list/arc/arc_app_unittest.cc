@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
@@ -35,6 +36,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -117,6 +119,7 @@ namespace {
 
 constexpr char kTestPackageName[] = "fake.package.name2";
 constexpr char kTestPackageName4[] = "fake.package.name4";
+constexpr char kTestPackageName5[] = "fake.package.name5";
 constexpr char kFrameworkPackageName[] = "android";
 
 constexpr int kFrameworkNycVersion = 25;
@@ -503,6 +506,8 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
     // Validating decoded content does not fit well for unit tests.
     ArcAppIcon::DisableSafeDecodingForTesting();
+
+    scoped_feature_list_.InitAndEnableFeature(arc::kPerAppLanguage);
   }
 
   void TearDown() override {
@@ -861,6 +866,8 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     prefs->SimulateDefaultAppAvailabilityTimeoutForTesting();
   }
 
+  void ResetFeatureFlag() { scoped_feature_list_.Reset(); }
+
   AppListControllerDelegate* controller() { return controller_.get(); }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -901,6 +908,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
       scoped_callback_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;
   std::unique_ptr<ash::ShelfModel> model_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {
@@ -1430,6 +1438,18 @@ TEST_P(ArcAppModelBuilderTest, ArcPackagePref) {
 
   // Update web_app_info of the last package to null.
   UpdatePackage(CreatePackage(kTestPackageName4));
+  ValidateHavePackages(fake_packages());
+}
+
+TEST_P(ArcAppModelBuilderTest, ArcPackagePref_PerAppLanguageFlagDisabled) {
+  ValidateHavePackages({});
+  ResetFeatureFlag();
+
+  app_instance()->SendRefreshPackageList(
+      ArcAppTest::ClonePackages(fake_packages()));
+
+  // Update locale_info of the locale info test package to null.
+  UpdatePackage(CreatePackage(kTestPackageName5));
   ValidateHavePackages(fake_packages());
 }
 
