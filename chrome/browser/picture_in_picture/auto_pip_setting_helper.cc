@@ -4,6 +4,7 @@
 
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,10 +39,14 @@ AutoPipSettingHelper::AutoPipSettingHelper(
 AutoPipSettingHelper::~AutoPipSettingHelper() = default;
 
 void AutoPipSettingHelper::OnUserClosedWindow() {
-  if (auto_blocker_ && ui_was_shown_but_not_acknowledged_) {
-    auto_blocker_->RecordDismissAndEmbargo(
-        origin_, ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
-        /*dismissed_prompt_was_quiet=*/false);
+  if (ui_was_shown_but_not_acknowledged_) {
+    RecordResult(PromptResult::kIgnored);
+
+    if (auto_blocker_) {
+      auto_blocker_->RecordDismissAndEmbargo(
+          origin_, ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+          /*dismissed_prompt_was_quiet=*/false);
+    }
   }
 }
 
@@ -114,16 +119,24 @@ void AutoPipSettingHelper::OnUiResult(AutoPipSettingView::UiResult result) {
   scoped_ignore_input_events_.reset();
   switch (result) {
     case AutoPipSettingView::UiResult::kBlock:
+      RecordResult(PromptResult::kBlock);
       UpdateContentSetting(CONTENT_SETTING_BLOCK);
       // Also close the pip window.
       std::move(close_pip_cb_).Run();
       break;
     case AutoPipSettingView::UiResult::kAllowOnEveryVisit:
+      RecordResult(PromptResult::kAllowOnEveryVisit);
       UpdateContentSetting(CONTENT_SETTING_ALLOW);
       break;
     case AutoPipSettingView::UiResult::kAllowOnce:
+      RecordResult(PromptResult::kAllowOnce);
       // Leave at 'ASK'.  Do not update the embargo, since the user allowed the
       // feature to continue.  If anything, this should vote for 'anti-embargo'.
       break;
   }
+}
+
+void AutoPipSettingHelper::RecordResult(PromptResult result) {
+  base::UmaHistogramEnumeration("Media.AutoPictureInPicture.PromptResult",
+                                result);
 }
