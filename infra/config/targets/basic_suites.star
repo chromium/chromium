@@ -1546,6 +1546,70 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "chromium_web_tests_brfetch_isolated_scripts",
+    tests = {
+        # brfetch_blink_web_tests provides coverage for
+        # running Layout Tests with BackgroundResourceFetch feature.
+        "brfetch_blink_web_tests": targets.legacy_test_config(
+            test = "blink_web_tests",
+            results_handler = "layout tests",
+            mixins = [
+                "has_native_resultdb_integration",
+                "blink_tests_write_run_histories",
+            ],
+            args = [
+                "--flag-specific=background-resource-fetch",
+                "--skipped=always",
+                # layout test failures are retried 3 times when '--test-list' is not
+                # passed, but 0 times when '--test-list' is passed. We want to always
+                # retry 3 times, so we explicitly specify it.
+                "--num-retries=3",
+            ],
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+            merge = targets.merge(
+                script = "//third_party/blink/tools/merge_web_test_results.py",
+                args = [
+                    "--verbose",
+                ],
+            ),
+            experiment_percentage = 100,
+        ),
+        # brfetch_blink_wpt_tests provides coverage for
+        # running Layout Tests with BackgroundResourceFetch feature.
+        "brfetch_blink_wpt_tests": targets.legacy_test_config(
+            test = "blink_wpt_tests",
+            results_handler = "layout tests",
+            mixins = [
+                "has_native_resultdb_integration",
+                "blink_tests_write_run_histories",
+            ],
+            args = [
+                "--flag-specific=background-resource-fetch",
+                "--skipped=always",
+                # layout test failures are retried 3 times when '--test-list' is not
+                # passed, but 0 times when '--test-list' is passed. We want to always
+                # retry 3 times, so we explicitly specify it.
+                "--num-retries=3",
+            ],
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+            merge = targets.merge(
+                script = "//third_party/blink/tools/merge_web_test_results.py",
+                args = [
+                    "--verbose",
+                ],
+            ),
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "chromium_web_tests_high_dpi_isolated_scripts",
     tests = {
         # high_dpi_blink_web_tests provides coverage for

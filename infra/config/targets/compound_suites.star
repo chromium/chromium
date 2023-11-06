@@ -397,6 +397,9 @@ targets.legacy_compound_suite(
         "telemetry_perf_unittests_isolated_scripts",
         "vulkan_swiftshader_isolated_scripts",
         "chromium_web_tests_high_dpi_isolated_scripts",
+        # TODO(crbug.com/1498364): Remove this once the BackgroundResourceFetch
+        # feature launches.
+        "chromium_web_tests_brfetch_isolated_scripts",
     ],
 )
 
