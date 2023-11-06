@@ -145,6 +145,7 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
       return AutofillTriggerSource::kPopup;
 #endif  // BUILDFLAG(IS_ANDROID)
     case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+    case AutofillSuggestionTriggerSource::kManualFallbackPayments:
       // Manual fallbacks are both a suggestion trigger source (e.g. through the
       // context menu) and a trigger source (by selecting a suggestion generated
       // through the context menu).

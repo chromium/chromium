@@ -19,6 +19,7 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
     case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+    case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
       return true;
     case AutofillSuggestionTriggerSource::kContentEditableClicked:
@@ -46,6 +47,7 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kContentEditableClicked:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
     case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+    case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
       return false;
     // `kShowCardsFromAccount`, `kPasswordManager`, `kAndroidWebView` and `kiOS`
@@ -75,6 +77,7 @@ bool ShouldShowFullSuggestionListForPasswordManager(
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
     case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+    case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
       return false;
     // `kShowCardsFromAccount`, `kPasswordManager`, `kAndroidWebView` and `kiOS`
