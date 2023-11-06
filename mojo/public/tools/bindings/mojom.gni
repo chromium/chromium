@@ -1933,11 +1933,10 @@ template("mojom") {
     not_needed(invoker, [ "use_typescript_sources" ])
   }
 
-  # Don't allow new JavaScript WebUI bindings on non-ChromeOS platforms.
+  # Don't allow JavaScript WebUI bindings on non-ChromeOS platforms.
   if (!use_typescript_for_target && defined(invoker.webui_module_path)) {
     assert(
-        is_chromeos_ash || invoker.webui_module_path ==
-                               "chrome://resources/mojo/mojo/public/mojom/base",
+        is_chromeos_ash,
         "WebUI bindings should be in TypeScript on non-ChromeOS platforms. " +
             "Remove use_typescript_sources = false")
   }

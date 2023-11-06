@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom_component("base") {
@@ -56,8 +57,12 @@ mojom_component("base") {
   webui_module_path = "chrome://resources/mojo/mojo/public/mojom/base"
 
   # Still widely used by Closure Compiler targets on ChromeOS, so generate
-  # WebUI bindings in JavaScript.
-  use_typescript_sources = false
+  # WebUI bindings in JavaScript for that platform.
+  use_typescript_sources = !is_chromeos_ash
+
+  # Always generate legacy bindings since this target is used by Blink, fuzzers,
+  # etc and not just by WebUI.
+  generate_legacy_js_bindings = true
 
   output_prefix = "mojo_base_mojom"
   macro_prefix = "MOJO_BASE_MOJOM"

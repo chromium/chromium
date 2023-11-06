@@ -217,9 +217,7 @@ export function generateSampleDataFromSiteNames(siteNames: string[]):
 }
 
 export function sampleToken(high: bigint, low: bigint): Token {
-  const token = new Token();
-  token.high = high;
-  token.low = low;
+  const token: Token = {high, low};
   Object.freeze(token);
 
   return token;
