@@ -1505,7 +1505,7 @@
       },
       {
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R118-15604.45.0",
+        "cros_img": "dedede-release/R118-15604.57.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -1539,7 +1539,7 @@
       },
       {
         "cros_board": "puff",
-        "cros_img": "puff-release/R118-15604.45.0",
+        "cros_img": "puff-release/R118-15604.57.0",
         "dut_pool": "chrome",
         "name": "lacros_all_tast_tests PUFF_RELEASE_STABLE",
         "resultdb": {
@@ -1605,7 +1605,7 @@
       },
       {
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R118-15604.45.0",
+        "cros_img": "jacuzzi-release/R118-15604.57.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
