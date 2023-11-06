@@ -20,6 +20,9 @@ message AllowSharedBufferSource {
   optional ViewType view_type = 3;
   optional uint32 view_offset = 4;
   optional uint32 view_length = 5;
+
+  // Transfer ArrayBuffer into ctor
+  optional bool transfer = 6;
 }
 
 message DOMRectInit {
@@ -233,10 +236,16 @@ message AudioDataInit {
   repeated bytes channels = 4;
 
   required AudioSampleFormat format = 5;
+
+  // Transfer ArrayBuffer into ctor
+  optional bool transfer = 6;
 }
 
 message EncodeVideo {
-  optional VideoFrameBitmapInit frame = 1;
+  oneof Frames {
+    VideoFrameBitmapInit frame = 1;
+    VideoFrameBufferInitInvocation frame_from_buffer = 3;
+  }
   message EncodeOptionsForAv1 {
     optional uint32 quantizer = 1;
   };
