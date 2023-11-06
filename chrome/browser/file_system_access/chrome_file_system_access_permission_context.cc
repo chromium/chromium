@@ -2265,7 +2265,8 @@ void ChromeFileSystemAccessPermissionContext::
   PermissionDecisionAutoBlockerFactory::GetForProfile(
       Profile::FromBrowserContext(profile()))
       ->RecordDismissAndEmbargo(
-          origin.GetURL(), ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, false);
+          origin.GetURL(),
+          ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION, false);
   UpdateGrantsOnRestorePermissionNotAllowed(origin);
 }
 
@@ -2274,7 +2275,8 @@ void ChromeFileSystemAccessPermissionContext::OnRestorePermissionIgnored(
   PermissionDecisionAutoBlockerFactory::GetForProfile(
       Profile::FromBrowserContext(profile()))
       ->RecordIgnoreAndEmbargo(
-          origin.GetURL(), ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, false);
+          origin.GetURL(),
+          ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION, false);
   UpdateGrantsOnRestorePermissionNotAllowed(origin);
 }
 
@@ -2353,8 +2355,9 @@ bool ChromeFileSystemAccessPermissionContext::
   const bool origin_is_embargoed =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
-          ->IsEmbargoed(origin.GetURL(),
-                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+          ->IsEmbargoed(
+              origin.GetURL(),
+              ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION);
   if (origin_is_embargoed) {
     return false;
   }

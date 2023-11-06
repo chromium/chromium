@@ -423,6 +423,16 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
+  Register(ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION,
+           "file-system-access-restore-permission", CONTENT_SETTING_ASK,
+           WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_schemes=*/{},
+           /*valid_settings=*/
+           {CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK},
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           WebsiteSettingsRegistry::DESKTOP,
+           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
+           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+
   Register(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
            "file-system-write-guard", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_schemes=*/{},

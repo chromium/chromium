@@ -369,6 +369,10 @@ enum class ContentSettingsType : int32_t {
   // heuristics.
   TPCD_HEURISTICS_GRANTS,
 
+  // Whether the FSA Persistent Permissions restore prompt is eligible to be
+  // shown to the user, for a given origin.
+  FILE_SYSTEM_ACCESS_RESTORE_PERMISSION,
+
   NUM_TYPES,
 };
 

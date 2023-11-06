@@ -1523,8 +1523,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto origin_is_embargoed =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
-          ->IsEmbargoed(kTestOrigin.GetURL(),
-                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+          ->IsEmbargoed(
+              kTestOrigin.GetURL(),
+              ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION);
   EXPECT_FALSE(origin_is_embargoed);
 
   //  Check that the origin is placed under embargo after being ignored
@@ -1536,8 +1537,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto origin_is_embargoed_updated =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
-          ->IsEmbargoed(kTestOrigin.GetURL(),
-                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+          ->IsEmbargoed(
+              kTestOrigin.GetURL(),
+              ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION);
   EXPECT_FALSE(origin_is_embargoed_updated);
   // The origin is embargoed, after reaching the ignore limit set by
   // `kDefaultDismissalsBeforeBlock`.
@@ -1546,8 +1548,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto origin_is_embargoed_after_rejection_limit =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
-          ->IsEmbargoed(kTestOrigin.GetURL(),
-                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+          ->IsEmbargoed(
+              kTestOrigin.GetURL(),
+              ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION);
   EXPECT_TRUE(origin_is_embargoed_after_rejection_limit);
 }
 
@@ -1699,8 +1702,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto origin_is_embargoed =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
-          ->IsEmbargoed(kTestOrigin.GetURL(),
-                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+          ->IsEmbargoed(
+              kTestOrigin.GetURL(),
+              ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION);
   EXPECT_FALSE(origin_is_embargoed);
 
   // The origin is placed under embargo after being ignored
@@ -1714,8 +1718,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto origin_is_embargoed_updated =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
-          ->IsEmbargoed(kTestOrigin.GetURL(),
-                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+          ->IsEmbargoed(
+              kTestOrigin.GetURL(),
+              ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION);
   EXPECT_FALSE(origin_is_embargoed_updated);
 
   // The origin is embargoed, after reaching the ignore limit set by
@@ -1725,8 +1730,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto origin_is_embargoed_after_ignore_limit =
       PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(profile()))
-          ->IsEmbargoed(kTestOrigin.GetURL(),
-                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+          ->IsEmbargoed(
+              kTestOrigin.GetURL(),
+              ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION);
   EXPECT_TRUE(origin_is_embargoed_after_ignore_limit);
 }
 
