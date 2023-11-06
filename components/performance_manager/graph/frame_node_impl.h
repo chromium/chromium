@@ -119,7 +119,6 @@ class FrameNodeImpl
   const base::flat_set<PageNodeImpl*>& embedded_page_nodes() const;
   LifecycleState lifecycle_state() const;
   bool has_nonempty_beforeunload() const;
-  const GURL& url() const;
   bool is_current() const;
   bool network_almost_idle() const;
   bool is_ad_frame() const;

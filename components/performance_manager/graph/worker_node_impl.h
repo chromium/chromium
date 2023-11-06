@@ -75,7 +75,6 @@ class WorkerNodeImpl
   ProcessNodeImpl* process_node() const;
 
   // Getters for non-const properties. These are not thread safe.
-  const GURL& url() const;
   const base::flat_set<FrameNodeImpl*>& client_frames() const;
   const base::flat_set<WorkerNodeImpl*>& client_workers() const;
   const base::flat_set<WorkerNodeImpl*>& child_workers() const;

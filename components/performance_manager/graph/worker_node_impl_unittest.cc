@@ -75,11 +75,11 @@ TEST_F(WorkerNodeImplTest, OnFinalResponseURLDetermined) {
                                                 process.get());
 
   // Initially empty.
-  EXPECT_TRUE(worker_impl->url().is_empty());
+  EXPECT_TRUE(worker_impl->GetURL().is_empty());
 
   // Set when OnFinalResponseURLDetermined() is called.
   worker_impl->OnFinalResponseURLDetermined(kTestUrl);
-  EXPECT_EQ(worker_impl->url(), kTestUrl);
+  EXPECT_EQ(worker_impl->GetURL(), kTestUrl);
 }
 
 // Create a worker of each type and register the frame as a client of each.

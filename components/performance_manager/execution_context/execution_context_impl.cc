@@ -62,7 +62,7 @@ class ExecutionContextImpl : public ExecutionContext,
 
   const GURL& GetUrl() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return node_->url();
+    return node_->GetURL();
   }
 
   const ProcessNode* GetProcessNode() const override {

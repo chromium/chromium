@@ -126,18 +126,18 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
     ASSERT_EQ(1u, page->main_frame_nodes().size());
 
     auto* main_frame = page->GetMainFrameNodeImpl();
-    EXPECT_EQ(kParentUrl, main_frame->url().spec());
+    EXPECT_EQ(kParentUrl, main_frame->GetURL().spec());
     EXPECT_EQ(2u, main_frame->child_frame_nodes().size());
 
     for (auto* child_frame : main_frame->child_frame_nodes()) {
-      if (child_frame->url().spec() == kChild1Url) {
+      if (child_frame->GetURL().spec() == kChild1Url) {
         ASSERT_EQ(1u, child_frame->child_frame_nodes().size());
         auto* grandchild_frame = *(child_frame->child_frame_nodes().begin());
-        EXPECT_EQ(grandchild_url, grandchild_frame->url().spec());
-      } else if (child_frame->url().spec() == kChild2Url) {
+        EXPECT_EQ(grandchild_url, grandchild_frame->GetURL().spec());
+      } else if (child_frame->GetURL().spec() == kChild2Url) {
         EXPECT_TRUE(child_frame->child_frame_nodes().empty());
       } else {
-        FAIL() << "Unexpected child frame: " << child_frame->url().spec();
+        FAIL() << "Unexpected child frame: " << child_frame->GetURL().spec();
       }
     }
   });

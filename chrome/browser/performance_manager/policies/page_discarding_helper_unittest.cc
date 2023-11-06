@@ -104,9 +104,9 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardMultipleCurrentMainFrames) {
   other_frame_node->SetIsCurrent(true);
 
   // frame_node() is created with a URL. `other_frame_node` starts without.
-  ASSERT_FALSE(frame_node()->url().is_empty());
+  ASSERT_FALSE(frame_node()->GetURL().is_empty());
   ASSERT_TRUE(frame_node()->is_current());
-  ASSERT_TRUE(other_frame_node->url().is_empty());
+  ASSERT_TRUE(other_frame_node->GetURL().is_empty());
   ASSERT_TRUE(other_frame_node->is_current());
 
   // An arbitrary "current" frame will be returned by GetMainFrameNode(). Make
@@ -118,9 +118,9 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardMultipleCurrentMainFrames) {
 
   SetPageAndFrameUrl(GURL(), page_node(), frame_node());
 
-  ASSERT_TRUE(frame_node()->url().is_empty());
+  ASSERT_TRUE(frame_node()->GetURL().is_empty());
   ASSERT_TRUE(frame_node()->is_current());
-  ASSERT_TRUE(other_frame_node->url().is_empty());
+  ASSERT_TRUE(other_frame_node->GetURL().is_empty());
   ASSERT_TRUE(other_frame_node->is_current());
 
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
@@ -130,9 +130,9 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardMultipleCurrentMainFrames) {
   SetPageAndFrameUrl(GURL("https://foo.com"), page_node(),
                      other_frame_node.get());
 
-  ASSERT_TRUE(frame_node()->url().is_empty());
+  ASSERT_TRUE(frame_node()->GetURL().is_empty());
   ASSERT_TRUE(frame_node()->is_current());
-  ASSERT_FALSE(other_frame_node->url().is_empty());
+  ASSERT_FALSE(other_frame_node->GetURL().is_empty());
   ASSERT_TRUE(other_frame_node->is_current());
 
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));

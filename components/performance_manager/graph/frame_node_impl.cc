@@ -165,7 +165,7 @@ bool FrameNodeImpl::HasNonemptyBeforeUnload() const {
 
 const GURL& FrameNodeImpl::GetURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return url();
+  return document_.url.value();
 }
 
 bool FrameNodeImpl::IsCurrent() const {
@@ -314,11 +314,6 @@ mojom::LifecycleState FrameNodeImpl::lifecycle_state() const {
 bool FrameNodeImpl::has_nonempty_beforeunload() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return document_.has_nonempty_beforeunload;
-}
-
-const GURL& FrameNodeImpl::url() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return document_.url.value();
 }
 
 bool FrameNodeImpl::is_current() const {

@@ -64,7 +64,7 @@ resource_attribution::WorkerContext WorkerNodeImpl::GetResourceContext() const {
 
 const GURL& WorkerNodeImpl::GetURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return url();
+  return url_;
 }
 
 uint64_t WorkerNodeImpl::GetResidentSetKbEstimate() const {
@@ -178,11 +178,6 @@ WorkerNode::WorkerType WorkerNodeImpl::worker_type() const {
 ProcessNodeImpl* WorkerNodeImpl::process_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return process_node_;
-}
-
-const GURL& WorkerNodeImpl::url() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return url_;
 }
 
 const base::flat_set<FrameNodeImpl*>& WorkerNodeImpl::client_frames() const {

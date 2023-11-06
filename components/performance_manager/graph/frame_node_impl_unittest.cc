@@ -93,20 +93,20 @@ TEST_F(FrameNodeImplTest, NavigationCommitted_SameDocument) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
-  EXPECT_TRUE(frame_node->url().is_empty());
+  EXPECT_TRUE(frame_node->GetURL().is_empty());
   const GURL url("http://www.foo.com/");
   frame_node->OnNavigationCommitted(url, /* same_document */ true);
-  EXPECT_EQ(url, frame_node->url());
+  EXPECT_EQ(url, frame_node->GetURL());
 }
 
 TEST_F(FrameNodeImplTest, NavigationCommitted_DifferentDocument) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
-  EXPECT_TRUE(frame_node->url().is_empty());
+  EXPECT_TRUE(frame_node->GetURL().is_empty());
   const GURL url("http://www.foo.com/");
   frame_node->OnNavigationCommitted(url, /* same_document */ false);
-  EXPECT_EQ(url, frame_node->url());
+  EXPECT_EQ(url, frame_node->GetURL());
 }
 
 TEST_F(FrameNodeImplTest, RemoveChildFrame) {
@@ -546,7 +546,6 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
             public_frame_node->GetLifecycleState());
   EXPECT_EQ(frame_node->has_nonempty_beforeunload(),
             public_frame_node->HasNonemptyBeforeUnload());
-  EXPECT_EQ(frame_node->url(), public_frame_node->GetURL());
   EXPECT_EQ(frame_node->is_current(), public_frame_node->IsCurrent());
   EXPECT_EQ(frame_node->network_almost_idle(),
             public_frame_node->GetNetworkAlmostIdle());
