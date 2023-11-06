@@ -4308,8 +4308,6 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     }
   }
 
-  proxy_server_ = response_head_->proxy_server;
-
   // Store the URLLoaderClient endpoints until checks have been processed.
   url_loader_client_endpoints_ = std::move(url_loader_client_endpoints);
 
@@ -8245,10 +8243,6 @@ NavigationEntry* NavigationRequest::GetNavigationEntry() const {
 
 int NavigationRequest::GetNavigationEntryOffset() {
   return navigation_entry_offset_;
-}
-
-const net::ProxyServer& NavigationRequest::GetProxyServer() {
-  return proxy_server_;
 }
 
 GlobalRenderFrameHostId NavigationRequest::GetPreviousRenderFrameHostId() {

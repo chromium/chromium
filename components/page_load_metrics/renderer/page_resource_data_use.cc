@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"
 
+#include "net/base/proxy_chain.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -29,7 +30,7 @@ void PageResourceDataUse::DidStartResponse(
   }
   resource_id_ = resource_id;
 
-  proxy_used_ = !response_head.proxy_server.is_direct();
+  proxy_used_ = !response_head.proxy_chain.is_direct();
   mime_type_ = response_head.mime_type;
   if (response_head.was_fetched_via_cache)
     cache_type_ = mojom::CacheType::kHttp;

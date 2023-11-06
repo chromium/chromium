@@ -176,7 +176,6 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD0(IsSignedExchangeInnerResponse, bool());
   MOCK_METHOD0(HasPrefetchedAlternativeSubresourceSignedExchange, bool());
   bool WasResponseCached() override { return was_response_cached_; }
-  const net::ProxyServer& GetProxyServer() override { return proxy_server_; }
   const std::string& GetHrefTranslate() override { return href_translate_; }
   const absl::optional<blink::Impression>& GetImpression() override {
     return impression_;
@@ -314,9 +313,6 @@ class MockNavigationHandle : public NavigationHandle {
   void set_was_response_cached(bool was_response_cached) {
     was_response_cached_ = was_response_cached;
   }
-  void set_proxy_server(const net::ProxyServer& proxy_server) {
-    proxy_server_ = proxy_server;
-  }
   void set_impression(const blink::Impression& impression) {
     impression_ = impression;
   }
@@ -364,7 +360,6 @@ class MockNavigationHandle : public NavigationHandle {
   content::GlobalRequestID global_request_id_;
   bool is_form_submission_ = false;
   bool was_response_cached_ = false;
-  net::ProxyServer proxy_server_;
   absl::optional<url::Origin> initiator_origin_;
   absl::optional<GURL> initiator_base_url_;
   ReloadType reload_type_ = content::ReloadType::NONE;

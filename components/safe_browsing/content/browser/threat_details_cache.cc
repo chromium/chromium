@@ -18,6 +18,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -202,8 +203,8 @@ void ThreatDetailsCacheCollector::ReadResponse(
   }
 
   bool was_fetched_via_proxy =
-      current_load_->ResponseInfo()->proxy_server.is_valid() &&
-      !current_load_->ResponseInfo()->proxy_server.is_direct();
+      current_load_->ResponseInfo()->proxy_chain.IsValid() &&
+      !current_load_->ResponseInfo()->proxy_chain.is_direct();
   if (!was_fetched_via_proxy) {
     pb_response->set_remote_ip(
         current_load_->ResponseInfo()->remote_endpoint.ToString());

@@ -40,6 +40,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/mime_sniffer.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/transport_info.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -1281,7 +1282,7 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->was_fetched_via_cache = url_request_->was_cached();
   response->is_validated = (response_info.cache_entry_status ==
                             net::HttpResponseInfo::ENTRY_VALIDATED);
-  response->proxy_server = url_request_->proxy_chain().proxy_server();
+  response->proxy_chain = url_request_->proxy_chain();
   response->network_accessed = response_info.network_accessed;
   response->async_revalidation_requested =
       response_info.async_revalidation_requested;

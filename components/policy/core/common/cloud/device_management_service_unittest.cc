@@ -25,6 +25,8 @@
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -259,7 +261,7 @@ class DeviceManagementServiceTestBase : public testing::Test {
         net::HttpUtil::AssembleRawHeaders(headers));
 
     if (was_fetched_via_proxy) {
-      head->proxy_server = net::ProxyServer(
+      head->proxy_chain = net::ProxyChain(
           net::ProxyServer::Scheme::SCHEME_HTTPS, /*host_port_pair=*/{});
     }
     head->mime_type = mime_type;

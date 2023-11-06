@@ -44,6 +44,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/base/load_flags.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -449,13 +450,13 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     head->load_timing.request_start = head->load_timing.receive_headers_end -
                                       base::Milliseconds(kHeaderLatency);
 
-    head->proxy_server =
+    head->proxy_chain =
         use_prefetch_proxy
-            ? net::ProxyServer::FromSchemeHostAndPort(
+            ? net::ProxyChain::FromSchemeHostAndPort(
                   net::ProxyServer::Scheme::SCHEME_HTTPS,
                   PrefetchProxyHost(GURL(kPrefetchProxyAddress)).spec(),
                   absl::nullopt)
-            : net::ProxyServer::Direct();
+            : net::ProxyChain::Direct();
 
     head->mime_type = mime_type;
     for (const auto& header : headers) {

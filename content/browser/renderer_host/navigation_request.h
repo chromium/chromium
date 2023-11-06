@@ -51,7 +51,6 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/isolation_info.h"
-#include "net/base/proxy_server.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
@@ -400,7 +399,6 @@ class CONTENT_EXPORT NavigationRequest
   bool IsSignedExchangeInnerResponse() override;
   bool HasPrefetchedAlternativeSubresourceSignedExchange() override;
   bool WasResponseCached() override;
-  const net::ProxyServer& GetProxyServer() override;
   const std::string& GetHrefTranslate() override;
   const absl::optional<blink::Impression>& GetImpression() override;
   const absl::optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
@@ -2282,9 +2280,6 @@ class CONTENT_EXPORT NavigationRequest
   // Test-only callback. Called when we're ready to call CommitNavigation.
   // Unlike above, this is informational only; it does not affect the request.
   base::OnceClosure ready_to_commit_callback_for_testing_;
-
-  // Which proxy server was used for this navigation, if any.
-  net::ProxyServer proxy_server_;
 
   // Unique id that identifies the navigation for which this NavigationRequest
   // is created.

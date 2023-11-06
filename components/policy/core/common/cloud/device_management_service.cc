@@ -18,6 +18,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -506,8 +507,8 @@ void DeviceManagementService::JobImpl::OnURLLoaderComplete(
   std::string mime_type;
   if (url_loader_->ResponseInfo()) {
     was_fetched_via_proxy =
-        url_loader_->ResponseInfo()->proxy_server.is_valid() &&
-        !url_loader_->ResponseInfo()->proxy_server.is_direct();
+        url_loader_->ResponseInfo()->proxy_chain.IsValid() &&
+        !url_loader_->ResponseInfo()->proxy_chain.is_direct();
     mime_type = url_loader_->ResponseInfo()->mime_type;
     if (url_loader_->ResponseInfo()->headers) {
       response_code = url_loader_->ResponseInfo()->headers->response_code();
