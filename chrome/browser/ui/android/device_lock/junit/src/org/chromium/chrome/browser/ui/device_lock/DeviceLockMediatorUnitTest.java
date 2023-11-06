@@ -52,6 +52,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
@@ -285,6 +286,14 @@ public class DeviceLockMediatorUnitTest {
 
     @Test
     public void testCreateDeviceLockOnClick_nullAccount_noReauthenticationTriggered() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.NOT_SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .CREATE_DEVICE_LOCK_CLICKED)
+                        .build();
+
         testOnClick(
                 null,
                 mDeviceLockAuthenticatorBridge,
@@ -297,12 +306,22 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 0,
                 /* onDeviceLockReadyCalls= */ 1,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void
             testCreateDeviceLockOnClick_previouslySetDeviceLock_callsDelegateOnDeviceLockReady() {
         doReturn(true).when(mKeyguardManager).isDeviceSecure();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .CREATE_DEVICE_LOCK_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -315,10 +334,20 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 1,
                 /* onDeviceLockReadyCalls= */ 1,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testCreateDeviceLockOnClick_noDeviceLockCreated_noDelegateCalls() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .CREATE_DEVICE_LOCK_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -331,10 +360,20 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 0,
                 /* onDeviceLockReadyCalls= */ 0,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testCreateDeviceLockOnClick_rejectedAccountReauthentication_noDelegateCalls() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .CREATE_DEVICE_LOCK_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -347,11 +386,21 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 1,
                 /* onDeviceLockReadyCalls= */ 0,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void
             testGoToOSSettingsOnClick_deviceLockCreatedSuccessfully_callsDelegateOnDeviceLockReady() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .GO_TO_OS_SETTINGS_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -364,11 +413,21 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 1,
                 /* onDeviceLockReadyCalls= */ 1,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testGoToOSSettingsOnClick_previouslySetDeviceLock_callsDelegateOnDeviceLockReady() {
         doReturn(true).when(mKeyguardManager).isDeviceSecure();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .GO_TO_OS_SETTINGS_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -381,10 +440,20 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 1,
                 /* onDeviceLockReadyCalls= */ 1,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testGoToOSSettingsOnClick_noDeviceLockCreated_noDelegateCalls() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .GO_TO_OS_SETTINGS_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -397,10 +466,20 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 0,
                 /* onDeviceLockReadyCalls= */ 0,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testGoToOSSettingsOnClick_rejectedAccountReauthentication_noDelegateCalls() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .GO_TO_OS_SETTINGS_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -413,10 +492,20 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 1,
                 /* onDeviceLockReadyCalls= */ 0,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testUserUnderstandsOnClick_successfulChallenges_callsDelegateOnDeviceLockReady() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .USER_UNDERSTANDS_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -429,11 +518,21 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 1,
                 /* onDeviceLockReadyCalls= */ 1,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void
             testUserUnderstandsOnClick_nullReauthenticationBridge_noReauthenticationChallenge() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .USER_UNDERSTANDS_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 /* deviceLockAuthenticatorBridge= */ null,
@@ -446,10 +545,20 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 1,
                 /* onDeviceLockReadyCalls= */ 1,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testUserUnderstandsOnClick_failedDeviceLockChallenge_noDelegateCalls() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .USER_UNDERSTANDS_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -462,10 +571,20 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 0,
                 /* onDeviceLockReadyCalls= */ 0,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testUserUnderstandsOnClick_rejectedAccountReauthentication_noDelegateCalls() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .USER_UNDERSTANDS_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -478,10 +597,20 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 1,
                 /* onDeviceLockReadyCalls= */ 0,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testUserUnderstandsOnClick_errorAccountReauthentication_noDelegateCalls() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction
+                                        .USER_UNDERSTANDS_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -494,10 +623,19 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 1,
                 /* onDeviceLockReadyCalls= */ 0,
                 /* onDeviceLockRefusedCalls= */ 0);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testDeviceLockMediator_dismissOnClick_callsDelegateOnDeviceLockRefused() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DeviceLockDialogAction.DISMISS_CLICKED)
+                        .build();
+
         testOnClick(
                 mAccount,
                 mDeviceLockAuthenticatorBridge,
@@ -510,6 +648,8 @@ public class DeviceLockMediatorUnitTest {
                 /* accountReauthenticationsTriggered= */ 0,
                 /* onDeviceLockReadyCalls= */ 0,
                 /* onDeviceLockRefusedCalls= */ 1);
+
+        histogramWatcher.assertExpected();
     }
 
     private void testOnClick(
