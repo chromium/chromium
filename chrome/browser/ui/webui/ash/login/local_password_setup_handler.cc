@@ -42,6 +42,8 @@ void LocalPasswordSetupHandler::DeclareLocalizedValues(
   builder->Add("confirmPasswordInputPlaceholderText",
                IDS_LOGIN_CONFIRM_PASSWORD_LABEL);
   builder->Add("passwordMismatchError", IDS_LOGIN_MANUAL_PASSWORD_MISMATCH);
+  builder->Add("showPassword", IDS_AUTH_SETUP_SHOW_PASSWORD);
+  builder->Add("hidePassword", IDS_AUTH_SETUP_HIDE_PASSWORD);
   builder->Add("setLocalPasswordPlaceholder",
                IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_PLACEHOLDER);
   builder->Add("setLocalPasswordConfirmPlaceholder",

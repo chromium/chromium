@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import './auth_setup_icons.html.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -53,6 +54,8 @@ enum ConfirmInputValidity {
  * When the user presses <Enter> in the confirmation input field and validation
  * passes, then the 'set-local-password-input' element dispatches a "submit"
  * event.
+ *
+ * TODO(b/309430756): Reuse ShowPasswordMixin here.
  */
 export class SetLocalPasswordInputElement extends
     LocalPasswordInputElementBase {
@@ -94,6 +97,16 @@ export class SetLocalPasswordInputElement extends
         type: String,
         value: null,
       },
+
+      isFirstPasswordVisible_: {
+        type: Boolean,
+        value: false,
+      },
+
+      isConfirmPasswordVisible_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -101,6 +114,8 @@ export class SetLocalPasswordInputElement extends
 
   private firstInputValidity_: null|FirstInputValidity;
   private confirmInputValidity_: null|ConfirmInputValidity;
+  private isFirstPasswordVisible_: boolean;
+  private isConfirmPasswordVisible_: boolean;
 
   locale: string;
 
@@ -287,6 +302,30 @@ export class SetLocalPasswordInputElement extends
       case ConfirmInputValidity.OK:
         return false;
     }
+  }
+
+  private getPasswordInputType(isVisible: boolean): string {
+    return isVisible ? 'text' : 'password';
+  }
+
+  private getShowHideButtonLabel(isVisible: boolean): string {
+    return isVisible ? loadTimeData.getString('hidePassword') :
+                       loadTimeData.getString('showPassword');
+  }
+
+  private getShowHideButtonIcon(isVisible: boolean): string {
+    return isVisible ? 'auth-setup:visibility-off' : 'auth-setup:visibility';
+  }
+
+  /**
+   * Handlers for showing/hiding the passwords. These methods should be
+   * attached to on-click event of show/hide password button.
+   */
+  private onFirstShowHidePasswordButtonClick() {
+    this.isFirstPasswordVisible_ = !this.isFirstPasswordVisible_;
+  }
+  private onConfirmShowHidePasswordButtonClick() {
+    this.isConfirmPasswordVisible_ = !this.isConfirmPasswordVisible_;
   }
 }
 

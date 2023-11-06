@@ -185,6 +185,7 @@ icons_html_files = [
   "multidevice_setup/icons.html",
   "navigation_icons.html",
 
+  "auth_setup/auth_setup_icons.html",
   "bluetooth/bluetooth_icons.html",
   "cellular_setup/cellular_setup_icons.html",
   "network/network_icons.html",
