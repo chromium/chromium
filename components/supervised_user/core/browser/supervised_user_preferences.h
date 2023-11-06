@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_PREFERENCES_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_PREFERENCES_H_
 
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 
@@ -13,11 +14,13 @@
 // family.
 namespace supervised_user {
 
+// Register preferences that describe parental controls.
 void RegisterFamilyPrefs(
     PrefService& pref_service,
     const kids_chrome_management::ListFamilyMembersResponse& response);
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-// Sets preferences that describe parental controls.
+// Set preferences that describe parental controls.
 void EnableParentalControls(PrefService& pref_service);
 void DisableParentalControls(PrefService& pref_service);
 

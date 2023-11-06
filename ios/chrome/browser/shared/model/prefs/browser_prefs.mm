@@ -58,6 +58,7 @@
 #import "components/strings/grit/components_locale_settings.h"
 #import "components/supervised_user/core/browser/child_account_service.h"
 #import "components/supervised_user/core/browser/supervised_user_metrics_service.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/common/buildflags.h"
 #import "components/supervised_user/core/common/pref_names.h"
@@ -460,8 +461,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   segmentation_platform::DeviceSwitcherResultDispatcher::RegisterProfilePrefs(
       registry);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  supervised_user::ChildAccountService::RegisterProfilePrefs(registry);
-  supervised_user::SupervisedUserService::RegisterProfilePrefs(registry);
+  supervised_user::RegisterProfilePrefs(registry);
   supervised_user::SupervisedUserMetricsService::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(registry);

@@ -37,10 +37,6 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 namespace supervised_user {
 class SupervisedUserSettingsService;
 
@@ -61,8 +57,6 @@ class SupervisedUserService : public KeyedService,
   SupervisedUserService& operator=(const SupervisedUserService&) = delete;
 
   ~SupervisedUserService() override;
-
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   supervised_user::RemoteWebApprovalsManager& remote_web_approvals_manager() {
     return remote_web_approvals_manager_;

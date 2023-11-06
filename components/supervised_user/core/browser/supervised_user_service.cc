@@ -19,7 +19,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
@@ -41,23 +40,6 @@ namespace supervised_user {
 SupervisedUserService::~SupervisedUserService() {
   DCHECK(!did_init_ || did_shutdown_);
   url_filter_->RemoveObserver(this);
-}
-
-// static
-void SupervisedUserService::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(prefs::kSupervisedUserId, std::string());
-  registry->RegisterDictionaryPref(prefs::kSupervisedUserManualHosts);
-  registry->RegisterDictionaryPref(prefs::kSupervisedUserManualURLs);
-  registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
-                                static_cast<int>(FilteringBehavior::kAllow));
-  registry->RegisterBooleanPref(prefs::kSupervisedUserSafeSites, true);
-  for (const char* pref : kCustodianInfoPrefs) {
-    registry->RegisterStringPref(pref, std::string());
-  }
-  registry->RegisterIntegerPref(
-      prefs::kFirstTimeInterstitialBannerState,
-      static_cast<int>(FirstTimeInterstitialBannerState::kUnknown));
 }
 
 void SupervisedUserService::Init() {

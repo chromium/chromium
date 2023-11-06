@@ -34,10 +34,7 @@
 class ParentalControlMetricsTest : public testing::Test {
  public:
   void SetUp() override {
-    supervised_user::SupervisedUserService::RegisterProfilePrefs(
-        pref_service_.registry());
-    supervised_user::ChildAccountService::RegisterProfilePrefs(
-        pref_service_.registry());
+    supervised_user::RegisterProfilePrefs(pref_service_.registry());
 
     // Prepare args for the AsyncURLChecker.
     kids_chrome_management_client_ =

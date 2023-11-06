@@ -137,6 +137,22 @@ void RegisterFamilyPrefs(
   }
 }
 
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(prefs::kSupervisedUserId, std::string());
+  registry->RegisterDictionaryPref(prefs::kSupervisedUserManualHosts);
+  registry->RegisterDictionaryPref(prefs::kSupervisedUserManualURLs);
+  registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
+                                static_cast<int>(FilteringBehavior::kAllow));
+  registry->RegisterBooleanPref(prefs::kSupervisedUserSafeSites, true);
+  for (const char* pref : kCustodianInfoPrefs) {
+    registry->RegisterStringPref(pref, std::string());
+  }
+  registry->RegisterIntegerPref(
+      prefs::kFirstTimeInterstitialBannerState,
+      static_cast<int>(FirstTimeInterstitialBannerState::kUnknown));
+  registry->RegisterBooleanPref(prefs::kChildAccountStatusKnown, false);
+}
+
 void EnableParentalControls(PrefService& pref_service) {
   pref_service.SetString(prefs::kSupervisedUserId,
                          supervised_user::kChildAccountSUID);

@@ -27,6 +27,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -56,8 +57,7 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
                 &test_url_loader_factory_),
             identity_test_env_.identity_manager()) {
     settings_service_.Init(syncable_pref_service_.user_prefs_store());
-    SupervisedUserService::RegisterProfilePrefs(
-        syncable_pref_service_.registry());
+    supervised_user::RegisterProfilePrefs(syncable_pref_service_.registry());
     if (is_supervised) {
       syncable_pref_service_.SetString(prefs::kSupervisedUserId,
                                        kChildAccountSUID);

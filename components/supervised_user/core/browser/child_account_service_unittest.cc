@@ -67,10 +67,7 @@ class ChildAccountServiceTest : public ::testing::Test {
             identity_test_environment_->identity_manager());
 
     settings_service_.Init(syncable_pref_service_.user_prefs_store());
-    SupervisedUserService::RegisterProfilePrefs(
-        syncable_pref_service_.registry());
-    ChildAccountService::RegisterProfilePrefs(
-        syncable_pref_service_.registry());
+    supervised_user::RegisterProfilePrefs(syncable_pref_service_.registry());
 
     // Set the user to be supervised.
     supervised_user::EnableParentalControls(GetUserPerferences());
