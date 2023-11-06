@@ -58,8 +58,10 @@ using ScopedGlobalAlloc =
 
 class MockPrintingContextWin : public PrintingContextSystemDialogWin {
  public:
-  explicit MockPrintingContextWin(Delegate* delegate)
-      : PrintingContextSystemDialogWin(delegate) {}
+  MockPrintingContextWin(Delegate* delegate)
+      : PrintingContextSystemDialogWin(
+            delegate,
+            PrintingContext::ProcessBehavior::kOopDisabled) {}
 
  protected:
   // This is a fake PrintDlgEx implementation that sets the right fields in
@@ -183,7 +185,8 @@ TEST_F(PrintingContextTest, DISABLED_Base) {
   auto settings = std::make_unique<PrintSettings>();
   settings->set_device_name(base::WideToUTF16(GetDefaultPrinter()));
   // Initialize it.
-  PrintingContextWin context(this);
+  PrintingContextWin context(this,
+                             PrintingContext::ProcessBehavior::kOopDisabled);
   EXPECT_EQ(mojom::ResultCode::kSuccess,
             context.InitWithSettingsForTest(std::move(settings)));
 

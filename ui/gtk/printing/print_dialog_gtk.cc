@@ -456,16 +456,13 @@ void PrintDialogGtk::ShowDialog(
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
                                    const std::u16string& document_name) {
 #if DCHECK_IS_ON()
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  const bool kOopPrinting = printing::features::ShouldPrintJobOop();
-#else
-  const bool kOopPrinting = false;
-#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+  bool oop_printing = context_->process_behavior() !=
+                      printing::PrintingContext::ProcessBehavior::kOopDisabled;
 
   // For in-browser printing, this runs on the print worker thread, so it does
   // not block the UI thread.  For OOP it runs on the service document task
   // runner.
-  DCHECK_EQ(owning_task_runner()->RunsTasksInCurrentSequence(), kOopPrinting);
+  DCHECK_EQ(owning_task_runner()->RunsTasksInCurrentSequence(), oop_printing);
 #endif  // DCHECK_IS_ON()
 
   // The document printing tasks can outlive the PrintingContext that created

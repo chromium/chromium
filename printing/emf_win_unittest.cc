@@ -90,7 +90,8 @@ TEST_F(EmfPrintingTest, Enumerate) {
   settings->set_device_name(u"UnitTest Printer");
 
   // Initialize it.
-  PrintingContextWin context(this);
+  PrintingContextWin context(this,
+                             PrintingContext::ProcessBehavior::kOopDisabled);
   EXPECT_EQ(mojom::ResultCode::kSuccess,
             context.InitWithSettingsForTest(std::move(settings)));
 
