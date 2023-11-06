@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/shadow/permission_shadow_element.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -21,7 +22,9 @@
 
 namespace blink {
 
-class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
+class CORE_EXPORT HTMLPermissionElement final
+    : public HTMLElement,
+      public mojom::blink::PermissionObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -69,6 +72,13 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
   // PermissionService's API.
   void RequestPageEmbededPermissions();
 
+  void RegisterPermissionObserver(
+      const mojom::blink::PermissionDescriptorPtr& descriptor,
+      mojom::blink::PermissionStatus current_status);
+
+  // mojom::blink::PermissionObserver override.
+  void OnPermissionStatusChange(mojom::blink::PermissionStatus status) override;
+
   // Callback triggered when <permission>  element is registered from browser
   // process.
   void OnPageEmbeddedPermissionControlRegistered(
@@ -110,6 +120,17 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
+
+  // Holds all `PermissionObserver` receivers connected with remotes in browser
+  // process. Each of them corresponds to a permission observer of one
+  // descriptor in `permission_descriptors_`.
+  // This set uses `PermissionName` as context type. Once a receiver call is
+  // triggered, we look into its name to determine which permission is changed.
+  HeapMojoReceiverSet<mojom::blink::PermissionObserver,
+                      HTMLPermissionElement,
+                      HeapMojoWrapperMode::kWithContextObserver,
+                      mojom::blink::PermissionName>
+      receivers_;
 
   //  Map holds all current permission statuses, keyed by permission name.
   using PermissionStatusMap =

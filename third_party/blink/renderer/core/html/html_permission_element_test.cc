@@ -129,6 +129,26 @@ TEST_F(HTMLPemissionElementTestBase, ParsePermissionDescriptorsFromType) {
   }
 }
 
+// Helper class used to wait until receiving a permission status change event.
+class PermissionStatusChangeWaiter : public PermissionObserver {
+ public:
+  explicit PermissionStatusChangeWaiter(
+      mojo::PendingReceiver<PermissionObserver> receiver,
+      base::OnceClosure callback)
+      : receiver_(this, std::move(receiver)), callback_(std::move(callback)) {}
+
+  // PermissionObserver override
+  void OnPermissionStatusChange(PermissionStatus status) override {
+    if (callback_) {
+      std::move(callback_).Run();
+    }
+  }
+
+ private:
+  mojo::Receiver<PermissionObserver> receiver_;
+  base::OnceClosure callback_;
+};
+
 class TestPermissionService : public PermissionService {
  public:
   explicit TestPermissionService(
@@ -165,11 +185,41 @@ class TestPermissionService : public PermissionService {
   void AddPermissionObserver(
       PermissionDescriptorPtr permission,
       PermissionStatus last_known_status,
-      mojo::PendingRemote<PermissionObserver> observer) override {}
+      mojo::PendingRemote<PermissionObserver> observer) override {
+    auto inserted_result = observers_.insert(
+        permission->name,
+        mojo::Remote<PermissionObserver>(std::move(observer)));
+    CHECK(inserted_result.is_new_entry);
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
 
   void NotifyEventListener(PermissionDescriptorPtr permission,
                            const String& event_type,
                            bool is_added) override {}
+
+  void NotifyPermissionStatusChange(PermissionName name,
+                                    PermissionStatus status) {
+    auto it = observers_.find(name);
+    CHECK(it != observers_.end());
+    it->value->OnPermissionStatusChange(status);
+    WaitForPermissionStatusChange(status);
+  }
+
+  void WaitForPermissionStatusChange(PermissionStatus status) {
+    mojo::Remote<PermissionObserver> observer;
+    base::RunLoop run_loop;
+    auto waiter = std::make_unique<PermissionStatusChangeWaiter>(
+        observer.BindNewPipeAndPassReceiver(), run_loop.QuitClosure());
+    observer->OnPermissionStatusChange(status);
+    run_loop.Run();
+  }
+
+  void WaitForPermissionObserverAdded() {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
 
   void set_initial_statuses(const Vector<PermissionStatus>& statuses) {
     initial_statuses_ = statuses;
@@ -178,6 +228,7 @@ class TestPermissionService : public PermissionService {
  private:
   mojo::Receiver<PermissionService> receiver_;
   HashMap<PermissionName, mojo::Remote<PermissionObserver>> observers_;
+  std::unique_ptr<base::RunLoop> run_loop_;
   Vector<PermissionStatus> initial_statuses_;
 };
 
@@ -309,6 +360,80 @@ TEST_F(HTMLPemissionElementTest,
     InnerTextChangeWaiter waiter(
         permission_element->permission_text_span_for_testing());
     waiter.Wait();
+    EXPECT_EQ(
+        data.expected_text,
+        permission_element->permission_text_span_for_testing()->innerText());
+  }
+}
+
+TEST_F(HTMLPemissionElementTest, StatusChangeSinglePermissionElement) {
+  const struct {
+    const char* type;
+    PermissionName name;
+    PermissionStatus status;
+    String expected_text;
+  } kTestData[] = {{"geolocation", PermissionName::GEOLOCATION,
+                    PermissionStatus::ASK, kGeolocationString},
+                   {"microphone", PermissionName::AUDIO_CAPTURE,
+                    PermissionStatus::ASK, kMicrophoneString},
+                   {"camera", PermissionName::VIDEO_CAPTURE,
+                    PermissionStatus::ASK, kCameraString},
+                   {"geolocation", PermissionName::GEOLOCATION,
+                    PermissionStatus::DENIED, kGeolocationString},
+                   {"microphone", PermissionName::AUDIO_CAPTURE,
+                    PermissionStatus::DENIED, kMicrophoneString},
+                   {"camera", PermissionName::VIDEO_CAPTURE,
+                    PermissionStatus::DENIED, kCameraString},
+                   {"geolocation", PermissionName::GEOLOCATION,
+                    PermissionStatus::GRANTED, kGeolocationAllowedString},
+                   {"microphone", PermissionName::AUDIO_CAPTURE,
+                    PermissionStatus::GRANTED, kMicrophoneAllowedString},
+                   {"camera", PermissionName::VIDEO_CAPTURE,
+                    PermissionStatus::GRANTED, kCameraAllowedString}};
+  for (const auto& data : kTestData) {
+    auto* permission_element =
+        MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+    permission_element->setAttribute(html_names::kTypeAttr,
+                                     AtomicString(data.type));
+    permission_service()->WaitForPermissionObserverAdded();
+    permission_service()->NotifyPermissionStatusChange(data.name, data.status);
+    EXPECT_EQ(
+        data.expected_text,
+        permission_element->permission_text_span_for_testing()->innerText());
+  }
+}
+
+TEST_F(HTMLPemissionElementTest,
+       StatusesChangeCameraMicrophonePermissionsElement) {
+  const struct {
+    PermissionStatus camera_status;
+    PermissionStatus microphone_status;
+    String expected_text;
+  } kTestData[] = {
+      {PermissionStatus::DENIED, PermissionStatus::DENIED,
+       kCameraMicrophoneString},
+      {PermissionStatus::DENIED, PermissionStatus::ASK,
+       kCameraMicrophoneString},
+      {PermissionStatus::DENIED, PermissionStatus::GRANTED, kCameraString},
+      {PermissionStatus::ASK, PermissionStatus::ASK, kCameraMicrophoneString},
+      {PermissionStatus::ASK, PermissionStatus::GRANTED, kCameraString},
+      {PermissionStatus::ASK, PermissionStatus::DENIED,
+       kCameraMicrophoneString},
+      {PermissionStatus::GRANTED, PermissionStatus::ASK, kMicrophoneString},
+      {PermissionStatus::GRANTED, PermissionStatus::DENIED, kMicrophoneString},
+      {PermissionStatus::GRANTED, PermissionStatus::GRANTED,
+       kCameraMicrophoneAllowedString},
+  };
+  for (const auto& data : kTestData) {
+    auto* permission_element =
+        MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+    permission_element->setAttribute(html_names::kTypeAttr,
+                                     AtomicString("camera microphone"));
+    permission_service()->WaitForPermissionObserverAdded();
+    permission_service()->NotifyPermissionStatusChange(
+        PermissionName::VIDEO_CAPTURE, data.camera_status);
+    permission_service()->NotifyPermissionStatusChange(
+        PermissionName::AUDIO_CAPTURE, data.microphone_status);
     EXPECT_EQ(
         data.expected_text,
         permission_element->permission_text_span_for_testing()->innerText());

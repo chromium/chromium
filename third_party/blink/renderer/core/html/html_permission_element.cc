@@ -32,6 +32,7 @@ using mojom::blink::EmbeddedPermissionRequestDescriptor;
 using mojom::blink::PermissionDescriptor;
 using mojom::blink::PermissionDescriptorPtr;
 using mojom::blink::PermissionName;
+using mojom::blink::PermissionObserver;
 using mojom::blink::PermissionService;
 using mojom::blink::PermissionStatus;
 
@@ -148,7 +149,8 @@ int GetMessageIDMultiplePermissions(
 
 HTMLPermissionElement::HTMLPermissionElement(Document& document)
     : HTMLElement(html_names::kPermissionTag, document),
-      permission_service_(document.GetExecutionContext()) {
+      permission_service_(document.GetExecutionContext()),
+      receivers_(this, document.GetExecutionContext()) {
   DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled());
   EnsureUserAgentShadowRoot();
 }
@@ -161,6 +163,7 @@ const AtomicString& HTMLPermissionElement::GetType() const {
 
 void HTMLPermissionElement::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
+  visitor->Trace(receivers_);
   visitor->Trace(shadow_element_);
   visitor->Trace(permission_text_span_);
   HTMLElement::Trace(visitor);
@@ -273,6 +276,24 @@ void HTMLPermissionElement::RequestPageEmbededPermissions() {
                     WrapWeakPersistent(this)));
 }
 
+void HTMLPermissionElement::RegisterPermissionObserver(
+    const PermissionDescriptorPtr& descriptor,
+    PermissionStatus current_status) {
+  mojo::PendingRemote<PermissionObserver> observer;
+  receivers_.Add(observer.InitWithNewPipeAndPassReceiver(), descriptor->name,
+                 GetTaskRunner());
+  GetPermissionService()->AddPermissionObserver(
+      descriptor.Clone(), current_status, std::move(observer));
+}
+
+void HTMLPermissionElement::OnPermissionStatusChange(PermissionStatus status) {
+  auto permission_name = receivers_.current_context();
+  auto it = permission_status_map_.find(permission_name);
+  CHECK(it != permission_status_map_.end());
+  it->value = status;
+  UpdateAppearance();
+}
+
 void HTMLPermissionElement::OnPageEmbeddedPermissionControlRegistered(
     bool allowed,
     const absl::optional<Vector<PermissionStatus>>& statuses) {
@@ -295,6 +316,7 @@ void HTMLPermissionElement::OnPageEmbeddedPermissionControlRegistered(
         permission_status_map_.insert(descriptor->name, status);
     CHECK(inserted_result.is_new_entry);
     permissions_granted_ &= (status == PermissionStatus::GRANTED);
+    RegisterPermissionObserver(descriptor, status);
   }
 
   UpdateAppearance();
@@ -308,7 +330,6 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
       return;
     case EmbeddedPermissionControlResult::kGranted:
       permissions_granted_ = true;
-      UpdateAppearance();
       DispatchEvent(*Event::Create(event_type_names::kResolve));
       return;
     case EmbeddedPermissionControlResult::kDenied:
