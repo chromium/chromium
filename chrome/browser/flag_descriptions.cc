@@ -2758,11 +2758,6 @@ const char kWindowsScrollingPersonalityDescription[] =
     "of the scroller size and the default scroll animation is replaced with "
     "Impulse-style scroll animations.";
 
-const char kPermissionChipName[] = "Permissions Chip Experiment";
-const char kPermissionChipDescription[] =
-    "Enables an experimental permission prompt that uses a chip in the location"
-    " bar.";
-
 const char kImprovedSemanticsActivityIndicatorsName[] =
     "Improved semantics activity indicators";
 const char kImprovedSemanticsActivityIndicatorsDescription[] =

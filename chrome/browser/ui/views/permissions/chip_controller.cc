@@ -121,6 +121,9 @@ void ChipController::OnTabVisibilityChanged(content::Visibility visibility) {
 }
 
 void ChipController::OnRequestsFinalized() {
+  // Due to a permissions requests queue reordering, currently active
+  // permission request may get finalized without a user deciding on a
+  // permission prompt. That means `OnRequestDecided` will not be executed.
   ResetPermissionRequestChip();
 }
 
@@ -132,9 +135,15 @@ void ChipController::OnRequestDecided(
     permissions::PermissionAction permission_action) {
   RemoveBubbleObserverAndResetTimersAndChipCallbacks();
   if (!GetLocationBarView()->IsDrawn() ||
-      GetLocationBarView()->GetWidget()->GetTopLevelWidget()->IsFullscreen()) {
-    // If the location bar isn't drawn or during fullscreen, the chip can't be
-    // shown anywhere.
+      GetLocationBarView()->GetWidget()->GetTopLevelWidget()->IsFullscreen() ||
+      permission_action == permissions::PermissionAction::IGNORED ||
+      permission_action == permissions::PermissionAction::DISMISSED ||
+      permission_action == permissions::PermissionAction::REVOKED) {
+    // Reset everything and hide chip if:
+    // - `LocationBarView` isn't visible
+    // - `kConfirmationChip` isn't enabled
+    // - Permission request was ignored or denied as we do not confirm such
+    // actions.
     ResetPermissionPromptChip();
   } else {
     HandleConfirmation(permission_action);
@@ -159,6 +168,8 @@ void ChipController::RestartTimersOnMouseHover() {
     collapse_timer_.Start(FROM_HERE, kConfirmationDisplayDuration, this,
                           &ChipController::CollapseConfirmation);
   } else if (chip_->is_fully_collapsed()) {
+    // Quiet chip can collapse from a verbose state to an icon state. After it
+    // is collapsed, it should be dismissed.
     StartDismissTimer();
   } else {
     StartCollapseTimer();
@@ -174,13 +185,10 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
 
   observation_.Reset();
 
-  if (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
-      widget->closed_reason() ==
-          views::Widget::ClosedReason::kCloseButtonClicked) {
-    OnPromptBubbleDismissed();
-  } else {
-    CollapsePrompt(/*allow_restart=*/false);
-  }
+  // This method will be called only if a user dismissed permission prompt
+  // popup bubble. In all other cases, `OnRequestDecided` is called and Widget
+  // observer gets unsubscribed.
+  OnPromptBubbleDismissed();
 }
 
 void ChipController::OnWidgetActivationChanged(views::Widget* widget,
@@ -350,7 +358,7 @@ void ChipController::ShowPageInfoDialog() {
   if (entry->IsInitialEntry())
     return;
 
-  // prevent chip from collapsing while prompt bubble is open
+  // Prevent chip from collapsing while prompt bubble is open.
   ResetTimers();
 
   auto initialized_callback =
@@ -400,9 +408,7 @@ void ChipController::HandleConfirmation(
   DCHECK(permission_prompt_model_);
   permission_prompt_model_->UpdateWithUserDecision(user_decision);
   SyncChipWithModel();
-  if (user_decision != permissions::PermissionAction::IGNORED &&
-      user_decision != permissions::PermissionAction::DISMISSED &&
-      active_chip_permission_request_manager_.has_value() &&
+  if (active_chip_permission_request_manager_.has_value() &&
       !active_chip_permission_request_manager_.value()
            ->has_pending_requests() &&
       permission_prompt_model_->CanDisplayConfirmation()) {
@@ -493,12 +499,12 @@ void ChipController::OpenPermissionPromptBubble() {
                                          ->GetAssociatedWebContents()
                                          ->CreateDisallowCustomCursorScope();
 
-  // prevent chip from collapsing while prompt bubble is open
+  // Prevent chip from collapsing while prompt bubble is open.
   ResetTimers();
 
   if (permission_prompt_model_->GetPromptStyle() ==
       PermissionPromptStyle::kChip) {
-    // Loud prompt bubble
+    // Loud prompt bubble.
     raw_ptr<PermissionPromptBubbleBaseView> prompt_bubble =
         CreatePermissionPromptBubbleView(
             browser_, permission_prompt_model_->GetDelegate(),
@@ -507,7 +513,7 @@ void ChipController::OpenPermissionPromptBubble() {
     prompt_bubble->Show();
   } else if (permission_prompt_model_->GetPromptStyle() ==
              PermissionPromptStyle::kQuietChip) {
-    // Quiet prompt bubble
+    // Quiet prompt bubble.
     LocationBarView* lbv = GetLocationBarView();
     content::WebContents* web_contents = lbv->GetContentSettingWebContents();
 

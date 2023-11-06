@@ -675,6 +675,7 @@ void PermissionRequestManager::Ignore() {
 }
 
 void PermissionRequestManager::FinalizeCurrentRequests() {
+  CHECK(IsRequestInProgress());
   ResetViewStateForCurrentRequest();
   std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
