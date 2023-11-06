@@ -212,8 +212,7 @@ export class NotificationTester extends PolymerElement {
         this.notificationDelayTime = '';
         // Create a deep copy of the current state of this.notifMetadata to
         // ensure it won't be modified before chrome.send() is called.
-        const notifMetadataCopy =
-            JSON.parse(JSON.stringify(this.notifMetadata));
+        const notifMetadataCopy = structuredClone(this.notifMetadata);
         setTimeout(
             chrome.send, timedInputValueNumber * NUM_MS_IN_S,
             'generateNotificationForm', [notifMetadataCopy]);

@@ -120,7 +120,7 @@ guestMessagePipe.registerHandler(Message.TEAR_DOWN_SIGNAL, async () => {
 // window.close() doesn't work from the iframe.
 guestMessagePipe.registerHandler(Message.CLOSE_WINDOW, async () => {
   const info = /** @type {!SystemInfo} */ (await systemInfo.getSystemInfo());
-  const systemInfoJson = JSON.parse(JSON.stringify(info));
+  const systemInfoJson = structuredClone(info);
   console.log('echeapi browser_proxy.js window.close');
   displayStreamHandler.onStreamStatusChanged(
       ash.echeApp.mojom.StreamStatus.kStreamStatusStopped);

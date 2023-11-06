@@ -368,26 +368,26 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     // Create a deep copy of the pref so that the chooser-exception-list element
     // is able update the UI appropriately when incognito mode is toggled.
     const pref = /** @type {!Array<!RawChooserException>} */ (
-        JSON.parse(JSON.stringify(this.prefs_.chooserExceptions[setting!])));
+        structuredClone(this.prefs_.chooserExceptions[setting!]));
     assert(pref !== undefined, 'Pref is missing for ' + chooserType);
 
     if (this.hasIncognito_) {
       for (let i = 0; i < pref.length; ++i) {
         const incognitoElements = [];
-        for (let j = 0; j < pref[i].sites.length; ++j) {
+        for (let j = 0; j < pref[i]!.sites.length; ++j) {
           // Skip preferences that are not controlled by policy since opening an
           // incognito session does not automatically grant permission to
           // chooser exceptions that have been granted in the main session.
-          if (pref[i].sites[j].source !== SiteSettingSource.POLICY) {
+          if (pref[i]!.sites[j]!.source !== SiteSettingSource.POLICY) {
             continue;
           }
 
           // Copy |sites[i]| to avoid changing the original |sites[i]|.
-          const incognitoSite = Object.assign({}, pref[i].sites[j]);
+          const incognitoSite = Object.assign({}, pref[i]!.sites[j]);
           incognitoElements.push(
               Object.assign(incognitoSite, {incognito: true}));
         }
-        pref[i].sites.push(...incognitoElements);
+        pref[i]!.sites.push(...incognitoElements);
       }
     }
 
