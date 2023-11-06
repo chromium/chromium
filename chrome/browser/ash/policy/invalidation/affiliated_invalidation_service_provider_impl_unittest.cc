@@ -173,8 +173,7 @@ FakeConsumer::FakeConsumer(AffiliatedInvalidationServiceProviderImpl* provider,
 
 FakeConsumer::~FakeConsumer() {
   if (invalidation_service_) {
-    invalidation_service_->UnregisterInvalidationHandler(
-        &invalidation_handler_);
+    invalidation_service_->RemoveObserver(&invalidation_handler_);
   }
   provider_->UnregisterConsumer(this);
 
@@ -186,8 +185,7 @@ void FakeConsumer::OnInvalidationServiceSet(
   ++invalidation_service_set_count_;
 
   if (invalidation_service_) {
-    invalidation_service_->UnregisterInvalidationHandler(
-        &invalidation_handler_);
+    invalidation_service_->RemoveObserver(&invalidation_handler_);
   }
 
   invalidation_service_ = invalidation_service;
@@ -198,7 +196,7 @@ void FakeConsumer::OnInvalidationServiceSet(
     // chance to unregister their invalidation handlers. Register an
     // invalidation handler so that |invalidation_service| CHECK()s in its
     // destructor if this regresses.
-    invalidation_service_->RegisterInvalidationHandler(&invalidation_handler_);
+    invalidation_service_->AddObserver(&invalidation_handler_);
   }
 }
 

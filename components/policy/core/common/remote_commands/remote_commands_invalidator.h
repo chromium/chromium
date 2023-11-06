@@ -57,7 +57,9 @@ class POLICY_EXPORT RemoteCommandsInvalidator
   }
 
   // Whether the invalidator currently has the ability to receive invalidations.
-  bool invalidations_enabled() { return invalidations_enabled_; }
+  bool invalidations_enabled() {
+    return IsRegistered() && AreInvalidationsEnabled();
+  }
 
   // invalidation::InvalidationHandler:
   void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
@@ -82,6 +84,12 @@ class POLICY_EXPORT RemoteCommandsInvalidator
   void ReloadPolicyData(const enterprise_management::PolicyData* policy);
 
  private:
+  // Returns true if `this` is observing `invalidation_service_`.
+  bool IsRegistered() const;
+
+  // Returns true if `IsRegistered()` and `invalidation_service_` is enabled.
+  bool AreInvalidationsEnabled() const;
+
   // Registers this handler with |invalidation_service_| if needed and
   // subscribes to the given |topic| with the invalidation service.
   void Register(const invalidation::Topic& topic);
@@ -92,9 +100,6 @@ class POLICY_EXPORT RemoteCommandsInvalidator
 
   // Unsubscribes from the current topics but keeps the registration as is.
   void UnsubscribeFromTopics();
-
-  // Updates invalidations_enabled_.
-  void UpdateInvalidationsEnabled();
 
   // The state of the object.
   enum State {
@@ -109,17 +114,6 @@ class POLICY_EXPORT RemoteCommandsInvalidator
 
   // The invalidation service.
   raw_ptr<invalidation::InvalidationService> invalidation_service_ = nullptr;
-
-  // Whether the invalidator currently has the ability to receive invalidations.
-  // This is true if the invalidation service is enabled and the invalidator
-  // has registered for a remote commands object.
-  bool invalidations_enabled_ = false;
-
-  // Whether the invalidation service is currently enabled.
-  bool invalidation_service_enabled_ = false;
-
-  // Whether this object has registered for remote commands invalidations.
-  bool is_registered_ = false;
 
   // The Topic representing the remote commands in the invalidation service.
   invalidation::Topic topic_;

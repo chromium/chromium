@@ -10,9 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -22,6 +20,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -104,11 +103,6 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   // is destroyed.
   void Shutdown();
 
-  // Whether the invalidator currently has the ability to receive invalidations.
-  bool invalidations_enabled() {
-    return invalidations_enabled_;
-  }
-
   // The highest invalidation version that was handled already.
   int64_t highest_handled_invalidation_version() const {
     return highest_handled_invalidation_version_;
@@ -135,6 +129,12 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   void OnStoreError(CloudPolicyStore* store) override;
 
  private:
+  // Returns true if `this` is observing `invalidation_service_`.
+  bool IsRegistered() const;
+
+  // Returns true if `IsRegistered()` and `invalidation_service_` is enabled.
+  bool AreInvalidationsEnabled() const;
+
   // Handle an invalidation to the policy.
   void HandleInvalidation(const invalidation::Invalidation& invalidation);
 
@@ -157,8 +157,8 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   void UpdateMaxFetchDelay(const PolicyMap& policy_map);
   void set_max_fetch_delay(int delay);
 
-  // Updates invalidations_enabled_ and calls the invalidation handler if the
-  // value changed.
+  // Informs the core's refresh scheduler about whether invalidations are
+  // enabled.
   void UpdateInvalidationsEnabled();
 
   // Refresh the policy.
@@ -174,7 +174,10 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   bool IsPolicyChanged(const enterprise_management::PolicyData* policy);
 
   // Determine if invalidations have been enabled longer than the grace period.
-  bool GetInvalidationsEnabled();
+  // This is a heuristic attempt to avoid counting initial policy fetches as
+  // invalidation-triggered.
+  // See https://codereview.chromium.org/213743014 for more details.
+  bool HaveInvalidationsBeenEnabledForAWhileForMetricsRecording();
 
   // The state of the object.
   enum State {
@@ -204,19 +207,8 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   raw_ptr<invalidation::InvalidationService, AcrossTasksDanglingUntriaged>
       invalidation_service_;
 
-  // Whether the invalidator currently has the ability to receive invalidations.
-  // This is true if the invalidation service is enabled and the invalidator
-  // has registered for a policy object.
-  bool invalidations_enabled_;
-
   // The time that invalidations became enabled.
-  base::Time invalidations_enabled_time_;
-
-  // Whether the invalidation service is currently enabled.
-  bool invalidation_service_enabled_;
-
-  // Whether this object has registered for policy invalidations.
-  bool is_registered_;
+  absl::optional<base::Time> invalidations_enabled_time_;
 
   // The topic representing the policy in the invalidation service.
   invalidation::Topic topic_;

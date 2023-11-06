@@ -63,22 +63,14 @@ class InvalidationService {
   //
   // Handler must unregister via `RemoveObserver` before InvalidationService
   // shutdown.
-  // TODO(b/308435631) Drop RegisterInvalidationHandler in favor of AddObserver.
   virtual void AddObserver(InvalidationHandler* handler) = 0;
-  void RegisterInvalidationHandler(InvalidationHandler* handler) {
-    AddObserver(handler);
-  }
 
   // Stops sending invalidations to |handler|. |handler| must not be NULL, and
   // it must already be registered. Note that this doesn't unregister the topics
   // associated with |handler|.
-  // TODO(b/308435631) Drop UnregisterInvalidationHandler in favor of
-  // RemoveObserver.
   virtual void RemoveObserver(const InvalidationHandler* handler) = 0;
-  void UnregisterInvalidationHandler(InvalidationHandler* handler) {
-    RemoveObserver(handler);
-  }
 
+  // Returns true if `handler` is observing this InvalidationService.
   virtual bool HasObserver(const InvalidationHandler* handler) const = 0;
 
   // Updates the set of topics associated with |handler|. |handler| must not be

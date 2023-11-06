@@ -70,6 +70,10 @@ class AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver
       invalidation_service_;
   bool is_service_connected_;
   bool is_observer_ready_;
+
+  base::ScopedObservation<invalidation::InvalidationService,
+                          invalidation::InvalidationHandler>
+      invalidation_service_observation_{this};
 };
 
 AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
@@ -81,7 +85,7 @@ AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
       is_service_connected_(false),
       is_observer_ready_(false) {
   DCHECK(invalidation_service_);
-  invalidation_service_->RegisterInvalidationHandler(this);
+  invalidation_service_observation_.Observe(invalidation_service_);
   is_service_connected_ = invalidation_service->GetInvalidatorState() ==
                           invalidation::INVALIDATIONS_ENABLED;
   is_observer_ready_ = true;
@@ -90,7 +94,6 @@ AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
 AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
     ~InvalidationServiceObserver() {
   is_observer_ready_ = false;
-  invalidation_service_->UnregisterInvalidationHandler(this);
 }
 
 invalidation::InvalidationService* AffiliatedInvalidationServiceProviderImpl::

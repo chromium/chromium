@@ -84,7 +84,7 @@ CertProvisioningInvalidationHandler::~CertProvisioningInvalidationHandler() {
 }
 
 bool CertProvisioningInvalidationHandler::Register() {
-  if (state_.is_registered) {
+  if (IsRegistered()) {
     return true;
   }
 
@@ -98,12 +98,11 @@ bool CertProvisioningInvalidationHandler::Register() {
     return false;
   }
 
-  state_.is_registered = true;
   return true;
 }
 
 void CertProvisioningInvalidationHandler::Unregister() {
-  if (!state_.is_registered) {
+  if (!IsRegistered()) {
     return;
   }
 
@@ -116,28 +115,23 @@ void CertProvisioningInvalidationHandler::Unregister() {
   DCHECK(invalidation_service_observation_.IsObservingSource(
       invalidation_service_.get()));
   invalidation_service_observation_.Reset();
-
-  state_.is_registered = false;
 }
 
 void CertProvisioningInvalidationHandler::OnInvalidatorStateChange(
     invalidation::InvalidatorState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  state_.is_invalidation_service_enabled =
-      state == invalidation::INVALIDATIONS_ENABLED;
 }
 
 void CertProvisioningInvalidationHandler::OnIncomingInvalidation(
     const invalidation::Invalidation& invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!state_.is_invalidation_service_enabled) {
+  if (!AreInvalidationsEnabled()) {
     LOG(WARNING) << "Unexpected invalidation received.";
   }
 
   CHECK(invalidation.topic() == topic_)
-      << "Incoming invlaidation does not contain invalidation"
+      << "Incoming invalidation does not contain invalidation"
          " for certificate topic";
 
   invalidation.Acknowledge();
@@ -154,6 +148,15 @@ bool CertProvisioningInvalidationHandler::IsPublicTopic(
     const invalidation::Topic& topic) const {
   return base::StartsWith(topic, kFcmCertProvisioningPublicTopicPrefix,
                           base::CompareCase::SENSITIVE);
+}
+
+bool CertProvisioningInvalidationHandler::IsRegistered() const {
+  return invalidation_service_ && invalidation_service_->HasObserver(this);
+}
+
+bool CertProvisioningInvalidationHandler::AreInvalidationsEnabled() const {
+  return IsRegistered() && invalidation_service_->GetInvalidatorState() ==
+                               invalidation::INVALIDATIONS_ENABLED;
 }
 
 }  // namespace internal

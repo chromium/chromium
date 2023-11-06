@@ -4,7 +4,6 @@
 
 #include "components/drive/drive_notification_manager.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -18,6 +17,7 @@
 #include "components/drive/drive_notification_observer.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
+#include "components/invalidation/public/invalidator_state.h"
 
 namespace drive {
 
@@ -45,8 +45,6 @@ DriveNotificationManager::DriveNotificationManager(
     invalidation::InvalidationService* invalidation_service,
     const base::TickClock* clock)
     : invalidation_service_(invalidation_service),
-      push_notification_registered_(false),
-      push_notification_enabled_(false),
       observers_notified_(false),
       batch_timer_(clock) {
   DCHECK(invalidation_service_);
@@ -60,27 +58,28 @@ DriveNotificationManager::~DriveNotificationManager() {
 void DriveNotificationManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Unregister for Drive notifications.
-  if (!invalidation_service_ || !push_notification_registered_)
+  if (!IsRegistered()) {
     return;
+  }
 
   // We unregister the handler without updating unregistering our IDs on
   // purpose.  See the class comment on the InvalidationService interface for
   // more information.
-  invalidation_service_->UnregisterInvalidationHandler(this);
+  invalidation_service_->RemoveObserver(this);
   invalidation_service_ = nullptr;
 }
 
 void DriveNotificationManager::OnInvalidatorStateChange(
     invalidation::InvalidatorState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  push_notification_enabled_ = (state == invalidation::INVALIDATIONS_ENABLED);
-  if (push_notification_enabled_) {
+  if (AreInvalidationsEnabled()) {
     DVLOG(1) << "XMPP Notifications enabled";
   } else {
     DVLOG(1) << "XMPP Notifications disabled (state=" << state << ")";
   }
-  for (auto& observer : observers_)
-    observer.OnPushNotificationEnabled(push_notification_enabled_);
+  for (auto& observer : observers_) {
+    observer.OnPushNotificationEnabled(AreInvalidationsEnabled());
+  }
 }
 
 void DriveNotificationManager::OnIncomingInvalidation(
@@ -186,11 +185,20 @@ void DriveNotificationManager::ClearTeamDriveIds() {
   }
 }
 
+bool DriveNotificationManager::IsRegistered() const {
+  return invalidation_service_ && invalidation_service_->HasObserver(this);
+}
+
+bool DriveNotificationManager::AreInvalidationsEnabled() const {
+  return IsRegistered() && invalidation_service_->GetInvalidatorState() ==
+                               invalidation::INVALIDATIONS_ENABLED;
+}
+
 void DriveNotificationManager::RestartPollingTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const int interval_secs = (push_notification_enabled_ ?
-                             kSlowPollingIntervalInSecs :
-                             kFastPollingIntervalInSecs);
+  const int interval_secs =
+      (AreInvalidationsEnabled() ? kSlowPollingIntervalInSecs
+                                 : kFastPollingIntervalInSecs);
 
   int jitter = base::RandInt(0, interval_secs);
 
@@ -235,7 +243,7 @@ void DriveNotificationManager::NotifyObserversToUpdate(
   }
   if (!observers_notified_) {
     UMA_HISTOGRAM_BOOLEAN("Drive.PushNotificationInitiallyEnabled",
-                          push_notification_enabled_);
+                          AreInvalidationsEnabled());
   }
   observers_notified_ = true;
 
@@ -247,17 +255,14 @@ void DriveNotificationManager::NotifyObserversToUpdate(
 
 void DriveNotificationManager::RegisterDriveNotifications() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!push_notification_enabled_);
+  DCHECK(!IsRegistered());
 
   if (!invalidation_service_)
     return;
 
-  invalidation_service_->RegisterInvalidationHandler(this);
+  invalidation_service_->AddObserver(this);
 
-  push_notification_registered_ = true;
-
-  UMA_HISTOGRAM_BOOLEAN("Drive.PushNotificationRegistered",
-                        push_notification_registered_);
+  UMA_HISTOGRAM_BOOLEAN("Drive.PushNotificationRegistered", true);
 }
 
 void DriveNotificationManager::UpdateRegisteredDriveNotifications() {
@@ -318,5 +323,4 @@ std::string DriveNotificationManager::ExtractTeamDriveId(
   }
   return std::string(topic_name.substr(prefix.size()));
 }
-
 }  // namespace drive

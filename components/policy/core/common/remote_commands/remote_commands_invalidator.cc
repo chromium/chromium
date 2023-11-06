@@ -74,9 +74,6 @@ void RemoteCommandsInvalidator::OnInvalidatorStateChange(
     invalidation::InvalidatorState state) {
   DCHECK_EQ(STARTED, state_);
   DCHECK(thread_checker_.CalledOnValidThread());
-
-  invalidation_service_enabled_ = state == invalidation::INVALIDATIONS_ENABLED;
-  UpdateInvalidationsEnabled();
 }
 
 void RemoteCommandsInvalidator::OnIncomingInvalidation(
@@ -86,7 +83,7 @@ void RemoteCommandsInvalidator::OnIncomingInvalidation(
 
   VLOG(2) << "Received remote command invalidation";
 
-  if (!invalidation_service_enabled_) {
+  if (!AreInvalidationsEnabled()) {
     LOG(WARNING) << "Unexpected invalidation received.";
   }
 
@@ -125,21 +122,28 @@ void RemoteCommandsInvalidator::ReloadPolicyData(
 
   // If the policy topic in the policy data is different from the currently
   // registered topic, update the object registration.
-  if (!is_registered_ || topic != topic_) {
+  if (!IsRegistered() || topic != topic_) {
     Register(topic);
   }
 }
 
+bool RemoteCommandsInvalidator::IsRegistered() const {
+  return invalidation_service_ && invalidation_service_->HasObserver(this);
+}
+
+bool RemoteCommandsInvalidator::AreInvalidationsEnabled() const {
+  return IsRegistered() && invalidation_service_->GetInvalidatorState() ==
+                               invalidation::INVALIDATIONS_ENABLED;
+}
+
 void RemoteCommandsInvalidator::Register(const invalidation::Topic& topic) {
   // Register this handler with the invalidation service if needed.
-  if (!is_registered_) {
+  if (!IsRegistered()) {
     OnInvalidatorStateChange(invalidation_service_->GetInvalidatorState());
-    invalidation_service_->RegisterInvalidationHandler(this);
-    is_registered_ = true;
+    invalidation_service_->AddObserver(this);
   }
 
   topic_ = topic;
-  UpdateInvalidationsEnabled();
 
   // Update subscription with the invalidation service.
   const bool success =
@@ -150,10 +154,8 @@ void RemoteCommandsInvalidator::Register(const invalidation::Topic& topic) {
 }
 
 void RemoteCommandsInvalidator::Unregister() {
-  if (is_registered_) {
-    invalidation_service_->UnregisterInvalidationHandler(this);
-    is_registered_ = false;
-    UpdateInvalidationsEnabled();
+  if (IsRegistered()) {
+    invalidation_service_->RemoveObserver(this);
   }
 }
 
@@ -164,16 +166,12 @@ void RemoteCommandsInvalidator::UnsubscribeFromTopics() {
 
   // Invalidator cannot unset its topics without being registered. Let's quickly
   // register and unregister to do just that.
-  if (!is_registered_) {
+  if (!IsRegistered()) {
     temporary_registration.Observe(invalidation_service_);
   }
 
   CHECK(invalidation_service_->UpdateInterestedTopics(
       this, invalidation::TopicSet()));
-}
-
-void RemoteCommandsInvalidator::UpdateInvalidationsEnabled() {
-  invalidations_enabled_ = invalidation_service_enabled_ && is_registered_;
 }
 
 }  // namespace policy
