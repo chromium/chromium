@@ -12,6 +12,7 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/status_area_widget.h"
 #include "base/time/time.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/message_center/message_center.h"
@@ -65,10 +66,14 @@ FocusModeController* FocusModeController::Get() {
 
 // static
 void FocusModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterTimeDeltaPref(prefs::kFocusModeSessionDuration,
-                                  /*default_value=*/kDefaultSessionDuration);
-  registry->RegisterBooleanPref(prefs::kFocusModeDoNotDisturb,
-                                /*default_value=*/true);
+  registry->RegisterTimeDeltaPref(
+      prefs::kFocusModeSessionDuration,
+      /*default_value=*/kDefaultSessionDuration,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kFocusModeDoNotDisturb,
+      /*default_value=*/true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 void FocusModeController::AddObserver(Observer* observer) {

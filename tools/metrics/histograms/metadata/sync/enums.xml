@@ -413,6 +413,8 @@ chromium-metrics-reviews@google.com.
   <int value="100237" label="KeyboardDefaultChromeOSSettings"/>
   <int value="100238" label="KeyboardDefaultNonChromeOSSettings"/>
   <int value="100239" label="TouchpadDefaultSettings"/>
+  <int value="100240" label="FocusModeDoNotDisturb"/>
+  <int value="100241" label="FocusModeSessionDuration"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
