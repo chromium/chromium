@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.ui.base.TestActivity;
@@ -50,13 +51,15 @@ public class HubCoordinatorUnitTest {
 
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
-                        .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane)
                         .registerPane(
-                                PaneId.INCOGNITO_TAB_SWITCHER, () -> mIncognitoTabSwitcherPane);
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane))
+                        .registerPane(
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
         mPaneManager = new PaneManagerImpl(builder);
         assertTrue(mPaneManager.focusPane(PaneId.TAB_SWITCHER));
         assertEquals(mTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
-
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 

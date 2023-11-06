@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import androidx.test.filters.SmallTest;
 
@@ -19,13 +20,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link PaneListBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PaneListBuilderUnitTest {
-    @Mock private Supplier<Pane> mMockSupplier;
+    @Mock private LazyOneshotSupplier<Pane> mMockSupplier;
 
     @Before
     public void setUp() {
@@ -54,6 +55,7 @@ public class PaneListBuilderUnitTest {
 
         assertEquals(3, panes.size());
         assertEquals(orderController.getPaneOrder(), panes.keySet());
+        verifyNoInteractions(mMockSupplier);
     }
 
     @Test
@@ -70,6 +72,7 @@ public class PaneListBuilderUnitTest {
 
         assertEquals(3, panes.size());
         assertEquals(orderController.getPaneOrder().asList(), panes.keySet().asList());
+        verifyNoInteractions(mMockSupplier);
     }
 
     @Test
@@ -85,6 +88,7 @@ public class PaneListBuilderUnitTest {
         assertEquals(1, panes.size());
         assertTrue(panes.containsKey(PaneId.TAB_SWITCHER));
         assertFalse(panes.containsKey(PaneId.BOOKMARKS));
+        verifyNoInteractions(mMockSupplier);
     }
 
     @Test
@@ -117,6 +121,7 @@ public class PaneListBuilderUnitTest {
         } catch (IllegalStateException e) {
             // This should catch the exception silently.
         }
+        verifyNoInteractions(mMockSupplier);
     }
 
     private PaneOrderController createReverseDefaultOrderController() {

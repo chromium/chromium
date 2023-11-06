@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.hub;
 
-
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -12,7 +11,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class HubToolbarCoordinator {
     private final HubToolbarMediator mMediator;
 
-    /** Eagerly creates the component, but will not be rooted in the view tree yet. */
+    /**
+     * Eagerly creates the component, but will not be rooted in the view tree yet.
+     *
+     * @param hubToolbarView The root view of this component. Inserted into hierarchy for us.
+     */
     public HubToolbarCoordinator(HubToolbarView hubToolbarView) {
         PropertyModel model = new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(model, hubToolbarView, HubToolbarViewBinder::bind);

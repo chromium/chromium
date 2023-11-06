@@ -8,15 +8,15 @@ import androidx.annotation.NonNull;
 
 import com.google.common.collect.ImmutableMap;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 
 /**
  * Implementation of {@link PaneManager} for managing {@link Pane}s.
  */
 public class PaneManagerImpl implements PaneManager {
-    private final ImmutableMap<Integer, Supplier<Pane>> mPanes;
+    private final ImmutableMap<Integer, LazyOneshotSupplier<Pane>> mPanes;
 
     private final ObservableSupplierImpl<Pane> mCurrentPaneSupplierImpl =
             new ObservableSupplierImpl<>();
@@ -39,7 +39,7 @@ public class PaneManagerImpl implements PaneManager {
     public boolean focusPane(@PaneId int paneId) {
         // TODO(crbug/1482286): This is an incomplete implementation, transitions may animate, and
         // not be completely synchronous.
-        Supplier<Pane> nextPaneSupplier = mPanes.get(paneId);
+        LazyOneshotSupplier<Pane> nextPaneSupplier = mPanes.get(paneId);
         if (nextPaneSupplier == null) return false;
 
         Pane nextPane = nextPaneSupplier.get();

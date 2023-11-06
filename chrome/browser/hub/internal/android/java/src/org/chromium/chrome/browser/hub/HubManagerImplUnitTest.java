@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.TestActivity;
 
@@ -58,7 +59,9 @@ public class HubManagerImplUnitTest {
     public void testCreatesPaneManager() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
-                        .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane);
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane));
         HubManager hubManager = HubManagerFactory.createHubManager(mActivity, builder);
 
         PaneManager paneManager = hubManager.getPaneManager();

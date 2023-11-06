@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.TestActivity;
 
@@ -58,7 +59,7 @@ public class HubProviderUnitTest {
         assertNotNull(hubManagerSupplier);
         assertFalse(hubManagerSupplier.hasValue());
 
-        builder.registerPane(PaneId.TAB_SWITCHER, () -> mMockPane);
+        builder.registerPane(PaneId.TAB_SWITCHER, LazyOneshotSupplier.fromValue(mMockPane));
         assertFalse(builder.isBuilt());
 
         HubManager hubManager = hubManagerSupplier.get();

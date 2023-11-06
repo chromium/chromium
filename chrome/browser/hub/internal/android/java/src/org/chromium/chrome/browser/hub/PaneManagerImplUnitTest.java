@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import androidx.test.filters.SmallTest;
 
@@ -17,6 +19,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link PaneManagerImpl}. */
@@ -24,6 +28,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class PaneManagerImplUnitTest {
     @Mock private Pane mTabSwitcherPane;
     @Mock private Pane mIncognitoTabSwitcherPane;
+    @Mock private Supplier<Pane> mPaneSupplier;
 
     @Before
     public void setUp() {
@@ -35,9 +40,12 @@ public class PaneManagerImplUnitTest {
     public void testFocusChangesPane() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
-                        .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane)
                         .registerPane(
-                                PaneId.INCOGNITO_TAB_SWITCHER, () -> mIncognitoTabSwitcherPane);
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane))
+                        .registerPane(
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
         PaneManager paneManager = new PaneManagerImpl(builder);
 
         assertNull(paneManager.getFocusedPaneSupplier().get());
@@ -57,7 +65,9 @@ public class PaneManagerImplUnitTest {
     public void testFocusUnregisteredPane() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
-                        .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane);
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane));
         PaneManager paneManager = new PaneManagerImpl(builder);
 
         assertNull(paneManager.getFocusedPaneSupplier().get());
@@ -77,8 +87,10 @@ public class PaneManagerImplUnitTest {
     public void testFocusUnsuppliedPane() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
-                        .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane)
-                        .registerPane(PaneId.BOOKMARKS, () -> null);
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane))
+                        .registerPane(PaneId.BOOKMARKS, LazyOneshotSupplier.fromValue(null));
         PaneManager paneManager = new PaneManagerImpl(builder);
 
         assertNull(paneManager.getFocusedPaneSupplier().get());
@@ -91,5 +103,20 @@ public class PaneManagerImplUnitTest {
 
         assertFalse(paneManager.focusPane(PaneId.BOOKMARKS));
         assertEquals(mTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
+    }
+
+    @Test
+    @SmallTest
+    public void testPaneSuppliedLazily() {
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromSupplier(mPaneSupplier));
+        PaneManager paneManager = new PaneManagerImpl(builder);
+        verifyNoInteractions(mPaneSupplier);
+
+        paneManager.focusPane(PaneId.TAB_SWITCHER);
+        verify(mPaneSupplier).get();
     }
 }

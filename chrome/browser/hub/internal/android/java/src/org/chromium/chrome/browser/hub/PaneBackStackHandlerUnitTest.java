@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -51,10 +52,14 @@ public class PaneBackStackHandlerUnitTest {
 
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
-                        .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane)
                         .registerPane(
-                                PaneId.INCOGNITO_TAB_SWITCHER, () -> mIncognitoTabSwitcherPane)
-                        .registerPane(PaneId.BOOKMARKS, () -> mBookmarksPane);
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane))
+                        .registerPane(
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane))
+                        .registerPane(
+                                PaneId.BOOKMARKS, LazyOneshotSupplier.fromValue(mBookmarksPane));
 
         mPaneManager = new PaneManagerImpl(builder);
         mBackStackHandler = new PaneBackStackHandler(mPaneManager);
