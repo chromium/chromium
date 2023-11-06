@@ -3844,6 +3844,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.DelayOnAttestationsLoaded" units="ms"
+    expires_after="2024-03-10">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time it took for the attribution manager to be ready upon
+    attestations loading. Recorded once per storage partition when the
+    attribution manager was created.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.DestinationRateLimitResult"
     enum="AttributionDestinationRateLimitResult" expires_after="2024-02-25">
   <owner>csharrison@chromium.org</owner>

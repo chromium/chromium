@@ -55,6 +55,10 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
                content::PrivacySandboxInvokingAPI invoking_api,
                bool post_impression_reporting),
               (override));
+  MOCK_METHOD(bool,
+              AddPrivacySandboxAttestationsObserver,
+              (PrivacySandboxAttestationsObserver*),
+              (override));
 };
 
 using MockAttributionReportingContentBrowserClient =

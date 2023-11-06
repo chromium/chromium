@@ -873,6 +873,14 @@ void ContentBrowserClient::RemovePresentationObserver(
     PresentationObserver* observer,
     WebContents* web_contents) {}
 
+bool ContentBrowserClient::AddPrivacySandboxAttestationsObserver(
+    PrivacySandboxAttestationsObserver* observer) {
+  return true;
+}
+
+void ContentBrowserClient::RemovePrivacySandboxAttestationsObserver(
+    PrivacySandboxAttestationsObserver* observer) {}
+
 void ContentBrowserClient::OpenURL(
     content::SiteInstance* site_instance,
     const content::OpenURLParams& params,

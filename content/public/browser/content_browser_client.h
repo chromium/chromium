@@ -232,6 +232,7 @@ class NavigationUIData;
 class PrefetchServiceDelegate;
 class PrerenderWebContentsDelegate;
 class PresentationObserver;
+class PrivacySandboxAttestationsObserver;
 class PrivateNetworkDeviceDelegate;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
@@ -1439,6 +1440,14 @@ class CONTENT_EXPORT ContentBrowserClient {
                                        WebContents* web_contents);
   virtual void RemovePresentationObserver(PresentationObserver* observer,
                                           WebContents* web_contents);
+
+  // Add or remove an observer for privacy sandbox attestations. Returns true if
+  // privacy sandbox attestations have ever been loaded, or if attestations are
+  // not enforced.
+  virtual bool AddPrivacySandboxAttestationsObserver(
+      PrivacySandboxAttestationsObserver* observer);
+  virtual void RemovePrivacySandboxAttestationsObserver(
+      PrivacySandboxAttestationsObserver* observer);
 
   // Allows programmatic opening of a new tab/window without going through
   // another WebContents. For example, from a Worker. |site_instance|

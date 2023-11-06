@@ -111,6 +111,9 @@ using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
+using AttributionReportingOperation =
+    ::content::ContentBrowserClient::AttributionReportingOperation;
+
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
 using DebugReportSentCallback =
@@ -128,6 +131,8 @@ constexpr AttributionStorageDelegate::OfflineReportDelayConfig
         .min = base::Minutes(0),
         .max = base::Minutes(1),
     };
+
+const base::TimeDelta kPrivacySandboxAttestationsTimeout = base::Minutes(5);
 
 constexpr char kPendingAndBrowserWentOfflineTimeSinceCreation[] =
     "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
@@ -396,6 +401,10 @@ class AttributionManagerImplTest : public testing::Test {
     // Ensure that the network connection observers have been notified before
     // this call returns.
     task_environment_.RunUntilIdle();
+  }
+
+  void NotifyAttestationsLoaded() {
+    attribution_manager_->OnAttestationsLoaded();
   }
 
  protected:
@@ -3547,6 +3556,159 @@ TEST_F(AttributionManagerImplTest,
 
     histograms.ExpectTotalCount(kSentVerboseDebugReportTypeMetric, 0);
   }
+}
+
+TEST_F(AttributionManagerImplTest,
+       SourceRegistrationDelayedByAttestationsLoading) {
+  ShutdownManager();
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client, AddPrivacySandboxAttestationsObserver)
+      .WillOnce(Return(false));
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _,
+          AnyOf(
+              AttributionReportingOperation::kSource,
+              AttributionReportingOperation::kSourceVerboseDebugReport,
+              AttributionReportingOperation::kSourceTransitionalDebugReporting),
+          _, _, _, _))
+      .WillRepeatedly(Return(true));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  base::HistogramTester histograms;
+
+  CreateManager();
+
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  EXPECT_THAT(StoredSources(), IsEmpty());
+
+  NotifyAttestationsLoaded();
+  EXPECT_THAT(StoredSources(), SizeIs(1));
+
+  histograms.ExpectTotalCount("Conversions.DelayOnAttestationsLoaded", 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       SourceRegistrationDelayedByAttestationsLoadingAtTimeout) {
+  ShutdownManager();
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client, AddPrivacySandboxAttestationsObserver)
+      .WillOnce(Return(false));
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _,
+          AnyOf(
+              AttributionReportingOperation::kSource,
+              AttributionReportingOperation::kSourceVerboseDebugReport,
+              AttributionReportingOperation::kSourceTransitionalDebugReporting),
+          _, _, _, _))
+      .WillRepeatedly(Return(true));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  base::HistogramTester histograms;
+
+  CreateManager();
+
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  EXPECT_THAT(StoredSources(), IsEmpty());
+
+  task_environment_.FastForwardBy(kPrivacySandboxAttestationsTimeout);
+  EXPECT_THAT(StoredSources(), SizeIs(1));
+
+  histograms.ExpectTotalCount("Conversions.DelayOnAttestationsLoaded", 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       ReportAtStartupDelayedByAttestationsLoading) {
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  ShutdownManager();
+
+  // Fast-forward past the reporting window.
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client, AddPrivacySandboxAttestationsObserver)
+      .WillOnce(Return(false));
+  EXPECT_CALL(browser_client,
+              IsAttributionReportingOperationAllowed(
+                  _, AttributionReportingOperation::kReport, _, _, _, _))
+      .WillOnce(Return(true));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  base::HistogramTester histograms;
+
+  CreateManager();
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, _, _)).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, _, _));
+  }
+
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+
+  // The report is not sent until the attestations are loaded.
+  NotifyAttestationsLoaded();
+
+  checkpoint.Call(1);
+
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+
+  histograms.ExpectTotalCount("Conversions.DelayOnAttestationsLoaded", 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       ReportAtStartupDelayedByAttestationsLoadingAtTimeout) {
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  ShutdownManager();
+
+  // Fast-forward past the reporting window.
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client, AddPrivacySandboxAttestationsObserver)
+      .WillOnce(Return(false));
+  EXPECT_CALL(browser_client,
+              IsAttributionReportingOperationAllowed(
+                  _, AttributionReportingOperation::kReport, _, _, _, _))
+      .WillOnce(Return(true));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  base::HistogramTester histograms;
+
+  CreateManager();
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, _, _)).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, _, _));
+  }
+
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+
+  // The report is not sent until attestations timeout.
+  task_environment_.FastForwardBy(kPrivacySandboxAttestationsTimeout -
+                                  kDefaultOfflineReportDelay.max);
+
+  checkpoint.Call(1);
+
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+
+  histograms.ExpectTotalCount("Conversions.DelayOnAttestationsLoaded", 1);
 }
 
 }  // namespace content
