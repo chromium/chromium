@@ -2179,9 +2179,14 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
   bool invalidate_part = false;
   if (auto* shadow_root = DynamicTo<ShadowRoot>(&node)) {
     Element& host = shadow_root->host();
+    // The SelectorFilter stack is set up for invalidating the tree
+    // under the host, which includes the host. When invalidating the
+    // host itself, we need to take it out so that the stack is consistent.
+    selector_filter.PopParent(host);
     ApplyRuleSetInvalidationForElement(tree_scope, host, selector_filter,
                                        style_scope_frame, rule_sets,
                                        /*is_shadow_host=*/true);
+    selector_filter.PushParent(host);
     if (host.GetStyleChangeType() == kSubtreeStyleChange) {
       return;
     }
@@ -2254,9 +2259,11 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
 
   if (invalidation_scope == kInvalidateAllScopes) {
     if (ShadowRoot* shadow_root = element.GetShadowRoot()) {
+      selector_filter.PushParent(element);
       ApplyRuleSetInvalidationForTreeScope(tree_scope, shadow_root->RootNode(),
                                            selector_filter, style_scope_frame,
                                            rule_sets, kInvalidateAllScopes);
+      selector_filter.PopParent(element);
     }
   }
 

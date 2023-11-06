@@ -203,9 +203,6 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
 
 void SelectorFilter::PushParentStackFrame(Element& parent) {
   DCHECK(ancestor_identifier_filter_);
-  DCHECK(parent_stack_.empty() ||
-         parent_stack_.back() == FlatTreeTraversal::ParentElement(parent));
-  DCHECK(!parent_stack_.empty() || !FlatTreeTraversal::ParentElement(parent));
   parent_stack_.push_back(parent);
   // Mix tags, class names and ids into some sort of weird bouillabaisse.
   // The filter is used for fast rejection of child and descendant selectors.
@@ -250,20 +247,22 @@ void SelectorFilter::PushParent(Element& parent) {
     return;
   }
   DCHECK(ancestor_identifier_filter_);
-  // We may get invoked for some random elements in some wacky cases during
-  // style resolve. Pause maintaining the stack in this case.
-  if (parent_stack_.back() != FlatTreeTraversal::ParentElement(parent)) {
-    return;
+#if DCHECK_IS_ON()
+  if (parent_stack_.back() != FlatTreeTraversal::ParentElement(parent) &&
+      parent_stack_.back() != parent.ParentOrShadowHostElement()) {
+    LOG(DFATAL) << "Parent stack must be consistent; pushed " << parent
+                << " with parent " << parent.ParentOrShadowHostElement()
+                << " and flat-tree parent "
+                << FlatTreeTraversal::ParentElement(parent)
+                << ", but the stack contained " << parent_stack_.back()
+                << ", which is neither";
   }
+#endif
   PushParentStackFrame(parent);
 }
 
 void SelectorFilter::PopParent(Element& parent) {
-  // Note that we may get invoked for some random elements in some wacky cases
-  // during style resolve. Pause maintaining the stack in this case.
-  if (!ParentStackIsConsistent(&parent)) {
-    return;
-  }
+  DCHECK(ParentStackIsConsistent(&parent));
   PopParentStackFrame();
 }
 

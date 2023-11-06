@@ -91,7 +91,11 @@ class CORE_EXPORT SelectorFilter {
   void PopParent(Element& parent);
 
   bool ParentStackIsConsistent(const Element* parent) const {
-    return !parent_stack_.empty() && parent_stack_.back() == parent;
+    if (parent == nullptr) {
+      return parent_stack_.empty();
+    } else {
+      return !parent_stack_.empty() && parent_stack_.back() == parent;
+    }
   }
 
   inline bool FastRejectSelector(
@@ -117,7 +121,10 @@ class CORE_EXPORT SelectorFilter {
 
 inline bool SelectorFilter::FastRejectSelector(
     const base::span<const unsigned> identifier_hashes) const {
-  DCHECK(ancestor_identifier_filter_);
+  if (!ancestor_identifier_filter_) {
+    DCHECK(parent_stack_.empty());
+    return false;
+  }
   for (unsigned hash : identifier_hashes) {
     if (!ancestor_identifier_filter_->MayContain(hash)) {
       return true;
