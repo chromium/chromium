@@ -9950,10 +9950,12 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
 TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
   base::HistogramTester hist;
   ProvideKeys();
-  NavigateAndCommit(GURL("https://not.allowed.test/"));
-  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  content_browser_client_.SetAllowList({kOriginA});
+  url::Origin test_origin =
+      url::Origin::Create(GURL("http://not.attested.test/"));
+  NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
-      blink::TestInterestGroupBuilder(test_origin, "cars")
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
           .SetAds(
               {{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
                  /*size_group=*/absl::nullopt,
@@ -9975,7 +9977,7 @@ TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
       GetAdAuctionDataAndFlushForFrame(test_origin);
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ("", result.value().request);
-  EXPECT_EQ("Invalid Operation", result.value().error_message);
+  EXPECT_EQ("Attestation Failed", result.value().error_message);
 
   hist.ExpectTotalCount("Ads.InterestGroup.BaDataSize", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 0);
