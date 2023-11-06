@@ -12,15 +12,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
-#include "components/exo/data_device.h"
-#include "components/exo/data_device_delegate.h"
 #include "components/exo/data_source.h"
 #include "components/exo/data_source_delegate.h"
 #include "components/exo/seat_observer.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
-#include "components/exo/test/test_data_device_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -745,9 +742,6 @@ TEST_F(SeatTest, PressedKeys) {
 
 TEST_F(SeatTest, DragDropAbort) {
   TestSeat seat;
-  test::TestDataDeviceDelegate data_device_delegate;
-
-  DataDevice data_device(&data_device_delegate, &seat);
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
   Surface origin, icon;
@@ -755,8 +749,7 @@ TEST_F(SeatTest, DragDropAbort) {
   // Give origin a root window for DragDropOperation.
   GetContext()->AddChild(origin.window());
 
-  data_device.StartDrag(&source, &origin, &icon,
-                        ui::mojom::DragEventSource::kMouse);
+  seat.StartDrag(&source, &origin, &icon, ui::mojom::DragEventSource::kMouse);
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
   seat.AbortPendingDragOperation();
   EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());

@@ -205,6 +205,22 @@ void WMHelper::RemoveFocusObserver(
   aura::client::GetFocusClient(GetPrimaryRoot())->RemoveObserver(observer);
 }
 
+void WMHelper::AddDragDropObserver(DragDropObserver* observer) {
+  drag_drop_observers_.AddObserver(observer);
+}
+
+void WMHelper::RemoveDragDropObserver(DragDropObserver* observer) {
+  drag_drop_observers_.RemoveObserver(observer);
+}
+
+void WMHelper::SetDragDropDelegate(aura::Window* window) {
+  aura::client::SetDragDropDelegate(window, this);
+}
+
+void WMHelper::ResetDragDropDelegate(aura::Window* window) {
+  aura::client::SetDragDropDelegate(window, nullptr);
+}
+
 void WMHelper::AddPowerObserver(WMHelper::PowerObserver* observer) {
   power_observers_.AddObserver(observer);
 }
@@ -351,6 +367,50 @@ aura::client::CaptureClient* WMHelper::GetCaptureClient() {
   return wm::CaptureController::Get();
 }
 
+void WMHelper::OnDragEntered(const ui::DropTargetEvent& event) {
+  for (DragDropObserver& observer : drag_drop_observers_) {
+    observer.OnDragEntered(event);
+  }
+}
+
+aura::client::DragUpdateInfo WMHelper::OnDragUpdated(
+    const ui::DropTargetEvent& event) {
+  aura::client::DragUpdateInfo drag_info(
+      ui::DragDropTypes::DRAG_NONE,
+      ui::DataTransferEndpoint(ui::EndpointType::kUnknownVm));
+
+  for (DragDropObserver& observer : drag_drop_observers_) {
+    auto observer_drag_info = observer.OnDragUpdated(event);
+    drag_info.drag_operation =
+        drag_info.drag_operation | observer_drag_info.drag_operation;
+    if (observer_drag_info.data_endpoint.type() !=
+        drag_info.data_endpoint.type()) {
+      drag_info.data_endpoint = observer_drag_info.data_endpoint;
+    }
+  }
+  return drag_info;
+}
+
+void WMHelper::OnDragExited() {
+  for (DragDropObserver& observer : drag_drop_observers_) {
+    observer.OnDragExited();
+  }
+}
+
+aura::client::DragDropDelegate::DropCallback WMHelper::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks;
+  for (DragDropObserver& observer : drag_drop_observers_) {
+    WMHelper::DragDropObserver::DropCallback drop_cb =
+        observer.GetDropCallback();
+    if (!drop_cb.is_null()) {
+      drop_callbacks.push_back(std::move(drop_cb));
+    }
+  }
+  return base::BindOnce(&WMHelper::PerformDrop, weak_ptr_factory_.GetWeakPtr(),
+                        std::move(drop_callbacks));
+}
+
 void WMHelper::SuspendDone(base::TimeDelta sleep_duration) {
   for (PowerObserver& observer : power_observers_) {
     observer.SuspendDone();
@@ -380,6 +440,20 @@ void WMHelper::AddVSyncParameterObserver(
 
 void WMHelper::RemoveExoWindowObserver(ExoWindowObserver* observer) {
   exo_window_observers_.RemoveObserver(observer);
+}
+
+void WMHelper::PerformDrop(
+    std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
+    std::unique_ptr<ui::OSExchangeData> data,
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
+  for (auto& drop_cb : drop_callbacks) {
+    auto operation = ui::mojom::DragOperation::kNone;
+    std::move(drop_cb).Run(operation);
+    if (operation != ui::mojom::DragOperation::kNone) {
+      output_drag_op = operation;
+    }
+  }
 }
 
 float GetDefaultDeviceScaleFactor() {
