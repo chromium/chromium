@@ -419,6 +419,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
             case OfficeFilesSourceVolume::kGuestOS:
             case OfficeFilesSourceVolume::kUnknown:
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
+            case OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider:
               SetWrongValueLogged(source_volume);
               break;
           }
@@ -428,6 +429,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
         if (source_volume.logged()) {
           switch (source_volume.value) {
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
+            case OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider:
               break;
             case OfficeFilesSourceVolume::kDownloadsDirectory:
             case OfficeFilesSourceVolume::kRemovableDiskPartition:
@@ -473,6 +475,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
             case OfficeFilesSourceVolume::kGuestOS:
             case OfficeFilesSourceVolume::kUnknown:
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
+            case OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider:
               break;
             case OfficeFilesSourceVolume::kGoogleDrive:
               SetWrongValueLogged(source_volume);
@@ -498,6 +501,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
             case OfficeFilesSourceVolume::kGoogleDrive:
               break;
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
+            case OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider:
               SetWrongValueLogged(source_volume);
               break;
           }

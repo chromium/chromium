@@ -446,6 +446,8 @@ void CloudOpenTask::OpenOrMoveFiles() {
   OfficeFilesSourceVolume source_volume;
   if (UrlIsOnODFS(profile_, file_urls_.front())) {
     source_volume = OfficeFilesSourceVolume::kMicrosoftOneDrive;
+  } else if (UrlIsOnAndroidOneDrive(profile_, file_urls_.front())) {
+    source_volume = OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider;
   } else {
     auto* volume_manager = file_manager::VolumeManager::Get(profile_);
     base::WeakPtr<file_manager::Volume> source =
@@ -466,14 +468,15 @@ void CloudOpenTask::OpenOrMoveFiles() {
         OfficeFilesTransferRequired::kNotRequired);
     OpenAlreadyHostedDriveUrls();
   } else if (cloud_provider_ == CloudProvider::kOneDrive &&
-             UrlIsOnODFS(profile_, file_urls_.front())) {
+             source_volume == OfficeFilesSourceVolume::kMicrosoftOneDrive) {
     // The files are on OneDrive already, selected from ODFS.
     transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
     cloud_open_metrics_->LogTransferRequired(
         OfficeFilesTransferRequired::kNotRequired);
     OpenODFSUrls(OfficeTaskResult::kOpened);
   } else if (cloud_provider_ == CloudProvider::kOneDrive &&
-             UrlIsOnAndroidOneDrive(profile_, file_urls_.front())) {
+             source_volume ==
+                 OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider) {
     // The files are on OneDrive already, selected from Android OneDrive.
     transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
     cloud_open_metrics_->LogTransferRequired(

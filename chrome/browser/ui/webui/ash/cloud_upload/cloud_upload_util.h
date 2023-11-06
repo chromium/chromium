@@ -137,7 +137,8 @@ enum class OfficeFilesSourceVolume {
   kGuestOS = 12,         // Guest OS volumes (Crostini, Bruschetta, etc)
   kUnknown = 100,
   kMicrosoftOneDrive = 101,
-  kMaxValue = kMicrosoftOneDrive,
+  kAndroidOneDriveDocumentsProvider = 102,
+  kMaxValue = kAndroidOneDriveDocumentsProvider,
 };
 
 // List of UMA enum value for Web Drive Office task results. The enum values

@@ -59879,6 +59879,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="Guest OS Files"/>
   <int value="100" label="Unknown"/>
   <int value="101" label="Microsoft OneDrive"/>
+  <int value="102" label="Android OneDrive Documents Provider"/>
 </enum>
 
 <enum name="OfficeFilesTransferRequired">
