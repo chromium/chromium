@@ -4,14 +4,12 @@
 
 #include "content/browser/media/media_devices_util.h"
 
-#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
-#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_device_id.h"
@@ -120,11 +118,6 @@ class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
     return future.Get();
   }
 
-  bool ShouldHideDeviceIDs() {
-    return base::FeatureList::IsEnabled(
-        features::kEnumerateDevicesHideDeviceIDs);
-  }
-
   GlobalRenderFrameHostId frame_id_;
   url::Origin origin_;
   MediaDeviceEnumeration device_enumeration_;
@@ -203,12 +196,11 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
     blink::WebMediaDeviceInfoArray web_media_device_infos =
         TranslateMediaDeviceInfoArray(/*has_permission=*/false, salt_and_origin,
                                       device_infos);
-    EXPECT_EQ(web_media_device_infos.size(),
-              ShouldHideDeviceIDs() ? 1u : device_infos.size());
+    EXPECT_EQ(web_media_device_infos.size(), 1u);
     for (const auto& device_info : web_media_device_infos) {
-      EXPECT_EQ(device_info.device_id.empty(), ShouldHideDeviceIDs());
+      EXPECT_TRUE(device_info.device_id.empty());
       EXPECT_TRUE(device_info.label.empty());
-      EXPECT_EQ(device_info.group_id.empty(), ShouldHideDeviceIDs());
+      EXPECT_TRUE(device_info.group_id.empty());
     }
   }
 }

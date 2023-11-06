@@ -167,13 +167,6 @@ BASE_FEATURE(kEnsureAllowBindingsIsAlwaysForWebUI,
              "EnsureAllowBindingsIsAlwaysForWebUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If this feature is enabled and device permission is not granted by the user,
-// media-device enumeration will provide at most one device per type and the
-// device IDs will not be available.
-BASE_FEATURE(kEnumerateDevicesHideDeviceIDs,
-             "EnumerateDevicesHideDeviceIDs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Content counterpart of ExperimentalContentSecurityPolicyFeatures in
 // third_party/blink/renderer/platform/runtime_enabled_features.json5. Enables
 // experimental Content Security Policy features ('navigate-to').

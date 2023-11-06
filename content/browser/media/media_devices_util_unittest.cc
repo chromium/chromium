@@ -4,8 +4,6 @@
 
 #include "content/browser/media/media_devices_util.h"
 
-#include "base/feature_list.h"
-#include "content/common/features.h"
 #include "media/audio/audio_device_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,10 +28,6 @@ blink::WebMediaDeviceInfo ExampleWebMediaDeviceInfo() {
   return blink::WebMediaDeviceInfo(/*device_id=*/"example device id",
                                    /*label=*/"example label",
                                    /*group_id=*/"example_group_id");
-}
-
-bool ShouldHideDeviceIDs() {
-  return base::FeatureList::IsEnabled(features::kEnumerateDevicesHideDeviceIDs);
 }
 
 }  // namespace
@@ -68,9 +62,9 @@ TEST(MediaDevicesUtilBrowserTest, TranslateMediaDeviceInfoWithoutPermission) {
   blink::WebMediaDeviceInfo original_info = ExampleWebMediaDeviceInfo();
   blink::WebMediaDeviceInfo translated_info = TranslateMediaDeviceInfo(
       /*has_permission=*/false, salt_and_origin, original_info);
-  EXPECT_EQ(translated_info.device_id.empty(), ShouldHideDeviceIDs());
+  EXPECT_TRUE(translated_info.device_id.empty());
   EXPECT_TRUE(translated_info.label.empty());
-  EXPECT_EQ(translated_info.group_id.empty(), ShouldHideDeviceIDs());
+  EXPECT_TRUE(translated_info.group_id.empty());
 }
 
 TEST(MediaDevicesUtilTest, TranslateSpecialDeviceIDs) {

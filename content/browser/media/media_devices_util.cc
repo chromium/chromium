@@ -250,36 +250,30 @@ blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfo& device_info) {
-  bool should_show_device_ids =
-      has_permission ||
-      !base::FeatureList::IsEnabled(features::kEnumerateDevicesHideDeviceIDs);
-  return blink::WebMediaDeviceInfo(
-      should_show_device_ids
-          ? GetHMACForRawMediaDeviceID(salt_and_origin, device_info.device_id)
-          : std::string(),
-      has_permission ? device_info.label : std::string(),
-      should_show_device_ids && !device_info.group_id.empty()
-          ? GetHMACForRawMediaDeviceID(salt_and_origin, device_info.group_id,
-                                       /*use_group_salt=*/true)
-          : std::string(),
-      has_permission ? device_info.video_control_support
-                     : media::VideoCaptureControlSupport(),
-      has_permission ? device_info.video_facing
-                     : blink::mojom::FacingMode::kNone);
+  if (has_permission) {
+    return blink::WebMediaDeviceInfo(
+        GetHMACForRawMediaDeviceID(salt_and_origin, device_info.device_id),
+        device_info.label,
+        device_info.group_id.empty()
+            ? std::string()
+            : GetHMACForRawMediaDeviceID(salt_and_origin, device_info.group_id,
+                                         /*use_group_salt=*/true),
+        device_info.video_control_support, device_info.video_facing);
+  }
+  return blink::WebMediaDeviceInfo(std::string(), std::string(), std::string(),
+                                   media::VideoCaptureControlSupport(),
+                                   blink::mojom::FacingMode::kNone);
 }
 
 blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfoArray& device_infos) {
-  const bool should_hide_device_ids_with_no_permission =
-      base::FeatureList::IsEnabled(features::kEnumerateDevicesHideDeviceIDs);
   blink::WebMediaDeviceInfoArray result;
   for (const auto& device_info : device_infos) {
     result.push_back(
         TranslateMediaDeviceInfo(has_permission, salt_and_origin, device_info));
-    if (should_hide_device_ids_with_no_permission && !has_permission &&
-        result.back().device_id.empty()) {
+    if (!has_permission && result.back().device_id.empty()) {
       break;
     }
   }
