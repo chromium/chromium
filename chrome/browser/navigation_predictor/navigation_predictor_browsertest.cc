@@ -443,15 +443,6 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, ClickAnchorElement) {
   EXPECT_EQ(1u, entries.size());
 }
 
-// Disabled because it fails when SingleProcessMash feature is enabled. Since
-// Navigation Predictor is not going to be enabled on Chrome OS, disabling the
-// browser test on that platform is fine.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define DISABLE_ON_CHROMEOS(x) DISABLED_##x
-#else
-#define DISABLE_ON_CHROMEOS(x) x
-#endif
-
 class NavigationPredictorBrowserTestWithDefaultPredictorEnabled
     : public NavigationPredictorBrowserTest {
  public:
