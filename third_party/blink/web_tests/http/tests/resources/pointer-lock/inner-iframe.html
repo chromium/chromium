@@ -1,8 +1,15 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+<script src="pointer-lock-test-harness.js"></script>
 <script src="iframe-common.js"></script>
 <script>
+    window.addEventListener('message', (e)=> {
+        if (e.data[0] === "clickBody") {
+            clickOnElement(document.body);
+        }
+    });
+
     document.addEventListener('click', () => {
         document.body.requestPointerLock().catch(error => {
             // Do nothing here. The errors returned in the promise are
