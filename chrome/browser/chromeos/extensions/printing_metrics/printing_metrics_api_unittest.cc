@@ -147,7 +147,7 @@ TEST_F(PrintingMetricsApiUnittest, GetPrintJobs_OnePrintJob) {
               testing::Field(&api::printing_metrics::PrintJobInfo::title,
                              kTitle1),
               testing::Field(&api::printing_metrics::PrintJobInfo::status,
-                             api::printing_metrics::PRINT_JOB_STATUS_FAILED),
+                             api::printing_metrics::PrintJobStatus::kFailed),
               testing::Field(
                   &api::printing_metrics::PrintJobInfo::number_of_pages,
                   kPagesNumber)))));
