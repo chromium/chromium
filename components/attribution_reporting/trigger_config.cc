@@ -345,7 +345,7 @@ const TriggerSpec* TriggerSpecs::SingleSharedSpec() const {
   return specs_.size() == 1 ? &specs_[0] : nullptr;
 }
 
-void TriggerSpecs::Serialize(base::Value::Dict& dict) const {
+base::Value::List TriggerSpecs::ToJson() const {
   base::Value::List spec_list;
   spec_list.reserve(specs_.size());
 
@@ -366,7 +366,11 @@ void TriggerSpecs::Serialize(base::Value::Dict& dict) const {
     }
   }
 
-  dict.Set(kTriggerSpecs, std::move(spec_list));
+  return spec_list;
+}
+
+void TriggerSpecs::Serialize(base::Value::Dict& dict) const {
+  dict.Set(kTriggerSpecs, ToJson());
 }
 
 TriggerSpecs::Iterator::Iterator(const TriggerSpecs& specs,

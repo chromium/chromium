@@ -94,7 +94,11 @@ struct WebUISource {
   url.mojom.Origin reporting_origin;
   double source_time;
   double expiry_time;
-  attribution_reporting.mojom.EventReportWindows event_report_windows;
+  // String instead of mojo_base.mojom.DictionaryValue because the value is
+  // simply displayed in the UI, never inspected. JSON is used instead of
+  // attribution_reporting.mojom.TriggerSpecs to avoid complex TypeScript-based
+  // formatting.
+  string trigger_specs_json;
   double aggregatable_report_window_time;
   int32 max_event_level_reports;
   attribution_reporting.mojom.SourceType source_type;

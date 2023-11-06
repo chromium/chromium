@@ -13,7 +13,6 @@ import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverRec
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mojom-webui.js';
 import {EventLevelResult} from './event_level_result.mojom-webui.js';
-import {EventReportWindows} from './registration.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';
@@ -237,7 +236,7 @@ class Source {
   reportingOrigin: string;
   sourceTime: Date;
   expiryTime: Date;
-  eventReportWindows: Date[];
+  triggerSpecs: string;
   aggregatableReportWindowTime: Date;
   maxEventLevelReports: bigint;
   sourceType: string;
@@ -260,8 +259,7 @@ class Source {
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
-    this.eventReportWindows =
-        windowsAbsoluteTime(mojo.eventReportWindows, this.sourceTime);
+    this.triggerSpecs = mojo.triggerSpecsJson;
     this.aggregatableReportWindowTime =
         new Date(mojo.aggregatableReportWindowTime);
     this.maxEventLevelReports = BigInt(mojo.maxEventLevelReports);
@@ -278,23 +276,6 @@ class Source {
         triggerDataMatchingText[mojo.triggerConfig.triggerDataMatching];
     this.status = attributabilityText[mojo.attributability];
     this.debugCookieSet = mojo.debugCookieSet;
-  }
-}
-
-const EVENT_REPORT_WINDOWS_COLS: Array<Column<Source>> = [
-  new DateColumn<Source>('Start Time', e => e.eventReportWindows[0]!),
-  new ListColumn<Source, Date>(
-      'End Times', e => e.eventReportWindows.slice(1), /*flatten=*/ false,
-      (v) => v.toLocaleString()),
-];
-
-class EventReportWindowsColumn implements Column<Source> {
-  renderHeader(th: HTMLElement) {
-    th.innerText = 'Event Report Windows';
-  }
-
-  render(td: HTMLElement, row: Source) {
-    renderDL(td, row, EVENT_REPORT_WINDOWS_COLS);
   }
 }
 
@@ -316,7 +297,7 @@ class SourceTableModel extends TableModel<Source> {
           new DateColumn<Source>(
               'Source Registration Time', (e) => e.sourceTime),
           new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
-          new EventReportWindowsColumn(),
+          new CodeColumn<Source>('Trigger Specs', (e) => e.triggerSpecs),
           new DateColumn<Source>(
               'Aggregatable Report Window Time',
               (e) => e.aggregatableReportWindowTime),
@@ -332,7 +313,8 @@ class SourceTableModel extends TableModel<Source> {
               'Aggregatable Budget Consumed',
               (e) => `${e.aggregatableBudgetConsumed} / ${BUDGET_PER_SOURCE}`),
           new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
-          new ValueColumn<Source, boolean>('Debug Cookie Set', (e) => e.debugCookieSet),
+          new ValueColumn<Source, boolean>(
+              'Debug Cookie Set', (e) => e.debugCookieSet),
           new ListColumn<Source, bigint>('Dedup Keys', (e) => e.dedupKeys),
           new ListColumn<Source, bigint>(
               'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),
@@ -901,18 +883,6 @@ function originToText(origin: Origin): string {
     result += ':' + origin.port;
   }
   return result;
-}
-
-function windowsAbsoluteTime(
-    eventReportWindows: EventReportWindows, sourceTime: Date): Date[] {
-  const dates: Date[] = [new Date(
-      sourceTime.getTime() +
-      (Number(eventReportWindows.startTime.microseconds) / 1000))];
-  for (const endTime of eventReportWindows.endTimes) {
-    dates.push(
-        new Date(sourceTime.getTime() + (Number(endTime.microseconds) / 1000)));
-  }
-  return dates;
 }
 
 const sourceTypeText: Readonly<Record<SourceType, string>> = {

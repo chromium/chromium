@@ -97,6 +97,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   // lookup for a given trigger data value and use it in
   // `content::AttributionStorageSql`.
 
+  base::Value::List ToJson() const;
+
   void Serialize(base::Value::Dict&) const;
 
   class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Iterator {

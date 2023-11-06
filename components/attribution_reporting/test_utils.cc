@@ -216,9 +216,7 @@ bool operator==(const TriggerSpecs& a, const TriggerSpecs& b) {
 }
 
 std::ostream& operator<<(std::ostream& out, const TriggerSpecs& specs) {
-  base::Value::Dict dict;
-  specs.Serialize(dict);
-  return out << dict;
+  return out << specs.ToJson();
 }
 
 }  // namespace attribution_reporting
