@@ -1901,8 +1901,6 @@ source_set("ash") {
     "login/screens/os_install_screen.h",
     "login/screens/os_trial_screen.cc",
     "login/screens/os_trial_screen.h",
-    "login/screens/osauth/base_osauth_setup_screen.cc",
-    "login/screens/osauth/base_osauth_setup_screen.h",
     "login/screens/packaged_license_screen.cc",
     "login/screens/packaged_license_screen.h",
     "login/screens/parental_handoff_screen.cc",
