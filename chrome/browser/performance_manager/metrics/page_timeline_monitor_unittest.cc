@@ -931,6 +931,73 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   ExpectNoCPUHistogram("TopNBackgroundCPU.1", "Delayed");
   ExpectNoCPUHistogram("TopNBackgroundCPU.2", "Delayed");
 }
+
+TEST_P(PageTimelineMonitorWithFeatureTest,
+       TestCPUInterventionMetricsNoForegroundTabs) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  mock_graph.page->SetType(performance_manager::PageType::kTab);
+  cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
+      .SetCPUUsage(base::SysInfo::NumberOfProcessors());
+
+  // Put the only tab in the background.
+  mock_graph.page->SetIsVisible(false);
+
+  // Let an arbitrary amount of time pass so there's some CPU usage to measure.
+  task_env().FastForwardBy(base::Minutes(1));
+  TriggerCollectPageResourceUsage();
+
+  ExpectCPUHistogram("AverageBackgroundCPU", "Baseline", 100);
+  ExpectCPUHistogram("TotalBackgroundCPU", "Baseline", 100);
+  ExpectCPUHistogram("TotalBackgroundTabCount", "Baseline", 1);
+  // AverageForegroundCPU would divide by 0.
+  ExpectCPUHistogram("TotalForegroundCPU", "Baseline", 0);
+  ExpectCPUHistogram("TotalForegroundTabCount", "Baseline", 0);
+
+  ExpectCPUHistogram("AverageBackgroundCPU", "Immediate", 100);
+  ExpectCPUHistogram("TotalBackgroundCPU", "Immediate", 100);
+  ExpectCPUHistogram("TotalBackgroundTabCount", "Immediate", 1);
+  // AverageForegroundCPU would divide by 0.
+  ExpectCPUHistogram("TotalForegroundCPU", "Immediate", 0);
+  ExpectCPUHistogram("TotalForegroundTabCount", "Immediate", 0);
+  ExpectCPUHistogram("BackgroundTabsToGetUnderCPUThreshold", "Immediate", 1);
+  ExpectCPUHistogram("TopNBackgroundCPU.1", "Immediate", 100);
+  ExpectCPUHistogram("TopNBackgroundCPU.2", "Immediate", 100);
+}
+
+TEST_P(PageTimelineMonitorWithFeatureTest,
+       TestCPUInterventionMetricsNoBackgroundTabs) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  mock_graph.page->SetType(performance_manager::PageType::kTab);
+  cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
+      .SetCPUUsage(base::SysInfo::NumberOfProcessors());
+
+  // Put the only tab in the foreground.
+  mock_graph.page->SetIsVisible(true);
+
+  // Let an arbitrary amount of time pass so there's some CPU usage to measure.
+  task_env().FastForwardBy(base::Minutes(1));
+  TriggerCollectPageResourceUsage();
+
+  // AverageBackgroundCPU would divide by 0.
+  ExpectCPUHistogram("TotalBackgroundCPU", "Baseline", 0);
+  ExpectCPUHistogram("TotalBackgroundTabCount", "Baseline", 0);
+  ExpectCPUHistogram("AverageForegroundCPU", "Baseline", 100);
+  ExpectCPUHistogram("TotalForegroundCPU", "Baseline", 100);
+  ExpectCPUHistogram("TotalForegroundTabCount", "Baseline", 1);
+
+  // AverageBackgroundCPU would divide by 0.
+  ExpectCPUHistogram("TotalBackgroundCPU", "Immediate", 0);
+  ExpectCPUHistogram("TotalBackgroundTabCount", "Immediate", 0);
+  ExpectCPUHistogram("AverageForegroundCPU", "Immediate", 100);
+  ExpectCPUHistogram("TotalForegroundCPU", "Immediate", 100);
+  ExpectCPUHistogram("TotalForegroundTabCount", "Immediate", 1);
+  // BackgroundTabsToGetUnderCPUThreshold is basically infinite (goes in the
+  // overflow bucket.)
+  ExpectCPUHistogram("BackgroundTabsToGetUnderCPUThreshold", "Immediate", 9999);
+  ExpectCPUHistogram("TopNBackgroundCPU.1", "Immediate", 0);
+  ExpectCPUHistogram("TopNBackgroundCPU.2", "Immediate", 0);
+}
+
 #endif
 
 }  // namespace performance_manager::metrics

@@ -355,40 +355,46 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
   }
   CHECK(suffix);
 
+  const int total_background_cpu_percent =
+      total_background_cpu_usage * 100 / base::SysInfo::NumberOfProcessors();
   base::UmaHistogramPercentage(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalBackgroundCPU.",
                     suffix}),
-      total_background_cpu_usage * 100 / base::SysInfo::NumberOfProcessors());
+      total_background_cpu_percent);
   base::UmaHistogramCounts1000(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalBackgroundTabCount.",
                     suffix}),
       background_tab_count);
-  base::UmaHistogramPercentage(
-      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
-                    "AverageBackgroundCPU.",
-                    suffix}),
-      total_background_cpu_usage * 100 / base::SysInfo::NumberOfProcessors() /
-          background_tab_count);
+  if (background_tab_count) {
+    base::UmaHistogramPercentage(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "AverageBackgroundCPU.",
+                      suffix}),
+        total_background_cpu_percent / background_tab_count);
+  }
 
   // Log basic foreground UMA metrics.
+  const int total_foreground_cpu_percent =
+      total_foreground_cpu_usage * 100 / base::SysInfo::NumberOfProcessors();
   base::UmaHistogramPercentage(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalForegroundCPU.",
                     suffix}),
-      total_foreground_cpu_usage * 100 / base::SysInfo::NumberOfProcessors());
+      total_foreground_cpu_percent);
   base::UmaHistogramCounts1000(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalForegroundTabCount.",
                     suffix}),
       foreground_tab_count);
-  base::UmaHistogramPercentage(
-      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
-                    "AverageForegroundCPU.",
-                    suffix}),
-      total_foreground_cpu_usage * 100 / base::SysInfo::NumberOfProcessors() /
-          foreground_tab_count);
+  if (foreground_tab_count) {
+    base::UmaHistogramPercentage(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "AverageForegroundCPU.",
+                      suffix}),
+        total_foreground_cpu_percent / foreground_tab_count);
+  }
 
   // Log derived background UMA metrics.
   if (histogram_suffix == CPUInterventionSuffix::kBaseline) {
