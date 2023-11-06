@@ -38,6 +38,50 @@ found in the LICENSE file.
     max-height: 286px;
     max-width: 286px;
   }
+
+  .footer-content-text {
+    padding-inline-start: 16px;
+  }
+
+  .footer-content {
+    padding: 16px;
+  }
+
+  .content-icon {
+    width: 20px;
+    height: auto;
+  }
+
+  quick-start-pin {
+    padding-top: 15%;
+    padding-bottom: 24px;
+  }
+
+  #qrCodeWrapper {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  #qrDeco {
+    width: 100%;
+    height: auto;
+  }
+
+  #qrHolder {
+    position: absolute;
+    top: 29.5%;
+    left: 45%;
+    width: 33%;
+    height: auto;
+    /* border: dashed; */
+  }
+
+  #qrCodeCanvas {
+    position: absolute;
+    width: 100%;
+    height: auto;
+  }
 </style>
 <!-- WAITING FOR INITIAL CONNECTION | ADVERTISING -->
 <oobe-loading-dialog id="loadingDialog" for-step="loading"
@@ -51,17 +95,45 @@ found in the LICENSE file.
   <iron-icon slot="icon" icon="oobe-20:quick-start-android-device">
   </iron-icon>
   <h1 slot="title">
-    [[i18nDynamic(locale, 'quickStartSetupTitle')]]
+    <div hidden="[[usePinInsteadOfQrForVerification_]]">
+      [[i18nDynamic(locale, 'quickStartSetupQrTitle')]]
+    </div>
+    <div hidden="[[!usePinInsteadOfQrForVerification_]]">
+      [[i18nDynamic(locale, 'quickStartSetupPinTitle')]]
+    </div>
   </h1>
   <div slot="subtitle">
     <div inner-h-t-m-l="[[getVerificationSubtitle(locale, discoverableName_, usePinInsteadOfQrForVerification_)]]">
     </div>
   </div>
-  <div id="code" class="flex layout vertical center-justified center" slot="content">
+  <div id="code" class="flex layout vertical start-justified center" slot="content">
     <div id="qrCodeWrapper" hidden="[[usePinInsteadOfQrForVerification_]]">
-      <canvas id="qrCodeCanvas" width="[[canvasSize_]]" height="[[canvasSize_]]">
-    </div>
-    <quick-start-pin id="pinWrapper" pin="[[pin_]]" hidden="[[!usePinInsteadOfQrForVerification_]]"></quick-start-pin>
+      <iron-icon id="qrDeco" icon="oobe-illos:quickstart-qr">
+      </iron-icon>
+      <div id="qrHolder">
+        <canvas id="qrCodeCanvas">
+        </canvas>
+      </div>
+      </div>
+      <quick-start-pin id="pinWrapper" pin="[[pin_]]" hidden="[[!usePinInsteadOfQrForVerification_]]">
+      </quick-start-pin>
+      <!-- Content footer for both QR and PIN verification methods. -->
+      <div class="self-start" style="padding-inline-start: 5%;">
+        <div class="flex layout horizontal center self-stretch footer-content">
+          <iron-icon icon="oobe-20:quick-start-bluetooth-icon" class="content-icon">
+          </iron-icon>
+          <div class="footer-content-text">
+            [[i18nDynamic(locale, 'quickStartSetupContentFooterTurnOnWifi')]]
+          </div>
+        </div>
+        <div class="flex layout horizontal center self-stretch footer-content">
+          <iron-icon icon="oobe-20:quick-start-camera-icon" class="content-icon">
+          </iron-icon>
+          <div class="footer-content-text">
+            [[i18nDynamic(locale, 'quickStartSetupContentFooterFollowInstructions')]]
+          </div>
+        </div>
+      </div>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="cancelButton" on-click="onCancelClicked_" text-key="cancelButton">

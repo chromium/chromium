@@ -56,11 +56,14 @@ void QuickStartScreenHandler::ShowFidoAssertionReceived(std::string email) {
 
 void QuickStartScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("quickStartSetupTitle", IDS_LOGIN_QUICK_START_SETUP_TITLE);
-  builder->Add("quickStartSetupSubtitleQrCode",
-               IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_QR_CODE);
-  builder->Add("quickStartSetupSubtitlePinCode",
-               IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_PIN_CODE);
+  builder->Add("quickStartSetupQrTitle", IDS_LOGIN_QUICK_START_SETUP_QR_TITLE);
+  builder->Add("quickStartSetupPinTitle",
+               IDS_LOGIN_QUICK_START_SETUP_PIN_TITLE);
+  builder->Add("quickStartSetupSubtitle", IDS_LOGIN_QUICK_START_SETUP_SUBTITLE);
+  builder->Add("quickStartSetupContentFooterTurnOnWifi",
+               IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_TURN_ON_WIFI_AND_BLT);
+  builder->Add("quickStartSetupContentFooterFollowInstructions",
+               IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS);
   builder->Add("quickStartWifiTransferTitle",
                IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE);
   builder->Add("quickStartWifiTransferSubtitle",

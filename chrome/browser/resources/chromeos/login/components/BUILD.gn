@@ -55,6 +55,7 @@ group("closure_compile") {
     ":oobe_slide",
     ":oobe_types",
     ":progress_list_item",
+    ":qr_code_canvas",
     ":quick_start_entry_point",
     ":quick_start_pin",
     ":security_token_pin",
@@ -269,6 +270,12 @@ js_library("progress_list_item") {
   extra_deps = [ ":web_components" ]
 }
 
+js_library("qr_code_canvas") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/qr_code_canvas.js" ]
+  deps = []
+  extra_deps = [ ":copy_js" ]
+}
+
 js_library("quick_start_pin") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/quick_start_pin.js" ]
   deps = [
@@ -327,6 +334,7 @@ copy("copy_js") {
     "long_touch_detector.js",
     "oobe_select.js",
     "oobe_types.js",
+    "qr_code_canvas.js",
     "web_view_helper.js",
     "web_view_loader.js",
   ]

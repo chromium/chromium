@@ -1441,26 +1441,23 @@
   <message name="IDS_LOGIN_QUICK_START_SETUP_SIGNIN_SCREEN_ENTRY_POINT" desc="A label on the button. Used on OOBE's sign-in screen to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
     Sign in with Android phone
   </message>
-  <message name="IDS_LOGIN_QUICK_START_SETUP_TITLE" desc="A title used on OOBE's Quick Start screen for setting up a Chromebook using an Android device.">
-    Set up with your Android phone
+  <message name="IDS_LOGIN_QUICK_START_SETUP_QR_TITLE" desc="A title used on OOBE's Quick Start screen for setting up a Chromebook using an Android device using a QR code.">
+    Scan the QR code with your Android phone
   </message>
-  <message name="IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_QR_CODE" desc="A subtitle used on OOBE's Quick Start screen for setting up a Chromebook using an Android device prompting the user to scan the QR code.">
-    Follow the instructions on your phone to scan the QR code. Make sure your phone's Bluetooth and Wi-Fi are turned on.
-    <ph name="BR">&lt;br&gt;</ph>
-    <ph name="BR">&lt;br&gt;</ph>
-    You can use your phone to add your Wi-Fi and Google Account info to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
-    <ph name="BR">&lt;br&gt;</ph>
-    <ph name="BR">&lt;br&gt;</ph>
-    Visible to nearby devices as <ph name="QUICK_START_DEVICE_DISPLAY_NAME">$2<ex>Chromebook (123)</ex></ph>...
+  <message name="IDS_LOGIN_QUICK_START_SETUP_PIN_TITLE" desc="A title used on OOBE's Quick Start screen for setting up a Chromebook using an Android device using a PIN code.">
+    Verify the code on your Android phone
   </message>
-  <message name="IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_PIN_CODE" desc="A subtitle used on OOBE's Quick Start screen for setting up a Chromebook using an Android device prompting the user to verify the code shown on the screen.">
-    Follow the instructions on your phone to verify the code. Make sure your phone's Bluetooth and Wi-Fi are turned on.
+  <message name="IDS_LOGIN_QUICK_START_SETUP_SUBTITLE" desc="A subtitle used on OOBE's Quick Start screen for setting up a Chromebook using an Android device.">
+    Easily set up your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone. You can add your Wi-Fi and Google Account without manually entering your passwords.
     <ph name="BR">&lt;br&gt;</ph>
     <ph name="BR">&lt;br&gt;</ph>
-    You can use your phone to add your Wi-Fi and Google Account info to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
-    <ph name="BR">&lt;br&gt;</ph>
-    <ph name="BR">&lt;br&gt;</ph>
-    Visible to nearby devices as <ph name="QUICK_START_DEVICE_DISPLAY_NAME">$2<ex>Chromebook (123)</ex></ph>...
+    Visible as <ph name="QUICK_START_DEVICE_DISPLAY_NAME">$2<ex>Chromebook (123)</ex></ph>...
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_TURN_ON_WIFI_AND_BLT" desc="A message telling the user to turn on their phone's Bluetooth and WiFi when setting up their Chromebook using an Android phone.">
+    Turn on your phone’s Bluetooth and Wi-Fi
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS" desc="A message telling the user to follow instructions on their phone when setting up when setting up their Chromebook using an Android phone.">
+    Follow instructions on your phone to verify the code
   </message>
   <message name="IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE" desc="A title used on OOBE's Quick Start screen when WiFi credentials are being transferred to the Chromebook from the Android device.">
     Connecting to Wi-Fi...

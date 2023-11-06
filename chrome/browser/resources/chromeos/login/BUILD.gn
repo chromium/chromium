@@ -178,6 +178,7 @@ preprocess_if_expr("preprocess_unconditional_existing") {
     "components/long_touch_detector.js",
     "components/oobe_select.js",
     "components/oobe_types.js",
+    "components/qr_code_canvas.js",
     "components/web_view_helper.js",
     "components/web_view_loader.js",
     "cr_ui.js",

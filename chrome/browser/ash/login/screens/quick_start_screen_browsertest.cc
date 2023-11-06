@@ -48,6 +48,8 @@ constexpr test::UIPath kCancelButtonVerificationDialog = {
     QuickStartView::kScreenId.name, kCancelButton};
 constexpr test::UIPath kQuickStartPinCode = {QuickStartView::kScreenId.name,
                                              kPinCodeWrapper};
+constexpr test::UIPath kQuickStartQrCodeCanvas = {
+    QuickStartView::kScreenId.name, "qrCodeCanvas"};
 
 std::string NetworkElementSelector(const std::string& network_name) {
   return test::GetOobeElementPath(
@@ -271,10 +273,18 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
 
   WaitForVerificationStep();
 
-  int canvas_size = test::OobeJS().GetAttributeInt(
-      "canvasSize_", {QuickStartView::kScreenId.name});
-  EXPECT_GE(canvas_size, 185);
-  EXPECT_LE(canvas_size, 265);
+  // Get the true number of cells that the QR code consists of.
+  const int qr_code_size = WizardController::default_controller()
+                               ->quick_start_controller()
+                               ->GetQrCode()
+                               .size();
+
+  // Get the number of cells per row/column (CELL_COUNT) exposed on <canvas>
+  const int canvas_cell_count =
+      test::OobeJS().GetAttributeInt("qrCellCount", kQuickStartQrCodeCanvas);
+
+  // Squaring the CELL_COUNT must yield the total size of the QR code.
+  EXPECT_EQ(canvas_cell_count * canvas_cell_count, qr_code_size);
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kSetUpAndroidPhone, 1);
