@@ -63,6 +63,7 @@ void TransitionKeyframe::AddKeyframePropertiesToV8Object(
 }
 
 void TransitionKeyframe::Trace(Visitor* visitor) const {
+  visitor->Trace(value_);
   visitor->Trace(compositor_value_);
   Keyframe::Trace(visitor);
 }
@@ -95,6 +96,7 @@ TransitionKeyframe::PropertySpecificKeyframe::CreateInterpolation(
 
 void TransitionKeyframe::PropertySpecificKeyframe::Trace(
     Visitor* visitor) const {
+  visitor->Trace(value_);
   visitor->Trace(compositor_value_);
   Keyframe::PropertySpecificKeyframe::Trace(visitor);
 }

@@ -112,8 +112,8 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
     static CSSNumberInterpolationType opacity_type(PropertyHandleOpacity);
     TransitionKeyframe* start_keyframe =
         MakeGarbageCollected<TransitionKeyframe>(PropertyHandleOpacity);
-    start_keyframe->SetValue(std::make_unique<TypedInterpolationValue>(
-        opacity_type, std::make_unique<InterpolableNumber>(1.0)));
+    start_keyframe->SetValue(MakeGarbageCollected<TypedInterpolationValue>(
+        opacity_type, MakeGarbageCollected<InterpolableNumber>(1.0)));
     start_keyframe->SetOffset(0.0);
     // Egregious hack: Sideload the compositor value.
     // This is usually set in a part of the rendering process SimulateFrame
@@ -122,8 +122,8 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
         MakeGarbageCollected<CompositorKeyframeDouble>(1.0));
     TransitionKeyframe* end_keyframe =
         MakeGarbageCollected<TransitionKeyframe>(PropertyHandleOpacity);
-    end_keyframe->SetValue(std::make_unique<TypedInterpolationValue>(
-        opacity_type, std::make_unique<InterpolableNumber>(0.0)));
+    end_keyframe->SetValue(MakeGarbageCollected<TypedInterpolationValue>(
+        opacity_type, MakeGarbageCollected<InterpolableNumber>(0.0)));
     end_keyframe->SetOffset(1.0);
     // Egregious hack: Sideload the compositor value.
     end_keyframe->SetCompositorValue(

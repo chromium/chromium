@@ -35,8 +35,7 @@ class UnderlyingItemValue : public UnderlyingValue {
     return *To<InterpolableList>(underlying_list_.MutableInterpolableValue())
                 .GetMutable(index_);
   }
-  void SetInterpolableValue(
-      std::unique_ptr<InterpolableValue> interpolable_value) final {
+  void SetInterpolableValue(InterpolableValue* interpolable_value) final {
     To<InterpolableList>(underlying_list_.MutableInterpolableValue())
         .Set(index_, std::move(interpolable_value));
   }
@@ -138,27 +137,27 @@ PairwiseInterpolationValue ListInterpolationFunctions::MaybeMergeSingles(
   }
 
   if (start_length == 0) {
-    std::unique_ptr<InterpolableValue> start_interpolable_value =
+    InterpolableValue* start_interpolable_value =
         end.interpolable_value->CloneAndZero();
-    return PairwiseInterpolationValue(std::move(start_interpolable_value),
+    return PairwiseInterpolationValue(start_interpolable_value,
                                       std::move(end.interpolable_value),
                                       std::move(end.non_interpolable_value));
   }
 
   if (end_length == 0) {
-    std::unique_ptr<InterpolableValue> end_interpolable_value =
+    InterpolableValue* end_interpolable_value =
         start.interpolable_value->CloneAndZero();
     return PairwiseInterpolationValue(std::move(start.interpolable_value),
-                                      std::move(end_interpolable_value),
+                                      end_interpolable_value,
                                       std::move(start.non_interpolable_value));
   }
 
   const wtf_size_t final_length =
       MatchLengths(start_length, end_length, length_matching_strategy);
-  auto result_start_interpolable_list =
-      std::make_unique<InterpolableList>(final_length);
-  auto result_end_interpolable_list =
-      std::make_unique<InterpolableList>(final_length);
+  auto* result_start_interpolable_list =
+      MakeGarbageCollected<InterpolableList>(final_length);
+  auto* result_end_interpolable_list =
+      MakeGarbageCollected<InterpolableList>(final_length);
   Vector<scoped_refptr<const NonInterpolableValue>>
       result_non_interpolable_values(final_length);
 
@@ -237,13 +236,13 @@ static void RepeatToLength(InterpolationValue& value, wtf_size_t length) {
   if (current_length == length)
     return;
   DCHECK_LT(current_length, length);
-  auto new_interpolable_list = std::make_unique<InterpolableList>(length);
+  auto* new_interpolable_list = MakeGarbageCollected<InterpolableList>(length);
   Vector<scoped_refptr<const NonInterpolableValue>> new_non_interpolable_values(
       length);
   for (wtf_size_t i = length; i-- > 0;) {
     new_interpolable_list->Set(
         i, i < current_length
-               ? std::move(interpolable_list.GetMutable(i))
+               ? std::move(interpolable_list.GetMutable(i).Get())
                : interpolable_list.Get(i % current_length)->Clone());
     new_non_interpolable_values[i] =
         non_interpolable_list.Get(i % current_length);
@@ -267,8 +266,8 @@ static void PadToSameLength(InterpolationValue& value,
       To<NonInterpolableList>(*length_value.non_interpolable_value);
   const wtf_size_t target_length = target_interpolable_list.length();
   DCHECK_LT(current_length, target_length);
-  auto new_interpolable_list =
-      std::make_unique<InterpolableList>(target_length);
+  auto* new_interpolable_list =
+      MakeGarbageCollected<InterpolableList>(target_length);
   Vector<scoped_refptr<const NonInterpolableValue>> new_non_interpolable_values(
       target_length);
   wtf_size_t index = 0;

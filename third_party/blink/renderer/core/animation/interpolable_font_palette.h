@@ -19,7 +19,7 @@ class CORE_EXPORT InterpolableFontPalette final : public InterpolableValue {
  public:
   explicit InterpolableFontPalette(scoped_refptr<FontPalette> mix_value);
 
-  static std::unique_ptr<InterpolableFontPalette> Create(
+  static InterpolableFontPalette* Create(
       scoped_refptr<FontPalette> font_palette);
 
   scoped_refptr<FontPalette> GetFontPalette() const;
@@ -38,6 +38,8 @@ class CORE_EXPORT InterpolableFontPalette final : public InterpolableValue {
     font_palette_ = To<InterpolableFontPalette>(other).font_palette_;
   }
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
+
+  void Trace(Visitor* v) const override { InterpolableValue::Trace(v); }
 
  private:
   InterpolableFontPalette* RawClone() const final;

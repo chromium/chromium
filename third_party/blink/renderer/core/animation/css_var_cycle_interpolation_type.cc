@@ -47,7 +47,7 @@ CSSVarCycleInterpolationType::CSSVarCycleInterpolationType(
 }
 
 static InterpolationValue CreateCycleDetectedValue() {
-  return InterpolationValue(std::make_unique<InterpolableList>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableList>(0));
 }
 
 InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(

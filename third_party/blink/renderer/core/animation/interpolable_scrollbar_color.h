@@ -20,9 +20,10 @@ class StyleResolverState;
 class CORE_EXPORT InterpolableScrollbarColor : public InterpolableValue {
  public:
   InterpolableScrollbarColor();
+  InterpolableScrollbarColor(InterpolableColor* thumb_color,
+                             InterpolableColor* track_color);
 
-  static std::unique_ptr<InterpolableScrollbarColor> Create(
-      StyleScrollbarColor);
+  static InterpolableScrollbarColor* Create(StyleScrollbarColor);
   bool IsScrollbarColor() const final { return true; }
 
   StyleScrollbarColor GetScrollbarColor(const StyleResolverState&) const;
@@ -39,21 +40,22 @@ class CORE_EXPORT InterpolableScrollbarColor : public InterpolableValue {
                    const double progress,
                    InterpolableValue& result) const final;
 
-  std::unique_ptr<InterpolableScrollbarColor> Clone() const {
-    return std::unique_ptr<InterpolableScrollbarColor>(RawClone());
-  }
+  InterpolableScrollbarColor* Clone() const { return RawClone(); }
 
   void Composite(const InterpolableScrollbarColor& other, double fraction);
 
- private:
-  InterpolableScrollbarColor(InterpolableColor thumb_color,
-                             InterpolableColor track_color);
+  void Trace(Visitor* v) const override {
+    InterpolableValue::Trace(v);
+    v->Trace(thumb_color_);
+    v->Trace(track_color_);
+  }
 
+ private:
   InterpolableScrollbarColor* RawClone() const final;
   InterpolableScrollbarColor* RawCloneAndZero() const final;
 
-  InterpolableColor thumb_color_;
-  InterpolableColor track_color_;
+  Member<InterpolableColor> thumb_color_;
+  Member<InterpolableColor> track_color_;
 };
 
 template <>

@@ -58,11 +58,11 @@ struct Scale {
   bool is_none;
 };
 
-std::unique_ptr<InterpolableValue> CreateScaleIdentity() {
-  auto list = std::make_unique<InterpolableList>(3);
+InterpolableValue* CreateScaleIdentity() {
+  auto* list = MakeGarbageCollected<InterpolableList>(3);
   for (wtf_size_t i = 0; i < 3; i++)
-    list->Set(i, std::make_unique<InterpolableNumber>(1));
-  return std::move(list);
+    list->Set(i, MakeGarbageCollected<InterpolableNumber>(1));
+  return list;
 }
 
 class InheritedScaleChecker
@@ -142,15 +142,15 @@ struct DowncastTraits<CSSScaleNonInterpolableValue> {
 
 InterpolationValue Scale::CreateInterpolationValue() const {
   if (is_none) {
-    return InterpolationValue(std::make_unique<InterpolableList>(0),
+    return InterpolationValue(MakeGarbageCollected<InterpolableList>(0),
                               CSSScaleNonInterpolableValue::Create(*this));
   }
 
-  auto list = std::make_unique<InterpolableList>(3);
-  for (wtf_size_t i = 0; i < 3; i++)
-    list->Set(i, std::make_unique<InterpolableNumber>(array[i]));
-  return InterpolationValue(std::move(list),
-                            CSSScaleNonInterpolableValue::Create(*this));
+  auto* list = MakeGarbageCollected<InterpolableList>(3);
+  for (wtf_size_t i = 0; i < 3; i++) {
+    list->Set(i, MakeGarbageCollected<InterpolableNumber>(array[i]));
+  }
+  return InterpolationValue(list, CSSScaleNonInterpolableValue::Create(*this));
 }
 
 InterpolationValue CSSScaleInterpolationType::MaybeConvertNeutral(

@@ -26,10 +26,10 @@ InterpolationValue SVGPointListInterpolationType::MaybeConvertNeutral(
   if (underlying_length == 0)
     return nullptr;
 
-  auto result = std::make_unique<InterpolableList>(underlying_length);
+  auto* result = MakeGarbageCollected<InterpolableList>(underlying_length);
   for (wtf_size_t i = 0; i < underlying_length; i++)
-    result->Set(i, std::make_unique<InterpolableNumber>(0));
-  return InterpolationValue(std::move(result));
+    result->Set(i, MakeGarbageCollected<InterpolableNumber>(0));
+  return InterpolationValue(result);
 }
 
 InterpolationValue SVGPointListInterpolationType::MaybeConvertSVGValue(
@@ -38,14 +38,15 @@ InterpolationValue SVGPointListInterpolationType::MaybeConvertSVGValue(
     return nullptr;
 
   const auto& point_list = To<SVGPointList>(svg_value);
-  auto result = std::make_unique<InterpolableList>(point_list.length() * 2);
+  auto* result =
+      MakeGarbageCollected<InterpolableList>(point_list.length() * 2);
   for (wtf_size_t i = 0; i < point_list.length(); i++) {
     const SVGPoint& point = *point_list.at(i);
-    result->Set(2 * i, std::make_unique<InterpolableNumber>(point.X()));
-    result->Set(2 * i + 1, std::make_unique<InterpolableNumber>(point.Y()));
+    result->Set(2 * i, MakeGarbageCollected<InterpolableNumber>(point.X()));
+    result->Set(2 * i + 1, MakeGarbageCollected<InterpolableNumber>(point.Y()));
   }
 
-  return InterpolationValue(std::move(result));
+  return InterpolationValue(result);
 }
 
 PairwiseInterpolationValue SVGPointListInterpolationType::MaybeMergeSingles(

@@ -10,15 +10,14 @@
 namespace blink {
 
 // static
-std::unique_ptr<InterpolableTransformList>
-InterpolableTransformList::ConvertCSSValue(
+InterpolableTransformList* InterpolableTransformList::ConvertCSSValue(
     const CSSValue& css_value,
     const CSSToLengthConversionData& conversion_data,
     TransformOperations::BoxSizeDependentMatrixBlending box_size_dependent) {
   TransformOperations transform =
       TransformBuilder::CreateTransformOperations(css_value, conversion_data);
-  return std::make_unique<InterpolableTransformList>(std::move(transform),
-                                                     box_size_dependent);
+  return MakeGarbageCollected<InterpolableTransformList>(std::move(transform),
+                                                         box_size_dependent);
 }
 
 void InterpolableTransformList::PreConcat(

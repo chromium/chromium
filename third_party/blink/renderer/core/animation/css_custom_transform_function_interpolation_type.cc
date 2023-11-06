@@ -13,7 +13,7 @@ InterpolationValue
 CSSCustomTransformFunctionInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers&) const {
-  return InterpolationValue(std::make_unique<InterpolableTransformList>(
+  return InterpolationValue(MakeGarbageCollected<InterpolableTransformList>(
       EmptyTransformOperations(),
       TransformOperations::BoxSizeDependentMatrixBlending::kDisallow));
 }
@@ -28,7 +28,7 @@ CSSCustomTransformFunctionInterpolationType::MaybeConvertValue(
     return nullptr;
   }
 
-  std::unique_ptr<InterpolableTransformList> interpolable =
+  InterpolableTransformList* interpolable =
       InterpolableTransformList::ConvertCSSValue(
           value, CSSToLengthConversionData(),
           TransformOperations::BoxSizeDependentMatrixBlending::kDisallow);

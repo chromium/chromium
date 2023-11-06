@@ -20,21 +20,20 @@ class StyleResolverState;
 // interpolated from/to.
 class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
  public:
-  InterpolableFilter(std::unique_ptr<InterpolableValue> value,
+  InterpolableFilter(InterpolableValue* value,
                      FilterOperation::OperationType type)
-      : value_(std::move(value)), type_(type) {
+      : value_(value), type_(type) {
+    static_assert(std::is_trivially_destructible_v<InterpolableFilter>,
+                  "Require trivial destruction for faster sweeping");
     DCHECK(value_);
   }
 
-  static std::unique_ptr<InterpolableFilter> MaybeCreate(const FilterOperation&,
-                                                         double zoom);
-  static std::unique_ptr<InterpolableFilter> MaybeConvertCSSValue(
-      const CSSValue&);
+  static InterpolableFilter* MaybeCreate(const FilterOperation&, double zoom);
+  static InterpolableFilter* MaybeConvertCSSValue(const CSSValue&);
 
   // Create an InterpolableFilter representing the 'initial value for
   // interpolation' for the given OperationType.
-  static std::unique_ptr<InterpolableFilter> CreateInitialValue(
-      FilterOperation::OperationType);
+  static InterpolableFilter* CreateInitialValue(FilterOperation::OperationType);
 
   FilterOperation::OperationType GetType() const { return type_; }
 
@@ -55,17 +54,23 @@ class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
   void Add(const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
+  void Trace(Visitor* v) const override {
+    InterpolableValue::Trace(v);
+    v->Trace(value_);
+  }
+
  private:
   InterpolableFilter* RawClone() const final {
-    return new InterpolableFilter(value_->Clone(), type_);
+    return MakeGarbageCollected<InterpolableFilter>(value_->Clone(), type_);
   }
   InterpolableFilter* RawCloneAndZero() const final {
-    return new InterpolableFilter(value_->CloneAndZero(), type_);
+    return MakeGarbageCollected<InterpolableFilter>(value_->CloneAndZero(),
+                                                    type_);
   }
 
   // Stores the interpolable data for the filter. The form varies depending on
   // the |type_|; see the implementation file for details of the mapping.
-  std::unique_ptr<InterpolableValue> value_;
+  Member<InterpolableValue> value_;
 
   FilterOperation::OperationType type_;
 };

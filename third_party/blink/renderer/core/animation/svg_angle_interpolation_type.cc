@@ -14,15 +14,15 @@ namespace blink {
 InterpolationValue SVGAngleInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  return InterpolationValue(std::make_unique<InterpolableNumber>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0));
 }
 
 InterpolationValue SVGAngleInterpolationType::MaybeConvertSVGValue(
     const SVGPropertyBase& svg_value) const {
   if (!To<SVGAngle>(svg_value).IsNumeric())
     return nullptr;
-  return InterpolationValue(
-      std::make_unique<InterpolableNumber>(To<SVGAngle>(svg_value).Value()));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
+      To<SVGAngle>(svg_value).Value()));
 }
 
 SVGPropertyBase* SVGAngleInterpolationType::AppliedSVGValue(

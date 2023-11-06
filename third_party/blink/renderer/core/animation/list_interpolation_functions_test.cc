@@ -56,8 +56,7 @@ class TestUnderlyingValue : public UnderlyingValue {
     return *interpolation_value_.interpolable_value;
   }
 
-  void SetInterpolableValue(
-      std::unique_ptr<InterpolableValue> interpolable_value) final {
+  void SetInterpolableValue(InterpolableValue* interpolable_value) final {
     interpolation_value_.interpolable_value = std::move(interpolable_value);
   }
 
@@ -81,7 +80,7 @@ InterpolationValue CreateInterpolableList(
   return ListInterpolationFunctions::CreateList(
       values.size(), [&values](wtf_size_t i) {
         return InterpolationValue(
-            std::make_unique<InterpolableNumber>(values[i].first),
+            MakeGarbageCollected<InterpolableNumber>(values[i].first),
             TestNonInterpolableValue::Create(values[i].second));
       });
 }
@@ -92,7 +91,7 @@ InterpolationValue CreateInterpolableList(const Vector<double>& values) {
   return ListInterpolationFunctions::CreateList(
       values.size(), [&values](wtf_size_t i) {
         return InterpolationValue(
-            std::make_unique<InterpolableNumber>(values[i]), nullptr);
+            MakeGarbageCollected<InterpolableNumber>(values[i]), nullptr);
       });
 }
 
@@ -101,7 +100,7 @@ InterpolationValue CreateInterpolableList(const Vector<double>& values) {
 InterpolationValue CreateNonInterpolableList(const Vector<int>& values) {
   return ListInterpolationFunctions::CreateList(
       values.size(), [&values](wtf_size_t i) {
-        return InterpolationValue(std::make_unique<InterpolableNumber>(0),
+        return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0),
                                   TestNonInterpolableValue::Create(values[i]));
       });
 }

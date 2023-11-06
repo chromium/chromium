@@ -23,15 +23,14 @@ class AnimationInterpolableValueTest : public testing::Test {
     // the compositor (as z-index isn't compositor-compatible).
     PropertyHandle property_handle(GetCSSPropertyZIndex());
     CSSNumberInterpolationType interpolation_type(property_handle);
-    InterpolationValue start(std::make_unique<InterpolableNumber>(a));
-    InterpolationValue end(std::make_unique<InterpolableNumber>(b));
+    InterpolationValue start(MakeGarbageCollected<InterpolableNumber>(a));
+    InterpolationValue end(MakeGarbageCollected<InterpolableNumber>(b));
     TransitionInterpolation* i = MakeGarbageCollected<TransitionInterpolation>(
         property_handle, interpolation_type, std::move(start), std::move(end),
         nullptr, nullptr);
 
     i->Interpolate(0, progress);
-    std::unique_ptr<TypedInterpolationValue> interpolated_value =
-        i->GetInterpolatedValue();
+    TypedInterpolationValue* interpolated_value = i->GetInterpolatedValue();
     EXPECT_TRUE(interpolated_value);
     return To<InterpolableNumber>(interpolated_value->GetInterpolableValue())
         .Value();
@@ -43,11 +42,10 @@ class AnimationInterpolableValueTest : public testing::Test {
     base.ScaleAndAdd(scale, add);
   }
 
-  std::unique_ptr<InterpolableValue> InterpolateLists(
-      std::unique_ptr<InterpolableValue> list_a,
-      std::unique_ptr<InterpolableValue> list_b,
-      double progress) {
-    std::unique_ptr<InterpolableValue> result = list_a->CloneAndZero();
+  InterpolableValue* InterpolateLists(InterpolableValue* list_a,
+                                      InterpolableValue* list_b,
+                                      double progress) {
+    InterpolableValue* result = list_a->CloneAndZero();
     list_a->Interpolate(*list_b, progress, *result);
     return result;
   }
@@ -63,17 +61,17 @@ TEST_F(AnimationInterpolableValueTest, InterpolateNumbers) {
 }
 
 TEST_F(AnimationInterpolableValueTest, SimpleList) {
-  auto list_a = std::make_unique<InterpolableList>(3);
-  list_a->Set(0, std::make_unique<InterpolableNumber>(0));
-  list_a->Set(1, std::make_unique<InterpolableNumber>(42));
-  list_a->Set(2, std::make_unique<InterpolableNumber>(20.5));
+  auto* list_a = MakeGarbageCollected<InterpolableList>(3);
+  list_a->Set(0, MakeGarbageCollected<InterpolableNumber>(0));
+  list_a->Set(1, MakeGarbageCollected<InterpolableNumber>(42));
+  list_a->Set(2, MakeGarbageCollected<InterpolableNumber>(20.5));
 
-  auto list_b = std::make_unique<InterpolableList>(3);
-  list_b->Set(0, std::make_unique<InterpolableNumber>(100));
-  list_b->Set(1, std::make_unique<InterpolableNumber>(-200));
-  list_b->Set(2, std::make_unique<InterpolableNumber>(300));
+  auto* list_b = MakeGarbageCollected<InterpolableList>(3);
+  list_b->Set(0, MakeGarbageCollected<InterpolableNumber>(100));
+  list_b->Set(1, MakeGarbageCollected<InterpolableNumber>(-200));
+  list_b->Set(2, MakeGarbageCollected<InterpolableNumber>(300));
 
-  std::unique_ptr<InterpolableValue> interpolated_value =
+  InterpolableValue* interpolated_value =
       InterpolateLists(std::move(list_a), std::move(list_b), 0.3);
   const auto& out_list = To<InterpolableList>(*interpolated_value);
 
@@ -83,22 +81,21 @@ TEST_F(AnimationInterpolableValueTest, SimpleList) {
 }
 
 TEST_F(AnimationInterpolableValueTest, NestedList) {
-  auto list_a = std::make_unique<InterpolableList>(3);
-  list_a->Set(0, std::make_unique<InterpolableNumber>(0));
-  auto sub_list_a = std::make_unique<InterpolableList>(1);
-  sub_list_a->Set(0, std::make_unique<InterpolableNumber>(100));
-  list_a->Set(1, std::move(sub_list_a));
-  list_a->Set(2, std::make_unique<InterpolableNumber>(0));
+  auto* list_a = MakeGarbageCollected<InterpolableList>(3);
+  list_a->Set(0, MakeGarbageCollected<InterpolableNumber>(0));
+  auto* sub_list_a = MakeGarbageCollected<InterpolableList>(1);
+  sub_list_a->Set(0, MakeGarbageCollected<InterpolableNumber>(100));
+  list_a->Set(1, sub_list_a);
+  list_a->Set(2, MakeGarbageCollected<InterpolableNumber>(0));
 
-  auto list_b = std::make_unique<InterpolableList>(3);
-  list_b->Set(0, std::make_unique<InterpolableNumber>(100));
-  auto sub_list_b = std::make_unique<InterpolableList>(1);
-  sub_list_b->Set(0, std::make_unique<InterpolableNumber>(50));
-  list_b->Set(1, std::move(sub_list_b));
-  list_b->Set(2, std::make_unique<InterpolableNumber>(1));
+  auto* list_b = MakeGarbageCollected<InterpolableList>(3);
+  list_b->Set(0, MakeGarbageCollected<InterpolableNumber>(100));
+  auto* sub_list_b = MakeGarbageCollected<InterpolableList>(1);
+  sub_list_b->Set(0, MakeGarbageCollected<InterpolableNumber>(50));
+  list_b->Set(1, sub_list_b);
+  list_b->Set(2, MakeGarbageCollected<InterpolableNumber>(1));
 
-  std::unique_ptr<InterpolableValue> interpolated_value =
-      InterpolateLists(std::move(list_a), std::move(list_b), 0.5);
+  InterpolableValue* interpolated_value = InterpolateLists(list_a, list_b, 0.5);
   const auto& out_list = To<InterpolableList>(*interpolated_value);
 
   EXPECT_FLOAT_EQ(50, To<InterpolableNumber>(out_list.Get(0))->Value());
@@ -109,29 +106,28 @@ TEST_F(AnimationInterpolableValueTest, NestedList) {
 }
 
 TEST_F(AnimationInterpolableValueTest, ScaleAndAddNumbers) {
-  std::unique_ptr<InterpolableNumber> base =
-      std::make_unique<InterpolableNumber>(10);
-  ScaleAndAdd(*base, 2, *std::make_unique<InterpolableNumber>(1));
+  InterpolableNumber* base = MakeGarbageCollected<InterpolableNumber>(10);
+  ScaleAndAdd(*base, 2, *MakeGarbageCollected<InterpolableNumber>(1));
   EXPECT_FLOAT_EQ(21, base->Value());
 
-  base = std::make_unique<InterpolableNumber>(10);
-  ScaleAndAdd(*base, 0, *std::make_unique<InterpolableNumber>(5));
+  base = MakeGarbageCollected<InterpolableNumber>(10);
+  ScaleAndAdd(*base, 0, *MakeGarbageCollected<InterpolableNumber>(5));
   EXPECT_FLOAT_EQ(5, base->Value());
 
-  base = std::make_unique<InterpolableNumber>(10);
-  ScaleAndAdd(*base, -1, *std::make_unique<InterpolableNumber>(8));
+  base = MakeGarbageCollected<InterpolableNumber>(10);
+  ScaleAndAdd(*base, -1, *MakeGarbageCollected<InterpolableNumber>(8));
   EXPECT_FLOAT_EQ(-2, base->Value());
 }
 
 TEST_F(AnimationInterpolableValueTest, ScaleAndAddLists) {
-  auto base_list = std::make_unique<InterpolableList>(3);
-  base_list->Set(0, std::make_unique<InterpolableNumber>(5));
-  base_list->Set(1, std::make_unique<InterpolableNumber>(10));
-  base_list->Set(2, std::make_unique<InterpolableNumber>(15));
-  auto add_list = std::make_unique<InterpolableList>(3);
-  add_list->Set(0, std::make_unique<InterpolableNumber>(1));
-  add_list->Set(1, std::make_unique<InterpolableNumber>(2));
-  add_list->Set(2, std::make_unique<InterpolableNumber>(3));
+  auto* base_list = MakeGarbageCollected<InterpolableList>(3);
+  base_list->Set(0, MakeGarbageCollected<InterpolableNumber>(5));
+  base_list->Set(1, MakeGarbageCollected<InterpolableNumber>(10));
+  base_list->Set(2, MakeGarbageCollected<InterpolableNumber>(15));
+  auto* add_list = MakeGarbageCollected<InterpolableList>(3);
+  add_list->Set(0, MakeGarbageCollected<InterpolableNumber>(1));
+  add_list->Set(1, MakeGarbageCollected<InterpolableNumber>(2));
+  add_list->Set(2, MakeGarbageCollected<InterpolableNumber>(3));
   ScaleAndAdd(*base_list, 2, *add_list);
   EXPECT_FLOAT_EQ(11, To<InterpolableNumber>(base_list->Get(0))->Value());
   EXPECT_FLOAT_EQ(22, To<InterpolableNumber>(base_list->Get(1))->Value());

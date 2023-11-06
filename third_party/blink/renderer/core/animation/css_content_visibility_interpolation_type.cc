@@ -111,7 +111,7 @@ class InheritedContentVisibilityChecker
 InterpolationValue
 CSSContentVisibilityInterpolationType::CreateContentVisibilityValue(
     EContentVisibility content_visibility) const {
-  return InterpolationValue(std::make_unique<InterpolableNumber>(0),
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0),
                             CSSContentVisibilityNonInterpolableValue::Create(
                                 content_visibility, content_visibility));
 }
@@ -191,8 +191,8 @@ CSSContentVisibilityInterpolationType::MaybeMergeSingles(
       To<CSSContentVisibilityNonInterpolableValue>(*end.non_interpolable_value)
           .ContentVisibility();
   return PairwiseInterpolationValue(
-      std::make_unique<InterpolableNumber>(0),
-      std::make_unique<InterpolableNumber>(1),
+      MakeGarbageCollected<InterpolableNumber>(0),
+      MakeGarbageCollected<InterpolableNumber>(1),
       CSSContentVisibilityNonInterpolableValue::Create(start_content_visibility,
                                                        end_content_visibility));
 }

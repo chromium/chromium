@@ -12,7 +12,7 @@ namespace blink {
 InterpolationValue CSSCustomTransformInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers&) const {
-  return InterpolationValue(std::make_unique<InterpolableTransformList>(
+  return InterpolationValue(MakeGarbageCollected<InterpolableTransformList>(
       EmptyTransformOperations(),
       TransformOperations::BoxSizeDependentMatrixBlending::kDisallow));
 }

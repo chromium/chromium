@@ -19,61 +19,60 @@ namespace blink {
 InterpolableScrollbarColor::InterpolableScrollbarColor() = default;
 
 InterpolableScrollbarColor::InterpolableScrollbarColor(
-    InterpolableColor thumb_color,
-    InterpolableColor track_color)
-    : thumb_color_(std::move(thumb_color)),
-      track_color_(std::move(track_color)) {}
+    InterpolableColor* thumb_color,
+    InterpolableColor* track_color)
+    : thumb_color_(thumb_color), track_color_(track_color) {}
 
-std::unique_ptr<InterpolableScrollbarColor> InterpolableScrollbarColor::Create(
+InterpolableScrollbarColor* InterpolableScrollbarColor::Create(
     StyleScrollbarColor scrollbar_color) {
-  std::unique_ptr<InterpolableScrollbarColor> result =
-      std::make_unique<InterpolableScrollbarColor>();
+  InterpolableScrollbarColor* result =
+      MakeGarbageCollected<InterpolableScrollbarColor>();
   result->thumb_color_ =
-      *InterpolableColor::Create(scrollbar_color.GetThumbColor().GetColor());
+      InterpolableColor::Create(scrollbar_color.GetThumbColor().GetColor());
   result->track_color_ =
-      *InterpolableColor::Create(scrollbar_color.GetTrackColor().GetColor());
+      InterpolableColor::Create(scrollbar_color.GetTrackColor().GetColor());
 
   return result;
 }
 
 InterpolableScrollbarColor* InterpolableScrollbarColor::RawClone() const {
-  return new InterpolableScrollbarColor(*thumb_color_.Clone(),
-                                        *track_color_.Clone());
+  return MakeGarbageCollected<InterpolableScrollbarColor>(
+      thumb_color_->Clone(), track_color_->Clone());
 }
 
 InterpolableScrollbarColor* InterpolableScrollbarColor::RawCloneAndZero()
     const {
-  return new InterpolableScrollbarColor(*thumb_color_.CloneAndZero(),
-                                        *track_color_.CloneAndZero());
+  return MakeGarbageCollected<InterpolableScrollbarColor>(
+      thumb_color_->CloneAndZero(), track_color_->CloneAndZero());
 }
 
 StyleScrollbarColor InterpolableScrollbarColor::GetScrollbarColor(
     const StyleResolverState& state) const {
   return StyleScrollbarColor(
       StyleColor(CSSColorInterpolationType::ResolveInterpolableColor(
-          thumb_color_, state)),
+          *thumb_color_, state)),
       StyleColor(CSSColorInterpolationType::ResolveInterpolableColor(
-          track_color_, state)));
+          *track_color_, state)));
 }
 
 void InterpolableScrollbarColor::AssertCanInterpolateWith(
     const InterpolableValue& other) const {
   const InterpolableScrollbarColor& other_scrollbar_color =
       To<InterpolableScrollbarColor>(other);
-  thumb_color_.AssertCanInterpolateWith(other_scrollbar_color.thumb_color_);
-  track_color_.AssertCanInterpolateWith(other_scrollbar_color.track_color_);
+  thumb_color_->AssertCanInterpolateWith(*other_scrollbar_color.thumb_color_);
+  track_color_->AssertCanInterpolateWith(*other_scrollbar_color.track_color_);
 }
 
 void InterpolableScrollbarColor::Scale(double scale) {
-  thumb_color_.Scale(scale);
-  track_color_.Scale(scale);
+  thumb_color_->Scale(scale);
+  track_color_->Scale(scale);
 }
 
 void InterpolableScrollbarColor::Add(const InterpolableValue& other) {
   const InterpolableScrollbarColor& other_scrollbar_color =
       To<InterpolableScrollbarColor>(other);
-  thumb_color_.Add(other_scrollbar_color.thumb_color_);
-  track_color_.Add(other_scrollbar_color.track_color_);
+  thumb_color_->Add(*other_scrollbar_color.thumb_color_);
+  track_color_->Add(*other_scrollbar_color.track_color_);
 }
 
 void InterpolableScrollbarColor::Interpolate(const InterpolableValue& to,
@@ -84,17 +83,17 @@ void InterpolableScrollbarColor::Interpolate(const InterpolableValue& to,
   InterpolableScrollbarColor& result_scrollbar_color =
       To<InterpolableScrollbarColor>(result);
 
-  thumb_color_.Interpolate(to_scrollbar_color.thumb_color_, progress,
-                           result_scrollbar_color.thumb_color_);
-  track_color_.Interpolate(to_scrollbar_color.track_color_, progress,
-                           result_scrollbar_color.track_color_);
+  thumb_color_->Interpolate(*to_scrollbar_color.thumb_color_, progress,
+                            *result_scrollbar_color.thumb_color_);
+  track_color_->Interpolate(*to_scrollbar_color.track_color_, progress,
+                            *result_scrollbar_color.track_color_);
 }
 
 void InterpolableScrollbarColor::Composite(
     const InterpolableScrollbarColor& other,
     double fraction) {
-  thumb_color_.Composite(other.thumb_color_, fraction);
-  track_color_.Composite(other.track_color_, fraction);
+  thumb_color_->Composite(*other.thumb_color_, fraction);
+  track_color_->Composite(*other.track_color_, fraction);
 }
 
 }  // namespace blink

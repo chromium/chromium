@@ -143,7 +143,7 @@ scoped_refptr<BasicShape> GetAnimatedShapeFromKeyframe(
             // CreateBasicShape function.
             : BasicShape::kBasicShapeCircleType;
     basic_shape = CreateBasicShape(
-        type, *keyframe->GetValue()->Value().interpolable_value.get(),
+        type, *keyframe->GetValue()->Value().interpolable_value.Get(),
         *non_interpolable_value);
   }
   DCHECK(basic_shape);

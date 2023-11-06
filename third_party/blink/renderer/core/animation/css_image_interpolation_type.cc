@@ -111,7 +111,7 @@ InterpolationValue CSSImageInterpolationType::MaybeConvertCSSValue(
     bool accept_gradients) {
   if (value.IsImageValue() || (value.IsGradientValue() && accept_gradients)) {
     CSSValue* refable_css_value = const_cast<CSSValue*>(&value);
-    return InterpolationValue(std::make_unique<InterpolableNumber>(1),
+    return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(1),
                               CSSImageNonInterpolableValue::Create(
                                   refable_css_value, refable_css_value));
   }
@@ -129,8 +129,8 @@ CSSImageInterpolationType::StaticMergeSingleConversions(
     return nullptr;
   }
   return PairwiseInterpolationValue(
-      std::make_unique<InterpolableNumber>(0),
-      std::make_unique<InterpolableNumber>(1),
+      MakeGarbageCollected<InterpolableNumber>(0),
+      MakeGarbageCollected<InterpolableNumber>(1),
       CSSImageNonInterpolableValue::Merge(start.non_interpolable_value,
                                           end.non_interpolable_value));
 }
@@ -170,24 +170,26 @@ class UnderlyingImageChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   UnderlyingImageChecker(const InterpolationValue& underlying)
-      : underlying_(underlying.Clone()) {}
+      : underlying_(MakeGarbageCollected<InterpolationValueGCed>(underlying)) {}
   ~UnderlyingImageChecker() final = default;
 
  private:
   bool IsValid(const StyleResolverState&,
                const InterpolationValue& underlying) const final {
-    if (!underlying && !underlying_)
+    if (!underlying && !underlying_) {
       return true;
-    if (!underlying || !underlying_)
+    }
+    if (!underlying || !underlying_) {
       return false;
-    return underlying_.interpolable_value->Equals(
+    }
+    return underlying_->underlying().interpolable_value->Equals(
                *underlying.interpolable_value) &&
            CSSImageInterpolationType::EqualNonInterpolableValues(
-               underlying_.non_interpolable_value.get(),
+               underlying_->underlying().non_interpolable_value.get(),
                underlying.non_interpolable_value.get());
   }
 
-  const InterpolationValue underlying_;
+  const Persistent<InterpolationValueGCed> underlying_;
 };
 
 InterpolationValue CSSImageInterpolationType::MaybeConvertNeutral(

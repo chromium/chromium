@@ -22,18 +22,18 @@ class UnderlyingImageListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit UnderlyingImageListChecker(const InterpolationValue& underlying)
-      : underlying_(underlying.Clone()) {}
+      : underlying_(MakeGarbageCollected<InterpolationValueGCed>(underlying)) {}
   ~UnderlyingImageListChecker() final = default;
 
  private:
   bool IsValid(const StyleResolverState&,
                const InterpolationValue& underlying) const final {
     return ListInterpolationFunctions::EqualValues(
-        underlying_, underlying,
+        underlying_->underlying(), underlying,
         CSSImageInterpolationType::EqualNonInterpolableValues);
   }
 
-  const InterpolationValue underlying_;
+  const Persistent<InterpolationValueGCed> underlying_;
 };
 
 InterpolationValue CSSImageListInterpolationType::MaybeConvertNeutral(
@@ -118,7 +118,7 @@ InterpolationValue CSSImageListInterpolationType::MaybeConvertValue(
   const auto& value_list = temp_list ? *temp_list : To<CSSValueList>(value);
 
   const wtf_size_t length = value_list.length();
-  auto interpolable_list = std::make_unique<InterpolableList>(length);
+  auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
   Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
       length);
   for (wtf_size_t i = 0; i < length; i++) {

@@ -43,35 +43,35 @@ Length CreateContentSizedLength(
 }
 }  // namespace
 
-InterpolableGridLength::InterpolableGridLength(
-    std::unique_ptr<InterpolableValue> value,
-    InterpolableGridLengthType type)
-    : value_(std::move(value)), type_(type) {
+InterpolableGridLength::InterpolableGridLength(InterpolableValue* value,
+                                               InterpolableGridLengthType type)
+    : value_(value), type_(type) {
   DCHECK(value_ || IsContentSized());
 }
 
 // static
-std::unique_ptr<InterpolableGridLength> InterpolableGridLength::Create(
-    const Length& length,
-    float zoom) {
+InterpolableGridLength* InterpolableGridLength::Create(const Length& length,
+                                                       float zoom) {
   InterpolableGridLengthType type = GetInterpolableGridLengthType(length);
-  std::unique_ptr<InterpolableValue> value;
+  InterpolableValue* value = nullptr;
   if (length.IsFlex()) {
-    value = std::make_unique<InterpolableNumber>(length.GetFloatValue());
+    value = MakeGarbageCollected<InterpolableNumber>(length.GetFloatValue());
   } else {
     value = InterpolableLength::MaybeConvertLength(length, zoom);
   }
-  return std::make_unique<InterpolableGridLength>(std::move(value), type);
+  return MakeGarbageCollected<InterpolableGridLength>(std::move(value), type);
 }
 
 Length InterpolableGridLength::CreateGridLength(
     const CSSToLengthConversionData& conversion_data) const {
-  if (IsContentSized())
+  if (IsContentSized()) {
     return CreateContentSizedLength(type_);
+  }
 
   DCHECK(value_);
-  if (type_ == kFlex)
+  if (type_ == kFlex) {
     return Length::Flex(To<InterpolableNumber>(*value_).Value());
+  }
   return To<InterpolableLength>(*value_).CreateLength(
       conversion_data, Length::ValueRange::kNonNegative);
 }
@@ -86,12 +86,13 @@ bool InterpolableGridLength::IsCompatibleWith(
 }
 
 InterpolableGridLength* InterpolableGridLength::RawClone() const {
-  return new InterpolableGridLength(value_ ? value_->Clone() : nullptr, type_);
+  return MakeGarbageCollected<InterpolableGridLength>(
+      value_ ? value_->Clone() : nullptr, type_);
 }
 
 InterpolableGridLength* InterpolableGridLength::RawCloneAndZero() const {
-  return new InterpolableGridLength(value_ ? value_->CloneAndZero() : nullptr,
-                                    type_);
+  return MakeGarbageCollected<InterpolableGridLength>(
+      value_ ? value_->CloneAndZero() : nullptr, type_);
 }
 
 bool InterpolableGridLength::Equals(const InterpolableValue& other) const {

@@ -10,6 +10,8 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -18,12 +20,9 @@ namespace blink {
 
 // Represents the components of a PropertySpecificKeyframe's value that change
 // smoothly as it interpolates to an adjacent value.
-class CORE_EXPORT InterpolableValue {
-  USING_FAST_MALLOC(InterpolableValue);
-
+class CORE_EXPORT InterpolableValue
+    : public GarbageCollected<InterpolableValue> {
  public:
-  virtual ~InterpolableValue() = default;
-
   // Interpolates from |this| InterpolableValue towards |to| at the given
   // |progress|, placing the output in |result|. That is:
   //
@@ -67,12 +66,10 @@ class CORE_EXPORT InterpolableValue {
   // Clone this value, optionally zeroing out the components at the same time.
   // These are not virtual to allow for covariant return types; see
   // documentation on RawClone/RawCloneAndZero.
-  std::unique_ptr<InterpolableValue> Clone() const {
-    return std::unique_ptr<InterpolableValue>(RawClone());
-  }
-  std::unique_ptr<InterpolableValue> CloneAndZero() const {
-    return std::unique_ptr<InterpolableValue>(RawCloneAndZero());
-  }
+  InterpolableValue* Clone() const { return RawClone(); }
+  InterpolableValue* CloneAndZero() const { return RawCloneAndZero(); }
+
+  virtual void Trace(Visitor*) const {}
 
  private:
   // Helper methods to allow covariant Clone/CloneAndZero methods. Concrete
@@ -83,13 +80,40 @@ class CORE_EXPORT InterpolableValue {
   virtual InterpolableValue* RawCloneAndZero() const = 0;
 };
 
-class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
+class CORE_EXPORT InlinedInterpolableNumber final {
+  DISALLOW_NEW();
+
  public:
-  InterpolableNumber() = default;
-  explicit InterpolableNumber(double value) : value_(value) {}
+  InlinedInterpolableNumber() = default;
+  explicit InlinedInterpolableNumber(double d) : value_(d) {}
 
   double Value() const { return value_; }
   void Set(double value) { value_ = value; }
+
+  double Interpolate(double to, const double progress) const;
+
+  void Scale(double scale) { value_ *= scale; }
+  void Add(double other) { value_ += other; }
+  void ScaleAndAdd(double scale, double other) {
+    value_ = value_ * scale + other;
+  }
+
+  void Trace(Visitor*) const {}
+
+ private:
+  double value_ = 0.;
+};
+
+class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
+ public:
+  InterpolableNumber() = default;
+  explicit InterpolableNumber(double value) : value_(value) {
+    static_assert(std::is_trivially_destructible_v<InterpolableNumber>,
+                  "Require trivial destruction for faster sweeping");
+  }
+
+  double Value() const { return value_.Value(); }
+  void Set(double value) { value_.Set(value); }
 
   // InterpolableValue
   void Interpolate(const InterpolableValue& to,
@@ -101,27 +125,34 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
   void Add(const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
-  std::unique_ptr<InterpolableNumber> Clone() const {
-    return std::unique_ptr<InterpolableNumber>(RawClone());
-  }
-  std::unique_ptr<InterpolableNumber> CloneAndZero() const {
-    return std::unique_ptr<InterpolableNumber>(RawCloneAndZero());
+  InterpolableNumber* Clone() const { return RawClone(); }
+  InterpolableNumber* CloneAndZero() const { return RawCloneAndZero(); }
+
+  void Trace(Visitor* v) const override {
+    InterpolableValue::Trace(v);
+    v->Trace(value_);
   }
 
  private:
   InterpolableNumber* RawClone() const final {
-    return new InterpolableNumber(value_);
+    return MakeGarbageCollected<InterpolableNumber>(value_.Value());
   }
   InterpolableNumber* RawCloneAndZero() const final {
-    return new InterpolableNumber(0);
+    return MakeGarbageCollected<InterpolableNumber>(0);
   }
 
-  double value_ = 0.;
+  InlinedInterpolableNumber value_;
 };
 
 class CORE_EXPORT InterpolableList final : public InterpolableValue {
  public:
-  explicit InterpolableList(wtf_size_t size) : values_(size) {}
+  explicit InterpolableList(wtf_size_t size) : values_(size) {
+    static_assert(std::is_trivially_destructible_v<InterpolableList>,
+                  "Require trivial destruction for faster sweeping");
+  }
+
+  explicit InterpolableList(HeapVector<Member<InterpolableValue>>&& values)
+      : values_(std::move(values)) {}
 
   InterpolableList(const InterpolableList&) = delete;
   InterpolableList& operator=(const InterpolableList&) = delete;
@@ -129,22 +160,18 @@ class CORE_EXPORT InterpolableList final : public InterpolableValue {
   InterpolableList& operator=(InterpolableList&&) = default;
 
   const InterpolableValue* Get(wtf_size_t position) const {
-    return values_[position].get();
+    return values_[position];
   }
-  std::unique_ptr<InterpolableValue>& GetMutable(wtf_size_t position) {
+  Member<InterpolableValue>& GetMutable(wtf_size_t position) {
     return values_[position];
   }
   wtf_size_t length() const { return values_.size(); }
-  void Set(wtf_size_t position, std::unique_ptr<InterpolableValue> value) {
+  void Set(wtf_size_t position, InterpolableValue* value) {
     values_[position] = std::move(value);
   }
 
-  std::unique_ptr<InterpolableList> Clone() const {
-    return std::unique_ptr<InterpolableList>(RawClone());
-  }
-  std::unique_ptr<InterpolableList> CloneAndZero() const {
-    return std::unique_ptr<InterpolableList>(RawCloneAndZero());
-  }
+  InterpolableList* Clone() const { return RawClone(); }
+  InterpolableList* CloneAndZero() const { return RawCloneAndZero(); }
 
   // InterpolableValue
   void Interpolate(const InterpolableValue& to,
@@ -158,71 +185,22 @@ class CORE_EXPORT InterpolableList final : public InterpolableValue {
   void ScaleAndAdd(double scale, const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
+  void Trace(Visitor* v) const override {
+    InterpolableValue::Trace(v);
+    v->Trace(values_);
+  }
+
  private:
   InterpolableList* RawClone() const final {
-    auto* result = new InterpolableList(length());
-    for (wtf_size_t i = 0; i < length(); i++)
+    auto* result = MakeGarbageCollected<InterpolableList>(length());
+    for (wtf_size_t i = 0; i < length(); i++) {
       result->Set(i, values_[i]->Clone());
+    }
     return result;
   }
   InterpolableList* RawCloneAndZero() const final;
 
-  Vector<std::unique_ptr<InterpolableValue>> values_;
-};
-
-template <typename T, size_t Size>
-class CORE_EXPORT StaticInterpolableList final {
- public:
-  const T& Get(wtf_size_t position) const { return values_[position]; }
-  T& GetMutable(wtf_size_t position) { return values_[position]; }
-
-  wtf_size_t length() const { return static_cast<wtf_size_t>(values_.size()); }
-
-  void Set(wtf_size_t position, T value) {
-    values_[position] = std::move(value);
-  }
-
-  StaticInterpolableList Clone() const { return *this; }
-  StaticInterpolableList CloneAndZero() const { return {}; }
-
-  void Interpolate(const StaticInterpolableList& to,
-                   const double progress,
-                   StaticInterpolableList& result) const {
-    for (wtf_size_t i = 0; i < length(); i++) {
-      values_[i].Interpolate(to.values_[i], progress, result.values_[i]);
-    }
-  }
-
-  bool Equals(const StaticInterpolableList& other) const {
-    for (wtf_size_t i = 0; i < length(); i++) {
-      if (!values_[i].Equals(other.values_[i]))
-        return false;
-    }
-    return true;
-  }
-
-  void Scale(double scale) {
-    for (auto& val : values_)
-      val.Scale(scale);
-  }
-
-  void Add(const StaticInterpolableList& other) {
-    for (wtf_size_t i = 0; i < length(); i++)
-      values_[i].Add(other.values_[i]);
-  }
-
-  // We override this to avoid two passes on the list from the base version.
-  void ScaleAndAdd(double scale, const StaticInterpolableList& other) {
-    for (wtf_size_t i = 0; i < length(); i++)
-      values_[i].ScaleAndAdd(scale, other.values_[i]);
-  }
-
-  void AssertCanInterpolateWith(const StaticInterpolableList& other) const {
-    DCHECK_EQ(other.length(), length());
-  }
-
- private:
-  std::array<T, Size> values_;
+  HeapVector<Member<InterpolableValue>> values_;
 };
 
 template <>

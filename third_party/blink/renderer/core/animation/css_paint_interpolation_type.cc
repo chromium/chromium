@@ -120,11 +120,11 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState*,
     ConversionCheckers&) const {
-  std::unique_ptr<InterpolableValue> interpolable_color =
+  InterpolableValue* interpolable_color =
       CSSColorInterpolationType::MaybeCreateInterpolableColor(value);
   if (!interpolable_color)
     return nullptr;
-  return InterpolationValue(std::move(interpolable_color));
+  return InterpolationValue(interpolable_color);
 }
 
 InterpolationValue

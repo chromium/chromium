@@ -223,7 +223,7 @@ void CSSScrollbarColorInterpolationType::ApplyStandardPropertyValue(
   state.StyleBuilder().SetScrollbarColor(scrollbar_color);
 }
 
-std::unique_ptr<InterpolableScrollbarColor>
+InterpolableScrollbarColor*
 CSSScrollbarColorInterpolationType::CreateScrollbarColorValue(
     absl::optional<StyleScrollbarColor> scrollbar_color) const {
   if (!scrollbar_color.has_value()) {

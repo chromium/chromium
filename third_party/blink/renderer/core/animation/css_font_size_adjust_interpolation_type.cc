@@ -63,7 +63,7 @@ InterpolationValue CreateFontSizeAdjustValue(FontSizeAdjust font_size_adjust) {
   }
 
   return InterpolationValue(
-      std::make_unique<InterpolableNumber>(font_size_adjust.Value()),
+      MakeGarbageCollected<InterpolableNumber>(font_size_adjust.Value()),
       CSSFontSizeAdjustNonInterpolableValue::Create(
           font_size_adjust.GetMetric()));
 }

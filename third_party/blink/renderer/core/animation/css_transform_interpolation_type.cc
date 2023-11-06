@@ -22,7 +22,7 @@
 namespace blink {
 namespace {
 InterpolationValue ConvertTransform(TransformOperations&& transform) {
-  return InterpolationValue(std::make_unique<InterpolableTransformList>(
+  return InterpolationValue(MakeGarbageCollected<InterpolableTransformList>(
       std::move(transform),
       TransformOperations::BoxSizeDependentMatrixBlending::kAllow));
 }

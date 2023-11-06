@@ -100,7 +100,7 @@ class InheritedDisplayChecker
 InterpolationValue CSSDisplayInterpolationType::CreateDisplayValue(
     EDisplay display) const {
   return InterpolationValue(
-      std::make_unique<InterpolableNumber>(0),
+      MakeGarbageCollected<InterpolableNumber>(0),
       CSSDisplayNonInterpolableValue::Create(display, display));
 }
 
@@ -182,8 +182,8 @@ PairwiseInterpolationValue CSSDisplayInterpolationType::MaybeMergeSingles(
   EDisplay end_display =
       To<CSSDisplayNonInterpolableValue>(*end.non_interpolable_value).Display();
   return PairwiseInterpolationValue(
-      std::make_unique<InterpolableNumber>(0),
-      std::make_unique<InterpolableNumber>(1),
+      MakeGarbageCollected<InterpolableNumber>(0),
+      MakeGarbageCollected<InterpolableNumber>(1),
       CSSDisplayNonInterpolableValue::Create(start_display, end_display));
 }
 

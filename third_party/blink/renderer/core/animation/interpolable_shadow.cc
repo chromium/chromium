@@ -16,33 +16,33 @@
 
 namespace blink {
 namespace {
-std::unique_ptr<InterpolableLength> MaybeConvertLength(
-    const CSSPrimitiveValue* value) {
-  if (value)
+InterpolableLength* MaybeConvertLength(const CSSPrimitiveValue* value) {
+  if (value) {
     return InterpolableLength::MaybeConvertCSSValue(*value);
+  }
   return InterpolableLength::CreatePixels(0);
 }
 
-std::unique_ptr<InterpolableColor> MaybeConvertColor(const CSSValue* value) {
-  if (value)
+InterpolableColor* MaybeConvertColor(const CSSValue* value) {
+  if (value) {
     return CSSColorInterpolationType::MaybeCreateInterpolableColor(*value);
+  }
   return CSSColorInterpolationType::CreateInterpolableColor(
       StyleColor::CurrentColor());
 }
 }  // namespace
 
-InterpolableShadow::InterpolableShadow(
-    std::unique_ptr<InterpolableLength> x,
-    std::unique_ptr<InterpolableLength> y,
-    std::unique_ptr<InterpolableLength> blur,
-    std::unique_ptr<InterpolableLength> spread,
-    std::unique_ptr<InterpolableColor> color,
-    ShadowStyle shadow_style)
-    : x_(std::move(x)),
-      y_(std::move(y)),
-      blur_(std::move(blur)),
-      spread_(std::move(spread)),
-      color_(std::move(color)),
+InterpolableShadow::InterpolableShadow(InterpolableLength* x,
+                                       InterpolableLength* y,
+                                       InterpolableLength* blur,
+                                       InterpolableLength* spread,
+                                       InterpolableColor* color,
+                                       ShadowStyle shadow_style)
+    : x_(x),
+      y_(y),
+      blur_(blur),
+      spread_(spread),
+      color_(color),
       shadow_style_(shadow_style) {
   DCHECK(x_);
   DCHECK(y_);
@@ -52,10 +52,9 @@ InterpolableShadow::InterpolableShadow(
 }
 
 // static
-std::unique_ptr<InterpolableShadow> InterpolableShadow::Create(
-    const ShadowData& shadow_data,
-    double zoom) {
-  return std::make_unique<InterpolableShadow>(
+InterpolableShadow* InterpolableShadow::Create(const ShadowData& shadow_data,
+                                               double zoom) {
+  return MakeGarbageCollected<InterpolableShadow>(
       InterpolableLength::CreatePixels(shadow_data.X() / zoom),
       InterpolableLength::CreatePixels(shadow_data.Y() / zoom),
       InterpolableLength::CreatePixels(shadow_data.Blur() / zoom),
@@ -66,47 +65,47 @@ std::unique_ptr<InterpolableShadow> InterpolableShadow::Create(
 }
 
 // static
-std::unique_ptr<InterpolableShadow> InterpolableShadow::CreateNeutral() {
+InterpolableShadow* InterpolableShadow::CreateNeutral() {
   return Create(ShadowData::NeutralValue(), 1);
 }
 
 // static
-std::unique_ptr<InterpolableShadow> InterpolableShadow::MaybeConvertCSSValue(
+InterpolableShadow* InterpolableShadow::MaybeConvertCSSValue(
     const CSSValue& value) {
   const auto* shadow = DynamicTo<CSSShadowValue>(value);
-  if (!shadow)
+  if (!shadow) {
     return nullptr;
+  }
 
   ShadowStyle shadow_style = ShadowStyle::kNormal;
   if (shadow->style) {
-    if (shadow->style->GetValueID() != CSSValueID::kInset)
+    if (shadow->style->GetValueID() != CSSValueID::kInset) {
       return nullptr;
+    }
     shadow_style = ShadowStyle::kInset;
   }
 
-  std::unique_ptr<InterpolableLength> x = MaybeConvertLength(shadow->x.Get());
-  std::unique_ptr<InterpolableLength> y = MaybeConvertLength(shadow->y.Get());
-  std::unique_ptr<InterpolableLength> blur =
-      MaybeConvertLength(shadow->blur.Get());
-  std::unique_ptr<InterpolableLength> spread =
-      MaybeConvertLength(shadow->spread.Get());
-  std::unique_ptr<InterpolableColor> color = MaybeConvertColor(shadow->color);
+  InterpolableLength* x = MaybeConvertLength(shadow->x.Get());
+  InterpolableLength* y = MaybeConvertLength(shadow->y.Get());
+  InterpolableLength* blur = MaybeConvertLength(shadow->blur.Get());
+  InterpolableLength* spread = MaybeConvertLength(shadow->spread.Get());
+  InterpolableColor* color = MaybeConvertColor(shadow->color);
 
   // If any of the conversations failed, we can't represent this CSSValue.
-  if (!x || !y || !blur || !spread || !color)
+  if (!x || !y || !blur || !spread || !color) {
     return nullptr;
+  }
 
-  return std::make_unique<InterpolableShadow>(
-      std::move(x), std::move(y), std::move(blur), std::move(spread),
-      std::move(color), shadow_style);
+  return MakeGarbageCollected<InterpolableShadow>(x, y, blur, spread, color,
+                                                  shadow_style);
 }
 
 // static
 PairwiseInterpolationValue InterpolableShadow::MaybeMergeSingles(
-    std::unique_ptr<InterpolableValue> start,
-    std::unique_ptr<InterpolableValue> end) {
-  InterpolableShadow* start_shadow = To<InterpolableShadow>(start.get());
-  InterpolableShadow* end_shadow = To<InterpolableShadow>(end.get());
+    InterpolableValue* start,
+    InterpolableValue* end) {
+  InterpolableShadow* start_shadow = To<InterpolableShadow>(start);
+  InterpolableShadow* end_shadow = To<InterpolableShadow>(end);
 
   if (start_shadow->shadow_style_ != end_shadow->shadow_style_) {
     return nullptr;
@@ -114,10 +113,10 @@ PairwiseInterpolationValue InterpolableShadow::MaybeMergeSingles(
 
   // Confirm that both colors are in the same colorspace and adjust if
   // necessary.
-  InterpolableColor::SetupColorInterpolationSpaces(*start_shadow->color_.get(),
-                                                   *end_shadow->color_.get());
+  InterpolableColor::SetupColorInterpolationSpaces(*start_shadow->color_,
+                                                   *end_shadow->color_);
 
-  return PairwiseInterpolationValue(std::move(start), std::move(end));
+  return PairwiseInterpolationValue(start, end);
 }
 
 //  static
@@ -162,15 +161,15 @@ ShadowData InterpolableShadow::CreateShadowData(
 }
 
 InterpolableShadow* InterpolableShadow::RawClone() const {
-  return new InterpolableShadow(x_->Clone(), y_->Clone(), blur_->Clone(),
-                                spread_->Clone(), color_->Clone(),
-                                shadow_style_);
+  return MakeGarbageCollected<InterpolableShadow>(
+      x_->Clone(), y_->Clone(), blur_->Clone(), spread_->Clone(),
+      color_->Clone(), shadow_style_);
 }
 
 InterpolableShadow* InterpolableShadow::RawCloneAndZero() const {
-  return new InterpolableShadow(x_->CloneAndZero(), y_->CloneAndZero(),
-                                blur_->CloneAndZero(), spread_->CloneAndZero(),
-                                color_->CloneAndZero(), shadow_style_);
+  return MakeGarbageCollected<InterpolableShadow>(
+      x_->CloneAndZero(), y_->CloneAndZero(), blur_->CloneAndZero(),
+      spread_->CloneAndZero(), color_->CloneAndZero(), shadow_style_);
 }
 
 void InterpolableShadow::Scale(double scale) {
