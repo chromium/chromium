@@ -220,6 +220,8 @@ def __step_config(ctx, step_config):
                         path.join(win_toolchain_dir, "Windows Kits/10/Include/10.0.22621.0/um/msiquery.h"),
                         # third_party/win_virtual_display/controller includes "Devpropdef.h"
                         path.join(win_toolchain_dir, "Windows Kits/10/Include/10.0.22621.0/shared/Devpropdef.h"),
+                        # third_party/dawn/third_party/dxc/include/dxc/Support/WinIncludes.h "ObjIdl.h"
+                        path.join(win_toolchain_dir, "Windows Kits/10/Include/10.0.22621.0/um/ObjIdl.h"),
                     ],
                 })
                 remote = True
