@@ -492,21 +492,25 @@ void CloudOpenMetrics::CheckForInconsistencies(
                    kUploadNotStartedReauthenticationRequired) {
       ExpectNotLogged(copy_error);
       ExpectNotLogged(move_error);
-      switch (task_result.value) {
-        case OfficeTaskResult::kFailedToUpload:
-          break;
-        case OfficeTaskResult::kFallbackQuickOffice:
-        case OfficeTaskResult::kFallbackOther:
-        case OfficeTaskResult::kOpened:
-        case OfficeTaskResult::kMoved:
-        case OfficeTaskResult::kCancelledAtConfirmation:
-        case OfficeTaskResult::kFailedToOpen:
-        case OfficeTaskResult::kCopied:
-        case OfficeTaskResult::kCancelledAtFallback:
-        case OfficeTaskResult::kCancelledAtSetup:
-        case OfficeTaskResult::kLocalFileTask:
-          SetWrongValueLogged(task_result);
-          break;
+      ExpectLogged(task_result);
+      // UploadHandler tests don't log TaskResult.
+      if (task_result.logged()) {
+        switch (task_result.value) {
+          case OfficeTaskResult::kFailedToUpload:
+            break;
+          case OfficeTaskResult::kFallbackQuickOffice:
+          case OfficeTaskResult::kFallbackOther:
+          case OfficeTaskResult::kOpened:
+          case OfficeTaskResult::kMoved:
+          case OfficeTaskResult::kCancelledAtConfirmation:
+          case OfficeTaskResult::kFailedToOpen:
+          case OfficeTaskResult::kCopied:
+          case OfficeTaskResult::kCancelledAtFallback:
+          case OfficeTaskResult::kCancelledAtSetup:
+          case OfficeTaskResult::kLocalFileTask:
+            SetWrongValueLogged(task_result);
+            break;
+        }
       }
     }
   }
