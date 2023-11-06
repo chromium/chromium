@@ -1362,9 +1362,8 @@ RenderFrameHost* RenderFrameHost::FromID(int render_process_id,
 
 // static
 RenderFrameHost* RenderFrameHost::FromFrameToken(
-    int process_id,
-    const blink::LocalFrameToken& token) {
-  return RenderFrameHostImpl::FromFrameToken(process_id, token);
+    const GlobalRenderFrameHostToken& frame_token) {
+  return RenderFrameHostImpl::FromFrameToken(frame_token);
 }
 
 // static
@@ -1385,6 +1384,15 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromID(int render_process_id,
                                                  int render_frame_id) {
   return RenderFrameHostImpl::FromID(
       GlobalRenderFrameHostId(render_process_id, render_frame_id));
+}
+
+// static
+RenderFrameHostImpl* RenderFrameHostImpl::FromFrameToken(
+    const GlobalRenderFrameHostToken& global_frame_token,
+    mojo::ReportBadMessageCallback* process_mismatch_callback) {
+  return RenderFrameHostImpl::FromFrameToken(global_frame_token.child_id,
+                                             global_frame_token.frame_token,
+                                             process_mismatch_callback);
 }
 
 // static
@@ -5101,6 +5109,10 @@ RenderWidgetHostView* RenderFrameHostImpl::GetView() {
 
 GlobalRenderFrameHostId RenderFrameHostImpl::GetGlobalId() const {
   return GlobalRenderFrameHostId(GetProcess()->GetID(), GetRoutingID());
+}
+
+GlobalRenderFrameHostToken RenderFrameHostImpl::GetGlobalFrameToken() const {
+  return GlobalRenderFrameHostToken(GetProcess()->GetID(), GetFrameToken());
 }
 
 bool RenderFrameHostImpl::HasPendingCommitNavigation() const {

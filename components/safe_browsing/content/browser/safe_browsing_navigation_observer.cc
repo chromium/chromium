@@ -253,8 +253,9 @@ void SafeBrowsingNavigationObserver::MaybeRecordNewWebContentsForPortalContents(
     content::RenderFrameHost* initiator_frame_host =
         navigation_handle->GetInitiatorFrameToken().has_value()
             ? content::RenderFrameHost::FromFrameToken(
-                  navigation_handle->GetInitiatorProcessId(),
-                  navigation_handle->GetInitiatorFrameToken().value())
+                  content::GlobalRenderFrameHostToken(
+                      navigation_handle->GetInitiatorProcessId(),
+                      navigation_handle->GetInitiatorFrameToken().value()))
             : nullptr;
 
     base::UmaHistogramBoolean(
@@ -377,8 +378,9 @@ void SafeBrowsingNavigationObserver::SetNavigationOutermostMainFrameIds(
     auto* initiator_frame_host =
         navigation_handle->GetInitiatorFrameToken().has_value()
             ? content::RenderFrameHost::FromFrameToken(
-                  navigation_handle->GetInitiatorProcessId(),
-                  navigation_handle->GetInitiatorFrameToken().value())
+                  content::GlobalRenderFrameHostToken(
+                      navigation_handle->GetInitiatorProcessId(),
+                      navigation_handle->GetInitiatorFrameToken().value()))
             : nullptr;
     if (initiator_frame_host) {
       nav_event->initiator_outermost_main_frame_id =
