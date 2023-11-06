@@ -37,7 +37,3 @@ ResultQueue.prototype.pop = function() {
 ResultQueue.prototype.popImmediately = function() {
   return this.queue.length ? this.queue.pop() : null;
 };
-
-function formatError(error) {
-  return error.name + ' - ' + error.message;
-}

@@ -5785,6 +5785,7 @@ data/font_src_local_matching.html
 data/form_that_posts_cross_site.html
 data/form_that_posts_to_echoall.html
 data/form_that_posts_to_echoall_nocache.html
+data/format_error.js
 data/forms/form_controls_browsertest_button.png
 data/forms/form_controls_browsertest_button_android.png
 data/forms/form_controls_browsertest_button_fuchsia.png
