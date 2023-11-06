@@ -10953,6 +10953,7 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/crosapi:crosapi",
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+          "//chrome/browser/ui/webui/ash/shortcut_customization:test_support",
           "//chromeos/ash/components/standalone_browser",
           "//components/app_constants",
           "//device/udev_linux:test_support",

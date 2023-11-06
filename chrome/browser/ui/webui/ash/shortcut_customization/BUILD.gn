@@ -1,0 +1,29 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "shortcut_customization_test_base.cc",
+    "shortcut_customization_test_base.h",
+  ]
+  deps = [
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//ui/base",
+    "//ui/events",
+    "//ui/views",
+  ]
+}
