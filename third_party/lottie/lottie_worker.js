@@ -1638,6 +1638,7 @@ const lottiejs = (function(window) {
             comps[i].layers.__used = true;
             return comps[i].layers;
           }
+          // eslint-disable-next-line no-restricted-syntax
           return JSON.parse(JSON.stringify(comps[i].layers));
         }
         i += 1;
@@ -4417,6 +4418,7 @@ const lottiejs = (function(window) {
   RepeaterModifier.prototype.cloneElements = function(elements) {
     let i;
     const len = elements.length;
+    // eslint-disable-next-line no-restricted-syntax
     const newElements = JSON.parse(JSON.stringify(elements));
     this.resetElements(newElements);
     return newElements;
