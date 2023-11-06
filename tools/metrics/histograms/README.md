@@ -706,7 +706,7 @@ current owners.
 Delete the entry in the histograms.xml file.
 
 * In some cases there may be artifacts that remain, with some examples being:
-  * Empty `<token>` blocks.
+  * Empty `<token>` blocks, or individual `<variant>`s.
   * `<enum>` blocks from enums.xml that are no longer used.
   * Suffix entries in histogram_suffixes_list.xml.
 * Please remove these artifacts if you find them.
