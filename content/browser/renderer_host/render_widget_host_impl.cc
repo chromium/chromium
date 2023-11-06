@@ -1603,14 +1603,6 @@ void RenderWidgetHostImpl::WaitForInputProcessed(
 }
 
 void RenderWidgetHostImpl::WaitForInputProcessed(base::OnceClosure callback) {
-  // TODO(bokan): The RequestPresentationCallback mechanism doesn't seem to
-  // work in OOPIFs. For now, just callback immediately. Remove when fixed.
-  // https://crbug.com/924646.
-  if (GetView()->IsRenderWidgetHostViewChildFrame()) {
-    std::move(callback).Run();
-    return;
-  }
-
   input_router_->WaitForInputProcessed(std::move(callback));
 }
 
