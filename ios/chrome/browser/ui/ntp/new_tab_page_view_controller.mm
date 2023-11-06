@@ -704,10 +704,15 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 }
 
 - (void)omniboxWillResignFirstResponder {
-  if (IsIOSLargeFakeboxEnabled() && [self isFakeboxPinned]) {
-    // Return early to allow the omnibox defocus animation show.
-    return;
+  self.omniboxFocused = NO;
+  if (IsIOSLargeFakeboxEnabled()) {
+    self.headerViewController.view.alpha = 1;
+    if ([self isFakeboxPinned]) {
+      // Return early to allow the omnibox defocus animation show.
+      return;
+    }
   }
+
   [self omniboxDidResignFirstResponder];
 }
 
@@ -716,10 +721,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     return;
   }
 
-  self.omniboxFocused = NO;
-  if (IsIOSLargeFakeboxEnabled()) {
-    self.headerViewController.view.alpha = 1;
-  }
   [self shiftTilesDownForOmniboxDefocus];
 }
 
@@ -888,15 +889,18 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     if (!self.scrolledToMinimumHeight) {
       // Scroll up to pinned position if it is not pinned already, but don't
       // wait for it to finish to focus the omnibox.
+      self.shouldAnimateHeader = NO;
+      __weak __typeof(self) weakSelf = self;
       [UIView animateWithDuration:kMaterialDuration6
-                       animations:^{
-                         self.collectionView.contentOffset =
-                             CGPoint(0, pinnedOffsetBeforeAnimation);
-                         [self resetFakeOmniboxConstraints];
-                       }];
+          animations:^{
+            weakSelf.collectionView.contentOffset =
+                CGPoint(0, pinnedOffsetBeforeAnimation);
+            [weakSelf resetFakeOmniboxConstraints];
+          }
+          completion:^(BOOL finished) {
+            weakSelf.shouldAnimateHeader = YES;
+          }];
     }
-    self.shouldAnimateHeader = NO;
-    self.disableScrollAnimation = NO;
     [self.NTPContentDelegate focusOmnibox];
     [self.headerViewController
         completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:
@@ -973,8 +977,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // Returns YES if scroll should be skipped when focusing the omnibox.
 - (BOOL)shouldSkipScrollToFocusOmnibox {
   return self.scrolledToMinimumHeight ||
-         (IsIOSLargeFakeboxEnabled() &&
-          (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE));
+         (IsIOSLargeFakeboxEnabled() && IsSplitToolbarMode(self));
 }
 
 // Returns the collection view containing all NTP content.
@@ -1075,6 +1078,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
         completion:^(BOOL finished) {
           weakSelf.inhibitScrollPositionUpdates = NO;
           weakSelf.collectionShiftingOffset = 0;
+          weakSelf.headerViewController.view.alpha = 1;
           weakSelf.collectionView.contentOffset = CGPoint(0, yOffset);
           weakSelf.scrolledToMinimumHeight = NO;
         }];
