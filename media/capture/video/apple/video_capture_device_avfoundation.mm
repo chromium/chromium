@@ -1054,9 +1054,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     // the original size, rotated_pixelBuffer need to scale it to its original
     // size by transforming it.
     base::apple::ScopedCFTypeRef<CVPixelBufferRef> rotated_pixelBuffer =
-        _sampleBufferTransformer->Rotate(pixelBuffer);
+        _sampleBufferTransformer->Rotate(pixelBuffer.get());
     base::apple::ScopedCFTypeRef<CVPixelBufferRef> final_pixel_buffer =
-        _sampleBufferTransformer->Transform(rotated_pixelBuffer);
+        _sampleBufferTransformer->Transform(rotated_pixelBuffer.get());
 
 #endif
 

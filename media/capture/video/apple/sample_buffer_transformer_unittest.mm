@@ -397,12 +397,12 @@ TEST_P(SampleBufferTransformerPixelTransferTest,
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
       transformer->Transform(input_sample_buffer.get());
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> roatated_pixel_buffer =
-      transformer->Rotate(output_pixel_buffer);
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(roatated_pixel_buffer));
+      transformer->Rotate(output_pixel_buffer.get());
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(roatated_pixel_buffer.get()));
   EXPECT_EQ(kFullResolutionWidth,
-            CVPixelBufferGetHeight(roatated_pixel_buffer));
+            CVPixelBufferGetHeight(roatated_pixel_buffer.get()));
   EXPECT_EQ(kFullResolutionHeight,
-            CVPixelBufferGetWidth(roatated_pixel_buffer));
+            CVPixelBufferGetWidth(roatated_pixel_buffer.get()));
 }
 #endif
 
