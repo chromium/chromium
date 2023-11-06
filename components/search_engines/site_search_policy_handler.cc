@@ -17,7 +17,9 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/strings/grit/components_strings.h"
 
 namespace policy {
@@ -35,8 +37,8 @@ bool IsSiteSearchPolicyEnabled() {
          base::FeatureList::IsEnabled(omnibox::kSiteSearchSettingsPolicy);
 }
 
-// Converts a site search policy entry |policy_dict| into a dictionary to be
-// saved to prefs, with fields corresponding to |TemplateURLData|.
+// Converts a site search policy entry `policy_dict` into a dictionary to be
+// saved to prefs, with fields corresponding to `TemplateURLData`.
 base::Value SiteSearchDictFromPolicyValue(
     const base::Value::Dict& policy_dict) {
   base::Value::Dict dict;
@@ -92,6 +94,10 @@ const std::string& GetName(const base::Value& provider) {
   return GetField(provider, SiteSearchPolicyHandler::kName);
 }
 
+const std::string& GetUrl(const base::Value& provider) {
+  return GetField(provider, SiteSearchPolicyHandler::kUrl);
+}
+
 bool ShortcutIsEmpty(const std::string& policy_name,
                      const std::string& shortcut,
                      PolicyErrorMap* errors) {
@@ -112,6 +118,17 @@ bool NameIsEmpty(const std::string& policy_name,
   }
 
   errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY);
+  return true;
+}
+
+bool UrlIsEmpty(const std::string& policy_name,
+                const std::string& url,
+                PolicyErrorMap* errors) {
+  if (!url.empty()) {
+    return false;
+  }
+
+  errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY);
   return true;
 }
 
@@ -138,6 +155,44 @@ bool ShortcutStartsWithAtSymbol(const std::string& policy_name,
   errors->AddError(policy_name,
                    IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_STARTS_WITH_AT,
                    shortcut);
+  return true;
+}
+
+bool ShortcutEqualsDefaultSearchProviderKeyword(const std::string& policy_name,
+                                                const std::string& shortcut,
+                                                const PolicyMap& policies,
+                                                PolicyErrorMap* errors) {
+  const base::Value* provider_enabled = policies.GetValue(
+      key::kDefaultSearchProviderEnabled, base::Value::Type::BOOLEAN);
+  const base::Value* provider_keyword = policies.GetValue(
+      key::kDefaultSearchProviderKeyword, base::Value::Type::STRING);
+  // Ignore if `DefaultSearchProviderEnabled` is not set, invalid, or disabled.
+  // Ignore if `DefaultSearchProviderKeyword` is not set, invalid, or different
+  // from `shortcut`.
+  if (!provider_enabled || !provider_enabled->GetBool() || !provider_keyword ||
+      shortcut != provider_keyword->GetString()) {
+    return false;
+  }
+
+  errors->AddError(policy_name,
+                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD,
+                   shortcut);
+  return true;
+}
+
+bool ReplacementStringIsMissingFromUrl(const std::string& policy_name,
+                                       const std::string& url,
+                                       PolicyErrorMap* errors) {
+  TemplateURLData data;
+  data.SetURL(url);
+  SearchTermsData search_terms_data;
+  if (TemplateURL(data).SupportsReplacement(search_terms_data)) {
+    return false;
+  }
+
+  errors->AddError(
+      policy_name,
+      IDS_POLICY_SITE_SEARCH_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT, url);
   return true;
 }
 
@@ -208,15 +263,18 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   base::flat_set<std::string> duplicated_shortcuts;
   for (const base::Value& provider : site_search_providers) {
     const std::string& shortcut = GetShortcut(provider);
-
-    // TODO(b/306201833): Implement remaining validation rules.
+    const std::string& url = GetUrl(provider);
 
     if (ShortcutIsEmpty(policy_name(), shortcut, errors) ||
         NameIsEmpty(policy_name(), GetName(provider), errors) ||
+        UrlIsEmpty(policy_name(), url, errors) ||
         ShortcutHasWhitespace(policy_name(), shortcut, errors) ||
         ShortcutStartsWithAtSymbol(policy_name(), shortcut, errors) ||
+        ShortcutEqualsDefaultSearchProviderKeyword(policy_name(), shortcut,
+                                                   policies, errors) ||
         ShortcutAlreadySeen(policy_name(), shortcut, shortcuts_already_seen,
-                            errors, &duplicated_shortcuts)) {
+                            errors, &duplicated_shortcuts) ||
+        ReplacementStringIsMissingFromUrl(policy_name(), url, errors)) {
       ignored_shortcuts_.insert(shortcut);
     }
 
