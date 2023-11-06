@@ -196,15 +196,16 @@ public class HistoryNavigationCoordinator
      * Initialize or reset {@link NavigationHandler} using the enabled state.
      */
     private void updateNavigationHandler() {
-        if (mEnabled) {
-            WebContents webContents = mTab != null ? mTab.getWebContents() : null;
+        // Check against |mActivityLifecycleDisptacher| prevents the flow after the destruction.
+        if (!mEnabled || mActivityLifecycleDispatcher == null) return;
 
-            // Also updates NavigationHandler when tab == null (going into TabSwitcher,
-            // or StartSurface homepage is shown).
-            if (mTab == null || webContents != null) {
-                if (mNavigationHandler == null) initNavigationHandler();
-                mNavigationHandler.setTab(isDetached(mTab) ? null : mTab);
-            }
+        WebContents webContents = mTab != null ? mTab.getWebContents() : null;
+
+        // Also updates NavigationHandler when tab == null (going into TabSwitcher,
+        // or StartSurface homepage is shown).
+        if (mTab == null || webContents != null) {
+            if (mNavigationHandler == null) initNavigationHandler();
+            mNavigationHandler.setTab(isDetached(mTab) ? null : mTab);
         }
     }
 
