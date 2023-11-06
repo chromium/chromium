@@ -75,7 +75,7 @@
 
     // text (see also the CanvasDrawingStyles interface)
     [HighEntropy] void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
-    void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
+    [HighEntropy] void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [HighEntropy, MeasureAs=OffscreenCanvasMeasureText] TextMetrics measureText(DOMString text);
 
     // drawing images

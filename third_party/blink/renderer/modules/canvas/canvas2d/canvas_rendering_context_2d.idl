@@ -125,7 +125,7 @@ interface CanvasRenderingContext2D {
 
     // text (see also the CanvasDrawingStyles interface)
     [HighEntropy] void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
-    void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
+    [HighEntropy] void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [HighEntropy] TextMetrics measureText(DOMString text);
 
     // Render entire FormattedText with line wrapping (one-shot)
