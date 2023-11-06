@@ -610,8 +610,28 @@ uint64_t av1_wedge_sse_from_residuals_c(const int16_t *r1, const int16_t *d, con
 uint64_t av1_wedge_sse_from_residuals_neon(const int16_t *r1, const int16_t *d, const uint8_t *m, int N);
 #define av1_wedge_sse_from_residuals av1_wedge_sse_from_residuals_neon
 
-void av1_wiener_convolve_add_src_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h, const ConvolveParams *conv_params);
-void av1_wiener_convolve_add_src_neon(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h, const ConvolveParams *conv_params);
+void av1_wiener_convolve_add_src_c(const uint8_t* src,
+                                   ptrdiff_t src_stride,
+                                   uint8_t* dst,
+                                   ptrdiff_t dst_stride,
+                                   const int16_t* filter_x,
+                                   int x_step_q4,
+                                   const int16_t* filter_y,
+                                   int y_step_q4,
+                                   int w,
+                                   int h,
+                                   const WienerConvolveParams* conv_params);
+void av1_wiener_convolve_add_src_neon(const uint8_t* src,
+                                      ptrdiff_t src_stride,
+                                      uint8_t* dst,
+                                      ptrdiff_t dst_stride,
+                                      const int16_t* filter_x,
+                                      int x_step_q4,
+                                      const int16_t* filter_y,
+                                      int y_step_q4,
+                                      int w,
+                                      int h,
+                                      const WienerConvolveParams* conv_params);
 #define av1_wiener_convolve_add_src av1_wiener_convolve_add_src_neon
 
 void cdef_copy_rect8_16bit_to_16bit_c(uint16_t *dst, int dstride, const uint16_t *src, int sstride, int width, int height);
