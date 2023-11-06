@@ -260,7 +260,8 @@ TEST_F(FencedFrameReporterTest, NoReportNoMap) {
       shared_url_loader_factory(), browser_context(),
       /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
       main_frame_origin_,
-      /*winner_origin=*/report_destination_origin_);
+      /*winner_origin=*/report_destination_origin_,
+      /*winner_aggregation_coordinator_origin=*/absl::nullopt);
   EXPECT_FALSE(reporter->SendReport(
       DestinationEnumEvent("event_type", "event_data"),
       blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl,
@@ -410,6 +411,7 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsAfterMapsReceived) {
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/{{report_destination_origin_}});
 
   // Receive all mappings.
@@ -485,6 +487,7 @@ TEST_F(FencedFrameReporterTest, SendReportsFledgeBeforeMapsReceived) {
           /*direct_seller_is_seller=*/true, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/{{report_destination_origin_}});
 
   // Make reports. They should be queued, since mappings haven't been received
@@ -580,6 +583,7 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsBeforeMapsReceivedWithErrors) {
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/{{report_destination_origin_}});
 
   // SendReport() is called, and then a mapping is received that doesn't have
@@ -644,6 +648,7 @@ TEST_F(FencedFrameReporterTest, CustomDestinationURLNoOrEmptyAllowlist) {
             /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
             main_frame_origin_,
             /*winner_origin=*/report_destination_origin_,
+            /*winner_aggregation_coordinator_origin=*/absl::nullopt,
             /*allowed_reporting_origins=*/test_case);
 
     // Receive buyer mapping.
@@ -679,6 +684,7 @@ TEST_F(FencedFrameReporterTest, CustomDestinationURLNoAdMacroMap) {
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/{});
 
   // Receive a buyer mapping whose `reporting_ad_macro_map` is absl::nullopt.
@@ -712,6 +718,7 @@ TEST_F(FencedFrameReporterTest, CustomDestinationURLEmptyAdMacroMap) {
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/
           {{report_destination_origin_}});
 
@@ -749,6 +756,7 @@ TEST_F(FencedFrameReporterTest, CustomDestinationURLCompleteMacroSubstitution) {
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/
           {{report_destination_origin_}});
 
@@ -790,6 +798,7 @@ TEST_F(FencedFrameReporterTest, CustomDestinationURLPartialMacroSubstitution) {
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/
           {{report_destination_origin_}});
 
@@ -831,6 +840,7 @@ TEST_F(FencedFrameReporterTest, CustomDestinationURLNestedMacro) {
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/
           {{report_destination_origin_}});
 
@@ -871,6 +881,7 @@ TEST_F(FencedFrameReporterTest, CustomDestinationHTTPURL) {
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/
           {{report_destination_origin_}});
 
@@ -908,6 +919,7 @@ TEST_F(FencedFrameReporterTest, CustomDestinationInvalidURL) {
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/
           {{report_destination_origin_}});
 
@@ -946,6 +958,7 @@ TEST_F(FencedFrameReporterTest, CustomDestinationInvalidURLAfterMacros) {
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/
           {{report_destination_origin_}});
 
@@ -986,6 +999,7 @@ TEST_F(FencedFrameReporterTest, CustomDestinationURLAllowlist) {
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
           /*allowed_reporting_origins=*/
           {{report_destination_origin_, report_destination2_origin_}});
 
@@ -1095,7 +1109,8 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsNoMapReceived) {
             shared_url_loader_factory(), browser_context(),
             /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
             main_frame_origin_,
-            /*winner_origin=*/report_destination_origin_);
+            /*winner_origin=*/report_destination_origin_,
+            /*winner_aggregation_coordinator_origin=*/absl::nullopt);
 
     // SendReport() is called, but a mapping is never received.
     std::string error_message;
@@ -1118,7 +1133,8 @@ TEST_F(FencedFrameReporterTest, FledgeEventsReceivedAfterRequestsReady) {
           shared_url_loader_factory(), browser_context(),
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
-          /*winner_origin=*/report_destination_origin_);
+          /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt);
 
   // Receive all non-reserved private aggregation requests.
   std::map<std::string, PrivateAggregationRequests>
@@ -1203,7 +1219,8 @@ TEST_F(FencedFrameReporterTest, FledgeEventsReceivedBeforeRequestsReady) {
           shared_url_loader_factory(), browser_context(),
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
-          /*winner_origin=*/report_destination_origin_);
+          /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt);
 
   // Calls SendPrivateAggregationRequestsForEvent() with event types. The event
   // types should be queued, since non-reserved private aggregation requests
@@ -1294,7 +1311,8 @@ TEST_F(FencedFrameReporterTest, FledgeEventsReceivedUnexpectedly) {
           shared_url_loader_factory(), browser_context(),
           /*direct_seller_is_seller=*/false,
           /*private_aggregation_manager=*/nullptr, main_frame_origin_,
-          /*winner_origin=*/report_destination_origin_);
+          /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt);
 
   // Calls SendPrivateAggregationRequestsForEvent() with "event_type".
   // "event_type" should be ignored and not be queued.

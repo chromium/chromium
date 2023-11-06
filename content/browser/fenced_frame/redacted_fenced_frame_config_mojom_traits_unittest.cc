@@ -495,7 +495,8 @@ TEST_F(FencedFrameConfigMojomTraitsTest,
       /*direct_seller_is_seller=*/false,
       /*private_aggregation_manager=*/nullptr,
       /*main_frame_origin=*/url::Origin(),
-      /*winner_origin=*/url::Origin());
+      /*winner_origin=*/url::Origin(),
+      /*winner_aggregation_coordinator_origin=*/absl::nullopt);
   input_properties = properties.RedactFor(FencedFrameEntity::kEmbedder);
   EXPECT_TRUE(input_properties.has_fenced_frame_reporting());
   mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameProperties>(

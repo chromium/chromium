@@ -216,6 +216,7 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
     PrivateAggregationManager* private_aggregation_manager,
     const url::Origin& main_frame_origin,
     const url::Origin& winner_origin,
+    const absl::optional<url::Origin>& aggregation_coordinator_origin,
     const absl::optional<std::vector<url::Origin>>& allowed_reporting_origins) {
   scoped_refptr<FencedFrameReporter> reporter =
       base::MakeRefCounted<FencedFrameReporter>(
@@ -223,7 +224,7 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
           PrivacySandboxInvokingAPI::kProtectedAudience,
           std::move(url_loader_factory), browser_context, main_frame_origin,
           private_aggregation_manager, winner_origin,
-          allowed_reporting_origins);
+          aggregation_coordinator_origin, allowed_reporting_origins);
   reporter->direct_seller_is_seller_ = direct_seller_is_seller;
   reporter->reporting_metadata_.emplace(
       blink::FencedFrame::ReportingDestination::kBuyer,
@@ -245,6 +246,7 @@ FencedFrameReporter::FencedFrameReporter(
     const url::Origin& main_frame_origin,
     PrivateAggregationManager* private_aggregation_manager,
     const absl::optional<url::Origin>& winner_origin,
+    const absl::optional<url::Origin>& winner_aggregation_coordinator_origin,
     const absl::optional<std::vector<url::Origin>>& allowed_reporting_origins)
     : url_loader_factory_(std::move(url_loader_factory)),
       attribution_manager_(
@@ -253,6 +255,8 @@ FencedFrameReporter::FencedFrameReporter(
       main_frame_origin_(main_frame_origin),
       private_aggregation_manager_(private_aggregation_manager),
       winner_origin_(winner_origin),
+      winner_aggregation_coordinator_origin_(
+          winner_aggregation_coordinator_origin),
       allowed_reporting_origins_(allowed_reporting_origins),
       invoking_api_(invoking_api) {
   DCHECK(url_loader_factory_);
@@ -768,7 +772,9 @@ void FencedFrameReporter::SendPrivateAggregationRequestsForEventInternal(
 
   SplitContributionsIntoBatchesThenSendToHost(
       /*requests=*/std::move(it->second), *private_aggregation_manager_,
-      /*reporting_origin=*/winner_origin_.value(), main_frame_origin_);
+      /*reporting_origin=*/winner_origin_.value(),
+      /*aggregation_coordinator_origin=*/winner_aggregation_coordinator_origin_,
+      main_frame_origin_);
 
   // Remove the entry of key `pa_event_type` from
   // `private_aggregation_event_map_` to avoid possibly sending the same

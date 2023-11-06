@@ -95,6 +95,27 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     kMaxValue = kNotStarted
   };
 
+  // Key used to group Private aggregation signals.
+  struct CONTENT_EXPORT PrivateAggregationKey {
+    PrivateAggregationKey(
+        url::Origin reporting_origin,
+        absl::optional<url::Origin> aggregation_coordinator_origin);
+    PrivateAggregationKey(const PrivateAggregationKey&);
+    PrivateAggregationKey& operator=(const PrivateAggregationKey&);
+    PrivateAggregationKey(PrivateAggregationKey&&);
+    PrivateAggregationKey& operator=(PrivateAggregationKey&&);
+    ~PrivateAggregationKey();
+
+    bool operator<(const PrivateAggregationKey& other) const {
+      return std::tie(reporting_origin, aggregation_coordinator_origin) <
+             std::tie(other.reporting_origin,
+                      other.aggregation_coordinator_origin);
+    }
+
+    url::Origin reporting_origin;
+    absl::optional<url::Origin> aggregation_coordinator_origin;
+  };
+
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
@@ -235,7 +256,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       std::vector<GURL> debug_win_report_urls,
       std::vector<GURL> debug_loss_report_urls,
       base::flat_set<std::string> k_anon_keys_to_join,
-      std::map<url::Origin, PrivateAggregationRequests>
+      std::map<PrivateAggregationKey, PrivateAggregationRequests>
           private_aggregation_requests_reserved,
       std::map<std::string, PrivateAggregationRequests>
           private_aggregation_requests_non_reserved);
@@ -300,7 +321,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       PrivateAggregationManager* private_aggregation_manager,
       const url::Origin& main_frame_origin,
       std::map<
-          url::Origin,
+          PrivateAggregationKey,
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
           private_aggregation_requests);
 
@@ -488,7 +509,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // Stores all pending Private Aggregation API report requests until they have
   // been flushed. Keyed by the origin of the script that issued the request
   // (i.e. the reporting origin).
-  std::map<url::Origin, PrivateAggregationRequests>
+  std::map<PrivateAggregationKey, PrivateAggregationRequests>
       private_aggregation_requests_reserved_;
   std::map<std::string, PrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;

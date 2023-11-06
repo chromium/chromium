@@ -9306,6 +9306,177 @@ function scoreAd(
   InvokeCallbackForURN(*auction_result);
 }
 
+class AdAuctionServiceImplPrivateAggregationMultiCloudTest
+    : public AdAuctionServiceImplPrivateAggregationEnabledTest {
+ public:
+  AdAuctionServiceImplPrivateAggregationMultiCloudTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {blink::features::kPrivateAggregationApiMultipleCloudProviders,
+         aggregation_service::kAggregationServiceMultipleCloudProviders},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AdAuctionServiceImplPrivateAggregationMultiCloudTest,
+       PrivateAggregationReportsForwarded) {
+  // Add a mock to intercept calls to the PrivateAggregationHost.
+  class MockPrivateAggregationHost : public PrivateAggregationHost {
+   public:
+    MockPrivateAggregationHost(
+        base::RepeatingCallback<void(const absl::optional<url::Origin>&,
+                                     const url::Origin&)> check_coordinator,
+        base::RepeatingCallback<void(
+            ReportRequestGenerator,
+            std::vector<blink::mojom::AggregatableReportHistogramContribution>,
+            PrivateAggregationBudgetKey,
+            PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+            on_report_request_details_received,
+        content::BrowserContext* browser_context)
+        : PrivateAggregationHost(std::move(on_report_request_details_received),
+                                 browser_context),
+          check_coordinator_(std::move(check_coordinator)) {
+      ON_CALL(*this, BindNewReceiver)
+          .WillByDefault(
+              [this](url::Origin worklet_origin, url::Origin top_frame_origin,
+                     PrivateAggregationBudgetKey::Api api_for_budgeting,
+                     absl::optional<std::string> context_id,
+                     absl::optional<base::TimeDelta> timeout,
+                     absl::optional<url::Origin> aggregation_coordinator_origin,
+                     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
+                         pending_receiver) -> bool {
+                check_coordinator_.Run(aggregation_coordinator_origin,
+                                       worklet_origin);
+                return PrivateAggregationHost::BindNewReceiver(
+                    std::move(worklet_origin), std::move(top_frame_origin),
+                    api_for_budgeting, std::move(context_id), timeout,
+                    std::move(aggregation_coordinator_origin),
+                    std::move(pending_receiver));
+              });
+    }
+
+    ~MockPrivateAggregationHost() override = default;
+
+    MOCK_METHOD(bool,
+                BindNewReceiver,
+                (url::Origin,
+                 url::Origin,
+                 PrivateAggregationBudgetKey::Api,
+                 absl::optional<std::string>,
+                 absl::optional<base::TimeDelta>,
+                 absl::optional<url::Origin>,
+                 mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
+                (override));
+
+   private:
+    base::RepeatingCallback<void(const absl::optional<url::Origin>&,
+                                 const url::Origin&)>
+        check_coordinator_;
+  };
+
+  class TestPrivateAggregationManagerImpl
+      : public PrivateAggregationManagerImpl {
+   public:
+    TestPrivateAggregationManagerImpl(
+        std::unique_ptr<PrivateAggregationBudgeter> budgeter,
+        std::unique_ptr<PrivateAggregationHost> host)
+        : PrivateAggregationManagerImpl(std::move(budgeter),
+                                        std::move(host),
+                                        /*storage_partition=*/nullptr) {}
+  };
+
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+
+function reportWin() {}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+      privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
+  return bid;
+}
+
+function reportResult() {}
+)";
+
+  const url::Origin kAwsAggCoordinator = url::Origin::Create(
+      GURL(aggregation_service::kDefaultAggregationCoordinatorAwsCloud));
+
+  base::RunLoop run_loop;
+  base::RepeatingCallback<void(const absl::optional<url::Origin>&,
+                               const url::Origin&)>
+      check_coordinator = base::BindLambdaForTesting(
+          [&](const absl::optional<url::Origin>& got_coordinator,
+              const url::Origin& got_worklet) {
+            EXPECT_EQ(kAwsAggCoordinator, got_coordinator);
+            run_loop.Quit();
+          });
+
+  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  auto mock_private_aggregation_host = std::make_unique<
+      MockPrivateAggregationHost>(
+      std::move(check_coordinator),
+      /*on_report_request_received=*/
+      base::BindRepeating(
+          [](PrivateAggregationHost::ReportRequestGenerator generator,
+             std::vector<blink::mojom::AggregatableReportHistogramContribution>
+                 contributions,
+             PrivateAggregationBudgetKey budget_key,
+             PrivateAggregationBudgeter::BudgetDeniedBehavior
+                 budget_denied_behavior) {
+            AggregatableReportRequest request =
+                std::move(generator).Run(contributions);
+          }),
+      /*browser_context=*/
+      storage_partition_impl->browser_context());
+  MockPrivateAggregationHost* private_aggregation_host =
+      mock_private_aggregation_host.get();
+  storage_partition_impl->OverridePrivateAggregationManagerForTesting(
+      std::make_unique<TestPrivateAggregationManagerImpl>(
+          std::make_unique<MockPrivateAggregationBudgeter>(),
+          std::move(mock_private_aggregation_host)));
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.priority = 2;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+
+  interest_group.aggregation_coordinator_origin = kAwsAggCoordinator;
+  JoinInterestGroupAndFlush(interest_group);
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.aggregation_coordinator_origin = kAwsAggCoordinator;
+
+  EXPECT_CALL(*private_aggregation_host, BindNewReceiver);
+
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
+  run_loop.Run();
+}
+
 class AdAuctionServiceImplPrivateAggregationDisabledTest
     : public AdAuctionServiceImplTest {
  public:

@@ -75,6 +75,7 @@ CONTENT_EXPORT void SplitContributionsIntoBatchesThenSendToHost(
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests,
     PrivateAggregationManager& pa_manager,
     const url::Origin& reporting_origin,
+    absl::optional<url::Origin> aggregation_coordinator_origin,
     const url::Origin& main_frame_origin);
 
 }  // namespace content
