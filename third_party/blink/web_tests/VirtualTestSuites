@@ -57,7 +57,7 @@
     "prefix": "pna-iframes-enabled",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--enable-features=PrivateNetworkAccessForIframes",
+    "args": ["--enable-features=PrivateNetworkAccessForIframes,CorsSafelistedHeaderValueSizeRelaxed",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jan 1, 2024"
@@ -66,7 +66,7 @@
     "prefix": "pna-iframes-warning",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--enable-features=PrivateNetworkAccessForIframes,PrivateNetworkAccessForIframesWarningOnly",
+    "args": ["--enable-features=PrivateNetworkAccessForIframes,PrivateNetworkAccessForIframesWarningOnly,CorsSafelistedHeaderValueSizeRelaxed",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jan 1, 2024"

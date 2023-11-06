@@ -100,7 +100,7 @@ function makePreflightTests({
     source,
     target: {
       server: targetServer,
-      behavior: { preflight: PreflightBehavior.success(token()) },
+      behavior: { preflight: PreflightBehavior.navigation(token()) },
     },
     expected: FrameTestResult.SUCCESS,
   }), prefix + "success.");
@@ -242,7 +242,7 @@ subsetTestByKey('grandparent', iframeGrandparentTest, {
   grandparentServer: Server.HTTPS_PUBLIC,
   child: {
     server: Server.HTTPS_LOCAL,
-    behavior: { preflight: PreflightBehavior.success(token()) },
+    behavior: { preflight: PreflightBehavior.navigation(token()) },
   },
   grandchild: {
     server: Server.HTTPS_LOCAL,
@@ -256,11 +256,11 @@ subsetTestByKey('grandparent', iframeGrandparentTest, {
   grandparentServer: Server.HTTPS_PUBLIC,
   child: {
     server: Server.HTTPS_LOCAL,
-    behavior: { preflight: PreflightBehavior.success(token()) },
+    behavior: { preflight: PreflightBehavior.navigation(token()) },
   },
   grandchild: {
     server: Server.HTTPS_LOCAL,
-    behavior: { preflight: PreflightBehavior.success(token()) },
+    behavior: { preflight: PreflightBehavior.navigation(token()) },
   },
   expected: FrameTestResult.SUCCESS,
 });

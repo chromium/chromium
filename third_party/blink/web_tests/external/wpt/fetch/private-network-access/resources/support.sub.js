@@ -269,6 +269,13 @@ const PreflightBehavior = {
     "preflight-headers": "cors+pna",
     "expect-single-preflight": true,
   }),
+
+  // The preflight response should succeed and allow origins and headers for
+  // navigations.
+  navigation: (uuid) => ({
+    "preflight-uuid": uuid,
+    "preflight-headers": "navigation",
+  }),
 };
 
 // Methods generate behavior specifications for how `resources/preflight.py`

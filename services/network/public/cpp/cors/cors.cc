@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
@@ -34,6 +35,10 @@
 namespace network {
 
 namespace {
+
+BASE_FEATURE(kCorsSafelistedHeaderValueSizeRelaxed,
+             "CorsSafelistedHeaderValueSizeRelaxed",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kAsterisk[] = "*";
 const char kLowerCaseTrue[] = "true";
@@ -277,10 +282,14 @@ bool IsCorsSafelistedContentType(const std::string& media_type) {
 
 bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
   const std::string lower_name = base::ToLowerASCII(name);
+  const size_t kValueLimit =
+      base::FeatureList::IsEnabled(kCorsSafelistedHeaderValueSizeRelaxed) ? 256
+                                                                          : 128;
 
   // If |value|’s length is greater than 128, then return false.
-  if (value.size() > 128)
+  if (value.size() > kValueLimit) {
     return false;
+  }
 
   // CORS-Safelisted headers are the only headers permitted in a CORS request.
   static constexpr auto safe_names = base::MakeFixedFlatSet<base::StringPiece>({
