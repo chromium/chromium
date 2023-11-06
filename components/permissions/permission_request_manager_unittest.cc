@@ -1869,6 +1869,36 @@ TEST_F(PermissionRequestManagerTest, MultipleSimultaneous2Low2HighRequests) {
   EXPECT_TRUE(request1_.granted());
 }
 
+TEST_F(PermissionRequestManagerTest, PEPCRequestNeverQuiet) {
+  manager_->clear_permission_ui_selector_for_testing();
+  MockNotificationPermissionUiSelector::CreateForManager(
+      manager_, PermissionUiSelector::QuietUiReason::kEnabledInPrefs,
+      absl::nullopt /* async_delay */);
+
+  // PEPC request is not quieted by selector.
+  MockPermissionRequest pepc_request(
+      RequestType::kNotifications,
+      /*embedded_permission_element_initiated=*/true);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &pepc_request);
+  WaitForBubbleToBeShown();
+
+  ASSERT_TRUE(prompt_factory_->is_visible());
+  ASSERT_TRUE(prompt_factory_->RequestTypeSeen(pepc_request.request_type()));
+  EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
+  Accept();
+
+  // Regular request is quieted by selector.
+  MockPermissionRequest request(RequestType::kNotifications,
+                                PermissionRequestGestureType::GESTURE);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request);
+  WaitForBubbleToBeShown();
+
+  ASSERT_TRUE(prompt_factory_->is_visible());
+  ASSERT_TRUE(prompt_factory_->RequestTypeSeen(request.request_type()));
+  EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
+  Accept();
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace permissions
