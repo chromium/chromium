@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,7 +23,6 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/common/renderer_configuration.mojom.h"
-#include "components/signin/public/base/test_signin_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -36,6 +35,9 @@
 #include "url/origin.h"
 
 namespace {
+using SessionTerminationTrigger =
+    BoundSessionCookieRefreshServiceImpl::SessionTerminationTrigger;
+
 constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
 constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
 const char kSessionTerminationHeader[] = "Sec-Session-Google-Termination";
@@ -198,9 +200,15 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
         begin, end);
   }
 
-  void SimulateTerminateSession() {
+  void SimulateTerminateSession(SessionTerminationTrigger trigger) {
     CHECK(cookie_refresh_service_);
-    cookie_refresh_service_->TerminateSession();
+    cookie_refresh_service_->TerminateSession(trigger);
+  }
+
+  void VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger trigger) {
+    histogram_tester_.ExpectUniqueSample(
+        "Signin.BoundSessionCredentials.SessionTerminationTrigger", trigger, 1);
   }
 
   void ResetCookieRefreshService() { cookie_refresh_service_.reset(); }
@@ -274,10 +282,13 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     return params;
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<BoundSessionParamsStorage> test_storage_;
   content::TestStoragePartition storage_partition_;
@@ -390,7 +401,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
     VerifyNoBoundSession();
   });
-  SimulateTerminateSession();
+  SimulateTerminateSession(
+      SessionTerminationTrigger::kSessionTerminationHeader);
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 }
 
@@ -399,8 +411,11 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, TerminateSession) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_TRUE(service->GetBoundSessionThrottlerParams());
 
-  SimulateTerminateSession();
+  SimulateTerminateSession(
+      SessionTerminationTrigger::kSessionTerminationHeader);
   VerifyNoBoundSession();
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kSessionTerminationHeader);
 
   // Verify prefs were cleared.
   // Ensure on next startup, there won't be a bound session.
@@ -421,6 +436,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   cookie_controller()->SimulateOnPersistentErrorEncountered();
 
   VerifyNoBoundSession();
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kCookieRotationPersistentError);
 
   // Verify prefs were cleared.
   // Ensure on next startup, there won't be a bound session.
@@ -440,6 +457,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->MaybeTerminateSession(headers.get());
   VerifyNoBoundSession();
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kSessionTerminationHeader);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -452,6 +471,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->MaybeTerminateSession(headers.get());
   VerifyBoundSession(CreateTestBoundSessionParams());
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -463,6 +484,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->MaybeTerminateSession(headers.get());
   VerifyBoundSession(CreateTestBoundSessionParams());
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -509,6 +532,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, OverrideExistingBoundSession) {
   service->RegisterNewBoundSession(new_params);
 
   VerifyBoundSession(new_params);
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kSessionOverride);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -523,6 +548,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
   // Original session should not be modified.
   VerifyBoundSession(original_params);
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest, ClearMatchingData) {
@@ -532,6 +559,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, ClearMatchingData) {
   ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
                   url::Origin::Create(kTestGoogleURL));
   VerifyNoBoundSession();
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kCookiesCleared);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -543,6 +572,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE,
                   url::Origin::Create(kTestGoogleURL));
   VerifyBoundSession(params);
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -554,6 +585,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
                   url::Origin::Create(GURL("https://example.org")));
   VerifyBoundSession(params);
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -565,6 +598,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
                   url::Origin::Create(GURL("https://accounts.google.com")));
   VerifyBoundSession(params);
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -578,4 +613,6 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
                   base::Time::Now() - base::Seconds(5),
                   base::Time::Now() - base::Seconds(3));
   VerifyBoundSession(params);
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
 }

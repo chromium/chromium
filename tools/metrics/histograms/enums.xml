@@ -72198,6 +72198,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="SessionTerminationTrigger">
+  <int value="0" label="Cookie rotation persistent error"/>
+  <int value="1" label="Cookies cleared"/>
+  <int value="2" label="Session termination header"/>
+  <int value="3" label="Session override"/>
+</enum>
+
 <enum name="SessionType">
   <int value="0" label="Existing Regular"/>
   <int value="1" label="Guest"/>

@@ -37,6 +37,16 @@ class BoundSessionCookieRefreshServiceImpl
       public BoundSessionCookieController::Delegate,
       public content::StoragePartition::DataRemovalObserver {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SessionTerminationTrigger {
+    kCookieRotationPersistentError = 0,
+    kCookiesCleared = 1,
+    kSessionTerminationHeader = 2,
+    kSessionOverride = 3,
+    kMaxValue = kSessionOverride,
+  };
+
   explicit BoundSessionCookieRefreshServiceImpl(
       unexportable_keys::UnexportableKeyService& key_service,
       std::unique_ptr<BoundSessionParamsStorage> session_params_storage,
@@ -118,7 +128,8 @@ class BoundSessionCookieRefreshServiceImpl
 
   // Terminates ongoing device bound session, clears the session params from
   // storage and updates all renderers.
-  void TerminateSession();
+  void TerminateSession(SessionTerminationTrigger trigger);
+  void RecordSessionTerminationTrigger(SessionTerminationTrigger trigger);
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   // Never null. Stored as `std::unique_ptr` for polymorphism.
