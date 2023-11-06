@@ -19,6 +19,7 @@
 #include "chrome/test/base/web_ui_test_data_source.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/page_type.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
@@ -40,12 +41,20 @@ bool WaitForTestToFinish(content::WebContents* web_contents) {
 }  // namespace
 
 WebUIMochaBrowserTest::WebUIMochaBrowserTest()
-    : test_loader_host_(chrome::kChromeUIWebUITestHost) {}
+    : test_loader_host_(chrome::kChromeUIWebUITestHost),
+      test_loader_scheme_(content::kChromeUIScheme) {}
 
 WebUIMochaBrowserTest::~WebUIMochaBrowserTest() = default;
 
 void WebUIMochaBrowserTest::set_test_loader_host(const std::string& host) {
   test_loader_host_ = host;
+}
+
+void WebUIMochaBrowserTest::set_test_loader_scheme(const std::string& scheme) {
+  // Only chrome:// and chrome-untrusted:// are supported.
+  CHECK(scheme == content::kChromeUIScheme ||
+        scheme == content::kChromeUIUntrustedScheme);
+  test_loader_scheme_ = scheme;
 }
 
 content::WebContents* WebUIMochaBrowserTest::GetWebContentsForSetup() {
@@ -64,7 +73,12 @@ void WebUIMochaBrowserTest::SetUpOnMainThread() {
   content::WebContents* web_contents = GetWebContentsForSetup();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  webui::CreateAndAddWebUITestDataSource(profile);
+  if (test_loader_scheme_ == content::kChromeUIScheme) {
+    webui::CreateAndAddWebUITestDataSource(profile);
+  } else {
+    // Must be untrusted
+    webui::CreateAndAddUntrustedWebUITestDataSource(profile);
+  }
 
   // Necessary setup for reporting code coverage metrics.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -93,9 +107,9 @@ void WebUIMochaBrowserTest::RunTest(const std::string& file,
   // Construct URL to load the test module file.
   GURL url(
       skip_test_loader
-          ? std::string("chrome://" + test_loader_host_)
+          ? std::string(test_loader_scheme_ + "://" + test_loader_host_)
           : std::string(
-                "chrome://" + test_loader_host_ +
+                test_loader_scheme_ + "://" + test_loader_host_ +
                 "/test_loader.html?adapter=mocha_adapter_simple.js&module=") +
                 file);
 
@@ -178,8 +192,8 @@ testing::AssertionResult WebUIMochaBrowserTest::SimulateTestLoader(
   std::string loadMochaScript(base::StringPrintf(
       R"(
 async function load() {
-  await import('chrome://%s/mocha.js');
-  await import('chrome://%s/mocha_adapter_simple.js');
+  await import('//%s/mocha.js');
+  await import('//%s/mocha_adapter_simple.js');
 }
 load();
 )",
@@ -192,9 +206,8 @@ load();
   }
 
   // Step 2: Programmatically loads the Mocha test file.
-  std::string loadTestModuleScript(
-      base::StringPrintf("import('chrome://%s/%s');",
-                         chrome::kChromeUIWebUITestHost, file.c_str()));
+  std::string loadTestModuleScript(base::StringPrintf(
+      "import('//%s/%s');", chrome::kChromeUIWebUITestHost, file.c_str()));
   return ExecJs(web_contents->GetPrimaryMainFrame(), loadTestModuleScript);
 }
 

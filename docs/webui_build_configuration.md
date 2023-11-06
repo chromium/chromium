@@ -650,6 +650,10 @@ to from other parts of the build.
 
 #### **Arguments**
 ```
+is_chrome_untrusted: Set to true if testing a chrome-untrusted:// UI. Optional
+                     parameter. Allows importing shared test files from
+                     chrome-untrusted://webui-test/ instead of
+                     chrome://webui-test.
 
 List of files params:
 files: Required parameter. List of all test related files.

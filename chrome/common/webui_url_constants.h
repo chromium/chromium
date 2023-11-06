@@ -280,6 +280,7 @@ extern const char kChromeUIUserNotesSidePanelURL[];
 extern const char kChromeUIWebAppInternalsHost[];
 extern const char kChromeUIWebAppInternalsURL[];
 extern const char kChromeUIWebUITestHost[];
+extern const char kChromeUIUntrustedWebUITestURL[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
