@@ -487,13 +487,13 @@ class DevToolsBeforeUnloadTest : public DevToolsTest {
   }
 
   void OpenDevToolsPopupWindow(DevToolsWindow* devtools_window) {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
     ASSERT_TRUE(content::ExecJs(
         DevToolsWindowTesting::Get(devtools_window)->main_web_contents(),
         "window.open(\"\", \"\", \"location=0\");"));
-    observer.Wait();
+    Browser* popup_browser = BrowserList::GetInstance()->GetLastActive();
+    WebContents* popup_contents =
+        popup_browser->tab_strip_model()->GetActiveWebContents();
+    content::WaitForLoadStop(popup_contents);
   }
 
   void CloseDevToolsPopupWindow(DevToolsWindow* devtools_window) {
