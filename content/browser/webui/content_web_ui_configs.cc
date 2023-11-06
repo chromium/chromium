@@ -16,12 +16,12 @@
 #include "content/browser/process_internals/process_internals_ui.h"
 #include "content/browser/quota/quota_internals_ui.h"
 #include "content/browser/service_worker/service_worker_internals_ui.h"
-#include "content/browser/tracing/trace_report/trace_report_internals_ui.h"
 #include "content/browser/ukm_internals_ui.h"
 #include "content/browser/webrtc/webrtc_internals_ui.h"
 #include "content/public/browser/webui_config_map.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "content/browser/tracing/trace_report/trace_report_internals_ui.h"
 #include "content/browser/tracing/tracing_ui.h"
 #endif
 
@@ -43,7 +43,6 @@ void RegisterContentWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ProcessInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<QuotaInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ServiceWorkerInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<TraceReportInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<UkmInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebRTCInternalsUIConfig>());
 
@@ -52,6 +51,7 @@ void RegisterContentWebUIConfigs() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+  map.AddWebUIConfig(std::make_unique<TraceReportInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<TracingUIConfig>());
 #endif
 }

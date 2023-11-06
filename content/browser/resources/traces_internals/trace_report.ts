@@ -16,6 +16,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './trace_report.html.js';
 import {ClientTraceReport} from './trace_report.mojom-webui.js';
 import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
+import {Notification, NotificationTypeEnum} from './trace_report_list.js';
 
 enum UploadState {
   NOT_UPLOADED = 0,
@@ -148,19 +149,19 @@ export class TraceReportElement extends PolymerElement {
     const {trace} =
         await this.traceReportProxy_.handler.downloadTrace(this.trace.uuid);
     if (trace !== null) {
-      // TODO(b/299476756): |result| can be empty/null/false in some
-      // methods which should be handled differently than currently
-      // for the user to know if an action has return the value
-      // expected or not. Not simply if the call to the method failed
       this.downloadData_(
           `${this.trace.uuid.high}-${this.trace.uuid.low}.gz`, trace);
+    } else {
+      this.dispatchToast_(`Failed to download trace ${this.trace.uuid.high}-${
+          this.trace.uuid.low}.`);
     }
     this.isLoading = false;
   }
 
   private downloadData_(fileName: string, data: BigBuffer): void {
     if (data.invalidBuffer) {
-      console.error('Invalid buffer received');
+      this.dispatchToast_(`Invalid buffer received for ${
+          this.trace.uuid.high}-${this.trace.uuid.low}.`);
       return;
     }
     try {
@@ -179,7 +180,8 @@ export class TraceReportElement extends PolymerElement {
           new Blob([bytes], {type: 'application/octet-stream'}));
       downloadUrl(fileName, url);
     } catch (e) {
-      console.error('Unable to create blob from trace data', e);
+      this.dispatchToast_(`Unable to create blob from trace data for ${
+          this.trace.uuid.high}-${this.trace.uuid.low}.`);
     }
   }
 
@@ -187,11 +189,9 @@ export class TraceReportElement extends PolymerElement {
     this.isLoading = true;
     const {success} =
         await this.traceReportProxy_.handler.deleteSingleTrace(this.trace.uuid);
-    if (success) {
-      // TODO(b/299476756): |result| can be empty/null/false in some
-      // methods which should be handled differently than currently
-      // for the user to know if an action has return the value
-      // expected or not. Not simply if the call to the method failed
+    if (!success) {
+      this.dispatchToast_(
+          `Failed to delete ${this.trace.uuid.high}-${this.trace.uuid.low}.`);
     }
     this.isLoading = false;
   }
@@ -201,17 +201,23 @@ export class TraceReportElement extends PolymerElement {
     const {success} =
         await this.traceReportProxy_.handler.userUploadSingleTrace(
             this.trace.uuid);
-    if (success) {
-      // TODO(b/299476756): |result| can be empty/null/false in some
-      // methods which should be handled differently than currently
-      // for the user to know if an action has return the value
-      // expected or not. Not simply if the call to the method failed
+    if (!success) {
+      this.dispatchToast_(`Failed to upload trace ${this.trace.uuid.high}-${
+          this.trace.uuid.low}.`);
     }
     this.isLoading = false;
   }
 
   private uploadStateEqual(value1: number, value2: UploadState): boolean {
     return value1 === value2;
+  }
+
+  private dispatchToast_(message: string): void {
+    this.dispatchEvent(new CustomEvent('show-toast', {
+      bubbles: true,
+      composed: true,
+      detail: new Notification(NotificationTypeEnum.ERROR, message),
+    }));
   }
 }
 
