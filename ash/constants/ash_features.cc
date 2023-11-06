@@ -2962,6 +2962,12 @@ BASE_FEATURE(kEnableFastInkForSoftwareCursor,
              "EnableFastInkForSoftwareCursor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// NOTE: Do not check the value of this feature directly; instead, use
+// ShouldUseMappableSharedImage() below.
+BASE_FEATURE(kEnableMappableSIForFastInkHost,
+             "EnableMappableSIForFastInkHost",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreContextualNudgesEnabled() {
@@ -4351,6 +4357,13 @@ bool ShouldShowPlayStoreInDemoMode() {
 bool IsFeatureAwareDeviceDemoModeEnabled() {
   return base::FeatureList::IsEnabled(
       kFeatureManagementFeatureAwareDeviceDemoMode);
+}
+
+// MappableSI can be used only if using a single SI for FastInkHost UiResources.
+bool ShouldUseMappableSharedImage() {
+  return base::FeatureList::IsEnabled(
+             kUseOneSharedImageForFastInkHostResources) &&
+         base::FeatureList::IsEnabled(kEnableMappableSIForFastInkHost);
 }
 
 bool ShouldUseV1DeviceSync() {

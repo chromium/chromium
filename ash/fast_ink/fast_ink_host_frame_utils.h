@@ -75,6 +75,7 @@ ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const gfx::Rect& total_damage_rect,
     bool auto_update,
     const aura::Window& host_window,
+    const gfx::Size& buffer_size,
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     UiResourceManager* resource_manager,
     gpu::Mailbox mailbox,

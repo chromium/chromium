@@ -180,6 +180,7 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const gfx::Rect& total_damage_rect,
     bool auto_update,
     const aura::Window& host_window,
+    const gfx::Size& buffer_size,
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     UiResourceManager* resource_manager,
     gpu::Mailbox mailbox,
@@ -193,7 +194,9 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   const gfx::Size window_size_in_pixel = gfx::ToFlooredSize(
       gfx::ConvertSizeToPixels(window_size_in_dip, device_scale_factor));
 
-  const gfx::Size buffer_size = gpu_memory_buffer->GetSize();
+  if (gpu_memory_buffer) {
+    CHECK_EQ(gpu_memory_buffer->GetSize(), buffer_size);
+  }
 
   // In auto_update mode, we use hardware overlays to render the content.
   auto resource = AcquireUiResource(buffer_size, auto_update, gpu_memory_buffer,
