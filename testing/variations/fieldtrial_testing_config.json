@@ -8535,6 +8535,30 @@
             ]
         }
     ],
+    "IOSHideFeedWithSearchChoice": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSHideFeedWithSearchChoice"
+                    ]
+                },
+                {
+                    "name": "Enabled with targeting",
+                    "params": {
+                        "IOSHideFeedWithSearchChoiceTargeted": "true"
+                    },
+                    "enable_features": [
+                        "IOSHideFeedWithSearchChoice"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSIPHForSafariSwitcher": [
         {
             "platforms": [
