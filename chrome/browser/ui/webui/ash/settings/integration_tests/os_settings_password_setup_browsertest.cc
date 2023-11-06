@@ -53,16 +53,13 @@ IN_PROC_BROWSER_TEST_F(OSSettingsPasswordSetupTestWithLocalPassword, Shown) {
   lock_screen_settings.AssertPasswordControlVisibility(true);
 }
 
+// The selected password type is settings is correct.
 IN_PROC_BROWSER_TEST_F(OSSettingsPasswordSetupTestWithLocalPassword, Selected) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
   mojom::PasswordSettingsApiAsyncWaiter password_settings =
       GoToPasswordSettings(lock_screen_settings);
-
-  // TODO(b/304961785): Reenable this check. This check did not succeed in a
-  // debug build, where the tests seems to have timed out.
-  //
-  // password_settings.AssertSelectedPasswordType(mojom::PasswordType::kLocal);
+  password_settings.AssertSelectedPasswordType(mojom::PasswordType::kLocal);
 }
 
 }  // namespace ash::settings
