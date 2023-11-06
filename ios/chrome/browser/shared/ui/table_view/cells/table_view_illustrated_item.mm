@@ -66,18 +66,14 @@ constexpr CGFloat kButtonTopPadding = 14.0;
     cell.subtitleLabel.hidden = YES;
   }
   if ([self.buttonText length]) {
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration = cell.button.configuration;
-      UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-      NSDictionary* attributes = @{NSFontAttributeName : font};
-      NSMutableAttributedString* attributedString =
-          [[NSMutableAttributedString alloc] initWithString:self.buttonText
-                                                 attributes:attributes];
-      buttonConfiguration.attributedTitle = attributedString;
-      cell.button.configuration = buttonConfiguration;
-    } else {
-      [cell.button setTitle:self.buttonText forState:UIControlStateNormal];
-    }
+    UIButtonConfiguration* buttonConfiguration = cell.button.configuration;
+    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSMutableAttributedString* attributedString =
+        [[NSMutableAttributedString alloc] initWithString:self.buttonText
+                                               attributes:attributes];
+    buttonConfiguration.attributedTitle = attributedString;
+    cell.button.configuration = buttonConfiguration;
   } else {
     cell.buttonContainer.hidden = YES;
   }
@@ -127,26 +123,16 @@ constexpr CGFloat kButtonTopPadding = 14.0;
     _button.layer.cornerRadius = kButtonCornerRadius;
     _button.translatesAutoresizingMaskIntoConstraints = NO;
 
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
-      buttonConfiguration.baseForegroundColor =
-          [UIColor colorNamed:kSolidButtonTextColor];
-      buttonConfiguration.background.backgroundColor =
-          [UIColor colorNamed:kBlueColor];
-      _button.configuration = buttonConfiguration;
-    } else {
-      _button.backgroundColor = [UIColor colorNamed:kBlueColor];
-      [_button.titleLabel
-          setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
-      UIEdgeInsets contentInsets = UIEdgeInsetsMake(
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
-      SetContentEdgeInsets(_button, contentInsets);
-    }
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
+        kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kSolidButtonTextColor];
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kBlueColor];
+    _button.configuration = buttonConfiguration;
 
     _buttonContainer = [[UIView alloc] init];
     _buttonContainer.translatesAutoresizingMaskIntoConstraints = NO;
