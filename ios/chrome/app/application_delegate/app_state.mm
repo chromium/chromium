@@ -521,14 +521,6 @@ void FlushCookieStoreOnIOThread(
       }]];
 }
 
-- (void)setLastTappedWindow:(UIWindow*)window {
-  if (_lastTappedWindow == window) {
-    return;
-  }
-  _lastTappedWindow = window;
-  [self.observers appState:self lastTappedWindowChanged:window];
-}
-
 - (void)initializeUIPreSafeMode {
   // TODO(crbug.com/1197330): Consider replacing this with a DCHECK once we
   // make sure that #initializeUIPreSafeMode is only called once. This should
