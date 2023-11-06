@@ -2194,7 +2194,7 @@
   {
     "name": "enable-component-updater-test-request",
     "owners": [ "romanarora@google.com", "lacros-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-compression-dictionary-transport",
