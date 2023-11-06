@@ -29,12 +29,16 @@ class OnDeviceInternalsUI : public ui::MojoWebUIController,
   WEB_UI_CONTROLLER_TYPE_DECL();
 
   on_device_model::mojom::OnDeviceModelService& GetService();
-  void OnModelAssetsLoaded(LoadModelCallback callback,
-                           on_device_model::ModelAssets assets);
+  void OnModelAssetsLoaded(
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+      LoadModelCallback callback,
+      on_device_model::ModelAssets assets);
 
   // mojom::OnDeviceInternalsPage:
-  void LoadModel(const base::FilePath& model_path,
-                 LoadModelCallback callback) override;
+  void LoadModel(
+      const base::FilePath& model_path,
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+      LoadModelCallback callback) override;
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override;
 

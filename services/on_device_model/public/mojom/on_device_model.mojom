@@ -37,7 +37,7 @@ interface Session {
 
   // Executes model on the given input. The input will be added on top of the
   // context provided by |AddContext()|. The response will be streamed to
-  // |response|.
+  // |response|. To cancel the request, close the |response| pipe.
   Execute(InputOptions input, pending_remote<StreamingResponder> response);
 };
 
@@ -56,18 +56,8 @@ struct ModelAssets {
   mojo_base.mojom.File? weights;
 };
 
-// The result of OnDeviceModelService.LoadModel().
-union LoadModelResult {
-  // On successful load, this field is populated with a Remote to control the
-  // loaded model.
-  pending_remote<OnDeviceModel> model;
-
-  // On load failure, this field is populated with a description of the failure.
-  string error;
-};
-
 // Classifies the device based on how fast it is estimated to be able to run a
-// model..
+// model.
 enum PerformanceClass {
   // There was an error running the benchmark. The device is likely not able to
   // run any models.
@@ -86,8 +76,10 @@ enum PerformanceClass {
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
  RequireContext=sandbox.mojom.Context.kBrowser]
 interface OnDeviceModelService {
-  // Initializes a new model instance given `assets`.
-  LoadModel(ModelAssets assets) => (LoadModelResult result);
+  // Initializes a new model instance given `assets`. If an error is returned,
+  // the model pipe will be reset.
+  LoadModel(ModelAssets assets, pending_receiver<OnDeviceModel> model) =>
+      (string? error);
 
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() => (PerformanceClass performance_class);

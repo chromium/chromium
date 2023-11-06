@@ -29,20 +29,17 @@ void OnDeviceModelServiceController::Execute(
   LaunchService();
   service_remote_->LoadModel(
       on_device_model::LoadModelAssets(model_path_),
+      model_remote_.BindNewPipeAndPassReceiver(),
       base::BindOnce(&OnDeviceModelServiceController::OnLoadModelResult,
-                     weak_ptr_factory_.GetWeakPtr(), input,
-                     std::move(streaming_responder)));
+                     weak_ptr_factory_.GetWeakPtr()));
+  Execute(input, std::move(streaming_responder));
 }
 
 void OnDeviceModelServiceController::OnLoadModelResult(
-    std::string_view input,
-    mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
-        streaming_responder,
-    on_device_model::mojom::LoadModelResultPtr result) {
-  if (result->is_model()) {
-    model_remote_ = mojo::Remote<on_device_model::mojom::OnDeviceModel>(
-        std::move(result->get_model()));
-    Execute(input, std::move(streaming_responder));
+    const std::optional<std::string>& error) {
+  if (error.has_value()) {
+    // TODO(b/302402576): Add error handling.
+    LOG(ERROR) << *error;
   }
 }
 

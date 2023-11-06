@@ -49,12 +49,12 @@ class OnDeviceModelServiceTest : public testing::Test {
   mojo::Remote<mojom::OnDeviceModel> LoadModel() {
     base::RunLoop run_loop;
     mojo::Remote<mojom::OnDeviceModel> remote;
-    service()->LoadModel(
-        ModelAssets(),
-        base::BindLambdaForTesting([&](mojom::LoadModelResultPtr result) {
-          remote.Bind(std::move(result->get_model()));
-          run_loop.Quit();
-        }));
+    service()->LoadModel(ModelAssets(), remote.BindNewPipeAndPassReceiver(),
+                         base::BindLambdaForTesting(
+                             [&](const std::optional<std::string>& error) {
+                               EXPECT_FALSE(error.has_value());
+                               run_loop.Quit();
+                             }));
     run_loop.Run();
     return remote;
   }

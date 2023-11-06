@@ -67,19 +67,20 @@ OnDeviceModelService::OnDeviceModelService(
 
 OnDeviceModelService::~OnDeviceModelService() = default;
 
-void OnDeviceModelService::LoadModel(ModelAssets assets,
-                                     LoadModelCallback callback) {
-  auto model = CreateModel(std::move(assets));
-  if (!model) {
-    std::move(callback).Run(
-        mojom::LoadModelResult::NewError("Failed to create model."));
+void OnDeviceModelService::LoadModel(
+    ModelAssets assets,
+    mojo::PendingReceiver<mojom::OnDeviceModel> model,
+    LoadModelCallback callback) {
+  auto model_impl = CreateModel(std::move(assets));
+  if (!model_impl) {
+    std::move(callback).Run("Failed to create model.");
     return;
   }
 
   mojo::PendingRemote<mojom::OnDeviceModel> remote;
-  model_receivers_.Add(std::make_unique<ModelWrapper>(std::move(model)),
-                       remote.InitWithNewPipeAndPassReceiver());
-  std::move(callback).Run(mojom::LoadModelResult::NewModel(std::move(remote)));
+  model_receivers_.Add(std::make_unique<ModelWrapper>(std::move(model_impl)),
+                       std::move(model));
+  std::move(callback).Run(std::nullopt);
 }
 
 void OnDeviceModelService::GetEstimatedPerformanceClass(

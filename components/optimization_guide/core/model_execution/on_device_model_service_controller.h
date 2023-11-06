@@ -50,11 +50,7 @@ class OnDeviceModelServiceController {
   friend class FakeOnDeviceModelServiceController;
 
   // Invoked at the end of model load, to continue with model execution.
-  void OnLoadModelResult(
-      std::string_view input,
-      mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
-          streaming_responder,
-      on_device_model::mojom::LoadModelResultPtr result);
+  void OnLoadModelResult(const std::optional<std::string>& error);
 
   base::FilePath model_path_;
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;

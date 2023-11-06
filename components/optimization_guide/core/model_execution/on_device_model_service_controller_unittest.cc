@@ -42,14 +42,13 @@ class FakeOnDeviceModelService
     : public on_device_model::mojom::OnDeviceModelService {
  private:
   // on_device_model::mojom::OnDeviceModelService:
-  void LoadModel(on_device_model::ModelAssets assets,
-                 LoadModelCallback callback) override {
-    mojo::PendingRemote<on_device_model::mojom::OnDeviceModel> remote;
+  void LoadModel(
+      on_device_model::ModelAssets assets,
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+      LoadModelCallback callback) override {
     auto test_model = std::make_unique<FakeOnDeviceModel>();
-    model_receivers_.Add(std::move(test_model),
-                         remote.InitWithNewPipeAndPassReceiver());
-    std::move(callback).Run(
-        on_device_model::mojom::LoadModelResult::NewModel(std::move(remote)));
+    model_receivers_.Add(std::move(test_model), std::move(model));
+    std::move(callback).Run(std::nullopt);
   }
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override {

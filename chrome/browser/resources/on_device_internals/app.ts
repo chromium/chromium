@@ -148,11 +148,13 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     // <if expr="not is_win">
     const processedPath = modelPath;
     // </if>
-    const {result} = await this.proxy_.handler.loadModel({path: processedPath});
-    if (result.error) {
-      this.error_ = result.error;
+    const newModel = new OnDeviceModelRemote();
+    const {error} = await this.proxy_.handler.loadModel(
+        {path: processedPath}, newModel.$.bindNewPipeAndPassReceiver());
+    if (error) {
+      this.error_ = error;
     } else {
-      this.model_ = result.model || null;
+      this.model_ = newModel;
       this.startNewSession_();
       this.modelPath_ = modelPath;
     }

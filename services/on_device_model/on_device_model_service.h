@@ -31,7 +31,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   OnDeviceModelService& operator=(const OnDeviceModelService&) = delete;
 
   // mojom::OnDeviceModelService:
-  void LoadModel(ModelAssets assets, LoadModelCallback callback) override;
+  void LoadModel(ModelAssets assets,
+                 mojo::PendingReceiver<mojom::OnDeviceModel> model,
+                 LoadModelCallback callback) override;
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override;
 
