@@ -552,13 +552,8 @@ public class TabListCoordinator
 
     private void registerLayoutChangeListener() {
         if (mListLayoutListener != null) {
-            assert !mLayoutListenerRegistered
-                    || !ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext);
-
-            // TODO(crbug/1478720): Early out if already registered. This is possible as this may
-            // be called repeatedly when Start Surface Refactor is disabled, and the transition
-            // animation to the Tab Switcher is skipped. Remove this if check once Start Surface
-            // Refactor is enabled everywhere.
+            // TODO(crbug/1500016): There might be a timing or race condition that LayoutListener
+            // has been registered while it shouldn't be with Start surface refactor is enabled.
             if (mLayoutListenerRegistered) return;
 
             mLayoutListenerRegistered = true;
