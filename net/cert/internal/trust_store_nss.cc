@@ -32,6 +32,23 @@
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
+// TODO(crbug.com/1482000): We can remove these weak attributes in M123 or
+// later. Until then, these need to be declared with the weak attribute
+// since older platforms may not provide these symbols.
+extern "C" CERTCertList* CERT_CreateSubjectCertListForChromium(
+    CERTCertList* certList,
+    CERTCertDBHandle* handle,
+    const SECItem* name,
+    PRTime sorttime,
+    PRBool validOnly,
+    PRBool ignoreChaps) __attribute__((weak));
+extern "C" CERTCertificate* CERT_FindCertByDERCertForChromium(
+    CERTCertDBHandle* handle,
+    SECItem* derCert,
+    PRBool ignoreChaps) __attribute__((weak));
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
+
 namespace net {
 
 namespace {
@@ -119,7 +136,16 @@ TrustStoreNSS::ListCertsResult& TrustStoreNSS::ListCertsResult::operator=(
     ListCertsResult&& other) = default;
 
 TrustStoreNSS::TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting)
-    : user_slot_trust_setting_(std::move(user_slot_trust_setting)) {}
+    : user_slot_trust_setting_(std::move(user_slot_trust_setting)) {
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
+  if (!CERT_CreateSubjectCertListForChromium) {
+    LOG(WARNING) << "CERT_CreateSubjectCertListForChromium is not available";
+  }
+  if (!CERT_FindCertByDERCertForChromium) {
+    LOG(WARNING) << "CERT_FindCertByDERCertForChromium is not available";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
+}
 
 TrustStoreNSS::~TrustStoreNSS() = default;
 
@@ -133,12 +159,29 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
   // version may not match the unnormalized version.
   name.len = cert->tbs().issuer_tlv.Length();
   name.data = const_cast<uint8_t*>(cert->tbs().issuer_tlv.UnsafeData());
+
   // |validOnly| in CERT_CreateSubjectCertList controls whether to return only
   // certs that are valid at |sorttime|. Expiration isn't meaningful for trust
   // anchors, so request all the matches.
+#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
   crypto::ScopedCERTCertList found_certs(CERT_CreateSubjectCertList(
       nullptr /* certList */, CERT_GetDefaultCertDB(), &name,
       PR_Now() /* sorttime */, PR_FALSE /* validOnly */));
+#else
+  crypto::ScopedCERTCertList found_certs;
+  if (CERT_CreateSubjectCertListForChromium) {
+    found_certs =
+        crypto::ScopedCERTCertList(CERT_CreateSubjectCertListForChromium(
+            nullptr /* certList */, CERT_GetDefaultCertDB(), &name,
+            PR_Now() /* sorttime */, PR_FALSE /* validOnly */,
+            PR_TRUE /* ignoreChaps */));
+  } else {
+    found_certs = crypto::ScopedCERTCertList(CERT_CreateSubjectCertList(
+        nullptr /* certList */, CERT_GetDefaultCertDB(), &name,
+        PR_Now() /* sorttime */, PR_FALSE /* validOnly */));
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
+
   if (!found_certs) {
     return;
   }
@@ -246,8 +289,20 @@ bssl::CertificateTrust TrustStoreNSS::GetTrust(
   // CERT_FindCertByDERCert to avoid having to have NSS parse the certificate
   // and create a structure for it if the cert doesn't already exist in any of
   // the loaded NSS databases.
+#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
   ScopedCERTCertificate nss_cert(
       CERT_FindCertByDERCert(CERT_GetDefaultCertDB(), &der_cert));
+#else
+  ScopedCERTCertificate nss_cert;
+  if (CERT_FindCertByDERCertForChromium) {
+    nss_cert = ScopedCERTCertificate(CERT_FindCertByDERCertForChromium(
+        CERT_GetDefaultCertDB(), &der_cert, /*ignoreChaps=*/PR_TRUE));
+  } else {
+    nss_cert = ScopedCERTCertificate(
+        CERT_FindCertByDERCert(CERT_GetDefaultCertDB(), &der_cert));
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
+
   if (!nss_cert) {
     DVLOG(1) << "skipped cert that has no CERTCertificate already";
     return bssl::CertificateTrust::ForUnspecified();
