@@ -164,16 +164,15 @@
    } ],
    "first_install_time": "1970-01-27 09:52:51.713000 UTC",
    "generated_icon_fix": {
-      "attempt_count": 49,
-      "last_attempt_time": "1970-01-27 13:51:34.772000 UTC",
+      "attempt_count": 6,
+      "last_attempt_time": "1970-02-16 01:03:53.549000 UTC",
       "source": "Retroactive",
-      "window_start_time": "1970-02-08 13:02:14.367000 UTC"
+      "window_start_time": "1970-01-27 13:51:34.772000 UTC"
    },
    "is_from_sync_and_pending_installation": true,
    "is_generated_icon": true,
    "is_locally_installed": true,
    "is_uninstalling": false,
-   "is_user_selected_app_for_capturing_links": true,
    "isolation_data": {
       "controlled_frame_partitions (on-disk)": [ "partition_name" ],
       "isolated_web_app_location": {
@@ -194,7 +193,7 @@
    "last_badging_time": "1970-02-06 10:58:36.765000 UTC",
    "last_launch_time": "1970-01-28 05:07:28.623000 UTC",
    "latest_install_source": "external lock screen",
-   "latest_install_time": "1970-02-05 16:23:32.767000 UTC",
+   "latest_install_time": "1970-01-06 12:19:09.338000 UTC",
    "launch_handler": {
       "client_mode": "kNavigateExisting"
    },
@@ -421,8 +420,8 @@
    } ],
    "sources": [ "System", "Kiosk", "Policy", "OEM", "SubApp", "WebAppStore", "OneDriveIntegration", "Sync", "CommandLine", "ApsDefault", "Default" ],
    "start_url": "https://example.com/scope1234/start1234",
-   "supported_links_offer_dismiss_count": 445271870,
-   "supported_links_offer_ignore_count": 716143606,
+   "supported_links_offer_dismiss_count": -1701779570,
+   "supported_links_offer_ignore_count": 445271870,
    "sync_fallback_data": {
       "manifest_icons": [ {
          "purpose": "kAny",
@@ -489,6 +488,7 @@
    } ],
    "user_display_mode": "kTabbed",
    "user_launch_ordinal": "INVALID[]",
+   "user_link_capturing_preference": "1",
    "user_page_ordinal": "INVALID[]",
    "window_controls_overlay_enabled": false
 }

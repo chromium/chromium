@@ -419,6 +419,11 @@ class WebAppRegistrar : public ProfileManagerObserver {
       const IsolatedWebAppUrlInfo& url_info,
       const std::string& partition_name);
 
+  // Returns if the given app_id would ever be eligible to capture links in
+  // its scope. This returns false for apps that aren't installed or for
+  // "Create Shortcut..." apps.
+  bool CanCaptureLinksInScope(const webapps::AppId& app_id) const;
+
   // Returns true if a web app is set to be the default app to
   // capture links by the user. If an app is not locally installed or is a
   // shortcut, this returns false.
@@ -438,7 +443,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Note: This does NOT mean that `app` has user link capturing enabled.
   bool IsLinkCapturableByApp(const webapps::AppId& app, const GURL& url) const;
 
-  // Returns a set of app ids that match the scope for user link capturing.
+  // Returns a set of app ids that match the scope for user link capturing that
   std::vector<webapps::AppId> GetOverlappingAppsMatchingScope(
       const webapps::AppId& app_id) const;
 
@@ -599,6 +604,13 @@ class WebAppRegistrar : public ProfileManagerObserver {
   bool registry_profile_being_deleted_ = false;
 
  private:
+  // Returns if the given app_id is the most recently installed application of
+  // the set of other apps with matching scopes, AND no other app has user link
+  // capturing explicitly turned on. Note that this doesn't consider the link
+  // capturing preference of the `app_id`.
+  bool ShouldCaptureLinksConsiderOverlappingScopes(
+      const webapps::AppId& app_id);
+
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
 

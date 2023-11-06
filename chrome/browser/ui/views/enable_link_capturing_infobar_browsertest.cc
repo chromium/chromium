@@ -12,7 +12,6 @@
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -70,12 +70,17 @@ class IntentChipVisibilityObserver : public OmniboxChipButton::Observer {
 };
 
 class EnableLinkCapturingInfobarBrowserTest
-    : public WebAppNavigationBrowserTest {
+    : public WebAppNavigationBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   EnableLinkCapturingInfobarBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
+        apps::test::GetFeaturesToEnableLinkCapturingUX(
+            /*override_captures_by_default=*/GetParam()),
+        {});
   }
+
+  bool LinkCapturingEnabledByDefault() { return GetParam(); }
 
   IntentChipButton* GetIntentPickerIcon() {
     return BrowserView::GetBrowserViewForBrowser(browser())
@@ -131,10 +136,17 @@ class EnableLinkCapturingInfobarBrowserTest
   }
 
   void TurnOnLinkCapturing(webapps::AppId app_id) {
-    ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
-    WebApp* app = update->UpdateApp(app_id);
-    CHECK(app);
-    app->SetIsUserSelectedAppForSupportedLinks(true);
+    base::test::TestFuture<void> preference_set;
+    provider().scheduler().SetAppCapturesSupportedLinksDisableOverlapping(
+        app_id, /*set_to_preferred=*/true, preference_set.GetCallback());
+    ASSERT_TRUE(preference_set.Wait());
+  }
+
+  void TurnOffLinkCapturing(webapps::AppId app_id) {
+    base::test::TestFuture<void> preference_set;
+    provider().scheduler().SetAppCapturesSupportedLinksDisableOverlapping(
+        app_id, /*set_to_preferred=*/false, preference_set.GetCallback());
+    ASSERT_TRUE(preference_set.Wait());
   }
 
   testing::AssertionResult WaitForIntentPickerToShow() {
@@ -223,10 +235,16 @@ class EnableLinkCapturingInfobarBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
+IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
                        InfoBarShowsOnIntentPickerLaunch) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const auto [_, in_scope_url] = InstallTestApp();
+  const auto [app_id, in_scope_url] = InstallTestApp();
+
+  // The infobar shows up only when link capturing is not enabled for an app.
+  // For default-on behavior, switch off link capturing manually.
+  if (LinkCapturingEnabledByDefault()) {
+    TurnOffLinkCapturing(app_id);
+  }
 
   NavigateViaLinkClick(browser(), in_scope_url);
 
@@ -239,10 +257,16 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
   EXPECT_NE(GetLinkCapturingInfoBar(app_browser), nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
+IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
                        EnableLinkCapturingThroughInfoBar) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const auto [app_id, in_scope_url] = InstallTestApp();
+
+  // The infobar shows up only when link capturing is not enabled for an app.
+  // For default-on behavior, switch off link capturing manually.
+  if (LinkCapturingEnabledByDefault()) {
+    TurnOffLinkCapturing(app_id);
+  }
 
   NavigateViaLinkClick(browser(), in_scope_url);
 
@@ -273,11 +297,16 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
                 in_scope_url));
 }
 
-IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
+IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
                        InfoBarNotShownOnLinkCapturingEnabled) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const auto [app_id, in_scope_url] = InstallTestApp();
-  TurnOnLinkCapturing(app_id);
+
+  // The infobar shows up only when link capturing is not enabled for an app.
+  // For default-on behavior, switch off link capturing manually.
+  if (!LinkCapturingEnabledByDefault()) {
+    TurnOnLinkCapturing(app_id);
+  }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
 
@@ -294,10 +323,16 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
   EXPECT_EQ(GetLinkCapturingInfoBar(app_browser), nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
+IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
                        RecordUserActionCancelled) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const auto [_, in_scope_url] = InstallTestApp();
+  const auto [app_id, in_scope_url] = InstallTestApp();
+
+  // The infobar shows up only when link capturing is not enabled for an app.
+  // For default-on behavior, switch off link capturing manually.
+  if (LinkCapturingEnabledByDefault()) {
+    TurnOffLinkCapturing(app_id);
+  }
 
   NavigateViaLinkClick(browser(), in_scope_url);
 
@@ -326,10 +361,16 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
                 in_scope_url));
 }
 
-IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
+IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
                        RecordUserActionIgnored) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const auto [_, in_scope_url] = InstallTestApp();
+  const auto [app_id, in_scope_url] = InstallTestApp();
+
+  // The infobar shows up only when link capturing is not enabled for an app.
+  // For default-on behavior, switch off link capturing manually.
+  if (LinkCapturingEnabledByDefault()) {
+    TurnOffLinkCapturing(app_id);
+  }
 
   NavigateViaLinkClick(browser(), in_scope_url);
 
@@ -355,9 +396,15 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
                 in_scope_url));
 }
 
-IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest, AppLaunched) {
+IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest, AppLaunched) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const auto [app_id, in_scope_url] = InstallTestApp();
+
+  // The infobar shows up only when link capturing is not enabled for an app.
+  // For default-on behavior, switch off link capturing manually.
+  if (LinkCapturingEnabledByDefault()) {
+    TurnOffLinkCapturing(app_id);
+  }
 
   NavigateViaLinkClick(browser(), in_scope_url);
 
@@ -372,7 +419,6 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest, AppLaunched) {
 
   infobars::InfoBar* infobar = GetLinkCapturingInfoBar(app_browser);
   ASSERT_TRUE(infobar);
-  base::UserActionTester user_action_tester;
   EXPECT_TRUE(
       static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())->Accept());
   // Because there is no testing utility for info bars, manually remove.
@@ -398,9 +444,15 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest, AppLaunched) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest, BarRemoved) {
+IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest, BarRemoved) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const auto [_, in_scope_url] = InstallTestApp();
+  const auto [app_id, in_scope_url] = InstallTestApp();
+
+  // The infobar shows up only when link capturing is not enabled for an app.
+  // For default-on behavior, switch off link capturing manually.
+  if (LinkCapturingEnabledByDefault()) {
+    TurnOffLinkCapturing(app_id);
+  }
 
   NavigateViaLinkClick(browser(), in_scope_url);
 
@@ -426,10 +478,16 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest, BarRemoved) {
 }
 
 // TODO(https://crbug.com/1492121): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
+IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
                        DISABLED_InfoBarHiddenAfterDismissals) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const auto [_, in_scope_url] = InstallTestApp();
+  const auto [app_id, in_scope_url] = InstallTestApp();
+
+  // The infobar shows up only when link capturing is not enabled for an app.
+  // For default-on behavior, switch off link capturing manually.
+  if (LinkCapturingEnabledByDefault()) {
+    TurnOffLinkCapturing(app_id);
+  }
 
   // Dismiss the infobar twice.
   for (int i = 0; i < 2; ++i) {
@@ -473,11 +531,18 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
   EXPECT_FALSE(infobar);
 }
 
-IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
+IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
                        OuterAppNoInfoBar) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const auto [outer_app_id, inner_app_id, inner_app_scoped_url] =
       InstallOuterAppAndInnerApp();
+
+  // The infobar shows up only when link capturing is not enabled for an app.
+  // For default-on behavior, switch off link capturing manually.
+  if (LinkCapturingEnabledByDefault()) {
+    TurnOffLinkCapturing(outer_app_id);
+    TurnOffLinkCapturing(inner_app_id);
+  }
 
   NavigateViaLinkClick(browser(), inner_app_scoped_url);
   EXPECT_TRUE(ClickIntentPickerAndWaitForBubble());
@@ -504,6 +569,13 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, outer_app_id));
   EXPECT_FALSE(GetLinkCapturingInfoBar(app_browser));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         EnableLinkCapturingInfobarBrowserTest,
+                         testing::Values(true, false),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "DefaultOn" : "DefaultOff";
+                         });
 
 }  // namespace
 }  // namespace web_app

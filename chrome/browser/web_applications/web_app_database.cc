@@ -892,8 +892,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     }
   }
 
-  local_data->set_is_user_selected_app_for_capturing_links(
-      web_app.is_user_selected_app_for_capturing_links());
+  local_data->set_user_link_capturing_preference(
+      web_app.user_link_capturing_preference());
 
   if (!web_app.latest_install_time().is_null()) {
     local_data->set_latest_install_time(
@@ -1646,9 +1646,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
         *location, version, controlled_frame_partitions, pending_update_info));
   }
 
-  if (local_data.has_is_user_selected_app_for_capturing_links()) {
-    web_app->SetIsUserSelectedAppForSupportedLinks(
-        local_data.is_user_selected_app_for_capturing_links());
+  if (local_data.has_user_link_capturing_preference()) {
+    web_app->SetLinkCapturingUserPreference(
+        local_data.user_link_capturing_preference());
   }
 
   if (local_data.has_latest_install_time()) {

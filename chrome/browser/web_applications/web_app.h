@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -409,8 +410,8 @@ class WebApp {
     return isolation_data_;
   }
 
-  bool is_user_selected_app_for_capturing_links() const {
-    return is_user_selected_app_for_capturing_links_;
+  proto::LinkCapturingUserPreference user_link_capturing_preference() const {
+    return user_link_capturing_preference_;
   }
 
   const base::Time& latest_install_time() const { return latest_install_time_; }
@@ -516,8 +517,8 @@ class WebApp {
   void SetCurrentOsIntegrationStates(
       proto::WebAppOsIntegrationState current_os_integration_states);
   void SetIsolationData(IsolationData isolation_data);
-  void SetIsUserSelectedAppForSupportedLinks(
-      bool is_user_selected_app_for_capturing_links);
+  void SetLinkCapturingUserPreference(
+      proto::LinkCapturingUserPreference user_link_capturing_preference);
   void SetSupportedLinksOfferIgnoreCount(int ignore_count);
   void SetSupportedLinksOfferDismissCount(int dismiss_count);
 
@@ -662,7 +663,8 @@ class WebApp {
 
   absl::optional<IsolationData> isolation_data_;
 
-  bool is_user_selected_app_for_capturing_links_ = false;
+  proto::LinkCapturingUserPreference user_link_capturing_preference_ =
+      proto::LinkCapturingUserPreference::LINK_CAPTURING_PREFERENCE_DEFAULT;
 
   base::Time latest_install_time_;
 

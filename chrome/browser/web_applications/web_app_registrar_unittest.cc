@@ -22,11 +22,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -1274,7 +1276,12 @@ TEST_F(WebAppRegistrarTest, DefaultNotActivelyInstalled) {
   EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
 }
 
+// Link capturing preferences & overlapping scopes have custom behavior on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebAppRegistrarTest, AppsOverlapIfSharesScope) {
+  base::test::ScopedFeatureList enable_link_capturing;
+  enable_link_capturing.InitWithFeaturesAndParameters(
+      apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
   InitSyncBridge();
 
   // Initialize 2 apps, both having the same scope, and set the second
@@ -1288,8 +1295,8 @@ TEST_F(WebAppRegistrarTest, AppsOverlapIfSharesScope) {
   auto web_app2 = test::CreateWebApp(GURL("https://example.com/def"),
                                      WebAppManagement::kDefault);
   web_app2->SetScope(GURL("https://example_scope.com"));
-  web_app2->SetIsUserSelectedAppForSupportedLinks(
-      /*is_user_selected_app_for_capturing_links=*/true);
+  web_app2->SetLinkCapturingUserPreference(
+      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
 
   const webapps::AppId app_id1 = web_app1->app_id();
   const webapps::AppId app_id2 = web_app2->app_id();
@@ -1313,8 +1320,8 @@ TEST_F(WebAppRegistrarTest, AppsDoNotOverlapIfNestedScope) {
   auto web_app2 = test::CreateWebApp(GURL("https://example.com/def"),
                                      WebAppManagement::kDefault);
   web_app2->SetScope(GURL("https://example_scope.com/nested"));
-  web_app2->SetIsUserSelectedAppForSupportedLinks(
-      /*is_user_selected_app_for_capturing_links=*/true);
+  web_app2->SetLinkCapturingUserPreference(
+      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
 
   const webapps::AppId app_id1 = web_app1->app_id();
   const webapps::AppId app_id2 = web_app2->app_id();
@@ -1323,6 +1330,7 @@ TEST_F(WebAppRegistrarTest, AppsDoNotOverlapIfNestedScope) {
 
   EXPECT_TRUE(registrar().GetOverlappingAppsMatchingScope(app_id1).empty());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class WebAppRegistrarTest_ScopeExtensions : public WebAppRegistrarTest {
  public:

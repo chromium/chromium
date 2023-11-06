@@ -42,6 +42,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -933,7 +934,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     app->SetIsolationData(isolation_data);
   }
 
-  app->SetIsUserSelectedAppForSupportedLinks(random.next_bool());
+  app->SetLinkCapturingUserPreference(NEXT_PROTO_ENUM(
+      random, proto::LinkCapturingUserPreference, /*skip_zero=*/false));
 
   app->SetLatestInstallTime(random.next_time());
 

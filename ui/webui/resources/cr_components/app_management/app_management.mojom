@@ -200,9 +200,9 @@ interface PageHandler {
   OpenNativeSettings(string app_id);
   // On ChromeOS, this updates the preferred apps list for `app_id`.
   // On Windows, Mac and Linux, this is used to update the
-  // is_user_selected_app_for_capturing_links_ flag on the web_app DB
+  // user_link_capturing_preference_ flag on the web_app DB
   // for the `app_id`. If the app_id is set as a preferred app,
-  // then it resets is_user_selected_app_for_capturing_links_
+  // then it resets user_link_capturing_preference_
   // for all other apps if that is set.
   SetPreferredApp(string app_id, bool is_preferred_app);
   // On ChromeOS: Returns a list of |app_ids| that are currently set
