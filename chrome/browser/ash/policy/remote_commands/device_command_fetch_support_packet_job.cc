@@ -66,6 +66,9 @@ constexpr char kCommandIdKey[] = "Command-ID";
 constexpr char kContentTypeJson[] = "application/json";
 constexpr char kFilenameKey[] = "Filename";
 
+// JSON key that's used in command result payload.
+constexpr char kResultKey[] = "result";
+
 std::set<support_tool::DataCollectorType> GetDataCollectorTypes(
     const base::Value::List& requested_data_collectors) {
   std::set<support_tool::DataCollectorType> data_collectors;
@@ -153,6 +156,15 @@ std::string GetUploadParameters(
   std::string json;
   base::JSONWriter::Write(upload_parameters_dict, &json);
   return base::StringPrintf("%s\n%s", json.c_str(), kContentTypeJson);
+}
+
+std::string GetCommandResultPayload(
+    policy::EnterpriseFetchSupportPacketFailureType result_enum) {
+  base::Value::Dict json;
+  json.Set(kResultKey, static_cast<int>(result_enum));
+  std::string result_payload;
+  base::JSONWriter::Write(json, &result_payload);
+  return result_payload;
 }
 
 }  // namespace
@@ -306,11 +318,14 @@ void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
     base::UmaHistogramEnumeration(kFetchSupportPacketFailureHistogramName,
                                   EnterpriseFetchSupportPacketFailureType::
                                       kFailedOnCommandEnabledForUserCheck);
-    SYSLOG(ERROR) << kCommandNotEnabledForUserMessage;
+    SYSLOG(ERROR)
+        << "FETCH_SUPPORT_PACKET command is not enabled for this user type.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(result_callback_), ResultType::kFailure,
-                       kCommandNotEnabledForUserMessage));
+        base::BindOnce(
+            std::move(result_callback_), ResultType::kFailure,
+            GetCommandResultPayload(EnterpriseFetchSupportPacketFailureType::
+                                        kFailedOnCommandEnabledForUserCheck)));
     return;
   }
 
@@ -362,12 +377,13 @@ void DeviceCommandFetchSupportPacketJob::OnDataExported(
     base::UmaHistogramEnumeration(kFetchSupportPacketFailureHistogramName,
                                   EnterpriseFetchSupportPacketFailureType::
                                       kFailedOnExportingSupportPacket);
-    std::string error_message =
-        base::StrCat({"The device couldn't export the collected data "
-                      "into local storage: ",
-                      export_error->error_message});
-    SYSLOG(ERROR) << error_message;
-    std::move(result_callback_).Run(ResultType::kFailure, error_message);
+    SYSLOG(ERROR) << "The device couldn't export the collected data "
+                     "into local storage: "
+                  << export_error->error_message;
+    std::move(result_callback_)
+        .Run(ResultType::kFailure,
+             GetCommandResultPayload(EnterpriseFetchSupportPacketFailureType::
+                                         kFailedOnExportingSupportPacket));
     return;
   }
 
@@ -425,14 +441,15 @@ void DeviceCommandFetchSupportPacketJob::OnEventEnqueued(
     return;
   }
 
-  std::string error_message = base::StrCat(
-      {"Couldn't enqueue event to reporting queue:  ", status.error_message()});
-
   base::UmaHistogramEnumeration(
       kFetchSupportPacketFailureHistogramName,
       EnterpriseFetchSupportPacketFailureType::kFailedOnEnqueueingEvent);
-  SYSLOG(ERROR) << error_message;
-  std::move(result_callback_).Run(ResultType::kFailure, error_message);
+  SYSLOG(ERROR) << "Couldn't enqueue event to reporting queue:  "
+                << status.error_message();
+  std::move(result_callback_)
+      .Run(ResultType::kFailure,
+           GetCommandResultPayload(EnterpriseFetchSupportPacketFailureType::
+                                       kFailedOnEnqueueingEvent));
 }
 
 }  // namespace policy
