@@ -188,10 +188,6 @@ void RemoveFederatedSiteSettingsData(
     HostContentSettingsMap::PatternSourcePredicate pattern_predicate,
     HostContentSettingsMap* host_content_settings_map) {
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION, delete_begin,
-      delete_end, pattern_predicate);
-
-  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::FEDERATED_IDENTITY_API, delete_begin, delete_end,
       pattern_predicate);
 

@@ -56,6 +56,8 @@ const char kObsoletePpapiBrokerDefaultPref[] =
     "profile.default_content_setting_values.ppapi_broker";
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
+constexpr char kObsoleteFederatedIdentityDefaultPref[] =
+    "profile.default_content_setting_values.fedcm_active_session";
 
 ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
   const base::Value& initial_default = info->initial_default_value();
@@ -133,6 +135,7 @@ void DefaultProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(kObsoletePpapiBrokerDefaultPref, 0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
+  registry->RegisterIntegerPref(kObsoleteFederatedIdentityDefaultPref, 0);
 }
 
 DefaultProvider::DefaultProvider(PrefService* prefs,
@@ -335,6 +338,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePpapiBrokerDefaultPref);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
+  prefs_->ClearPref(kObsoleteFederatedIdentityDefaultPref);
 }
 
 void DefaultProvider::RecordHistogramMetrics() {

@@ -16,10 +16,6 @@ bool IsFedCmAuthzEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmAuthz);
 }
 
-bool IsFedCmIdpSignoutEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmLogoutRps);
-}
-
 bool IsFedCmMultipleIdentityProvidersEnabled() {
   return base::FeatureList::IsEnabled(
       features::kFedCmMultipleIdentityProviders);

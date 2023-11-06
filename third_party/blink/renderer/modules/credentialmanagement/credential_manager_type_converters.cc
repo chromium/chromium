@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_field_requirement.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_selector.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_revoke_options.h"
@@ -86,8 +85,6 @@ using blink::mojom::blink::IdentityProviderRequestOptionsPtr;
 using blink::mojom::blink::IdentityUserInfo;
 using blink::mojom::blink::IdentityUserInfoPtr;
 using blink::mojom::blink::LargeBlobSupport;
-using blink::mojom::blink::LogoutRpsRequest;
-using blink::mojom::blink::LogoutRpsRequestPtr;
 using blink::mojom::blink::PRFValues;
 using blink::mojom::blink::PRFValuesPtr;
 using blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr;
@@ -459,17 +456,6 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
     }
   }
   return mojo_criteria;
-}
-
-// static
-LogoutRpsRequestPtr
-TypeConverter<LogoutRpsRequestPtr, blink::IdentityCredentialLogoutRPsRequest>::
-    Convert(const blink::IdentityCredentialLogoutRPsRequest& request) {
-  auto mojo_request = LogoutRpsRequest::New();
-
-  mojo_request->url = blink::KURL(request.url());
-  mojo_request->account_id = request.accountId();
-  return mojo_request;
 }
 
 // static

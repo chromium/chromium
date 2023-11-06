@@ -243,11 +243,6 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::LOSSY,
            WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, ALL_PLATFORMS,
            WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
-  Register(ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION,
-           "fedcm-active-session", base::Value(),
-           WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, ALL_PLATFORMS,
-           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::NOTIFICATION_INTERACTIONS,
            "notification-interactions", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,

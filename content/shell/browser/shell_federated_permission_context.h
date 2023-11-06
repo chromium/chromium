@@ -59,15 +59,6 @@ class ShellFederatedPermissionContext
   void AddIdpSigninStatusObserver(IdpSigninStatusObserver* observer) override;
   void RemoveIdpSigninStatusObserver(
       IdpSigninStatusObserver* observer) override;
-  bool HasActiveSession(const url::Origin& relying_party_requester,
-                        const url::Origin& identity_provider,
-                        const std::string& account_identifier) override;
-  void GrantActiveSession(const url::Origin& relying_party_requester,
-                          const url::Origin& identity_provider,
-                          const std::string& account_identifier) override;
-  void RevokeActiveSession(const url::Origin& relying_party_requester,
-                           const url::Origin& identity_provider,
-                           const std::string& account_identifier) override;
   bool HasSharingPermission(
       const url::Origin& relying_party_requester,
       const url::Origin& relying_party_embedder,
@@ -98,8 +89,6 @@ class ShellFederatedPermissionContext
   // Tuples of <RP requester, RP embedder, IDP, Account>
   std::set<std::tuple<std::string, std::string, std::string, std::string>>
       sharing_permissions_;
-  // Tuples of <RP requester, IDP, Account>
-  std::set<std::tuple<std::string, std::string, std::string>> active_sessions_;
   // Map of <IDP, IDPSigninStatus>
   std::map<std::string, absl::optional<bool>> idp_signin_status_;
 

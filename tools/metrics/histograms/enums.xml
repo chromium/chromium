@@ -12142,7 +12142,8 @@ Called by update_net_error_codes.py.-->
   <int value="79" label="Javascript JIT"/>
   <int value="80" label="HTTP allowed"/>
   <int value="81" label="Formfill metadata"/>
-  <int value="82" label="Federated identity active session"/>
+  <int value="82"
+      label="Federated identity active session (Obsolete Nov 2023)"/>
   <int value="83" label="Auto-darken web content"/>
   <int value="84" label="Request desktop site"/>
   <int value="85" label="Federated identity browser JavaScript API"/>
@@ -32298,8 +32299,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4222" label="OBSOLETE_GestureScrollEnd"/>
   <int value="4223" label="ArrayBufferTooBigForWebAPI"/>
   <int value="4224" label="FedCmRevoke"/>
-  <int value="4225" label="FedCmLogout"/>
-  <int value="4226" label="FedCmLogoutRps"/>
+  <int value="4225" label="OBSOLETE_FedCmLogout"/>
+  <int value="4226" label="OBSOLETE_FedCmLogoutRps"/>
   <int value="4227" label="V8Navigator_DeprecatedReplaceInURN_Method"/>
   <int value="4228" label="WebAppBorderless"/>
   <int value="4229" label="PaymentInstruments"/>

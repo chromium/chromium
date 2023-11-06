@@ -92,35 +92,6 @@ void ShellFederatedPermissionContext::RemoveIdpSigninStatusObserver(
   idp_signin_status_observer_list_.RemoveObserver(observer);
 }
 
-// FederatedIdentityActiveSessionPermissionContextDelegate
-bool ShellFederatedPermissionContext::HasActiveSession(
-    const url::Origin& relying_party_requester,
-    const url::Origin& identity_provider,
-    const std::string& account_identifier) {
-  return base::Contains(
-      active_sessions_,
-      std::tuple(relying_party_requester.Serialize(),
-                 identity_provider.Serialize(), account_identifier));
-}
-
-void ShellFederatedPermissionContext::GrantActiveSession(
-    const url::Origin& relying_party_requester,
-    const url::Origin& identity_provider,
-    const std::string& account_identifier) {
-  active_sessions_.insert(std::tuple(relying_party_requester.Serialize(),
-                                     identity_provider.Serialize(),
-                                     account_identifier));
-}
-
-void ShellFederatedPermissionContext::RevokeActiveSession(
-    const url::Origin& relying_party_requester,
-    const url::Origin& identity_provider,
-    const std::string& account_identifier) {
-  active_sessions_.erase(std::tuple(relying_party_requester.Serialize(),
-                                    identity_provider.Serialize(),
-                                    account_identifier));
-}
-
 bool ShellFederatedPermissionContext::HasSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,

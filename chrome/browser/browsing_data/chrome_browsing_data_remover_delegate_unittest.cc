@@ -3125,9 +3125,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
   for (content::BrowsingDataRemover::DataType test_data_type : test_cases) {
     {
       FederatedIdentityPermissionContext federated_context(GetProfile());
-      federated_context.GrantActiveSession(rp_origin, idp_origin, account_id);
-      ASSERT_TRUE(federated_context.HasActiveSession(rp_origin, idp_origin,
-                                                     account_id));
 
       federated_context.GrantSharingPermission(rp_origin, rp_embedder_origin,
                                                idp_origin, account_id);
@@ -3153,8 +3150,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
       // ObjectPermissionContextBase cache.
       FederatedIdentityPermissionContext federated_context(GetProfile());
 
-      EXPECT_FALSE(federated_context.HasActiveSession(rp_origin, idp_origin,
-                                                      account_id));
       EXPECT_FALSE(federated_context.HasSharingPermission(
           rp_origin, rp_embedder_origin, idp_origin, account_id));
 

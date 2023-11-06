@@ -33,12 +33,6 @@ enum RequestUserInfoStatus {
   kError,
 };
 
-enum LogoutRpsStatus {
-  kSuccess,
-  kErrorTooManyRequests,
-  kError,
-};
-
 // Represents the fetch result from a IdentityProvider.revoke() request.
 // It is used to determine whether a JavaScript exception should be
 // thrown, and what the error message of such exception should say.
@@ -63,18 +57,6 @@ enum RpContext {
 enum RpMode {
   kButton,
   kWidget
-};
-
-// The details of a single logout request from an identity provider.
-struct LogoutRpsRequest {
-  // URL to which the request will be sent. The origin is validated to
-  // have an associated active session.
-  url.mojom.Url url;
-
-  // Identifier for the account being logged out. This is used to verify that
-  // the logout request correlates to a previous sign-in event, and will
-  // result in the corresponding active session being terminated.
-  string account_id;
 };
 
 // The details of different mechanisms that allows the browser
@@ -220,10 +202,6 @@ interface FederatedAuthRequest {
   // when the id_assertion_endpoint returns a continue_on rather than the
   // actual token.
   ResolveTokenRequest(string token) => (bool success);
-
-  // Contact the list of Relying Party logout endpoints and account IDs to
-  // attempt to initiate user logout.
-  LogoutRps(array<LogoutRpsRequest> rp_logout_requests) => (LogoutRpsStatus status);
 
   // Marks the user as logged in/out to the IDP on this origin.
   SetIdpSigninStatus(url.mojom.Origin origin, IdpSigninStatus status);

@@ -926,9 +926,6 @@ extern const char kFedCmIdPRegistrationDescription[];
 extern const char kFedCmMetricsEndpointName[];
 extern const char kFedCmMetricsEndpointDescription[];
 
-extern const char kFedCmLogoutRpsName[];
-extern const char kFedCmLogoutRpsDescription[];
-
 extern const char kFedCmMultiIdpName[];
 extern const char kFedCmMultiIdpDescription[];
 

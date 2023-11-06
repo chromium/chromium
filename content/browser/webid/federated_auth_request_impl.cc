@@ -52,7 +52,6 @@ using blink::mojom::IdentityProviderConfigPtr;
 using blink::mojom::IdentityProviderGetParametersPtr;
 using blink::mojom::IdentityProviderRequestOptions;
 using blink::mojom::IdentityProviderRequestOptionsPtr;
-using blink::mojom::LogoutRpsStatus;
 using blink::mojom::RequestTokenStatus;
 using blink::mojom::RequestUserInfoStatus;
 using blink::mojom::RevokeStatus;
@@ -489,7 +488,6 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // Ensures key data members are destructed in proper order and resolves any
   // pending promise.
   if (auth_request_token_callback_) {
-    DCHECK(!logout_callback_);
     CompleteRequestWithError(FederatedAuthRequestResult::kError,
                              TokenStatus::kUnhandledRequest,
                              /*token_error=*/absl::nullopt,
@@ -506,14 +504,6 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // `fedcm_metrics_` may no longer be usable when the destructor get invoked
   // naturally.
   revoke_request_.reset();
-
-  if (logout_callback_) {
-    // We do not complete the logout request, so unset the
-    // PendingWebIdentityRequest on the Page so that other frames in the
-    // same Page may still trigger new requests after the current
-    // RenderFrameHost is destroyed.
-    GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(nullptr);
-  }
 
   // Since FederatedAuthRequestImpl is a subclass of
   // DocumentService<blink::mojom::FederatedAuthRequest>, it only lives as long
@@ -953,66 +943,6 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
                            /*should_delay_callback=*/false);
 }
 
-// TODO(kenrb): Depending on how this code evolves, it might make sense to
-// spin session management code into its own service. The prohibition on
-// making authentication requests and logout requests at the same time, while
-// not problematic for any plausible use case, need not be strictly necessary
-// if there is a good way to not have to resource contention between requests.
-// https://crbug.com/1200581
-void FederatedAuthRequestImpl::LogoutRps(
-    std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
-    LogoutRpsCallback callback) {
-  if (HasPendingRequest()) {
-    std::move(callback).Run(LogoutRpsStatus::kErrorTooManyRequests);
-    return;
-  }
-
-  DCHECK(logout_requests_.empty());
-
-  logout_callback_ = std::move(callback);
-  GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(this);
-
-  if (logout_requests.empty()) {
-    CompleteLogoutRequest(LogoutRpsStatus::kError);
-    return;
-  }
-
-  if (base::ranges::any_of(logout_requests, [](auto& request) {
-        return !request->url.is_valid();
-      })) {
-    bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
-                                    bad_message::FARI_LOGOUT_BAD_ENDPOINT);
-    CompleteLogoutRequest(LogoutRpsStatus::kError);
-    return;
-  }
-
-  for (auto& request : logout_requests) {
-    logout_requests_.push(std::move(request));
-  }
-
-  if (!network::IsOriginPotentiallyTrustworthy(origin())) {
-    CompleteLogoutRequest(LogoutRpsStatus::kError);
-    return;
-  }
-
-  network_manager_ = CreateNetworkManager();
-
-  if (!IsFedCmIdpSignoutEnabled()) {
-    CompleteLogoutRequest(LogoutRpsStatus::kError);
-    return;
-  }
-
-  if (GetApiPermissionStatus(origin()) !=
-      FederatedApiPermissionStatus::GRANTED) {
-    CompleteLogoutRequest(LogoutRpsStatus::kError);
-    return;
-  }
-
-  // TODO(kenrb): These should be parallelized rather than being dispatched
-  // serially. https://crbug.com/1200581.
-  DispatchOneLogout();
-}
-
 void FederatedAuthRequestImpl::ResolveTokenRequest(
     const std::string& token,
     ResolveTokenRequestCallback callback) {
@@ -1102,8 +1032,7 @@ void FederatedAuthRequestImpl::OnIdpSigninStatusReceived(
 bool FederatedAuthRequestImpl::HasPendingRequest() const {
   bool has_pending_request =
       GetPageData(&render_frame_host())->PendingWebIdentityRequest() != nullptr;
-  DCHECK(has_pending_request ||
-         (!auth_request_token_callback_ && !logout_callback_));
+  DCHECK(has_pending_request || !auth_request_token_callback_);
   return has_pending_request;
 }
 
@@ -2120,9 +2049,6 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
           origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
           account_id_);
 
-      permission_delegate_->GrantActiveSession(
-          origin(), url::Origin::Create(idp_config_url), account_id_);
-
       SetRequiresUserMediation(false);
 
       fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
@@ -2160,40 +2086,6 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       return;
     }
   }
-}
-
-void FederatedAuthRequestImpl::DispatchOneLogout() {
-  auto logout_request = std::move(logout_requests_.front());
-  DCHECK(logout_request->url.is_valid());
-  std::string account_id = logout_request->account_id;
-  auto logout_origin = url::Origin::Create(logout_request->url);
-  logout_requests_.pop();
-
-  if (permission_delegate_->HasActiveSession(logout_origin, origin(),
-                                             account_id)) {
-    network_manager_->SendLogout(
-        logout_request->url,
-        base::BindOnce(&FederatedAuthRequestImpl::OnLogoutCompleted,
-                       weak_ptr_factory_.GetWeakPtr()));
-    permission_delegate_->RevokeActiveSession(logout_origin, origin(),
-                                              account_id);
-  } else {
-    if (logout_requests_.empty()) {
-      CompleteLogoutRequest(LogoutRpsStatus::kSuccess);
-      return;
-    }
-
-    DispatchOneLogout();
-  }
-}
-
-void FederatedAuthRequestImpl::OnLogoutCompleted() {
-  if (logout_requests_.empty()) {
-    CompleteLogoutRequest(LogoutRpsStatus::kSuccess);
-    return;
-  }
-
-  DispatchOneLogout();
 }
 
 void FederatedAuthRequestImpl::CompleteRequestWithError(
@@ -2378,17 +2270,6 @@ url::Origin FederatedAuthRequestImpl::GetEmbeddingOrigin() const {
   return render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
 }
 
-void FederatedAuthRequestImpl::CompleteLogoutRequest(
-    blink::mojom::LogoutRpsStatus status) {
-  network_manager_.reset();
-  base::queue<blink::mojom::LogoutRpsRequestPtr>().swap(logout_requests_);
-  if (logout_callback_) {
-    std::move(logout_callback_).Run(status);
-    logout_callback_.Reset();
-    GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(nullptr);
-  }
-}
-
 void FederatedAuthRequestImpl::CompleteUserInfoRequest(
     FederatedAuthUserInfoRequest* request,
     RequestUserInfoCallback callback,
@@ -2500,7 +2381,6 @@ void FederatedAuthRequestImpl::OnRejectRequest() {
   if (!auth_request_token_callback_) {
     return;
   }
-  DCHECK(!logout_callback_);
   DCHECK(errors_logged_to_console_);
   CompleteRequestWithError(FederatedAuthRequestResult::kError,
                            /*token_status=*/absl::nullopt,

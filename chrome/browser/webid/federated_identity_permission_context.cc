@@ -15,19 +15,13 @@
 #include "url/origin.h"
 
 namespace {
-const char kActiveSessionIdpKey[] = "identity-provider";
 const char kSharingIdpKey[] = "idp-origin";
 
 }  // namespace
 
 FederatedIdentityPermissionContext::FederatedIdentityPermissionContext(
     content::BrowserContext* browser_context)
-    : active_session_context_(
-          new FederatedIdentityAccountKeyedPermissionContext(
-              browser_context,
-              ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION,
-              kActiveSessionIdpKey)),
-      sharing_context_(new FederatedIdentityAccountKeyedPermissionContext(
+    : sharing_context_(new FederatedIdentityAccountKeyedPermissionContext(
           browser_context,
           ContentSettingsType::FEDERATED_IDENTITY_SHARING,
           kSharingIdpKey)),
@@ -62,33 +56,6 @@ void FederatedIdentityPermissionContext::AddIdpSigninStatusObserver(
 void FederatedIdentityPermissionContext::RemoveIdpSigninStatusObserver(
     IdpSigninStatusObserver* observer) {
   idp_signin_status_observer_list_.RemoveObserver(observer);
-}
-
-bool FederatedIdentityPermissionContext::HasActiveSession(
-    const url::Origin& relying_party_requester,
-    const url::Origin& identity_provider,
-    const std::string& account_identifier) {
-  return active_session_context_->HasPermission(
-      relying_party_requester, relying_party_requester, identity_provider,
-      account_identifier);
-}
-
-void FederatedIdentityPermissionContext::GrantActiveSession(
-    const url::Origin& relying_party_requester,
-    const url::Origin& identity_provider,
-    const std::string& account_identifier) {
-  active_session_context_->GrantPermission(
-      relying_party_requester, relying_party_requester, identity_provider,
-      account_identifier);
-}
-
-void FederatedIdentityPermissionContext::RevokeActiveSession(
-    const url::Origin& relying_party_requester,
-    const url::Origin& identity_provider,
-    const std::string& account_identifier) {
-  active_session_context_->RevokePermission(
-      relying_party_requester, relying_party_requester, identity_provider,
-      account_identifier);
 }
 
 bool FederatedIdentityPermissionContext::HasSharingPermission(
@@ -150,7 +117,6 @@ void FederatedIdentityPermissionContext::UnregisterIdP(const GURL& origin) {
 }
 
 void FederatedIdentityPermissionContext::FlushScheduledSaveSettingsCalls() {
-  active_session_context_->FlushScheduledSaveSettingsCalls();
   sharing_context_->FlushScheduledSaveSettingsCalls();
   idp_signin_context_->FlushScheduledSaveSettingsCalls();
   idp_registration_context_->FlushScheduledSaveSettingsCalls();

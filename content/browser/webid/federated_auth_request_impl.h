@@ -83,8 +83,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void CancelTokenRequest() override;
   void ResolveTokenRequest(const std::string& token,
                            ResolveTokenRequestCallback callback) override;
-  void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
-                 LogoutRpsCallback) override;
   void SetIdpSigninStatus(const url::Origin& origin,
                           blink::mojom::IdpSigninStatus status) override;
   void RegisterIdP(const ::GURL& idp, RegisterIdPCallback) override;
@@ -269,8 +267,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
       IdpNetworkRequestManager::FetchStatus status,
       const GURL& url);
-  void DispatchOneLogout();
-  void OnLogoutCompleted();
 
   void CompleteRequestWithError(
       blink::mojom::FederatedAuthRequestResult result,
@@ -287,7 +283,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const absl::optional<GURL>& selected_idp_config_url,
       const std::string& token,
       bool should_delay_callback);
-  void CompleteLogoutRequest(blink::mojom::LogoutRpsStatus);
   void CompleteUserInfoRequest(
       FederatedAuthUserInfoRequest* request,
       RequestUserInfoCallback callback,
@@ -422,9 +417,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Pending revoke request.
   std::unique_ptr<FederatedAuthRevokeRequest> revoke_request_;
-
-  base::queue<blink::mojom::LogoutRpsRequestPtr> logout_requests_;
-  LogoutRpsCallback logout_callback_;
 
   // TODO(crbug.com/1361649): Refactor these member variables introduced through
   // the multi IDP prototype implementation to make them less confusing.

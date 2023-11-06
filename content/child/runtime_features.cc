@@ -234,8 +234,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      kDefault},
     {wf::EnableFedCmIdpSigninStatus,
      raw_ref(features::kFedCmIdpSigninStatusEnabled), kSetOnlyIfOverridden},
-    {wf::EnableFedCmIdpSignout, raw_ref(features::kFedCmLogoutRps),
-     kSetOnlyIfOverridden},
     {wf::EnableGamepadMultitouch, raw_ref(features::kEnableGamepadMultitouch)},
     {wf::EnableSharedStorageAPI,
      raw_ref(features::kPrivacySandboxAdsAPIsOverride), kSetOnlyIfOverridden},

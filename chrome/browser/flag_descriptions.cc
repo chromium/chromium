@@ -1619,11 +1619,6 @@ const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
 const char kFedCmIdPRegistrationDescription[] =
     "Enables RPs to get identity credentials from registered IdPs.";
 
-const char kFedCmLogoutRpsName[] = "FedCM with logoutRPs";
-const char kFedCmLogoutRpsDescription[] =
-    "Enables an IDP to declare itself logged out and request front-channel "
-    "logout.";
-
 const char kFedCmMetricsEndpointName[] = "FedCmMetricsEndpoint";
 const char kFedCmMetricsEndpointDescription[] =
     "Allows the FedCM API to send performance measurement to the metrics "

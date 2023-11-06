@@ -17,7 +17,6 @@
 namespace blink {
 
 namespace {
-using mojom::blink::LogoutRpsStatus;
 using mojom::blink::RequestTokenStatus;
 using mojom::blink::RevokeStatus;
 
@@ -31,21 +30,6 @@ enum class FedCmCspStatus {
   kFailedOrigin = 2,
   kMaxValue = kFailedOrigin
 };
-
-void OnLogoutRpsResponse(ScriptPromiseResolver* resolver,
-                         LogoutRpsStatus status) {
-  // TODO(kenrb); There should be more thought put into how this API works.
-  // Returning success or failure doesn't have a lot of meaning. If some
-  // logout attempts fail and others succeed, and even different attempts
-  // fail for different reasons, how does that get conveyed to the caller?
-  if (status != LogoutRpsStatus::kSuccess) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, "Error logging out endpoints."));
-
-    return;
-  }
-  resolver->Resolve();
-}
 
 void OnRevoke(ScriptPromiseResolver* resolver, RevokeStatus status) {
   if (status != RevokeStatus::kSuccess) {
@@ -109,65 +93,6 @@ IdentityCredential::IdentityCredential(const String& token,
 
 bool IdentityCredential::IsIdentityCredential() const {
   return true;
-}
-
-// static
-ScriptPromise IdentityCredential::logoutRPs(
-    ScriptState* script_state,
-    const HeapVector<Member<IdentityCredentialLogoutRPsRequest>>&
-        logout_endpoints) {
-  if (!RuntimeEnabledFeatures::FedCmIdpSignoutEnabled(
-          ExecutionContext::From(script_state))) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kNotSupportedError,
-                          "FedCM IdpSignout flag in about:flags not enabled."));
-  }
-
-  // |FedCmEnabled| is not implied by |FedCmIdpSignoutEnabled| when the latter
-  // is set via runtime flags (rather than about:flags).
-  if (!RuntimeEnabledFeatures::FedCmEnabled(
-          ExecutionContext::From(script_state))) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kNotSupportedError,
-                          "FedCM flag in about:flags not enabled."));
-  }
-
-  if (logout_endpoints.empty()) {
-    return ScriptPromise();
-  }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  ContentSecurityPolicy* policy =
-      resolver->GetExecutionContext()
-          ->GetContentSecurityPolicyForCurrentWorld();
-  Vector<mojom::blink::LogoutRpsRequestPtr> logout_requests;
-  for (auto& request : logout_endpoints) {
-    auto logout_request = mojom::blink::LogoutRpsRequest::From(*request);
-    if (!logout_request->url.IsValid()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kSyntaxError, "Invalid logout endpoint URL."));
-      return promise;
-    }
-    if (IsRejectingPromiseDueToCSP(policy, resolver, logout_request->url))
-      return promise;
-    if (logout_request->account_id.empty()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kSyntaxError, "Account ID cannot be empty."));
-      return promise;
-    }
-    logout_requests.push_back(std::move(logout_request));
-  }
-
-  auto* fedcm_logout_request =
-      CredentialManagerProxy::From(script_state)->FedCmLogoutRpsRequest();
-  fedcm_logout_request->LogoutRps(
-      std::move(logout_requests),
-      WTF::BindOnce(&OnLogoutRpsResponse, WrapPersistent(resolver)));
-  return promise;
 }
 
 // static

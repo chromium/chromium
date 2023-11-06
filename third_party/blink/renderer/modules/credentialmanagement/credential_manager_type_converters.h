@@ -25,7 +25,6 @@ class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class Credential;
 class IdentityCredentialRevokeOptions;
-class IdentityCredentialLogoutRPsRequest;
 class IdentityProviderConfig;
 class IdentityProviderRequestOptions;
 class IdentityUserInfo;
@@ -137,13 +136,6 @@ struct TypeConverter<blink::mojom::blink::AuthenticatorSelectionCriteriaPtr,
                      blink::AuthenticatorSelectionCriteria> {
   static blink::mojom::blink::AuthenticatorSelectionCriteriaPtr Convert(
       const blink::AuthenticatorSelectionCriteria&);
-};
-
-template <>
-struct TypeConverter<blink::mojom::blink::LogoutRpsRequestPtr,
-                     blink::IdentityCredentialLogoutRPsRequest> {
-  static blink::mojom::blink::LogoutRpsRequestPtr Convert(
-      const blink::IdentityCredentialLogoutRPsRequest&);
 };
 
 template <>

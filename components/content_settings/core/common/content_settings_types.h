@@ -274,7 +274,8 @@ enum class ContentSettingsType : int32_t {
   // a specified account. When this is present it allows access to session
   // management capabilities between the sites. This setting is associated
   // with the relying party's origin.
-  FEDERATED_IDENTITY_ACTIVE_SESSION,
+  // Obsolete on Nov 2023.
+  DEPRECATED_FEDERATED_IDENTITY_ACTIVE_SESSION,
 
   // Setting to indicate whether Chrome should automatically apply darkening to
   // web content.

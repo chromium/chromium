@@ -36,9 +36,6 @@
 
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using blink::mojom::LogoutRpsRequest;
-using blink::mojom::LogoutRpsRequestPtr;
-using blink::mojom::LogoutRpsStatus;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;

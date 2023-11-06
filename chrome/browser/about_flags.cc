@@ -9154,10 +9154,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmIdpSigninStatusDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmIdpSigninStatusEnabled)},
 
-    {"fedcm-logout-rps", flag_descriptions::kFedCmLogoutRpsName,
-     flag_descriptions::kFedCmLogoutRpsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmLogoutRps)},
-
     {"fedcm-metrics-endpoint", flag_descriptions::kFedCmMetricsEndpointName,
      flag_descriptions::kFedCmMetricsEndpointDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmMetricsEndpoint)},

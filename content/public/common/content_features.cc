@@ -377,11 +377,6 @@ BASE_FEATURE(kFedCmIdPRegistration,
              "FedCmIdPregistration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables usage of the FedCM logoutRPs method.
-BASE_FEATURE(kFedCmLogoutRps,
-             "FedCmLogoutRps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables usage of the FedCM API with metrics endpoint at the same time.
 BASE_FEATURE(kFedCmMetricsEndpoint,
              "FedCmMetricsEndpoint",

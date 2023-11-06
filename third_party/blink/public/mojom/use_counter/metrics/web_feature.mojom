@@ -3548,8 +3548,8 @@ enum WebFeature {
   kOBSOLETE_GestureScrollEnd = 4222,
   kArrayBufferTooBigForWebAPI = 4223,
   kFedCmRevoke = 4224,
-  kFedCmLogout = 4225,
-  kFedCmLogoutRps = 4226,
+  kOBSOLETE_FedCmLogout = 4225,
+  kOBSOLETE_FedCmLogoutRps = 4226,
   kV8Navigator_DeprecatedReplaceInURN_Method = 4227,
   // The items above roughly this point are available in the M103 branch.
 
