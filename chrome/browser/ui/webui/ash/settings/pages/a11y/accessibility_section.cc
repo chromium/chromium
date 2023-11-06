@@ -519,6 +519,8 @@ void AccessibilitySection::AddLoadTimeData(
   webui::LocalizedString kLocalizedStrings[] = {
       {"a11yExplanation", IDS_SETTINGS_ACCESSIBILITY_EXPLANATION},
       {"a11yPageTitle", IDS_SETTINGS_ACCESSIBILITY},
+      {"a11yMenuItemDescription",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MENU_ITEM_DESCRIPTION},
       {"a11yWebStore", IDS_SETTINGS_ACCESSIBILITY_WEB_STORE},
       {"accessibleImageLabelsSubtitle",
        IDS_SETTINGS_ACCESSIBLE_IMAGE_LABELS_SUBTITLE},

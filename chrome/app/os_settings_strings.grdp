@@ -1209,6 +1209,9 @@
   </message>
 
   <!-- A11y (OS Settings) -->
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MENU_ITEM_DESCRIPTION" desc="Description for the Accessibility menu item in the left menu.">
+    Screen reader, magnification
+  </message>
   <message name="IDS_SETTINGS_OPTIONS_IN_MENU_LABEL" desc="Label for checkbox which enables showing accessibility options in the system menu.">
     Show accessibility options in Quick Settings
   </message>

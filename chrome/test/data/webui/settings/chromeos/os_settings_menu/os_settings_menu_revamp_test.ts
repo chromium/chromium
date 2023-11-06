@@ -277,6 +277,18 @@ suite('<os-settings-menu>', () => {
     });
   });
 
+  suite('A11y menu item', () => {
+    test('Description text', async () => {
+      await createMenu();
+
+      const a11yMenuItem =
+          queryMenuItemByPath(`/${routesMojom.ACCESSIBILITY_SECTION_PATH}`);
+      assertTrue(!!a11yMenuItem);
+
+      assertEquals('Screen reader, magnification', a11yMenuItem.sublabel);
+    });
+  });
+
   suite('Bluetooth menu item', () => {
     let bluetoothConfig: FakeBluetoothConfig;
     const bluetoothMouse = createDefaultBluetoothDevice(
