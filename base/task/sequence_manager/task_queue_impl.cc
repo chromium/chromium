@@ -41,26 +41,10 @@
 namespace base {
 namespace sequence_manager {
 
-namespace {
-
-// Controls whether cancelled tasks are removed from the delayed queue.
-BASE_FEATURE(kSweepCancelledTasks,
-             "SweepCancelledTasks",
-             FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
-
 namespace internal {
 
 namespace {
 
-// Cache of the state of the kRemoveCanceledTasksInTaskQueue,
-// kSweepCancelledTasks and kExplicitHighResolutionTimerWin features. This
-// avoids the need to constantly query their enabled state through
-// FeatureList::IsEnabled().
-bool g_is_remove_canceled_tasks_in_task_queue_enabled = true;
-bool g_is_sweep_cancelled_tasks_enabled =
-    kSweepCancelledTasks.default_state == FEATURE_ENABLED_BY_DEFAULT;
 // An atomic is used here because the value is queried from other threads when
 // tasks are posted cross-thread, which can race with its initialization.
 std::atomic<base::TimeDelta> g_max_precise_delay{kDefaultMaxPreciseDelay};
@@ -144,12 +128,6 @@ DelayedTaskHandle TaskQueueImpl::TaskRunner::PostCancelableDelayedTaskAt(
     OnceClosure callback,
     TimeTicks delayed_run_time,
     base::subtle::DelayPolicy delay_policy) {
-  if (!g_is_remove_canceled_tasks_in_task_queue_enabled) {
-    // This will revert to PostDelayedTaskAt() with default DelayedTaskHandle.
-    return SequencedTaskRunner::PostCancelableDelayedTaskAt(
-        pass_key, location, std::move(callback), delayed_run_time,
-        delay_policy);
-  }
   return task_poster_->PostCancelableTask(
       PostedTask(this, std::move(callback), location, delayed_run_time,
                  delay_policy, Nestable::kNestable, task_type_));
@@ -160,11 +138,6 @@ DelayedTaskHandle TaskQueueImpl::TaskRunner::PostCancelableDelayedTask(
     const Location& location,
     OnceClosure callback,
     TimeDelta delay) {
-  if (!g_is_remove_canceled_tasks_in_task_queue_enabled) {
-    return SequencedTaskRunner::PostCancelableDelayedTask(
-        pass_key, location, std::move(callback), delay);
-  }
-
   return task_poster_->PostCancelableTask(
       PostedTask(this, std::move(callback), location, delay,
                  Nestable::kNestable, task_type_));
@@ -185,36 +158,12 @@ bool TaskQueueImpl::TaskRunner::RunsTasksInCurrentSequence() const {
 
 // static
 void TaskQueueImpl::InitializeFeatures() {
-  ApplyRemoveCanceledTasksInTaskQueue();
-  g_is_sweep_cancelled_tasks_enabled =
-      FeatureList::IsEnabled(kSweepCancelledTasks);
   g_max_precise_delay = kMaxPreciseDelay.Get();
 #if BUILDFLAG(IS_WIN)
   g_explicit_high_resolution_timer_win.store(
       FeatureList::IsEnabled(kExplicitHighResolutionTimerWin),
       std::memory_order_relaxed);
 #endif  // BUILDFLAG(IS_WIN)
-}
-
-// static
-void TaskQueueImpl::ApplyRemoveCanceledTasksInTaskQueue() {
-  // Since kRemoveCanceledTasksInTaskQueue is not constexpr (forbidden for
-  // Features), it cannot be used to initialize
-  // |g_is_remove_canceled_tasks_in_task_queue_enabled| at compile time. At
-  // least DCHECK that its initial value matches the default value of the
-  // feature here.
-  DCHECK_EQ(g_is_remove_canceled_tasks_in_task_queue_enabled,
-            kRemoveCanceledTasksInTaskQueue.default_state ==
-                FEATURE_ENABLED_BY_DEFAULT);
-  g_is_remove_canceled_tasks_in_task_queue_enabled =
-      FeatureList::IsEnabled(kRemoveCanceledTasksInTaskQueue);
-}
-
-// static
-void TaskQueueImpl::ResetRemoveCanceledTasksInTaskQueueForTesting() {
-  g_is_remove_canceled_tasks_in_task_queue_enabled =
-      kRemoveCanceledTasksInTaskQueue.default_state ==
-      FEATURE_ENABLED_BY_DEFAULT;
 }
 
 TaskQueueImpl::TaskQueueImpl(SequenceManagerImpl* sequence_manager,
@@ -1199,19 +1148,18 @@ void TaskQueueImpl::ReclaimMemory(TimeTicks now) {
   if (main_thread_only().delayed_incoming_queue.empty())
     return;
 
-  if (g_is_sweep_cancelled_tasks_enabled) {
-    main_thread_only().delayed_incoming_queue.SweepCancelledTasks(
-        sequence_manager_);
+  main_thread_only().delayed_incoming_queue.SweepCancelledTasks(
+      sequence_manager_);
 
-    // If deleting one of the cancelled tasks shut down this queue, bail out.
-    // Note that in this scenario |this| is still valid, but some fields of the
-    // queue have been cleared out by |UnregisterTaskQueue|.
-    if (!main_thread_only().delayed_work_queue)
-      return;
-
-    LazyNow lazy_now(now);
-    UpdateWakeUp(&lazy_now);
+  // If deleting one of the cancelled tasks shut down this queue, bail out.
+  // Note that in this scenario |this| is still valid, but some fields of the
+  // queue have been cleared out by |UnregisterTaskQueue|.
+  if (!main_thread_only().delayed_work_queue) {
+    return;
   }
+
+  LazyNow lazy_now(now);
+  UpdateWakeUp(&lazy_now);
 
   // Also consider shrinking the work queue if it's wasting memory.
   main_thread_only().delayed_work_queue->MaybeShrinkQueue();

@@ -80,15 +80,6 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
   // after FeatureList initialization and while Chrome is still single-threaded.
   static void InitializeFeatures();
 
-  // Sets the global cached state of the RemoveCanceledTasksInTaskQueue feature
-  // according to its enabled state. Must be invoked after FeatureList
-  // initialization.
-  static void ApplyRemoveCanceledTasksInTaskQueue();
-
-  // Resets the global cached state of the RemoveCanceledTasksInTaskQueue
-  // feature according to its default state.
-  static void ResetRemoveCanceledTasksInTaskQueueForTesting();
-
   TaskQueueImpl(SequenceManagerImpl* sequence_manager,
                 WakeUpQueue* wake_up_queue,
                 const TaskQueue::Spec& spec);
