@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/payments/content/payment_app.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -80,7 +82,8 @@ class PaymentResponseHelper
 
   // A normalized copy of the shipping address, which will be included in the
   // PaymentResponse.
-  autofill::AutofillProfile shipping_address_;
+  autofill::AutofillProfile shipping_address_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
 
   // Instrument Details.
   std::string method_name_;
