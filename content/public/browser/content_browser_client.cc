@@ -1654,11 +1654,4 @@ void ContentBrowserClient::BindVideoEffectsManager(
         video_effects_manager) {}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void ContentBrowserClient::PreferenceRankAudioDeviceInfos(
-    BrowserContext* browser_context,
-    blink::WebMediaDeviceInfoArray& infos) {}
-void ContentBrowserClient::PreferenceRankVideoDeviceInfos(
-    BrowserContext* browser_context,
-    blink::WebMediaDeviceInfoArray& infos) {}
-
 }  // namespace content
