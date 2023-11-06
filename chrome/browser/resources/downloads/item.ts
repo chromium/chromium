@@ -468,8 +468,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case State.kAsyncScanning:
         return loadTimeData.getString('asyncScanningDownloadDesc');
       case State.kPromptForScanning:
-      case State.kPromptForLocalPasswordScanning:  // Fallthrough.
         return loadTimeData.getString('promptForScanningDesc');
+      case State.kPromptForLocalPasswordScanning:
+        return loadTimeData.getString('promptForLocalPasswordScanningDesc');
       case State.kInProgress:
       case State.kPaused:  // Fallthrough.
         return data.progressStatusText;

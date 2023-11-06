@@ -2196,8 +2196,12 @@ are declared in tools/grit/grit_rule.gni.
         Scanning for malware...
       </message>
       <message name="IDS_BLOCK_REASON_PROMPT_FOR_SCANNING_UPDATED"
-               desc="Message shown to the user on chrome://downloads page to explain that this download is recommended to be scanned.">
+          desc="Message shown to the user on chrome://downloads page to explain that this download is recommended to be scanned.">
         This file might be a virus or malware. You can send it to Google to check if it's unsafe.
+      </message>
+      <message name="IDS_BLOCK_REASON_PROMPT_FOR_LOCAL_PASSWORD_SCANNING"
+          desc="Message shown to the user on chrome://downloads page to explain that this download is recommended to be scanned.">
+        This file may be dangerous
       </message>
       <message name="IDS_DEEP_SCANNED_OPENED_DANGEROUS_DESCRIPTION"
         desc="Message shown to the user on chrome://downloads page to explain this this download was deep scanned, and found to be malicious.">
