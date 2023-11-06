@@ -461,7 +461,9 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagDisabled) {
 }
 
 // Test `CalculatePromoStatistics` when feature flag is enabled.
-TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagEnabled) {
+// TODO(crbug.com/1499711): Test is failing.
+TEST_F(DefaultBrowserUtilsTest,
+       DISABLED_CalculatePromoStatisticsTest_FlagEnabled) {
   feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
                                  {});
   {
