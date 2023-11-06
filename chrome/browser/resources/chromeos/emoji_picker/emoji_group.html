@@ -277,7 +277,11 @@
 <!-- Add emoji buttons.
   Note that the click and context menu listeners are shared among all the
   elements to improve efficiency and performance.
-  -->
+
+  Note duplicate loop for case with and without variants. Since many categories
+  have zero variants, doing the variants on a per-group basis has a significant
+  advantage.
+-->
 <div id="palette"
   class$="[[getLayoutClassName(layoutType, category)]]"
   on-click="onEmojiClick"
@@ -306,6 +310,7 @@
     </div>
   </template>
   <template is="dom-if" if="[[!isVisual(category)]]">
+    <template is="dom-if" if="[[hasVariants(data)]]">
       <template is="dom-repeat" items="[[data]]">
         <div class="emoji-button-container">
         <button id="emoji-[[index]]" data-index$="[[index]]"
@@ -324,6 +329,19 @@
         </template>
         </div>
       </template>
+    </template>
+    <template is="dom-if" if="[[!hasVariants(data)]]">
+      <template is="dom-repeat" items="[[data]]">
+        <div class="emoji-button-container">
+        <button id="emoji-[[index]]" data-index$="[[index]]"
+          class$="emoji-button [[getEmojiButtonClassName(item)]]"
+          on-mouseenter="showTooltip" on-focus="showTooltip"
+          aria-label="[[getEmojiAriaLabel(item)]]">
+          [[getDisplayEmojiForEmoji(item.base.string)]]
+        </button>
+        </div>
+      </template>
+    </template>
   </template>
   <paper-tooltip id='tooltip' fit-to-visible-bounds offset="8">
     [[focusedEmoji.base.name]]

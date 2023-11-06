@@ -340,6 +340,11 @@ export class EmojiGroupComponent extends PolymerElement {
     return category === CategoryEnum.GIF;
   }
 
+  private hasVariants(data: EmojiVariants[]): boolean {
+    return data.some(
+        t => !(t.alternates === undefined || t.alternates.length === 0));
+  }
+
   /**
    * Filters visual content to be displayed in the given column based on '
    * the height of the given column.
