@@ -271,9 +271,13 @@ void ServiceWorkerHost::OnExtensionPermissionsUpdated(
   if (extension.id() != worker_id_.extension_id) {
     return;
   }
+  content::BrowserContext* browser_context = GetBrowserContext();
+  if (!browser_context) {
+    return;
+  }
   content::ServiceWorkerContext* context =
       util::GetServiceWorkerContextForExtensionId(worker_id_.extension_id,
-                                                  GetBrowserContext());
+                                                  browser_context);
   CHECK(context);
   if (!context->IsLiveRunningServiceWorker(worker_id_.version_id)) {
     return;
@@ -300,9 +304,14 @@ void ServiceWorkerHost::OpenChannelToExtension(
   bad_message::ReceivedBadMessage(render_process_host_,
                                   bad_message::LEGACY_IPC_MISMATCH);
 #else
+  content::BrowserContext* browser_context = GetBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
   MessageServiceApi::GetMessageService()->OpenChannelToExtension(
-      GetBrowserContext(), worker_id_, port_id, *info, channel_type,
-      channel_name, std::move(port), std::move(port_host));
+      browser_context, worker_id_, port_id, *info, channel_type, channel_name,
+      std::move(port), std::move(port_host));
 #endif
 }
 
@@ -318,9 +327,14 @@ void ServiceWorkerHost::OpenChannelToNativeApp(
   bad_message::ReceivedBadMessage(render_process_host_,
                                   bad_message::LEGACY_IPC_MISMATCH);
 #else
+  content::BrowserContext* browser_context = GetBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
   MessageServiceApi::GetMessageService()->OpenChannelToNativeApp(
-      GetBrowserContext(), worker_id_, port_id, native_app_name,
-      std::move(port), std::move(port_host));
+      browser_context, worker_id_, port_id, native_app_name, std::move(port),
+      std::move(port_host));
 #endif
 }
 
@@ -340,8 +354,13 @@ void ServiceWorkerHost::OpenChannelToTab(
   bad_message::ReceivedBadMessage(render_process_host_,
                                   bad_message::LEGACY_IPC_MISMATCH);
 #else
+  content::BrowserContext* browser_context = GetBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
   MessageServiceApi::GetMessageService()->OpenChannelToTab(
-      GetBrowserContext(), worker_id_, port_id, tab_id, frame_id,
+      browser_context, worker_id_, port_id, tab_id, frame_id,
       document_id ? *document_id : std::string(), channel_type, channel_name,
       std::move(port), std::move(port_host));
 #endif
