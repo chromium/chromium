@@ -503,19 +503,26 @@ suite('WallpaperSearchTest', () => {
           $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
     });
 
-    test('shows error ui if search fails', async () => {
-      handler.setResultFor(
-          'getWallpaperSearchResults',
-          Promise.resolve({status: WallpaperSearchStatus.kError, results: []}));
-      createWallpaperSearchElementWithDescriptors();
-      await flushTasks();
+    [WallpaperSearchStatus.kError, WallpaperSearchStatus.kRequestThrottled]
+        .forEach((status) => {
+          test(
+              `shows error ui if search fails with status of ${status}`,
+              async () => {
+                handler.setResultFor(
+                    'getWallpaperSearchResults',
+                    Promise.resolve({status: status, results: []}));
+                createWallpaperSearchElementWithDescriptors();
+                await flushTasks();
 
-      wallpaperSearchElement.$.submitButton.click();
-      await waitAfterNextRender(wallpaperSearchElement);
+                wallpaperSearchElement.$.submitButton.click();
+                await waitAfterNextRender(wallpaperSearchElement);
 
-      assertNotStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
-      assertStyle(
-          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
-    });
+                assertNotStyle(
+                    $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+                assertStyle(
+                    $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
+                    'none');
+              });
+        });
   });
 });

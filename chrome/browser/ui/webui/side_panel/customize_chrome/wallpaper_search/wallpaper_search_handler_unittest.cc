@@ -593,6 +593,53 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
   EXPECT_EQ(static_cast<int>(images.size()), response.images_size());
 }
 
+TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
+  optimization_guide::proto::WallpaperSearchRequest request;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      done_callback;
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+      .WillOnce(Invoke(
+          [&request, &done_callback](
+              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              const google::protobuf::MessageLite& request_arg,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  done_callback_arg) {
+            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
+            request.CheckTypeAndMergeFrom(request_arg);
+            done_callback = std::move(done_callback_arg);
+          }));
+  base::MockCallback<WallpaperSearchHandler::GetWallpaperSearchResultsCallback>
+      callback;
+
+  handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
+                                      nullptr, callback.Get());
+  EXPECT_EQ("foo", request.descriptors().descriptor_a());
+  EXPECT_TRUE(request.descriptors().descriptor_b().empty());
+  EXPECT_TRUE(request.descriptors().descriptor_c().empty());
+  EXPECT_TRUE(request.descriptors().descriptor_d().empty());
+
+  std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
+      images;
+  side_panel::customize_chrome::mojom::WallpaperSearchStatus status;
+  EXPECT_CALL(callback, Run(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
+
+  std::move(done_callback)
+      .Run(
+          base::unexpected(
+              optimization_guide::OptimizationGuideModelExecutionError::
+                  FromModelExecutionError(
+                      optimization_guide::OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kRequestThrottled)),
+          nullptr);
+
+  EXPECT_EQ(status, side_panel::customize_chrome::mojom::WallpaperSearchStatus::
+                        kRequestThrottled);
+  EXPECT_EQ(images.size(), 0u);
+}
+
 TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   // Fill wallpaper_search_results_ with 2 bitmaps.
   optimization_guide::proto::WallpaperSearchRequest request;

@@ -7850,6 +7850,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER" translateable="false" desc="Header for the wallpaper search section for showing past themes." >
         Your recent themes
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_DESCRIPTION" desc="The description of the message displayed when a wallpaper search request is throttled.">
+        You can try again tomorrow.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_TITLE" desc="The title of the message displayed when a wallpaper search request is throttled.">
+        You've reached your limit for today.
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_AGAIN_BTN_TEXT" translateable="false" desc="Button text for submitting the form to get wallpaper search results when the user has already done it before." >
         Search Again
       </message>

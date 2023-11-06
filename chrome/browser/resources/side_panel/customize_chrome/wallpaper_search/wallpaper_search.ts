@@ -181,6 +181,12 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
           description: this.i18n('genericErrorDescription'),
           callToAction: this.i18n('tryAgain'),
         };
+      case WallpaperSearchStatus.kRequestThrottled:
+        return {
+          title: this.i18n('requestThrottledTitle'),
+          description: this.i18n('requestThrottledDescription'),
+          callToAction: this.i18n('ok'),
+        };
     }
   }
 

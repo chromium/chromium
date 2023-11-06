@@ -37,6 +37,8 @@ enum WallpaperSearchStatus {
   kOk,
   // Generic error, not specified.
   kError,
+  // Too many requests.
+  kRequestThrottled,
 };
 
 // Browser-side handler for requests from WebUI page.

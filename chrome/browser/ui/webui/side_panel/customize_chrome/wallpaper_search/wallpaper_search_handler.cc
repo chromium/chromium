@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/image_fetcher/core/image_decoder.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
@@ -292,6 +293,15 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!result.has_value()) {
+    if (result.error().error() ==
+        optimization_guide::OptimizationGuideModelExecutionError::
+            ModelExecutionError::kRequestThrottled) {
+      std::move(callback).Run(
+          side_panel::customize_chrome::mojom::WallpaperSearchStatus::
+              kRequestThrottled,
+          std::vector<
+              side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>());
+    }
     return;
   }
   auto response = optimization_guide::ParsedAnyMetadata<
