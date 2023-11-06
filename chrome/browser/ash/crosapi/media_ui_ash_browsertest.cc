@@ -14,6 +14,7 @@
 #include "components/global_media_controls/public/test/mock_device_service.h"
 #include "content/public/test/browser_test.h"
 
+using global_media_controls::test::MockDeviceListClient;
 using testing::_;
 
 namespace mojom {
@@ -26,13 +27,6 @@ using global_media_controls::mojom::DeviceService;
 namespace crosapi {
 
 namespace {
-
-class MockDeviceListClient : public ::mojom::DeviceListClient {
- public:
-  MOCK_METHOD(void,
-              OnDevicesUpdated,
-              (std::vector<global_media_controls::mojom::DevicePtr> devices));
-};
 
 class MockObserver : public MediaUIAsh::Observer {
  public:

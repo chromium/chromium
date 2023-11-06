@@ -31,10 +31,13 @@ class MockMojoImpl : public T {
 
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
- protected:
+  mojo::Receiver<T>& receiver() { return receiver_; }
+
+ private:
   mojo::Receiver<T> receiver_{this};
 };
 
+// This class should only be used by tests for GlobalMediaControls classes.
 class MockDeviceListHost : public MockMojoImpl<mojom::DeviceListHost> {
  public:
   MockDeviceListHost();
@@ -43,6 +46,16 @@ class MockDeviceListHost : public MockMojoImpl<mojom::DeviceListHost> {
   MOCK_METHOD(void, SelectDevice, (const std::string& device_id));
 };
 
+// This class should only be used by tests for GlobalMediaControls classes.
+class MockDeviceListClient : public MockMojoImpl<mojom::DeviceListClient> {
+ public:
+  MockDeviceListClient();
+  ~MockDeviceListClient() override;
+
+  MOCK_METHOD(void, OnDevicesUpdated, (std::vector<mojom::DevicePtr> devices));
+};
+
+// This class should only be used by tests for GlobalMediaControls classes.
 class MockDeviceService : public MockMojoImpl<mojom::DeviceService> {
  public:
   MockDeviceService();
@@ -61,6 +74,47 @@ class MockDeviceService : public MockMojoImpl<mojom::DeviceService> {
       void,
       SetDevicePickerProvider,
       (mojo::PendingRemote<mojom::DevicePickerProvider> provider_remote));
+};
+
+// This class should only be used by tests for GlobalMediaControls classes.
+class MockDevicePickerProvider
+    : public MockMojoImpl<mojom::DevicePickerProvider> {
+ public:
+  MockDevicePickerProvider();
+  ~MockDevicePickerProvider() override;
+
+  MOCK_METHOD(void, CreateItem, (const base::UnguessableToken& source_id));
+  MOCK_METHOD(void, ShowItem, ());
+  MOCK_METHOD(void, HideItem, ());
+  MOCK_METHOD(void, DeleteItem, ());
+  MOCK_METHOD(void,
+              OnMetadataChanged,
+              (const media_session::MediaMetadata& metadata));
+  MOCK_METHOD(void,
+              OnArtworkImageChanged,
+              (const gfx::ImageSkia& artwork_image));
+  MOCK_METHOD(void,
+              OnFaviconImageChanged,
+              (const gfx::ImageSkia& favicon_image));
+  MOCK_METHOD(
+      void,
+      AddObserver,
+      (mojo::PendingRemote<global_media_controls::mojom::DevicePickerObserver>
+           observer));
+  MOCK_METHOD(void, HideMediaUI, ());
+};
+
+// This class should only be used by tests for GlobalMediaControls classes.
+class MockDevicePickerObserver
+    : public MockMojoImpl<mojom::DevicePickerObserver> {
+ public:
+  MockDevicePickerObserver();
+  ~MockDevicePickerObserver() override;
+
+  MOCK_METHOD(void, OnMediaUIOpened, ());
+  MOCK_METHOD(void, OnMediaUIClosed, ());
+  MOCK_METHOD(void, OnMediaUIUpdated, ());
+  MOCK_METHOD(void, OnPickerDismissed, ());
 };
 
 }  // namespace global_media_controls::test

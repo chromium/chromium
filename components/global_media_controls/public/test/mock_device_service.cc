@@ -9,7 +9,16 @@ namespace global_media_controls::test {
 MockDeviceListHost::MockDeviceListHost() = default;
 MockDeviceListHost::~MockDeviceListHost() = default;
 
+MockDeviceListClient::MockDeviceListClient() = default;
+MockDeviceListClient::~MockDeviceListClient() = default;
+
 MockDeviceService::MockDeviceService() = default;
 MockDeviceService::~MockDeviceService() = default;
+
+MockDevicePickerProvider::MockDevicePickerProvider() = default;
+MockDevicePickerProvider::~MockDevicePickerProvider() = default;
+
+MockDevicePickerObserver::MockDevicePickerObserver() = default;
+MockDevicePickerObserver::~MockDevicePickerObserver() = default;
 
 }  // namespace global_media_controls::test

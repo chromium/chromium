@@ -19,6 +19,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
+#include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/global_media_controls/public/test/mock_media_dialog_delegate.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/browser/test/mock_media_router.h"
@@ -33,46 +34,10 @@
 #include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
 #endif
 
+using global_media_controls::test::MockDevicePickerProvider;
 using testing::_;
 using testing::AtLeast;
 using testing::NiceMock;
-
-namespace {
-
-class MockDevicePickerProvider
-    : public global_media_controls::mojom::DevicePickerProvider {
- public:
-  mojo::PendingRemote<global_media_controls::mojom::DevicePickerProvider>
-  PassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  MOCK_METHOD(void, CreateItem, (const base::UnguessableToken& source_id));
-  MOCK_METHOD(void, ShowItem, ());
-  MOCK_METHOD(void, HideItem, ());
-  MOCK_METHOD(void, DeleteItem, ());
-  MOCK_METHOD(void,
-              OnMetadataChanged,
-              (const media_session::MediaMetadata& metadata));
-  MOCK_METHOD(void,
-              OnArtworkImageChanged,
-              (const gfx::ImageSkia& artwork_image));
-  MOCK_METHOD(void,
-              OnFaviconImageChanged,
-              (const gfx::ImageSkia& favicon_image));
-  MOCK_METHOD(
-      void,
-      AddObserver,
-      (mojo::PendingRemote<global_media_controls::mojom::DevicePickerObserver>
-           observer));
-  MOCK_METHOD(void, HideMediaUI, ());
-
- private:
-  mojo::Receiver<global_media_controls::mojom::DevicePickerProvider> receiver_{
-      this};
-};
-
-}  // namespace
 
 class PresentationRequestNotificationProducerTest
     : public ChromeRenderViewHostTestHarness {

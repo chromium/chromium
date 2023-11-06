@@ -29,6 +29,7 @@
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/media_session_notification_item.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
+#include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/global_media_controls/public/test/mock_media_dialog_delegate.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
@@ -53,6 +54,7 @@ using global_media_controls::mojom::DeviceListHost;
 using global_media_controls::mojom::DevicePtr;
 }  // namespace mojom
 
+using global_media_controls::test::MockDeviceListClient;
 using media_router::MediaRoute;
 using media_router::StartPresentationContext;
 using media_session::mojom::AudioFocusRequestState;
@@ -66,18 +68,6 @@ using testing::NiceMock;
 using testing::Return;
 
 namespace {
-
-class MockDeviceListClient : public mojom::DeviceListClient {
- public:
-  MockDeviceListClient() : receiver_(this) {}
-
-  MOCK_METHOD(void, OnDevicesUpdated, (std::vector<mojom::DevicePtr> devices));
-
-  mojo::Receiver<mojom::DeviceListClient>& receiver() { return receiver_; }
-
- private:
-  mojo::Receiver<mojom::DeviceListClient> receiver_;
-};
 
 }  // namespace
 
