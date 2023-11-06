@@ -12,11 +12,11 @@ import {getSelectedApp} from 'chrome://resources/cr_components/app_management/ut
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppManagementBrowserProxy} from '../../common/app_management/browser_proxy.js';
+import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
 import {isRevampWayfindingEnabled} from '../../common/load_time_booleans.js';
 
-import {AppManagementBrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './chrome_app_detail_view.html.js';
-import {AppManagementStoreMixin} from './store_mixin.js';
 
 const AppManagementChromeAppDetailViewElementBase =
     AppManagementStoreMixin(I18nMixin(PolymerElement));

@@ -11,9 +11,9 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../../assert_extras.js';
+import {AppManagementBrowserProxy} from '../../common/app_management/browser_proxy.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 
-import {AppManagementBrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './pin_to_shelf_item.html.js';
 
 export class AppManagementPinToShelfItemElement extends PolymerElement {

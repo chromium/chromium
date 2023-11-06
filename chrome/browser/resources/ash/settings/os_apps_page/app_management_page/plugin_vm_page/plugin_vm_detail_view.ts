@@ -18,8 +18,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast} from '../../../assert_extras.js';
+import {AppManagementStoreMixin} from '../../../common/app_management/store_mixin.js';
 import {Router, routes} from '../../../router.js';
-import {AppManagementStoreMixin} from '../store_mixin.js';
 
 import {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';
 import {getTemplate} from './plugin_vm_detail_view.html.js';

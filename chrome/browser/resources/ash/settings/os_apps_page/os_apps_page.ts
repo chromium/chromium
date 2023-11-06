@@ -36,6 +36,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppManagementStoreMixin} from '../common/app_management/store_mixin.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {androidAppsVisible, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable, isRevampWayfindingEnabled, shouldShowStartup} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
@@ -45,7 +46,6 @@ import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, Router, routes} from '../router.js';
 
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
-import {AppManagementStoreMixin} from './app_management_page/store_mixin.js';
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
 import {getTemplate} from './os_apps_page.html.js';
 

@@ -11,8 +11,9 @@ import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.j
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
+
 import {getTemplate} from './app_item.html.js';
-import {AppManagementStoreMixin} from './store_mixin.js';
 import {openAppDetailPage} from './util.js';
 
 const AppManagementAppItemElementBase = AppManagementStoreMixin(PolymerElement);

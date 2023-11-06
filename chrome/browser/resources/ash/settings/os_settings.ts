@@ -122,6 +122,11 @@ export {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-ic
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+export {addApp, AppManagementActions, changeApp, removeApp, updateSelectedAppId, updateSubAppToParentAppId} from './common/app_management/actions.js';
+export {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from './common/app_management/browser_proxy.js';
+export {reduceAction, updateApps} from './common/app_management/reducers.js';
+export {AppManagementPageState, AppManagementStore} from './common/app_management/store.js';
+export {AppManagementStoreMixin} from './common/app_management/store_mixin.js';
 export {resetGlobalScrollTargetForTesting, setGlobalScrollTarget as setGlobalScrollTargetForTesting} from './common/global_scroll_target_mixin.js';
 export {LacrosExtensionControlBrowserProxy, LacrosExtensionControlBrowserProxyImpl} from './common/lacros_extension_control_browser_proxy.js';
 export {LacrosExtensionControlledIndicatorElement} from './common/lacros_extension_controlled_indicator.js';
@@ -196,12 +201,7 @@ export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from './os_abou
 export {DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.js';
 export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_util.js';
 export {AndroidAppsBrowserProxy, AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
-export {addApp, AppManagementActions, changeApp, removeApp, updateSelectedAppId, updateSubAppToParentAppId} from './os_apps_page/app_management_page/actions.js';
-export {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
 export {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
-export {reduceAction, updateApps} from './os_apps_page/app_management_page/reducers.js';
-export {AppManagementPageState, AppManagementStore} from './os_apps_page/app_management_page/store.js';
-export {AppManagementStoreMixin} from './os_apps_page/app_management_page/store_mixin.js';
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 export {OsSettingsAppsPageElement} from './os_apps_page/os_apps_page.js';
 export {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js';

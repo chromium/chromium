@@ -21,10 +21,10 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
 import {isRevampWayfindingEnabled} from '../../common/load_time_booleans.js';
 
 import {getTemplate} from './arc_detail_view.html.js';
-import {AppManagementStoreMixin} from './store_mixin.js';
 
 const AppManagementArcDetailViewElementBase =
     AppManagementStoreMixin(I18nMixin(PolymerElement));
