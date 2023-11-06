@@ -258,6 +258,7 @@ source_set("tokens_encodings") {
     "src/anonymous_tokens/cpp/privacy_pass/token_encodings.cc",
     "src/anonymous_tokens/cpp/privacy_pass/token_encodings.h",
   ]
+  configs += [ ":anonymous_tokens_internal_config" ]
   public_configs = [ ":anonymous_tokens_config" ]
   deps = [ ":status_utils" ]
   public_deps = [
