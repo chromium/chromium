@@ -25,6 +25,7 @@
 
 #include <iterator>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "util/win/exception_handler_server.h"
 #include "util/win/loader_lock.h"
