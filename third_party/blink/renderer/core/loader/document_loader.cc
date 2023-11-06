@@ -332,6 +332,7 @@ struct SameSizeAsDocumentLoader
   const base::flat_map<mojom::blink::RuntimeFeature, bool>
       modified_runtime_features;
   AtomicString cookie_deprecation_label;
+  mojom::RendererContentSettingsPtr content_settings;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -534,7 +535,8 @@ DocumentLoader::DocumentLoader(
       load_with_storage_access_(params_->load_with_storage_access),
       browsing_context_group_info_(params_->browsing_context_group_info),
       modified_runtime_features_(std::move(params_->modified_runtime_features)),
-      cookie_deprecation_label_(params_->cookie_deprecation_label) {
+      cookie_deprecation_label_(params_->cookie_deprecation_label),
+      content_settings_(std::move(params_->content_settings)) {
   DCHECK(frame_);
   DCHECK(params_);
 
@@ -685,6 +687,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->load_with_storage_access = load_with_storage_access_;
   params->modified_runtime_features = modified_runtime_features_;
   params->cookie_deprecation_label = cookie_deprecation_label_;
+  params->content_settings = content_settings_->Clone();
   return params;
 }
 
@@ -3494,6 +3497,10 @@ void DocumentLoader::DisableCodeCacheForTesting() {
 void DocumentLoader::UpdateSubresourceLoadMetrics(
     const SubresourceLoadMetrics& subresource_load_metrics) {
   GetLocalFrameClient().DidObserveSubresourceLoad(subresource_load_metrics);
+}
+
+const mojom::RendererContentSettingsPtr& DocumentLoader::GetContentSettings() {
+  return content_settings_;
 }
 
 DEFINE_WEAK_IDENTIFIER_MAP(DocumentLoader)

@@ -476,6 +476,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     return cookie_deprecation_label_;
   }
 
+  // Gets the content settings for the current {frame, navigation commit} tuple.
+  const mojom::RendererContentSettingsPtr& GetContentSettings();
+
  protected:
   // Based on its MIME type, if the main document's response corresponds to an
   // MHTML archive, then every resources will be loaded from this archive.
@@ -847,6 +850,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Will be used in
   // //third_party/blink/renderer/modules/cookie_deprecation_label.
   const AtomicString cookie_deprecation_label_;
+
+  // Renderer-enforced content settings are stored on a per-document basis.
+  mojom::RendererContentSettingsPtr content_settings_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

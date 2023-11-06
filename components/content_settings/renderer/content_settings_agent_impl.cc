@@ -382,16 +382,6 @@ bool ContentSettingsAgentImpl::AllowRunningInsecureContent(
   return false;
 }
 
-bool ContentSettingsAgentImpl::AllowPopupsAndRedirects(bool default_value) {
-  if (!content_setting_rules_)
-    return default_value;
-  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  return GetContentSettingFromRules(
-             content_setting_rules_->popup_redirect_rules,
-             url::Origin(frame->GetDocument().GetSecurityOrigin()).GetURL()) ==
-         CONTENT_SETTING_ALLOW;
-}
-
 bool ContentSettingsAgentImpl::ShouldAutoupgradeMixedContent() {
   if (mixed_content_autoupgrades_disabled_)
     return false;
@@ -416,6 +406,10 @@ void ContentSettingsAgentImpl::SetRendererContentSettingRulesForTest(
 
 void ContentSettingsAgentImpl::DidNotAllowScript() {
   DidBlockContentType(ContentSettingsType::JAVASCRIPT);
+}
+
+void ContentSettingsAgentImpl::DidNotAllowImage() {
+  DidBlockContentType(ContentSettingsType::IMAGES);
 }
 
 void ContentSettingsAgentImpl::ClearBlockedContentSettings() {
