@@ -1045,28 +1045,32 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "lacros_skylab_tests_amd64_generic",
     basic_suites = {
-        "lacros_skylab_tests": targets.legacy_matrix_config(
+        "lacros_skylab_tests_version_skew": targets.legacy_matrix_config(
             variants = [
-                "CROS_BRYA_RELEASE_LKGM",
                 "CROS_BRYA_RELEASE_DEV",
                 "CROS_BRYA_RELEASE_BETA",
                 "CROS_BRYA_RELEASE_STABLE",
-                "CROS_DEDEDE_RELEASE_LKGM",
                 "CROS_DEDEDE_RELEASE_DEV",
                 "CROS_DEDEDE_RELEASE_BETA",
                 "CROS_DEDEDE_RELEASE_STABLE",
-                "CROS_FIZZ_RELEASE_LKGM",
                 "CROS_FIZZ_RELEASE_DEV",
                 "CROS_FIZZ_RELEASE_BETA",
                 "CROS_FIZZ_RELEASE_STABLE",
-                "CROS_GUYBRUSH_RELEASE_LKGM",
                 "CROS_GUYBRUSH_RELEASE_DEV",
                 "CROS_GUYBRUSH_RELEASE_BETA",
                 "CROS_GUYBRUSH_RELEASE_STABLE",
-                "CROS_PUFF_RELEASE_LKGM",
                 "CROS_PUFF_RELEASE_DEV",
                 "CROS_PUFF_RELEASE_BETA",
                 "CROS_PUFF_RELEASE_STABLE",
+            ],
+        ),
+        "lacros_skylab_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_BRYA_RELEASE_LKGM",
+                "CROS_DEDEDE_RELEASE_LKGM",
+                "CROS_FIZZ_RELEASE_LKGM",
+                "CROS_GUYBRUSH_RELEASE_LKGM",
+                "CROS_PUFF_RELEASE_LKGM",
             ],
         ),
         "lacros_skylab_tests_with_gtests": targets.legacy_matrix_config(
