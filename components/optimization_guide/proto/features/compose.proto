@@ -11,6 +11,8 @@ option java_outer_classname = "ComposeProto";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
 // ComposeFeatureLoggingData is the wrapper containing of ModelExecution
 // request, response and quality data for one compose execution run.
 message ComposeLoggingData {
@@ -83,13 +85,6 @@ enum FinalStatus {
   STATUS_FINISHED_WITHOUT_INSERT = 3;
 }
 
-// The explicit feedback provided by the user.
-enum UserFeedback {
-  FEEDBACK_UNSPECIFIED = 0;
-  FEEDBACK_THUMBS_UP = 1;
-  FEEDBACK_THUMBS_DOWN = 2;
-}
-
 // How the user used their clipboard with the feature.
 enum ClipboardUse {
   CLIPBOARD_UNSPECIFIED = 0;
@@ -133,5 +128,5 @@ message ComposeQuality {
   int64 request_latency_ms = 4;
   // How much was the text modified before commit only valid iff
   // final_status = INSERTED.
-  optional int64 edit_distance = 5;
+  int64 edit_distance = 5;
 }
