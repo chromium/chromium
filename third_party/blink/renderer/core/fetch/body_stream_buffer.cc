@@ -251,7 +251,14 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
                                     ExceptionState& exception_state) {
   DCHECK(!loader_);
   DCHECK(!keep_alive_);
-  DCHECK(script_state_->ContextIsValid());
+
+  if (!script_state_->ContextIsValid()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot load body from a frame or worker than has been detached");
+    return;
+  }
+
   if (signal_) {
     if (signal_->aborted()) {
       client->Abort();
@@ -668,7 +675,7 @@ BytesConsumer* BodyStreamBuffer::ReleaseHandle(
     // Avoid crashing if ContextDestroyed() has been called.
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Cannot release body in a window or worker than has been detached");
+        "Cannot release body in a window or worker that has been detached");
     return nullptr;
   }
 
