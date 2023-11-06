@@ -34,6 +34,18 @@ void KioskAshBrowserTestStarter::PrepareEnvironmentForKioskLacros() {
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kAshEnableWaylandServer);
+
+  std::vector<std::string> lacros_args = {
+      // Disable gpu process in Lacros since hardware accelerated rendering is
+      // not possible yet in Ash X11 backend. See details in crbug/1478369.
+      "--disable-gpu",
+      // Disable gpu sandbox in Lacros since it fails in Linux emulator
+      // environment.
+      // See details in crbug/1483530.
+      "--disable-gpu-sandbox"};
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ash::switches::kLacrosChromeAdditionalArgs,
+      base::JoinString(lacros_args, "####"));
 }
 
 void KioskAshBrowserTestStarter::SetLacrosAvailabilityPolicy() {

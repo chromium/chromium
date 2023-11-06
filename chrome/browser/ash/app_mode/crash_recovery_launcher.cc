@@ -7,9 +7,7 @@
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
-#include "chrome/common/chrome_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -23,14 +21,9 @@ CrashRecoveryLauncher::CrashRecoveryLauncher(Profile& profile,
     app_launcher_ = std::make_unique<StartupAppLauncher>(
         &profile, *kiosk_app_id.app_id, /*should_skip_install=*/true,
         /*network_delegate=*/this);
-  } else if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
-             !crosapi::browser_util::IsLacrosEnabled()) {
+  } else {
     app_launcher_ = std::make_unique<WebKioskAppServiceLauncher>(
         &profile, *kiosk_app_id.account_id, /*network_delegate=*/this);
-  } else {
-    app_launcher_ = std::make_unique<WebKioskAppLauncher>(
-        &profile, *kiosk_app_id.account_id,
-        /*should_skip_install=*/true, /*network_delegate=*/this);
   }
   observation_.Observe(app_launcher_.get());
 }

@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
@@ -165,17 +164,8 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
           profile, kiosk_app_id.app_id.value(), /*should_skip_install=*/false,
           network_delegate);
     case KioskAppType::kWebApp:
-      // TODO(b/242023891): `WebKioskAppServiceLauncher` does not support
-      // Lacros until App Service installation API is available.
-      if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
-          !crosapi::browser_util::IsLacrosEnabled()) {
-        return std::make_unique<WebKioskAppServiceLauncher>(
-            profile, kiosk_app_id.account_id.value(), network_delegate);
-      } else {
-        return std::make_unique<WebKioskAppLauncher>(
-            profile, kiosk_app_id.account_id.value(),
-            /*should_skip_install=*/false, network_delegate);
-      }
+      return std::make_unique<WebKioskAppServiceLauncher>(
+          profile, kiosk_app_id.account_id.value(), network_delegate);
   }
 }
 
