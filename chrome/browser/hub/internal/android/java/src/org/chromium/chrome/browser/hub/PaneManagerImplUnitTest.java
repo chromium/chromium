@@ -13,11 +13,12 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -26,14 +27,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit tests for {@link PaneManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PaneManagerImplUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Pane mTabSwitcherPane;
     @Mock private Pane mIncognitoTabSwitcherPane;
     @Mock private Supplier<Pane> mPaneSupplier;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     @SmallTest

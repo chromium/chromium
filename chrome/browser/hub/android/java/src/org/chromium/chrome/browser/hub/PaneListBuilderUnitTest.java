@@ -14,11 +14,12 @@ import androidx.test.filters.SmallTest;
 
 import com.google.common.collect.ImmutableSet;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -26,12 +27,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit tests for {@link PaneListBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PaneListBuilderUnitTest {
-    @Mock private LazyOneshotSupplier<Pane> mMockSupplier;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
+    @Mock private LazyOneshotSupplier<Pane> mMockSupplier;
 
     @Test
     @SmallTest
@@ -95,17 +93,13 @@ public class PaneListBuilderUnitTest {
     @SmallTest
     public void testAlreadyBuiltThrowsException() {
         PaneOrderController orderController = new DefaultPaneOrderController();
-
         PaneListBuilder builder = new PaneListBuilder(orderController);
-
         assertFalse(builder.isBuilt());
 
         builder.registerPane(PaneId.TAB_SWITCHER, mMockSupplier);
-
         assertFalse(builder.isBuilt());
 
         builder.build();
-
         assertTrue(builder.isBuilt());
 
         try {
@@ -125,12 +119,8 @@ public class PaneListBuilderUnitTest {
     }
 
     private PaneOrderController createReverseDefaultOrderController() {
-        return new PaneOrderController() {
-            @Override
-            public ImmutableSet<Integer> getPaneOrder() {
-                return ImmutableSet.copyOf(
+        return () ->
+                ImmutableSet.copyOf(
                         new DefaultPaneOrderController().getPaneOrder().asList().reverse());
-            }
-        };
     }
 }

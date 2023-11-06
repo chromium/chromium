@@ -219,7 +219,7 @@ public class PaneBackStackHandlerUnitTest {
 
     @Test
     @SmallTest
-    public void testCompleltyFailToFocus() {
+    public void testCompletelyFailToFocus() {
         mBackStackHandler = new PaneBackStackHandler(mMockPaneManager);
         ShadowLooper.runUiThreadTasks();
         assertFalse(mBackStackHandler.getHandleBackPressChangedSupplier().get());
