@@ -348,6 +348,11 @@ id<GREYMatcher> PasswordManagerWidgetPromoInstructionsCloseButton() {
       grey_interactable(), nullptr);
 }
 
+// Returns matcher for the Password Details move to account button.
+id<GREYMatcher> PasswordDetailsMoveToAccountButton() {
+  return grey_accessibilityID(kMovePasswordToAccountButtonId);
+}
+
 // Saves two example forms in the store.
 void SaveExamplePasswordForms() {
   SavePasswordForm(/*password=*/@"password1",
@@ -694,7 +699,9 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
   if ([self isRunningTest:@selector
-            (testAccountStorageSwitchHiddenIfSignedIn_SyncToSigninEnabled)]) {
+            (testAccountStorageSwitchHiddenIfSignedIn_SyncToSigninEnabled)] ||
+      [self isRunningTest:@selector
+            (testMovePasswordToAccountStoreIfSignedIn_SyncToSigninEnabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -3738,6 +3745,38 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   // instructions should be visible with its image.
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   CheckPasswordManagerWidgetPromoInstructionScreenVisible();
+}
+
+// Checks password details page offers move to account option if the password is
+// saved in the local store.
+- (void)testMovePasswordToAccountStoreIfSignedIn_SyncToSigninEnabled {
+  // Save form to be moved to account later.
+  SavePasswordForm();
+
+  // Sign in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Open password details view for the saved password.
+  OpenPasswordManager();
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      performAction:grey_tap()];
+
+  // Verify the locally-saved password details page has a move to account
+  // option.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsMoveToAccountButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the move to account button to move the local password to account
+  // store.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsMoveToAccountButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the password details page does not show the move to account
+  // option anymore.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsMoveToAccountButton()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end
