@@ -542,6 +542,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="GetContentSizeFailed"/>
   <int value="10" label="ResizeMappedTextureFailed"/>
   <int value="11" label="RecreateFramePoolFailed"/>
+  <int value="12" label="FramePoolEmpty"/>
 </enum>
 
 <enum name="WebRtcWgcCaptureSessionStartResult">
