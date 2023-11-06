@@ -555,6 +555,7 @@ void RestrictedCookieManager::GetAllForUrl(
     const url::Origin& top_frame_origin,
     bool has_storage_access,
     mojom::CookieManagerGetOptionsPtr options,
+    bool is_ad_tagged,
     GetAllForUrlCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -575,8 +576,8 @@ void RestrictedCookieManager::GetAllForUrl(
       url, net_options, cookie_partition_key_collection_,
       base::BindOnce(&RestrictedCookieManager::CookieListToGetAllForUrlCallback,
                      weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
-                     top_frame_origin, has_storage_access, net_options,
-                     std::move(options), std::move(callback)));
+                     top_frame_origin, has_storage_access, is_ad_tagged,
+                     net_options, std::move(options), std::move(callback)));
 }
 
 void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
@@ -584,6 +585,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     bool has_storage_access,
+    bool is_ad_tagged,
     const net::CookieOptions& net_options,
     mojom::CookieManagerGetOptionsPtr options,
     GetAllForUrlCallback callback,
@@ -637,7 +639,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url, site_for_cookies,
           std::move(on_cookies_accessed_result), absl::nullopt, /*count=*/1,
-          /*is_ad_tagged=*/false));
+          is_ad_tagged));
     }
   };
 
@@ -946,6 +948,7 @@ void RestrictedCookieManager::GetCookiesString(
     const url::Origin& top_frame_origin,
     bool has_storage_access,
     bool get_version_shared_memory,
+    bool is_ad_tagged,
     GetCookiesStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Checks done by GetAllForUrl
@@ -989,7 +992,7 @@ void RestrictedCookieManager::GetCookiesString(
   match_options->name = "";
   match_options->match_type = mojom::CookieMatchType::STARTS_WITH;
   GetAllForUrl(url, site_for_cookies, top_frame_origin, has_storage_access,
-               std::move(match_options),
+               std::move(match_options), is_ad_tagged,
                base::BindOnce([](const std::vector<net::CookieWithAccessResult>&
                                      cookies) {
                  return net::CanonicalCookie::BuildCookieLine(cookies);
