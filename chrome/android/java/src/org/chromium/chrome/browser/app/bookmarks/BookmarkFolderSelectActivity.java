@@ -158,7 +158,7 @@ public class BookmarkFolderSelectActivity
 
         mIsCreatingFolder = getIntent().getBooleanExtra(INTENT_IS_CREATING_FOLDER, false);
         if (mIsCreatingFolder) {
-            mParentId = mModel.getMobileFolderId();
+            mParentId = mModel.getDefaultFolder();
         } else {
             mParentId = mModel.getBookmarkById(mBookmarksToMove.get(0)).getParentId();
         }
