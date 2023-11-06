@@ -7060,9 +7060,6 @@ crbug.com/1495422 [ Mac10.15 ] external/wpt/css/css-text/parsing/white-space-sho
 crbug.com/1495422 [ Mac10.15 ] external/wpt/html/semantics/popovers/popover-light-dismiss-flat-tree-nested.html [ Failure ]
 crbug.com/1495422 [ Mac10.15 ] external/wpt/css/css-typed-om/the-stylepropertymap/properties/white-space.html [ Failure ]
 
-# TODO(crbug.com/1496301): Fix expectations to reflect new default setting and reenable
-crbug.com/1496301 http/tests/devtools/a11y-axe-core/settings/blackbox-a11y-test.js [ Failure Pass ]
-
 # Gardener 2023-10-30
 crbug.com/1497325 [ Mac ] external/wpt/css/css-color/nested-color-mix-with-currentcolor.html [ Failure Pass ]
 
