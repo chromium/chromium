@@ -26,7 +26,11 @@ BASE_FEATURE(kMediaSessionService,
 // have audio focus at any one time.
 BASE_FEATURE(kAudioFocusEnforcement,
              "AudioFocusEnforcement",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
              base::FEATURE_DISABLED_BY_DEFAULT
+#endif
 );
 
 // Enables Audio Focus grouping which means that multiple media sessions can
