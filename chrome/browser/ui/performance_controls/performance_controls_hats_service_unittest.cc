@@ -49,8 +49,7 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
     environment_.SetUp(&local_state_);
 
     performance_controls_hats_service_ =
-        std::make_unique<PerformanceControlsHatsService>(&local_state_,
-                                                         profile);
+        std::make_unique<PerformanceControlsHatsService>(profile);
   }
 
   void TearDown() override {
@@ -159,12 +158,9 @@ TEST_F(PerformanceControlsHatsServiceTest, LaunchesPerformanceSurvey) {
   SetBatterySaverMode(performance_manager::user_tuning::prefs::
                           BatterySaverModeState::kEnabledBelowThreshold);
 
-  SurveyBitsData expected_bits = {{"high_efficiency_mode", false}};
-  SurveyStringData expected_strings = {
-      {"battery_saver_mode",
-       base::NumberToString(static_cast<int>(
-           performance_manager::user_tuning::prefs::BatterySaverModeState::
-               kEnabledBelowThreshold))}};
+  SurveyBitsData expected_bits = {{"high_efficiency_mode", false},
+                                  {"battery_saver_mode", true}};
+  SurveyStringData expected_strings = {};
   EXPECT_CALL(*mock_hats_service(),
               LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPerformance, _,
                            _, expected_bits, expected_strings));

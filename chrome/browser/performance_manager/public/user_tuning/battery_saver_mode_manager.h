@@ -49,16 +49,21 @@ class BatterySaverModeManager {
 
   class Observer : public base::CheckedObserver {
    public:
+    // Raised when the browser level battery saver mode is enabled or disabled.
+    // Both `kEnabledOnBattery` and `kEnabledBelowThreshold` are considered
+    // enabled. This does not imply whether the mode is active or not.
+    virtual void OnBatterySaverModeChanged(bool is_enabled) {}
+
     // Raised when the battery saver mode interventions are activated or
     // deactivated
-    virtual void OnBatterySaverModeChanged(bool is_active) {}
+    virtual void OnBatterySaverActiveChanged(bool is_active) {}
 
     // Raised when the device is plugged in or unplugged
     // Can be used by the UI to show a promo if BSM isn't configured to be
     // enabled when on battery power.
     // If the connection/disconnection from power causes battery saver to be
     // enabled/disabled, the state of battery saver will not yet be updated when
-    // this is invoked. `OnBatterySaverModeChanged` will be invoked after the
+    // this is invoked. `OnBatterySaverActiveChanged` will be invoked after the
     // state is updated.
     virtual void OnExternalPowerConnectedChanged(bool on_battery_power) {}
 
@@ -92,6 +97,18 @@ class BatterySaverModeManager {
   // undetermined amount of time at startup, until the battery state is
   // sampled for the first time.
   bool DeviceHasBattery() const;
+
+  // Returns true if Battery Saver Mode is enabled for the user. If any state
+  // transitions cause an observer notification, this is guaranteed to reflect
+  // the *new* value when the observers are notified so the UI layer can make
+  // decisions based on the most up-to-date state.
+  bool IsBatterySaverModeEnabled();
+
+  // Returns true if Battery Saver Mode is a managed pref. If any state
+  // transitions cause an observer notification, this is guaranteed to reflect
+  // the *new* value when the observers are notified so the UI layer can make
+  // decisions based on the most up-to-date state.
+  bool IsBatterySaverModeManaged() const;
 
   // Returns true if Battery Saver Mode interventions are active. If any state
   // transitions cause an observer notification, this is guaranteed to reflect
@@ -128,6 +145,8 @@ class BatterySaverModeManager {
     virtual ~BatterySaverProvider() = default;
 
     virtual bool DeviceHasBattery() const = 0;
+    virtual bool IsBatterySaverModeEnabled() = 0;
+    virtual bool IsBatterySaverModeManaged() = 0;
     virtual bool IsBatterySaverActive() const = 0;
     virtual bool IsUsingBatteryPower() const = 0;
     virtual base::Time GetLastBatteryUsageTimestamp() const = 0;
@@ -145,6 +164,7 @@ class BatterySaverModeManager {
   // Called from the installed BatterySaverProvider to signify a change in
   // battery saver mode related state.
   void NotifyOnBatterySaverModeChanged(bool battery_saver_mode_enabled);
+  void NotifyOnBatterySaverActiveChanged(bool battery_saver_mode_active);
   void NotifyOnExternalPowerConnectedChanged(bool on_battery_power);
   void NotifyOnDeviceHasBatteryChanged(bool has_battery);
   void NotifyOnBatteryThresholdReached();

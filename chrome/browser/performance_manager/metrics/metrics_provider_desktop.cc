@@ -179,7 +179,7 @@ MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
                           base::Unretained(this)));
 }
 
-void MetricsProviderDesktop::OnBatterySaverModeChanged(bool is_active) {
+void MetricsProviderDesktop::OnBatterySaverActiveChanged(bool is_active) {
   battery_saver_enabled_ = is_active;
   battery_saver_mode_tracker_->ModeChanged(battery_saver_enabled_);
   OnTuningModesChanged();

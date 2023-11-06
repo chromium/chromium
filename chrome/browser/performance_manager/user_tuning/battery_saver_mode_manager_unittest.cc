@@ -58,7 +58,7 @@ class QuitRunLoopOnBSMChangeObserver : public QuitRunLoopObserverBase {
   ~QuitRunLoopOnBSMChangeObserver() override = default;
 
   // BatterySaverModeManager::Observer implementation:
-  void OnBatterySaverModeChanged(bool) override { Quit(); }
+  void OnBatterySaverActiveChanged(bool) override { Quit(); }
 };
 
 class QuitRunLoopOnPowerStateChangeObserver : public QuitRunLoopObserverBase {
@@ -172,14 +172,17 @@ TEST_F(BatterySaverModeManagerTest, TemporaryBatterySaver) {
       static_cast<int>(performance_manager::user_tuning::prefs::
                            BatterySaverModeState::kEnabled));
 
+  EXPECT_TRUE(manager()->IsBatterySaverModeEnabled());
   EXPECT_TRUE(manager()->IsBatterySaverActive());
   EXPECT_TRUE(throttling_enabled());
 
   manager()->SetTemporaryBatterySaverDisabledForSession(true);
+  EXPECT_TRUE(manager()->IsBatterySaverModeEnabled());
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
 
   manager()->SetTemporaryBatterySaverDisabledForSession(false);
+  EXPECT_TRUE(manager()->IsBatterySaverModeEnabled());
   EXPECT_TRUE(manager()->IsBatterySaverActive());
   EXPECT_TRUE(throttling_enabled());
 
@@ -243,6 +246,7 @@ TEST_F(BatterySaverModeManagerTest, BatterySaverModePref) {
       performance_manager::user_tuning::prefs::kBatterySaverModeState,
       static_cast<int>(performance_manager::user_tuning::prefs::
                            BatterySaverModeState::kEnabled));
+  EXPECT_TRUE(manager()->IsBatterySaverModeEnabled());
   EXPECT_TRUE(manager()->IsBatterySaverActive());
   EXPECT_TRUE(throttling_enabled());
 
@@ -250,6 +254,7 @@ TEST_F(BatterySaverModeManagerTest, BatterySaverModePref) {
       performance_manager::user_tuning::prefs::kBatterySaverModeState,
       static_cast<int>(performance_manager::user_tuning::prefs::
                            BatterySaverModeState::kDisabled));
+  EXPECT_FALSE(manager()->IsBatterySaverModeEnabled());
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
 }
@@ -521,6 +526,7 @@ TEST_F(BatterySaverModeManagerTest, ManagedFromPowerManager) {
   manager()->RemoveObserver(observer.get());
 
   EXPECT_TRUE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(manager()->IsBatterySaverModeEnabled());
   EXPECT_TRUE(throttling_enabled());
 }
 

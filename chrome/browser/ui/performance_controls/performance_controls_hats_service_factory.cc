@@ -34,7 +34,6 @@ PerformanceControlsHatsServiceFactory::GetInstance() {
 PerformanceControlsHatsService*
 PerformanceControlsHatsServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<PerformanceControlsHatsService*>(
-      g_browser_process->local_state(),
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
@@ -65,12 +64,12 @@ PerformanceControlsHatsServiceFactory::BuildServiceInstanceForBrowserContext(
   // Chrome) and simply not creating the service avoids unnecessary work
   // tracking user interactions.
   auto* hats_service =
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+      HatsServiceFactory::GetForProfile(profile,
+                                        /*create_if_necessary=*/true);
   if (!hats_service ||
       !hats_service->CanShowAnySurvey(/*user_prompted=*/false)) {
     return nullptr;
   }
 
-  return std::make_unique<PerformanceControlsHatsService>(
-      g_browser_process->local_state(), profile);
+  return std::make_unique<PerformanceControlsHatsService>(profile);
 }

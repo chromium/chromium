@@ -28,7 +28,7 @@ class BatterySaverButtonController : public performance_manager::user_tuning::
   void Init(BatterySaverButtonControllerDelegate* delegate);
 
   // BatterySaverModeManager::Observer:
-  void OnBatterySaverModeChanged(bool is_active) override;
+  void OnBatterySaverActiveChanged(bool is_active) override;
 
  private:
   void UpdateVisibilityState(bool is_active);
