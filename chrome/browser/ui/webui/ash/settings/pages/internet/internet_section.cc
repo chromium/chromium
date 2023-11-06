@@ -302,12 +302,6 @@ const std::vector<SearchConcept>& GetCellularSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kCellularRoaming}},
-      {IDS_OS_SETTINGS_TAG_CELLULAR_APN,
-       mojom::kCellularDetailsSubpagePath,
-       mojom::SearchResultIcon::kCellular,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kCellularApn}},
   });
   return *tags;
 }
@@ -394,6 +388,39 @@ const std::vector<SearchConcept>& GetCellularAddESimSearchTerms() {
        {.setting = mojom::Setting::kAddESimNetwork},
        {IDS_OS_SETTINGS_TAG_ADD_ESIM_ALT1, IDS_OS_SETTINGS_TAG_ADD_ESIM_ALT2,
         SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>&
+GeActiveCellularNetworkApnSettingsSearchConcepts() {
+  if (ash::features::IsApnRevampEnabled()) {
+    static const base::NoDestructor<std::vector<SearchConcept>> tags(
+        {{IDS_OS_SETTINGS_TAG_CELLULAR_APN_SETTINGS,
+          mojom::kApnSubpagePath,
+          mojom::SearchResultIcon::kCellular,
+          mojom::SearchResultDefaultRank::kMedium,
+          mojom::SearchResultType::kSubpage,
+          {.subpage = mojom::Subpage::kApn},
+          {IDS_OS_SETTINGS_TAG_CELLULAR_APN_SETTINGS_ALT_1,
+           SearchConcept::kAltTagEnd}},
+         {IDS_OS_SETTINGS_TAG_ADD_APN,
+          mojom::kApnSubpagePath,
+          mojom::SearchResultIcon::kCellular,
+          mojom::SearchResultDefaultRank::kMedium,
+          mojom::SearchResultType::kSetting,
+          {.setting = mojom::Setting::kCellularAddApn},
+          {IDS_OS_SETTINGS_TAG_ADD_APN_ALT1, SearchConcept::kAltTagEnd}}});
+    return *tags;
+  }
+
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_CELLULAR_APN,
+       mojom::kCellularDetailsSubpagePath,
+       mojom::SearchResultIcon::kCellular,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kCellularApn}},
   });
   return *tags;
 }
@@ -602,6 +629,7 @@ const std::vector<mojom::Setting>& GetCellularDetailsSettings() {
       mojom::Setting::kCellularMetered,
       mojom::Setting::kCellularRemoveESimNetwork,
       mojom::Setting::kCellularRenameESimNetwork,
+      mojom::Setting::kCellularAddApn,
   });
   return *settings;
 }
@@ -1340,6 +1368,10 @@ std::string InternetSection::ModifySearchResultUrl(
     return GetDetailsSubpageUrl(modified_url, *active_cellular_guid_);
   }
 
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kApn)) {
+    return GetDetailsSubpageUrl(modified_url, *active_cellular_guid_);
+  }
+
   if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kTetherDetails)) {
     return GetDetailsSubpageUrl(modified_url, *connected_tether_guid_);
   }
@@ -1503,6 +1535,7 @@ void InternetSection::OnNetworkList(
   updater.RemoveSearchTags(GetWifiMeteredSearchConcepts());
   updater.RemoveSearchTags(GetWifiHiddenSearchConcepts());
   updater.RemoveSearchTags(GetCellularSearchConcepts());
+  updater.RemoveSearchTags(GeActiveCellularNetworkApnSettingsSearchConcepts());
   updater.RemoveSearchTags(GetCellularConnectedSearchConcepts());
   updater.RemoveSearchTags(GetCellularPrimaryIsNonPolicyESimSearchConcepts());
   updater.RemoveSearchTags(GetCellularMeteredSearchConcepts());
@@ -1527,6 +1560,8 @@ void InternetSection::OnNetworkList(
       if (is_primary_cellular_network) {
         active_cellular_guid_ = network->guid;
         updater.AddSearchTags(GetCellularSearchConcepts());
+        updater.AddSearchTags(
+            GeActiveCellularNetworkApnSettingsSearchConcepts());
 
         // If the primary cellular network is ESim and not policy ESim.
         if (!network->type_state->get_cellular()->eid.empty() &&

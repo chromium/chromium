@@ -131,6 +131,7 @@
           <cr-button id="createCustomApnButton"
               on-click="onCreateCustomApnClicked_"
               class="cancel-button"
+              deep-link-focus-id$="[[Setting.kCellularAddApn]]"
               disabled="[[isCreateCustomApnButtonDisabled_]]">
             <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
             $i18n{apnPageAddNewApn}

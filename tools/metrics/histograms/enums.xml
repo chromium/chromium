@@ -60838,6 +60838,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="29" label="Wi-Fi: Hidden Network"/>
   <int value="30" label="Hotspot: On/Off"/>
   <int value="31" label="Hotspot: Automatically Turn Off Hotspot"/>
+  <int value="32" label="Cellular APN: Add APN"/>
   <int value="100" label="Bluetooth: On/Off"/>
   <int value="101" label="Bluetooth: Connect To Device"/>
   <int value="102" label="Bluetooth: Disconnect From Device"/>

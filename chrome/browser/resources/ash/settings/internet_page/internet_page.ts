@@ -301,6 +301,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         value: () => new Set<Setting>([
           Setting.kWifiOnOff,
           Setting.kMobileOnOff,
+          Setting.kCellularAddApn,
         ]),
       },
 
@@ -475,6 +476,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       networkType = NetworkType.kWiFi;
     } else if (settingId === Setting.kMobileOnOff) {
       networkType = NetworkType.kCellular;
+    } else {
+      return true;
     }
 
     afterNextRender(this, () => {
@@ -500,7 +503,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     super.currentRouteChanged(newRoute, oldRoute);
 
-    if (newRoute === this.route) {
+    if (newRoute === this.route || newRoute === routes.APN) {
       // Show deep links for the internet page.
       this.attemptDeepLink();
     } else if (newRoute === routes.INTERNET_NETWORKS) {
