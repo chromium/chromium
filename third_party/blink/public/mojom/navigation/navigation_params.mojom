@@ -611,4 +611,7 @@ struct CommitNavigationParams {
   // Some content settings must be enforced by the renderer. See
   // ContentSettingsType for more details.
   RendererContentSettings content_settings;
+
+  // The cookie deprecation label for cookie deprecation facilitated testing.
+  string? cookie_deprecation_label;
 };

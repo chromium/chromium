@@ -552,6 +552,9 @@ struct BLINK_EXPORT WebNavigationParams {
   // For each document, the browser passes along state for each
   // renderer-enforced content setting.
   mojom::RendererContentSettingsPtr content_settings;
+
+  // The cookie deprecation label for cookie deprecation facilitated testing.
+  WebString cookie_deprecation_label;
 };
 
 }  // namespace blink

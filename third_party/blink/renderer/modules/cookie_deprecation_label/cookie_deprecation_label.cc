@@ -7,19 +7,15 @@
 #include <utility>
 
 #include "base/check.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/cookie_deprecation_label/cookie_deprecation_label.mojom-blink.h"
-#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -39,47 +35,22 @@ CookieDeprecationLabel* CookieDeprecationLabel::cookieDeprecationLabel(
 }
 
 CookieDeprecationLabel::CookieDeprecationLabel(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
-      label_document_service_(navigator.DomWindow()) {}
+    : Supplement<Navigator>(navigator) {}
 
 CookieDeprecationLabel::~CookieDeprecationLabel() = default;
 
-mojom::blink::CookieDeprecationLabelDocumentService*
-CookieDeprecationLabel::GetDocumentService(ScriptState* script_state) {
-  if (!label_document_service_.is_bound()) {
-    ExecutionContext::From(script_state)
-        ->GetBrowserInterfaceBroker()
-        .GetInterface(label_document_service_.BindNewPipeAndPassReceiver(
-            ExecutionContext::From(script_state)
-                ->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-  }
-  return label_document_service_.get();
-}
-
 ScriptPromise CookieDeprecationLabel::getValue(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  String label;
 
-  GetDocumentService(script_state)
-      ->GetValue(WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver, const String& label) {
-            DCHECK(resolver);
-            // The label will be null if cookie deprecation label is not allowed
-            // for the profile.
-            if (label.IsNull()) {
-              resolver->Resolve(String());
-            } else {
-              resolver->Resolve(label);
-            }
-          },
-          WrapPersistent(resolver)));
+  if (auto* dom_window = GetSupplementable()->DomWindow()) {
+    label = dom_window->document()->Loader()->GetCookieDeprecationLabel();
+  }
 
-  return promise;
+  return ScriptPromise::Cast(script_state,
+                             V8String(script_state->GetIsolate(), label));
 }
 
 void CookieDeprecationLabel::Trace(Visitor* visitor) const {
-  visitor->Trace(label_document_service_);
   Supplement<Navigator>::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
