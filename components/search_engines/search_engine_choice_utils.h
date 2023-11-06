@@ -155,11 +155,9 @@ bool IsEeaChoiceCountry(int country_id);
 // Records the location from which the choice was made and the search engine
 // that was chosen.
 // The function should be called after the default search engine has been set.
-// TODO(b/307713013): Remove the default value for `template_url_service` once
-// the function is used on the iOS side.
 void RecordChoiceMade(PrefService* profile_prefs,
                       ChoiceMadeLocation choice_location,
-                      TemplateURLService* template_url_service = nullptr);
+                      TemplateURLService* template_url_service);
 
 // Records the specified choice screen condition at profile initialization.
 void RecordChoiceScreenProfileInitCondition(
