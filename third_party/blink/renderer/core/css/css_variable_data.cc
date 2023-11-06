@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -167,11 +168,11 @@ CSSVariableData::CSSVariableData(StringView original_text,
       has_line_height_units_(has_line_height_units),
       unused_(0) {
   if (is_8bit_) {
-    memcpy(reinterpret_cast<LChar*>(this + 1), original_text.Characters8(),
-           original_text.length());
+    base::ranges::copy(original_text.Span8(),
+                       reinterpret_cast<LChar*>(this + 1));
   } else {
-    memcpy(reinterpret_cast<UChar*>(this + 1), original_text.Characters16(),
-           original_text.length() * 2);
+    base::ranges::copy(original_text.Span16(),
+                       reinterpret_cast<UChar*>(this + 1));
   }
 }
 
