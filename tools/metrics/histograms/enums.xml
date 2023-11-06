@@ -27328,6 +27328,8 @@ Called by update_extension_permission.py.-->
   <int value="5" label="LEGACY_PACKAGED_APP"/>
   <int value="6" label="PLATFORM_APP"/>
   <int value="7" label="SHARED_MODULE"/>
+  <int value="8" label="LOGIN_SCREEN_EXTENSION"/>
+  <int value="9" label="CHROMEOS_SYSTEM_EXTENSION"/>
 </enum>
 
 <enum name="ExtensionUninstallSource">
