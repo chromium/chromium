@@ -2549,15 +2549,20 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForUIExplicitlyDismissed) {
 namespace {
 
 // TestDialogController subclass which supports WeakPtr.
-class WeakTestDialogController
-    : public TestDialogController,
-      public base::SupportsWeakPtr<WeakTestDialogController> {
+class WeakTestDialogController : public TestDialogController {
  public:
   explicit WeakTestDialogController(MockConfiguration configuration)
       : TestDialogController(configuration) {}
   ~WeakTestDialogController() override = default;
   WeakTestDialogController(WeakTestDialogController&) = delete;
   WeakTestDialogController& operator=(WeakTestDialogController&) = delete;
+
+  base::WeakPtr<WeakTestDialogController> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<WeakTestDialogController> weak_ptr_factory_{this};
 };
 
 }  // namespace
