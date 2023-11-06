@@ -190,6 +190,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
         file_system_context.get(),
         /*origin=*/GURL(),
         /*query=*/"",
+        /*cutoff_days=*/base::Days(30),
         /*file_type=*/ash::RecentModel::FileType::kAll,
         /*invalidate_cache=*/false,
         base::BindLambdaForTesting(

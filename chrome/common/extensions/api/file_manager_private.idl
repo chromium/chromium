@@ -1820,10 +1820,13 @@ interface Functions {
   // Gets recently modified files across file systems.
   // |restriction| Flag to restrict sources of recent files.
   // |fileType| Requested file type to filter recent files.
-  // |callback|
+  // |query| When not empty, removes files with non-matching names.
+  // |cutoff_days| Specifies oldest modification time.
+  // |callback| Called with zero or more matched files.
   [nocompile, supportsPromises]
   static void getRecentFiles(SourceRestriction restriction,
                              DOMString query,
+                             long cutoff_days,
                              FileCategory fileCategory,
                              boolean invalidateCache,
                              GetRecentFilesCallback callback);

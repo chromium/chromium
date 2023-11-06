@@ -716,17 +716,23 @@ export class DriveMetadataSearchContentScanner extends ContentScanner {
 export class RecentContentScanner extends ContentScanner {
   /**
    * @param {string} query Search query.
+   * @param {number} cutoffDays The time delta in days for the modified time.
    * @param {VolumeManager} volumeManager Volume manager.
    * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
    * @param {chrome.fileManagerPrivate.FileCategory=} opt_fileCategory
    */
-  constructor(query, volumeManager, opt_sourceRestriction, opt_fileCategory) {
+  constructor(
+      query, cutoffDays, volumeManager, opt_sourceRestriction,
+      opt_fileCategory) {
     super();
 
     /**
      * @private @type {string}
      */
     this.query_ = query.toLowerCase();
+
+    /** @private @type {number} */
+    this.cutoffDays_ = cutoffDays;
 
     /**
      * @private @type {VolumeManager}
@@ -763,8 +769,8 @@ export class RecentContentScanner extends ContentScanner {
     const isAllowedVolume = (entry) =>
         this.volumeManager_.getVolumeInfo(entry) !== null;
     chrome.fileManagerPrivate.getRecentFiles(
-        this.sourceRestriction_, this.query_, this.fileCategory_,
-        invalidateCache, entries => {
+        this.sourceRestriction_, this.query_, this.cutoffDays_,
+        this.fileCategory_, invalidateCache, entries => {
           if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError.message);
             errorCallback(

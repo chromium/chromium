@@ -32,9 +32,6 @@ namespace ash {
 
 namespace {
 
-// Cut-off time. Files older than this are filtered out.
-constexpr base::TimeDelta kCutoffTimeDelta = base::Days(30);
-
 // Recent file cache will be cleared this duration after it is built.
 // Note: Do not make this value large. When cache is used, cut-off criteria is
 // not strictly honored.
@@ -113,11 +110,17 @@ void RecentModel::GetRecentFiles(
     storage::FileSystemContext* file_system_context,
     const GURL& origin,
     const std::string& query,
+    const base::TimeDelta& now_delta,
     FileType file_type,
     bool invalidate_cache,
     GetRecentFilesCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  SearchCriteria search_criteria = {
+      .query = query,
+      .now_delta = now_delta,
+      .file_type = file_type,
+  };
   /**
    * Use cache only if:
    *  * cache has value.
@@ -126,8 +129,7 @@ void RecentModel::GetRecentFiles(
    * Otherwise clear cache if it has values.
    */
   if (cached_files_.has_value()) {
-    if (!invalidate_cache && cached_files_type_ == file_type &&
-        cached_query_ == query) {
+    if (!invalidate_cache && cached_search_criteria_ == search_criteria) {
       std::move(callback).Run(cached_files_.value());
       return;
     }
@@ -151,14 +153,12 @@ void RecentModel::GetRecentFiles(
 
   num_inflight_sources_ = sources_.size();
   if (sources_.empty()) {
-    OnGetRecentFilesCompleted(query, file_type);
+    OnGetRecentFilesCompleted(search_criteria);
     return;
   }
 
   // cutoff_time is the oldest modified time for a file to be considered recent.
-  base::Time cutoff_time = forced_cutoff_time_.has_value()
-                               ? forced_cutoff_time_.value()
-                               : base::Time::Now() - kCutoffTimeDelta;
+  base::Time cutoff_time = base::Time::Now() - now_delta;
 
   uint32_t run_on_sequence_id = current_sequence_id_;
   // If there is no scan timeout we set the end_time, i.e., the time by which
@@ -174,13 +174,13 @@ void RecentModel::GetRecentFiles(
         file_type,
         base::BindOnce(&RecentModel::OnGetRecentFiles,
                        weak_ptr_factory_.GetWeakPtr(), run_on_sequence_id,
-                       max_files_, cutoff_time, query, file_type)));
+                       max_files_, cutoff_time, search_criteria)));
   }
   if (scan_timeout_duration_) {
     deadline_timer_.Start(
         FROM_HERE, base::TimeTicks::Now() + *scan_timeout_duration_,
         base::BindOnce(&RecentModel::OnScanTimeout,
-                       weak_ptr_factory_.GetWeakPtr(), query, file_type));
+                       weak_ptr_factory_.GetWeakPtr(), search_criteria));
   }
 }
 
@@ -192,10 +192,10 @@ void RecentModel::ClearScanTimeout() {
   scan_timeout_duration_.reset();
 }
 
-void RecentModel::OnScanTimeout(const std::string& query, FileType file_type) {
+void RecentModel::OnScanTimeout(const SearchCriteria& search_criteria) {
   if (num_inflight_sources_ > 0) {
     num_inflight_sources_ = 0;
-    OnGetRecentFilesCompleted(query, file_type);
+    OnGetRecentFilesCompleted(search_criteria);
   }
 }
 
@@ -210,8 +210,7 @@ void RecentModel::Shutdown() {
 void RecentModel::OnGetRecentFiles(uint32_t run_on_sequence_id,
                                    size_t max_files,
                                    const base::Time& cutoff_time,
-                                   const std::string& query,
-                                   FileType file_type,
+                                   const SearchCriteria& search_criteria,
                                    std::vector<RecentFile> files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -234,12 +233,12 @@ void RecentModel::OnGetRecentFiles(uint32_t run_on_sequence_id,
 
   --num_inflight_sources_;
   if (num_inflight_sources_ == 0) {
-    OnGetRecentFilesCompleted(query, file_type);
+    OnGetRecentFilesCompleted(search_criteria);
   }
 }
 
-void RecentModel::OnGetRecentFilesCompleted(const std::string& query,
-                                            FileType file_type) {
+void RecentModel::OnGetRecentFilesCompleted(
+    const SearchCriteria& search_criteria) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   DCHECK_EQ(0, num_inflight_sources_);
@@ -256,8 +255,7 @@ void RecentModel::OnGetRecentFilesCompleted(const std::string& query,
   }
   std::reverse(files.begin(), files.end());
   cached_files_ = std::move(files);
-  cached_files_type_ = file_type;
-  cached_query_ = query;
+  cached_search_criteria_ = search_criteria;
 
   DCHECK(cached_files_.has_value());
   DCHECK(intermediate_files_.empty());
@@ -291,13 +289,6 @@ void RecentModel::SetMaxFilesForTest(size_t max_files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   max_files_ = max_files;
-}
-
-void RecentModel::SetForcedCutoffTimeForTest(
-    const base::Time& forced_cutoff_time) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  forced_cutoff_time_ = forced_cutoff_time;
 }
 
 }  // namespace ash

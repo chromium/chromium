@@ -520,6 +520,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Recent) {
     base::File video_file(downloads_dir.Append("all-justice.mp4"),
                           base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     ASSERT_TRUE(video_file.IsValid());
+    base::File text_file(downloads_dir.Append("all-justice.txt"),
+                         base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(text_file.IsValid());
+    ASSERT_TRUE(text_file.SetTimes(base::Time::Now(),
+                                   base::Time::Now() - base::Days(60)));
   }
 
   ASSERT_TRUE(RunExtensionTest("file_browser/recent_test", {},

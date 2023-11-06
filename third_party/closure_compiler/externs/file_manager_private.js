@@ -1493,13 +1493,14 @@ chrome.fileManagerPrivate.getDirectorySize = function(entry, callback) {};
  * recent files. |callback|
  * @param {!chrome.fileManagerPrivate.SourceRestriction} restriction
  * @param {string} query
+ * @param {number} cutoffDays
  * @param {!chrome.fileManagerPrivate.FileCategory} fileCategory
  * @param {boolean} invalidateCache
  * @param {function(!Array<Entry>): void} callback |entries| Recently modified
  *     entries.
  */
 chrome.fileManagerPrivate.getRecentFiles = function(
-    restriction, query, fileCategory, invalidateCache, callback) {};
+    restriction, query, cutoffDays, fileCategory, invalidateCache, callback) {};
 
 /**
  * Requests the root directory of the volume with the ID specified in

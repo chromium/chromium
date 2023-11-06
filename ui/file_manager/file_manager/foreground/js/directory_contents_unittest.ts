@@ -17,9 +17,9 @@ import {FileFilter, RecentContentScanner} from './directory_contents.js';
 const mockChrome = {
   fileManagerPrivate: {
     getRecentFiles:
-        (_1: chrome.fileManagerPrivate.SourceRestriction,
-         query: string, _2: chrome.fileManagerPrivate.FileCategory,
-         _3: boolean, callback: (entries: FileEntry[]) => void) => {
+        (_1: chrome.fileManagerPrivate.SourceRestriction, query: string,
+         _2: number, _3: chrome.fileManagerPrivate.FileCategory, _4: boolean,
+         callback: (entries: FileEntry[]) => void) => {
           const entries: FileEntry[] = [
             {name: '1.txt'} as FileEntry,
             {name: '2.txt'} as FileEntry,
@@ -113,7 +113,7 @@ export async function testRecentScannerFilter() {
       } as VolumeInfo;
     },
   } as VolumeManager;
-  const scanner = new RecentContentScanner('txt', volumeManager);
+  const scanner = new RecentContentScanner('txt', 30, volumeManager);
   let entriesCallbackResult: FileEntry[] = [];
   function entriesCallback(entries: FileEntry[]) {
     entriesCallbackResult = entries;

@@ -1682,7 +1682,8 @@ export class DirectoryModel extends EventTarget {
       const fakeEntry = /** @type {!FakeEntry} */ (entry);
       return () => {
         return new RecentContentScanner(
-            sanitizedQuery, this.volumeManager_, fakeEntry.sourceRestriction,
+            sanitizedQuery, 30, this.volumeManager_,
+            fakeEntry.sourceRestriction,
             getFileCategory(fakeEntry, sanitizedQuery, options));
       };
     }

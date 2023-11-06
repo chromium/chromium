@@ -60,6 +60,7 @@ std::vector<std::unique_ptr<RecentSource>> BuildDefaultSources() {
 }
 
 std::vector<RecentFile> GetRecentFiles(RecentModel* model,
+                                       base::TimeDelta now_delta,
                                        RecentModel::FileType file_type,
                                        bool invalidate_cache) {
   std::vector<RecentFile> files;
@@ -68,7 +69,7 @@ std::vector<RecentFile> GetRecentFiles(RecentModel* model,
 
   model->GetRecentFiles(
       nullptr /* file_system_context */, GURL() /* origin */,
-      "" /* query: unused */, file_type, invalidate_cache,
+      "" /* query: unused */, now_delta, file_type, invalidate_cache,
       base::BindOnce(
           [](base::RunLoop* run_loop, std::vector<RecentFile>* files_out,
              const std::vector<RecentFile>& files) {
@@ -96,7 +97,7 @@ class RecentModelTest : public testing::Test {
   std::vector<RecentFile> BuildModelAndGetRecentFiles(
       RecentSourceListFactory source_list_factory,
       size_t max_files,
-      const base::Time& cutoff_time,
+      const base::TimeDelta& cutoff_delta,
       RecentModel::FileType file_type,
       bool invalidate_cache) {
     RecentModel* model = static_cast<RecentModel*>(
@@ -111,10 +112,9 @@ class RecentModelTest : public testing::Test {
                 std::move(source_list_factory))));
 
     model->SetMaxFilesForTest(max_files);
-    model->SetForcedCutoffTimeForTest(cutoff_time);
     model->SetScanTimeout(base::Milliseconds(500));
 
-    return GetRecentFiles(model, file_type, invalidate_cache);
+    return GetRecentFiles(model, cutoff_delta, file_type, invalidate_cache);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -123,7 +123,7 @@ class RecentModelTest : public testing::Test {
 
 TEST_F(RecentModelTest, GetRecentFiles) {
   std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
-      base::BindRepeating(&BuildDefaultSources), 10, base::Time(),
+      base::BindRepeating(&BuildDefaultSources), 10, base::Days(30),
       RecentModel::FileType::kAll, false);
 
   ASSERT_EQ(4u, files.size());
@@ -139,7 +139,7 @@ TEST_F(RecentModelTest, GetRecentFiles) {
 
 TEST_F(RecentModelTest, GetRecentFiles_MaxFiles) {
   std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
-      base::BindRepeating(&BuildDefaultSources), 3, base::Time(),
+      base::BindRepeating(&BuildDefaultSources), 3, base::Days(30),
       RecentModel::FileType::kAll, false);
 
   ASSERT_EQ(3u, files.size());
@@ -152,9 +152,19 @@ TEST_F(RecentModelTest, GetRecentFiles_MaxFiles) {
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_CutoffTime) {
+  // TODO(b:307455066): Fix last modified time in created files.
+  // Files created for the tests have last modified time set to 1, 2, 3, and 4
+  // seconds since Unix epoch. This allows for last modified time checks to be
+  // performed independently of when the test is run. However, this is not
+  // ideal. First, there is a repetitive base::Time::FromSecondsSinceUnixEpoch
+  // scattered in the tests. Changing, say, the last modified time for aaa.jpg
+  // would require changing it everywhere in the tests. In addition, now that
+  // one can pass time delta to GetRecentFiles method, this makes testing
+  // fragile as we need to hit the right span of a few seconds between now and
+  // the start of the Unix epoch.
   std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
       base::BindRepeating(&BuildDefaultSources), 10,
-      base::Time::FromMillisecondsSinceUnixEpoch(2500),
+      base::Time::Now() - base::Time::FromMillisecondsSinceUnixEpoch(2500),
       RecentModel::FileType::kAll, false);
 
   ASSERT_EQ(2u, files.size());
@@ -169,14 +179,14 @@ TEST_F(RecentModelTest, GetRecentFiles_UmaStats) {
 
   BuildModelAndGetRecentFiles(
       base::BindRepeating([]() { return RecentSourceList(); }), 10,
-      base::Time(), RecentModel::FileType::kAll, false);
+      base::Days(30), RecentModel::FileType::kAll, false);
 
   histogram_tester.ExpectTotalCount(RecentModel::kLoadHistogramName, 1);
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_Audio) {
   std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
-      base::BindRepeating(&BuildDefaultSources), 10, base::Time(),
+      base::BindRepeating(&BuildDefaultSources), 10, base::Days(30),
       RecentModel::FileType::kAudio, false);
 
   ASSERT_EQ(1u, files.size());
@@ -186,7 +196,7 @@ TEST_F(RecentModelTest, GetRecentFiles_Audio) {
 
 TEST_F(RecentModelTest, GetRecentFiles_Image) {
   std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
-      base::BindRepeating(&BuildDefaultSources), 10, base::Time(),
+      base::BindRepeating(&BuildDefaultSources), 10, base::Days(30),
       RecentModel::FileType::kImage, false);
 
   ASSERT_EQ(2u, files.size());
@@ -198,7 +208,7 @@ TEST_F(RecentModelTest, GetRecentFiles_Image) {
 
 TEST_F(RecentModelTest, GetRecentFiles_Video) {
   std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
-      base::BindRepeating(&BuildDefaultSources), 10, base::Time(),
+      base::BindRepeating(&BuildDefaultSources), 10, base::Days(30),
       RecentModel::FileType::kVideo, false);
 
   ASSERT_EQ(1u, files.size());
@@ -209,7 +219,7 @@ TEST_F(RecentModelTest, GetRecentFiles_Video) {
 TEST_F(RecentModelTest, GetRecentFiles_OneSourceIsLate) {
   std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
       base::BindRepeating(&BuildDefaultSourcesWithLag, 100, 501), 10,
-      base::Time(), RecentModel::FileType::kAll, false);
+      base::Days(30), RecentModel::FileType::kAll, false);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("ccc.mp4", files[0].url().path().value());
@@ -221,7 +231,7 @@ TEST_F(RecentModelTest, GetRecentFiles_OneSourceIsLate) {
 TEST_F(RecentModelTest, GetRecentFiles_NoSourceIsLate) {
   std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
       base::BindRepeating(&BuildDefaultSourcesWithLag, 499, 111), 10,
-      base::Time(), RecentModel::FileType::kAll, false);
+      base::Days(30), RecentModel::FileType::kAll, false);
 
   ASSERT_EQ(4u, files.size());
   EXPECT_EQ("ddd.ogg", files[0].url().path().value());
@@ -240,10 +250,9 @@ TEST(RecentModelCacheTest, GetRecentFiles_InvalidateCache) {
   content::BrowserTaskEnvironment task_environment;
   std::unique_ptr<RecentModel> model =
       RecentModel::CreateForTest(BuildDefaultSources());
-  model->SetForcedCutoffTimeForTest(base::Time());
 
-  std::vector<RecentFile> files1 =
-      GetRecentFiles(model.get(), RecentModel::FileType::kAll, false);
+  std::vector<RecentFile> files1 = GetRecentFiles(
+      model.get(), base::TimeDelta::Max(), RecentModel::FileType::kAll, false);
   ASSERT_EQ(4u, files1.size());
 
   // Shutdown() will clear all sources.
@@ -251,13 +260,13 @@ TEST(RecentModelCacheTest, GetRecentFiles_InvalidateCache) {
 
   // The returned file list should still has 4 files even though all sources has
   // been cleared in Shutdown(), because it hits cache.
-  std::vector<RecentFile> files2 =
-      GetRecentFiles(model.get(), RecentModel::FileType::kAll, false);
+  std::vector<RecentFile> files2 = GetRecentFiles(
+      model.get(), base::TimeDelta::Max(), RecentModel::FileType::kAll, false);
   ASSERT_EQ(4u, files2.size());
 
   // Inalidate cache and query again.
-  std::vector<RecentFile> files3 =
-      GetRecentFiles(model.get(), RecentModel::FileType::kAll, true);
+  std::vector<RecentFile> files3 = GetRecentFiles(
+      model.get(), base::Days(30), RecentModel::FileType::kAll, true);
   ASSERT_EQ(0u, files3.size());
 }
 
