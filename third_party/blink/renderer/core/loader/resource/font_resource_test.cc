@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
+#include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/resource/mock_font_resource_client.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -234,11 +235,12 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   ResourceFetcher* fetcher = document.Fetcher();
-  CSSFontFaceSrcValue* src_value = CSSFontFaceSrcValue::Create(
+  auto* src_uri_value = MakeGarbageCollected<cssvalue::CSSURIValue>(
       CSSUrlData(AtomicString(url.GetString()), url,
                  Referrer(document.Url(), document.GetReferrerPolicy()),
-                 OriginClean::kTrue, false /* is_ad_related */),
-      nullptr /* world */);
+                 OriginClean::kTrue, false /* is_ad_related */));
+  auto* src_value =
+      CSSFontFaceSrcValue::Create(src_uri_value, nullptr /* world */);
 
   // Route font requests in this test through CSSFontFaceSrcValue::Fetch
   // instead of calling FontResource::Fetch directly. CSSFontFaceSrcValue

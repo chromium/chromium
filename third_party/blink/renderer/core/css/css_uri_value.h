@@ -37,6 +37,7 @@ class CORE_EXPORT CSSURIValue : public CSSValue {
 
   String CustomCSSText() const;
 
+  const CSSUrlData& UrlData() const { return url_data_; }
   bool IsLocal(const Document&) const;
   AtomicString FragmentIdentifier() const;
 
