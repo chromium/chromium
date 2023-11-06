@@ -87,10 +87,17 @@ class CppTypeGenerator(object):
       x86_64: kX86_64
       x86_ARCH: kX86Arch
       '': EmptyString
+      kConstantSupport: kConstantSupport.
     """
 
     if not name:
       return 'EmptyString'
+
+    # For cases where the enum entry is something like kValue, an exception is
+    # made to drop the initial `k` to avoid generating a key that looks like
+    # kKvalue, which is less readable than kValue.
+    if len(name) > 1 and name.startswith('k') and name[1].isupper():
+      name = name[1:]
 
     change_to_upper = True
     last_was_lower = True
