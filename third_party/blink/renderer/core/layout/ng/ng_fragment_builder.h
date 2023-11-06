@@ -378,6 +378,9 @@ class CORE_EXPORT NGFragmentBuilder {
   void SetAdjoiningObjectTypes(NGAdjoiningObjectTypes adjoining_object_types) {
     adjoining_object_types_ = adjoining_object_types;
   }
+  void SetHasAdjoiningObjectDescendants(bool has_adjoining_object_descendants) {
+    has_adjoining_object_descendants_ = has_adjoining_object_descendants;
+  }
   NGAdjoiningObjectTypes AdjoiningObjectTypes() const {
     return adjoining_object_types_;
   }

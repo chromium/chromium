@@ -307,6 +307,8 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
             .ToLogical(*previous_fragment.InflowBounds());
     container_builder_.SetInflowBounds(inflow_bounds);
   }
+  container_builder_.SetHasAdjoiningObjectDescendants(
+      previous_fragment.HasAdjoiningObjectDescendants());
   container_builder_.SetMayHaveDescendantAboveBlockStart(
       previous_fragment.MayHaveDescendantAboveBlockStart());
   container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(

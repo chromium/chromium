@@ -1726,6 +1726,8 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   DCHECK_EQ(is_math_operator_, other.is_math_operator_);
 
   // |has_floating_descendants_for_paint_| can change during simplified layout.
+  DCHECK_EQ(has_adjoining_object_descendants_,
+            other.has_adjoining_object_descendants_);
   DCHECK_EQ(may_have_descendant_above_block_start_,
             other.may_have_descendant_above_block_start_);
   DCHECK_EQ(depends_on_percentage_block_size_,
