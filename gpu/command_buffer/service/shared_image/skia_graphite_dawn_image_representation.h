@@ -23,7 +23,6 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      int plane_index = 0,
       bool is_yuv_plane = false);
 
   ~SkiaGraphiteDawnImageRepresentation() override;
@@ -45,7 +44,6 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      int plane_index,
       bool is_yuv_plane,
       wgpu::TextureUsage supported_tex_usages);
 
@@ -56,11 +54,9 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
   std::unique_ptr<DawnImageRepresentation::ScopedAccess> dawn_scoped_access_;
   scoped_refptr<SharedContextState> context_state_;
   const raw_ptr<skgpu::graphite::Recorder> recorder_;
-  const int plane_index_;
   const bool is_yuv_plane_;
   const wgpu::TextureUsage supported_tex_usages_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
-  std::vector<wgpu::TextureView> plane_views_;
 };
 
 }  // namespace gpu

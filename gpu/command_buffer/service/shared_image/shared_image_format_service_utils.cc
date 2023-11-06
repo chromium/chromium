@@ -492,6 +492,11 @@ wgpu::TextureAspect GetDawnTextureAspect(viz::SharedImageFormat format,
     return wgpu::TextureAspect::All;
   }
 
+  // Dawn only supports 2 plane multiplanar formats i.e. NV12 and P010.
+  if (format.plane_config() != viz::SharedImageFormat::PlaneConfig::kY_UV) {
+    return wgpu::TextureAspect::All;
+  }
+
   if (plane_index == 0) {
     return wgpu::TextureAspect::Plane0Only;
   }
@@ -538,6 +543,7 @@ skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
   if (wgpu_format != wgpu::TextureFormat::Undefined) {
     dawn_texture_info.fSampleCount = 1;
     dawn_texture_info.fFormat = wgpu_format;
+    dawn_texture_info.fAspect = GetDawnTextureAspect(format, plane_index);
     dawn_texture_info.fUsage = GetSupportedDawnTextureUsage(
         is_yuv_plane, scanout_dcomp_surface, supports_multiplanar_rendering);
     dawn_texture_info.fMipmapped =

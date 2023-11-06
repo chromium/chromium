@@ -290,7 +290,7 @@ DCompSurfaceImageBacking::ProduceSkiaGraphite(
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-      /*plane_index=*/0, /*is_yuv_plane=*/false);
+      /*is_yuv_plane=*/false);
 }
 
 Microsoft::WRL::ComPtr<ID3D11Texture2D> DCompSurfaceImageBacking::BeginDraw(
