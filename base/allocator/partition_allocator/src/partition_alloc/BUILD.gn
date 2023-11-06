@@ -4,7 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")

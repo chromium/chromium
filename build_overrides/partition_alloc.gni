@@ -24,7 +24,7 @@
 #
 # {variable}_default works as the default value of {variable}.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 if (is_ios) {
   import("//build/config/ios/ios_sdk.gni")

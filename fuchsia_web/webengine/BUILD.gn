@@ -4,7 +4,7 @@
 
 assert(is_fuchsia)
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/packaged_content_embedder_excluded_dirs.gni")
 import("//build/config/locales.gni")

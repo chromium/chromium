@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build_overrides/build.gni")
