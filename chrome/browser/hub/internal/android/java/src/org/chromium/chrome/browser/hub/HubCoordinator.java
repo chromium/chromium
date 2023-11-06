@@ -9,18 +9,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import androidx.annotation.NonNull;
 
-/**
- * Root coordinator of the Hub.
- *
- * <p>TODO(crbug/1487315): This is a stub implementation make it display the Hub UI.
- */
-public class HubCoordinator {
-    private final FrameLayout mContainerView;
-    private final View mMainHubParent;
-    private final HubToolbarCoordinator mHubToolbarCoordinator;
-    private final HubPaneHostCoordinator mHubPaneHostCoordinator;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+
+/** Root coordinator of the Hub. */
+public class HubCoordinator implements BackPressHandler {
+    private final @NonNull FrameLayout mContainerView;
+    private final @NonNull View mMainHubParent;
+    private final @NonNull HubToolbarCoordinator mHubToolbarCoordinator;
+    private final @NonNull HubPaneHostCoordinator mHubPaneHostCoordinator;
+    private final @NonNull ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
+    private final @NonNull PaneBackStackHandler mPaneBackStackHandler;
 
     /**
      * Creates the {@link HubCoordinator}.
@@ -28,7 +31,7 @@ public class HubCoordinator {
      * @param containerView The view to attach the Hub to.
      * @param paneSupplier Used to observe the current pane.
      */
-    public HubCoordinator(FrameLayout containerView, ObservableSupplier<Pane> paneSupplier) {
+    public HubCoordinator(@NonNull FrameLayout containerView, @NonNull PaneManager paneManager) {
         Context context = containerView.getContext();
         mContainerView = containerView;
         mMainHubParent = LayoutInflater.from(context).inflate(R.layout.hub_layout, null);
@@ -38,7 +41,15 @@ public class HubCoordinator {
         mHubToolbarCoordinator = new HubToolbarCoordinator(hubToolbarView);
 
         HubPaneHostView hubPaneHostView = mContainerView.findViewById(R.id.hub_pane_host);
-        mHubPaneHostCoordinator = new HubPaneHostCoordinator(hubPaneHostView, paneSupplier);
+        mHubPaneHostCoordinator =
+                new HubPaneHostCoordinator(hubPaneHostView, paneManager.getFocusedPaneSupplier());
+
+        mHandleBackPressSupplier = new ObservableSupplierImpl<>();
+        mPaneBackStackHandler = new PaneBackStackHandler(paneManager);
+        mPaneBackStackHandler
+                .getHandleBackPressChangedSupplier()
+                .addObserver((handlesBackPress) -> updateHandleBackPressSupplier());
+        updateHandleBackPressSupplier();
     }
 
     /** Removes the hub from the layout tree and cleans up resources. */
@@ -46,5 +57,36 @@ public class HubCoordinator {
         mContainerView.removeView(mMainHubParent);
         mHubToolbarCoordinator.destroy();
         mHubPaneHostCoordinator.destroy();
+    }
+
+    @Override
+    public @BackPressResult int handleBackPress() {
+        // TODO(crbug/1498614): Add support here for in order of priority.
+        // 1) Delegate to the current Pane.
+        // 2) Delegate to PaneBackStackHandler. - DONE
+        // 3) No-op if Start Surface was the previous layout. It should be higher priority and
+        //    already handle it, but add verification.
+        // 4) Hide the Hub to the most recent tab in the current TabModel.
+        if (mPaneBackStackHandler.handleBackPress() == BackPressResult.SUCCESS) {
+            return BackPressResult.SUCCESS;
+        }
+        return BackPressResult.FAILURE;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mHandleBackPressSupplier;
+    }
+
+    private void updateHandleBackPressSupplier() {
+        // TODO(crbug/1498614): See comment in handleBackPress. The conditions to check for each
+        // case are:
+        // 1) Whether the Pane's getHandleBackPressChangedSupplier is set.
+        // 2) Whether the PaneBackStackHandler getHandleBackPressChangeSupplier is set. - DONE
+        // 3) Whether Start Surface was the previous layout and we are not in incognito mode.
+        // 4) Whether the current TabModel has a selected tab.
+        boolean shouldHandleBackPress =
+                mPaneBackStackHandler.getHandleBackPressChangedSupplier().get();
+        mHandleBackPressSupplier.set(shouldHandleBackPress);
     }
 }

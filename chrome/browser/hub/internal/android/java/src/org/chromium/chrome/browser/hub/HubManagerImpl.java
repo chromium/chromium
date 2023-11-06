@@ -76,8 +76,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private void ensureHubCoordinatorIsInitialized() {
         if (mHubCoordinator != null) return;
 
-        mHubCoordinator =
-                new HubCoordinator(mHubContainerView, mPaneManager.getFocusedPaneSupplier());
+        mHubCoordinator = new HubCoordinator(mHubContainerView, mPaneManager);
     }
 
     HubCoordinator getHubCoordinatorForTesting() {
