@@ -212,7 +212,7 @@ TEST(PrintingApiUtilsTest, PrinterToIdl) {
   EXPECT_EQ(kName, idl_printer.name);
   EXPECT_EQ(kDescription, idl_printer.description);
   EXPECT_EQ(kUri, idl_printer.uri);
-  EXPECT_EQ(idl::PRINTER_SOURCE_POLICY, idl_printer.source);
+  EXPECT_EQ(idl::PrinterSource::kPolicy, idl_printer.source);
   EXPECT_EQ(true, idl_printer.is_default);
   ASSERT_TRUE(idl_printer.recently_used_rank);
   EXPECT_EQ(kRank, *idl_printer.recently_used_rank);

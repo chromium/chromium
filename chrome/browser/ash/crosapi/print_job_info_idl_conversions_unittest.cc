@@ -88,7 +88,7 @@ TEST(PrintJobInfoIdlConversionsTest, PrintJobInfoProtoToIdl) {
   EXPECT_EQ(kHeight, media_size.height);
   EXPECT_EQ(kVendorId, media_size.vendor_id);
   EXPECT_EQ(kPagesNumber, print_job_info.number_of_pages);
-  EXPECT_EQ(api::printing::PRINTER_STATUS_OUT_OF_PAPER,
+  EXPECT_EQ(api::printing::PrinterStatus::kOutOfPaper,
             print_job_info.printer_status);
 }
 

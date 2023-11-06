@@ -177,7 +177,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
     absl::optional<std::string> error = std::move(result).error();
     absl::optional<api::printing::SubmitJobStatus> status;
     if (!error)
-      status = api::printing::SUBMIT_JOB_STATUS_USER_REJECTED;
+      status = api::printing::SubmitJobStatus::kUserRejected;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), status, absl::nullopt,
                                   std::move(error)));
@@ -193,7 +193,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), api::printing::SUBMIT_JOB_STATUS_OK,
+      base::BindOnce(std::move(callback), api::printing::SubmitJobStatus::kOk,
                      cups_id, absl::nullopt));
 
   DCHECK(!base::Contains(print_jobs_, cups_id));
@@ -213,7 +213,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
       std::make_unique<Event>(events::PRINTING_ON_JOB_STATUS_CHANGED,
                               api::printing::OnJobStatusChanged::kEventName,
                               api::printing::OnJobStatusChanged::Create(
-                                  cups_id, api::printing::JOB_STATUS_PENDING));
+                                  cups_id, api::printing::JobStatus::kPending));
   event_router_->DispatchEventToExtension(extension_id, std::move(event));
 }
 
@@ -298,7 +298,7 @@ void PrintingAPIHandler::OnPrinterCapabilitiesRetrieved(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), /*capabilities=*/absl::nullopt,
-                       /*status=*/api::printing::PRINTER_STATUS_UNREACHABLE,
+                       /*status=*/api::printing::PrinterStatus::kUnreachable,
                        /*error=*/absl::nullopt));
     return;
   }
@@ -319,7 +319,7 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
   if (!printer_status) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(capabilities),
-                                  api::printing::PRINTER_STATUS_UNREACHABLE,
+                                  api::printing::PrinterStatus::kUnreachable,
                                   /*error=*/absl::nullopt));
     return;
   }
@@ -347,17 +347,17 @@ void PrintingAPIHandler::OnPrintJobUpdate(
   api::printing::JobStatus job_status;
   switch (status) {
     case crosapi::mojom::PrintJobStatus::kStarted:
-      job_status = api::printing::JOB_STATUS_IN_PROGRESS;
+      job_status = api::printing::JobStatus::kInProgress;
       done = false;
       break;
     case crosapi::mojom::PrintJobStatus::kDone:
-      job_status = api::printing::JOB_STATUS_PRINTED;
+      job_status = api::printing::JobStatus::kPrinted;
       break;
     case crosapi::mojom::PrintJobStatus::kError:
-      job_status = api::printing::JOB_STATUS_FAILED;
+      job_status = api::printing::JobStatus::kFailed;
       break;
     case crosapi::mojom::PrintJobStatus::kCancelled:
-      job_status = api::printing::JOB_STATUS_CANCELED;
+      job_status = api::printing::JobStatus::kCanceled;
       break;
     default:  // crosapi::mojom::PrintJobStatus::kCreated
       return;
