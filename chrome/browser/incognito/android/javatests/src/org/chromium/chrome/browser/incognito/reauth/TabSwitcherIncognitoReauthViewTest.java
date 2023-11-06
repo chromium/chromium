@@ -155,7 +155,7 @@ public class TabSwitcherIncognitoReauthViewTest {
                 .check(matches(not(isDisplayed())));
 
         mRenderTestRule.render(
-                cta.findViewById(R.id.action_bar_root), "incognito_reauth_view_tab_switcher");
+                cta.findViewById(R.id.action_bar_root), "incognito_reauth_view_tab_switcher_v2");
     }
 
     @Test
