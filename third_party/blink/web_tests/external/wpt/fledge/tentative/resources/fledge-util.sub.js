@@ -31,6 +31,7 @@ const OTHER_ORIGIN7 = 'https://{{hosts[alt][www]}}:{{ports[https][1]}}';
 // `dispatch` affects what the tracker script does.
 // `id` can be used to uniquely identify tracked requests. It has no effect
 //     on behavior of the script; it only serves to make the URL unique.
+// `id` will always be the last query parameter.
 function createTrackerURL(origin, uuid, dispatch, id = null) {
   let url = new URL(`${origin}${BASE_PATH}resources/request-tracker.py`);
   url.searchParams.append('uuid', uuid);
@@ -50,6 +51,7 @@ function createCleanupURL(uuid) {
 // Create tracked bidder/seller URLs. The only difference is the prefix added
 // to the `id` passed to createTrackerURL. The optional `id` field allows
 // multiple bidder/seller report URLs to be distinguishable from each other.
+// `id` will always be the last query parameter.
 function createBidderReportURL(uuid, id = '1', origin = window.location.origin) {
   return createTrackerURL(origin, uuid, `track_get`, `bidder_report_${id}`);
 }
@@ -278,14 +280,27 @@ async function runBasicFledgeAuction(test, uuid, auctionConfigOverrides = {}) {
   return await navigator.runAdAuction(auctionConfig);
 }
 
+// Checks that await'ed return value of runAdAuction() denotes a successful
+// auction with a winner.
+function expectSuccess(config) {
+  assert_true(config !== null, `Auction unexpectedly had no winner`);
+  assert_true(
+      config instanceof FencedFrameConfig,
+      `Wrong value type returned from auction: ${config.constructor.type}`);
+}
+
+// Checks that await'ed return value of runAdAuction() denotes an auction
+// without a winner (but no fatal error).
+function expectNoWinner(result) {
+  assert_true(result === null, 'Auction unexpectedly had a winner');
+}
+
 // Wrapper around runBasicFledgeAuction() that runs an auction with the specified
 // arguments, expecting the auction to have a winner. Returns the FencedFrameConfig
 // from the auction.
 async function runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides = {}) {
   let config = await runBasicFledgeAuction(test, uuid, auctionConfigOverrides);
-  assert_true(config !== null, `Auction unexpectedly had no winner`);
-  assert_true(config instanceof FencedFrameConfig,
-      `Wrong value type returned from auction: ${config.constructor.type}`);
+  expectSuccess(config);
   return config;
 }
 
@@ -294,7 +309,7 @@ async function runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverri
 async function runBasicFledgeTestExpectingNoWinner(
     test, uuid, auctionConfigOverrides = {}) {
   let result = await runBasicFledgeAuction(test, uuid, auctionConfigOverrides);
-  assert_true(result === null, 'Auction unexpectedly had a winner');
+  expectNoWinner(result);
 }
 
 // Creates a fenced frame and applies fencedFrameConfig to it. Also adds a cleanup
