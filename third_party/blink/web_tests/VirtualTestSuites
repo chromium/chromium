@@ -1652,7 +1652,7 @@
       "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeRounding:fledge_bid_reporting_bits/8/fledge_score_reporting_bits/8/fledge_ad_cost_reporting_bits/8",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
-    "expires": "Dec 1, 2023"
+    "expires": "Sep 1, 2024"
   },
   {
     "prefix": "automatic-lazy-frame-loading",
