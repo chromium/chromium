@@ -27,6 +27,20 @@ export class ReportingHistoryElement extends PolymerElement {
   private browserProxy: EnterpriseReportingBrowserProxy =
       EnterpriseReportingBrowserProxy.getInstance();
 
+  // Filtering options for the table.
+  private static allEvents: string = 'All events';
+  private static allButUploads: string = 'All events except uploads';
+  private filterOptions: string[] = [
+    ReportingHistoryElement.allEvents,
+    ReportingHistoryElement.allButUploads,
+    'QueueAction',
+    'Enqueue',
+    'Flush',
+    'Confirm',
+    'Upload',
+  ];
+  private selectedOption: string = ReportingHistoryElement.allEvents;
+
   static get is() {
     return 'reporting-history-element' as const;
   }
@@ -38,13 +52,23 @@ export class ReportingHistoryElement extends PolymerElement {
   static get properties() {
     return {
       loggingState: Boolean,
+
+      filterOptions: {
+        type: Array,
+        value: () => [],
+      },
+
+      selectedOption: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   private loggingState: boolean;
 
   loggingStateToString(checked: boolean) {
-    return checked ? 'on' : 'off';
+    return checked ? 'On' : 'Off';
   }
 
   onToggleChange(event: CustomEvent<boolean>) {
@@ -141,9 +165,23 @@ export class ReportingHistoryElement extends PolymerElement {
       return;
     }
 
+    // If there are events we filter them by the type of event.
+    const filteredEvents = history.events.filter(
+        (event: ErpHistoryEvent) => event.call == this.selectedOption ||
+            this.selectedOption == ReportingHistoryElement.allEvents ||
+            (this.selectedOption == ReportingHistoryElement.allButUploads &&
+             event.call != 'Upload'));
+
+    // If there are no events after filtering, present the placeholder.
+    if (filteredEvents.length === 0) {
+      this.setEmptyErpTable();
+      return;
+    }
+
     // Populate the table row by the events: iterate through the history
     // in reverse order so that the most recent event shows up first.
-    for (const event of history.events.reverse()) {
+    // This uses the already filtered events by the user selection.
+    for (const event of filteredEvents.reverse()) {
       const row = this.composeTableRow(event);
       this.$.body.appendChild(row);
     }
