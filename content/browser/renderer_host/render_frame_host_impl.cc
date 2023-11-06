@@ -30,6 +30,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/state_transitions.h"
 #include "base/strings/strcat.h"
@@ -2933,9 +2934,9 @@ void RenderFrameHostImpl::AccessibilityFatalError() {
     // in addition to the DumpWithoutCrashing() for the first reset.
     render_accessibility_->FatalError();
   } else {
-    // Crash keys set in BrowserAccessibilityManager::Unserialize().
-    if (accessibility_fatal_error_count_ == 1) {
-      // Only send crash report first time -- don't skew crash stats too much.
+    if (base::RandGenerator(20) == 0) {
+      // Only report crash ~5% of the time -- don't skew crash stats too much.
+      // Crash keys were set in BrowserAccessibilityManager::Unserialize().
       base::debug::DumpWithoutCrashing();
     }
     AccessibilityReset();

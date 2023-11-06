@@ -2802,7 +2802,7 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
   LOG_IF(FATAL, is_fatal) << verbose_error.str();
 
   // If this is the first error, will dump without crashing in
-  // RenderAccessibilityImpl::OnFatalError().
+  // RenderFrameHostImpl::AccessibilityFatalError().
   static auto* const ax_tree_error_key = base::debug::AllocateCrashKeyString(
       "ax_tree_error", base::debug::CrashKeySize::Size256);
   static auto* const ax_tree_update_key = base::debug::AllocateCrashKeyString(
