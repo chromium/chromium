@@ -3809,11 +3809,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-windows-gaming-input-data-fetcher",
-    "owners": ["gabrielbrito@microsoft.com", "qiaye@microsoft.com" ],
-    "expiry_milestone": 121
-  },
-  {
     "name": "enable-winrt-geolocation-implementation",
     "owners": [ "pelavall@microsoft.com", "deviceapi-team@google.com" ],
     "expiry_milestone": 125
