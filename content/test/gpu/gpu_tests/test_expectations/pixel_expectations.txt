@@ -416,6 +416,9 @@ crbug.com/1489248 [ android android-chromium android-nexus-5x no-clang-coverage 
 # Fails almost consistently, but likely to pass when run on its own in the retry.
 crbug.com/1484212 [ win debug nvidia ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ RetryOnFailure ]
 
+# Fails with hung renderer
+crbug.com/1372149 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] Pixel_WebGLFloat [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
