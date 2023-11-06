@@ -231,6 +231,7 @@ class CONTENT_EXPORT MediaDevicesManager
       EnumerateDevicesCallback callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin);
   void OnPermissionsCheckDone(
+      GlobalRenderFrameHostId render_frame_host_id,
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
       bool request_audio_input_capabilities,
@@ -238,6 +239,7 @@ class CONTENT_EXPORT MediaDevicesManager
       const MediaDeviceSaltAndOrigin& salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions);
   void OnDevicesEnumerated(
+      GlobalRenderFrameHostId render_frame_host_id,
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
       bool request_audio_input_capabilities,
@@ -245,6 +247,14 @@ class CONTENT_EXPORT MediaDevicesManager
       const MediaDeviceSaltAndOrigin& salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions,
       const MediaDeviceEnumeration& enumeration);
+  void OnDevicesRanked(
+      const MediaDevicesManager::BoolDeviceTypes& requested_types,
+      bool request_video_input_capabilities,
+      bool request_audio_input_capabilities,
+      EnumerateDevicesCallback callback,
+      const MediaDeviceSaltAndOrigin& salt_and_origin,
+      const MediaDevicesManager::BoolDeviceTypes& has_permissions,
+      MediaDeviceEnumeration ranked_enumeration);
   void GetAudioInputCapabilities(
       bool request_video_input_capabilities,
       bool request_audio_input_capabilities,
@@ -305,11 +315,18 @@ class CONTENT_EXPORT MediaDevicesManager
       MediaDeviceType type,
       const blink::WebMediaDeviceInfoArray& device_infos,
       const MediaDeviceSaltAndOrigin& salt_and_origin);
+  void OnCheckedPermissionForDeviceChange(
+      uint32_t subscription_id,
+      GlobalRenderFrameHostId render_frame_host_id,
+      MediaDeviceType type,
+      const blink::WebMediaDeviceInfoArray& device_infos,
+      const MediaDeviceSaltAndOrigin& salt_and_origin,
+      bool has_permission);
   void NotifyDeviceChange(uint32_t subscription_id,
                           MediaDeviceType type,
-                          const blink::WebMediaDeviceInfoArray& device_infos,
                           const MediaDeviceSaltAndOrigin& salt_and_origin,
-                          bool has_permission);
+                          bool has_permission,
+                          MediaDeviceEnumeration enumeration);
 
 #if BUILDFLAG(IS_MAC)
   void StartMonitoringOnUIThread();

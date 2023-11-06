@@ -29,6 +29,7 @@
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -172,6 +173,46 @@ void ReportVideoEnumerationStart() {
 void ReportVideoEnumerationResult(DeviceEnumerationResult result_code) {
   base::UmaHistogramEnumeration(
       "Media.MediaDevicesManager.VideoDeviceEnumeration.Result", result_code);
+}
+
+BrowserContext* GetBrowserContextOnUIThread(
+    GlobalRenderFrameHostId render_frame_host_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* rfh = RenderFrameHostImpl::FromID(render_frame_host_id);
+  if (!rfh) {
+    return nullptr;
+  }
+  return rfh->GetBrowserContext();
+}
+
+void RankDevices(GlobalRenderFrameHostId render_frame_host_id,
+                 const MediaDevicesManager::BoolDeviceTypes& requested_types,
+                 const MediaDeviceEnumeration& enumeration,
+                 base::OnceCallback<void(MediaDeviceEnumeration)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  auto* browser_context = GetBrowserContextOnUIThread(render_frame_host_id);
+  if (!browser_context) {
+    std::move(callback).Run(enumeration);
+    return;
+  }
+
+  ContentBrowserClient* content_client_browser = GetContentClient()->browser();
+  auto ranked_enumeration = enumeration;
+
+  if (requested_types[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)]) {
+    content_client_browser->PreferenceRankAudioDeviceInfos(
+        browser_context, ranked_enumeration[static_cast<size_t>(
+                             MediaDeviceType::kMediaAudioInput)]);
+  }
+
+  if (requested_types[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)]) {
+    content_client_browser->PreferenceRankVideoDeviceInfos(
+        browser_context, ranked_enumeration[static_cast<size_t>(
+                             MediaDeviceType::kMediaVideoInput)]);
+  }
+
+  std::move(callback).Run(ranked_enumeration);
 }
 
 }  // namespace
@@ -682,13 +723,14 @@ void MediaDevicesManager::CheckPermissionsForEnumerateDevices(
       requested_types, render_frame_host_id.child_id,
       render_frame_host_id.frame_routing_id,
       base::BindOnce(&MediaDevicesManager::OnPermissionsCheckDone,
-                     weak_factory_.GetWeakPtr(), requested_types,
-                     request_video_input_capabilities,
+                     weak_factory_.GetWeakPtr(), render_frame_host_id,
+                     requested_types, request_video_input_capabilities,
                      request_audio_input_capabilities, std::move(callback),
                      std::move(salt_and_origin)));
 }
 
 void MediaDevicesManager::OnPermissionsCheckDone(
+    GlobalRenderFrameHostId render_frame_host_id,
     const MediaDevicesManager::BoolDeviceTypes& requested_types,
     bool request_video_input_capabilities,
     bool request_audio_input_capabilities,
@@ -717,13 +759,14 @@ void MediaDevicesManager::OnPermissionsCheckDone(
   EnumerateDevices(
       internal_requested_types,
       base::BindOnce(&MediaDevicesManager::OnDevicesEnumerated,
-                     weak_factory_.GetWeakPtr(), requested_types,
-                     request_video_input_capabilities,
+                     weak_factory_.GetWeakPtr(), render_frame_host_id,
+                     requested_types, request_video_input_capabilities,
                      request_audio_input_capabilities, std::move(callback),
                      std::move(salt_and_origin), has_permissions));
 }
 
 void MediaDevicesManager::OnDevicesEnumerated(
+    GlobalRenderFrameHostId render_frame_host_id,
     const MediaDevicesManager::BoolDeviceTypes& requested_types,
     bool request_video_input_capabilities,
     bool request_audio_input_capabilities,
@@ -731,6 +774,27 @@ void MediaDevicesManager::OnDevicesEnumerated(
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const MediaDevicesManager::BoolDeviceTypes& has_permissions,
     const MediaDeviceEnumeration& enumeration) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetUIThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &RankDevices, render_frame_host_id, requested_types, enumeration,
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &MediaDevicesManager::OnDevicesRanked, weak_factory_.GetWeakPtr(),
+              requested_types, request_video_input_capabilities,
+              request_audio_input_capabilities, std::move(callback),
+              std::move(salt_and_origin), has_permissions))));
+}
+
+void MediaDevicesManager::OnDevicesRanked(
+    const MediaDevicesManager::BoolDeviceTypes& requested_types,
+    bool request_video_input_capabilities,
+    bool request_audio_input_capabilities,
+    EnumerateDevicesCallback callback,
+    const MediaDeviceSaltAndOrigin& salt_and_origin,
+    const MediaDevicesManager::BoolDeviceTypes& has_permissions,
+    MediaDeviceEnumeration ranked_enumeration) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   const bool video_input_capabilities_requested =
@@ -747,7 +811,7 @@ void MediaDevicesManager::OnDevicesEnumerated(
     if (!requested_types[i])
       continue;
 
-    for (const auto& device_info : enumeration[i]) {
+    for (const auto& device_info : ranked_enumeration[i]) {
       if (base::FeatureList::IsEnabled(
               features::kEnumerateDevicesHideDeviceIDs) &&
           !has_permissions[i] && !translation[i].empty())
@@ -758,9 +822,9 @@ void MediaDevicesManager::OnDevicesEnumerated(
     }
   }
 
-  GetAudioInputCapabilities(video_input_capabilities_requested,
-                            audio_input_capabilities_requested,
-                            std::move(callback), enumeration, translation);
+  GetAudioInputCapabilities(
+      video_input_capabilities_requested, audio_input_capabilities_requested,
+      std::move(callback), ranked_enumeration, translation);
 }
 
 void MediaDevicesManager::GetAudioInputCapabilities(
@@ -1220,17 +1284,41 @@ void MediaDevicesManager::CheckPermissionForDeviceChange(
   permission_checker_->CheckPermission(
       type, render_frame_host_id.child_id,
       render_frame_host_id.frame_routing_id,
-      base::BindOnce(&MediaDevicesManager::NotifyDeviceChange,
-                     weak_factory_.GetWeakPtr(), subscription_id, type,
-                     device_infos, salt_and_origin));
+      base::BindOnce(&MediaDevicesManager::OnCheckedPermissionForDeviceChange,
+                     weak_factory_.GetWeakPtr(), subscription_id,
+                     render_frame_host_id, type, device_infos,
+                     salt_and_origin));
+}
+
+void MediaDevicesManager::OnCheckedPermissionForDeviceChange(
+    uint32_t subscription_id,
+    GlobalRenderFrameHostId render_frame_host_id,
+    MediaDeviceType type,
+    const blink::WebMediaDeviceInfoArray& device_infos,
+    const MediaDeviceSaltAndOrigin& salt_and_origin,
+    bool has_permission) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  MediaDevicesManager::BoolDeviceTypes requested_types;
+  requested_types[static_cast<size_t>(type)] = true;
+  MediaDeviceEnumeration enumeration;
+  enumeration[static_cast<size_t>(type)] = device_infos;
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RankDevices, render_frame_host_id, requested_types,
+                     enumeration,
+                     base::BindPostTaskToCurrentDefault(base::BindOnce(
+                         &MediaDevicesManager::NotifyDeviceChange,
+                         weak_factory_.GetWeakPtr(), subscription_id, type,
+                         salt_and_origin, has_permission))));
 }
 
 void MediaDevicesManager::NotifyDeviceChange(
     uint32_t subscription_id,
     MediaDeviceType type,
-    const blink::WebMediaDeviceInfoArray& device_infos,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
-    bool has_permission) {
+    bool has_permission,
+    MediaDeviceEnumeration enumeration) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(blink::IsValidMediaDeviceType(type));
   auto it = subscriptions_.find(subscription_id);
@@ -1242,8 +1330,9 @@ void MediaDevicesManager::NotifyDeviceChange(
 
   const SubscriptionRequest& request = it->second;
   request.listener_->OnDevicesChanged(
-      type, TranslateMediaDeviceInfoArray(has_permission, salt_and_origin,
-                                          device_infos));
+      type,
+      TranslateMediaDeviceInfoArray(has_permission, salt_and_origin,
+                                    enumeration[static_cast<size_t>(type)]));
 }
 
 MediaDevicesManager::EnumerationState::EnumerationState() = default;

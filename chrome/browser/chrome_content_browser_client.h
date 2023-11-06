@@ -965,6 +965,13 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
           video_effects_manager) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  void PreferenceRankAudioDeviceInfos(
+      content::BrowserContext* browser_context,
+      blink::WebMediaDeviceInfoArray& infos) override;
+  void PreferenceRankVideoDeviceInfos(
+      content::BrowserContext* browser_context,
+      blink::WebMediaDeviceInfoArray& infos) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
