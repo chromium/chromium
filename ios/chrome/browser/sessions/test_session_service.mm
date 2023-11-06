@@ -8,11 +8,16 @@
 #import "base/task/single_thread_task_runner.h"
 #import "ios/chrome/browser/sessions/session_window_ios_factory.h"
 
+namespace {
+constexpr base::TimeDelta kTestSaveDelay = base::Seconds(2.5);
+}
+
 @implementation TestSessionService
 
 - (instancetype)init {
   return [super
-      initWithTaskRunner:base::SingleThreadTaskRunner::GetCurrentDefault()];
+      initWithSaveDelay:kTestSaveDelay
+             taskRunner:base::SingleThreadTaskRunner::GetCurrentDefault()];
 }
 
 - (void)saveSession:(__weak SessionWindowIOSFactory*)factory

@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 
 @class SessionWindowIOS;
 @class SessionWindowIOSFactory;
@@ -21,11 +22,12 @@
 // Lazily creates a singleton instance with a default task runner.
 + (SessionServiceIOS*)sharedService;
 
-// Initializes a SessionServiceIOS with a given task runner. Prefer to use the
-// `sharedService` method.
-- (instancetype)initWithTaskRunner:
-    (const scoped_refptr<base::SequencedTaskRunner>&)taskRunner
-    NS_DESIGNATED_INITIALIZER;
+// Initializes a SessionServiceIOS with a given task runner and save delay.
+// Prefer to use the `sharedService` method.
+- (instancetype)initWithSaveDelay:(base::TimeDelta)saveDelay
+                       taskRunner:
+                           (const scoped_refptr<base::SequencedTaskRunner>&)
+                               taskRunner NS_DESIGNATED_INITIALIZER;
 
 // Requests that `closure` is invoked when all pending background tasks
 // are complete. The `closure` may be invoked on a background sequence,

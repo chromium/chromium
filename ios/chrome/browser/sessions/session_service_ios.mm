@@ -7,6 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
+#import "base/check_op.h"
 #import "base/files/file_path.h"
 #import "base/format_macros.h"
 #import "base/functional/bind.h"
@@ -22,6 +24,7 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_internal_util.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
@@ -32,16 +35,187 @@
 #import "ios/web/public/session/crw_session_storage.h"
 
 namespace {
-const NSTimeInterval kSaveDelay = 2.5;     // Value taken from Desktop Chrome.
+
+// Value taken from Desktop Chrome.
+constexpr base::TimeDelta kSaveDelay = base::Seconds(2.5);
+
+// Callback invoked to request saving session at path using factory.
+using SaveSessionCallback =
+    base::RepeatingCallback<void(NSString*, SessionWindowIOSFactory*)>;
+
+}  // namespace
+
+// Represents a pending save request.
+@interface SaveSessionRequest : NSObject
+
+// Designated initializer.
+- (instancetype)initWithPath:(NSString*)path
+                    deadline:(base::TimeTicks)deadline
+                     factory:(__weak SessionWindowIOSFactory*)factory
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Path at which the data needs to be saved on disk.
+@property(nonatomic, readonly) NSString* path;
+
+// Time at which the data needs to be saved on disk.
+@property(nonatomic, readonly) base::TimeTicks deadline;
+
+// Factory used to generate the data to save to disk.
+@property(nonatomic, weak, readonly) SessionWindowIOSFactory* factory;
+
+@end
+
+@implementation SaveSessionRequest
+
+- (instancetype)initWithPath:(NSString*)path
+                    deadline:(base::TimeTicks)deadline
+                     factory:(__weak SessionWindowIOSFactory*)factory {
+  if ((self = [super init])) {
+    DCHECK(path.length);
+    _path = [path copy];
+    _deadline = deadline;
+    _factory = factory;
+  }
+  return self;
 }
+
+@end
+
+// Represents a queue of pending save requests.
+@interface SaveSessionRequestQueue : NSObject
+
+// Designated initializer.
+- (instancetype)initWithCallback:(SaveSessionCallback)callback
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Schedules a new requests to save data at `path` after `delay` using
+// `factory`. Ignored if a request scheduled for `path` with a closer
+// deadline is already scheduled.
+- (void)scheduleRequestForPath:(NSString*)path
+                         delay:(base::TimeDelta)delay
+                       factory:(__weak SessionWindowIOSFactory*)factory;
+
+@end
+
+@implementation SaveSessionRequestQueue {
+  // Priority queue storing the pending requests ordered by deadline.
+  std::multimap<base::TimeTicks, SaveSessionRequest*> _priority;
+
+  // Dictionary mapping session path to the pending save request for that path.
+  NSMutableDictionary<NSString*, SaveSessionRequest*>* _pending;
+
+  // Callback passed to the constructor and invoked to save a session when
+  // the deadline for a request expires.
+  SaveSessionCallback _callback;
+
+  // Timer used to wait until the next pending request deadline expires.
+  base::OneShotTimer _timer;
+}
+
+- (instancetype)initWithCallback:(SaveSessionCallback)callback {
+  if ((self = [super init])) {
+    _pending = [[NSMutableDictionary alloc] init];
+    _callback = std::move(callback);
+    DCHECK(!_callback.is_null());
+  }
+  return self;
+}
+
+- (void)scheduleRequestForPath:(NSString*)path
+                         delay:(base::TimeDelta)delay
+                       factory:(__weak SessionWindowIOSFactory*)factory {
+  DCHECK(path.length);
+  DCHECK_GE(delay, base::TimeDelta());  // Can't schedule in the past.
+  const base::TimeTicks deadline = base::TimeTicks::Now() + delay;
+  SaveSessionRequest* request = [_pending objectForKey:path];
+  if (request) {
+    // The existing request is scheduled with a shorter deadline, ignore the
+    // new request. Return early as there is nothing to do.
+    if (request.deadline <= deadline) {
+      return;
+    }
+
+    // Drop the old request as the new one will expire sooner.
+    auto range = _priority.equal_range(request.deadline);
+    for (auto iter = range.first; iter != range.second; ++iter) {
+      if (iter->second == request) {
+        _priority.erase(iter);
+        break;
+      }
+    }
+    [_pending removeObjectForKey:path];
+  }
+
+  request = [[SaveSessionRequest alloc] initWithPath:path
+                                            deadline:deadline
+                                             factory:factory];
+
+  // Need to reset the timer if the newly scheduled request will have the
+  // closest deadline.
+  const bool resetTimer =
+      _priority.empty() || deadline < _priority.begin()->first;
+
+  [_pending setObject:request forKey:path];
+  _priority.insert(std::make_pair(deadline, request));
+
+  if (resetTimer) {
+    [self resetTimerWithDelay:delay];
+  }
+}
+
+// Resets the timer to expire in `delay`. If the delay is zero, then consider
+// the timer expires immediately and instead call the timer expiration method.
+- (void)resetTimerWithDelay:(base::TimeDelta)delay {
+  DCHECK(!_priority.empty());
+  DCHECK_GE(delay, base::TimeDelta());
+  if (delay == base::TimeDelta()) {
+    // No delay, stop the timer and consider it as immediately expired.
+    _timer.Stop();
+    [self onTimerExpired];
+    return;
+  }
+
+  __weak SaveSessionRequestQueue* weakSelf = self;
+  _timer.Start(FROM_HERE, delay, base::BindOnce(^{
+                 [weakSelf onTimerExpired];
+               }));
+}
+
+// Invoked when the timer expires. Should only happens when the priority queue
+// is not empty, and at least one item is scheduled to expire now or in the
+// past.
+- (void)onTimerExpired {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  while (!_priority.empty()) {
+    auto iter = _priority.begin();
+    if (iter->first > now) {
+      [self resetTimerWithDelay:(iter->first - now)];
+      break;
+    }
+
+    SaveSessionRequest* request = iter->second;
+    [_pending removeObjectForKey:request.path];
+    _priority.erase(iter);
+
+    _callback.Run(request.path, request.factory);
+  }
+}
+
+@end
 
 @implementation SessionServiceIOS {
   // The SequencedTaskRunner on which File IO operations are performed.
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
 
-  // Maps session path to the pending session factories for the delayed save
-  // behaviour. SessionWindowIOSFactory pointers are weak.
-  NSMapTable<NSString*, SessionWindowIOSFactory*>* _pendingSessions;
+  // Delay before saving data to storage when not saving session immediately.
+  base::TimeDelta _saveDelay;
+
+  // Queue of pending save requests.
+  SaveSessionRequestQueue* _pendingRequests;
 }
 
 #pragma mark - NSObject overrides
@@ -52,7 +226,7 @@ const NSTimeInterval kSaveDelay = 2.5;     // Value taken from Desktop Chrome.
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-  return [self initWithTaskRunner:taskRunner];
+  return [self initWithSaveDelay:kSaveDelay taskRunner:taskRunner];
 }
 
 #pragma mark - Public interface
@@ -65,13 +239,24 @@ const NSTimeInterval kSaveDelay = 2.5;     // Value taken from Desktop Chrome.
   return singleton;
 }
 
-- (instancetype)initWithTaskRunner:
-    (const scoped_refptr<base::SequencedTaskRunner>&)taskRunner {
+- (instancetype)initWithSaveDelay:(base::TimeDelta)saveDelay
+                       taskRunner:
+                           (const scoped_refptr<base::SequencedTaskRunner>&)
+                               taskRunner {
   DCHECK(taskRunner);
+  DCHECK_GT(saveDelay, base::Seconds(0));
   self = [super init];
   if (self) {
-    _pendingSessions = [NSMapTable strongToWeakObjectsMapTable];
     _taskRunner = taskRunner;
+    _saveDelay = saveDelay;
+
+    __weak SessionServiceIOS* weakSelf = self;
+    auto savingBlock = ^(NSString* path, SessionWindowIOSFactory* factory) {
+      [weakSelf saveSessionToPath:path usingFactory:factory];
+    };
+
+    _pendingRequests = [[SaveSessionRequestQueue alloc]
+        initWithCallback:base::BindRepeating(savingBlock)];
   }
   return self;
 }
@@ -86,18 +271,11 @@ const NSTimeInterval kSaveDelay = 2.5;     // Value taken from Desktop Chrome.
         immediately:(BOOL)immediately {
   NSString* sessionPath = [[self class] sessionPathForSessionID:sessionID
                                                       directory:directory];
-  BOOL hadPendingSession = [_pendingSessions objectForKey:sessionPath] != nil;
-  [_pendingSessions setObject:factory forKey:sessionPath];
-  if (immediately) {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self];
-    [self performSaveToPathInBackground:sessionPath];
-  } else if (!hadPendingSession) {
-    // If there wasn't previously a delayed save pending for `sessionPath`,
-    // enqueue one now.
-    [self performSelector:@selector(performSaveToPathInBackground:)
-               withObject:sessionPath
-               afterDelay:kSaveDelay];
-  }
+
+  const base::TimeDelta delay = immediately ? base::TimeDelta() : _saveDelay;
+  [_pendingRequests scheduleRequestForPath:sessionPath
+                                     delay:delay
+                                   factory:factory];
 }
 
 - (SessionWindowIOS*)loadSessionWithSessionID:(NSString*)sessionID
@@ -218,16 +396,13 @@ const NSTimeInterval kSaveDelay = 2.5;     // Value taken from Desktop Chrome.
 }
 
 // Do the work of saving on a background thread.
-- (void)performSaveToPathInBackground:(NSString*)sessionPath {
+- (void)saveSessionToPath:(NSString*)sessionPath
+             usingFactory:(SessionWindowIOSFactory*)factory {
   DCHECK(sessionPath);
-
-  const base::TimeTicks start_time = base::TimeTicks::Now();
 
   // Serialize to NSData on the main thread to avoid accessing potentially
   // non-threadsafe objects on a background thread.
-  SessionWindowIOSFactory* factory =
-      [_pendingSessions objectForKey:sessionPath];
-  [_pendingSessions removeObjectForKey:sessionPath];
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   SessionWindowIOS* sessionWindow = [factory sessionForSaving];
 
   // Because the factory may be called asynchronously after the underlying
