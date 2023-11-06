@@ -8,11 +8,13 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
 
 import androidx.annotation.CallSuper;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.policy.PolicyService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -107,7 +110,13 @@ public abstract class FirstRunActivityBase
         AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mChildAccountStatusSupplier =
                 new ChildAccountStatusSupplier(accountManagerFacade, mFirstRunAppRestrictionInfo);
+
+        if (BuildInfo.getInstance().isAutomotive) {
+            StatusBarColorController.setStatusBarColor(getWindow(), Color.BLACK);
+        }
     }
+
+
 
     @Override
     protected void onPreCreate() {
