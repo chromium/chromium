@@ -137,6 +137,7 @@ class CORE_EXPORT AttributionSrcLoader
 
   void RegisterAttributionHeaders(
       attribution_reporting::mojom::blink::RegistrationEligibility,
+      network::mojom::AttributionSupport,
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
       const Vector<network::TriggerVerification>&);

@@ -229,11 +229,13 @@ class AttributionSrcLoader::ResourceClient
       AttributionSrcLoader* loader,
       RegistrationEligibility eligibility,
       SourceType source_type,
-      mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host)
+      mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host,
+      network::mojom::AttributionSupport support)
       : loader_(loader),
         eligibility_(eligibility),
         source_type_(source_type),
-        data_host_(std::move(data_host)) {
+        data_host_(std::move(data_host)),
+        support_(support) {
     DCHECK(loader_);
     DCHECK(loader_->local_frame_);
     DCHECK(loader_->local_frame_->IsAttached());
@@ -299,6 +301,8 @@ class AttributionSrcLoader::ResourceClient
   mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host_;
 
   wtf_size_t num_registrations_ = 0;
+
+  network::mojom::AttributionSupport support_;
 
   SelfKeepAlive<ResourceClient> keep_alive_{this};
 };
@@ -439,6 +443,8 @@ bool AttributionSrcLoader::DoRegistration(
     source_type = SourceType::kEvent;
   }
 
+  network::mojom::AttributionSupport support = GetSupport();
+
   for (const KURL& url : urls) {
     // TODO(apaseltiner): Respect the referrerpolicy attribute of the
     // originating <a> or <img> tag, if present.
@@ -464,8 +470,8 @@ bool AttributionSrcLoader::DoRegistration(
     params.MutableOptions().initiator_info.name =
         fetch_initiator_type_names::kAttributionsrc;
 
-    auto* client = MakeGarbageCollected<ResourceClient>(this, eligibility,
-                                                        source_type, data_host);
+    auto* client = MakeGarbageCollected<ResourceClient>(
+        this, eligibility, source_type, data_host, support);
     // TODO(https://crbug.com/1374121): If this registration is
     // `associated_with_navigation`, there is a risk that the navigation will
     // complete before the resource fetch here is complete. In this case, the
@@ -566,7 +572,9 @@ bool AttributionSrcLoader::CanRegister(const KURL& url,
 }
 
 network::mojom::AttributionSupport AttributionSrcLoader::GetSupport() const {
-  return local_frame_->GetPage()->GetAttributionSupport();
+  auto* page = local_frame_->GetPage();
+  CHECK(page);
+  return page->GetAttributionSupport();
 }
 
 network::AttributionReportingRuntimeFeatures
@@ -641,15 +649,18 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
       break;
   }
 
+  network::mojom::AttributionSupport support =
+      request.GetAttributionReportingSupport();
+
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {
     document->AddPostPrerenderingActivationStep(
         WTF::BindOnce(&AttributionSrcLoader::RegisterAttributionHeaders,
                       WrapPersistentIfNeeded(this), registration_eligibility,
-                      std::move(*reporting_origin), std::move(headers),
+                      support, std::move(*reporting_origin), std::move(headers),
                       response.GetTriggerVerifications()));
   } else {
-    RegisterAttributionHeaders(registration_eligibility,
+    RegisterAttributionHeaders(registration_eligibility, support,
                                std::move(*reporting_origin), headers,
                                response.GetTriggerVerifications());
   }
@@ -659,6 +670,7 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 
 void AttributionSrcLoader::RegisterAttributionHeaders(
     RegistrationEligibility registration_eligibility,
+    network::mojom::AttributionSupport support,
     attribution_reporting::SuitableOrigin reporting_origin,
     const AttributionHeaders& headers,
     const Vector<network::TriggerVerification>& trigger_verifications) {
@@ -675,7 +687,8 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
   // TODO(johnidel): Consider refactoring this such that we can share clients
   // for redirect chain, or not create the client at all.
   auto* client = MakeGarbageCollected<ResourceClient>(
-      this, registration_eligibility, SourceType::kEvent, std::move(data_host));
+      this, registration_eligibility, SourceType::kEvent, std::move(data_host),
+      support);
   client->HandleResponseHeaders(std::move(reporting_origin), headers,
                                 trigger_verifications);
   client->Finish();
@@ -823,7 +836,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     base::UmaHistogramCounts1M("Conversions.HeadersSize.RegisterSource",
                                headers.web_source.length());
 
-    if (!network::HasAttributionWebSupport(loader_->GetSupport())) {
+    if (!network::HasAttributionWebSupport(support_)) {
       headers.LogSourceIgnored(loader_->local_frame_->DomWindow());
       return;
     }
@@ -848,7 +861,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   base::UmaHistogramCounts1M("Conversions.HeadersSize.RegisterOsSource",
                              headers.os_source.length());
 
-  if (!network::HasAttributionOsSupport(loader_->GetSupport())) {
+  if (!network::HasAttributionOsSupport(support_)) {
     headers.LogOsSourceIgnored(loader_->local_frame_->DomWindow());
     return;
   }
@@ -887,7 +900,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     base::UmaHistogramCounts1M("Conversions.HeadersSize.RegisterTrigger",
                                headers.web_trigger.length());
 
-    if (!network::HasAttributionWebSupport(loader_->GetSupport())) {
+    if (!network::HasAttributionWebSupport(support_)) {
       headers.LogTriggerIgnored(loader_->local_frame_->DomWindow());
       return;
     }
@@ -915,7 +928,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   base::UmaHistogramCounts1M("Conversions.HeadersSize.RegisterOsTrigger",
                              headers.os_trigger.length());
 
-  if (!network::HasAttributionOsSupport(loader_->GetSupport())) {
+  if (!network::HasAttributionOsSupport(support_)) {
     headers.LogOsTriggerIgnored(loader_->local_frame_->DomWindow());
     return;
   }
