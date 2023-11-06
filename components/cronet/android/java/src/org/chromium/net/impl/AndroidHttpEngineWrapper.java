@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi;
 import org.chromium.net.ExperimentalCronetEngine;
 
 import java.io.IOException;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
@@ -54,6 +55,20 @@ class AndroidHttpEngineWrapper extends ExperimentalCronetEngine {
     public URLConnection openConnection(URL url) throws IOException {
         return CronetExceptionTranslationUtils.executeTranslatingCronetExceptions(
                 () -> mBackend.openConnection(url), IOException.class);
+    }
+
+    @Override
+    public URLConnection openConnection(URL url, Proxy proxy) throws IOException {
+        // HttpEngine doesn't expose an openConnection(URL, Proxy) method. To maintain compatibility
+        // copy-paste CronetUrlRequestContext's logic here.
+        if (proxy.type() != Proxy.Type.DIRECT) {
+            throw new UnsupportedOperationException();
+        }
+        String protocol = url.getProtocol();
+        if ("http".equals(protocol) || "https".equals(protocol)) {
+            return openConnection(url);
+        }
+        throw new UnsupportedOperationException("Unexpected protocol:" + protocol);
     }
 
     @Override

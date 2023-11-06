@@ -93,9 +93,6 @@ public class CronetHttpURLStreamHandlerTest {
 
     @Test
     @SmallTest
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason = "crbug.com/1494845: Proxy config gets lost during translation")
     public void testOpenConnectionWithProxy() throws Exception {
         URL url = new URL(NativeTestServer.getEchoMethodURL());
         CronetHttpURLStreamHandler streamHandler =
