@@ -209,7 +209,7 @@ void AndroidAutofillManager::OnFieldTypesDetermined(AutofillManager& manager,
 
   forms_with_server_predictions_.insert(form);
   if (auto* provider = GetAutofillProvider()) {
-    provider->OnServerPredictionsAvailable(this, form);
+    provider->OnServerPredictionsAvailable(form);
   }
 }
 

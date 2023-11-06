@@ -74,10 +74,7 @@ class AutofillProviderAndroid : public AutofillProvider,
                                  const FormData& form,
                                  base::TimeTicks timestamp) override;
   void OnHidePopup(AndroidAutofillManager* manager) override;
-  // TODO(crbug.com/1479006): Remove the `manager_for_debugging` parameter.
-  void OnServerPredictionsAvailable(
-      AndroidAutofillManager* manager_for_debugging,
-      FormGlobalId form) override;
+  void OnServerPredictionsAvailable(FormGlobalId form) override;
   void OnServerQueryRequestError(AndroidAutofillManager* manager,
                                  FormSignature form_signature) override;
 
