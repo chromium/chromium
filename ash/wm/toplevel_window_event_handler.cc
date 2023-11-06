@@ -716,9 +716,12 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
 
   if (!PrepareForDrag(window, point_in_parent, window_component, source,
                       grab_capture)) {
+    in_gesture_drag_ = false;
+
     // Treat failure to start as a revert.
     if (end_closure)
       std::move(end_closure).Run(DragResult::REVERT);
+
     return false;
   }
 
@@ -766,7 +769,8 @@ bool ToplevelWindowEventHandler::AttemptToStartPinch(
 
   // Only gesture drag move can switch to pinch to resize. No other existing
   // resizer is allowed.
-  bool in_gesture_drag_move = in_gesture_drag_ && window_resizer_->IsMove();
+  bool in_gesture_drag_move =
+      in_gesture_drag_ && window_resizer_ && window_resizer_->IsMove();
   if (window_resizer_ && !in_gesture_drag_move) {
     return false;
   }
@@ -778,6 +782,7 @@ bool ToplevelWindowEventHandler::AttemptToStartPinch(
   }
 
   if (!PrepareForPinch(window, point_in_parent, window_component)) {
+    in_gesture_drag_ = false;
     return false;
   }
 
