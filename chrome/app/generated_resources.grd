@@ -16395,6 +16395,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
         =1 {Checking public key and integrity block... 1 minute remaining}
         other {Checking public key and integrity block... # minutes remaining}}
     </message>
+    <message name="IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE" desc="Title of an error popup during the verification step of the Isolated Web App installer">
+      Chrome failed to verify this installation bundle
+    </message>
+    <message name="IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE" desc="Subtitle of an error popup during the verification step of the Isolated Web App installer">
+      This bundle might be broken or compromised. Please close this window and download it again
+    </message>
   </messages>
 </release>
 </grit>

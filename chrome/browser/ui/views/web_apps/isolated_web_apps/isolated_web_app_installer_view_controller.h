@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -66,12 +65,11 @@ class IsolatedWebAppInstallerViewController
 
   // `IsolatedWebAppInstallerView::Delegate`:
   void OnSettingsLinkClicked() override;
+  void OnChildDialogCanceled() override;
+  void OnChildDialogAccepted() override;
 
   // Updates the View to reflect the current state of the model.
   void OnModelChanged();
-
-  void SetButtons(int close_button_label_id,
-                  absl::optional<int> accept_button_label_id);
 
   std::unique_ptr<views::DialogDelegate> CreateDialogDelegate(
       std::unique_ptr<views::View> contents_view);

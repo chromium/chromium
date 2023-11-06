@@ -19,8 +19,13 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/range/range.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/strings/grit/ui_strings.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -57,155 +62,133 @@ std::unique_ptr<views::StyledLabel> CreateLabelWithContextAndStyle(
   return label;
 }
 
+ui::ImageModel CreateImageModelFromVector(const gfx::VectorIcon& vector_icon,
+                                          ui::ColorId color_id) {
+  return ui::ImageModel::FromVectorIcon(vector_icon, color_id, kIconSize);
+}
+
 }  // namespace
 
-// Base class for all installer screens that handles common UI elements like
-// icons, title, and subtitle.
-class InstallerScreenView : public views::BoxLayoutView {
+// The contents view used for all installer screens. This will handle rendering
+// common UI elements like icon, title, subtitle, and an optional View for the
+// body of the dialog.
+class InstallerDialogView : public views::BoxLayoutView {
  public:
-  METADATA_HEADER(InstallerScreenView);
+  METADATA_HEADER(InstallerDialogView);
 
-  explicit InstallerScreenView(const ui::ImageModel& icon_model) {
+  // The message_id of the link's body and a callback to run when it's clicked.
+  using LinkInfo = std::pair<int, base::RepeatingClosure>;
+
+  InstallerDialogView(const ui::ImageModel& icon_model,
+                      int title_id,
+                      int subtitle_id,
+                      absl::optional<LinkInfo> subtitle_link = absl::nullopt,
+                      std::unique_ptr<views::View> contents_view = nullptr) {
     ConfigureBoxLayoutView(this);
 
     auto* icon = AddChildView(std::make_unique<NonAccessibleImageView>());
     icon->SetImage(icon_model);
     icon->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
 
-    title_ = AddChildView(CreateLabelWithContextAndStyle(
+    views::StyledLabel* title = AddChildView(CreateLabelWithContextAndStyle(
         views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
-    subtitle_ = AddChildView(CreateLabelWithContextAndStyle(
+    title->SetText(l10n_util::GetStringUTF16(title_id));
+
+    views::StyledLabel* subtitle = AddChildView(CreateLabelWithContextAndStyle(
         views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
-  }
+    if (subtitle_link.has_value()) {
+      std::u16string link_text =
+          l10n_util::GetStringUTF16(subtitle_link->first);
+      size_t offset;
+      subtitle->SetText(
+          l10n_util::GetStringFUTF16(subtitle_id, link_text, &offset));
+      subtitle->AddStyleRange(gfx::Range(offset, offset + link_text.length()),
+                              views::StyledLabel::RangeStyleInfo::CreateForLink(
+                                  subtitle_link->second));
+    } else {
+      subtitle->SetText(l10n_util::GetStringUTF16(subtitle_id));
+    }
 
-  InstallerScreenView(const ui::ImageModel& icon_model,
-                      const std::u16string& title,
-                      const std::u16string& subtitle)
-      : InstallerScreenView(icon_model) {
-    SetTitle(title);
-    SetSubtitle(subtitle);
-  }
-
-  virtual void SetProgress(double percent, int minutes_remaining) {}
-
- protected:
-  void SetTitle(const std::u16string& title) { title_->SetText(title); }
-
-  void SetSubtitle(const std::u16string& subtitle) {
-    subtitle_->SetText(subtitle);
-  }
-
-  void SetSubtitleWithLink(const std::u16string& subtitle,
-                           const gfx::Range& link_range,
-                           base::RepeatingClosure link_handler) {
-    SetSubtitle(subtitle);
-    subtitle_->AddStyleRange(
-        link_range,
-        views::StyledLabel::RangeStyleInfo::CreateForLink(link_handler));
-  }
-
-  void SetContentsView(std::unique_ptr<views::View> contents) {
-    CHECK(!contents_);
-    contents_ = AddChildView(std::move(contents));
-    SetFlexForView(contents_, 1);
-  }
-
- private:
-  raw_ptr<views::StyledLabel> title_;
-  raw_ptr<views::StyledLabel> subtitle_;
-  raw_ptr<views::View> contents_;
-};
-BEGIN_METADATA(InstallerScreenView, views::BoxLayoutView)
-END_METADATA
-
-class GetMetadataScreen : public InstallerScreenView {
- public:
-  METADATA_HEADER(GetMetadataScreen);
-
-  GetMetadataScreen()
-      : InstallerScreenView(
-            ui::ImageModel::FromVectorIcon(kFingerprintIcon,
-                                           ui::kColorAccent,
-                                           kIconSize),
-            l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_VERIFICATION_TITLE),
-            l10n_util::GetStringUTF16(
-                IDS_IWA_INSTALLER_VERIFICATION_SUBTITLE)) {
-    SetContentsView(CreateContentsView());
-  }
-
-  void SetProgress(double percent, int minutes_remaining) override {
-    progress_bar_->SetValue(percent / 100.0);
-  }
-
- private:
-  std::unique_ptr<views::View> CreateContentsView() {
-    auto progress_view = std::make_unique<views::BoxLayoutView>();
-    ConfigureBoxLayoutView(progress_view.get());
-    progress_view->SetInsideBorderInsets(
-        gfx::Insets::VH(0, kProgressViewHorizontalPadding));
-
-    progress_bar_ =
-        progress_view->AddChildView(std::make_unique<views::ProgressBar>());
-    progress_view->AddChildView(CreateLabelWithContextAndStyle(
-        views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY,
-        l10n_util::GetPluralStringFUTF16(IDS_IWA_INSTALLER_VERIFICATION_STATUS,
-                                         0)));
-    return progress_view;
-  }
-
-  raw_ptr<views::ProgressBar> progress_bar_;
-};
-BEGIN_METADATA(GetMetadataScreen, InstallerScreenView)
-END_METADATA
-
-class DisabledScreen : public InstallerScreenView {
- public:
-  METADATA_HEADER(DisabledScreen);
-
-  explicit DisabledScreen(base::RepeatingClosure change_preference_handler)
-      : InstallerScreenView(
-            ui::ImageModel::FromVectorIcon(vector_icons::kErrorOutlineIcon,
-                                           ui::kColorAlertMediumSeverityIcon,
-                                           kIconSize)) {
-    SetTitle(l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_DISABLED_TITLE));
-
-    std::u16string change_preference =
-        l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE);
-    size_t offset;
-    std::u16string subtitle = l10n_util::GetStringFUTF16(
-        IDS_IWA_INSTALLER_DISABLED_SUBTITLE, change_preference, &offset);
-    SetSubtitleWithLink(subtitle,
-                        gfx::Range(offset, offset + change_preference.length()),
-                        change_preference_handler);
+    if (contents_view) {
+      views::View* contents = AddChildView(std::move(contents_view));
+      SetFlexForView(contents, 1);
+    }
   }
 };
-BEGIN_METADATA(DisabledScreen, InstallerScreenView)
+BEGIN_METADATA(InstallerDialogView, views::BoxLayoutView)
 END_METADATA
+
+// static
+void IsolatedWebAppInstallerView::SetDialogButtons(
+    views::DialogDelegate* dialog_delegate,
+    int close_button_label_id,
+    absl::optional<int> accept_button_label_id) {
+  if (!dialog_delegate) {
+    return;
+  }
+
+  int buttons = ui::DIALOG_BUTTON_CANCEL;
+  dialog_delegate->SetButtonLabel(
+      ui::DIALOG_BUTTON_CANCEL,
+      l10n_util::GetStringUTF16(close_button_label_id));
+  if (accept_button_label_id.has_value()) {
+    buttons |= ui::DIALOG_BUTTON_OK;
+    dialog_delegate->SetButtonLabel(
+        ui::DIALOG_BUTTON_OK,
+        l10n_util::GetStringUTF16(accept_button_label_id.value()));
+  }
+  dialog_delegate->SetButtons(buttons);
+}
 
 IsolatedWebAppInstallerView::IsolatedWebAppInstallerView(Delegate* delegate)
-    : delegate_(delegate), screen_(nullptr), initialized_(false) {}
+    : delegate_(delegate), dialog_view_(nullptr), initialized_(false) {}
 
 IsolatedWebAppInstallerView::~IsolatedWebAppInstallerView() = default;
 
 void IsolatedWebAppInstallerView::ShowDisabledScreen() {
-  ShowScreen(std::make_unique<DisabledScreen>(base::BindRepeating(
-      &Delegate::OnSettingsLinkClicked, base::Unretained(delegate_))));
+  InstallerDialogView::LinkInfo link(
+      IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE,
+      base::BindRepeating(&Delegate::OnSettingsLinkClicked,
+                          base::Unretained(delegate_)));
+  ShowScreen(std::make_unique<InstallerDialogView>(
+      CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                                 ui::kColorAlertMediumSeverityIcon),
+      IDS_IWA_INSTALLER_DISABLED_TITLE, IDS_IWA_INSTALLER_DISABLED_SUBTITLE,
+      link));
 }
 
 void IsolatedWebAppInstallerView::ShowGetMetadataScreen() {
-  ShowScreen(std::make_unique<GetMetadataScreen>());
+  auto progress_view = std::make_unique<views::BoxLayoutView>();
+  ConfigureBoxLayoutView(progress_view.get());
+  progress_view->SetInsideBorderInsets(
+      gfx::Insets::VH(0, kProgressViewHorizontalPadding));
+
+  views::ProgressBar* progress_bar =
+      progress_view->AddChildView(std::make_unique<views::ProgressBar>());
+  progress_view->AddChildView(CreateLabelWithContextAndStyle(
+      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY,
+      l10n_util::GetPluralStringFUTF16(IDS_IWA_INSTALLER_VERIFICATION_STATUS,
+                                       0)));
+
+  ShowScreen(std::make_unique<InstallerDialogView>(
+                 CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
+                 IDS_IWA_INSTALLER_VERIFICATION_TITLE,
+                 IDS_IWA_INSTALLER_VERIFICATION_SUBTITLE,
+                 /*subtitle_link=*/absl::nullopt, std::move(progress_view)),
+             progress_bar);
 }
 
 void IsolatedWebAppInstallerView::UpdateGetMetadataProgress(
     double percent,
     int minutes_remaining) {
-  CHECK(screen_);
-  screen_->SetProgress(percent, minutes_remaining);
+  CHECK(progress_bar_);
+  progress_bar_->SetValue(percent / 100.0);
 }
 
 void IsolatedWebAppInstallerView::ShowMetadataScreen(
     const SignedWebBundleMetadata& bundle_metadata) {
   // TODO(crbug.com/1479140): Implement
+  ShowDisabledScreen();
 }
 
 void IsolatedWebAppInstallerView::ShowInstallScreen(
@@ -224,18 +207,47 @@ void IsolatedWebAppInstallerView::ShowInstallSuccessScreen(
 }
 
 void IsolatedWebAppInstallerView::ShowScreen(
-    std::unique_ptr<InstallerScreenView> screen) {
+    std::unique_ptr<InstallerDialogView> dialog_view,
+    views::ProgressBar* progress_bar) {
   if (!initialized_) {
     initialized_ = true;
     views::LayoutProvider* provider = views::LayoutProvider::Get();
     SetInsideBorderInsets(
         provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG));
   }
-
-  if (screen_) {
-    RemoveChildView(screen_);
+  progress_bar_ = progress_bar;
+  if (dialog_view_) {
+    RemoveChildView(dialog_view_);
   }
-  screen_ = AddChildView(std::move(screen));
+  dialog_view_ = AddChildView(std::move(dialog_view));
+  InvalidateLayout();
+}
+
+void IsolatedWebAppInstallerView::ShowDialog(
+    const IsolatedWebAppInstallerModel::DialogContent& dialog_content) {
+  CHECK(initialized_);
+  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
+      GetWidget()->GetContentsView(), views::BubbleBorder::FLOAT);
+  bubble_delegate->SetModalType(ui::MODAL_TYPE_CHILD);
+  bubble_delegate->set_close_on_deactivate(false);
+
+  bubble_delegate->SetContentsView(std::make_unique<InstallerDialogView>(
+      dialog_content.is_error
+          ? CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
+                                       ui::kColorAlertMediumSeverityIcon)
+          : CreateImageModelFromVector(kSecurityIcon, ui::kColorAccent),
+      dialog_content.message, dialog_content.details,
+      dialog_content.details_link));
+
+  SetDialogButtons(bubble_delegate.get(), IDS_APP_CLOSE,
+                   /*accept_button_label_id=*/absl::nullopt);
+
+  bubble_delegate->SetCancelCallback(base::BindOnce(
+      &Delegate::OnChildDialogCanceled, base::Unretained(delegate_)));
+  bubble_delegate->SetAcceptCallback(base::BindOnce(
+      &Delegate::OnChildDialogAccepted, base::Unretained(delegate_)));
+
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();
 }
 
 BEGIN_METADATA(IsolatedWebAppInstallerView, views::BoxLayoutView)

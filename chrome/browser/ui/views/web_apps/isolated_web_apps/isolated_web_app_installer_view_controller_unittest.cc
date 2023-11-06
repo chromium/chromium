@@ -27,7 +27,9 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -39,10 +41,32 @@
 namespace web_app {
 namespace {
 
-using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Exactly;
+using ::testing::ExplainMatchResult;
+using ::testing::Field;
 using ::testing::Invoke;
+using ::testing::Property;
+using DialogContent = IsolatedWebAppInstallerModel::DialogContent;
 
 constexpr base::StringPiece kIconPath = "/icon.png";
+
+MATCHER_P3(WithMetadata, app_id, app_name, version, "") {
+  return ExplainMatchResult(
+      AllOf(Property("app_id", &SignedWebBundleMetadata::app_id, app_id),
+            Property("app_name", &SignedWebBundleMetadata::app_name, app_name),
+            Property("version", &SignedWebBundleMetadata::version,
+                     base::Version(version))),
+      arg, result_listener);
+}
+
+MATCHER_P3(WithContents, is_error, message_id, details_id, "") {
+  return ExplainMatchResult(
+      AllOf(Field("is_error", &DialogContent::is_error, is_error),
+            Field("message_id", &DialogContent::message, message_id),
+            Field("details_id", &DialogContent::details, details_id)),
+      arg, result_listener);
+}
 
 IsolatedWebAppUrlInfo CreateAndWriteTestBundle(
     const base::FilePath& bundle_path,
@@ -103,9 +127,16 @@ class MockView : public IsolatedWebAppInstallerView,
               ShowInstallSuccessScreen,
               (const SignedWebBundleMetadata& bundle_metadata),
               (override));
+  MOCK_METHOD(
+      void,
+      ShowDialog,
+      (const IsolatedWebAppInstallerModel::DialogContent& dialog_content),
+      (override));
 
   // `IsolatedWebAppInstallerView::Delegate`:
   MOCK_METHOD(void, OnSettingsLinkClicked, (), (override));
+  MOCK_METHOD(void, OnChildDialogCanceled, (), (override));
+  MOCK_METHOD(void, OnChildDialogAccepted, (), (override));
 };
 
 class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
@@ -177,16 +208,46 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   testing::StrictMock<MockView> view;
   controller.SetViewForTesting(&view);
 
-  base::test::TestFuture<SignedWebBundleMetadata> bundle_metadata;
+  base::test::TestFuture<void> callback;
   EXPECT_CALL(view, ShowGetMetadataScreen());
-  EXPECT_CALL(view, ShowMetadataScreen(_))
-      .WillOnce(
-          Invoke(&bundle_metadata,
-                 &base::test::TestFuture<SignedWebBundleMetadata>::SetValue));
+  EXPECT_CALL(
+      view, ShowMetadataScreen(WithMetadata("hoealecpbefphiclhampllbdbdpfmfpi",
+                                            u"test app name", "7.7.7")))
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
 
   controller.Start();
 
-  EXPECT_TRUE(bundle_metadata.Wait());
+  EXPECT_TRUE(callback.Wait());
+}
+
+TEST_F(IsolatedWebAppInstallerViewControllerTest,
+       InvalidBundleShowsErrorDialog) {
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    CHECK(base::WriteFile(bundle_path, "not a valid bundle"));
+  }
+  auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+      web_package::SignedWebBundleId::CreateRandomForDevelopment());
+  MockIconAndPageState(url_info);
+
+  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
+                                                   &model);
+  testing::StrictMock<MockView> view;
+  controller.SetViewForTesting(&view);
+
+  base::test::TestFuture<void> callback;
+  EXPECT_CALL(view, ShowGetMetadataScreen()).Times(Exactly(2));
+  EXPECT_CALL(view,
+              ShowDialog(WithContents(
+                  /*is_error=*/true, IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
+                  IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE)))
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
+
+  controller.Start();
+
+  EXPECT_TRUE(callback.Wait());
 }
 
 }  // namespace
