@@ -729,8 +729,7 @@ TEST_P(BrowserDataBackMigratorFilesSetupTest, MergeStateStoreLevelDB) {
   }
 }
 
-TEST_F(BrowserDataBackMigratorTest,
-       MergesAshOnlyPreferencesCorrectly) {
+TEST_F(BrowserDataBackMigratorTest, MergesAshOnlyPreferencesCorrectly) {
   // AshPrefs
   // {
   //   kOtherAshPreference: kAshPrefValue,
@@ -775,8 +774,7 @@ TEST_F(BrowserDataBackMigratorTest,
   ASSERT_EQ(merged_other_ash_pref->GetInt(), kAshPrefValue);
 }
 
-TEST_F(BrowserDataBackMigratorTest,
-       MergesDictSplitPreferencesCorrectly) {
+TEST_F(BrowserDataBackMigratorTest, MergesDictSplitPreferencesCorrectly) {
   // AshPrefs
   // {
   //   browser_data_migrator_util::kSplitPreferencesKeys[0]: {
@@ -853,8 +851,7 @@ TEST_F(BrowserDataBackMigratorTest,
   ASSERT_EQ(lacros_extension_value->GetInt(), kLacrosPrefValue);
 }
 
-TEST_F(BrowserDataBackMigratorTest,
-       MergesListSplitPreferencesCorrectly) {
+TEST_F(BrowserDataBackMigratorTest, MergesListSplitPreferencesCorrectly) {
   // AshPrefs
   // {
   //   browser_data_migrator_util::kSplitPreferencesKeys[0]: [
@@ -920,8 +917,7 @@ TEST_F(BrowserDataBackMigratorTest,
   ASSERT_EQ(CountStringInList(*split_pref_list, kLacrosOnlyExtensionId), 1u);
 }
 
-TEST_F(BrowserDataBackMigratorTest,
-       MergesLacrosPreferencesCorrectly) {
+TEST_F(BrowserDataBackMigratorTest, MergesLacrosPreferencesCorrectly) {
   // AshPrefs
   // {
   //   kOtherAshPreference: kAshPrefValue,
@@ -1083,6 +1079,42 @@ TEST_F(BrowserDataBackMigratorFilesSetupTest,
           .Append(kLacrosOnlyExtensionId)));
   EXPECT_FALSE(base::PathExists(lacros_default_profile_dir_.Append(
       browser_data_migrator_util::kExtensionsFilePath)));
+}
+
+TEST_F(BrowserDataBackMigratorTest, MovesMergedItemsBackToAshCorrectly) {
+  CreateTemporaryDirectory();
+  // Generate merged Local Storage leveldb.
+  const base::FilePath tmp_local_storage_leveldb_path =
+      tmp_profile_dir_.Append(browser_data_migrator_util::kLocalStorageFilePath)
+          .Append(browser_data_migrator_util::kLocalStorageLeveldbName);
+  std::map<std::string, std::string> merged_level_db_contents;
+  merged_level_db_contents["VERSION"] = "1";
+  GenerateLevelDB(tmp_local_storage_leveldb_path, merged_level_db_contents);
+  // Generate merged preferences.
+  base::Value::Dict merged_prefs;
+  merged_prefs.SetByDottedPath(
+      browser_data_migrator_util::kAshOnlyPreferencesKeys[0], kAshPrefValue);
+  ASSERT_TRUE(WriteJSONDict(merged_prefs, tmp_prefs_path_));
+
+  const auto result =
+      BrowserDataBackMigrator::MoveMergedItemsBackToAsh(ash_profile_dir_);
+
+  ASSERT_EQ(result.status, BrowserDataBackMigrator::TaskStatus::kSucceeded);
+  // Verify that there is a level db in the ash dir with the right contents.
+  const base::FilePath ash_local_storage_leveldb_path =
+      ash_profile_dir_.Append(browser_data_migrator_util::kLocalStorageFilePath)
+          .Append(browser_data_migrator_util::kLocalStorageLeveldbName);
+  auto ash_level_db = ReadLevelDB(ash_local_storage_leveldb_path);
+  EXPECT_EQ(ash_level_db["VERSION"], "1");
+  EXPECT_EQ(ash_level_db.size(), 1u);
+  // Verify that there is a pref file in the ash dir with the right contents.
+  base::Value ash_prefs;
+  EXPECT_TRUE(ReadJSON(ash_prefs_path_, &ash_prefs));
+  const base::Value::Dict& ash_prefs_dict = ash_prefs.GetDict();
+  EXPECT_EQ(ash_prefs_dict.size(), 1u);
+  const base::Value* ash_pref = ash_prefs_dict.FindByDottedPath(
+      browser_data_migrator_util::kAshOnlyPreferencesKeys[0]);
+  EXPECT_EQ(ash_pref->GetInt(), kAshPrefValue);
 }
 
 namespace {
