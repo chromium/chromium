@@ -474,14 +474,14 @@ async function iframeTest(t, { source, target, expected }) {
 async function fencedFrameTest(t, { source, target, expected }) {
   // Allows running tests in parallel.
   const target_url = preflightUrl(target);
-  target_url.searchParams.set("file", "fenced-frame-local-network-access-target.https.html");
+  target_url.searchParams.set("file", "fenced-frame-private-network-access-target.https.html");
   target_url.searchParams.set("is-loaded-in-fenced-frame", true);
 
   const frame_loaded_key = token();
   const child_frame_target = generateURL(target_url, [frame_loaded_key]);
 
   const source_url =
-      resolveUrl("resources/fenced-frame-local-network-access.https.html", sourceResolveOptions(source));
+      resolveUrl("resources/fenced-frame-private-network-access.https.html", sourceResolveOptions(source));
   source_url.searchParams.set("fenced_frame_url", child_frame_target);
 
   const urn = await generateURNFromFledge(source_url, []);
