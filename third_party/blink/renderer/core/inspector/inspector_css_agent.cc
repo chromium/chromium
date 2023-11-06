@@ -838,6 +838,7 @@ void InspectorCSSAgent::SetActiveStyleSheets(
   for (CSSStyleSheet* css_style_sheet : added_sheets) {
     InspectorStyleSheet* new_style_sheet = BindStyleSheet(css_style_sheet);
     document_css_style_sheets->insert(css_style_sheet);
+    new_style_sheet->SyncTextIfNeeded();
     if (GetFrontend()) {
       GetFrontend()->styleSheetAdded(
           new_style_sheet->BuildObjectForStyleSheetInfo());
@@ -2957,6 +2958,11 @@ void InspectorCSSAgent::GetTextPosition(wtf_size_t offset,
                                         TextPosition* result) {
   std::unique_ptr<Vector<wtf_size_t>> line_endings = WTF::GetLineEndings(*text);
   *result = TextPosition::FromOffsetAndLineEndings(offset, *line_endings);
+}
+
+void InspectorCSSAgent::DidReplaceStyleSheetText(CSSStyleSheet* css_style_sheet,
+                                                 const String& text) {
+  BindStyleSheet(css_style_sheet)->CSSOMStyleSheetTextReplaced(text);
 }
 
 void InspectorCSSAgent::StyleSheetChanged(

@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_medialist_string.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
@@ -390,6 +391,7 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
             ").");
     return 0;
   }
+
   const auto* context =
       MakeGarbageCollected<CSSParserContext>(contents_->ParserContext(), this);
 
@@ -453,6 +455,7 @@ void CSSStyleSheet::deleteRule(unsigned index,
     }
     return;
   }
+
   RuleMutationScope mutation_scope(this);
 
   bool success = contents_->WrapperDeleteRule(index);
@@ -504,6 +507,7 @@ ScriptPromise CSSStyleSheet::replace(ScriptState* script_state,
     return ScriptPromise();
   }
   SetText(text, CSSImportRules::kIgnoreWithWarning);
+  probe::DidReplaceStyleSheetText(OwnerDocument(), this, text);
   // We currently parse synchronously, and since @import support was removed,
   // nothing else happens asynchronously. This API is left as-is, so that future
   // async parsing can still be supported here.
@@ -518,6 +522,7 @@ void CSSStyleSheet::replaceSync(const String& text,
         "Can't call replaceSync on non-constructed CSSStyleSheets.");
   }
   SetText(text, CSSImportRules::kIgnoreWithWarning);
+  probe::DidReplaceStyleSheetText(OwnerDocument(), this, text);
 }
 
 CSSRuleList* CSSStyleSheet::cssRules(ExceptionState& exception_state) {

@@ -1364,6 +1364,10 @@ bool InspectorStyleSheet::SetText(const String& text,
   return true;
 }
 
+void InspectorStyleSheet::CSSOMStyleSheetTextReplaced(const String& text) {
+  InnerSetText(text, false);
+}
+
 CSSStyleRule* InspectorStyleSheet::SetRuleSelector(
     const SourceRange& range,
     const String& text,
@@ -2049,6 +2053,7 @@ String InspectorStyleSheet::MergeCSSOMRulesWithText(const String& text) {
 
 void InspectorStyleSheet::InnerSetText(const String& text,
                                        bool mark_as_locally_modified) {
+  marked_for_sync_ = false;
   ParseText(text);
 
   text_ = text;
@@ -2118,7 +2123,7 @@ InspectorStyleSheet::BuildObjectForStyleSheetInfo() {
   // proper URL of the source of the stylesheet.
   const String& source_url =
       (style_sheet->IsConstructed() && !style_sheet->IsForCSSModuleScript())
-          ? String()
+          ? SourceURL()
           : Url();
 
   std::unique_ptr<protocol::CSS::CSSStyleSheetHeader> result =
