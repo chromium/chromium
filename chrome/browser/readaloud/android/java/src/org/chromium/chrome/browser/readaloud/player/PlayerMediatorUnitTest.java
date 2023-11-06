@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.readaloud.player;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
@@ -283,6 +285,41 @@ public class PlayerMediatorUnitTest {
     public void testCloseClicked() {
         mMediator.onCloseClick();
         verify(mPlayerCoordinator).closeClicked();
+    }
+
+    @Test
+    public void testOnSeekBack() {
+        // make sure nothing happens if playback hasn't been set yet
+        mMediator.setPlayback(null);
+        mMediator.onSeekBackClick();
+        verify(mPlayback, never()).seekRelative(anyLong());
+
+        mModel.set(PlayerProperties.ELAPSED_NANOS, 0L);
+        mModel.set(PlayerProperties.DURATION_NANOS, 40 * 1_000_000_000L);
+        mMediator.setPlayback(mPlayback);
+        mMediator.onSeekBackClick();
+        verify(mPlayback).seekRelative(-10 * 1_000_000_000L);
+    }
+
+    @Test
+    public void testOnSeekForward() {
+        mMediator.setPlayback(mPlayback);
+        mModel.set(PlayerProperties.ELAPSED_NANOS, 0L);
+        mModel.set(PlayerProperties.DURATION_NANOS, 40 * 1_000_000_000L);
+
+        mMediator.onSeekForwardClick();
+        verify(mPlayback).seekRelative(30 * 1_000_000_000L);
+    }
+
+    @Test
+    public void testOnSeekForwardPastEnd() {
+        // Set playback duration shorter to test the pause at end when seeking beyond duration
+        mMediator.setPlayback(mPlayback);
+        mModel.set(PlayerProperties.ELAPSED_NANOS, 0L);
+        mModel.set(PlayerProperties.DURATION_NANOS, 1L);
+        mMediator.onSeekForwardClick();
+        verify(mPlayback).pause();
+        verify(mPlayback).seek(1L);
     }
 
     @Test

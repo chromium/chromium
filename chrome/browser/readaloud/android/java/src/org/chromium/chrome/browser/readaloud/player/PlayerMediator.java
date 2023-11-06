@@ -20,6 +20,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator class in charge of updating player UI property model. */
 class PlayerMediator implements InteractionHandler {
+    private static final long SEEK_BACK_NANOS = -10 * 1_000_000_000L;
+    private static final long SEEK_FORWARD_NANOS = 30 * 1_000_000_000L;
     private final PlayerCoordinator mCoordinator;
     private final PlayerCoordinator.Delegate mDelegate;
     private final PropertyModel mModel;
@@ -32,6 +34,8 @@ class PlayerMediator implements InteractionHandler {
                             (float) data.absolutePositionNanos()
                                     / (float) data.totalDurationNanos();
                     mModel.set(PlayerProperties.PROGRESS, percent);
+                    mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
+                    mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
                 }
             };
 
@@ -102,10 +106,14 @@ class PlayerMediator implements InteractionHandler {
     public void onPublisherClick() {}
 
     @Override
-    public void onSeekBackClick() {}
+    public void onSeekBackClick() {
+        maybeSeekRelative(SEEK_BACK_NANOS);
+    }
 
     @Override
-    public void onSeekForwardClick() {}
+    public void onSeekForwardClick() {
+        maybeSeekRelative(SEEK_FORWARD_NANOS);
+    }
 
     @Override
     public void onVoiceSelected(PlaybackVoice voice) {
@@ -141,5 +149,18 @@ class PlayerMediator implements InteractionHandler {
     @Override
     public void onMiniPlayerExpandClick() {
         mCoordinator.expand();
+    }
+
+    private void maybeSeekRelative(long nanos) {
+        if (mPlayback == null) {
+            return;
+        }
+        if (mModel.get(PlayerProperties.ELAPSED_NANOS) + nanos
+                >= mModel.get(PlayerProperties.DURATION_NANOS)) {
+            mPlayback.pause();
+            mPlayback.seek(mModel.get(PlayerProperties.DURATION_NANOS));
+        } else {
+            mPlayback.seekRelative(nanos);
+        }
     }
 }

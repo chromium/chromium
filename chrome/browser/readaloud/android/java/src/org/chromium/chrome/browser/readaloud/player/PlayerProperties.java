@@ -25,6 +25,10 @@ public class PlayerProperties {
     public static final WritableObjectPropertyKey<Float> PROGRESS =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Float> SPEED = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Long> ELAPSED_NANOS =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Long> DURATION_NANOS =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<InteractionHandler> INTERACTION_HANDLER =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<MiniPlayerMediator> MINI_PLAYER_MEDIATOR =
@@ -39,6 +43,8 @@ public class PlayerProperties {
         PROGRESS, //
         MINI_PLAYER_MEDIATOR, //
         SPEED, //
+        ELAPSED_NANOS, //
+        DURATION_NANOS, //
         INTERACTION_HANDLER //
     };
 }
