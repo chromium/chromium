@@ -7447,3 +7447,12 @@ crbug.com/1498089 [ Mac ] external/wpt/content-security-policy/reporting/report-
 # Gardener 2023-11-02
 crbug.com/1498203 external/wpt/fetch/fetch-later/send-on-discard.tentative.https.window.html [ Failure Pass ]
 crbug.com/1498203 virtual/keepalive-in-browser-migration/external/wpt/fetch/fetch-later/send-on-discard.tentative.https.window.html [ Failure Pass ]
+
+# Importer 2023-11-06
+crbug.com/626703 external/wpt/css/css-page/parsing/size-invalid.html [ Failure Pass ]
+crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-001.html [ Failure Pass ]
+crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-002.html [ Failure Pass ]
+crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-003.html [ Failure Pass ]
+crbug.com/626703 external/wpt/css/css-text/text-align/text-align-justify-tabs-004.html [ Failure Pass ]
+crbug.com/626703 external/wpt/editing/run/formatblock.html?1-1000 [ Failure Pass ]
+crbug.com/626703 external/wpt/editing/run/formatblock.html?4001-last [ Failure Pass ]
