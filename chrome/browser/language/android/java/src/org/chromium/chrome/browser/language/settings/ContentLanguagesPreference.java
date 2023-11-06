@@ -78,48 +78,51 @@ public class ContentLanguagesPreference extends Preference {
             // Enable "Remove" option if there are multiple accept languages.
             menuItems.add(buildMenuListItem(R.string.remove, 0, 0, languageCount > 1));
 
-            // Add some appropriate options for moving the language when the list is not
-            // draggable. E.g. in the accessibility mode.
-            if (!mDragStateDelegate.getDragEnabled()) {
-                // Add "Move to top" and "Move up" menu when it's not the first one.
-                if (position > 0) {
-                    menuItems.add(buildMenuListItem(R.string.menu_item_move_to_top, 0, 0));
-                    menuItems.add(buildMenuListItem(R.string.menu_item_move_up, 0, 0));
-                }
-
-                // Add "Move down" menu when it's not the last one.
-                if (position < (languageCount - 1)) {
-                    menuItems.add(buildMenuListItem(R.string.menu_item_move_down, 0, 0));
-                }
+            // Add movement options even if not in accessibility mode https://crbug.com/1440469.
+            // Add "Move to top" and "Move up" menu when it's not the first one.
+            if (position > 0) {
+                menuItems.add(buildMenuListItem(R.string.menu_item_move_to_top, 0, 0));
+                menuItems.add(buildMenuListItem(R.string.menu_item_move_up, 0, 0));
             }
-            ListMenu.Delegate delegate = (model) -> {
-                int textId = model.get(ListMenuItemProperties.TITLE_ID);
-                if (textId == R.string.languages_item_option_offer_to_translate) {
-                    // Toggle current blocked state of this language.
-                    boolean state = model.get(ListMenuItemProperties.END_ICON_ID) == 0;
-                    TranslateBridge.setLanguageBlockedState(info.getCode(), !state);
-                    LanguagesManager.recordAction(state
-                                    ? LanguagesManager.LanguageSettingsActionType
-                                              .ENABLE_TRANSLATE_FOR_SINGLE_LANGUAGE
-                                    : LanguagesManager.LanguageSettingsActionType
-                                              .DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
-                } else if (textId == R.string.remove) {
-                    LanguagesManager.getInstance().removeFromAcceptLanguages(info.getCode());
-                    LanguagesManager.recordAction(
-                            LanguagesManager.LanguageSettingsActionType.LANGUAGE_REMOVED);
-                } else if (textId == R.string.menu_item_move_up) {
-                    LanguagesManager.getInstance().moveLanguagePosition(info.getCode(), -1, true);
-                } else if (textId == R.string.menu_item_move_down) {
-                    LanguagesManager.getInstance().moveLanguagePosition(info.getCode(), 1, true);
-                } else if (textId == R.string.menu_item_move_to_top) {
-                    LanguagesManager.getInstance().moveLanguagePosition(
-                            info.getCode(), -position, true);
-                }
-                // Re-generate list items.
-                if (textId != R.string.remove) {
-                    notifyDataSetChanged();
-                }
-            };
+
+            // Add "Move down" menu when it's not the last one.
+            if (position < (languageCount - 1)) {
+                menuItems.add(buildMenuListItem(R.string.menu_item_move_down, 0, 0));
+            }
+
+            ListMenu.Delegate delegate =
+                    (model) -> {
+                        int textId = model.get(ListMenuItemProperties.TITLE_ID);
+                        if (textId == R.string.languages_item_option_offer_to_translate) {
+                            // Toggle current blocked state of this language.
+                            boolean state = model.get(ListMenuItemProperties.END_ICON_ID) == 0;
+                            TranslateBridge.setLanguageBlockedState(info.getCode(), !state);
+                            LanguagesManager.recordAction(
+                                    state
+                                            ? LanguagesManager.LanguageSettingsActionType
+                                                    .ENABLE_TRANSLATE_FOR_SINGLE_LANGUAGE
+                                            : LanguagesManager.LanguageSettingsActionType
+                                                    .DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
+                        } else if (textId == R.string.remove) {
+                            LanguagesManager.getInstance()
+                                    .removeFromAcceptLanguages(info.getCode());
+                            LanguagesManager.recordAction(
+                                    LanguagesManager.LanguageSettingsActionType.LANGUAGE_REMOVED);
+                        } else if (textId == R.string.menu_item_move_up) {
+                            LanguagesManager.getInstance()
+                                    .moveLanguagePosition(info.getCode(), -1, true);
+                        } else if (textId == R.string.menu_item_move_down) {
+                            LanguagesManager.getInstance()
+                                    .moveLanguagePosition(info.getCode(), 1, true);
+                        } else if (textId == R.string.menu_item_move_to_top) {
+                            LanguagesManager.getInstance()
+                                    .moveLanguagePosition(info.getCode(), -position, true);
+                        }
+                        // Re-generate list items.
+                        if (textId != R.string.remove) {
+                            notifyDataSetChanged();
+                        }
+                    };
             ((LanguageRowViewHolder) holder)
                     .setMenuButtonDelegate(
                             () -> {
