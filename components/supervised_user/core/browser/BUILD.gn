@@ -2,10 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
-
 static_library("supervised_user_preferences") {
   sources = [
     "supervised_user_preferences.cc",
@@ -219,10 +215,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
   ]
-}
-
-if (is_android) {
-  java_cpp_enum("supervised_user_url_filter_enum_javagen") {
-    sources = [ "supervised_user_url_filter.h" ]
-  }
 }

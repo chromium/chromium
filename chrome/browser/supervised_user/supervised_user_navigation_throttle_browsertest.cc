@@ -38,6 +38,7 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -343,7 +344,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
               profile->GetProfileKey());
   supervised_user_settings_service->SetLocalSetting(
       supervised_user::kContentPackDefaultFilteringBehavior,
-      base::Value(supervised_user::SupervisedUserURLFilter::BLOCK));
+      base::Value(
+          static_cast<int>(supervised_user::FilteringBehavior::kBlock)));
 
   std::unique_ptr<WebContents> web_contents(
       WebContents::Create(WebContents::CreateParams(profile)));
@@ -875,7 +877,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 
   // Set the default behavior to block.
   filter->SetDefaultFilteringBehavior(
-      supervised_user::SupervisedUserURLFilter::BLOCK);
+      supervised_user::FilteringBehavior::kBlock);
 
   // The async checker will make rpc calls to check if the url should be
   // blocked or not. This may cause flakiness.

@@ -40,6 +40,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"  // nogncheck
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -89,7 +90,7 @@ bool SupervisorBridge::IsBlocked(const GURL& url) {
       SupervisedUserServiceFactory::GetForProfile(profile_);
   auto* url_filter = supervised_user_service->GetURLFilter();
   return url_filter->GetFilteringBehaviorForURL(url) ==
-         supervised_user::SupervisedUserURLFilter::FilteringBehavior::BLOCK;
+         supervised_user::FilteringBehavior::kBlock;
 }
 
 bool SupervisorBridge::IsChildProfile() {

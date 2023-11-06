@@ -108,15 +108,14 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 @implementation SupervisedUserSettingsAppInterface : NSObject
 
 + (void)setSupervisedUserURLFilterBehavior:
-    (supervised_user::SupervisedUserURLFilter::FilteringBehavior)behavior {
+    (supervised_user::FilteringBehavior)behavior {
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForBrowserState(
           chrome_test_util::GetOriginalBrowserState());
   settings_service->SetLocalSetting(
       supervised_user::kContentPackDefaultFilteringBehavior,
-      base::Value(behavior));
-  if (behavior ==
-      supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW) {
+      base::Value(static_cast<int>(behavior)));
+  if (behavior == supervised_user::FilteringBehavior::kAllow) {
     settings_service->SetLocalSetting(supervised_user::kSafeSitesEnabled,
                                       base::Value(true));
   }
@@ -168,13 +167,13 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 }
 
 + (void)setFilteringToAllowAllSites {
-  [self setSupervisedUserURLFilterBehavior:supervised_user::
-                                               SupervisedUserURLFilter::ALLOW];
+  [self setSupervisedUserURLFilterBehavior:supervised_user::FilteringBehavior::
+                                               kAllow];
 }
 
 + (void)setFilteringToAllowApprovedSites {
-  [self setSupervisedUserURLFilterBehavior:supervised_user::
-                                               SupervisedUserURLFilter::BLOCK];
+  [self setSupervisedUserURLFilterBehavior:supervised_user::FilteringBehavior::
+                                               kBlock];
 }
 
 + (void)addWebsiteToAllowList:(NSURL*)host {

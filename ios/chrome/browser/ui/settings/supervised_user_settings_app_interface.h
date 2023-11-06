@@ -7,14 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#import "components/supervised_user/core/common/supervised_user_utils.h"
 
 // The app interface for supervised user settings tests.
 @interface SupervisedUserSettingsAppInterface : NSObject
 
 // Sets the parental control setting to filter websites for supervised users.
 + (void)setSupervisedUserURLFilterBehavior:
-    (supervised_user::SupervisedUserURLFilter::FilteringBehavior)behavior;
+    (supervised_user::FilteringBehavior)behavior;
 
 // Resets to default parental control settings for website filtering.
 + (void)resetSupervisedUserURLFilterBehavior;

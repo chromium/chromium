@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <set>
 
 #include "base/check_op.h"
@@ -265,10 +266,10 @@ base::Value::Dict HistoryEntryToValue(
       supervised_user_service->IsURLFilteringEnabled()) {
     supervised_user::SupervisedUserURLFilter* url_filter =
         supervised_user_service->GetURLFilter();
-    int filtering_behavior =
+    supervised_user::FilteringBehavior filtering_behavior =
         url_filter->GetFilteringBehaviorForURL(entry.url.GetWithEmptyPath());
     is_blocked_visit = entry.blocked_visit;
-    host_filtering_behavior = filtering_behavior;
+    host_filtering_behavior = static_cast<int>(filtering_behavior);
   }
 #endif
 

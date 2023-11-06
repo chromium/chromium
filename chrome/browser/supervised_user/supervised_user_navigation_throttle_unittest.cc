@@ -12,6 +12,7 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -95,7 +96,7 @@ TEST_F(SupervisedUserNavigationThrottleTest,
   hosts[blocked_url.host()] = false;
   GetSupervisedUserURLFilter()->SetManualHosts(std::move(hosts));
   ASSERT_EQ(
-      supervised_user::SupervisedUserURLFilter::FilteringBehavior::BLOCK,
+      supervised_user::FilteringBehavior::kBlock,
       GetSupervisedUserURLFilter()->GetFilteringBehaviorForURL(blocked_url));
 
   CreateNavigationThrottle(blocked_url)->WillStartRequest();
@@ -108,7 +109,7 @@ TEST_F(SupervisedUserNavigationThrottleTest,
 TEST_F(SupervisedUserNavigationThrottleTest,
        AllSitesBlockedRecordedInBlockNotInAllowlistBucket) {
   GetSupervisedUserURLFilter()->SetDefaultFilteringBehavior(
-      supervised_user::SupervisedUserURLFilter::BLOCK);
+      supervised_user::FilteringBehavior::kBlock);
 
   CreateNavigationThrottle(GURL(kExampleURL))->WillStartRequest();
 
@@ -126,8 +127,7 @@ TEST_F(SupervisedUserNavigationThrottleTest,
       .WillByDefault([](const GURL& url,
                         supervised_user::FilteringBehaviorReason* reason) {
         *reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER;
-        return supervised_user::SupervisedUserURLFilter::FilteringBehavior::
-            BLOCK;
+        return supervised_user::FilteringBehavior::kBlock;
       });
   SupervisedUserServiceFactory::GetForProfile(profile())
       ->SetURLFilterForTesting(std::move(mock_url_filter));

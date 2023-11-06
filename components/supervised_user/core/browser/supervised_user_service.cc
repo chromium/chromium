@@ -29,6 +29,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -49,7 +50,7 @@ void SupervisedUserService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kSupervisedUserManualHosts);
   registry->RegisterDictionaryPref(prefs::kSupervisedUserManualURLs);
   registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
-                                SupervisedUserURLFilter::ALLOW);
+                                static_cast<int>(FilteringBehavior::kAllow));
   registry->RegisterBooleanPref(prefs::kSupervisedUserSafeSites, true);
   for (const char* pref : kCustodianInfoPrefs) {
     registry->RegisterStringPref(pref, std::string());
@@ -310,7 +311,7 @@ void SupervisedUserService::OnSupervisedUserIdChanged() {
 void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
   int behavior_value =
       user_prefs_->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
-  SupervisedUserURLFilter::FilteringBehavior behavior =
+  supervised_user::FilteringBehavior behavior =
       SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
   url_filter_->SetDefaultFilteringBehavior(behavior);
   UpdateAsyncUrlChecker();
@@ -348,12 +349,12 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
 void SupervisedUserService::UpdateAsyncUrlChecker() {
   int behavior_value =
       user_prefs_->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
-  SupervisedUserURLFilter::FilteringBehavior behavior =
+  supervised_user::FilteringBehavior behavior =
       SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
 
   bool use_online_check =
       IsSafeSitesEnabled() ||
-      behavior == SupervisedUserURLFilter::FilteringBehavior::BLOCK;
+      behavior == supervised_user::FilteringBehavior::kBlock;
 
   if (use_online_check != url_filter_->HasAsyncURLChecker()) {
     if (use_online_check) {

@@ -19,6 +19,7 @@
 #include "components/safe_search_api/url_checker.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -43,16 +44,6 @@ namespace supervised_user {
 //     sources.
 class SupervisedUserURLFilter {
  public:
-  // A Java counterpart will be generated for this enum.
-  // Values are stored in prefs under kDefaultSupervisedUserFilteringBehavior.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.superviseduser
-  enum FilteringBehavior {
-    ALLOW = 0,
-    // Deprecated, WARN = 1.
-    BLOCK = 2,
-    INVALID = 3,
-  };
-
   // This enum describes the filter types of Chrome, which is
   // set by Family Link App or at families.google.com/families. These values
   // are logged to UMA. Entries should not be renumbered and numeric values
@@ -125,7 +116,7 @@ class SupervisedUserURLFilter {
   };
 
   using FilteringBehaviorCallback =
-      base::OnceCallback<void(FilteringBehavior,
+      base::OnceCallback<void(supervised_user::FilteringBehavior,
                               supervised_user::FilteringBehaviorReason,
                               bool /* uncertain */)>;
 

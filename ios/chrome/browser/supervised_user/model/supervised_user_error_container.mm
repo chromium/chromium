@@ -120,7 +120,7 @@ bool SupervisedUserErrorContainer::IsRemoteApprovalPendingForUrl(
 
 void SupervisedUserErrorContainer::URLFilterCheckCallback(
     const GURL& url,
-    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   auto* blocking_tab_helper =
@@ -151,8 +151,7 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
   }
 
   bool should_show_interstitial =
-      behavior ==
-      supervised_user::SupervisedUserURLFilter::FilteringBehavior::BLOCK;
+      behavior == supervised_user::FilteringBehavior::kBlock;
 
   if (is_showing_supervised_user_interstitial_for_url !=
       should_show_interstitial) {
@@ -188,8 +187,7 @@ void SupervisedUserErrorContainer::OnRequestCreated(
 }
 
 void SupervisedUserErrorContainer::MaybeUpdatePendingApprovals() {
-  supervised_user::SupervisedUserURLFilter::FilteringBehavior
-      filtering_behavior;
+  supervised_user::FilteringBehavior filtering_behavior;
   supervised_user::SupervisedUserURLFilter* url_filter =
       supervised_user_service_->GetURLFilter();
 
@@ -197,9 +195,8 @@ void SupervisedUserErrorContainer::MaybeUpdatePendingApprovals() {
     bool is_manual = url_filter->GetManualFilteringBehaviorForURL(
         GURL(*iter), &filtering_behavior);
 
-    if (is_manual && filtering_behavior ==
-                         supervised_user::SupervisedUserURLFilter::
-                             FilteringBehavior::ALLOW) {
+    if (is_manual &&
+        filtering_behavior == supervised_user::FilteringBehavior::kAllow) {
       iter = requested_hosts_.erase(iter);
     } else {
       iter++;

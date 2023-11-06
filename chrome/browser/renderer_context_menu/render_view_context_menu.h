@@ -424,8 +424,7 @@ class RenderViewContextMenu
   // Does not execute "Save link as" if the URL is blocked by the URL filter.
   void CheckSupervisedUserURLFilterAndSaveLinkAs();
   void OnSupervisedUserURLFilterChecked(
-      supervised_user::SupervisedUserURLFilter::FilteringBehavior
-          filtering_behavior,
+      supervised_user::FilteringBehavior filtering_behavior,
       supervised_user::FilteringBehaviorReason reason,
       bool uncertain);
 #endif

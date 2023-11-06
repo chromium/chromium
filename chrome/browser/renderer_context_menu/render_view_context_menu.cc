@@ -3545,7 +3545,7 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
     // filter requires an async call. This call is made if the user selects
     // "Save link as" and blocks the download.
     if (url_filter->GetFilteringBehaviorForURL(params_.link_url) !=
-        supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW) {
+        supervised_user::FilteringBehavior::kAllow) {
       return false;
     }
   }
@@ -3909,12 +3909,10 @@ void RenderViewContextMenu::CheckSupervisedUserURLFilterAndSaveLinkAs() {
 }
 
 void RenderViewContextMenu::OnSupervisedUserURLFilterChecked(
-    supervised_user::SupervisedUserURLFilter::FilteringBehavior
-        filtering_behavior,
+    supervised_user::FilteringBehavior filtering_behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
-  if (filtering_behavior ==
-      supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW) {
+  if (filtering_behavior == supervised_user::FilteringBehavior::kAllow) {
     ExecSaveLinkAs();
   }
 }

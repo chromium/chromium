@@ -131,7 +131,7 @@ void SupervisedUserNavigationObserver::OnRequestBlocked(
 }
 
 void SupervisedUserNavigationObserver::UpdateMainFrameFilteringStatus(
-    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason) {
   main_frame_filtering_behavior_ = behavior;
   main_frame_filtering_behavior_reason_ = reason;
@@ -284,7 +284,7 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
     const GURL& url,
     int render_frame_process_id,
     int render_frame_routing_id,
-    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   auto* render_frame_host = content::RenderFrameHost::FromID(
@@ -301,8 +301,7 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
   bool is_showing_interstitial =
       base::Contains(supervised_user_interstitials_, frame_id);
   bool should_show_interstitial =
-      behavior ==
-      supervised_user::SupervisedUserURLFilter::FilteringBehavior::BLOCK;
+      behavior == supervised_user::FilteringBehavior::kBlock;
 
   // If an interstitial is being shown where it shouldn't (for e.g. because a
   // parent just approved a request) reloading will clear it. On the other hand,
@@ -422,16 +421,14 @@ void SupervisedUserNavigationObserver::RequestCreated(
 }
 
 void SupervisedUserNavigationObserver::MaybeUpdateRequestedHosts() {
-  supervised_user::SupervisedUserURLFilter::FilteringBehavior
-      filtering_behavior;
+  supervised_user::FilteringBehavior filtering_behavior;
 
   for (auto iter = requested_hosts_.begin(); iter != requested_hosts_.end();) {
     bool is_manual = url_filter_->GetManualFilteringBehaviorForURL(
         GURL(*iter), &filtering_behavior);
 
-    if (is_manual && filtering_behavior ==
-                         supervised_user::SupervisedUserURLFilter::
-                             FilteringBehavior::ALLOW) {
+    if (is_manual &&
+        filtering_behavior == supervised_user::FilteringBehavior::kAllow) {
       iter = requested_hosts_.erase(iter);
     } else {
       iter++;

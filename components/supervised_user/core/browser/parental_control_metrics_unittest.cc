@@ -23,6 +23,7 @@
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -134,8 +135,9 @@ TEST_F(ParentalControlMetricsTest, RecordDefaultMetrics) {
 TEST_F(ParentalControlMetricsTest, WebFilterTypeMetric) {
   // Override the value of prefs::kSupervisedUserSafeSites and
   // prefs::kDefaultSupervisedUserFilteringBehavior in default storage.
-  pref_service_.SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                           supervised_user::SupervisedUserURLFilter::ALLOW);
+  pref_service_.SetInteger(
+      prefs::kDefaultSupervisedUserFilteringBehavior,
+      static_cast<int>(supervised_user::FilteringBehavior::kAllow));
   pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
 
   // Tests filter "try to block mature sites".
@@ -158,10 +160,11 @@ TEST_F(ParentalControlMetricsTest, WebFilterTypeMetric) {
       /*expected_count=*/1);
 
   // Tests filter "only allow certain sites".
-  pref_service_.SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                           supervised_user::SupervisedUserURLFilter::BLOCK);
+  pref_service_.SetInteger(
+      prefs::kDefaultSupervisedUserFilteringBehavior,
+      static_cast<int>(supervised_user::FilteringBehavior::kBlock));
   filter_.SetDefaultFilteringBehavior(
-      supervised_user::SupervisedUserURLFilter::BLOCK);
+      supervised_user::FilteringBehavior::kBlock);
   histogram_tester_.ExpectBucketCount(
       supervised_user::SupervisedUserURLFilter::
           GetWebFilterTypeHistogramNameForTest(),
@@ -180,8 +183,9 @@ TEST_F(ParentalControlMetricsTest, ManagedSiteListTypeMetric) {
   // needed, otherwise no report could be triggered by policies change or
   // OnNewDay(). Since the default values are the same of override values, the
   // WebFilterType doesn't change and no report here.
-  pref_service_.SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                           supervised_user::SupervisedUserURLFilter::ALLOW);
+  pref_service_.SetInteger(
+      prefs::kDefaultSupervisedUserFilteringBehavior,
+      static_cast<int>(supervised_user::FilteringBehavior::kAllow));
   pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
 
   // Tests daily report.

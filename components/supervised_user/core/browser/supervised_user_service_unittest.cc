@@ -31,6 +31,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -154,7 +155,7 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   // doesn't change and no report here.
   syncable_pref_service_.SetInteger(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      SupervisedUserURLFilter::ALLOW);
+      static_cast<int>(FilteringBehavior::kAllow));
   syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
 
   // Blocks `kExampleUrl0`.
@@ -333,7 +334,7 @@ TEST_F(SupervisedUserServiceTestUnsupervised, AreExtensionsPermissionsEnabled) {
 TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
   ASSERT_EQ(syncable_pref_service_.GetInteger(
                 prefs::kDefaultSupervisedUserFilteringBehavior),
-            SupervisedUserURLFilter::ALLOW);
+            static_cast<int>(FilteringBehavior::kAllow));
   EXPECT_DCHECK_DEATH(syncable_pref_service_.SetInteger(
       prefs::kDefaultSupervisedUserFilteringBehavior,
       /* SupervisedUserURLFilter::WARN */ 1));

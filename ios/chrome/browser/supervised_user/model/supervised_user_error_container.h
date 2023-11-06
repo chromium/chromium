@@ -101,11 +101,10 @@ class SupervisedUserErrorContainer
                         const GURL& url,
                         bool successfully_created_request);
   void MaybeUpdatePendingApprovals();
-  void URLFilterCheckCallback(
-      const GURL& url,
-      supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
-      supervised_user::FilteringBehaviorReason reason,
-      bool uncertain);
+  void URLFilterCheckCallback(const GURL& url,
+                              supervised_user::FilteringBehavior behavior,
+                              supervised_user::FilteringBehaviorReason reason,
+                              bool uncertain);
   WEB_STATE_USER_DATA_KEY_DECL();
 
   std::unique_ptr<SupervisedUserErrorInfo> supervised_user_error_info_;

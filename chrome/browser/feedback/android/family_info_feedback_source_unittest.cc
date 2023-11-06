@@ -27,6 +27,7 @@
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,8 +60,7 @@ kids_chrome_management::ListFamilyMembersResponse CreateFamilyWithOneMember(
 // TODO(b/280772872): Integrate AsyncURLChecker to test
 // supervised_user::SupervisedUserURLFilter::WebFilterType::kTryToBlockMatureSites.
 class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
-    : public testing::TestWithParam<
-          supervised_user::SupervisedUserURLFilter::FilteringBehavior> {
+    : public testing::TestWithParam<supervised_user::FilteringBehavior> {
  public:
   FamilyInfoFeedbackSourceForChildFilterBehaviorTest()
       : env_(base::android::AttachCurrentThread()) {}
@@ -156,10 +156,10 @@ TEST_P(FamilyInfoFeedbackSourceForChildFilterBehaviorTest,
 
   // Don't put logic in tests, test explicit values.
   switch (GetParam()) {
-    case (supervised_user::SupervisedUserURLFilter::FilteringBehavior::BLOCK):
+    case (supervised_user::FilteringBehavior::kBlock):
       EXPECT_EQ("allow_certain_sites", expected_feedback_value);
       break;
-    case (supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW):
+    case (supervised_user::FilteringBehavior::kAllow):
       EXPECT_EQ("allow_all_sites", expected_feedback_value);
       break;
     default:
@@ -171,9 +171,8 @@ TEST_P(FamilyInfoFeedbackSourceForChildFilterBehaviorTest,
 INSTANTIATE_TEST_SUITE_P(
     FilterBehaviourContainer,
     FamilyInfoFeedbackSourceForChildFilterBehaviorTest,
-    ::testing::Values(
-        supervised_user::SupervisedUserURLFilter::FilteringBehavior::BLOCK,
-        supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW));
+    ::testing::Values(supervised_user::FilteringBehavior::kBlock,
+                      supervised_user::FilteringBehavior::kAllow));
 
 class FamilyInfoFeedbackSourceTest
     : public testing::TestWithParam<kids_chrome_management::FamilyRole> {
@@ -284,7 +283,7 @@ TEST_P(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedIn) {
     // Set some filtering behavior for the user, as ListFamilyMembers
     // will try to obtain this along with the family role (and crush otherwise).
     supervised_user_service_->GetURLFilter()->SetDefaultFilteringBehavior(
-        supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW);
+        supervised_user::FilteringBehavior::kAllow);
   }
 
   base::WeakPtr<FamilyInfoFeedbackSource> feedback_source =

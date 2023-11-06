@@ -74,20 +74,20 @@ void AddSectionEntry(base::Value::List* section_list,
 }
 
 std::string FilteringBehaviorToString(
-    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior) {
+    supervised_user::FilteringBehavior behavior) {
   switch (behavior) {
-    case supervised_user::SupervisedUserURLFilter::ALLOW:
+    case supervised_user::FilteringBehavior::kAllow:
       return "Allow";
-    case supervised_user::SupervisedUserURLFilter::BLOCK:
+    case supervised_user::FilteringBehavior::kBlock:
       return "Block";
-    case supervised_user::SupervisedUserURLFilter::INVALID:
+    case supervised_user::FilteringBehavior::kInvalid:
       return "Invalid";
   }
   return "Unknown";
 }
 
 std::string FilteringBehaviorToString(
-    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::FilteringBehavior behavior,
     bool uncertain) {
   std::string result = FilteringBehaviorToString(behavior);
   if (uncertain)
@@ -251,14 +251,14 @@ void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
 
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
     const std::string& callback_id,
-    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   base::Value::Dict result;
   result.Set("allowResult", FilteringBehaviorToString(behavior, uncertain));
   result.Set("manual",
              reason == supervised_user::FilteringBehaviorReason::MANUAL &&
-                 behavior == supervised_user::SupervisedUserURLFilter::ALLOW);
+                 behavior == supervised_user::FilteringBehavior::kAllow);
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
@@ -266,7 +266,7 @@ void FamilyLinkUserInternalsMessageHandler::OnSiteListUpdated() {}
 
 void FamilyLinkUserInternalsMessageHandler::OnURLChecked(
     const GURL& url,
-    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

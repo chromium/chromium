@@ -26,6 +26,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
 #include "extensions/buildflags/buildflags.h"
@@ -129,8 +130,9 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
   prefs_ = std::make_unique<PrefValueMap>();
   if (!settings.empty()) {
     // Set hardcoded prefs and defaults.
-    prefs_->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                       supervised_user::SupervisedUserURLFilter::ALLOW);
+    prefs_->SetInteger(
+        prefs::kDefaultSupervisedUserFilteringBehavior,
+        static_cast<int>(supervised_user::FilteringBehavior::kAllow));
 
     if (base::FeatureList::IsEnabled(
             supervised_user::kForceGoogleSafeSearchForSupervisedUsers)) {

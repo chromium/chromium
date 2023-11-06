@@ -25,6 +25,16 @@ enum class FilteringBehaviorReason {
   NOT_SIGNED_IN = 5,
 };
 
+// A Java counterpart will be generated for this enum.
+// Values are stored in prefs under kDefaultSupervisedUserFilteringBehavior.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.superviseduser
+enum class FilteringBehavior : int {
+  kAllow = 0,
+  // Deprecated, kWarn = 1.
+  kBlock = 2,
+  kInvalid = 3,
+};
+
 // This enum describes the state of the interstitial banner that is shown for
 // when previous supervised users of desktop see the interstitial for the first
 // time after desktop controls are enabled.
