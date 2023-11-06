@@ -99,16 +99,21 @@ void CloudOpenMetrics::CheckForInconsistencies(
     Metric<OfficeFilesTransferRequired>& transfer_required,
     Metric<OfficeFilesUploadResult>& upload_result) {
   bool google_drive = cloud_provider_ == CloudProvider::kGoogleDrive;
+  // Task result should always be logged.
   ExpectLogged(task_result);
   if (task_result.logged()) {
     if (task_result.value == OfficeTaskResult::kFallbackQuickOffice ||
         task_result.value == OfficeTaskResult::kCancelledAtFallback ||
         task_result.value == OfficeTaskResult::kCancelledAtSetup ||
         task_result.value == OfficeTaskResult::kLocalFileTask) {
+      // The cloud open/upload flow was exited at the Fallback Dialog or Setup
+      // flow.
       ExpectNotLogged(transfer_required);
       ExpectNotLogged(upload_result);
       if (task_result.value == OfficeTaskResult::kFallbackQuickOffice ||
           task_result.value == OfficeTaskResult::kCancelledAtFallback) {
+        // The cloud open/upload flow was exited at the Fallback Dialog.
+        // OpenErrors should give a fallback reason.
         if (google_drive) {
           ExpectLogged(drive_open_error);
           if (drive_open_error.logged()) {
@@ -155,12 +160,16 @@ void CloudOpenMetrics::CheckForInconsistencies(
         }
       }
     } else {
+      // The cloud open/upload flow was not exited at the Fallback Dialog or
+      // Setup flow.
       ExpectLogged(source_volume);
       ExpectLogged(transfer_required);
       if (task_result.value == OfficeTaskResult::kCancelledAtConfirmation) {
+        // The cloud upload flow was exited at the Move Confirmation Dialog.
         ExpectNotLogged(upload_result);
         ExpectNotLogged(drive_open_error);
         ExpectNotLogged(one_drive_open_error);
+        // TransferRequired should be kMove or kCopy.
         ExpectLogged(transfer_required);
         if (transfer_required.logged()) {
           switch (transfer_required.value) {
@@ -206,6 +215,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
             break;
         }
       } else if (task_result.value == OfficeTaskResult::kFailedToOpen) {
+        // The cloud open flow failed.
+        // OpenErrors should be an error.
         if (google_drive) {
           ExpectLogged(drive_open_error);
           if (drive_open_error.logged()) {
@@ -254,6 +265,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
       } else if (task_result.value == OfficeTaskResult::kOpened ||
                  task_result.value == OfficeTaskResult::kCopied ||
                  task_result.value == OfficeTaskResult::kMoved) {
+        // The cloud open/upload flow was successful.
+        // The OpenErrors should be success.
         if (google_drive) {
           ExpectLogged(drive_open_error);
           if (drive_open_error.logged()) {
@@ -300,7 +313,9 @@ void CloudOpenMetrics::CheckForInconsistencies(
         }
         ExpectLogged(transfer_required);
         if (task_result.value == OfficeTaskResult::kOpened) {
+          // The cloud open flow was successful.
           ExpectNotLogged(upload_result);
+          // TransferRequired should be kNotRequired.
           if (transfer_required.logged()) {
             switch (transfer_required.value) {
               case OfficeFilesTransferRequired::kNotRequired:
@@ -312,29 +327,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
             }
           }
         } else {
-          if (task_result.value == OfficeTaskResult::kCopied) {
-            if (transfer_required.logged()) {
-              switch (transfer_required.value) {
-                case OfficeFilesTransferRequired::kCopy:
-                  break;
-                case OfficeFilesTransferRequired::kNotRequired:
-                case OfficeFilesTransferRequired::kMove:
-                  SetWrongValueLogged(transfer_required);
-                  break;
-              }
-            }
-          } else {
-            if (transfer_required.logged()) {
-              switch (transfer_required.value) {
-                case OfficeFilesTransferRequired::kMove:
-                  break;
-                case OfficeFilesTransferRequired::kNotRequired:
-                case OfficeFilesTransferRequired::kCopy:
-                  SetWrongValueLogged(transfer_required);
-                  break;
-              }
-            }
-          }
+          // The cloud upload flow was successful.
+          // The UploadResult should be success.
           ExpectLogged(upload_result);
           if (upload_result.logged()) {
             switch (upload_result.value) {
@@ -368,6 +362,33 @@ void CloudOpenMetrics::CheckForInconsistencies(
                 break;
             }
           }
+          if (task_result.value == OfficeTaskResult::kCopied) {
+            // The cloud upload (copy) flow was successful.
+            // TransferRequired should be kCopy.
+            if (transfer_required.logged()) {
+              switch (transfer_required.value) {
+                case OfficeFilesTransferRequired::kCopy:
+                  break;
+                case OfficeFilesTransferRequired::kNotRequired:
+                case OfficeFilesTransferRequired::kMove:
+                  SetWrongValueLogged(transfer_required);
+                  break;
+              }
+            }
+          } else {
+            // The cloud upload (move) flow was successful.
+            // TransferRequired should be kMove.
+            if (transfer_required.logged()) {
+              switch (transfer_required.value) {
+                case OfficeFilesTransferRequired::kMove:
+                  break;
+                case OfficeFilesTransferRequired::kNotRequired:
+                case OfficeFilesTransferRequired::kCopy:
+                  SetWrongValueLogged(transfer_required);
+                  break;
+              }
+            }
+          }
         }
       }
     }
@@ -377,6 +398,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
     ExpectLogged(source_volume);
     if (transfer_required.value == OfficeFilesTransferRequired::kNotRequired) {
       ExpectNotLogged(upload_result);
+      // SourceVolume should match the CloudProvider.
       if (google_drive) {
         ExpectLogged(drive_open_error);
         if (source_volume.logged()) {
@@ -427,10 +449,13 @@ void CloudOpenMetrics::CheckForInconsistencies(
         }
       }
     } else {
+      // TransferRequired was kCopy or kMove.
       if (task_result.logged() &&
           task_result.value != OfficeTaskResult::kCancelledAtConfirmation) {
+        // The cloud upload flow was exited at the Move Confirmation Dialog.
         ExpectLogged(upload_result);
       }
+      // SourceVolume should not match the CloudProvider.
       if (google_drive) {
         if (source_volume.logged()) {
           switch (source_volume.value) {
@@ -492,6 +517,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
                    kUploadNotStartedReauthenticationRequired) {
       ExpectNotLogged(copy_error);
       ExpectNotLogged(move_error);
+      // TaskResult should be kFailedToUpload.
       ExpectLogged(task_result);
       // UploadHandler tests don't log TaskResult.
       if (task_result.logged()) {
