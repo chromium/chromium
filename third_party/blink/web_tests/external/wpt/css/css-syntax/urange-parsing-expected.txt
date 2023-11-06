@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 92 tests; 78 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 94 tests; 88 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] "u/**/+/**/a/**/?" => "U+A0-AF"
   assert_equals: expected "U+A0-AF" but got "U+1357"
 [PASS] "u+abc" => "U+ABC"
@@ -29,10 +29,8 @@ Found 92 tests; 78 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] "u+aa?????" is invalid
 [PASS] "u+a??????" is invalid
 [PASS] "u+a?a" is invalid
-[FAIL] "u+aaaaaa" is invalid
-  assert_equals: expected "U+1357" but got "U+AAAAAA"
-[FAIL] "u+a?????" is invalid
-  assert_equals: expected "U+1357" but got "U+A00000-AFFFFF"
+[PASS] "u+aaaaaa" is invalid
+[PASS] "u+a?????" is invalid
 [FAIL] "u/**/+0a/**/?" => "U+A0-AF"
   assert_equals: expected "U+A0-AF" but got "U+1357"
 [PASS] "u+0a" => "U+A"
@@ -49,8 +47,7 @@ Found 92 tests; 78 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] "u+0a????" => "U+A0000-AFFFF"
 [PASS] "u+0a?????" is invalid
 [PASS] "u+00a????" is invalid
-[FAIL] "u+22222a" is invalid
-  assert_equals: expected "U+1357" but got "U+22222A"
+[PASS] "u+22222a" is invalid
 [PASS] "u+1e9a" => "U+1E9A"
 [FAIL] "u/**/+0/**/?" => "U+0-F"
   assert_equals: expected "U+0-F" but got "U+1357"
@@ -70,10 +67,8 @@ Found 92 tests; 78 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] "u+0??????" is invalid
 [PASS] "u+1e3" => "U+1E3"
 [PASS] "u+1e-20" => "U+1E-20"
-[FAIL] "u+222222" is invalid
-  assert_equals: expected "U+1357" but got "U+222222"
-[FAIL] "u+2?????" is invalid
-  assert_equals: expected "U+1357" but got "U+200000-2FFFFF"
+[PASS] "u+222222" is invalid
+[PASS] "u+2?????" is invalid
 [FAIL] "u/**/+0/**/-0a" => "U+0-A"
   assert_equals: expected "U+0-A" but got "U+1357"
 [PASS] "u+0-0a" => "U+0-A"
@@ -84,8 +79,7 @@ Found 92 tests; 78 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] "u+0+0a" is invalid
 [PASS] "u+0?-0a" is invalid
 [PASS] "u+0-0a?" is invalid
-[FAIL] "u+222222-22222a" is invalid
-  assert_equals: expected "U+1357" but got "U+222222-22222A"
+[PASS] "u+222222-22222a" is invalid
 [FAIL] "u/**/+0/**/-1" => "U+0-1"
   assert_equals: expected "U+0-1" but got "U+1357"
 [PASS] "u+0-1" => "U+0-1"
@@ -95,16 +89,16 @@ Found 92 tests; 78 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] "u+000000-000001" => "U+0-1"
 [PASS] "u+0000000-1" is invalid
 [PASS] "u+0-0000001" is invalid
-[FAIL] "u+0-222222" is invalid
-  assert_equals: expected "U+1357" but got "U+0-222222"
+[PASS] "u+0-10ffff" => "U+0-10FFFF"
+[PASS] "u+0-110000" is invalid
+[PASS] "u+0-222222" is invalid
 [FAIL] "u/**/+/**/?" => "U+0-F"
   assert_equals: expected "U+0-F" but got "U+1357"
 [PASS] "u+?" => "U+0-F"
 [PASS] "u+?????" => "u+0-FFFFF"
 [PASS] "u+???????" is invalid
 [PASS] "u+?a" is invalid
-[FAIL] "u+??????" is invalid
-  assert_equals: expected "U+1357" but got "U+0-FFFFFF"
+[PASS] "u+??????" is invalid
 [PASS] u+a is a valid selector
 Harness: the test ran to completion.
 

@@ -67,7 +67,7 @@ CSSValueList* ConsumeFontFaceUnicodeRange(CSSParserTokenRange& range) {
 
     UChar32 start = token.UnicodeRangeStart();
     UChar32 end = token.UnicodeRangeEnd();
-    if (start > end) {
+    if (start > end || end > 0x10FFFF) {
       return nullptr;
     }
     values->Append(
