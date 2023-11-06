@@ -21,7 +21,7 @@ namespace ash {
 
 class UserContext;
 
-class ScopedSessionRefresher {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) ScopedSessionRefresher {
  public:
   ScopedSessionRefresher(const ScopedSessionRefresher&) = delete;
   ScopedSessionRefresher& operator=(const ScopedSessionRefresher&) = delete;
