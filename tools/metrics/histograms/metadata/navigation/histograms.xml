@@ -483,6 +483,7 @@ chromium-metrics-reviews@google.com.
     enum="AutomaticBeaconOutcome" expires_after="2024-10-01">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
+  <owner>chrome-fenced-frames-core@google.com</owner>
   <summary>
     Record if a 'reserved.top_navigation' automatic beacon was sent out, or the
     reason for not sending the beacon if it was not sent out.
@@ -695,10 +696,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.FencedFrameAutomaticBeaconEventType"
+    enum="FencedFrameAutomaticBeaconEventType" expires_after="2024-10-01">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <owner>chrome-fenced-frames-core@google.com</owner>
+  <summary>
+    Recorded what event type is used when automatic beacon data is set using
+    setReportEventDataForAutomaticBeacons().
+  </summary>
+</histogram>
+
 <histogram name="Navigation.FencedFrameTopNavigation"
     enum="FencedFrameNavigationState" expires_after="2024-10-01">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
+  <owner>chrome-fenced-frames-core@google.com</owner>
   <summary>
     This records top-level navigations that originated from a fenced frame or
     URN iframe. At navigation start, a 'Begin' is logged. If the navigation

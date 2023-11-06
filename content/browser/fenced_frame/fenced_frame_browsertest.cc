@@ -6906,6 +6906,14 @@ class FencedFrameAutomaticBeaconBrowserTest
       std::string path;
     };
 
+    struct BeaconType {
+      // The name of the event type as passed into
+      // setReportEventDataForAutomaticBeacons().
+      std::string name;
+      // The mojo value that will be checked for histograms.
+      blink::mojom::AutomaticBeaconType type;
+    };
+
     Destination starting_url;
     Destination secondary_initiator_url;
     Destination navigation_url;
@@ -6939,6 +6947,10 @@ class FencedFrameAutomaticBeaconBrowserTest
     // Whether we expect cookie data to be attached to the beacon.
     // TODO(crbug.com/1496395): Remove this after 3PCD.
     bool expected_cookie = true;
+
+    BeaconType beacon_type = {
+        blink::kFencedFrameTopNavigationCommitBeaconType,
+        blink::mojom::AutomaticBeaconType::kTopNavigationCommit};
   };
 
   static std::string DescribeParams(
@@ -7015,7 +7027,7 @@ class FencedFrameAutomaticBeaconBrowserTest
     fenced_frame_reporter->OnUrlMappingReady(
         blink::FencedFrame::ReportingDestination::kBuyer,
         {
-            {blink::kFencedFrameTopNavigationCommitBeaconType, reporting_url},
+            {config.beacon_type.name, reporting_url},
         });
     // Set empty reporting url for seller.
     fenced_frame_reporter->OnUrlMappingReady(
@@ -7089,9 +7101,12 @@ class FencedFrameAutomaticBeaconBrowserTest
                 destination: $2
               });
             )",
-                             blink::kFencedFrameTopNavigationCommitBeaconType,
-                             destination_list.Clone()),
+                             config.beacon_type.name, destination_list.Clone()),
                    ad_frame_execjs_options));
+
+        histogram_tester_.ExpectUniqueSample(
+            blink::kAutomaticBeaconEventTypeHistogram, config.beacon_type.type,
+            1);
       } else {
         // Call `setReportEventDataForAutomaticBeacons()` with `eventData`.
         EvalJsResult result =
@@ -7103,8 +7118,8 @@ class FencedFrameAutomaticBeaconBrowserTest
                 destination: $3
               });
             )",
-                             blink::kFencedFrameTopNavigationCommitBeaconType,
-                             config.message.value(), destination_list.Clone()),
+                             config.beacon_type.name, config.message.value(),
+                             destination_list.Clone()),
                    ad_frame_execjs_options);
 
         if (config.message->length() > blink::kFencedFrameMaxBeaconLength) {
@@ -7116,8 +7131,15 @@ class FencedFrameAutomaticBeaconBrowserTest
               testing::HasSubstr("The data provided to "
                                  "setReportEventDataForAutomaticBeacons() "
                                  "exceeds the maximum length, which is 64KB."));
+
+          histogram_tester_.ExpectUniqueSample(
+              blink::kAutomaticBeaconEventTypeHistogram,
+              config.beacon_type.type, 0);
         } else {
           EXPECT_TRUE(result.error.empty());
+          histogram_tester_.ExpectUniqueSample(
+              blink::kAutomaticBeaconEventTypeHistogram,
+              config.beacon_type.type, 1);
         }
       }
     }
@@ -7395,6 +7417,27 @@ IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
       .navigation_url = {"a.test", "/fenced_frames/title1.html"},
       .expected_cookie = false,
   };
+  RunTest(config);
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
+                       DeprecatedTopNavigation) {
+  Config config = {
+      .starting_url = {"a.test", "/fenced_frames/title1.html"},
+      .navigation_url = {"a.test", "/fenced_frames/title1.html"},
+      .beacon_type = {
+          blink::kDeprecatedFencedFrameTopNavigationBeaconType,
+          blink::mojom::AutomaticBeaconType::kDeprecatedTopNavigation}};
+  RunTest(config);
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
+                       TopNavigationStart) {
+  Config config = {
+      .starting_url = {"a.test", "/fenced_frames/title1.html"},
+      .navigation_url = {"a.test", "/fenced_frames/title1.html"},
+      .beacon_type = {blink::kFencedFrameTopNavigationStartBeaconType,
+                      blink::mojom::AutomaticBeaconType::kTopNavigationStart}};
   RunTest(config);
 }
 

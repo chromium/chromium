@@ -6626,12 +6626,6 @@ Called by update_autofill_enums.py.-->
   <int value="273" label="ClearLocalCvcs: Failure"/>
 </enum>
 
-<enum name="AutomaticBeaconOutcome">
-  <int value="0" label="Success"/>
-  <int value="1" label="No transient user activation"/>
-  <int value="2" label="Initiator frame not same-origin with mapped URL"/>
-</enum>
-
 <enum name="AutomaticLazyFrameLoadReason">
   <int value="0" label="Not eligible"/>
   <int value="1" label="Eligible for LazyEmbeds"/>

@@ -43,6 +43,9 @@ inline constexpr char kFencedFrameTopNavigationHistogram[] =
 inline constexpr char kAutomaticBeaconOutcomeHistogram[] =
     "Navigation.AutomaticBeaconOutcome";
 
+inline constexpr char kAutomaticBeaconEventTypeHistogram[] =
+    "Navigation.FencedFrameAutomaticBeaconEventType";
+
 // Corresponds to the "FencedFrameCreationOutcome" histogram enumeration type in
 // tools/metrics/histograms/enums.xml.
 //

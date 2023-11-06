@@ -9007,6 +9007,9 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
   }
   CHECK(owner_);  // See `owner_` invariants about `IsActive()`.
 
+  base::UmaHistogramEnumeration(blink::kAutomaticBeaconEventTypeHistogram,
+                                event_type);
+
   owner_->SetFencedFrameAutomaticBeaconReportEventData(
       event_type, event_data, destinations,
       attribution_reporting_runtime_features, once);
