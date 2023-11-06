@@ -6,14 +6,10 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {pageVisibility, Router, SettingsMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
-// <if expr="_google_chrome">
-import {buildRouter, loadTimeData} from 'chrome://settings/settings.js';
-// </if>
-import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
-// <if expr="_google_chrome">
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
-// </if>
+import {buildRouter, loadTimeData, pageVisibility, Router, SettingsMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 // clang-format on
 
@@ -99,6 +95,33 @@ suite('SettingsMenu', function() {
     assertEquals('/help', path);
   });
   // </if>
+
+  test('noExperimental', async function() {
+    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: false});
+    Router.resetInstanceForTesting(buildRouter());
+    createSettingsMenu();
+    await flushTasks();
+
+    const entry = settingsMenu.shadowRoot!.querySelector('a[href=\'/ai\']');
+    assertTrue(!!entry);
+    assertFalse(isVisible(entry));
+  });
+
+  test('navigateToExperimental', async function() {
+    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
+    Router.resetInstanceForTesting(buildRouter());
+    createSettingsMenu();
+    Router.getInstance().navigateTo(routes.AI);
+    await flushTasks();
+
+    const entry = settingsMenu.shadowRoot!.querySelector('a[href=\'/ai\']');
+    assertTrue(!!entry);
+    assertTrue(isVisible(entry));
+
+    const selector = settingsMenu.$.menu;
+    const path = new window.URL(selector.selected.toString()).pathname;
+    assertEquals('/ai', path);
+  });
 
   test('pageVisibility', function() {
     function assertPagesHidden(expectedHidden: boolean) {

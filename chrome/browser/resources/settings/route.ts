@@ -175,6 +175,12 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
 
   const visibility = pageVisibility || {};
 
+  if (visibility.ai !== false &&
+      loadTimeData.getBoolean('showAdvancedFeaturesMainControl')) {
+    r.AI = r.BASIC.createSection(
+        '/ai', 'ai', loadTimeData.getString('experimentalAdvancedPageTitle'));
+  }
+
   // <if expr="not chromeos_ash">
   if (visibility.people !== false) {
     assert(r.PEOPLE);

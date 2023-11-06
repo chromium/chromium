@@ -637,3 +637,30 @@ suite('SafetyHubDisabled', () => {
         'Safety Hub section should not be visible with default visibility');
   });
 });
+
+suite('ExperimentalAdvanced', () => {
+  let page: SettingsBasicPageElement;
+
+  function createBasicPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-basic-page');
+    document.body.appendChild(page);
+    flush();
+  }
+
+  test('sectionNotVisible', function() {
+    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: false});
+    createBasicPage();
+    const sectionElement =
+        page.shadowRoot!.querySelector('settings-section[section=ai]');
+    assertFalse(!!sectionElement);
+  });
+
+  test('sectionVisible', function() {
+    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
+    createBasicPage();
+    const sectionElement =
+        page.shadowRoot!.querySelector('settings-section[section=ai]');
+    assertTrue(!!sectionElement);
+  });
+});

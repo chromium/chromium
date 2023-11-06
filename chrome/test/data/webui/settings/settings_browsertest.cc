@@ -521,6 +521,11 @@ IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, SafetyHubDisabled) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('SafetyHubDisabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, ExperimentalAdvanced) {
+  RunTest("settings/basic_page_test.js",
+          "runMochaSuite('ExperimentalAdvanced')");
+}
+
 using SettingsClearBrowsingDataTest = SettingsBrowserTest;
 
 // TODO(crbug.com/1107652): Flaky on Mac.

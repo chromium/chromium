@@ -178,6 +178,11 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
               'isPerformanceSettingsPreloadingSubpageV2Enabled');
         },
       },
+
+      showAdvancedFeaturesMainControl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showAdvancedFeaturesMainControl'),
+      },
     };
   }
 
@@ -200,6 +205,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   private currentRoute_: Route;
   private advancedTogglingInProgress_: boolean;
   private showBatterySettings_: boolean;
+  private showAdvancedFeaturesMainControl_: boolean;
 
   private showPrivacyGuidePromo_: boolean;
   private privacyGuidePromoWasShown_: boolean;
@@ -409,6 +415,11 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   private showSafetyHubEntryPointPage_(visibility?: boolean): boolean {
     return loadTimeData.getBoolean('enableSafetyHub') &&
+        this.showPage_(visibility);
+  }
+
+  private showExperimentalAdvancedPage_(visibility?: boolean): boolean {
+    return loadTimeData.getBoolean('showAdvancedFeaturesMainControl') &&
         this.showPage_(visibility);
   }
 
