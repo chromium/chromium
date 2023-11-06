@@ -900,7 +900,7 @@
       },
       'mac10.15-blink-rel': {
         'swarming': {
-          'shards': 12,
+          'shards': 1,
           'hard_timeout': 2400,
         },
       },
