@@ -942,4 +942,30 @@ AutofillPrivateCheckIfDeviceAuthAvailableFunction::Run() {
   return RespondNow(Error(kErrorDeviceAuthUnavailable));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateBulkDeleteAllCvcsFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateBulkDeleteAllCvcsFunction::Run() {
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  if (!client) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  autofill::PersonalDataManager* personal_data =
+      client->GetPersonalDataManager();
+  if (!personal_data || !personal_data->IsDataLoaded()) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  // Clear local and server CVCs from the webdata database. For server CVCs,
+  // this will also clear them from the Chrome sync server and thus other
+  // devices.
+  personal_data->ClearLocalCvcs();
+  personal_data->ClearServerCvcs();
+
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

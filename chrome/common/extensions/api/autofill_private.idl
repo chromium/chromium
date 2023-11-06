@@ -391,6 +391,11 @@ namespace autofillPrivate {
     // (biometric or screen lock), false otherwise.
     [supportsPromises] static void checkIfDeviceAuthAvailable(
         CheckForDeviceAuthCallback callback);
+
+    // Bulk delete all the CVCs (server and local) from the local webdata
+    // database. For server CVCs, this will also clear them from the Chrome
+    // sync server and thus other devices.
+    static void bulkDeleteAllCvcs();
   };
 
   interface Events {

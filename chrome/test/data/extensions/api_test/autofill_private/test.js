@@ -579,6 +579,12 @@ var availableTests = [
               }));
         }));
   },
+
+  function bulkDeleteAllCvcs() {
+    chrome.autofillPrivate.bulkDeleteAllCvcs();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
 ];
 
 /** @const */
@@ -601,6 +607,7 @@ var TESTS_FOR_CONFIG = {
   'authenticateUserAndFlipMandatoryAuthToggle':
       ['authenticateUserAndFlipMandatoryAuthToggle'],
   'getLocalCard': ['addNewCreditCard', 'getLocalCard'],
+  'bulkDeleteAllCvcs': ['bulkDeleteAllCvcs'],
 };
 
 var testConfig = window.location.search.substring(1);

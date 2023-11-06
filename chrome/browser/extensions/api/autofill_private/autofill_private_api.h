@@ -368,6 +368,23 @@ class AutofillPrivateCheckIfDeviceAuthAvailableFunction
   ResponseAction Run() override;
 };
 
+class AutofillPrivateBulkDeleteAllCvcsFunction : public ExtensionFunction {
+ public:
+  AutofillPrivateBulkDeleteAllCvcsFunction() = default;
+  AutofillPrivateBulkDeleteAllCvcsFunction(
+      const AutofillPrivateBulkDeleteAllCvcsFunction&) = delete;
+  AutofillPrivateBulkDeleteAllCvcsFunction& operator=(
+      const AutofillPrivateBulkDeleteAllCvcsFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.bulkDeleteAllCvcs",
+                             AUTOFILLPRIVATE_BULKDELETEALLCVCS)
+
+ protected:
+  ~AutofillPrivateBulkDeleteAllCvcsFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_

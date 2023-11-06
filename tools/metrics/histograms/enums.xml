@@ -26901,6 +26901,7 @@ Called by update_extension_histograms.py.-->
       label="OS_DIAGNOSTICS_ISVOLUMEBUTTONROUTINEARGUMENTSUPPORTED"/>
   <int value="1838" label="USERSCRIPTS_CONFIGUREWORLD"/>
   <int value="1839" label="ENTERPRISE_KIOSKINPUT_SETCURRENTINPUTMETHOD"/>
+  <int value="1840" label="AUTOFILLPRIVATE_BULKDELETEALLCVCS"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">

@@ -245,4 +245,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                    "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, bulkDeleteAllCvcs) {
+  EXPECT_TRUE(RunAutofillSubtest("bulkDeleteAllCvcs")) << message_;
+}
+
 }  // namespace extensions
