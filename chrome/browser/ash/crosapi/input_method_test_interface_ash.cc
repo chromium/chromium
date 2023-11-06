@@ -40,11 +40,7 @@ GetInputMethodManagerState() {
 }
 
 bool HasCapability(const base::StringPiece capability) {
-  return capability == kInputMethodTestCapabilitySendKeyModifiers ||
-         capability == kInputMethodTestCapabilityConfirmComposition ||
-         capability == kInputMethodTestCapabilityDeleteSurroundingText ||
-         capability == kInputMethodTestCapabilityExtendedConfirmComposition ||
-         capability == kInputMethodTestCapabilityChangeInputMethod;
+  return false;
 }
 
 std::string GenerateUniqueExtensionId() {
