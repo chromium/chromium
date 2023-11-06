@@ -420,11 +420,6 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
     const OmniboxPopupSelection selection,
     const ui::Event& event) {
   if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
-    // TODO(yoangela): Port to PopupModel and merge with keyEvent
-    // TODO(orinj): Clear out existing suggestions, particularly this one, as
-    // once we AcceptKeyword, we are really in a new scope state and holding
-    // onto old suggestions is confusing and error prone. Without this check,
-    // a second click of the button violates assumptions in |AcceptKeyword|.
     // Note: Since keyword mode logic depends on state of the edit model, the
     // selection must first be set to prepare for keyword mode before accepting.
     popup_view_->model()->SetPopupSelection(selection);

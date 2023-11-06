@@ -297,6 +297,14 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
     if (shortcut_match.relevance == 0)
       continue;
 
+    if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+      // Let builtin provider win for starter pack shortcuts; they should not
+      // allow default or inline autocomplete for the keyword mode refresh.
+      if (shortcut_match.type == AutocompleteMatch::Type::STARTER_PACK) {
+        continue;
+      }
+    }
+
     if (shortcut_match.shortcut->match_core.type ==
         AutocompleteMatch::Type::HISTORY_CLUSTER) {
       history_cluster_shortcut_matches.push_back(shortcut_match);

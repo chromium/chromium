@@ -433,6 +433,11 @@ class AutocompleteController : public AutocompleteProviderListener,
   // feature is enabled.
   void MaybeRemoveCompanyEntityImages(AutocompleteResult* result);
 
+  // May remove actions from default suggestion to avoid interference with
+  // keyword mode refresh interaction.
+  void MaybeCleanDefaultSuggestionForKeywordMode(const std::u16string& input,
+                                                 AutocompleteResult* result);
+
   base::ObserverList<Observer> observers_;
 
   // The client passed to the providers.

@@ -1109,6 +1109,7 @@ void AutocompleteController::SortCullAndAnnotateResult(
   UpdateAssistedQueryStats(&internal_result_);
   UpdateTailSuggestPrefix(&internal_result_);
   MaybeRemoveCompanyEntityImages(&internal_result_);
+  MaybeCleanDefaultSuggestionForKeywordMode(input_.text(), &internal_result_);
 
   if (search_provider_)
     search_provider_->RegisterDisplayedAnswers(internal_result_);
@@ -1234,7 +1235,10 @@ void AutocompleteController::UpdateAssociatedKeywords(
 
     // Only add the keyword if the match does not have a duplicate keyword with
     // a more relevant match.
-    if (!keyword.empty() && !keywords.count(keyword)) {
+    if (!keyword.empty() &&
+        (!keywords.count(keyword) ||
+         (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+          match.type == AutocompleteMatchType::STARTER_PACK))) {
       keywords.insert(keyword);
       match.associated_keyword = std::make_unique<AutocompleteMatch>(
           keyword_provider_->CreateVerbatimMatch(match.fill_into_edit, keyword,
@@ -1894,6 +1898,23 @@ void AutocompleteController::MaybeRemoveCompanyEntityImages(
         result->match_at(i)->image_url = GURL();
         result->match_at(i)->image_dominant_color.clear();
       }
+    }
+  }
+}
+
+void AutocompleteController::MaybeCleanDefaultSuggestionForKeywordMode(
+    const std::u16string& input,
+    AutocompleteResult* result) {
+  // Intentionally avoid actions and remove button on first suggestion
+  // which may interfere with keyword mode refresh.
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+      input.starts_with(u'@') && result->size() > 1 &&
+      result->match_at(1)->type == AutocompleteMatchType::STARTER_PACK) {
+    result->match_at(0)->actions.clear();
+    result->match_at(0)->deletable = false;
+    for (AutocompleteMatch& duplicate :
+         result->match_at(0)->duplicate_matches) {
+      duplicate.deletable = false;
     }
   }
 }

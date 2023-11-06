@@ -895,8 +895,7 @@ bool OmniboxEditModel::AcceptKeyword(
     OmniboxEventProto::KeywordModeEntryMethod entry_method) {
   TRACE_EVENT0("omnibox", "OmniboxEditModel::AcceptKeyword");
 
-  DCHECK(is_keyword_hint_ && !keyword_.empty())
-      << "is_keyword_hint_: " << is_keyword_hint_ << ", keyword_: " << keyword_;
+  DCHECK(!keyword_.empty()) << keyword_;
 
   controller_->autocomplete_controller()->Stop(false);
 
@@ -2113,12 +2112,20 @@ void OmniboxEditModel::StepPopupSelection(
       controller_->result(), GetPrefService(),
       controller_->client()->GetTemplateURLService(), direction, step);
   if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
-    ClearKeyword();
-    SetPopupSelection(new_selection);
-    if (new_selection.state == OmniboxPopupSelection::LineState::KEYWORD_MODE) {
-      AcceptKeyword(old_selection.line == new_selection.line
-                        ? metrics::OmniboxEventProto::TAB
-                        : metrics::OmniboxEventProto::SELECT_SUGGESTION);
+    if (old_selection.IsChangeToKeyword(new_selection)) {
+      ClearKeyword();
+      SetPopupSelection(new_selection);
+    } else if (new_selection.state ==
+               OmniboxPopupSelection::LineState::KEYWORD_MODE) {
+      // Prepare for keyword mode before accepting it.
+      SetPopupSelection(OmniboxPopupSelection(
+          new_selection.line, OmniboxPopupSelection::LineState::NORMAL));
+      // Note: Popup behavior currently depends on the entry method being tab.
+      // This is not ideal for nuanced metrics, but it is how it has worked
+      // for a long time. Consider refactoring to fix this if needed.
+      AcceptKeyword(metrics::OmniboxEventProto::TAB);
+    } else {
+      SetPopupSelection(new_selection);
     }
   } else {
     if (old_selection.IsChangeToKeyword(new_selection)) {
