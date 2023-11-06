@@ -157,7 +157,8 @@ void AssistantZeroStateView::InitLayout() {
 
   // Launcher search IPH view:
   iph_view_ = AddChildView(std::make_unique<LauncherSearchIphView>(
-      /*delegate=*/this, /*is_in_tablet_mode=*/delegate_->IsTabletMode()));
+      /*delegate=*/this, /*is_in_tablet_mode=*/delegate_->IsTabletMode(),
+      /*scoped_iph_session=*/nullptr, /*show_assistant_chip=*/false));
   iph_view_->SetID(AssistantViewID::kLauncherSearchIph);
   iph_view_->SetProperty(views::kMarginsKey, delegate_->IsTabletMode()
                                                  ? kIphMarginTabletModeDip

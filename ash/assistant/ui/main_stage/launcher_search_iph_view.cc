@@ -15,6 +15,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/rand_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -37,14 +38,21 @@ namespace {
 constexpr int kMainLayoutBetweenChildSpacing = 16;
 constexpr int kActionContainerBetweenChildSpacing = 8;
 
+constexpr int kNumberOfQueryChipsWithAssistantChip = 3;
+constexpr int kNumberOfQueryChipsWithoutAssistantChip = 4;
+
 constexpr char16_t kTitleTextPlaceholder[] = u"Title text";
 constexpr char16_t kDescriptionTextPlaceholder[] = u"Description text";
 
-constexpr char16_t kChipOneQueryPlaceholder[] = u"Weather";
-constexpr char16_t kChipTwoQueryPlaceholder[] = u"1+1";
-constexpr char16_t kChipThreeQueryPlaceholder[] = u"5 cm in inches";
+constexpr char16_t kChipWeatherQueryPlaceholder[] = u"Weather";
+constexpr char16_t kChipShortcutQueryPlaceholder[] = u"Screen Saver";
+constexpr char16_t kChipCalculationQueryPlaceholder[] = u"50+96/5";
+constexpr char16_t kChipUnitConversionQueryPlaceholder[] = u"1 inch in cm";
+constexpr char16_t kChipTranslationQueryPlaceholder[] = u"Hello in Spanish";
+constexpr char16_t kChipDefinitionQueryPlaceholder[] = u"impromptu definition";
+constexpr char16_t kChipStockQueryPlaceholder[] = u"S&P 500";
 
-constexpr char16_t kAssistantButtonPlaceholder[] = u"Assistant";
+constexpr char16_t kAssistantButtonPlaceholder[] = u"Go to Assistant";
 
 constexpr gfx::RoundedCornersF kBackgroundRadiiClamshellLTR = {16, 4, 16, 16};
 
@@ -63,13 +71,28 @@ constexpr gfx::Insets kInnerBackgroundInsetsTablet = gfx::Insets::VH(16, 16);
 
 constexpr int kBackgroundRadiusTablet = 16;
 
+std::vector<std::u16string> GetQueryChips(int num_of_chips) {
+  std::vector<std::u16string> chips = {
+      kChipWeatherQueryPlaceholder,     kChipShortcutQueryPlaceholder,
+      kChipCalculationQueryPlaceholder, kChipUnitConversionQueryPlaceholder,
+      kChipTranslationQueryPlaceholder, kChipDefinitionQueryPlaceholder,
+      kChipStockQueryPlaceholder};
+  CHECK_GE(static_cast<int>(chips.size()), num_of_chips);
+  base::RandomShuffle(chips.begin(), chips.end());
+  chips.resize(num_of_chips);
+  return chips;
+}
+
 }  // namespace
 
 LauncherSearchIphView::LauncherSearchIphView(
     Delegate* delegate,
     bool is_in_tablet_mode,
-    std::unique_ptr<ScopedIphSession> scoped_iph_session)
-    : delegate_(delegate), scoped_iph_session_(std::move(scoped_iph_session)) {
+    std::unique_ptr<ScopedIphSession> scoped_iph_session,
+    bool show_assistant_chip)
+    : delegate_(delegate),
+      scoped_iph_session_(std::move(scoped_iph_session)),
+      show_assistant_chip_(show_assistant_chip) {
   SetID(ViewId::kSelf);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -121,10 +144,13 @@ LauncherSearchIphView::LauncherSearchIphView(
   actions_container->SetBetweenChildSpacing(
       kActionContainerBetweenChildSpacing);
 
+  // In Launcher zero state, we show 3 query chips + Assistant chip.
+  // In Assistant zero state, we show 4 query chips.
+  int num_of_chips = show_assistant_chip_
+                         ? kNumberOfQueryChipsWithAssistantChip
+                         : kNumberOfQueryChipsWithoutAssistantChip;
   int query_chip_view_id = ViewId::kChipStart;
-  for (const std::u16string& query :
-       {kChipOneQueryPlaceholder, kChipTwoQueryPlaceholder,
-        kChipThreeQueryPlaceholder}) {
+  for (const std::u16string& query : GetQueryChips(num_of_chips)) {
     ChipView* chip = actions_container->AddChildView(
         std::make_unique<ChipView>(ChipView::Type::kLarge));
     chip->SetText(query);
@@ -135,18 +161,20 @@ LauncherSearchIphView::LauncherSearchIphView(
     query_chip_view_id++;
   }
 
-  views::View* spacer =
-      actions_container->AddChildView(std::make_unique<views::View>());
-  actions_container->SetFlexForView(spacer, 1);
+  if (show_assistant_chip_) {
+    views::View* spacer =
+        actions_container->AddChildView(std::make_unique<views::View>());
+    actions_container->SetFlexForView(spacer, 1);
 
-  ash::PillButton* assistant_button =
-      actions_container->AddChildView(std::make_unique<ash::PillButton>(
-          base::BindRepeating(&LauncherSearchIphView::OpenAssistantPage,
-                              weak_ptr_factory_.GetWeakPtr()),
-          kAssistantButtonPlaceholder));
-  assistant_button->SetID(ViewId::kAssistant);
-  assistant_button->SetPillButtonType(
-      PillButton::Type::kDefaultLargeWithoutIcon);
+    ash::PillButton* assistant_button =
+        actions_container->AddChildView(std::make_unique<ash::PillButton>(
+            base::BindRepeating(&LauncherSearchIphView::OpenAssistantPage,
+                                weak_ptr_factory_.GetWeakPtr()),
+            kAssistantButtonPlaceholder));
+    assistant_button->SetID(ViewId::kAssistant);
+    assistant_button->SetPillButtonType(
+        PillButton::Type::kDefaultLargeWithoutIcon);
+  }
 
   if (is_in_tablet_mode) {
     box_layout_view->SetBackground(views::CreateThemedRoundedRectBackground(
