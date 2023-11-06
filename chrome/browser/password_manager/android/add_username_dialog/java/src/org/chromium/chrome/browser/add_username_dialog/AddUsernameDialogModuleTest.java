@@ -88,6 +88,7 @@ public class AddUsernameDialogModuleTest {
         TextInputEditText passwordInput =
                 dialogModel.get(ModalDialogProperties.CUSTOM_VIEW).findViewById(R.id.password);
         Assert.assertTrue(usernameInput.getText().length() == 0);
+        Assert.assertTrue(usernameInput.isFocused());
         Assert.assertEquals(passwordInput.getText().toString(), TEST_PASSWORD);
     }
 
