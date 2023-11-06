@@ -34,6 +34,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.ContextMenu.ShowStatus" enum="ComposeShowStatus"
+    expires_after="2024-03-31">
+  <owner>sophey@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Histogram that records the show status of the Compose context menu item.
+    Logged each time the menu item is displayed or blocked from displaying (with
+    a reason why).
+  </summary>
+</histogram>
+
 <histogram name="Compose.Response.Duration.Error" units="ms"
     expires_after="2024-03-31">
   <owner>perrier@chromium.org</owner>

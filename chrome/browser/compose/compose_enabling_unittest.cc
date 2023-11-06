@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -106,6 +107,13 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
         ->GetPrimaryMainFrame();
   }
 
+  void CheckIsEnabledError(ComposeEnabling compose_enabling,
+                           compose::ComposeShowStatus error_show_status) {
+    EXPECT_EQ(compose_enabling.IsEnabled(GetProfile(),
+                                         identity_test_env_.identity_manager()),
+              base::unexpected(error_show_status));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
 
@@ -126,8 +134,9 @@ TEST_F(ComposeEnablingTest, EverythingDisabledTest) {
   scoped_feature_list_.InitAndDisableFeature(compose::features::kEnableCompose);
   // We intentionally don't call sign in to make our state not signed in.
   SetMsbbState(false);
-  EXPECT_FALSE(compose_enabling.IsEnabled(
-      GetProfile(), identity_test_env_.identity_manager()));
+  EXPECT_NE(compose_enabling.IsEnabled(GetProfile(),
+                                       identity_test_env_.identity_manager()),
+            base::ok());
 }
 
 TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
@@ -140,8 +149,8 @@ TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
   // Turn on MSBB.
   SetMsbbState(true);
 
-  EXPECT_FALSE(compose_enabling.IsEnabled(
-      GetProfile(), identity_test_env_.identity_manager()));
+  CheckIsEnabledError(compose_enabling,
+                      compose::ComposeShowStatus::kGenericBlocked);
 }
 
 TEST_F(ComposeEnablingTest, MsbbDisabledTest) {
@@ -150,16 +159,15 @@ TEST_F(ComposeEnablingTest, MsbbDisabledTest) {
   SignIn(signin::ConsentLevel::kSync);
   // MSBB turned off.
   SetMsbbState(false);
-  EXPECT_FALSE(compose_enabling.IsEnabled(
-      GetProfile(), identity_test_env_.identity_manager()));
+  CheckIsEnabledError(compose_enabling,
+                      compose::ComposeShowStatus::kDisabledMsbb);
 }
 
 TEST_F(ComposeEnablingTest, NotSignedInTest) {
   ComposeEnabling compose_enabling(&mock_translate_language_provider_);
   // Turn on MSBB.
   SetMsbbState(true);
-  EXPECT_FALSE(compose_enabling.IsEnabled(
-      GetProfile(), identity_test_env_.identity_manager()));
+  CheckIsEnabledError(compose_enabling, compose::ComposeShowStatus::kSignedOut);
 }
 
 TEST_F(ComposeEnablingTest, EverythingEnabledTest) {
@@ -168,8 +176,9 @@ TEST_F(ComposeEnablingTest, EverythingEnabledTest) {
   SignIn(signin::ConsentLevel::kSync);
   // Turn on MSBB.
   SetMsbbState(true);
-  EXPECT_TRUE(compose_enabling.IsEnabled(
-      GetProfile(), identity_test_env_.identity_manager()));
+  EXPECT_EQ(compose_enabling.IsEnabled(GetProfile(),
+                                       identity_test_env_.identity_manager()),
+            base::ok());
 }
 
 TEST_F(ComposeEnablingTest, AlternateFlagEnabledTest) {
@@ -186,8 +195,9 @@ TEST_F(ComposeEnablingTest, AlternateFlagEnabledTest) {
   SignIn(signin::ConsentLevel::kSync);
   // Turn on MSBB.
   SetMsbbState(true);
-  EXPECT_TRUE(compose_enabling.IsEnabled(
-      GetProfile(), identity_test_env_.identity_manager()));
+  EXPECT_EQ(compose_enabling.IsEnabled(GetProfile(),
+                                       identity_test_env_.identity_manager()),
+            base::ok());
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {

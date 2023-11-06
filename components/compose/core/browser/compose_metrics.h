@@ -19,14 +19,32 @@ extern const char kComposeResponseStatus[];
 // Enum for calculating the CTR of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Keep in sync with
-// ComposeContextMenuCtrEvent in src/tools/metrics/histograms/enums.xml.
+// ComposeContextMenuCtrEvent in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ComposeContextMenuCtrEvent {
   kMenuItemDisplayed = 0,
   kComposeOpened = 1,
   kMaxValue = kComposeOpened,
 };
 
+// Enum for recording the show status of the Compose context menu item.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with
+// ComposeShowStatus in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeShowStatus {
+  kShouldShow = 0,
+  kGenericBlocked = 1,
+  kIncompatibleFieldType = 2,
+  kDisabledMsbb = 3,
+  kSignedOut = 4,
+  kUnsupportedLanguage = 5,
+  kMaxValue = kUnsupportedLanguage,
+};
+
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
+
+void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 
 // Log the duration of a compose request. |is_valid| indicates the status of
 // the request.

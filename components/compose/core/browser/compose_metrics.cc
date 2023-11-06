@@ -18,6 +18,10 @@ void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Compose.ContextMenu.CTR", event);
 }
 
+void LogComposeContextMenuShowStatus(ComposeShowStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("Compose.ContextMenu.ShowStatus", status);
+}
+
 void LogComposeRequestDuration(base::TimeDelta duration, bool is_valid) {
   base::UmaHistogramMediumTimes(
       is_valid ? kComposeResponseDurationOk : kComposeResponseDurationError,

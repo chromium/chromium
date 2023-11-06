@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_
 #define CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_
 
+#include "base/types/expected.h"
 #include "chrome/browser/compose/translate_language_provider.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/compose/core/browser/compose_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/context_menu_params.h"
@@ -17,8 +19,11 @@ class ComposeEnabling {
   explicit ComposeEnabling(
       TranslateLanguageProvider* translate_language_provider);
   ~ComposeEnabling();
-  bool IsEnabledForProfile(Profile* profile);
-  bool IsEnabled(Profile* profile, signin::IdentityManager* identity_manager);
+  base::expected<void, compose::ComposeShowStatus> IsEnabledForProfile(
+      Profile* profile);
+  base::expected<void, compose::ComposeShowStatus> IsEnabled(
+      Profile* profile,
+      signin::IdentityManager* identity_manager);
   void SetEnabledForTesting();
   void ClearEnabledForTesting();
   std::string GetLanguage();
@@ -36,10 +41,11 @@ class ComposeEnabling {
   raw_ptr<TranslateLanguageProvider> translate_language_provider_;
   bool enabled_for_testing_;
 
-  bool PageLevelChecks(Profile* profile,
-                       translate::TranslateManager* translate_manager,
-                       const url::Origin& top_level_frame_origin,
-                       const url::Origin& element_frame_origin);
+  base::expected<void, compose::ComposeShowStatus> PageLevelChecks(
+      Profile* profile,
+      translate::TranslateManager* translate_manager,
+      const url::Origin& top_level_frame_origin,
+      const url::Origin& element_frame_origin);
 };
 
 #endif  // CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_

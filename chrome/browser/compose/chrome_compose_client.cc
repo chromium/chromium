@@ -62,7 +62,7 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
 
   if (GetOptimizationGuide()) {
     std::vector<optimization_guide::proto::OptimizationType> types;
-    if (compose_enabling_.IsEnabledForProfile(profile_)) {
+    if (compose_enabling_.IsEnabledForProfile(profile_).has_value()) {
       types.push_back(optimization_guide::proto::OptimizationType::COMPOSE);
     }
 
@@ -258,7 +258,7 @@ compose::ComposeHintDecision ChromeComposeClient::GetOptimizationGuidanceForUrl(
     return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
   }
 
-  if (!compose_enabling_.IsEnabledForProfile(profile_)) {
+  if (!compose_enabling_.IsEnabledForProfile(profile_).has_value()) {
     return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED;
   }
 
