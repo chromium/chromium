@@ -147,12 +147,6 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
                         TabSelectionEditorAction.ButtonType.TEXT,
                         TabSelectionEditorAction.IconPosition.END);
                 break;
-            case TabSuggestion.TabSuggestionAction.GROUP:
-                action = TabSelectionEditorGroupAction.createAction(mContext,
-                        TabSelectionEditorAction.ShowMode.IF_ROOM,
-                        TabSelectionEditorAction.ButtonType.TEXT,
-                        TabSelectionEditorAction.IconPosition.END);
-                break;
             default:
                 assert false;
                 return null;

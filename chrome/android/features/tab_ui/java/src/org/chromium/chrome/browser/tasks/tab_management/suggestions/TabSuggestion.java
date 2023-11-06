@@ -16,11 +16,10 @@ import java.util.List;
  */
 public final class TabSuggestion {
     /** Types of Suggestion Actions */
-    @IntDef({TabSuggestion.TabSuggestionAction.GROUP, TabSuggestion.TabSuggestionAction.CLOSE})
+    @IntDef({TabSuggestion.TabSuggestionAction.CLOSE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabSuggestionAction {
-        int GROUP = 0;
-        int CLOSE = 1;
+        int CLOSE = 0;
     }
 
     private final List<TabContext.TabInfo> mTabsInfo;

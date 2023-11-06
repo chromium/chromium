@@ -76,8 +76,6 @@ public class TabSuggestionMessageCardViewModel {
     private static String getTitleText(
             Context context, @TabSuggestion.TabSuggestionAction int suggestionActionType) {
         switch (suggestionActionType) {
-            case TabSuggestion.TabSuggestionAction.GROUP:
-                return "";
             case TabSuggestion.TabSuggestionAction.CLOSE:
                 return context.getString(R.string.tab_cleanup_message_card_title);
             default:
@@ -91,8 +89,6 @@ public class TabSuggestionMessageCardViewModel {
         int suggestionActionType = data.getActionType();
 
         switch (suggestionActionType) {
-            case TabSuggestion.TabSuggestionAction.GROUP:
-                return "";
             case TabSuggestion.TabSuggestionAction.CLOSE:
                 return context.getResources()
                         .getQuantityString(
@@ -108,8 +104,6 @@ public class TabSuggestionMessageCardViewModel {
     private static String getActionText(
             Context context, @TabSuggestion.TabSuggestionAction int suggestionActionType) {
         switch (suggestionActionType) {
-            case TabSuggestion.TabSuggestionAction.GROUP:
-                return "";
             case TabSuggestion.TabSuggestionAction.CLOSE:
                 return context.getString(R.string.tab_cleanup_message_card_review_tabs_button);
             default:
@@ -121,8 +115,6 @@ public class TabSuggestionMessageCardViewModel {
     private static String getSecondaryActionText(
             Context context, @TabSuggestion.TabSuggestionAction int suggestionActionType) {
         switch (suggestionActionType) {
-            case TabSuggestion.TabSuggestionAction.GROUP:
-                return "";
             case TabSuggestion.TabSuggestionAction.CLOSE:
                 return context.getString(R.string.tab_cleanup_message_card_close_tabs_button);
             default:
@@ -134,8 +126,6 @@ public class TabSuggestionMessageCardViewModel {
     private static int getIconWidth(
             Context context, @TabSuggestion.TabSuggestionAction int suggestionActionType) {
         switch (suggestionActionType) {
-            case TabSuggestion.TabSuggestionAction.GROUP:
-                return 0;
             case TabSuggestion.TabSuggestionAction.CLOSE:
                 return (int)
                         context.getResources()
@@ -149,8 +139,6 @@ public class TabSuggestionMessageCardViewModel {
     private static int getIconHeight(
             Context context, @TabSuggestion.TabSuggestionAction int suggestionActionType) {
         switch (suggestionActionType) {
-            case TabSuggestion.TabSuggestionAction.GROUP:
-                return 0;
             case TabSuggestion.TabSuggestionAction.CLOSE:
                 return (int)
                         context.getResources()

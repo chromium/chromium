@@ -97,11 +97,6 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
                         aggregated.add(tabSuggestion);
                     }
                     break;
-                case TabSuggestion.TabSuggestionAction.GROUP:
-                    if (!tabSuggestion.getTabsInfo().isEmpty()) {
-                        aggregated.add(tabSuggestion);
-                    }
-                    break;
                 default:
                     android.util.Log.e(
                             TAG, String.format("Unknown action: %d", tabSuggestion.getAction()));
@@ -239,9 +234,6 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
         switch (tabSuggestionFeedback.tabSuggestion.getAction()) {
             case TabSuggestionAction.CLOSE:
                 suffix = "Closing";
-                break;
-            case TabSuggestionAction.GROUP:
-                suffix = "Grouping";
                 break;
             default:
                 assert false : "Unknown TabSuggestion action";
