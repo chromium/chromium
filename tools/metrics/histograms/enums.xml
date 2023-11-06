@@ -6804,6 +6804,9 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="No WebFrame in RenderFrame"/>
   <int value="2" label="No active Document in WebAXContext"/>
   <int value="3" label="No existing AXObjectCache in WebAXContext"/>
+  <int value="4" label="Max nodes limit reached"/>
+  <int value="5" label="Timeout limit reached"/>
+  <int value="6" label="Max nodes and timeout limits both reached"/>
 </enum>
 
 <enum name="BackForwardCacheBrowsingInstanceNotSwappedReason">
