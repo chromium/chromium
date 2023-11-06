@@ -18,11 +18,13 @@
 // 1. Prefix all config macros in this file with PA_CONFIG_ and define them in
 //    a function-like manner, e.g. PA_CONFIG_MY_SETTING().
 // 2. Both positive and negative cases must be defined.
-// 3. Don't use PA_CONFIG_MY_SETTING() directly outside of this file, use
+// 3. Don't use PA_CONFIG_MY_SETTING() directly outside of its definition, use
 //    PA_CONFIG(flag-without-PA_CONFIG_) instead, e.g. PA_CONFIG(MY_SETTING).
 // 4. Do not use PA_CONFIG() when defining config macros, or it will lead to
 //    recursion. Either use #if/#else, or PA_CONFIG_MY_SETTING() directly.
-// 5. Try to use constexpr instead of macros wherever possible.
+// 5. Similarly to above, but for a different reason, don't use defined() when
+//    defining config macros. It'd violate -Wno-expansion-to-defined.
+// 6. Try to use constexpr instead of macros wherever possible.
 // TODO(bartekn): Convert macros to constexpr or BUILDFLAG as much as possible.
 #define PA_CONFIG(flag) (PA_CONFIG_##flag())
 
@@ -131,8 +133,11 @@ static_assert(sizeof(void*) != 8, "");
 // Too expensive for official builds, as it adds cache misses to all
 // allocations. On the other hand, we want wide metrics coverage to get
 // realistic profiles.
-#define PA_CONFIG_THREAD_CACHE_ALLOC_STATS() \
-  (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !defined(OFFICIAL_BUILD))
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !defined(OFFICIAL_BUILD)
+#define PA_CONFIG_THREAD_CACHE_ALLOC_STATS() 1
+#else
+#define PA_CONFIG_THREAD_CACHE_ALLOC_STATS() 0
+#endif
 
 // Optional statistics collection. Lightweight, contrary to the ones above,
 // hence enabled by default.
@@ -148,14 +153,20 @@ static_assert(sizeof(void*) != 8, "");
 // making the shadow entry equal to the original, valid pointer to the next
 // slot. In case Use-after-Free happens, we'd rather not hand out a valid,
 // ready-to-use pointer.
-#define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY()    \
-  (!BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
-   defined(ARCH_CPU_LITTLE_ENDIAN))
+#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
+    defined(ARCH_CPU_LITTLE_ENDIAN)
+#define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY() 1
+#else
+#define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY() 0
+#endif
 
-#define PA_CONFIG_HAS_MEMORY_TAGGING()              \
-  (defined(ARCH_CPU_ARM64) && defined(__clang__) && \
-   !defined(ADDRESS_SANITIZER) &&                   \
-   (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)))
+#if defined(ARCH_CPU_ARM64) && defined(__clang__) && \
+    !defined(ADDRESS_SANITIZER) &&                   \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
+#define PA_CONFIG_HAS_MEMORY_TAGGING() 1
+#else
+#define PA_CONFIG_HAS_MEMORY_TAGGING() 0
+#endif
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
 static_assert(sizeof(void*) == 8);
@@ -203,9 +214,12 @@ static_assert(sizeof(void*) == 8);
 //
 // Regardless, the "normal" TLS access is fast on x86_64 (see partition_tls.h),
 // so don't bother with thread_local anywhere.
-#define PA_CONFIG_THREAD_LOCAL_TLS()                                           \
-  (!(BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)) && !BUILDFLAG(IS_APPLE) && \
-   !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS))
+#if !(BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)) && \
+    !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+#define PA_CONFIG_THREAD_LOCAL_TLS() 1
+#else
+#define PA_CONFIG_THREAD_LOCAL_TLS() 0
+#endif
 
 // When PartitionAlloc is malloc(), detect malloc() becoming re-entrant by
 // calling malloc() again.
@@ -287,8 +301,11 @@ constexpr bool kUseLazyCommit = false;
 //
 // Also enabled on ARM64 macOS, as the 16kiB pages on this platform lead to
 // larger slot spans.
-#define PA_CONFIG_PREFER_SMALLER_SLOT_SPANS() \
-  (BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)))
+#if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+#define PA_CONFIG_PREFER_SMALLER_SLOT_SPANS() 1
+#else
+#define PA_CONFIG_PREFER_SMALLER_SLOT_SPANS() 0
+#endif
 
 // Enable shadow metadata.
 //
