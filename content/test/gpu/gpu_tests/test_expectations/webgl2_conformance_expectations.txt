@@ -858,6 +858,8 @@ crbug.com/1492256 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/g
 crbug.com/1492257 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 crbug.com/1492258 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/uninitialized-local-global-variables.html [ Failure ]
 crbug.com/1492270 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/reading/read-pixels-pack-parameters.html [ Failure ]
+crbug.com/1499514 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/textures/canvas_sub_rectangle/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1499514 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/textures/webgl_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1499514 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/textures/canvas_sub_rectangle/tex-2d-srgb8-rgb-unsigned_byte.html [ Failure ]
 crbug.com/1499516 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
 crbug.com/1499523 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/data/gles3/shaders/arrays.html [ Failure ]
@@ -872,6 +874,7 @@ crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functiona
 crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
 crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/single_basic_array.html [ Failure ]
 crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/single_basic_type.html [ Failure ]
+crbug.com/1500045 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/rendering/blitframebuffer-r11f-g11f-b10f.html [ RetryOnFailure ]
 
 #####################
 # Lacros failures #
