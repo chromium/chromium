@@ -52,6 +52,10 @@ class IOSChromeSigninClient : public SigninClient {
   bool AreNetworkCallsDelayed() override;
   void DelayNetworkCall(base::OnceClosure callback) override;
   version_info::Channel GetClientChannel() override;
+  void OnPrimaryAccountChangedWithEventSource(
+      signin::PrimaryAccountChangeEvent event_details,
+      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+          event_source) override;
 
  private:
   // Helper to delay callbacks until connection becomes online again.

@@ -6,6 +6,7 @@
 
 #import "components/signin/core/browser/cookie_settings_util.h"
 #import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
+#import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "components/version_info/channel.h"
 #import "ios/web_view/internal/signin/web_view_gaia_auth_fetcher.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -86,3 +87,8 @@ version_info::Channel IOSWebViewSigninClient::GetClientChannel() {
   // implemented.
   return version_info::Channel::STABLE;
 }
+
+void IOSWebViewSigninClient::OnPrimaryAccountChangedWithEventSource(
+    signin::PrimaryAccountChangeEvent event_details,
+    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+        event_source) {}
