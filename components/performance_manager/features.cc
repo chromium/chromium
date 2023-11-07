@@ -138,6 +138,10 @@ const base::FeatureParam<int> kProactiveDiscardingTargetFalsePositivePercent{
     &kProbabilisticProactiveDiscarding,
     "proactive_discarding_target_false_positive_percent", 35};
 
+const base::FeatureParam<base::TimeDelta> kProactiveDiscardingSamplingInterval{
+    &kProbabilisticProactiveDiscarding,
+    "proactive_discarding_sampling_interval", base::Minutes(10)};
+
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
              "BFCachePerformanceManagerPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);

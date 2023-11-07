@@ -140,6 +140,11 @@ BASE_DECLARE_FEATURE(kProbabilisticProactiveDiscarding);
 extern const base::FeatureParam<int>
     kProactiveDiscardingTargetFalsePositivePercent;
 
+// The time interval at which the Proactive Discarder evaluates background tabs
+// for discard eligibility.
+extern const base::FeatureParam<base::TimeDelta>
+    kProactiveDiscardingSamplingInterval;
+
 // Policy that evicts the BFCache of pages that become non visible or the
 // BFCache of all pages when the system is under memory pressure.
 BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);
