@@ -56,12 +56,10 @@
   self.viewController.pageInfoCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageInfoCommands);
 
-  if (@available(iOS 15.0, *)) {
-    self.permissionsMediator =
-        [[PageInfoPermissionsMediator alloc] initWithWebState:webState];
-    self.viewController.permissionsDelegate = self.permissionsMediator;
-    self.permissionsMediator.consumer = self.viewController;
-  }
+  self.permissionsMediator =
+      [[PageInfoPermissionsMediator alloc] initWithWebState:webState];
+  self.viewController.permissionsDelegate = self.permissionsMediator;
+  self.permissionsMediator.consumer = self.viewController;
 
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
@@ -69,10 +67,7 @@
 }
 
 - (void)stop {
-  if (@available(iOS 15.0, *)) {
-    [self.permissionsMediator disconnect];
-  }
-
+  [self.permissionsMediator disconnect];
   [self.baseViewController.presentedViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
