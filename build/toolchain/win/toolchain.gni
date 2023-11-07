@@ -315,15 +315,17 @@ template("msvc_toolchain") {
           ml_py = rebase_path("//build/toolchain/win/ml.py", root_build_dir)
           ml = "\"$python_path\" $ml_py $ml"
         }
-      }
-      if (toolchain_args.current_cpu != "arm64" || toolchain_is_clang) {
-        # TODO(thakis): Stop using asm-wrapper when using clang.
-        command = "\"$python_path\" $_tool_wrapper_path asm-wrapper $env $ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
+
+        if (toolchain_args.current_cpu == "arm64") {
+          # armasm64.exe does not support definitions passed via the command
+          # line. (Fortunately, they're not needed for compiling the V8
+          # snapshot, which is the only time this assembler is required.)
+          command = "\"$python_path\" $_tool_wrapper_path asm-wrapper $env $ml {{include_dirs}} {{asmflags}} {{source}}"
+        } else {
+          command = "\"$python_path\" $_tool_wrapper_path asm-wrapper $env $ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
+        }
       } else {
-        # armasm64.exe does not support definitions passed via the command
-        # line. (Fortunately, they're not needed for compiling the V8
-        # snapshot, which is the only time this assembler is required.)
-        command = "\"$python_path\" $_tool_wrapper_path asm-wrapper $env $ml {{include_dirs}} {{asmflags}} {{source}}"
+        command = "$ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
       }
 
       description = "ASM {{output}}"
