@@ -1,19 +1,4 @@
 {
-    "AAudioInputStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseAAudioInput"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityIncludeLongClickAction": [
         {
             "platforms": [
