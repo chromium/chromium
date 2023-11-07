@@ -14,10 +14,10 @@
 #include <unordered_map>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/metadata_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/starscan_fwd.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
+#include "partition_alloc/partition_alloc_base/time/time.h"
+#include "partition_alloc/starscan/metadata_allocator.h"
+#include "partition_alloc/starscan/starscan_fwd.h"
 
 namespace partition_alloc {
 

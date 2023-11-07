@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
 
 #include <errno.h>
 #include <pthread.h>
@@ -14,11 +14,11 @@
 #include <unistd.h>
 #include <memory>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_internal_posix.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread_internal_posix.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <zircon/process.h>
@@ -27,8 +27,8 @@
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/stack/stack.h"
+#include "partition_alloc/starscan/pcscan.h"
+#include "partition_alloc/starscan/stack/stack.h"
 #endif
 
 namespace partition_alloc::internal::base {

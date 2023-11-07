@@ -5,8 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_YIELD_PROCESSOR_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_YIELD_PROCESSOR_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_config.h"
 
 // The PA_YIELD_PROCESSOR macro wraps an architecture specific-instruction that
 // informs the processor we're in a busy wait, so it can handle the branch more

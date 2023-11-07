@@ -9,10 +9,10 @@
 #include <limits>
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
+#include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
 #if !defined(__native_client__) && (defined(__ARMEL__) || defined(__arch64__))
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_math_arm_impl.h"
+#include "partition_alloc/partition_alloc_base/numerics/safe_math_arm_impl.h"
 #define PA_BASE_HAS_ASSEMBLER_SAFE_MATH (1)
 #else
 #define PA_BASE_HAS_ASSEMBLER_SAFE_MATH (0)

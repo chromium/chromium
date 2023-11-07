@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
+#include "partition_alloc/tagging.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cpu.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/cpu.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_config.h"
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
 #include <arm_acle.h>
@@ -42,8 +42,8 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/files/file_path.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/native_library.h"
+#include "partition_alloc/partition_alloc_base/files/file_path.h"
+#include "partition_alloc/partition_alloc_base/native_library.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace partition_alloc {

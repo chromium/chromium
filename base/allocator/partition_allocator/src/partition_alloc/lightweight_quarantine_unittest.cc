@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/lightweight_quarantine.h"
+#include "partition_alloc/lightweight_quarantine.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/partition_stats.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc {

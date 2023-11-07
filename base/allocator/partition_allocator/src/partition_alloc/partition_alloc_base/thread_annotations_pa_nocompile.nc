@@ -5,7 +5,7 @@
 // This is a "No Compile Test" suite.
 // https://dev.chromium.org/developers/testing/no-compile-tests
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
 
 namespace {
 

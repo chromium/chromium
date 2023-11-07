@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/stack_trace.h"
+#include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
 // Surprisingly, uClibc defines __GLIBC__ in some build configs, but
 // execinfo.h and backtrace(3) are really only present in glibc and in macOS
