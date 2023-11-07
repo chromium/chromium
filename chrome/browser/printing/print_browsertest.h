@@ -82,6 +82,9 @@ class PrintBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  // Initialize a run loop for a testing sequence.
+  void PrepareRunloop();
+
   void OnNewDocument(
 #if BUILDFLAG(IS_MAC)
       bool destination_is_preview,

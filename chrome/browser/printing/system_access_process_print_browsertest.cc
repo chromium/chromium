@@ -602,6 +602,12 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 
   // PrintViewManagerBase::TestObserver:
+  void OnPrintPreviewDone() override {
+    if (check_for_print_preview_done_) {
+      CheckForQuit();
+    }
+  }
+
   void OnRegisterSystemPrintClient(bool succeeded) override {
     system_print_registration_succeeded_ = succeeded;
   }
@@ -852,6 +858,10 @@ class SystemAccessProcessPrintBrowserTestBase
         /*cause_errors=*/true);
   }
 
+  void SetCheckForPrintPreviewDone(bool check) {
+    check_for_print_preview_done_ = check;
+  }
+
   const absl::optional<bool> system_print_registration_succeeded() const {
     return system_print_registration_succeeded_;
   }
@@ -1039,6 +1049,7 @@ class SystemAccessProcessPrintBrowserTestBase
 
   base::test::ScopedFeatureList feature_list_;
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+  bool check_for_print_preview_done_ = false;
   TestPrintJobWorker::PrintCallbacks test_print_job_worker_callbacks_;
   TestPrintJobWorkerOop::PrintCallbacks test_print_job_worker_oop_callbacks_;
   CreatePrinterQueryCallback test_create_printer_query_callback_;
@@ -1970,6 +1981,70 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   SetNumExpectedMessages(/*num=*/1);
 
   SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
+
+  EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
+  // TODO(crbug.com/1495120):  Update once an error dialog is shown for this
+  // failure to print.
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+}
+
+// This test is Windows-only because of Print Preview behavior in
+// `onPrintWithSystemDialog_()`.  For Windows this call ends up going through
+// `PrintViewManagerBase::PrintForPrintPreview()`, and thus invokes
+// `UpdatePrintSettings()` before displaying the system dialog.  Other
+// platforms end up going through `PrintViewManager::PrintForSystemDialogNow()`
+// and thus do not update print settings before the system dialog is displayed.
+// TODO(crbug.com/1474785):  Enable test once crash is fixed.
+IN_PROC_BROWSER_TEST_F(
+    SystemAccessProcessSandboxedServicePrintBrowserTest,
+    DISABLED_PrintPreviewAfterSystemPrintFromPrintPreviewUpdatePrintSettingsFails) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForFailInUpdatePrinterSettings();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // First invoke system print from Print Preview.  Must wait until the
+  // PrintPreviewUI is completely done before proceeding to the second part
+  // of this test to ensure that the client is unregistered from the
+  // `PrintBackendServiceManager`.
+  SetCheckForPrintPreviewDone(/*check=*/true);
+
+  // Once the transition to system print is initiated, the expected events
+  // are:
+  // 1.  Update the print settings, which fails.  No further printing calls
+  //     are made.  No print job is created because of such an early failure.
+  // 2.  Print Preview UI is done.
+  SetNumExpectedMessages(/*num=*/2);
+  SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
+
+  EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
+  // TODO(crbug.com/1495120):  Update once an error dialog is shown for this
+  // failure to print.
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+
+  // Reset before initiating another Print Preview.
+  PrepareRunloop();
+  ResetNumReceivedMessages();
+
+  // No longer expect the `PrintPreviewUI` to issue a done callback as part of
+  // the test expectations, since the Print Preview will stay open displaying
+  // an error message.  There will still be a preview done callback during
+  // test shutdown though, so disable doing an expectation check for that.
+  SetCheckForPrintPreviewDone(/*check=*/false);
+
+  // The expected events for this are:
+  // 1.  Update the print settings, which fails.  No further printing calls
+  //     are made.  No print job is created because of such an early failure.
+  SetNumExpectedMessages(/*num=*/1);
+  PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(update_print_settings_result(), mojom::ResultCode::kFailed);
   // TODO(crbug.com/1495120):  Update once an error dialog is shown for this

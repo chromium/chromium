@@ -485,11 +485,7 @@ void PrintBrowserTest::SetUpOnMainThread() {
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // `run_loop_` and `quit_callback_` are initialized here to avoid having a
-  // race between the last expected `CheckForQuit()` call and
-  // `WaitUntilCallbackReceived()` being called.
-  run_loop_ = std::make_unique<base::RunLoop>();
-  quit_callback_ = run_loop_->QuitClosure();
+  PrepareRunloop();
 }
 
 void PrintBrowserTest::TearDownOnMainThread() {
@@ -667,6 +663,14 @@ void PrintBrowserTest::OverrideBinderForTesting(
       base::BindRepeating(
           &TestPrintRenderFrame::Bind,
           base::Unretained(GetFrameContent(render_frame_host))));
+}
+
+void PrintBrowserTest::PrepareRunloop() {
+  // `run_loop_` and `quit_callback_` are initialized together to avoid having
+  // a race between the last expected `CheckForQuit()` call and
+  // `WaitUntilCallbackReceived()` being called.
+  run_loop_ = std::make_unique<base::RunLoop>();
+  quit_callback_ = run_loop_->QuitClosure();
 }
 
 void PrintBrowserTest::OnNewDocument(
