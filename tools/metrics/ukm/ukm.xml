@@ -4422,6 +4422,12 @@ be describing additional metrics about the same event.
       when the error dialog is displayed.
     </summary>
   </metric>
+  <metric name="Error.TokenResponseType" enum="FedCmTokenResponseType">
+    <summary>
+      Records the type of token response received. Recorded at most once per API
+      call when a token response received.
+    </summary>
+  </metric>
   <metric name="FedCmSessionID">
     <summary>
       Records the session ID associated to the FedCM call for which this event
@@ -4563,6 +4569,19 @@ be describing additional metrics about the same event.
     <summary>
       Records the type of error dialog shown. Recorded at most once per API call
       when the error dialog is displayed.
+    </summary>
+  </metric>
+  <metric name="Error.ErrorUrlType" enum="FedCmErrorUrlType">
+    <summary>
+      Records whether the error URL is same-origin, cross-origin but same-site
+      or cross-site with the config URL. Recorded at most once per API call when
+      a valid error URL is received.
+    </summary>
+  </metric>
+  <metric name="Error.TokenResponseType" enum="FedCmTokenResponseType">
+    <summary>
+      Records the type of token response received. Recorded at most once per API
+      call when a token response received.
     </summary>
   </metric>
   <metric name="FedCmSessionID">

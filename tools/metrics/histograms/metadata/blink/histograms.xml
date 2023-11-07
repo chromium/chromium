@@ -1366,6 +1366,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Error.ErrorUrlType" enum="FedCmErrorUrlType"
+    expires_after="M130">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether the error URL is same-origin, cross-origin but same-site or
+    cross-site with the config URL. Recorded at most once per API call when a
+    valid error URL is received.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.Error.TokenResponseType"
+    enum="FedCmTokenResponseType" expires_after="M130">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the type of token response received. Recorded at most once per API
+    call when a token response received.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.IdpSigninRequestInitiatedByUser"
     enum="BooleanYesNo" expires_after="2024-03-17">
   <owner>cbiesinger@chromium.org</owner>
