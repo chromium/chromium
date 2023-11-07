@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/buildflag.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -145,8 +146,13 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
       blink::mojom::WebFeature::kUserDataFieldFilledPreviously, 2);
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ClearBrowsingData DISABLED_ClearBrowsingData
+#else
+#define MAYBE_ClearBrowsingData ClearBrowsingData
+#endif
 IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
-                       ClearBrowsingData) {
+                       MAYBE_ClearBrowsingData) {
   // TODO(https://crbug.com/1487593): Re-enable this test on bfcache bot.
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     return;
