@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.RegularProfile.DefaultStorageAccess"
+<histogram name="ContentSettings.RegularProfile.DefaultStorageAccessSetting"
     enum="ContentSetting" expires_after="2024-06-23">
   <owner>dullweber@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
