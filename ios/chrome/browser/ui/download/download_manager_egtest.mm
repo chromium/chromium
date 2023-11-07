@@ -308,51 +308,43 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 // Tests successful blob download. This also checks that a file can be
 // downloaded and saved locally while an anchor tag has the download attribute.
 - (void)testSucessfulBlobDownload {
-  if (@available(iOS 15.0, *)) {
-    [ChromeEarlGrey
-        loadURL:self.testServer->GetURL("/download_test_page.html")];
-    [ChromeEarlGrey waitForWebStateContainingText:"BlobURL"];
-    [ChromeEarlGrey tapWebStateElementWithID:@"blob"];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/download_test_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"BlobURL"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"blob"];
 
-    GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
-    [[EarlGrey selectElementWithMatcher:DownloadButton()]
-        performAction:grey_tap()];
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
 
-    GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
-  }
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
 }
 
 // Tests that a pdf can be downloaded. This also checks that a file can be
 // downloaded and saved locally while an anchor tag has the download attribute.
 - (void)testSucessfulPDFDownload {
-  if (@available(iOS 15.0, *)) {
-    [ChromeEarlGrey
-        loadURL:self.testServer->GetURL("/download_test_page.html")];
-    [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
-    [ChromeEarlGrey tapWebStateElementWithID:@"pdf"];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/download_test_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"pdf"];
 
-    GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
-    [[EarlGrey selectElementWithMatcher:DownloadButton()]
-        performAction:grey_tap()];
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
 
-    GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
-  }
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
 }
 
 // Tests that a file is downloaded successfully even if it is renderable by the
 // browser.
 - (void)testSucessfulDownloadWithContentDisposition {
-  if (@available(iOS 15.0, *)) {
-    [ChromeEarlGrey loadURL:self.testServer->GetURL("/content-disposition")];
-    [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
-    [ChromeEarlGrey tapWebStateElementWithID:@"pdf"];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/content-disposition")];
+  [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"pdf"];
 
-    GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
-    [[EarlGrey selectElementWithMatcher:DownloadButton()]
-        performAction:grey_tap()];
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
 
-    GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
-  }
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
 }
 
 // Tests successful download up to the point where "Open in..." button is
