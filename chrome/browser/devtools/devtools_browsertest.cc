@@ -1903,9 +1903,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CanInspectExtensionOffscreenDoc) {
           get_info_function.get(),
           content::JsReplace(R"([$1])", extension->id()), browser()->profile());
   ASSERT_TRUE(result);
-  std::unique_ptr<extensions::api::developer_private::ExtensionInfo> info =
-      extensions::api::developer_private::ExtensionInfo::FromValueDeprecated(
-          *result);
+  auto info =
+      extensions::api::developer_private::ExtensionInfo::FromValue(*result);
   ASSERT_TRUE(info);
 
   // The only inspectable view should be the offscreen document. Validate the
