@@ -3086,7 +3086,7 @@
       "os": {
         "type": "win"
       },
-      "multi_gpu_category": "any",
+      "multi_gpu_category": "active",
       "vendor_id": "0x8086",
       "features": [
         "disable_direct_composition_sw_video_overlays"
