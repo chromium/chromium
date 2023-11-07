@@ -4850,9 +4850,6 @@ targets.legacy_basic_suite(
     tests = {
         "memory.leak_detection": targets.legacy_test_config(
             test = "performance_test_suite",
-            override_compile_targets = [
-                "performance_test_suite",
-            ],
             args = [
                 "--pageset-repeat=1",
                 "--test-shard-map-filename=linux_leak_detection_shard_map.json",
@@ -5154,9 +5151,6 @@ targets.legacy_basic_suite(
     tests = {
         "live_companion_tests": targets.legacy_test_config(
             test = "browser_tests",
-            override_compile_targets = [
-                "browser_tests",
-            ],
             args = [
                 "--gtest_filter=CompanionLiveTest.*",
                 "--run-live-tests",

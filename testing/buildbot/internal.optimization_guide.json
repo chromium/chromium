@@ -21,9 +21,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "live_companion_tests",
-        "override_compile_targets": [
-          "browser_tests"
-        ],
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04|Ubuntu-18.04",
@@ -57,9 +54,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "live_companion_tests",
-        "override_compile_targets": [
-          "browser_tests"
-        ],
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045",

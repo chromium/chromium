@@ -1565,9 +1565,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "memory.leak_detection",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"

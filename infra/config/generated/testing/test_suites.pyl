@@ -4126,9 +4126,6 @@
     'leak_detection_isolated_scripts': {
       'memory.leak_detection': {
         'test': 'performance_test_suite',
-        'override_compile_targets': [
-          'performance_test_suite',
-        ],
         'args': [
           '--pageset-repeat=1',
           '--test-shard-map-filename=linux_leak_detection_shard_map.json',
@@ -4366,9 +4363,6 @@
     'live_companion_tests': {
       'live_companion_tests': {
         'test': 'browser_tests',
-        'override_compile_targets': [
-          'browser_tests',
-        ],
         'args': [
           '--gtest_filter=CompanionLiveTest.*',
           '--run-live-tests',
