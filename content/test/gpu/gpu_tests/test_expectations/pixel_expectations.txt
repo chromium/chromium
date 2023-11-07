@@ -410,8 +410,6 @@ crbug.com/1494227 [ mac graphite-enabled intel release no-asan ] Pixel_CSSFilter
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
-# GL Crash on Nexus 5X causing flakes
-crbug.com/1489248 [ android android-chromium android-nexus-5x no-clang-coverage ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
 
 # Fails almost consistently, but likely to pass when run on its own in the retry.
 crbug.com/1484212 [ win debug nvidia ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ RetryOnFailure ]
