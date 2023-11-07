@@ -22,7 +22,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/unified/top_shortcuts_view.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"

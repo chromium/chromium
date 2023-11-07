@@ -19,7 +19,6 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -318,10 +317,6 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
     return GetPrimaryUnifiedSystemTray()
         ->bubble()
         ->unified_system_tray_controller();
-  }
-
-  UnifiedSystemTrayView* unified_view() {
-    return GetPrimaryUnifiedSystemTray()->bubble()->unified_view();
   }
 
   QuickSettingsView* quick_settings_view() {

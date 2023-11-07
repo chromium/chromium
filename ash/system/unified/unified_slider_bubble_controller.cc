@@ -254,7 +254,9 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   }
 
   if (IsAnyMainBubbleShown()) {
-    tray_->EnsureBubbleExpanded();
+    // If a detailed view is showing, first transit to the main view.
+    tray_->bubble()->unified_system_tray_controller()->TransitionToMainView(
+        false);
 
     // Unlike VOLUME and BRIGHTNESS, which are shown in the main bubble view,
     // MIC slider is shown in the audio details view.

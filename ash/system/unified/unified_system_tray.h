@@ -119,18 +119,6 @@ class ASH_EXPORT UnifiedSystemTray
   // Activates the system tray bubble.
   void ActivateBubble();
 
-  // Collapse the message center bubble.
-  void CollapseMessageCenter();
-
-  // Expand the message center bubble.
-  void ExpandMessageCenter();
-
-  // Ensure the quick settings bubble is collapsed.
-  void EnsureQuickSettingsCollapsed(bool animate);
-
-  // Ensure the system tray bubble is expanded.
-  void EnsureBubbleExpanded();
-
   // Shows volume slider bubble shown at the right bottom of screen. The bubble
   // is same as one shown when volume buttons on keyboard are pressed.
   void ShowVolumeSliderBubble();

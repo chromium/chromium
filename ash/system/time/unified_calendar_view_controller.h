@@ -37,7 +37,7 @@ class UnifiedCalendarViewController : public DetailedViewController {
   // Unowned, the object that instantiated us.
   const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
 
-  // Owned by UnifiedSystemTrayView's detailed_view_container_.
+  // Owned by `QuickSettingsView`'s detailed_view_container_.
   raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> view_ = nullptr;
 };
 

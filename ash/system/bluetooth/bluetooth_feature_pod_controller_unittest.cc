@@ -18,7 +18,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/i18n/number_formatting.h"
@@ -212,10 +211,6 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
     return GetPrimaryUnifiedSystemTray()
         ->bubble()
         ->unified_system_tray_controller();
-  }
-
-  UnifiedSystemTrayView* tray_view() {
-    return GetPrimaryUnifiedSystemTray()->bubble()->unified_view();
   }
 
   size_t GetTryToShowSurveyCount() {

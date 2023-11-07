@@ -17,7 +17,6 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"

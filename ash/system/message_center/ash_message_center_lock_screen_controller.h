@@ -44,15 +44,6 @@ class AshMessageCenterLockScreenController
   bool IsScreenLocked() const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemTrayControllerTest,
-                           NotificationHiddenView_ModeShow);
-  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemTrayControllerTest,
-                           NotificationHiddenView_ModeHide);
-  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemTrayControllerTest,
-                           NotificationHiddenView_ModeHideSensitive);
-  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemTrayControllerTest,
-                           NotificationHiddenView_ModeProhibited);
-
   // Modes of the lock screen notification.
   enum class Mode { PROHIBITED, HIDE, SHOW, HIDE_SENSITIVE };
 

@@ -401,8 +401,7 @@ TEST_F(TrayEventFilterTest, NotCloseTrayBubbleWhenTranscientChildActivated) {
   auto* bubble = system_tray->bubble();
 
   // Show the network detailed view.
-  bubble->unified_system_tray_controller()->ShowNetworkDetailedView(
-      /*force=*/true);
+  bubble->unified_system_tray_controller()->ShowNetworkDetailedView();
 
   // Click on the info button in the network detailed view so that a transient
   // bubble is opened.

@@ -14,13 +14,10 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/detailed_view_controller.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/feature_tiles_container_view.h"
-#include "ash/system/unified/page_indicator_view.h"
 #include "ash/system/unified/quick_settings_footer.h"
 #include "ash/system/unified/quick_settings_header.h"
-#include "ash/system/unified/unified_system_info_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -300,12 +297,6 @@ bool QuickSettingsView::IsDetailedViewShown() const {
 void QuickSettingsView::TotalPagesChanged(int previous_page_count,
                                           int new_page_count) {
   pagination_view_->SetVisible(new_page_count > 1);
-}
-
-void QuickSettingsView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_SCROLL_FLING_START) {
-    controller_->Fling(event->details().velocity_y());
-  }
 }
 
 BEGIN_METADATA(QuickSettingsView, views::View)

@@ -59,24 +59,12 @@ bool SystemTrayTestApi::IsTrayBubbleOpen() {
   return GetTray()->IsBubbleShown();
 }
 
-bool SystemTrayTestApi::IsTrayBubbleExpanded() {
-  return GetTray()->bubble_->controller_->IsExpanded();
-}
-
 void SystemTrayTestApi::ShowBubble() {
   GetTray()->ShowBubble();
 }
 
 void SystemTrayTestApi::CloseBubble() {
   GetTray()->CloseBubble();
-}
-
-void SystemTrayTestApi::CollapseBubble() {
-  GetTray()->EnsureQuickSettingsCollapsed(true /*animate*/);
-}
-
-void SystemTrayTestApi::ExpandBubble() {
-  GetTray()->EnsureBubbleExpanded();
 }
 
 void SystemTrayTestApi::ShowAccessibilityDetailedView() {
@@ -86,7 +74,7 @@ void SystemTrayTestApi::ShowAccessibilityDetailedView() {
 
 void SystemTrayTestApi::ShowNetworkDetailedView() {
   GetTray()->ShowBubble();
-  GetTray()->bubble_->controller_->ShowNetworkDetailedView(true /* force */);
+  GetTray()->bubble_->controller_->ShowNetworkDetailedView();
 }
 
 AccessibilityDetailedView* SystemTrayTestApi::GetAccessibilityDetailedView() {

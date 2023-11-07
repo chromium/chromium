@@ -310,9 +310,6 @@ Style notes:
         <ph name="network">$2<ex>Connected to Google-A, Median signal</ex></ph>
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the quick settings bubble and the information in it.">
-        Quick Settings, Press search + left to access the notification center.
-      </message>
-      <message name="IDS_ASH_REVAMPED_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the revamped quick settings bubble and the information in it.">
         Quick Settings
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_A11Y_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for accessibility settings accessed through the accessibility feature pod.">
@@ -1389,9 +1386,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HELP" desc="The accessible text for the help button.">
         Help
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DATE" desc="The date displayed on ash system bubble, Depending on launguage, please choose the best separator(eg ',') between abbreviated weekday and date">
-        <ph name="short_weekday">$1<ex>Fri</ex></ph>, <ph name="date">$2<ex>Aug 31, 2012</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DATE_TIME" desc="The time displayed on ash system tray, Depending on launguage, please choose the best separator(eg ',') between abbreviated date and time">
         <ph name="date">$1<ex>Aug 31</ex></ph>, <ph name="time">$2<ex>03:00</ex></ph>
@@ -5070,15 +5064,6 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_MESSAGE_CENTER_FOOTER_LOCKSCREEN" desc="The label in the footer of the message center on lock screen">
         Unlock device to view your notifications
       </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_UNIFIED" desc="The label in the message center area on lock screen.">
-        Notifications are hidden.
-      </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE" desc="The label in the button in the message center area on lock screen. This button is to open the setting of the lock scren notification.">
-        Change
-      </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE_TOOLTIP" desc="The tooltip text for Change button to open the setting of lock screen notification.">
-        Change the lock-screen notification settings
-      </message>
       <message name="IDS_ASH_MESSAGE_CENTER_NO_MESSAGES" desc="The message displayed in the message center when there are no notifications.">
         All done
       </message>
@@ -5177,10 +5162,6 @@ Some features are limited to increase battery life.
       <!-- Calendar  -->
       <message name="IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar bubble and the information in it.">
         Calendar, <ph name="current_month_year">$1<ex>Wednesday, August 17, 2022</ex></ph>
-      </message>
-
-      <message name="IDS_ASH_CALENDAR_ENTRY_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar entry button.">
-       <ph name="current_time">$1<ex>Tuesday, August 31, 2021 at 11:25:12 AM</ex></ph>, Press enter key to open Calendar view
       </message>
 
       <message name="IDS_ASH_CALENDAR_TITLE" desc="The label used as the title of the unified system tray calendar view.">
@@ -5685,9 +5666,6 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_PERFORM_ACTION_WITH_USER_ID" desc="The short message to encourage user to unlock the device so that ChromeOS can perform the notification action selected by user after unlocking.">
         Unlock device as <ph name="login_id">$1<ex>example@gmail.com</ex></ph> to perform the notification action
-      </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_CHANGE_SETTING" desc="The short message to encourage user to unlock the device to change the lock screen notification setting, so that ChromeOS can show the setting window after unlocking.">
-        To see notifications on your lock screen, unlock to change the setting
       </message>
 
       <!-- Media Notification -->

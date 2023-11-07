@@ -122,11 +122,7 @@ constexpr int kTrayPopupInkDropCornerRadius = 2;
 // Threshold to ignore update on the slider value.
 constexpr float kAudioSliderIgnoreUpdateThreshold = 0.01;
 
-// Duration for the collapse / expand animation in ms.
-constexpr int kSystemMenuCollapseExpandAnimationDurationMs = 500;
-
 constexpr auto kUnifiedMenuItemPadding = gfx::Insets::TLBR(0, 16, 16, 16);
-constexpr auto kUnifiedSystemInfoViewPadding = gfx::Insets::TLBR(0, 16, 16, 16);
 constexpr int kSliderChildrenViewSpacing = 8;
 
 // Constants used in the QuickSettingsSlider of the `QuickSettingsView`.
@@ -222,9 +218,6 @@ constexpr int kFeatureTileMaxRows = 4;
 constexpr int kFeatureTileMaxRowsWhenMediaViewIsShowing = 3;
 constexpr int kFeatureTileMinRows = 1;
 constexpr int kFeatureTileHeight = 64;
-
-// Height of the page indicator view.
-constexpr int kPageIndicatorViewMaxHeight = 20;
 
 // Constants used in system tray page transition animations.
 constexpr double kCollapseThreshold = 0.3;

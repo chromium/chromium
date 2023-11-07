@@ -66,7 +66,6 @@
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/unified/quick_settings_footer.h"
-#include "ash/system/unified/top_shortcuts_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/touch/touch_devices_controller.h"
@@ -200,11 +199,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   LoginExpandedPublicAccountView::RegisterLocalStatePrefs(registry);
   LockStateController::RegisterPrefs(registry);
   quick_pair::Mediator::RegisterLocalStatePrefs(registry);
-  if (ash::features::IsQsRevampEnabled()) {
-    QuickSettingsFooter::RegisterLocalStatePrefs(registry);
-  } else {
-    TopShortcutsView::RegisterLocalStatePrefs(registry);
-  }
+  QuickSettingsFooter::RegisterLocalStatePrefs(registry);
   KeyboardBacklightColorController::RegisterPrefs(registry);
   BatterySaverController::RegisterLocalStatePrefs(registry);
   PowerSoundsController::RegisterLocalStatePrefs(registry);

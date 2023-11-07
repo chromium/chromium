@@ -14,7 +14,7 @@
 namespace ash {
 
 // ChannelIndicatorQuickSettingsView contains all of the views included in the
-// channel indicator UI that resides in UnifiedSystemInfoView.
+// channel indicator UI that resides in `QuickSettingsHeader`.
 class ASH_EXPORT ChannelIndicatorQuickSettingsView : public views::View {
  public:
   METADATA_HEADER(ChannelIndicatorQuickSettingsView);

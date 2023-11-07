@@ -44,7 +44,6 @@
 #include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/memory/raw_ptr.h"
@@ -245,30 +244,6 @@ void UnifiedSystemTray::CloseSecondaryBubbles() {
   }
 }
 
-void UnifiedSystemTray::CollapseMessageCenter() {
-}
-
-void UnifiedSystemTray::ExpandMessageCenter() {
-}
-
-void UnifiedSystemTray::EnsureQuickSettingsCollapsed(bool animate) {
-  if (!bubble_) {
-    return;
-  }
-
-  if (animate) {
-    bubble_->EnsureCollapsed();
-  } else {
-    bubble_->CollapseWithoutAnimating();
-  }
-}
-
-void UnifiedSystemTray::EnsureBubbleExpanded() {
-  if (bubble_) {
-    bubble_->EnsureExpanded();
-  }
-}
-
 void UnifiedSystemTray::ShowVolumeSliderBubble() {
   slider_bubble_controller_->ShowBubble(
       UnifiedSliderBubbleController::SLIDER_TYPE_VOLUME);
@@ -306,7 +281,7 @@ void UnifiedSystemTray::ShowNetworkDetailedViewBubble() {
   // `bubble_` is still uninitialized). Only show detailed view if `bubble_` is
   // not null.
   if (bubble_) {
-    bubble_->ShowNetworkDetailedView(/*force=*/true);
+    bubble_->ShowNetworkDetailedView();
   }
 }
 
@@ -330,12 +305,6 @@ bool UnifiedSystemTray::FocusQuickSettings(bool reverse) {
   quick_settings_widget->widget_delegate()->SetCanActivate(true);
 
   Shell::Get()->focus_cycler()->FocusWidget(quick_settings_widget);
-
-  // Focus an individual element in quick settings if chrome vox is
-  // disabled.
-  if (!ShouldEnableExtraKeyboardAccessibility()) {
-    bubble_->FocusEntered(reverse);
-  }
 
   return true;
 }
@@ -495,21 +464,12 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForBubble() {
 }
 
 std::u16string UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
-  if (features::IsQsRevampEnabled()) {
     if (bubble_->quick_settings_view()->IsDetailedViewShown()) {
       return bubble_->quick_settings_view()->GetDetailedViewAccessibleName();
     }
 
     return l10n_util::GetStringUTF16(
-        IDS_ASH_REVAMPED_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION);
-  }
-
-  if (bubble_->unified_view()->IsDetailedViewShown()) {
-    return bubble_->unified_view()->GetDetailedViewAccessibleName();
-  }
-
-  return l10n_util::GetStringUTF16(
-      IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION);
+        IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION);
 }
 
 void UnifiedSystemTray::HandleLocaleChange() {
