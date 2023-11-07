@@ -14,12 +14,8 @@
   }
 
   :host(:not(.multi-card)) {
-    background-color: var(--cr-card-background-color);
-    box-shadow: var(--cr-card-shadow);
-  }
-
-  :host-context(body.jelly-enabled):host {
     background-color: var(--cros-sys-app_base);
+    box-shadow: var(--cr-card-shadow);
   }
 
   #headerLine {
@@ -39,7 +35,7 @@
     width: var(--cr-icon-ripple-size);
   }
 
-  :host-context(body.jelly-enabled) #title {
+  #title {
     font: var(--cros-button-1-font);
   }
 

@@ -40,14 +40,10 @@
   }
 
   #card {
-    background-color: var(--cr-card-background-color);
+    background-color: var(--cros-sys-app_base);
     border-radius: var(--settings-card-border-radius);
     flex: 1;
     overflow: hidden;
-  }
-
-  :host-context(body.jelly-enabled) #card {
-    background-color: var(--cros-sys-app_base);
   }
 
   :host-context(body:not(.revamp-wayfinding-enabled)) #card {
