@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
+// Deprecated method IDs: 1
 // Next MinVersion: 3
 
 module arc.mojom;
@@ -36,9 +37,8 @@ interface CompatibilityModeInstance {
   SetResizeLockState@0(string package_name,
                        ArcResizeLockState state);
 
-  // DEPRECATED. Use IsOptimizedForCrosApp() instead.
-  [MinVersion=1] DEPRECATED_IsGioApplicable@1(string package_name) =>
-    (bool is_gio_applicable);
+  // REMOVED! [MinVersion=1] DEPRECATED_IsGioApplicable@1(string package_name)
+  //   => (bool is_gio_applicable);
 
   // Queries whether app of `package_name` is an Optimized-for-Chromebook (O4C)
   // app. Returns true if `package_name` is an O4C app.

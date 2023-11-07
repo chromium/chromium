@@ -14,12 +14,6 @@ void FakeCompatibilityModeInstance::SetResizeLockState(
     const std::string& package_name,
     mojom::ArcResizeLockState state) {}
 
-void FakeCompatibilityModeInstance::DEPRECATED_IsGioApplicable(
-    const std::string& package_name,
-    DEPRECATED_IsGioApplicableCallback callback) {
-  std::move(callback).Run(is_gio_applicable_);
-}
-
 void FakeCompatibilityModeInstance::IsOptimizedForCrosApp(
     const std::string& package_name,
     IsOptimizedForCrosAppCallback callback) {
