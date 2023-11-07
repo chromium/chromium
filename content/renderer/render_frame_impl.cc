@@ -6247,9 +6247,19 @@ void RenderFrameImpl::LoadHTMLStringForTesting(const std::string& html,
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);
 
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      url_loader_factory_remote;
+  if (url_loader_factory_override_for_test_) {
+    url_loader_factory_override_for_test_->Clone(
+        url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
+  } else {
+    url_loader_factory_remote =
+        network::NotImplementedURLLoaderFactory::Create();
+  }
+
   pending_loader_factories_ = CreateLoaderFactoryBundle(
       blink::ChildPendingURLLoaderFactoryBundle::CreateFromDefaultFactoryImpl(
-          network::NotImplementedURLLoaderFactory::Create()),
+          std::move(url_loader_factory_remote)),
       /*subresource_overrides=*/absl::nullopt,
       /*subresource_proxying_loader_factory=*/{},
       /*keep_alive_loader_factory=*/{},

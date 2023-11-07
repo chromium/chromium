@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -20,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -174,9 +176,25 @@ class CommitTimeConditionChecker : public content::RenderFrameObserver {
 
 }  // namespace
 
-class ContentSettingsAgentImplBrowserTest : public content::RenderViewTest {
+enum class BackgroundResourceFetchTestCase {
+  kBackgroundResourceFetchEnabled,
+  kBackgroundResourceFetchDisabled,
+};
+
+class ContentSettingsAgentImplBrowserTest
+    : public content::RenderViewTest,
+      public testing::WithParamInterface<BackgroundResourceFetchTestCase> {
  protected:
   void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (IsBackgroundResourceFetchEnabled()) {
+      enabled_features.push_back(blink::features::kBackgroundResourceFetch);
+    } else {
+      disabled_features.push_back(blink::features::kBackgroundResourceFetch);
+    }
+    feature_background_resource_fetch_.InitWithFeatures(enabled_features,
+                                                        disabled_features);
     RenderViewTest::SetUp();
 
     // Set up a fake url loader factory to ensure that script loader can create
@@ -227,15 +245,37 @@ class ContentSettingsAgentImplBrowserTest : public content::RenderViewTest {
     mojo::Receiver<blink::mojom::CodeCacheHost> receiver_{this};
   };
 
-  void OnCodeCacheHostRequest(mojo::ScopedMessagePipeHandle handle) {
-    fake_code_cache_host_ = std::make_unique<FakeCodeCacheHost>(
-        mojo::PendingReceiver<blink::mojom::CodeCacheHost>(std::move(handle)));
+  bool IsBackgroundResourceFetchEnabled() const {
+    return GetParam() ==
+           BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled;
   }
 
-  std::unique_ptr<FakeCodeCacheHost> fake_code_cache_host_;
+  void OnCodeCacheHostRequest(mojo::ScopedMessagePipeHandle handle) {
+    fake_code_cache_hosts_.emplace_back(std::make_unique<FakeCodeCacheHost>(
+        mojo::PendingReceiver<blink::mojom::CodeCacheHost>(std::move(handle))));
+  }
+
+  std::vector<std::unique_ptr<FakeCodeCacheHost>> fake_code_cache_hosts_;
+  base::test::ScopedFeatureList feature_background_resource_fetch_;
 };
 
-TEST_F(ContentSettingsAgentImplBrowserTest, AllowlistedSchemes) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContentSettingsAgentImplBrowserTest,
+    testing::ValuesIn(
+        {BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled,
+         BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled}),
+    [](const testing::TestParamInfo<BackgroundResourceFetchTestCase>& info) {
+      switch (info.param) {
+        case (BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled):
+          return "BackgroundResourceFetchEnabled";
+        case (
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled):
+          return "BackgroundResourceFetchDisabled";
+      }
+    });
+
+TEST_P(ContentSettingsAgentImplBrowserTest, AllowlistedSchemes) {
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kAllowlistScheme, url::SCHEME_WITH_HOST);
 
@@ -263,7 +303,7 @@ TEST_F(ContentSettingsAgentImplBrowserTest, AllowlistedSchemes) {
   EXPECT_FALSE(mock_agent.IsAllowlistedForContentSettings());
 }
 
-TEST_F(ContentSettingsAgentImplBrowserTest, DidBlockContentType) {
+TEST_P(ContentSettingsAgentImplBrowserTest, DidBlockContentType) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
   mock_agent.DidBlockContentType(ContentSettingsType::COOKIES);
   base::RunLoop().RunUntilIdle();
@@ -278,7 +318,7 @@ TEST_F(ContentSettingsAgentImplBrowserTest, DidBlockContentType) {
 
 // Tests that multiple invocations of AllowStorageAccessSync result in a single
 // IPC.
-TEST_F(ContentSettingsAgentImplBrowserTest, AllowStorageAccessSync) {
+TEST_P(ContentSettingsAgentImplBrowserTest, AllowStorageAccessSync) {
   // Load some HTML, so we have a valid security origin.
   LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
@@ -296,7 +336,7 @@ TEST_F(ContentSettingsAgentImplBrowserTest, AllowStorageAccessSync) {
 }
 
 // Tests that multiple invocations of AllowStorageAccess result in a single IPC.
-TEST_F(ContentSettingsAgentImplBrowserTest, AllowStorageAccess) {
+TEST_P(ContentSettingsAgentImplBrowserTest, AllowStorageAccess) {
   // Load some HTML, so we have a valid security origin.
   LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
@@ -315,7 +355,7 @@ TEST_F(ContentSettingsAgentImplBrowserTest, AllowStorageAccess) {
   EXPECT_EQ(1, mock_agent.allow_storage_access_count());
 }
 
-TEST_F(ContentSettingsAgentImplBrowserTest, ImagesBlockedByDefault) {
+TEST_P(ContentSettingsAgentImplBrowserTest, ImagesBlockedByDefault) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
 
   // Load some HTML.
@@ -353,7 +393,7 @@ TEST_F(ContentSettingsAgentImplBrowserTest, ImagesBlockedByDefault) {
   EXPECT_EQ(1, mock_agent.on_content_blocked_count());
 }
 
-TEST_F(ContentSettingsAgentImplBrowserTest, ImagesAllowedByDefault) {
+TEST_P(ContentSettingsAgentImplBrowserTest, ImagesAllowedByDefault) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
 
   // Load some HTML.
@@ -390,7 +430,7 @@ TEST_F(ContentSettingsAgentImplBrowserTest, ImagesAllowedByDefault) {
   EXPECT_EQ(ContentSettingsType::IMAGES, mock_agent.on_content_blocked_type());
 }
 
-TEST_F(ContentSettingsAgentImplBrowserTest, ContentSettingsBlockScripts) {
+TEST_P(ContentSettingsAgentImplBrowserTest, ContentSettingsBlockScripts) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
   // Set the content settings for scripts.
   RendererContentSettingRules content_setting_rules;
@@ -412,7 +452,7 @@ TEST_F(ContentSettingsAgentImplBrowserTest, ContentSettingsBlockScripts) {
   EXPECT_EQ(1, mock_agent.on_content_blocked_count());
 }
 
-TEST_F(ContentSettingsAgentImplBrowserTest,
+TEST_P(ContentSettingsAgentImplBrowserTest,
        ContentSettingsAllowScriptsWithSrc) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
   // Set the content settings for scripts.
@@ -435,7 +475,7 @@ TEST_F(ContentSettingsAgentImplBrowserTest,
   EXPECT_EQ(0, mock_agent.on_content_blocked_count());
 }
 
-TEST_F(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesDisabledByRules) {
+TEST_P(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesDisabledByRules) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
 
   LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
@@ -467,7 +507,7 @@ TEST_F(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesDisabledByRules) {
   EXPECT_FALSE(agent->ShouldAutoupgradeMixedContent());
 }
 
-TEST_F(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesNoSettingsSet) {
+TEST_P(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesNoSettingsSet) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
 
   ContentSettingsAgentImpl* agent =
@@ -475,7 +515,7 @@ TEST_F(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesNoSettingsSet) {
   EXPECT_TRUE(agent->ShouldAutoupgradeMixedContent());
 }
 
-TEST_F(ContentSettingsAgentImplBrowserTest, ContentSettingsAllowedAutoDark) {
+TEST_P(ContentSettingsAgentImplBrowserTest, ContentSettingsAllowedAutoDark) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
 
   // Load some HTML.
@@ -507,7 +547,7 @@ TEST_F(ContentSettingsAgentImplBrowserTest, ContentSettingsAllowedAutoDark) {
   EXPECT_FALSE(agent->AllowAutoDarkWebContent(true));
 }
 
-TEST_F(ContentSettingsAgentImplBrowserTest, ContentSettingsDisabledAutoDark) {
+TEST_P(ContentSettingsAgentImplBrowserTest, ContentSettingsDisabledAutoDark) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
 
   // Load some HTML.
