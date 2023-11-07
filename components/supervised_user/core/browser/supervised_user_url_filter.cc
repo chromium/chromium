@@ -698,6 +698,7 @@ void SupervisedUserURLFilter::Clear() {
   allowed_host_list_.clear();
   blocked_host_list_.clear();
   async_url_checker_.reset();
+  is_filter_initialized_ = false;
 }
 
 void SupervisedUserURLFilter::AddObserver(Observer* observer) {

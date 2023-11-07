@@ -16,10 +16,16 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
+#include "components/sync/test/mock_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,12 +33,10 @@
 class ParentalControlMetricsTest : public testing::Test {
  public:
   void SetUp() override {
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    pref_service_->registry()->RegisterIntegerPref(
-        prefs::kDefaultSupervisedUserFilteringBehavior,
-        supervised_user::SupervisedUserURLFilter::ALLOW);
-    pref_service_->registry()->RegisterBooleanPref(
-        prefs::kSupervisedUserSafeSites, true);
+    supervised_user::SupervisedUserService::RegisterProfilePrefs(
+        pref_service_.registry());
+    supervised_user::ChildAccountService::RegisterProfilePrefs(
+        pref_service_.registry());
 
     // Prepare args for the AsyncURLChecker.
     kids_chrome_management_client_ =
@@ -41,19 +45,41 @@ class ParentalControlMetricsTest : public testing::Test {
                 &test_url_loader_factory_),
             identity_test_env_.identity_manager());
 
-    filter_.SetFilterInitialized(true);
+    settings_service_.Init(pref_service_.user_prefs_store());
+
+    supervised_user::EnableParentalControls(pref_service_);
+    supervised_user_service_ =
+        std::make_unique<supervised_user::SupervisedUserService>(
+            identity_test_env_.identity_manager(),
+            kids_chrome_management_client_.get(), pref_service_,
+            settings_service_, sync_service_,
+            /*check_webstore_url_callback=*/
+            base::BindRepeating([](const GURL& url) { return false; }),
+            std::make_unique<supervised_user::FakeURLFilterDelegate>(),
+            /*can_show_first_time_interstitial_banner=*/false);
+    supervised_user_service_->Init();
+
     parental_control_metrics_ =
         std::make_unique<supervised_user::ParentalControlMetrics>(
-            pref_service_.get(), &filter_);
+            supervised_user_service_->GetURLFilter());
+  }
+
+  void TearDown() override {
+    settings_service_.Shutdown();
+    supervised_user_service_->Shutdown();
   }
 
  protected:
   void OnNewDay() { parental_control_metrics_->OnNewDay(); }
 
+  supervised_user::SupervisedUserService* supervised_user_service() {
+    return supervised_user_service_.get();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -62,24 +88,57 @@ class ParentalControlMetricsTest : public testing::Test {
       supervised_user::SupervisedUserURLFilter(
           base::BindRepeating([](const GURL& url) { return false; }),
           std::make_unique<supervised_user::FakeURLFilterDelegate>());
+  std::unique_ptr<supervised_user::SupervisedUserService>
+      supervised_user_service_;
+
+  supervised_user::SupervisedUserSettingsService settings_service_;
+  syncer::MockSyncService sync_service_;
 
   std::unique_ptr<supervised_user::ParentalControlMetrics>
       parental_control_metrics_;
   base::HistogramTester histogram_tester_;
 };
 
+TEST_F(ParentalControlMetricsTest,
+       MetricsNotRecordedForSignedOutSupervisedUser) {
+  supervised_user::DisableParentalControls(pref_service_);
+  OnNewDay();
+  histogram_tester_.ExpectTotalCount(supervised_user::SupervisedUserURLFilter::
+                                         GetWebFilterTypeHistogramNameForTest(),
+                                     /*expected_count=*/0);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
+      /*expected_count=*/0);
+}
+
+TEST_F(ParentalControlMetricsTest, RecordDefaultMetrics) {
+  // If the parent has not changed their configuration the supervised user
+  // should be subject to default mature sites blocking.
+  OnNewDay();
+  histogram_tester_.ExpectUniqueSample(
+      supervised_user::SupervisedUserURLFilter::
+          GetWebFilterTypeHistogramNameForTest(),
+      /*sample=*/
+      supervised_user::SupervisedUserURLFilter::WebFilterType::
+          kTryToBlockMatureSites,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
+      /*sample=*/
+      supervised_user::SupervisedUserURLFilter::ManagedSiteList::kEmpty,
+      /*expected_bucket_count=*/1);
+}
+
 TEST_F(ParentalControlMetricsTest, WebFilterTypeMetric) {
-  // Overriding the value of prefs::kSupervisedUserSafeSites and
-  // prefs::kDefaultSupervisedUserFilteringBehavior in default storage is
-  // needed, otherwise no report could be triggered policies change or
-  // OnNewDay(). Since the default values are the same of override values, the
-  // WebFilterType doesn't change and no report here.
-  pref_service_->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                            supervised_user::SupervisedUserURLFilter::ALLOW);
-  pref_service_->SetBoolean(prefs::kSupervisedUserSafeSites, true);
+  // Override the value of prefs::kSupervisedUserSafeSites and
+  // prefs::kDefaultSupervisedUserFilteringBehavior in default storage.
+  pref_service_.SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
+                           supervised_user::SupervisedUserURLFilter::ALLOW);
+  pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
 
   // Tests filter "try to block mature sites".
-  filter_.InitAsyncURLChecker(kids_chrome_management_client_.get());
   OnNewDay();
   histogram_tester_.ExpectUniqueSample(
       supervised_user::SupervisedUserURLFilter::
@@ -90,9 +149,7 @@ TEST_F(ParentalControlMetricsTest, WebFilterTypeMetric) {
       /*expected_bucket_count=*/1);
 
   // Tests filter "allow all sites".
-  pref_service_->SetBoolean(prefs::kSupervisedUserSafeSites, false);
-  filter_.ClearAsyncURLChecker();
-  OnNewDay();
+  pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
   histogram_tester_.ExpectBucketCount(
       supervised_user::SupervisedUserURLFilter::
           GetWebFilterTypeHistogramNameForTest(),
@@ -101,11 +158,10 @@ TEST_F(ParentalControlMetricsTest, WebFilterTypeMetric) {
       /*expected_count=*/1);
 
   // Tests filter "only allow certain sites".
-  pref_service_->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                            supervised_user::SupervisedUserURLFilter::BLOCK);
+  pref_service_.SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
+                           supervised_user::SupervisedUserURLFilter::BLOCK);
   filter_.SetDefaultFilteringBehavior(
       supervised_user::SupervisedUserURLFilter::BLOCK);
-  OnNewDay();
   histogram_tester_.ExpectBucketCount(
       supervised_user::SupervisedUserURLFilter::
           GetWebFilterTypeHistogramNameForTest(),
@@ -124,9 +180,9 @@ TEST_F(ParentalControlMetricsTest, ManagedSiteListTypeMetric) {
   // needed, otherwise no report could be triggered by policies change or
   // OnNewDay(). Since the default values are the same of override values, the
   // WebFilterType doesn't change and no report here.
-  pref_service_->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                            supervised_user::SupervisedUserURLFilter::ALLOW);
-  pref_service_->SetBoolean(prefs::kSupervisedUserSafeSites, true);
+  pref_service_.SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
+                           supervised_user::SupervisedUserURLFilter::ALLOW);
+  pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
 
   // Tests daily report.
   OnNewDay();
