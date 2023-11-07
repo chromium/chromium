@@ -27,6 +27,7 @@ import {Debouncer, DomRepeatEvent, PolymerElement, timeOut} from 'chrome://resou
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from '../customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
 import {DescriptorA, DescriptorDValue, Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
+import {WindowProxy} from '../window_proxy.js';
 
 import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
 import {getTemplate} from './wallpaper_search.html.js';
@@ -113,7 +114,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private descriptors_: Descriptors|null;
   private descriptorD_: string[];
   private emptyContainers_: number[];
-  private errorCallback_: (() => Promise<void>)|undefined;
+  private errorCallback_: (() => void)|undefined;
   private errorState_: ErrorState|null = null;
   private loading_: boolean;
   private results_: WallpaperSearchResult[];
@@ -185,6 +186,12 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         return {
           title: this.i18n('requestThrottledTitle'),
           description: this.i18n('requestThrottledDescription'),
+          callToAction: this.i18n('ok'),
+        };
+      case WallpaperSearchStatus.kOffline:
+        return {
+          title: this.i18n('offlineTitle'),
+          description: this.i18n('offlineDescription'),
           callToAction: this.i18n('ok'),
         };
     }
@@ -290,6 +297,17 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private async onSearchClick_() {
+    if (!WindowProxy.getInstance().onLine) {
+      this.errorCallback_ = () => {
+        if (WindowProxy.getInstance().onLine) {
+          this.status_ = WallpaperSearchStatus.kOk;
+          this.errorCallback_ = undefined;
+        }
+      };
+      this.status_ = WallpaperSearchStatus.kOffline;
+      return;
+    }
+
     assert(this.descriptors_);
     this.selectedDescriptorA_ = this.selectedDescriptorA_ ||
         getRandomDescriptorA(this.descriptors_.descriptorA);

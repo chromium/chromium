@@ -118,6 +118,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"genericErrorDescription",
        IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION},
       {"genericErrorTitle", IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_TITLE},
+      {"offlineDescription", IDS_NTP_WALLPAPER_SEARCH_OFFLINE_DESCRIPTION},
+      {"offlineTitle", IDS_NTP_WALLPAPER_SEARCH_OFFLINE_TITLE},
       {"requestThrottledDescription",
        IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_DESCRIPTION},
       {"requestThrottledTitle",

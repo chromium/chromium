@@ -10,6 +10,7 @@ import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-
 import {Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
+import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -23,6 +24,7 @@ suite('WallpaperSearchTest', () => {
   let callbackRouterRemote: CustomizeChromePageRemote;
   let handler: TestMock<WallpaperSearchHandlerInterface>;
   let wallpaperSearchElement: WallpaperSearchElement;
+  let windowProxy: TestMock<WindowProxy>;
 
   async function createWallpaperSearchElement(
       descriptors: Descriptors|null = null): Promise<WallpaperSearchElement> {
@@ -43,6 +45,8 @@ suite('WallpaperSearchTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    windowProxy = installMock(WindowProxy);
+    windowProxy.setResultFor('onLine', true);
     handler = installMock(
         WallpaperSearchHandlerRemote,
         (mock: WallpaperSearchHandlerInterface) =>
@@ -479,6 +483,40 @@ suite('WallpaperSearchTest', () => {
       await waitAfterNextRender(wallpaperSearchElement);
 
       assertEquals(2, handler.getCallCount('getDescriptors'));
+      assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+      assertNotStyle(
+          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+    });
+
+    test('shows error ui if browser if offline', async () => {
+      windowProxy.setResultFor('onLine', false);
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(1, windowProxy.getCallCount('onLine'));
+      assertNotStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
+      assertStyle(
+          $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+    });
+
+    test('checks if browser is back online', async () => {
+      windowProxy.setResultFor('onLine', false);
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(1, windowProxy.getCallCount('onLine'));
+      windowProxy.setResultFor('onLine', true);
+
+      $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(2, windowProxy.getCallCount('onLine'));
       assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
       assertNotStyle(
           $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');

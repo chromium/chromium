@@ -39,6 +39,8 @@ enum WallpaperSearchStatus {
   kError,
   // Too many requests.
   kRequestThrottled,
+  // Browser offline.
+  kOffline,
 };
 
 // Browser-side handler for requests from WebUI page.

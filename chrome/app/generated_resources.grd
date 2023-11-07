@@ -7850,6 +7850,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER" translateable="false" desc="Header for the wallpaper search section for showing past themes." >
         Your recent themes
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_OFFLINE_DESCRIPTION" desc="The description of the message displayed by wallpaper search when the browser is offline.">
+        Check your internet connection and try again.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_OFFLINE_TITLE" desc="The title of the message displayed by wallpaper search when the browser is offline.">
+        Looks like you're offline.
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_DESCRIPTION" desc="The description of the message displayed when a wallpaper search request is throttled.">
         You can try again tomorrow.
       </message>
