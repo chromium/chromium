@@ -3536,6 +3536,10 @@ bool AXObject::IsModal() const {
 
 bool AXObject::IsBlockedByAriaModalDialog(
     IgnoredReasons* ignored_reasons) const {
+  if (IsDetached()) {
+    return false;
+  }
+
   Element* active_aria_modal_dialog =
       AXObjectCache().GetActiveAriaModalDialog();
 
