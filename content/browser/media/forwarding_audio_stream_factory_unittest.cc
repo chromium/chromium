@@ -218,6 +218,10 @@ class ForwardingAudioStreamFactoryTest : public RenderViewHostTestHarness {
         RenderFrameHostTester::For(main_rfh())->AppendChild("other_rfh");
   }
 
+  void TearDown() override {
+    other_rfh_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
   void BindFactory(
       mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
     stream_factory_.receiver_.Bind(std::move(receiver));
@@ -258,7 +262,7 @@ class ForwardingAudioStreamFactoryTest : public RenderViewHostTestHarness {
   static const uint32_t kSharedMemoryCount;
   static const bool kEnableAgc;
   MockStreamFactory stream_factory_;
-  raw_ptr<RenderFrameHost, DanglingUntriaged> other_rfh_;
+  raw_ptr<RenderFrameHost> other_rfh_ = nullptr;
   std::unique_ptr<MockBrokerFactory> broker_factory_;
 };
 
@@ -591,6 +595,10 @@ TEST_F(ForwardingAudioStreamFactoryTest, DestroyWebContents_DestroysStreams) {
   factory.core()->CreateOutputStream(
       main_rfh()->GetProcess()->GetID(), main_rfh()->GetRoutingID(),
       kOutputDeviceId, kParams, std::move(output_client));
+
+  // We're about to reset the |TestWebContents|. As such we need to remove the
+  // reference to |other_rfh_| beforehand, otherwise it will become dangling.
+  other_rfh_ = nullptr;
 
   DeleteContents();
   base::RunLoop().RunUntilIdle();
