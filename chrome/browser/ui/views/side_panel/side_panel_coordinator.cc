@@ -152,15 +152,11 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
 
 std::unique_ptr<views::ImageView> CreateIcon() {
   std::unique_ptr<views::ImageView> icon = std::make_unique<views::ImageView>();
-  int horizontal_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-    horizontal_margin =
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            ChromeDistanceMetric::
-                DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL) *
-        2;
-  }
+  const int horizontal_margin =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          ChromeDistanceMetric::
+              DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL) *
+      2;
   icon->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin));

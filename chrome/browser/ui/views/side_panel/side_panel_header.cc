@@ -22,7 +22,10 @@ void SidePanelHeader::Layout() {
     gfx::Rect contents_bounds = parent()->GetContentsBounds();
 
     const int header_padding_bottom =
-        base::FeatureList::IsEnabled(features::kSidePanelPinning) ? 0 : 6;
+        base::FeatureList::IsEnabled(features::kSidePanelPinning) &&
+                features::IsChromeRefresh2023()
+            ? 0
+            : 6;
     gfx::Rect header_bounds =
         gfx::Rect(contents_bounds.x(),
                   contents_bounds.y() - GetPreferredSize().height() -
