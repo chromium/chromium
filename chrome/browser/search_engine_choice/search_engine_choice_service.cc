@@ -172,6 +172,12 @@ SearchEngineChoiceService::GetSearchEngines() {
 
 search_engines::SearchEngineChoiceScreenConditions
 SearchEngineChoiceService::ComputeDialogConditions(Browser& browser) {
+  if (!search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kDialog)) {
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kFeatureSuppressed;
+  }
+
   if (web_app::AppBrowserController::IsWebApp(&browser)) {
     // Showing a Chrome-specific search engine dialog on top of a window
     // dedicated to a specific web app is a horrible UX, we suppress it for this
