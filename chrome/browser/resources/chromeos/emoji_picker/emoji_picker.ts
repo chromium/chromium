@@ -74,7 +74,13 @@ export class EmojiPicker extends PolymerElement {
     return {
       category: {type: String, value: 'emoji', observer: 'onCategoryChanged'},
       emojiGroupTabs: {type: Array},
-      dummyTab: {type: Object, value: () => ({})},
+      dummyTab: {type: Object, value: () => ({
+        name: '',
+        groupId: '-1',
+        active: false,
+        disabled: false,
+        category: CategoryEnum.GIF,
+      })},
       categoriesData: {type: Array, value: () => ([])},
       categoriesGroupElements: {type: Array, value: () => ([])},
       activeInfiniteGroupId: {type: String, value: null},

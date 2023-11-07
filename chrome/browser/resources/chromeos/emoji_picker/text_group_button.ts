@@ -25,6 +25,7 @@ export class TextGroupButton extends PolymerElement {
       groupId: {type: String, readonly: true},
       active: {type: Boolean, value: false},
       disabled: {type: Boolean, value: false},
+      jellySupport: {type: Boolean, value: false},
       customTabIndex: {type: Number, value: -1},
     };
   }
@@ -47,7 +48,12 @@ export class TextGroupButton extends PolymerElement {
     return active ? 'text-group-active' : '';
   }
 
-  private toUpperCase(text: string) {
+  private maybeToUpperCase(text: string, jellySupport: boolean) {
+    // With Jelly flag on, we do not capitalize texts here.
+    // TODO(b/263055563): Remove this flag once Jelly is default on.
+    if (jellySupport) {
+      return text;
+    }
     return text.toUpperCase();
   }
 
