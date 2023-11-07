@@ -41,12 +41,11 @@ const size_t kIdSize = 16;
 std::string GenerateId(base::StringPiece input) {
   uint8_t hash[kIdSize];
   crypto::SHA256HashString(input, hash, sizeof(hash));
-  return GenerateIdFromHash(hash, sizeof(hash));
+  return GenerateIdFromHash(hash);
 }
 
-std::string GenerateIdFromHash(const uint8_t* hash, size_t hash_size) {
-  CHECK_GE(hash_size, kIdSize);
-  std::string result = base::HexEncode(hash, kIdSize);
+std::string GenerateIdFromHash(base::span<const uint8_t> hash) {
+  std::string result = base::HexEncode(hash.first(kIdSize));
   ConvertHexadecimalToIDAlphabet(&result);
   return result;
 }

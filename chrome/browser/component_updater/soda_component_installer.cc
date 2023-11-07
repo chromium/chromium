@@ -83,8 +83,7 @@ SodaComponentInstallerPolicy::SodaComponentInstallerPolicy(
 SodaComponentInstallerPolicy::~SodaComponentInstallerPolicy() = default;
 
 const std::string SodaComponentInstallerPolicy::GetExtensionId() {
-  return crx_file::id_util::GenerateIdFromHash(kSodaPublicKeySHA256,
-                                               sizeof(kSodaPublicKeySHA256));
+  return crx_file::id_util::GenerateIdFromHash(kSodaPublicKeySHA256);
 }
 
 void SodaComponentInstallerPolicy::UpdateSodaComponentOnDemand() {

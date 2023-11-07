@@ -154,8 +154,7 @@ absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
 LanguageCode GetLanguageCodeByComponentId(const std::string& component_id) {
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
-    if (crx_file::id_util::GenerateIdFromHash(config.public_key_sha,
-                                              sizeof(config.public_key_sha)) ==
+    if (crx_file::id_util::GenerateIdFromHash(config.public_key_sha) ==
         component_id) {
       return config.language_code;
     }

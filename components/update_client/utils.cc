@@ -75,9 +75,8 @@ std::string GetCrxComponentID(const CrxComponent& component) {
                                   : component.app_id;
 }
 
-std::string GetCrxIdFromPublicKeyHash(const std::vector<uint8_t>& pk_hash) {
-  const std::string result =
-      crx_file::id_util::GenerateIdFromHash(&pk_hash[0], pk_hash.size());
+std::string GetCrxIdFromPublicKeyHash(base::span<const uint8_t> pk_hash) {
+  const std::string result = crx_file::id_util::GenerateIdFromHash(pk_hash);
   CHECK(crx_file::id_util::IdIsValid(result));
   return result;
 }

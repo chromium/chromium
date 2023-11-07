@@ -96,8 +96,7 @@ base::FilePath ScreenAIComponentInstallerPolicy::GetRelativeInstallDir() const {
 
 // static
 std::string ScreenAIComponentInstallerPolicy::GetOmahaId() {
-  return crx_file::id_util::GenerateIdFromHash(
-      kScreenAIPublicKeySHA256, std::size(kScreenAIPublicKeySHA256));
+  return crx_file::id_util::GenerateIdFromHash(kScreenAIPublicKeySHA256);
 }
 
 void ScreenAIComponentInstallerPolicy::GetHash(

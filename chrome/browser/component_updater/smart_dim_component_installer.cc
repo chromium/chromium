@@ -97,8 +97,7 @@ SmartDimComponentInstallerPolicy::SmartDimComponentInstallerPolicy(
 SmartDimComponentInstallerPolicy::~SmartDimComponentInstallerPolicy() = default;
 
 const std::string SmartDimComponentInstallerPolicy::GetExtensionId() {
-  return crx_file::id_util::GenerateIdFromHash(
-      kSmartDimPublicKeySHA256, sizeof(kSmartDimPublicKeySHA256));
+  return crx_file::id_util::GenerateIdFromHash(kSmartDimPublicKeySHA256);
 }
 
 bool SmartDimComponentInstallerPolicy::
