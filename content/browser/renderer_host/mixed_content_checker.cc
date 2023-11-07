@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
@@ -15,6 +16,7 @@
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
@@ -24,6 +26,14 @@
 
 namespace content {
 namespace {
+
+// Tells whether in-browser mixed content checker should cancel prerendering
+// pages when they are loading a mixed content fetch keepalive request.
+bool ShouldFetchKeepAliveCancelPrerenderingOnMixedContent() {
+  return GetFieldTrialParamByFeatureAsBool(
+      blink::features::kKeepAliveInBrowserMigration,
+      "cancel_prerendering_on_mixed_content", /*default_value=*/true);
+}
 
 bool IsSecureScheme(const std::string& scheme) {
   return base::Contains(url::GetSecureSchemes(), scheme);
@@ -53,6 +63,39 @@ bool DoesOriginSchemeRestrictMixedContent(const url::Origin& origin) {
 bool IsMixedContent(const url::Origin& origin, const GURL& url) {
   return !IsUrlPotentiallySecure(url) &&
          DoesOriginSchemeRestrictMixedContent(origin);
+}
+
+// This mirrors `blink::MixedContentChecker::InWhichFrameIsContentMixed()` but
+// without reporting to renderer.
+// Unlike the other `InWhichFrameIsContentMixed` in this file, this function
+// should only be called to find the mixed content frame for fetch keepalive
+// requests, and it does not record any blink::mojom::WebFeature when
+// identifying mixed content frames.
+RenderFrameHostImpl* InWhichFrameIsContentMixedForFetchKeepAlive(
+    RenderFrameHostImpl* initiator_frame,
+    const GURL& url) {
+  // The caller may provide nullptr `initiator_frame` if a fetch keepalive
+  // request stay alive until after the frame of its document is destroyed. In
+  // such case, there is no enough information to calculate whether the request
+  // is mixed content or not.
+  // See also the mirrored function in Blink, which does not calculate mixed
+  // content for frameless call.
+  if (!initiator_frame) {
+    return nullptr;
+  }
+
+  // Check the main frame first.
+  RenderFrameHostImpl* main_frame = initiator_frame->GetOutermostMainFrame();
+  if (IsMixedContent(main_frame->GetLastCommittedOrigin(), url)) {
+    return main_frame;
+  }
+
+  if (IsMixedContent(initiator_frame->GetLastCommittedOrigin(), url)) {
+    return initiator_frame;
+  }
+
+  // No mixed content, no problem.
+  return nullptr;
 }
 
 void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
@@ -162,6 +205,34 @@ bool MixedContentChecker::ShouldBlockNavigation(
                                   request->mixed_content_context_type(),
                                   navigation_mixed_content_features_);
 
+  bool should_report_to_renderer = false;
+  bool should_block = ShouldBlockInternal(
+      mixed_content_frame, node, request->GetURL(), for_redirect,
+      /*cancel_prerendering=*/true, request->mixed_content_context_type(),
+      &navigation_mixed_content_features_, &should_report_to_renderer);
+
+  if (should_report_to_renderer) {
+    UpdateRendererOnMixedContentFound(
+        request, mixed_content_frame->GetLastCommittedURL(),
+        /*was_allowed=*/!should_block, for_redirect);
+    MaybeSendBlinkFeatureUsageReport(navigation_handle,
+                                     navigation_mixed_content_features_);
+  }
+  return should_block;
+}
+
+// static
+bool MixedContentChecker::ShouldBlockInternal(
+    RenderFrameHostImpl* mixed_content_frame,
+    FrameTreeNode* node,
+    const GURL& url,
+    bool for_redirect,
+    bool cancel_prerendering,
+    blink::mojom::MixedContentContextType mixed_content_context_type,
+    std::set<blink::mojom::WebFeature>* mixed_content_features,
+    bool* should_report_to_renderer) {
+  CHECK(mixed_content_frame);
+
   // If we're in strict mode, we'll automagically fail everything, and
   // intentionally skip the client/embedder checks in order to prevent degrading
   // the site's security UI.
@@ -180,9 +251,6 @@ bool MixedContentChecker::ShouldBlockNavigation(
   bool strict_mode =
       prefs.strict_mixed_content_checking || block_all_mixed_content;
 
-  blink::mojom::MixedContentContextType mixed_context_type =
-      request->mixed_content_context_type();
-
   // Do not treat non-webby schemes as mixed content when loaded in subframes.
   // Navigations to non-webby schemes cannot return data to the browser, so
   // insecure content will not be run or displayed to the user as a result of
@@ -194,7 +262,7 @@ bool MixedContentChecker::ShouldBlockNavigation(
   //
   // TODO(https://crbug.com/1030307): decide whether CORS-enabled is really the
   // right way to draw this distinction.
-  if (!ShouldTreatURLSchemeAsCorsEnabled(request->GetURL())) {
+  if (!ShouldTreatURLSchemeAsCorsEnabled(url)) {
     // Record non-webby mixed content to see if it is rare enough that it can be
     // gated behind an enterprise policy. This excludes URLs that are considered
     // potentially-secure such as blob: and filesystem:, which are special-cased
@@ -207,7 +275,8 @@ bool MixedContentChecker::ShouldBlockNavigation(
   // Cancel the prerendering page to prevent the problems that can be the
   // logging UMA, UKM and calling `DidChangeVisibleSecurityState()` through this
   // throttle.
-  if (mixed_content_frame->CancelPrerendering(
+  if (cancel_prerendering &&
+      mixed_content_frame->CancelPrerendering(
           PrerenderCancellationReason(PrerenderFinalStatus::kMixedContent))) {
     return true;
   }
@@ -215,11 +284,11 @@ bool MixedContentChecker::ShouldBlockNavigation(
   bool allowed = false;
   RenderFrameHostDelegate* frame_host_delegate =
       node->current_frame_host()->delegate();
-  switch (mixed_context_type) {
+  switch (mixed_content_context_type) {
     case blink::mojom::MixedContentContextType::kOptionallyBlockable:
       allowed = !strict_mode;
       if (allowed) {
-        frame_host_delegate->PassiveInsecureContentFound(request->GetURL());
+        frame_host_delegate->PassiveInsecureContentFound(url);
         node->frame_tree().controller().ssl_manager()->DidDisplayMixedContent();
       }
       break;
@@ -233,18 +302,18 @@ bool MixedContentChecker::ShouldBlockNavigation(
       bool should_ask_delegate =
           !strict_mode && (!prefs.strictly_block_blockable_mixed_content ||
                            prefs.allow_running_insecure_content);
-      allowed =
-          should_ask_delegate &&
-          frame_host_delegate->ShouldAllowRunningInsecureContent(
-              prefs.allow_running_insecure_content,
-              mixed_content_frame->GetLastCommittedOrigin(), request->GetURL());
+      allowed = should_ask_delegate &&
+                frame_host_delegate->ShouldAllowRunningInsecureContent(
+                    prefs.allow_running_insecure_content,
+                    mixed_content_frame->GetLastCommittedOrigin(), url);
       if (allowed) {
         const GURL& origin_url =
             mixed_content_frame->GetLastCommittedOrigin().GetURL();
-        mixed_content_frame->OnDidRunInsecureContent(origin_url,
-                                                     request->GetURL());
-        navigation_mixed_content_features_.insert(
-            blink::mojom::WebFeature::kMixedContentBlockableAllowed);
+        mixed_content_frame->OnDidRunInsecureContent(origin_url, url);
+        if (mixed_content_features) {
+          mixed_content_features->insert(
+              blink::mojom::WebFeature::kMixedContentBlockableAllowed);
+        }
       }
       break;
     }
@@ -261,11 +330,9 @@ bool MixedContentChecker::ShouldBlockNavigation(
       break;
   };
 
-  UpdateRendererOnMixedContentFound(request,
-                                    mixed_content_frame->GetLastCommittedURL(),
-                                    allowed, for_redirect);
-  MaybeSendBlinkFeatureUsageReport(navigation_handle,
-                                   navigation_mixed_content_features_);
+  if (should_report_to_renderer) {
+    *should_report_to_renderer = true;
+  }
 
   return !allowed;
 }
@@ -330,6 +397,34 @@ RenderFrameHostImpl* MixedContentChecker::InWhichFrameIsContentMixed(
             kMixedContentInSecureFrameThatDoesNotRestrictMixedContent);
   }
   return mixed_content_frame;
+}
+
+// static
+bool MixedContentChecker::ShouldBlockFetchKeepAlive(
+    RenderFrameHostImpl* initiator_frame,
+    const GURL& url,
+    bool for_redirect) {
+  // A fetch keepalive request's RequestContextType is one of the following:
+  // - RequestContextType::FETCH,
+  // - RequestContextType::BEACON,
+  // - RequestContextType::ATTRIBUTION_SRC,
+  // which all maps to kBlockable.
+  // See also `blink::MixedContent::ContextTypeFromRequestContext()`.
+  constexpr auto kMixedContentContextType =
+      blink::mojom::MixedContentContextType::kBlockable;
+
+  RenderFrameHostImpl* mixed_content_frame =
+      InWhichFrameIsContentMixedForFetchKeepAlive(initiator_frame, url);
+  if (!mixed_content_frame) {
+    return false;
+  }
+
+  return ShouldBlockInternal(
+      mixed_content_frame, initiator_frame->frame_tree_node(), url,
+      for_redirect,
+      /*cancel_prerendering=*/
+      ShouldFetchKeepAliveCancelPrerenderingOnMixedContent(),
+      kMixedContentContextType);
 }
 
 // static
