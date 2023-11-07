@@ -165,7 +165,9 @@ bool IsLacrosEnabledInternal(const User* user,
 
   // If profile migration is enabled, the completion of it is necessary for
   // Lacros to be enabled.
-  if (check_migration_status && IsProfileMigrationEnabled()) {
+  if (check_migration_status &&
+      !base::FeatureList::IsEnabled(
+          ash::standalone_browser::features::kLacrosProfileMigrationForceOff)) {
     PrefService* local_state = g_browser_process->local_state();
     // Note that local_state can be nullptr in tests.
     if (local_state && !ash::standalone_browser::migrator_util::
@@ -307,29 +309,24 @@ bool IsLacrosEnabledForMigration(const User* user,
                                  /*check_migration_status=*/false);
 }
 
-bool IsProfileMigrationEnabled() {
-  return IsProfileMigrationEnabledWithUserAndPolicyInitState(
-      GetPrimaryUser(), PolicyInitState::kAfterInit);
-}
-
-bool IsProfileMigrationEnabledWithUserAndPolicyInitState(
-    const user_manager::User* user,
-    PolicyInitState policy_init_state) {
+bool IsProfileMigrationEnabled(const user_manager::User* user,
+                               PolicyInitState policy_init_state) {
   return !base::FeatureList::IsEnabled(ash::standalone_browser::features::
                                            kLacrosProfileMigrationForceOff) &&
          !IsAshWebBrowserEnabledForMigration(user, policy_init_state);
 }
 
 bool IsProfileMigrationAvailable() {
-  if (!IsProfileMigrationEnabled()) {
+  auto* user_manager = UserManager::Get();
+  auto* primary_user = user_manager->GetPrimaryUser();
+  if (!IsProfileMigrationEnabled(primary_user, PolicyInitState::kAfterInit)) {
     return false;
   }
 
   // If migration is already completed, it is not necessary to run again.
   if (ash::standalone_browser::migrator_util::
-          IsProfileMigrationCompletedForUser(
-              UserManager::Get()->GetLocalState(),
-              UserManager::Get()->GetPrimaryUser()->username_hash())) {
+          IsProfileMigrationCompletedForUser(user_manager->GetLocalState(),
+                                             primary_user->username_hash())) {
     return false;
   }
 

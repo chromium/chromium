@@ -233,9 +233,8 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
   }
 
   // Check if profile migration is enabled. If not immediately return.
-  if (!crosapi::browser_util::
-          IsProfileMigrationEnabledWithUserAndPolicyInitState(
-              user, policy_init_state)) {
+  if (!crosapi::browser_util::IsProfileMigrationEnabled(user,
+                                                        policy_init_state)) {
     if (crosapi::browser_util::IsLacrosEnabledForMigration(user,
                                                            policy_init_state) ||
         base::CommandLine::ForCurrentProcess()->HasSwitch(
