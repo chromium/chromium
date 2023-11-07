@@ -356,19 +356,19 @@
 
 // Type detection for wchar_t.
 #if defined(OS_WIN)
-#define WCHAR_T_IS_UTF16
+#define WCHAR_T_IS_16_BIT
 #elif defined(OS_FUCHSIA)
-#define WCHAR_T_IS_UTF32
+#define WCHAR_T_IS_32_BIT
 #elif defined(OS_POSIX) && defined(COMPILER_GCC) && defined(__WCHAR_MAX__) && \
     (__WCHAR_MAX__ == 0x7fffffff || __WCHAR_MAX__ == 0xffffffff)
-#define WCHAR_T_IS_UTF32
+#define WCHAR_T_IS_32_BIT
 #elif defined(OS_POSIX) && defined(COMPILER_GCC) && defined(__WCHAR_MAX__) && \
     (__WCHAR_MAX__ == 0x7fff || __WCHAR_MAX__ == 0xffff)
 // On Posix, we'll detect short wchar_t, but projects aren't guaranteed to
 // compile in this mode (in particular, Chrome doesn't). This is intended for
 // other projects using base who manage their own dependencies and make sure
 // short wchar works for them.
-#define WCHAR_T_IS_UTF16
+#define WCHAR_T_IS_16_BIT
 #else
 #error Please add support for your compiler in build/build_config.h
 #endif

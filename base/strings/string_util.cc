@@ -233,7 +233,7 @@ bool IsStringASCII(StringPiece16 str) {
   return internal::DoIsStringASCII(str.data(), str.length());
 }
 
-#if defined(WCHAR_T_IS_UTF32)
+#if defined(WCHAR_T_IS_32_BIT)
 bool IsStringASCII(WStringPiece str) {
   return internal::DoIsStringASCII(str.data(), str.length());
 }

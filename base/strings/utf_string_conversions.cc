@@ -42,7 +42,7 @@ struct SizeCoefficient<char16_t, char> {
   static constexpr int value = 3;
 };
 
-#if defined(WCHAR_T_IS_UTF32)
+#if defined(WCHAR_T_IS_32_BIT)
 template <>
 struct SizeCoefficient<wchar_t, char> {
   // UTF-8 uses at most 4 codeunits per character.
@@ -54,7 +54,7 @@ struct SizeCoefficient<wchar_t, char16_t> {
   // UTF-16 uses at most 2 codeunits per character.
   static constexpr int value = 2;
 };
-#endif  // defined(WCHAR_T_IS_UTF32)
+#endif  // defined(WCHAR_T_IS_32_BIT)
 
 template <typename SrcChar, typename DestChar>
 constexpr int size_coefficient_v =
@@ -162,7 +162,7 @@ bool DoUTFConversion(const char16_t* src,
   return success;
 }
 
-#if defined(WCHAR_T_IS_UTF32)
+#if defined(WCHAR_T_IS_32_BIT)
 
 template <typename DestChar>
 bool DoUTFConversion(const wchar_t* src,
@@ -185,7 +185,7 @@ bool DoUTFConversion(const wchar_t* src,
   return success;
 }
 
-#endif  // defined(WCHAR_T_IS_UTF32)
+#endif  // defined(WCHAR_T_IS_32_BIT)
 
 // UTFConversion --------------------------------------------------------------
 // Function template for generating all UTF conversions.
@@ -246,7 +246,7 @@ std::string UTF16ToUTF8(StringPiece16 utf16) {
 
 // UTF-16 <-> Wide -------------------------------------------------------------
 
-#if defined(WCHAR_T_IS_UTF16)
+#if defined(WCHAR_T_IS_16_BIT)
 // When wide == UTF-16 the conversions are a NOP.
 
 bool WideToUTF16(const wchar_t* src, size_t src_len, std::u16string* output) {
@@ -267,7 +267,7 @@ std::wstring UTF16ToWide(StringPiece16 utf16) {
   return std::wstring(utf16.begin(), utf16.end());
 }
 
-#elif defined(WCHAR_T_IS_UTF32)
+#elif defined(WCHAR_T_IS_32_BIT)
 
 bool WideToUTF16(const wchar_t* src, size_t src_len, std::u16string* output) {
   return UTFConversion(base::WStringPiece(src, src_len), output);
@@ -293,7 +293,7 @@ std::wstring UTF16ToWide(StringPiece16 utf16) {
   return ret;
 }
 
-#endif  // defined(WCHAR_T_IS_UTF32)
+#endif  // defined(WCHAR_T_IS_32_BIT)
 
 // UTF-8 <-> Wide --------------------------------------------------------------
 
@@ -311,7 +311,7 @@ std::wstring UTF8ToWide(StringPiece utf8) {
   return ret;
 }
 
-#if defined(WCHAR_T_IS_UTF16)
+#if defined(WCHAR_T_IS_16_BIT)
 // Easy case since we can use the "utf" versions we already wrote above.
 
 bool WideToUTF8(const wchar_t* src, size_t src_len, std::string* output) {
@@ -322,7 +322,7 @@ std::string WideToUTF8(WStringPiece wide) {
   return UTF16ToUTF8(StringPiece16(as_u16cstr(wide), wide.size()));
 }
 
-#elif defined(WCHAR_T_IS_UTF32)
+#elif defined(WCHAR_T_IS_32_BIT)
 
 bool WideToUTF8(const wchar_t* src, size_t src_len, std::string* output) {
   return UTFConversion(WStringPiece(src, src_len), output);
@@ -336,7 +336,7 @@ std::string WideToUTF8(WStringPiece wide) {
   return ret;
 }
 
-#endif  // defined(WCHAR_T_IS_UTF32)
+#endif  // defined(WCHAR_T_IS_32_BIT)
 
 std::u16string ASCIIToUTF16(StringPiece ascii) {
   DCHECK(IsStringASCII(ascii)) << ascii;
@@ -348,7 +348,7 @@ std::string UTF16ToASCII(StringPiece16 utf16) {
   return std::string(utf16.begin(), utf16.end());
 }
 
-#if defined(WCHAR_T_IS_UTF16)
+#if defined(WCHAR_T_IS_16_BIT)
 std::wstring ASCIIToWide(StringPiece ascii) {
   DCHECK(IsStringASCII(ascii)) << ascii;
   return std::wstring(ascii.begin(), ascii.end());
@@ -358,6 +358,6 @@ std::string WideToASCII(WStringPiece wide) {
   DCHECK(IsStringASCII(wide)) << wide;
   return std::string(wide.begin(), wide.end());
 }
-#endif  // defined(WCHAR_T_IS_UTF16)
+#endif  // defined(WCHAR_T_IS_16_BIT)
 
 }  // namespace base

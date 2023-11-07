@@ -344,7 +344,7 @@ BASE_EXPORT bool IsStringUTF8AllowingNoncharacters(StringPiece str);
 BASE_EXPORT bool IsStringASCII(StringPiece str);
 BASE_EXPORT bool IsStringASCII(StringPiece16 str);
 
-#if defined(WCHAR_T_IS_UTF32)
+#if defined(WCHAR_T_IS_32_BIT)
 BASE_EXPORT bool IsStringASCII(WStringPiece str);
 #endif
 
