@@ -1701,12 +1701,6 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
 // Tests that the user is prompted to save or update password on a succesful
 // form submission.
 TEST_F(PasswordControllerTest, ShowingSavingPromptOnSuccessfulSubmission) {
-  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
-  // sometimes failing to finish loading the HTML.
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    return;
-  }
-
   const char* kHtml = {"<html><body>"
                        "<form name='login_form' id='login_form'>"
                        "  <input type='text' name='username'>"
@@ -1772,12 +1766,6 @@ TEST_F(PasswordControllerTest, NotShowingSavingPromptWithoutSubmission) {
 // Tests that the user is not prompted to save or update password on a
 // succesful form submission while saving is disabled.
 TEST_F(PasswordControllerTest, NotShowingSavingPromptWhileSavingIsDisabled) {
-  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
-  // sometimes failing to finish loading the HTML.
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    return;
-  }
-
   const char* kHtml = {"<html><body>"
                        "<form name='login_form' id='login_form'>"
                        "  <input type='text' name='username'>"
@@ -1805,12 +1793,6 @@ TEST_F(PasswordControllerTest, NotShowingSavingPromptWhileSavingIsDisabled) {
 // form submission when there's already a credential with the same
 // username in the store.
 TEST_F(PasswordControllerTest, ShowingUpdatePromptOnSuccessfulSubmission) {
-  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
-  // sometimes failing to finish loading the HTML.
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    return;
-  }
-
   PasswordForm form(MakeSimpleForm());
   ON_CALL(*store_, GetLogins)
       .WillByDefault(WithArg<1>(InvokeConsumer(store_.get(), form)));
@@ -2204,12 +2186,6 @@ TEST_F(PasswordControllerTest,
 }
 
 TEST_F(PasswordControllerTest, PasswordMetricsNoSavedCredentials) {
-  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
-  // sometimes failing to finish loading the HTML.
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    return;
-  }
-
   base::HistogramTester histogram_tester;
   {
     ON_CALL(*store_, GetLogins)
