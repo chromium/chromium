@@ -945,36 +945,6 @@ bool ItemIsInterrupted(DownloadItem* item) {
   return item->GetState() == DownloadItem::INTERRUPTED;
 }
 
-download::DownloadInterruptReason InterruptReasonExtensionToComponent(
-    downloads::InterruptReason error) {
-  switch (error) {
-    case downloads::INTERRUPT_REASON_NONE:
-      return download::DOWNLOAD_INTERRUPT_REASON_NONE;
-#define INTERRUPT_REASON(name, value)      \
-  case downloads::INTERRUPT_REASON_##name: \
-    return download::DOWNLOAD_INTERRUPT_REASON_##name;
-#include "components/download/public/common/download_interrupt_reason_values.h"
-#undef INTERRUPT_REASON
-  }
-  NOTREACHED();
-  return download::DOWNLOAD_INTERRUPT_REASON_NONE;
-}
-
-downloads::InterruptReason InterruptReasonContentToExtension(
-    download::DownloadInterruptReason error) {
-  switch (error) {
-    case download::DOWNLOAD_INTERRUPT_REASON_NONE:
-      return downloads::INTERRUPT_REASON_NONE;
-#define INTERRUPT_REASON(name, value)              \
-  case download::DOWNLOAD_INTERRUPT_REASON_##name: \
-    return downloads::INTERRUPT_REASON_##name;
-#include "components/download/public/common/download_interrupt_reason_values.h"
-#undef INTERRUPT_REASON
-  }
-  NOTREACHED();
-  return downloads::INTERRUPT_REASON_NONE;
-}
-
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
@@ -2908,7 +2878,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string error;
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
-      base::FilePath(), downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      base::FilePath(), downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_EQ("", error);
 
   // The download should complete successfully.
@@ -3031,7 +3001,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string error;
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
-      base::FilePath(), downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      base::FilePath(), downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_EQ("", error);
 
   // Calling DetermineFilename again should return an error instead of calling
@@ -3039,7 +3009,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_FALSE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("different")),
-      downloads::FILENAME_CONFLICT_ACTION_OVERWRITE, &error));
+      downloads::FilenameConflictAction::kOverwrite, &error));
   EXPECT_EQ(errors::kTooManyListeners, error);
 
   // The download should complete successfully.
@@ -3149,7 +3119,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("overridden.swf")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_EQ("", error);
 
   ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
@@ -3208,7 +3178,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("overridden.txt")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_EQ("", error);
 
   // Dangerous download prompt will be shown.
@@ -3283,7 +3253,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("sneaky/../../sneaky.txt")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_STREQ(errors::kInvalidFilename, error.c_str());
   ASSERT_TRUE(
       WaitFor(downloads::OnChanged::kEventName,
@@ -3345,7 +3315,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("<")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_STREQ(errors::kInvalidFilename, error.c_str());
   ASSERT_TRUE(
       WaitFor(downloads::OnChanged::kEventName,
@@ -3408,7 +3378,7 @@ IN_PROC_BROWSER_TEST_F(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL(
           "My Computer.{20D04FE0-3AEA-1069-A2D8-08002B30309D}/foo")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_STREQ(errors::kInvalidFilename, error.c_str());
   ASSERT_TRUE(
       WaitFor(downloads::OnChanged::kEventName,
@@ -3470,7 +3440,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("con.foo")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_STREQ(errors::kInvalidFilename, error.c_str());
   ASSERT_TRUE(
       WaitFor(downloads::OnChanged::kEventName,
@@ -3532,7 +3502,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL(".")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_STREQ(errors::kInvalidFilename, error.c_str());
   ASSERT_TRUE(
       WaitFor(downloads::OnChanged::kEventName,
@@ -3594,7 +3564,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("..")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_STREQ(errors::kInvalidFilename, error.c_str());
   ASSERT_TRUE(
       WaitFor(downloads::OnChanged::kEventName,
@@ -3656,7 +3626,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       downloads_directory().Append(FILE_PATH_LITERAL("sneaky.txt")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_STREQ(errors::kInvalidFilename, error.c_str());
 
   ASSERT_TRUE(
@@ -3720,7 +3690,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("foo/")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_STREQ(errors::kInvalidFilename, error.c_str());
 
   ASSERT_TRUE(
@@ -3781,7 +3751,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string error;
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
-      base::FilePath(), downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      base::FilePath(), downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_EQ("", error);
 
   ASSERT_TRUE(
@@ -3836,7 +3806,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   error = "";
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
-      base::FilePath(), downloads::FILENAME_CONFLICT_ACTION_OVERWRITE, &error));
+      base::FilePath(), downloads::FilenameConflictAction::kOverwrite, &error));
   EXPECT_EQ("", error);
 
   ASSERT_TRUE(
@@ -3896,7 +3866,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string error;
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
-      base::FilePath(), downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY, &error));
+      base::FilePath(), downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_EQ("", error);
 
   ASSERT_TRUE(
@@ -3952,7 +3922,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
       current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("foo")),
-      downloads::FILENAME_CONFLICT_ACTION_OVERWRITE, &error));
+      downloads::FilenameConflictAction::kOverwrite, &error));
   EXPECT_EQ("", error);
 
   ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
@@ -4091,13 +4061,9 @@ IN_PROC_BROWSER_TEST_F(
   // Respond to the onDeterminingFilename events.
   std::string error;
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
-      current_browser()->profile(),
-      false,
-      GetExtensionId(),
-      result_id,
+      current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("42.txt")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY,
-      &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_EQ("", error);
 
   // The download should complete successfully.
@@ -4154,13 +4120,9 @@ IN_PROC_BROWSER_TEST_F(
   // Respond to the onDeterminingFilename.
   error = "";
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
-      current_browser()->profile(),
-      false,
-      GetExtensionId(),
-      result_id,
+      current_browser()->profile(), false, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("5.txt")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY,
-      &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_EQ("", error);
 
   // The download should complete successfully.
@@ -4232,13 +4194,9 @@ IN_PROC_BROWSER_TEST_F(
   // Respond to the onDeterminingFilename events.
   std::string error;
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
-      current_browser()->profile(),
-      true,
-      GetExtensionId(),
-      result_id,
+      current_browser()->profile(), true, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("42.txt")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY,
-      &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_EQ("", error);
 
   // The download should complete successfully.
@@ -4294,13 +4252,9 @@ IN_PROC_BROWSER_TEST_F(
   // Respond to the onDeterminingFilename.
   error = "";
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
-      current_browser()->profile(),
-      true,
-      GetExtensionId(),
-      result_id,
+      current_browser()->profile(), true, GetExtensionId(), result_id,
       base::FilePath(FILE_PATH_LITERAL("42.txt")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY,
-      &error));
+      downloads::FilenameConflictAction::kUniquify, &error));
   EXPECT_EQ("", error);
 
   // The download should complete successfully.
@@ -4398,13 +4352,9 @@ IN_PROC_BROWSER_TEST_F(
   // filename determination.
   std::string error;
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
-      current_browser()->profile(),
-      false,
-      GetExtensionId(),
-      item->GetId(),
+      current_browser()->profile(), false, GetExtensionId(), item->GetId(),
       base::FilePath(FILE_PATH_LITERAL("42.txt")),
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY,
-      &error))
+      downloads::FilenameConflictAction::kUniquify, &error))
       << error;
   EXPECT_EQ("", error);
   ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
@@ -4720,56 +4670,36 @@ IN_PROC_BROWSER_TEST_F(DownloadsApiTest, DownloadsApiTest) {
   ASSERT_TRUE(RunExtensionTest("downloads")) << message_;
 }
 
-TEST(DownloadInterruptReasonEnumsSynced,
-     DownloadInterruptReasonEnumsSynced) {
-#define INTERRUPT_REASON(name, value)                                          \
-  EXPECT_EQ(InterruptReasonContentToExtension(                                 \
-                download::DOWNLOAD_INTERRUPT_REASON_##name),                   \
-            downloads::INTERRUPT_REASON_##name);                               \
-  EXPECT_EQ(                                                                   \
-      InterruptReasonExtensionToComponent(downloads::INTERRUPT_REASON_##name), \
-      download::DOWNLOAD_INTERRUPT_REASON_##name);
-#include "build/chromeos_buildflags.h"
-#include "components/download/public/common/download_interrupt_reason_values.h"
-#undef INTERRUPT_REASON
-}
-
 TEST(ExtensionDetermineDownloadFilenameInternal,
      ExtensionDetermineDownloadFilenameInternal) {
   std::string winner_id;
   base::FilePath filename;
   downloads::FilenameConflictAction conflict_action =
-      downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY;
+      downloads::FilenameConflictAction::kUniquify;
   WarningSet warnings;
 
   // Empty incumbent determiner
   warnings.clear();
   ExtensionDownloadsEventRouter::DetermineFilenameInternal(
       base::FilePath(FILE_PATH_LITERAL("a")),
-      downloads::FILENAME_CONFLICT_ACTION_OVERWRITE,
-      "suggester",
-      base::Time::Now(),
-      "",
-      base::Time(),
-      &winner_id,
-      &filename,
-      &conflict_action,
-      &warnings);
+      downloads::FilenameConflictAction::kOverwrite, "suggester",
+      base::Time::Now(), "", base::Time(), &winner_id, &filename,
+      &conflict_action, &warnings);
   EXPECT_EQ("suggester", winner_id);
   EXPECT_EQ(FILE_PATH_LITERAL("a"), filename.value());
-  EXPECT_EQ(downloads::FILENAME_CONFLICT_ACTION_OVERWRITE, conflict_action);
+  EXPECT_EQ(downloads::FilenameConflictAction::kOverwrite, conflict_action);
   EXPECT_TRUE(warnings.empty());
 
   // Incumbent wins
   warnings.clear();
   ExtensionDownloadsEventRouter::DetermineFilenameInternal(
       base::FilePath(FILE_PATH_LITERAL("b")),
-      downloads::FILENAME_CONFLICT_ACTION_PROMPT, "suggester",
+      downloads::FilenameConflictAction::kPrompt, "suggester",
       base::Time::Now() - base::Days(1), "incumbent", base::Time::Now(),
       &winner_id, &filename, &conflict_action, &warnings);
   EXPECT_EQ("incumbent", winner_id);
   EXPECT_EQ(FILE_PATH_LITERAL("a"), filename.value());
-  EXPECT_EQ(downloads::FILENAME_CONFLICT_ACTION_OVERWRITE, conflict_action);
+  EXPECT_EQ(downloads::FilenameConflictAction::kOverwrite, conflict_action);
   EXPECT_FALSE(warnings.empty());
   EXPECT_EQ(Warning::kDownloadFilenameConflict,
             warnings.begin()->warning_type());
@@ -4779,12 +4709,12 @@ TEST(ExtensionDetermineDownloadFilenameInternal,
   warnings.clear();
   ExtensionDownloadsEventRouter::DetermineFilenameInternal(
       base::FilePath(FILE_PATH_LITERAL("b")),
-      downloads::FILENAME_CONFLICT_ACTION_PROMPT, "suggester",
+      downloads::FilenameConflictAction::kPrompt, "suggester",
       base::Time::Now(), "incumbent", base::Time::Now() - base::Days(1),
       &winner_id, &filename, &conflict_action, &warnings);
   EXPECT_EQ("suggester", winner_id);
   EXPECT_EQ(FILE_PATH_LITERAL("b"), filename.value());
-  EXPECT_EQ(downloads::FILENAME_CONFLICT_ACTION_PROMPT, conflict_action);
+  EXPECT_EQ(downloads::FilenameConflictAction::kPrompt, conflict_action);
   EXPECT_FALSE(warnings.empty());
   EXPECT_EQ(Warning::kDownloadFilenameConflict,
             warnings.begin()->warning_type());
