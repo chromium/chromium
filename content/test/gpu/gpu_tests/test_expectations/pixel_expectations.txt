@@ -297,6 +297,9 @@ crbug.com/1488026 [ android android-nexus-5x ] Pixel_Video_HEVC [ Skip ]
 [ android android-shield-android-tv ] Pixel_SVGHuge [ Slow ]
 [ android android-sm-a135m ] Pixel_SVGHuge [ Slow ]
 [ android android-sm-a235m ] Pixel_SVGHuge [ Slow ]
+# Doesn't hit heartbeat timeouts, but can time out when trying to execute
+# JavaScript after the SVG is loaded.
+[ mac intel release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
 
 ###################
 # Failures/Flakes #
