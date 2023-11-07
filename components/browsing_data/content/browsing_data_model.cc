@@ -225,31 +225,6 @@ struct StorageRemoverHelper {
   base::WeakPtrFactory<StorageRemoverHelper> weak_ptr_factory_{this};
 };
 
-void StorageRemoverHelper::RemoveDataKeyEntries(
-    const BrowsingDataModel::DataKeyEntries& data_key_entries,
-    base::OnceClosure completed) {
-  // At a helper level, only a single deletion may occur at a time. However
-  // multiple helpers may be associated with a single model.
-  DCHECK(!removing_);
-  removing_ = true;
-
-  completed_ = std::move(completed);
-
-  // Creating a synchronous callback to hold off running `completed_` callback
-  // until the loop has completed visiting all its entries whether deletion is
-  // synchronous or asynchronous.
-  auto sync_completion = GetCompleteCallback();
-  for (const auto& [key, details] : data_key_entries) {
-    absl::visit(Visitor{this, details.storage_types}, key);
-    if (delegate_) {
-      delegate_->RemoveDataKey(key, details.storage_types,
-                               GetCompleteCallback());
-    }
-  }
-
-  std::move(sync_completion).Run();
-}
-
 template <>
 void StorageRemoverHelper::Visitor::operator()<url::Origin>(
     const url::Origin& origin) {
@@ -372,6 +347,31 @@ void StorageRemoverHelper::Visitor::operator()<net::CanonicalCookie>(
   } else {
     NOTREACHED();
   }
+}
+
+void StorageRemoverHelper::RemoveDataKeyEntries(
+    const BrowsingDataModel::DataKeyEntries& data_key_entries,
+    base::OnceClosure completed) {
+  // At a helper level, only a single deletion may occur at a time. However
+  // multiple helpers may be associated with a single model.
+  DCHECK(!removing_);
+  removing_ = true;
+
+  completed_ = std::move(completed);
+
+  // Creating a synchronous callback to hold off running `completed_` callback
+  // until the loop has completed visiting all its entries whether deletion is
+  // synchronous or asynchronous.
+  auto sync_completion = GetCompleteCallback();
+  for (const auto& [key, details] : data_key_entries) {
+    absl::visit(Visitor{this, details.storage_types}, key);
+    if (delegate_) {
+      delegate_->RemoveDataKey(key, details.storage_types,
+                               GetCompleteCallback());
+    }
+  }
+
+  std::move(sync_completion).Run();
 }
 
 void RemoveBrowsingDataEntries(
