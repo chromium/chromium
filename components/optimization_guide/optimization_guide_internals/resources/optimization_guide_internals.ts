@@ -91,6 +91,9 @@ function getLogSource(logSource: number) {
   if (logSource == 5) {
     return 'TEXT_CLASSIFIER';
   }
+  if (logSource == 6) {
+    return 'MODEL_EXECUTION';
+  }
   return logSource.toString();
 }
 
