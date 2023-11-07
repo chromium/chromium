@@ -8880,9 +8880,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
       std::string data;
       // For data to be sent in the automatic beacon, it must be specified in
       // the event's "destination" for setReportEventDataForAutomaticBeacons().
-      if (info &&
-          std::find(info->destinations.begin(), info->destinations.end(),
-                    destination) != info->destinations.end()) {
+      if (info && base::Contains(info->destinations, destination)) {
         data = info->data;
       }
       initiator_rfh->SendFencedFrameReportingBeaconInternal(
