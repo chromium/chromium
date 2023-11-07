@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "content/public/common/process_type.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -27,15 +28,13 @@ SimulatedCPUMeasurementDelegateFactory::
 }
 
 void SimulatedCPUMeasurementDelegateFactory::SetDefaultCPUUsage(
-    double default_cpu_usage) {
+    SimulatedCPUUsage default_cpu_usage) {
   default_cpu_usage_ = default_cpu_usage;
 }
 
-CPUMeasurementDelegate::FactoryCallback
-SimulatedCPUMeasurementDelegateFactory::GetFactoryCallback() {
-  return base::BindRepeating(
-      &SimulatedCPUMeasurementDelegateFactory::TakeDelegate,
-      weak_factory_.GetSafeRef());
+void SimulatedCPUMeasurementDelegateFactory::SetRequireValidProcesses(
+    bool require_valid) {
+  require_valid_processes_ = require_valid;
 }
 
 SimulatedCPUMeasurementDelegate&
@@ -47,12 +46,9 @@ SimulatedCPUMeasurementDelegateFactory::GetDelegate(
     return *(it->second);
   }
   // Create a new delegate, saving it in `pending_cpu_delegates_` until someone
-  // calls TakeDelegate().
+  // calls CreateDelegateForProcess().
   auto new_delegate = std::make_unique<SimulatedCPUMeasurementDelegate>(
-      PassKey(), weak_factory_.GetSafeRef());
-  if (default_cpu_usage_) {
-    new_delegate->SetCPUUsage(default_cpu_usage_);
-  }
+      PassKey(), weak_factory_.GetSafeRef(), default_cpu_usage_);
   auto* delegate_ptr = new_delegate.get();
   simulated_cpu_delegates_.emplace(process_node, delegate_ptr);
   const auto [_, inserted] =
@@ -61,8 +57,19 @@ SimulatedCPUMeasurementDelegateFactory::GetDelegate(
   return *delegate_ptr;
 }
 
+bool SimulatedCPUMeasurementDelegateFactory::ShouldMeasureProcess(
+    const ProcessNode* process_node) {
+  if (require_valid_processes_) {
+    // Delegate the decision to the production factory.
+    return CPUMeasurementDelegate::GetDefaultFactory()->ShouldMeasureProcess(
+        process_node);
+  }
+  // Measure only renderer processes, as in production.
+  return process_node->GetProcessType() == content::PROCESS_TYPE_RENDERER;
+}
+
 std::unique_ptr<CPUMeasurementDelegate>
-SimulatedCPUMeasurementDelegateFactory::TakeDelegate(
+SimulatedCPUMeasurementDelegateFactory::CreateDelegateForProcess(
     const ProcessNode* process_node) {
   // If there was a delegate already created, use it.
   auto it = pending_cpu_delegates_.find(process_node);
@@ -74,10 +81,7 @@ SimulatedCPUMeasurementDelegateFactory::TakeDelegate(
   }
   // Create a new delegate.
   auto new_delegate = std::make_unique<SimulatedCPUMeasurementDelegate>(
-      PassKey(), weak_factory_.GetSafeRef());
-  if (default_cpu_usage_) {
-    new_delegate->SetCPUUsage(default_cpu_usage_);
-  }
+      PassKey(), weak_factory_.GetSafeRef(), default_cpu_usage_);
   auto* delegate_ptr = new_delegate.get();
   simulated_cpu_delegates_.emplace(process_node, delegate_ptr);
   return new_delegate;
@@ -94,14 +98,17 @@ void SimulatedCPUMeasurementDelegateFactory::OnDelegateDeleted(
 
 SimulatedCPUMeasurementDelegate::SimulatedCPUMeasurementDelegate(
     base::PassKey<SimulatedCPUMeasurementDelegateFactory>,
-    base::SafeRef<SimulatedCPUMeasurementDelegateFactory> factory)
-    : factory_(factory) {}
+    base::SafeRef<SimulatedCPUMeasurementDelegateFactory> factory,
+    SimulatedCPUUsage initial_usage)
+    : factory_(factory) {
+  SetCPUUsage(initial_usage);
+}
 
 SimulatedCPUMeasurementDelegate::~SimulatedCPUMeasurementDelegate() {
   factory_->OnDelegateDeleted(PassKey(), this);
 }
 
-void SimulatedCPUMeasurementDelegate::SetCPUUsage(double usage,
+void SimulatedCPUMeasurementDelegate::SetCPUUsage(SimulatedCPUUsage usage,
                                                   base::TimeTicks start_time) {
   if (!cpu_usage_periods_.empty()) {
     cpu_usage_periods_.back().end_time = start_time;

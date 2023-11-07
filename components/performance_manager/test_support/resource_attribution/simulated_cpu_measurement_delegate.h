@@ -25,15 +25,30 @@ namespace performance_manager::resource_attribution {
 
 class SimulatedCPUMeasurementDelegate;
 
+// The proportion of CPU used over time as a fraction, on the same scale as
+// ProcessMetrics::GetPlatformIndependentCPUUsage: 0% to 100% *
+// SysInfo::NumberOfProcessors().
+//
+// Since tests should be independent of the number of processors, it's usually
+// convenient to use a range of 0.0 to 1.0 (for 100%), simulating a
+// single-processor system. But if the code under test scales CPU measurements
+// by SysInfo::NumberOfProcessors(), it's better to set the simulated usage to
+// SysInfo::NumberOfProcessors() * a fraction, so that the code under test
+// gets the same results after scaling on every system.
+using SimulatedCPUUsage = double;
+
 // A factory that manages SimulatedCPUMeasurementDelegate instances. Embed an
-// instance of this in a unit test, and pass the result of GetFactoryCallback()
-// to CPUMeasurementDelegate::SetDelegateFactoryForTesting().
-class SimulatedCPUMeasurementDelegateFactory {
+// instance of this in a unit test, and pass it to
+// CPUMeasurementDelegate::SetDelegateFactoryForTesting(). The caller must
+// ensure that the SimulatedCPUMeasurementDelegateFactory outlives all callers
+// of CreateDelegateForProcess().
+class SimulatedCPUMeasurementDelegateFactory final
+    : public CPUMeasurementDelegate::Factory {
  public:
   using PassKey = base::PassKey<SimulatedCPUMeasurementDelegateFactory>;
 
   SimulatedCPUMeasurementDelegateFactory();
-  ~SimulatedCPUMeasurementDelegateFactory();
+  ~SimulatedCPUMeasurementDelegateFactory() final;
 
   SimulatedCPUMeasurementDelegateFactory(
       const SimulatedCPUMeasurementDelegateFactory&) = delete;
@@ -41,32 +56,42 @@ class SimulatedCPUMeasurementDelegateFactory {
       const SimulatedCPUMeasurementDelegateFactory&) = delete;
 
   // Sets the default CPU usage reported by delegates created by this factory.
-  void SetDefaultCPUUsage(double default_cpu_usage);
+  // If this is not called, all delegates will report 100% CPU.
+  void SetDefaultCPUUsage(SimulatedCPUUsage default_cpu_usage);
 
-  // Returns a callback that can be passed to
-  // CPUMeasurementDelegate::SetDelegateFactoryForTesting to use
-  // SimulatedCPUMeasurementDelegates in tests. The caller must ensure that the
-  // SimulatedCPUMeasurementDelegateFactory outlives all users of the callback,
-  // otherwise it will crash when it's invoked.
-  CPUMeasurementDelegate::FactoryCallback GetFactoryCallback();
+  // By default, delegates created by this factory can return simulated
+  // measurements for ProcessNodes without a valid base::Process backing them.
+  // This is useful because most tests use shim ProcessNodes and only need the
+  // delegates to provide simple test data. Calling this with `require_valid`
+  // true will apply all the valid process checks used in production, for tests
+  // that do strict validation of CPU measurements.
+  void SetRequireValidProcesses(bool require_valid);
 
   // Returns a delegate for `process_node`. This can be used to set initial
   // values on delegates before the code under test gets a pointer to them using
-  // the factory callback returned from GetCallback().
+  // CreateDelegateForProcess().
   SimulatedCPUMeasurementDelegate& GetDelegate(const ProcessNode* process_node);
+
+  // CPUMeasurementDelegate::Factory implementation
+
+  bool ShouldMeasureProcess(const ProcessNode* process_node) final;
+
+  std::unique_ptr<CPUMeasurementDelegate> CreateDelegateForProcess(
+      const ProcessNode* process_node) final;
+
+  // Private implementation guarded by PassKey
 
   // Called by `delegate` when it's deleted.
   void OnDelegateDeleted(base::PassKey<SimulatedCPUMeasurementDelegate>,
                          SimulatedCPUMeasurementDelegate* delegate);
 
-  // Factory function for SimulatedCPUMeasurementDelegate objects. Passes
-  // ownership of the delegate for `process_node` to the caller, creating a
-  // delegate if none exists yet. Exposed through GetFactoryCallback().
-  std::unique_ptr<CPUMeasurementDelegate> TakeDelegate(
-      const ProcessNode* process_node);
-
+ private:
   // The default CPU usage of delegates created by this factory.
-  double default_cpu_usage_ = 0.0;
+  SimulatedCPUUsage default_cpu_usage_ = 1.0;
+
+  // If true, this factory won't create delegates for ProcessNodes without a
+  // valid base::Process.
+  bool require_valid_processes_ = false;
 
   // Map of ProcessNode to CPUMeasurementDelegate that simulates that process.
   // The delegates are owned by `pending_cpu_delegates_` when they're created,
@@ -91,7 +116,8 @@ class SimulatedCPUMeasurementDelegate final : public CPUMeasurementDelegate {
   // Only SimulatedCPUMeasurementDelegateFactory can call the constructor.
   SimulatedCPUMeasurementDelegate(
       base::PassKey<SimulatedCPUMeasurementDelegateFactory>,
-      base::SafeRef<SimulatedCPUMeasurementDelegateFactory> factory);
+      base::SafeRef<SimulatedCPUMeasurementDelegateFactory> factory,
+      SimulatedCPUUsage initial_usage);
 
   ~SimulatedCPUMeasurementDelegate() final;
 
@@ -102,7 +128,7 @@ class SimulatedCPUMeasurementDelegate final : public CPUMeasurementDelegate {
 
   // Sets the CPU usage to `usage`, starting at `start_time` (which must be
   // later than any `start_time` previously used).
-  void SetCPUUsage(double usage,
+  void SetCPUUsage(SimulatedCPUUsage usage,
                    base::TimeTicks start_time = base::TimeTicks::Now());
 
   // Sets the process to have an error that will be reported as `usage_error`.
@@ -121,7 +147,7 @@ class SimulatedCPUMeasurementDelegate final : public CPUMeasurementDelegate {
   struct CPUUsagePeriod {
     base::TimeTicks start_time;
     base::TimeTicks end_time;
-    double cpu_usage;
+    SimulatedCPUUsage cpu_usage;
   };
 
   // The factory that created this delegate. The factory's destructor CHECK's

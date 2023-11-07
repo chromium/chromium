@@ -90,8 +90,10 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
   void SetUp() override {
     GetGraphFeatures().EnableResourceAttributionScheduler();
     Super::SetUp();
-    cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
-        delegate_factory_.GetFactoryCallback());
+    // These tests validate specific timing of measurements around process
+    // creation and destruction.
+    delegate_factory_.SetRequireValidProcesses(true);
+    cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(&delegate_factory_);
   }
 
   // Creates a renderer process and starts mocking its CPU measurements. By

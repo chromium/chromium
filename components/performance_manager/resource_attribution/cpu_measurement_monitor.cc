@@ -15,12 +15,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
-#include "base/process/process_handle.h"
-#include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
@@ -31,49 +28,12 @@
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "components/performance_manager/public/resource_attribution/worker_context.h"
 #include "components/performance_manager/resource_attribution/graph_change.h"
-#include "content/public/browser/browser_child_process_host.h"
 #include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager::resource_attribution {
 
 namespace {
-
-class CPUMeasurementDelegateImpl final : public CPUMeasurementDelegate {
- public:
-  // Default factory function.
-  static std::unique_ptr<CPUMeasurementDelegate> Create(
-      const ProcessNode* process_node) {
-    return std::make_unique<CPUMeasurementDelegateImpl>(process_node);
-  }
-
-  explicit CPUMeasurementDelegateImpl(const ProcessNode* process_node);
-  ~CPUMeasurementDelegateImpl() final = default;
-
-  base::TimeDelta GetCumulativeCPUUsage() final;
-
- private:
-  std::unique_ptr<base::ProcessMetrics> process_metrics_;
-};
-
-CPUMeasurementDelegateImpl::CPUMeasurementDelegateImpl(
-    const ProcessNode* process_node) {
-  const base::ProcessHandle handle = process_node->GetProcess().Handle();
-#if BUILDFLAG(IS_MAC)
-  process_metrics_ = base::ProcessMetrics::CreateProcessMetrics(
-      handle, content::BrowserChildProcessHost::GetPortProvider());
-#else
-  process_metrics_ = base::ProcessMetrics::CreateProcessMetrics(handle);
-#endif
-}
-
-base::TimeDelta CPUMeasurementDelegateImpl::GetCumulativeCPUUsage() {
-#if BUILDFLAG(IS_WIN)
-  return process_metrics_->GetPreciseCumulativeCPUUsage();
-#else
-  return process_metrics_->GetCumulativeCPUUsage();
-#endif
-}
 
 // Returns true if `result` is in the default-initialized state.
 bool IsEmptyCPUTimeResult(const CPUTimeResult& result) {
@@ -145,11 +105,11 @@ void ApplyOverlappingDelta(CPUTimeResult& result, const CPUTimeResult& delta) {
   ValidateCPUTimeResult(result);
 }
 
-// Recursively visits all client workers of `worker_node`, and all client frames
-// of each worker, and adds each frame's PageNode to `client_pages`.
-// `visited_workers` is used to check for loops in the graph of client workers.
-// `graph_change` is a change to the graph topology in progress that may affect
-// the client page set, or NoGraphChange.
+// Recursively visits all client workers of `worker_node`, and all client
+// frames of each worker, and adds each frame's PageNode to `client_pages`.
+// `visited_workers` is used to check for loops in the graph of client
+// workers. `graph_change` is a change to the graph topology in progress that
+// may affect the client page set, or NoGraphChange.
 void RecursivelyFindClientPages(const WorkerNode* worker_node,
                                 GraphChange graph_change,
                                 std::set<const PageNode*>& client_pages,
@@ -212,7 +172,7 @@ std::set<const PageNode*> GetClientPages(const WorkerNode* worker_node,
 
 CPUMeasurementMonitor::CPUMeasurementMonitor()
     : cpu_measurement_delegate_factory_(
-          base::BindRepeating(&CPUMeasurementDelegateImpl::Create)) {}
+          CPUMeasurementDelegate::GetDefaultFactory()) {}
 
 CPUMeasurementMonitor::~CPUMeasurementMonitor() {
   if (graph_) {
@@ -222,16 +182,12 @@ CPUMeasurementMonitor::~CPUMeasurementMonitor() {
 }
 
 void CPUMeasurementMonitor::SetCPUMeasurementDelegateFactoryForTesting(
-    CPUMeasurementDelegate::FactoryCallback factory) {
+    CPUMeasurementDelegate::Factory* factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ensure that all CPU measurements use the same delegate.
   CHECK(cpu_measurement_map_.empty());
-  if (factory.is_null()) {
-    cpu_measurement_delegate_factory_ =
-        base::BindRepeating(&CPUMeasurementDelegateImpl::Create);
-  } else {
-    cpu_measurement_delegate_factory_ = std::move(factory);
-  }
+  CHECK(factory);
+  cpu_measurement_delegate_factory_ = factory;
 }
 
 void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
@@ -245,8 +201,8 @@ void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
   // Start monitoring CPU usage for all existing processes. Can't read their CPU
   // usage until they have a pid assigned.
   graph_->VisitAllProcessNodes([this](const ProcessNode* process_node) {
-    if (process_node->GetProcessType() == content::PROCESS_TYPE_RENDERER &&
-        process_node->GetProcessId() != base::kNullProcessId) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (cpu_measurement_delegate_factory_->ShouldMeasureProcess(process_node)) {
       MonitorCPUUsage(process_node);
     }
     return true;
@@ -310,19 +266,9 @@ void CPUMeasurementMonitor::OnProcessLifetimeChange(
     CHECK(cpu_measurement_map_.empty());
     return;
   }
-  // Only handle process start notifications (which is when the pid is
-  // assigned), not exit notifications. Note the pid can be reassigned if a
-  // process dies and a new one is started for the same ProcessNode - in that
-  // case MonitorCPUUsage will reset the measurements and start monitoring the
-  // new process from scratch.
-  if (!process_node->GetProcess().IsValid()) {
-    return;
+  if (cpu_measurement_delegate_factory_->ShouldMeasureProcess(process_node)) {
+    MonitorCPUUsage(process_node);
   }
-  CHECK_NE(process_node->GetProcessId(), base::kNullProcessId);
-  if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
-    return;
-  }
-  MonitorCPUUsage(process_node);
 }
 
 void CPUMeasurementMonitor::OnBeforeProcessNodeRemoved(
@@ -412,7 +358,9 @@ void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   // measurements in the same ProcessContext.
   cpu_measurement_map_.insert_or_assign(
       process_node,
-      CPUMeasurement(cpu_measurement_delegate_factory_.Run(process_node)));
+      CPUMeasurement(
+          cpu_measurement_delegate_factory_->CreateDelegateForProcess(
+              process_node)));
 }
 
 void CPUMeasurementMonitor::UpdateAllCPUMeasurements() {

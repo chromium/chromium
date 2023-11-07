@@ -141,8 +141,11 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness,
     mock_utility_process_->SetProcess(base::Process::Current(),
                                       /*launch_time=*/base::TimeTicks::Now());
 
-    cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
-        graph(), delegate_factory_.GetFactoryCallback());
+    // These tests validate specific timing of measurements around process
+    // creation and destruction.
+    delegate_factory_.SetRequireValidProcesses(true);
+    cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(graph(),
+                                                            &delegate_factory_);
   }
 
   // Creates a renderer process containing a single page and frame, for simple

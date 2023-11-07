@@ -75,7 +75,7 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     monitor_->SetShouldCollectSliceCallbackForTesting(
         base::BindRepeating([]() { return true; }));
     monitor_->cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
-        graph(), cpu_delegate_factory_.GetFactoryCallback());
+        graph(), &cpu_delegate_factory_);
     graph()->PassToGraph(std::move(monitor));
     ResetHistogramTester();
     ResetUkmRecorder();

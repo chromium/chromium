@@ -48,6 +48,8 @@ class QuerySchedulerTest : public GraphTestHarness {
   void SetUp() override {
     GetGraphFeatures().EnableResourceAttributionScheduler();
     Super::SetUp();
+    CPUMeasurementDelegate::SetDelegateFactoryForTesting(graph(),
+                                                         &delegate_factory_);
   }
 
   // This must be deleted after TearDown() so that it outlives the
@@ -57,9 +59,6 @@ class QuerySchedulerTest : public GraphTestHarness {
 
 TEST_F(QuerySchedulerTest, CPUQueries) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
-  CPUMeasurementDelegate::SetDelegateFactoryForTesting(
-      graph(), delegate_factory_.GetFactoryCallback());
-  delegate_factory_.SetDefaultCPUUsage(99);
 
   auto* scheduler = QueryScheduler::GetFromGraph(graph());
   ASSERT_TRUE(scheduler);
@@ -89,9 +88,6 @@ TEST_F(QuerySchedulerTest, CPUQueries) {
 TEST_F(QuerySchedulerTest, GraphTeardown) {
   // Make sure queries that still exist when the scheduler is deleted during
   // graph teardown safely return no data.
-  CPUMeasurementDelegate::SetDelegateFactoryForTesting(
-      graph(), delegate_factory_.GetFactoryCallback());
-
   auto* scheduler = QueryScheduler::GetFromGraph(graph());
   ASSERT_TRUE(scheduler);
   auto weak_scheduler = scheduler->GetWeakPtr();
