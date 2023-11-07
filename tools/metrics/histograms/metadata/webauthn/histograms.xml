@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManCreateRequest"
-    enum="CredManCreateRequestEnum" expires_after="2024-01-01">
+    enum="CredManCreateRequestEnum" expires_after="2024-05-05">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManPrepareRequest"
-    enum="CredManPrepareRequestEnum" expires_after="2024-01-01">
+    enum="CredManPrepareRequestEnum" expires_after="2024-05-05">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManPrepareRequestDuration"
-    units="ms" expires_after="2024-01-01">
+    units="ms" expires_after="2024-05-05">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -100,14 +100,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.MobileResult"
-    enum="WebAuthenticationCableV2MobileResult" expires_after="2024-03-01">
+    enum="WebAuthenticationCableV2MobileResult" expires_after="2024-05-05">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>Records the outcome of caBLEv2 transactions.</summary>
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.PrelinkDataAgeDays" units="days"
-    expires_after="2024-03-01">
+    expires_after="2024-05-05">
   <owner>agl@chromium.org</owner>
   <owner>nsatragno@google.com</owner>
   <summary>
