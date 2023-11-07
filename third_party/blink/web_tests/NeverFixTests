@@ -2076,6 +2076,7 @@ crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/fin
 [ Chrome ] external/wpt/bluetooth/* [ Skip ]
 [ Chrome ] wpt_internal/bluetooth/* [ Skip ]
 [ Chrome ] external/wpt/fledge/* [ Skip ]
+[ Chrome ] wpt_internal/import-maps/* [ Skip ]
 [ Chrome ] external/wpt/speculation-rules/prerender/* [ Skip ]
 [ Chrome ] external/wpt/speculation-rules/prerender/credentialed-prerender-not-opt-in.html [ Pass ]
 [ Chrome ] external/wpt/speculation-rules/prerender/csp-script-src-self.html [ Pass ]
@@ -2086,3 +2087,14 @@ crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/fin
 [ Chrome ] external/wpt/speculation-rules/prerender/response-code-non-successful.html?code=402 [ Pass ]
 [ Chrome ] external/wpt/speculation-rules/prerender/response-code-non-successful.html?code=500 [ Pass ]
 [ Chrome ] external/wpt/speculation-rules/prerender/response-code-successful.html?code=202 [ Pass ]
+
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin-allow-popups.https.html?7-8 [ Skip ] # harness error
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?5-6 [ Skip ] # harness error
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?7-8 [ Skip ] # harness error
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html?3-4 [ Skip ] # harness error
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html?5-6 [ Skip ] # harness error
+crbug.com/1499775 [ Chrome ] external/wpt/notifications/getnotifications-across-processes.https.window.html [ Skip ]
+crbug.com/1499775 [ Chrome ] external/wpt/screen-orientation/lock-sandboxed-iframe.html [ Skip ]
+crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/loopback-receive.https.html [ Skip ]
+crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/loopback-with-timestamp.https.html [ Skip ]
+crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/requestmidiaccess-upgrade.https.html [ Skip ]
