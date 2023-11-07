@@ -39,7 +39,6 @@ build_webui("build") {
     "test_loader.ts",
     "test_loader_util.ts",
     "util.ts",
-    "util_ts.ts",
   ]
 
   if (is_chromeos) {
