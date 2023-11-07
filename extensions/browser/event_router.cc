@@ -307,11 +307,15 @@ void EventRouter::BindForRenderer(
     int render_process_id,
     mojo::PendingAssociatedReceiver<mojom::EventRouter> receiver) {
   auto* host = RenderProcessHost::FromID(render_process_id);
+  if (!host) {
+    return;
+  }
   // EventRouter might be null for some irregular profile, e.g. the System
   // Profile.
   EventRouter* event_router = EventRouter::Get(host->GetBrowserContext());
-  if (!host || !event_router)
+  if (!event_router) {
     return;
+  }
 
   event_router->receivers_.Add(event_router, std::move(receiver),
                                render_process_id);
