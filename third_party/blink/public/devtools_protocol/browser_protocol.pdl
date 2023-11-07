@@ -9931,6 +9931,13 @@ experimental domain Storage
       # duration in seconds
       array of integer ends
 
+  experimental type AttributionReportingTriggerSpec extends object
+    properties
+      # number instead of integer because not all uint32 can be represented by
+      # int
+      array of number triggerData
+      AttributionReportingEventReportWindows eventReportWindows
+
   experimental type AttributionReportingTriggerDataMatching extends string
     enum
       exact
@@ -9941,7 +9948,7 @@ experimental domain Storage
       Network.TimeSinceEpoch time
       # duration in seconds
       integer expiry
-      AttributionReportingEventReportWindows eventReportWindows
+      array of AttributionReportingTriggerSpec triggerSpecs
       # duration in seconds
       integer aggregatableReportWindow
       AttributionReportingSourceType type
