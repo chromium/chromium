@@ -379,6 +379,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Automotive.DeviceLockDialogAction.{Source}"
+    enum="DeviceLockDialogAction" expires_after="2024-10-28">
+  <owner>clhager@google.com</owner>
+  <owner>geoffhuang@google.com</owner>
+  <summary>
+    Records action user took when presented with the device lock explainer
+    dialog (ex: button clicked) during a {Source} flow. Other actions such as
+    clicking back on the automotive toolbar or clicking outside of the dialog to
+    escape it can be calculated by subtracting button clicks from number of
+    times the dialog was shown.
+  </summary>
+  <token key="Source">
+    <variant name="AccountPicker"/>
+    <variant name="Autofill"/>
+    <variant name="FirstRun"/>
+    <variant name="SyncConsent"/>
+  </token>
+</histogram>
+
 <histogram name="Android.Automotive.DeviceLockOutcome" enum="Boolean"
     expires_after="2024-10-28">
   <owner>twellington@chromium.org</owner>
@@ -409,36 +428,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the automotive device has a device lock set when Chrome is
     resumed.
-  </summary>
-</histogram>
-
-<histogram name="Android.Automotive.NotSigninFlow.DeviceLockDialogAction"
-    enum="DeviceLockDialogAction" expires_after="2024-10-28">
-  <owner>twellington@chromium.org</owner>
-  <owner>clhager@google.com</owner>
-  <owner>geoffhuang@google.com</owner>
-  <summary>
-    Records an event whenever the missing device lock dialog is shown to the
-    user or the user takes an action on the dialog. Records action user took
-    when presented with the device lock explainer dialog (ex: button clicked)
-    when not in a sign in flow (ex: in an autofill flow). Other actions such as
-    clicking back on the automotive toolbar or clicking outside of the dialog to
-    escape it can be calculated by subtracting button clicks from number of
-    times the dialog was shown.
-  </summary>
-</histogram>
-
-<histogram name="Android.Automotive.SigninFlow.DeviceLockDialogAction"
-    enum="DeviceLockDialogAction" expires_after="2024-10-28">
-  <owner>twellington@chromium.org</owner>
-  <owner>clhager@google.com</owner>
-  <owner>geoffhuang@google.com</owner>
-  <summary>
-    Records action user took when presented with the device lock explainer
-    dialog (ex: button clicked) during a sign in flow. Other actions such as
-    clicking back on the automotive toolbar or clicking outside of the dialog to
-    escape it can be calculated by subtracting button clicks from number of
-    times the dialog was shown.
   </summary>
 </histogram>
 

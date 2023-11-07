@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.ui.device_lock;
 
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.DEVICE_SUPPORTS_PIN_CREATION_INTENT;
-import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.IN_SIGN_IN_FLOW;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_CREATE_DEVICE_LOCK_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_DISMISS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_GO_TO_OS_SETTINGS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_USER_UNDERSTANDS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_USE_WITHOUT_AN_ACCOUNT_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PREEXISTING_DEVICE_LOCK;
+import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.SOURCE;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.UI_ENABLED;
 import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
 
@@ -29,7 +29,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.ui.device_lock.DeviceLockDialogMetrics.DeviceLockDialogAction;
+import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
+import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics.DeviceLockDialogAction;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountReauthenticationUtils;
@@ -79,8 +80,8 @@ public class DeviceLockMediator {
                         .with(
                                 DEVICE_SUPPORTS_PIN_CREATION_INTENT,
                                 DeviceLockUtils.isDeviceLockCreationIntentSupported(mActivity))
-                        .with(IN_SIGN_IN_FLOW, account != null)
                         .with(UI_ENABLED, true)
+                        .with(SOURCE, mDelegate.getSource())
                         .with(ON_CREATE_DEVICE_LOCK_CLICKED, v -> onCreateDeviceLockClicked())
                         .with(ON_GO_TO_OS_SETTINGS_CLICKED, v -> onGoToOSSettingsClicked())
                         .with(ON_USER_UNDERSTANDS_CLICKED, v -> onUserUnderstandsClicked())
@@ -107,8 +108,7 @@ public class DeviceLockMediator {
 
     private void onCreateDeviceLockClicked() {
         DeviceLockDialogMetrics.recordDeviceLockDialogAction(
-                DeviceLockDialogAction.CREATE_DEVICE_LOCK_CLICKED,
-                mModel.get(DeviceLockProperties.IN_SIGN_IN_FLOW));
+                DeviceLockDialogAction.CREATE_DEVICE_LOCK_CLICKED, mDelegate.getSource());
         mModel.set(UI_ENABLED, false);
         navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockDirectlyIntent(),
                 () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
@@ -116,8 +116,7 @@ public class DeviceLockMediator {
 
     private void onGoToOSSettingsClicked() {
         DeviceLockDialogMetrics.recordDeviceLockDialogAction(
-                DeviceLockDialogAction.GO_TO_OS_SETTINGS_CLICKED,
-                mModel.get(DeviceLockProperties.IN_SIGN_IN_FLOW));
+                DeviceLockDialogAction.GO_TO_OS_SETTINGS_CLICKED, mDelegate.getSource());
         mModel.set(UI_ENABLED, false);
         navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockThroughOSSettingsIntent(),
                 () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
@@ -125,8 +124,7 @@ public class DeviceLockMediator {
 
     private void onUserUnderstandsClicked() {
         DeviceLockDialogMetrics.recordDeviceLockDialogAction(
-                DeviceLockDialogAction.USER_UNDERSTANDS_CLICKED,
-                mModel.get(DeviceLockProperties.IN_SIGN_IN_FLOW));
+                DeviceLockDialogAction.USER_UNDERSTANDS_CLICKED, mDelegate.getSource());
         mModel.set(UI_ENABLED, false);
         triggerDeviceLockChallenge(
                 () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
@@ -134,15 +132,13 @@ public class DeviceLockMediator {
 
     private void onUseWithoutAnAccountClicked() {
         DeviceLockDialogMetrics.recordDeviceLockDialogAction(
-                DeviceLockDialogAction.USE_WITHOUT_AN_ACCOUNT_CLICKED,
-                mModel.get(DeviceLockProperties.IN_SIGN_IN_FLOW));
+                DeviceLockDialogAction.USE_WITHOUT_AN_ACCOUNT_CLICKED, mDelegate.getSource());
         mDelegate.onDeviceLockRefused();
     }
 
     private void onDismissClicked() {
         DeviceLockDialogMetrics.recordDeviceLockDialogAction(
-                DeviceLockDialogAction.DISMISS_CLICKED,
-                mModel.get(DeviceLockProperties.IN_SIGN_IN_FLOW));
+                DeviceLockDialogAction.DISMISS_CLICKED, mDelegate.getSource());
         mDelegate.onDeviceLockRefused();
     }
 

@@ -15,9 +15,9 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.DEVICE_SUPPORTS_PIN_CREATION_INTENT;
-import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.IN_SIGN_IN_FLOW;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_CREATE_DEVICE_LOCK_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_DISMISS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_GO_TO_OS_SETTINGS_CLICKED;
@@ -43,7 +43,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
@@ -57,6 +56,8 @@ import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
 import org.chromium.components.signin.AccountReauthenticationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -71,13 +72,13 @@ public class DeviceLockMediatorUnitTest {
 
     @Mock public Activity mActivity;
     @Mock public Account mAccount;
-    @Mock private MockDelegate mDelegate;
+    @Mock private DeviceLockCoordinator.Delegate mDelegate;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ReauthenticatorBridge mDeviceLockAuthenticatorBridge;
     @Mock private AccountReauthenticationUtils mAccountReauthenticationUtils;
     @Mock private KeyguardManager mKeyguardManager;
     @Mock private PackageManager mPackageManager;
-    @Mock private View mMockView;
+    @Mock private View mView;
 
     private final Answer<Object> mSuccessfulDeviceLockCreation =
             (invocation) -> {
@@ -136,12 +137,8 @@ public class DeviceLockMediatorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivity = Mockito.mock(Activity.class);
-        mDelegate = Mockito.mock(MockDelegate.class);
-        mMockView = Mockito.mock(View.class);
 
-        mKeyguardManager = Mockito.mock(KeyguardManager.class);
-        mPackageManager = Mockito.mock(PackageManager.class);
+        when(mDelegate.getSource()).thenReturn(DeviceLockActivityLauncher.Source.AUTOFILL);
         doReturn(mKeyguardManager).when(mActivity).getSystemService(eq(Context.KEYGUARD_SERVICE));
         doReturn(mPackageManager).when(mActivity).getPackageManager();
 
@@ -236,38 +233,6 @@ public class DeviceLockMediatorUnitTest {
     }
 
     @Test
-    public void testDeviceLockMediator_inSignInFlow_inSignInFlowIsTrue() {
-        DeviceLockMediator deviceLockMediator =
-                new DeviceLockMediator(
-                        mDelegate,
-                        null,
-                        mDeviceLockAuthenticatorBridge,
-                        mAccountReauthenticationUtils,
-                        mActivity,
-                        mAccount);
-
-        assertTrue(
-                "PropertyModel IN_SIGN_IN_FLOW should be True",
-                deviceLockMediator.getModel().get(IN_SIGN_IN_FLOW));
-    }
-
-    @Test
-    public void testDeviceLockMediator_notInSignInFlow_inSignInFlowIsFalse() {
-        DeviceLockMediator deviceLockMediator =
-                new DeviceLockMediator(
-                        mDelegate,
-                        null,
-                        mDeviceLockAuthenticatorBridge,
-                        mAccountReauthenticationUtils,
-                        mActivity,
-                        null);
-
-        assertFalse(
-                "PropertyModel IN_SIGN_IN_FLOW should be False",
-                deviceLockMediator.getModel().get(IN_SIGN_IN_FLOW));
-    }
-
-    @Test
     public void
             testCreateDeviceLockOnClick_deviceLockCreatedSuccessfully_callsDelegateOnDeviceLockReady() {
         testOnClick(
@@ -289,7 +254,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.NOT_SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .CREATE_DEVICE_LOCK_CLICKED)
                         .build();
@@ -317,7 +283,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .CREATE_DEVICE_LOCK_CLICKED)
                         .build();
@@ -343,7 +310,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .CREATE_DEVICE_LOCK_CLICKED)
                         .build();
@@ -369,7 +337,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .CREATE_DEVICE_LOCK_CLICKED)
                         .build();
@@ -396,7 +365,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .GO_TO_OS_SETTINGS_CLICKED)
                         .build();
@@ -423,7 +393,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .GO_TO_OS_SETTINGS_CLICKED)
                         .build();
@@ -449,7 +420,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .GO_TO_OS_SETTINGS_CLICKED)
                         .build();
@@ -475,7 +447,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .GO_TO_OS_SETTINGS_CLICKED)
                         .build();
@@ -501,7 +474,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .USER_UNDERSTANDS_CLICKED)
                         .build();
@@ -528,7 +502,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .USER_UNDERSTANDS_CLICKED)
                         .build();
@@ -554,7 +529,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .USER_UNDERSTANDS_CLICKED)
                         .build();
@@ -580,7 +556,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .USER_UNDERSTANDS_CLICKED)
                         .build();
@@ -606,7 +583,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction
                                         .USER_UNDERSTANDS_CLICKED)
                         .build();
@@ -632,7 +610,8 @@ public class DeviceLockMediatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                DeviceLockDialogMetrics.SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
+                                DeviceLockDialogMetrics.DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX
+                                        + mDelegate.getSource(),
                                 DeviceLockDialogMetrics.DeviceLockDialogAction.DISMISS_CLICKED)
                         .build();
 
@@ -690,7 +669,7 @@ public class DeviceLockMediatorUnitTest {
                         mAccountReauthenticationUtils,
                         mActivity,
                         account);
-        deviceLockMediator.getModel().get(onClick).onClick(mMockView);
+        deviceLockMediator.getModel().get(onClick).onClick(mView);
 
         verify(mWindowAndroid, times(deviceLockCreationCalls))
                 .showIntent(any(Intent.class), any(WindowAndroid.IntentCallback.class), any());
@@ -726,16 +705,5 @@ public class DeviceLockMediatorUnitTest {
                     "The UI should have been set to a disabled state.",
                     deviceLockMediator.getModel().get(UI_ENABLED));
         }
-    }
-
-    private class MockDelegate implements DeviceLockCoordinator.Delegate {
-        @Override
-        public void setView(View view) {}
-
-        @Override
-        public void onDeviceLockReady() {}
-
-        @Override
-        public void onDeviceLockRefused() {}
     }
 }

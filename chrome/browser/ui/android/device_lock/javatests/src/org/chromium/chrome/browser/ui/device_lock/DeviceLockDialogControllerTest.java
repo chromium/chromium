@@ -32,6 +32,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -92,7 +93,8 @@ public class DeviceLockDialogControllerTest {
                         mActivity,
                         mModalDialogManager,
                         null,
-                        true);
+                        true,
+                        DeviceLockActivityLauncher.Source.AUTOFILL);
         assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
 
         deviceLockDialogController.showDialog();
@@ -114,7 +116,8 @@ public class DeviceLockDialogControllerTest {
                         mActivity,
                         mModalDialogManager,
                         null,
-                        false);
+                        false,
+                        DeviceLockActivityLauncher.Source.AUTOFILL);
         assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
 
         deviceLockDialogController.showDialog();
@@ -136,7 +139,8 @@ public class DeviceLockDialogControllerTest {
                         mActivity,
                         mModalDialogManager,
                         null,
-                        true);
+                        true,
+                        DeviceLockActivityLauncher.Source.AUTOFILL);
         assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
 
         deviceLockDialogController.setView(mView);
@@ -160,7 +164,8 @@ public class DeviceLockDialogControllerTest {
                         mActivity,
                         mModalDialogManager,
                         null,
-                        true);
+                        true,
+                        DeviceLockActivityLauncher.Source.AUTOFILL);
         assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
 
         deviceLockDialogController.setView(mView);

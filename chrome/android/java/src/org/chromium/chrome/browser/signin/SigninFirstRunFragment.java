@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -283,6 +284,11 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @Override
     public void onDeviceLockRefused() {
         mSigninFirstRunCoordinator.cancelSignInAndDismiss();
+    }
+
+    @Override
+    public @DeviceLockActivityLauncher.Source String getSource() {
+        return DeviceLockActivityLauncher.Source.FIRST_RUN;
     }
 
     private void restoreMainView() {

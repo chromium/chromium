@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -25,6 +26,7 @@ public class DeviceLockDialogController implements DeviceLockCoordinator.Delegat
     private final Runnable mOnDeviceLockReady;
     private final Runnable mOnDeviceLockRefused;
     private final DeviceLockCoordinator mDeviceLockCoordinator;
+    private final @DeviceLockActivityLauncher.Source String mSource;
 
     /**
      * The modal dialog controller to detect events on the dialog but it's not needed in this
@@ -39,26 +41,33 @@ public class DeviceLockDialogController implements DeviceLockCoordinator.Delegat
             };
 
     /**
-     * Launcher to manage the Device Lock dialog to inform the user about data privacy and
-     * prompting the user to create a device lock.
+     * Launcher to manage the Device Lock dialog to inform the user about data privacy and prompting
+     * the user to create a device lock.
      *
-     * @param onDeviceLockReady Callback to run if the device has a device lock set and the user
-     *        has chosen to continue.
+     * @param onDeviceLockReady Callback to run if the device has a device lock set and the user has
+     *     chosen to continue.
      * @param onDeviceLockRefused Callback to run if user has decided to dismiss the dialog without
-     *        setting a device lock.
+     *     setting a device lock.
      * @param windowAndroid Used to launch Intents with callbacks.
      * @param activity The activity hosting the dialog.
-     * @param modalDialogManager The {@link ModalDialogManager} to host the
-     *        Missing Device Lock dialog.
-     * @param account The account that will be used for the reauthentication challenge, or null
-     *        if reauthentication is not needed.
+     * @param modalDialogManager The {@link ModalDialogManager} to host the Missing Device Lock
+     *     dialog.
+     * @param account The account that will be used for the reauthentication challenge, or null if
+     *     reauthentication is not needed.
      * @param requireDeviceLockReauthentication Whether or not the reauthentication of the device
-     *        lock credentials should be required (if a device lock is already present).
+     *     lock credentials should be required (if a device lock is already present).
+     * @param source Which source flow the user took to arrive at the device lock UI.
      */
-    public DeviceLockDialogController(Runnable onDeviceLockReady, Runnable onDeviceLockRefused,
-            WindowAndroid windowAndroid, Activity activity,
-            @NonNull ModalDialogManager modalDialogManager, @Nullable Account account,
-            boolean requireDeviceLockReauthentication) {
+    public DeviceLockDialogController(
+            Runnable onDeviceLockReady,
+            Runnable onDeviceLockRefused,
+            WindowAndroid windowAndroid,
+            Activity activity,
+            @NonNull ModalDialogManager modalDialogManager,
+            @Nullable Account account,
+            boolean requireDeviceLockReauthentication,
+            @DeviceLockActivityLauncher.Source String source) {
+        mSource = source;
         mOnDeviceLockReady = onDeviceLockReady;
         mOnDeviceLockRefused = onDeviceLockRefused;
         mModalDialogManager = modalDialogManager;
@@ -110,5 +119,10 @@ public class DeviceLockDialogController implements DeviceLockCoordinator.Delegat
     @Override
     public void onDeviceLockRefused() {
         mOnDeviceLockRefused.run();
+    }
+
+    @Override
+    public @DeviceLockActivityLauncher.Source String getSource() {
+        return mSource;
     }
 }

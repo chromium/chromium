@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.device_lock;
+package org.chromium.components.browser_ui.device_lock;
 
 import androidx.annotation.IntDef;
 
@@ -10,6 +10,8 @@ import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.VisibleForTesting;
 
 /** Helper class for emitting metrics to the Android.Automotive.DeviceLockDialogAction histogram. */
 public class DeviceLockDialogMetrics {
@@ -57,21 +59,15 @@ public class DeviceLockDialogMetrics {
         int COUNT = 7;
     }
 
-    public static final String SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION =
-            "Android.Automotive.SigninFlow.DeviceLockDialogAction";
-    public static final String NOT_SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION =
-            "Android.Automotive.NotSigninFlow.DeviceLockDialogAction";
+    @VisibleForTesting
+    public static final String DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX =
+            "Android.Automotive.DeviceLockDialogAction.";
 
     public static void recordDeviceLockDialogAction(
-            @DeviceLockDialogAction int action, boolean inSigninFlow) {
-        if (inSigninFlow) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION, action, DeviceLockDialogAction.COUNT);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram(
-                    NOT_SIGN_IN_FLOW_DEVICE_LOCK_DIALOG_ACTION,
-                    action,
-                    DeviceLockDialogAction.COUNT);
-        }
+            @DeviceLockDialogAction int action, @DeviceLockActivityLauncher.Source String source) {
+        RecordHistogram.recordEnumeratedHistogram(
+                DEVICE_LOCK_DIALOG_ACTION_HISTOGRAM_PREFIX + source,
+                action,
+                DeviceLockDialogAction.COUNT);
     }
 }
