@@ -22,6 +22,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -1105,7 +1106,9 @@ class TrackingProtectionHatsBaseTest : public InProcessBrowserTest {
   explicit TrackingProtectionHatsBaseTest(
       const std::vector<base::test::FeatureRefAndParams>&
           allow_and_enable_features) {
-    feature_list_.InitWithFeaturesAndParameters(allow_and_enable_features, {});
+    feature_list_.InitWithFeaturesAndParameters(
+        allow_and_enable_features,
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   void SetUpOnMainThread() override {
