@@ -1994,10 +1994,9 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 // `UpdatePrintSettings()` before displaying the system dialog.  Other
 // platforms end up going through `PrintViewManager::PrintForSystemDialogNow()`
 // and thus do not update print settings before the system dialog is displayed.
-// TODO(crbug.com/1474785):  Enable test once crash is fixed.
 IN_PROC_BROWSER_TEST_F(
     SystemAccessProcessSandboxedServicePrintBrowserTest,
-    DISABLED_PrintPreviewAfterSystemPrintFromPrintPreviewUpdatePrintSettingsFails) {
+    PrintPreviewAfterSystemPrintFromPrintPreviewUpdatePrintSettingsFails) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForFailInUpdatePrinterSettings();
