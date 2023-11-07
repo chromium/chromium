@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -428,6 +429,35 @@ void SidePanelCoordinator::Toggle() {
     }
     Show(entry_id, SidePanelUtil::SidePanelOpenTrigger::kToolbarButton);
   }
+}
+
+void SidePanelCoordinator::Toggle(
+    SidePanelEntryKey key,
+    SidePanelUtil::SidePanelOpenTrigger open_trigger) {
+  // If an entry is already showing in the sidepanel, the sidepanel
+  // should be closed.
+  if (IsSidePanelEntryShowing(key)) {
+    Close();
+    return;
+  }
+
+  // If the entry is the loading entry and is toggled,
+  // it should also be closed. This handles quick double clicks
+  // to close the sidepanel.
+  if (IsSidePanelShowing()) {
+    SidePanelContentSwappingContainer* content_wrapper =
+        static_cast<SidePanelContentSwappingContainer*>(
+            GetContentContainerView()->GetViewByID(
+                kSidePanelContentWrapperViewId));
+
+    if (content_wrapper->loading_entry() == GetEntryForKey(key)) {
+      content_wrapper->ResetLoadingEntryIfNecessary();
+      Close();
+      return;
+    }
+  }
+
+  Show(key, open_trigger);
 }
 
 void SidePanelCoordinator::OpenInNewTab() {

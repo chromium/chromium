@@ -390,6 +390,44 @@ TEST_F(SidePanelCoordinatorTest, SidePanelReopensToLastSeenGlobalEntry) {
             SidePanelEntry::Id::kReadingList);
 }
 
+TEST_F(SidePanelCoordinatorTest, SidePanelToggleWithEntriesTest) {
+  // Show reading list sidepanel.
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  EXPECT_TRUE(GetLastActiveEntryKey().has_value());
+  EXPECT_EQ(GetLastActiveEntryKey().value().id(),
+            SidePanelEntry::Id::kReadingList);
+
+  // Toggle reading list sidepanel to close.
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+
+  // If the same entry is loading, close the sidepanel.
+  coordinator_->SetNoDelaysForTesting(false);
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+  coordinator_->SetNoDelaysForTesting(true);
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+
+  // Toggling reading list followed by bookmarks shows the reading list side
+  // panel followed by the bookmarks side panel.
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  EXPECT_EQ(GetLastActiveEntryKey().value().id(),
+            SidePanelEntry::Id::kReadingList);
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  EXPECT_EQ(GetLastActiveEntryKey().value().id(),
+            SidePanelEntry::Id::kBookmarks);
+}
+
 TEST_F(SidePanelCoordinatorTest, ShowOpensSidePanel) {
   coordinator_->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());

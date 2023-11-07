@@ -144,9 +144,15 @@ void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
                   [](scoped_refptr<const Extension> extension, Browser* browser,
                      actions::ActionItem* item,
                      actions::ActionInvocationContext context) {
-                    SidePanelUI::GetSidePanelUIForBrowser(browser)->Show(
+                    const SidePanelOpenTrigger open_trigger =
+                        static_cast<SidePanelOpenTrigger>(
+                            context.GetProperty(kSidePanelOpenTriggerKey));
+                    CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
+                    CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
+                    SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(
                         SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
-                                            extension->id()));
+                                            extension->id()),
+                        open_trigger);
                   },
                   base::WrapRefCounted(extension), browser_))
               .SetText(base::UTF8ToUTF16(extension->short_name()))

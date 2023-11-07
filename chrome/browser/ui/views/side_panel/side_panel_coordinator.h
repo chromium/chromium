@@ -11,7 +11,6 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -72,6 +71,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
                 absl::nullopt) override;
   void Close() override;
   void Toggle() override;
+  void Toggle(SidePanelEntryKey key,
+              SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
   void OpenInNewTab() override;
   void UpdatePinState() override;
   absl::optional<SidePanelEntry::Id> GetCurrentEntryId() const override;

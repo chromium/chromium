@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feed/feed_feature_list.h"
@@ -55,8 +56,8 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
                            context.GetProperty(kSidePanelOpenTriggerKey));
                    CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
                    CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
-                   SidePanelUI::GetSidePanelUIForBrowser(browser)->Show(
-                       id, open_trigger);
+                   SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(
+                       SidePanelEntry::Key(id), open_trigger);
                  },
                  id, browser))
       .SetActionId(action_id)

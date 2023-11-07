@@ -43,8 +43,14 @@ class SidePanelUI : public base::SupportsUserData::Data {
   // Close the side panel.
   virtual void Close() = 0;
 
-  // Open side panel when it's close or close side panel when it's only
+  // Open side panel when it's close or close side panel when it's open.
+  // TODO(shibalik): Remove after SidePanelPinning launch.
   virtual void Toggle() = 0;
+
+  // Open the side panel for a key. If side panel for the key is already opened
+  // then close the side panel.
+  virtual void Toggle(SidePanelEntryKey key,
+                      SidePanelOpenTrigger open_trigger) = 0;
 
   // Opens the current side panel contents in a new tab. This is called by the
   // header button, when it's visible.
