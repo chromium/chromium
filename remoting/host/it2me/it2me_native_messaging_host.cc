@@ -116,6 +116,46 @@ ChromeOsEnterpriseParams BuildEnterpriseParams(
 }
 #endif
 
+std::unique_ptr<It2MeHost::DeferredConnectContext>
+CreateDelegatedSignalingDeferredConnectContext(
+    std::unique_ptr<remoting::SignalStrategy> signal_strategy,
+    ChromotingHostContext* context) {
+  auto connection_context =
+      std::make_unique<It2MeHost::DeferredConnectContext>();
+  connection_context->register_request =
+      std::make_unique<XmppRegisterSupportHostRequest>(kDirectoryBotJidValue);
+  connection_context->log_to_server = std::make_unique<XmppLogToServer>(
+      ServerLogEntry::IT2ME, signal_strategy.get(), kDirectoryBotJidValue,
+      context->network_task_runner());
+  connection_context->signal_strategy = std::move(signal_strategy);
+  return connection_context;
+}
+
+std::unique_ptr<It2MeHost::DeferredConnectContext>
+CreateNativeSignalingDeferredConnectContext(
+    const std::string& username,
+    const std::string& access_token,
+    ChromotingHostContext* host_context) {
+  auto connection_context =
+      std::make_unique<It2MeHost::DeferredConnectContext>();
+  connection_context->use_ftl_signaling = true;
+  connection_context->signal_strategy = std::make_unique<FtlSignalStrategy>(
+      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
+      host_context->url_loader_factory(),
+      std::make_unique<FtlClientUuidDeviceIdProvider>());
+  connection_context->register_request =
+      std::make_unique<RemotingRegisterSupportHostRequest>(
+          std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
+          host_context->url_loader_factory());
+  connection_context->log_to_server = std::make_unique<RemotingLogToServer>(
+      ServerLogEntry::IT2ME,
+      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
+      host_context->url_loader_factory());
+  connection_context->oauth_token_getter =
+      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token);
+  return connection_context;
+}
+
 }  // namespace
 
 It2MeNativeMessagingHost::It2MeNativeMessagingHost(
@@ -291,57 +331,17 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     }
     auto signal_strategy = CreateDelegatedSignalStrategy(message);
     if (signal_strategy) {
-      create_connection_context = base::BindOnce(
-          [](std::unique_ptr<remoting::SignalStrategy> signal_strategy,
-             ChromotingHostContext* context) {
-            auto connection_context =
-                std::make_unique<It2MeHost::DeferredConnectContext>();
-            connection_context->register_request =
-                std::make_unique<XmppRegisterSupportHostRequest>(
-                    kDirectoryBotJidValue);
-            connection_context->log_to_server =
-                std::make_unique<XmppLogToServer>(
-                    ServerLogEntry::IT2ME, signal_strategy.get(),
-                    kDirectoryBotJidValue, context->network_task_runner());
-            connection_context->signal_strategy = std::move(signal_strategy);
-            return connection_context;
-          },
-          std::move(signal_strategy));
+      create_connection_context =
+          base::BindOnce(&CreateDelegatedSignalingDeferredConnectContext,
+                         std::move(signal_strategy));
     }
   } else {
     if (!username.empty()) {
       std::string access_token = ExtractAccessToken(message);
       create_connection_context = base::BindOnce(
-          [](const std::string& username, const std::string& access_token,
-             ChromotingHostContext* host_context) {
-            auto connection_context =
-                std::make_unique<It2MeHost::DeferredConnectContext>();
-            connection_context->use_ftl_signaling = true;
-            connection_context->signal_strategy =
-                std::make_unique<FtlSignalStrategy>(
-                    std::make_unique<PassthroughOAuthTokenGetter>(username,
-                                                                  access_token),
-                    host_context->url_loader_factory(),
-                    std::make_unique<FtlClientUuidDeviceIdProvider>());
-            connection_context->register_request =
-                std::make_unique<RemotingRegisterSupportHostRequest>(
-                    std::make_unique<PassthroughOAuthTokenGetter>(username,
-                                                                  access_token),
-                    host_context->url_loader_factory());
-            connection_context->log_to_server =
-                std::make_unique<RemotingLogToServer>(
-                    ServerLogEntry::IT2ME,
-                    std::make_unique<PassthroughOAuthTokenGetter>(username,
-                                                                  access_token),
-                    host_context->url_loader_factory());
-            connection_context->oauth_token_getter =
-                std::make_unique<PassthroughOAuthTokenGetter>(username,
-                                                              access_token);
-            return connection_context;
-          },
-          username, access_token);
+          &CreateNativeSignalingDeferredConnectContext, username, access_token);
     } else {
-      LOG(ERROR) << "'userName' not found in request.";
+      LOG(ERROR) << kUserName << " not found in request.";
     }
   }
   if (!create_connection_context) {

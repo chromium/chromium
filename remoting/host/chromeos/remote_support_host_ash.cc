@@ -165,38 +165,41 @@ void RemoteSupportHostAsh::ReconnectToSession(SessionId session_id,
     return;
   }
 
-  LOG(INFO) << "CRD: Checking for reconnectable session";
-
+  LOG(INFO) << "CRD: Retrieving details for reconnectable session id:"
+            << session_id;
+  std::string access_token = "TODO(joedow): Provide real access token";
   session_storage_->RetrieveSession(base::BindOnce(
-      [](base::WeakPtr<RemoteSupportHostAsh> self,
-         StartSessionCallback callback,
-         absl::optional<base::Value::Dict> session) {
-        if (!self) {
-          return;
-        }
+      &RemoteSupportHostAsh::OnSessionRetrieved, weak_ptr_factory_.GetWeakPtr(),
+      session_id, access_token, std::move(callback)));
+}
 
-        DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+void RemoteSupportHostAsh::OnSessionRetrieved(
+    SessionId session_id,
+    const std::string& access_token,
+    StartSessionCallback callback,
+    absl::optional<base::Value::Dict> session) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-        if (!session.has_value()) {
-          LOG(ERROR) << "CRD: No reconnectable session found";
-          std::move(callback).Run(GetUnableToReconnectError());
-          return;
-        }
+  if (!session.has_value()) {
+    LOG(ERROR) << "CRD: No reconnectable session found for id: " << session_id;
+    std::move(callback).Run(GetUnableToReconnectError());
+    return;
+  }
 
-        // Remove the stored session information now that we've read it, so we
-        // do not keep it around forever.
-        self->session_storage_->DeleteSession(base::DoNothing());
+  // Remove the stored session information now that we've read it, so we
+  // do not keep it around forever.
+  session_storage_->DeleteSession(base::DoNothing());
 
-        LOG(INFO) << "CRD: Reconnectable session found - starting connection";
-        self->StartSession(
-            SessionParamsFromDict(*session->EnsureDict(kSessionParamsDict)),
-            EnterpriseParamsFromDict(
-                *session->EnsureDict(kEnterpriseParamsDict)),
-            ReconnectParams::FromDict(
-                *session->EnsureDict(kReconnectParamsDict)),
-            std::move(callback));
-      },
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  auto session_params =
+      SessionParamsFromDict(*session->EnsureDict(kSessionParamsDict));
+  session_params.oauth_access_token = access_token;
+
+  LOG(INFO) << "CRD: Reconnectable session found - starting connection";
+  StartSession(
+      std::move(session_params),
+      EnterpriseParamsFromDict(*session->EnsureDict(kEnterpriseParamsDict)),
+      ReconnectParams::FromDict(*session->EnsureDict(kReconnectParamsDict)),
+      std::move(callback));
 }
 
 // static
@@ -239,7 +242,7 @@ void RemoteSupportHostAsh::OnHostStateDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Don't allow reconnecting to the session if the client disconnects.
-  LOG(INFO) << "CRD: Clearing reconnectable session information";
+  LOG(INFO) << "Deleting reconnectable session info after client disconnect";
   session_storage_->DeleteSession(base::DoNothing());
   return;
 }
@@ -249,7 +252,7 @@ void RemoteSupportHostAsh::OnSessionDisconnected() {
 
   // Don't allow reconnecting to the session if we explicitly disconnect the
   // session.
-  LOG(INFO) << "CRD: Clearing reconnectable session information";
+  LOG(INFO) << "Deleting reconnectable session info after host-side disconnect";
   session_storage_->DeleteSession(base::DoNothing());
 
   if (it2me_native_message_host_ash_) {
