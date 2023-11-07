@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "chrome/browser/compose/inner_text_extractor.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -92,12 +93,20 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Sets an initial input value for the session given by the renderer.
   void set_initial_input(const std::string input) { initial_input_ = input; }
 
+  // Refresh the inner text on session resumption.
+  void RefreshInnerText();
+
  private:
   void ProcessError(compose::mojom::ComposeStatus status);
   void ModelExecutionCallback(
       base::TimeTicks request_start,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
+  // ComposeWithInnerText can either be called synchronously or on a later event
+  // loop
+  void ComposeWithInnerText(const std::string& input,
+                            const std::string& inner_text);
 
   // Outlives `this`.
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;
@@ -124,6 +133,13 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // A callback to Autofill that triggers filling the field.
   ComposeCallback callback_;
+
+  InnerTextExtractor inner_text_extractor_;
+
+  std::optional<std::string> inner_text_;
+  std::optional<std::string> input_;
+
+  void FindInnerText(const std::string& inner_text);
 
   base::WeakPtrFactory<ComposeSession> weak_ptr_factory_;
 };

@@ -8011,6 +8011,8 @@ static_library("browser") {
       "compose/compose_session.h",
       "compose/compose_text_usage_logger.cc",
       "compose/compose_text_usage_logger.h",
+      "compose/inner_text_extractor.cc",
+      "compose/inner_text_extractor.h",
       "compose/translate_language_provider.cc",
       "compose/translate_language_provider.h",
     ]

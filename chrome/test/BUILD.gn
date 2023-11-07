@@ -2824,6 +2824,10 @@ if (!is_android) {
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 
+    if (enable_compose) {
+      sources += [ "../browser/compose/compose_inner_text_browsertest.cc" ]
+    }
+
     if (enable_supervised_users) {
       sources += [
         # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.

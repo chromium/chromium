@@ -504,6 +504,10 @@ TEST_F(ChromeComposeClientTest, TestSaveThenComposeThenRestoreWebUIState) {
   page_handler()->SaveWebUIState("web ui state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
 
+  compose::mojom::ComposeResponsePtr response = compose_test_future.Take();
+  EXPECT_FALSE(response->undo_available)
+      << "First Compose() response should say undo not available.";
+
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> test_future;
   page_handler()->RequestInitialState(test_future.GetCallback());
   compose::mojom::OpenMetadataPtr open_metadata = test_future.Take();
@@ -780,12 +784,13 @@ TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
 
   page_handler()->SaveWebUIState("this state should be restored with undo");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
-  page_handler()->SaveWebUIState("second state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
 
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
+  page_handler()->SaveWebUIState("second state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+
   response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
                                            "say undo is available.";
@@ -829,21 +834,25 @@ TEST_F(ChromeComposeClientTest, TestUndoStackMultipleUndos) {
 
   page_handler()->SaveWebUIState("first state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
-  page_handler()->SaveWebUIState("second state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
-  page_handler()->SaveWebUIState("third state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
-  page_handler()->SaveWebUIState("fourth state");
 
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
+
+  page_handler()->SaveWebUIState("second state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
   response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
                                            "say undo is available.";
+
+  page_handler()->SaveWebUIState("third state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+
   response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Third Compose() response should "
                                            "say undo is available.";
+
+  page_handler()->SaveWebUIState("fourth state");
 
   base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
   page_handler()->Undo(undo_future.GetCallback());
@@ -880,16 +889,18 @@ TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
 
   page_handler()->SaveWebUIState("first state");
   page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
-  page_handler()->SaveWebUIState("second state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
-  page_handler()->SaveWebUIState("wip web ui state");
 
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
+
+  page_handler()->SaveWebUIState("second state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+
   response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
                                            "say undo is available.";
+  page_handler()->SaveWebUIState("wip web ui state");
 
   base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
   page_handler()->Undo(undo_future.GetCallback());

@@ -154,6 +154,7 @@ void ChromeComposeClient::CreateSessionIfNeeded(
     // Update existing session (only if session was not removed earlier).
     auto& existing_session = *it->second;
     existing_session.set_compose_callback(std::move(callback));
+    existing_session.RefreshInnerText();
   } else {
     // Insert new session.
     sessions_.emplace(
@@ -165,6 +166,7 @@ void ChromeComposeClient::CreateSessionIfNeeded(
   if (!selected_text.empty()) {
     auto& session = sessions_.at(last_compose_field_id_.value());
     session->set_initial_input(selected_text);
+    session->RefreshInnerText();
   }
 }
 

@@ -58,6 +58,9 @@ ComposeSession::ComposeSession(
   callback_ = std::move(callback);
   current_state_ = compose::mojom::ComposeState::New();
   current_state_->style = compose::mojom::StyleModifiers::New();
+  inner_text_extractor_.Extract(web_contents_,
+                                base::BindOnce(&ComposeSession::FindInnerText,
+                                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 ComposeSession::~ComposeSession() = default;
@@ -84,10 +87,19 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
     ProcessError(compose::mojom::ComposeStatus::kMisconfiguration);
     return;
   }
+  if (inner_text_.has_value()) {
+    ComposeWithInnerText(input, inner_text_.value());
+  } else {
+    input_ = input;
+  }
+}
 
+void ComposeSession::ComposeWithInnerText(const std::string& input,
+                                          const std::string& inner_text) {
   optimization_guide::proto::ComposePageMetadata page_metadata;
   page_metadata.set_page_url(web_contents_->GetLastCommittedURL().spec());
   page_metadata.set_page_title(base::UTF16ToUTF8(web_contents_->GetTitle()));
+  page_metadata.set_page_inner_text(inner_text);
 
   optimization_guide::proto::ComposeRequest request;
   request.set_user_input(input);
@@ -220,4 +232,19 @@ void ComposeSession::SaveLastOKStateToUndoStack() {
     undo_states_.push(std::move(last_ok_state_));
   }
   last_ok_state_ = current_state_->Clone();
+}
+
+void ComposeSession::FindInnerText(const std::string& inner_text) {
+  if (input_.has_value()) {
+    ComposeWithInnerText(input_.value(), inner_text);
+  } else {
+    inner_text_ = inner_text;
+  }
+}
+
+void ComposeSession::RefreshInnerText() {
+  inner_text_ = std::nullopt;
+  inner_text_extractor_.Extract(web_contents_,
+                                base::BindOnce(&ComposeSession::FindInnerText,
+                                               weak_ptr_factory_.GetWeakPtr()));
 }
