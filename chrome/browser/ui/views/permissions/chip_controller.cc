@@ -379,10 +379,10 @@ void ChipController::OnPageInfoBubbleClosed(
 }
 
 void ChipController::CollapseConfirmation() {
-  chip_->AnimateCollapse(GetAnimationDuration(base::Milliseconds(75)));
   is_confirmation_showing_ = false;
   is_waiting_for_confirmation_collapse_ = true;
   GetLocationBarView()->ResetConfirmationChipShownTime();
+  chip_->AnimateCollapse(GetAnimationDuration(base::Milliseconds(75)));
 }
 
 bool ChipController::should_expand_for_testing() {
