@@ -215,6 +215,9 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse:
+    case FederatedAuthRequestResult::
+        kErrorFetchingIdTokenCrossSiteIdpErrorResponse:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType:
     case FederatedAuthRequestResult::kErrorRpPageNotVisible:
     case FederatedAuthRequestResult::kErrorSilentMediationFailure:
@@ -244,6 +247,9 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
           kAccountsEndpointInvalidResponse;
     }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse:
+    case FederatedAuthRequestResult::
+        kErrorFetchingIdTokenCrossSiteIdpErrorResponse:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kTokenEndpointInvalidResponse;
@@ -2086,11 +2092,17 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       if (token_error) {
         MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
-        // TODO(tanzachary): Use error specific value instead of
-        // InvalidResponse for both metrics and inspector.
+        if (error_url_type_ && *error_url_type_ == ErrorUrlType::kCrossSite) {
+          CompleteRequestWithError(
+              FederatedAuthRequestResult::
+                  kErrorFetchingIdTokenCrossSiteIdpErrorResponse,
+              TokenStatus::kIdTokenCrossSiteIdpErrorResponse, token_error,
+              should_delay_callback);
+          return;
+        }
         CompleteRequestWithError(
-            FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-            TokenStatus::kIdTokenInvalidResponse, token_error,
+            FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
+            TokenStatus::kIdTokenIdpErrorResponse, token_error,
             should_delay_callback);
         return;
       }
@@ -2764,6 +2776,9 @@ void FederatedAuthRequestImpl::RecordErrorMetrics(
   }
 
   if (error_url_type) {
+    // This is used to determine if we need to use the cross-site specific
+    // devtools issue when failing the request.
+    error_url_type_ = error_url_type;
     fedcm_metrics_->RecordErrorUrlTypeMetrics(*error_url_type);
   }
 }

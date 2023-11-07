@@ -454,6 +454,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Time when the mismatch dialog is last shown for metrics purposes.
   absl::optional<base::TimeTicks> mismatch_dialog_shown_time_;
 
+  // Type of error URL for metrics and devtools issue purposes.
+  absl::optional<IdpNetworkRequestManager::FedCmErrorUrlType> error_url_type_;
+
   // Number of navigator.credentials.get() requests made for metrics purposes.
   // Requests made when there is a pending FedCM request or for the purpose of
   // Wallets or multi-IDP are not counted.

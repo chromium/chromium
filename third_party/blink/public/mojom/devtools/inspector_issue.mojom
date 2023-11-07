@@ -229,6 +229,8 @@ enum FederatedAuthRequestResult {
   kErrorFetchingIdTokenHttpNotFound,
   kErrorFetchingIdTokenNoResponse,
   kErrorFetchingIdTokenInvalidResponse,
+  kErrorFetchingIdTokenIdpErrorResponse,
+  kErrorFetchingIdTokenCrossSiteIdpErrorResponse,
   kErrorFetchingIdTokenInvalidContentType,
   kErrorCanceled,
   kErrorRpPageNotVisible,

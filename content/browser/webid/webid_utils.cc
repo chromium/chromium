@@ -256,6 +256,16 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
       return "Provider's token is invalid.";
     }
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse: {
+      return "Provider is unable to issue a token, but provided details on the "
+             "error that occurred.";
+    }
+    case FederatedAuthRequestResult::
+        kErrorFetchingIdTokenCrossSiteIdpErrorResponse: {
+      return "Provider is unable to issue a token, but provided details on the "
+             "error that occurred. The error URL must be same-site with the "
+             "config URL.";
+    }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType: {
       return "Provider's token endpoint content type must be a JSON content "
              "type.";

@@ -5266,7 +5266,7 @@ TEST_F(FederatedAuthRequestImplTest, ErrorUrlDisplayedWithProperUrl) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
       /*standalone_console_message=*/absl::nullopt,
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -5354,7 +5354,7 @@ TEST_F(FederatedAuthRequestImplTest, ErrorDialogTypeMetrics) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
       /*standalone_console_message=*/absl::nullopt,
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -5383,7 +5383,7 @@ TEST_F(FederatedAuthRequestImplTest, ErrorDialogResultMetrics) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
       /*standalone_console_message=*/absl::nullopt,
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -5415,7 +5415,7 @@ TEST_F(FederatedAuthRequestImplTest, TokenResponseTypeMetrics) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
       /*standalone_console_message=*/absl::nullopt,
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -5445,7 +5445,7 @@ TEST_F(FederatedAuthRequestImplTest, ErrorUrlTypeMetrics) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
       /*standalone_console_message=*/absl::nullopt,
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -5460,6 +5460,30 @@ TEST_F(FederatedAuthRequestImplTest, ErrorUrlTypeMetrics) {
 
   ExpectUKMPresenceInternal("Error.ErrorUrlType", FedCmIdpEntry::kEntryName);
   CheckAllFedCmSessionIDs();
+}
+
+// Test that cross-site URL fails the request with the appropriate devtools
+// issue.
+TEST_F(FederatedAuthRequestImplTest, CrossSiteErrorDialogDevtoolsIssue) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  MockConfiguration configuration = kConfigurationValid;
+  ErrorUrlType error_url_type = ErrorUrlType::kCrossSite;
+  configuration.token_error = TokenError(
+      /*code=*/"invalid_request", GURL("https://cross-site.example/error"));
+  configuration.error_url_type = error_url_type;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::
+          kErrorFetchingIdTokenCrossSiteIdpErrorResponse,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
 }
 
 }  // namespace content
