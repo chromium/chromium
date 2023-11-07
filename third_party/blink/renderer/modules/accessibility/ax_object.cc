@@ -4957,6 +4957,9 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
         AtomicString("ARIA-GRABBED"),
         AtomicString("ARIA-HIDDEN"),  // For aria-hidden=false.
         AtomicString("ARIA-KEYSHORTCUTS"),
+        AtomicString("ARIA-LABEL"),
+        AtomicString("ARIA-LABELEDBY"),
+        AtomicString("ARIA-LABELLEDBY"),
         AtomicString("ARIA-LIVE"),
         AtomicString("ARIA-OWNS"),
         AtomicString("ARIA-RELEVANT"),

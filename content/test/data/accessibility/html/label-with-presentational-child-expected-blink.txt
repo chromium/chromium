@@ -1,12 +1,13 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++textField name='bar'
+++++++textField name='foo'
 ++++++++genericContainer
 ++++++labelText
-++++++++genericContainer name='bar'
-++++++++++staticText name='baz'
-++++++++++++inlineTextBox name='baz'
+++++++++genericContainer name='foo'
+++++++++++genericContainer name='bar'
+++++++++++++staticText name='baz'
+++++++++++++++inlineTextBox name='baz'
 ++++++lineBreak name='<newline>'
 ++++++++inlineTextBox name='<newline>'
 ++++++textField name='bar'
