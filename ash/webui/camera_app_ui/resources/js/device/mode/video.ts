@@ -777,14 +777,16 @@ export class Video extends ModeBase {
    */
   private async captureTimeLapse(param: h264.EncoderParameters):
       Promise<TimeLapseSaver> {
-    const encoderConfig = getVideoEncoderConfig(param, this.captureResolution);
+    const {width, height} = getVideoTrackSettings(this.getVideoTrack());
+    const resolution = new Resolution(width, height);
+    const encoderConfig = getVideoEncoderConfig(param, resolution);
 
     // Creates a saver given the initial speed.
     const saver = await this.handler.createTimeLapseSaver(
         {
           encoderConfig,
           fps: this.frameRate,
-          resolution: this.captureResolution,
+          resolution,
         },
         TIME_LAPSE_INITIAL_SPEED);
 
