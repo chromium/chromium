@@ -1054,7 +1054,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitBoxAlign:
     case CSSPropertyID::kWebkitBoxDecorationBreak:
     case CSSPropertyID::kWebkitBoxDirection:
-    case CSSPropertyID::kWebkitBoxDirectionAlternative:
     case CSSPropertyID::kWebkitBoxFlex:
     case CSSPropertyID::kWebkitBoxOrdinalGroup:
     case CSSPropertyID::kWebkitBoxOrient:

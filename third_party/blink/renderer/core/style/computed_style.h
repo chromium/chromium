@@ -1013,10 +1013,7 @@ class ComputedStyle final : public ComputedStyleBase {
   bool ResolvedIsColumnReverseFlexDirection() const {
     if (IsDeprecatedWebkitBox()) {
       return BoxOrient() == EBoxOrient::kVertical &&
-             (RuntimeEnabledFeatures::NonInheritedWebkitBoxDirectionEnabled()
-                  ? BoxDirectionAlternative() ==
-                        EBoxDirectionAlternative::kReverse
-                  : BoxDirection() == EBoxDirection::kReverse);
+             BoxDirection() == EBoxDirection::kReverse;
     }
     return FlexDirection() == EFlexDirection::kColumnReverse;
   }
@@ -1030,10 +1027,7 @@ class ComputedStyle final : public ComputedStyleBase {
   bool ResolvedIsRowReverseFlexDirection() const {
     if (IsDeprecatedWebkitBox()) {
       return BoxOrient() == EBoxOrient::kHorizontal &&
-             (RuntimeEnabledFeatures::NonInheritedWebkitBoxDirectionEnabled()
-                  ? BoxDirectionAlternative() ==
-                        EBoxDirectionAlternative::kReverse
-                  : BoxDirection() == EBoxDirection::kReverse);
+             BoxDirection() == EBoxDirection::kReverse;
     }
     return FlexDirection() == EFlexDirection::kRowReverse;
   }

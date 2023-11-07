@@ -2613,10 +2613,6 @@
       status: "stable",
     },
     {
-      name: "NonInheritedWebkitBoxDirection",
-      status: "stable",
-    },
-    {
       // TODO(crbug.com/924486): This feature enables the deprecated values
       // inner-spin-button, push-button, searchfield-cancel-button,
       // slider-horizontal, square-button. Disable this feature to stop
