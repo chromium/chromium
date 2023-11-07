@@ -63,6 +63,7 @@
 #include "services/network/public/mojom/websocket.mojom-forward.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom-forward.h"
@@ -2727,6 +2728,18 @@ class CONTENT_EXPORT ContentBrowserClient {
       mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
           video_effects_manager);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Re-order audio device `infos` based on user preference. The ordering will
+  // be from most preferred to least preferred.
+  virtual void PreferenceRankVideoDeviceInfos(
+      BrowserContext* browser_context,
+      blink::WebMediaDeviceInfoArray& infos);
+
+  // Re-order video device `infos` based on user preference. The ordering will
+  // be from most preferred to least preferred.
+  virtual void PreferenceRankAudioDeviceInfos(
+      BrowserContext* browser_context,
+      blink::WebMediaDeviceInfoArray& infos);
 };
 
 }  // namespace content

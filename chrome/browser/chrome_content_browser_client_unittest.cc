@@ -29,6 +29,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
+#include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -655,6 +656,52 @@ TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsManager) {
   EXPECT_FALSE(configuration_future.Get().is_null());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(ChromeContentBrowserClientTest, PreferenceRankAudioDeviceInfos) {
+  blink::WebMediaDeviceInfoArray infos{
+      {/*device_id=*/"0", /*label=*/"0", /*group_id=*/"0"},
+      {/*device_id=*/"1", /*label=*/"1", /*group_id=*/"1"},
+  };
+
+  // Initialize the ranking with device 1 being preferred.
+  TestingProfile profile_with_prefs;
+  media_prefs::UpdateAudioDevicePreferenceRanking(
+      *profile_with_prefs.GetPrefs(), infos.begin() + 1, infos);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  blink::WebMediaDeviceInfoArray expected_infos{
+      infos.back(),   // device_id=1
+      infos.front(),  // device_id=0
+  };
+  test_content_browser_client.PreferenceRankAudioDeviceInfos(
+      &profile_with_prefs, infos);
+  EXPECT_EQ(infos, expected_infos);
+}
+
+TEST_F(ChromeContentBrowserClientTest, PreferenceRankVideoDeviceInfos) {
+  blink::WebMediaDeviceInfoArray infos{
+      blink::WebMediaDeviceInfo{
+          media::VideoCaptureDeviceDescriptor{/*display_name=*/"0",
+                                              /*device_id=*/"0"}},
+      blink::WebMediaDeviceInfo{
+          media::VideoCaptureDeviceDescriptor{/*display_name=*/"1",
+                                              /*device_id=*/"1"}},
+  };
+
+  // Initialize the ranking with device 1 being preferred.
+  TestingProfile profile_with_prefs;
+  media_prefs::UpdateVideoDevicePreferenceRanking(
+      *profile_with_prefs.GetPrefs(), infos.begin() + 1, infos);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  blink::WebMediaDeviceInfoArray expected_infos{
+      infos.back(),   // device_id=1
+      infos.front(),  // device_id=0
+  };
+  test_content_browser_client.PreferenceRankVideoDeviceInfos(
+      &profile_with_prefs, infos);
+  EXPECT_EQ(infos, expected_infos);
+}
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ChromeContentSettingsRedirectTest
