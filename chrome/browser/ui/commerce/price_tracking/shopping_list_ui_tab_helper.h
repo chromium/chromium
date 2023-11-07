@@ -41,6 +41,25 @@ namespace commerce {
 
 struct CommerceSubscription;
 
+// The possible ways a suggested save location can be handled. These must be
+// kept in sync with the values in enums.xml.
+enum class PageActionIconInteractionState {
+  // The icon was shown and the user clicked it.
+  kClicked = 0,
+
+  // The icon was shown and expanded before the user clicked on it.
+  kClickedExpanded = 1,
+
+  // The icon was shown but the user did not interact with it.
+  kNotClicked = 2,
+
+  // The icon was shown and expanded but the user did not interact with it.
+  kNotClickedExpanded = 3,
+
+  // This enum must be last and is only used for histograms.
+  kMaxValue = kNotClickedExpanded
+};
+
 // This tab helper is used to update and maintain the state of the shopping list
 // and price tracking UI on desktop.
 // TODO(b:283833590): Rename this class since it serves for all shopping
@@ -81,6 +100,7 @@ class ShoppingListUiTabHelper
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidStopLoading() override;
+  void WebContentsDestroyed() override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,
@@ -112,6 +132,9 @@ class ShoppingListUiTabHelper
   // matches the icon that should expand -- the "true" response is only valid
   // once per page load to avoid having the icon expand multiple times.
   virtual bool ShouldExpandPageActionIcon(PageActionIconType type);
+
+  // A notification that the price tracking icon was clicked.
+  void OnPriceTrackingIconClicked();
 
  protected:
   ShoppingListUiTabHelper(content::WebContents* contents,
@@ -176,6 +199,11 @@ class ShoppingListUiTabHelper
 
   bool IsShowingDiscountsIcon();
 
+  // Record the interaction state with the pricce tracking icon for a page.
+  // |from_icon_use| indicates an interaction to track the product since
+  // clicking the icon a second time does not immediately untrack the product.
+  void RecordPriceTrackingIconMetrics(bool from_icon_use);
+
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
@@ -209,6 +237,10 @@ class ShoppingListUiTabHelper
   bool got_initial_subscription_status_for_page_{false};
   bool page_has_discounts_{false};
 
+  // Whether the price tracking icon was recorded for the current page. This
+  // will only record "track" events.
+  bool icon_use_recorded_for_page_{false};
+
   // A flag indicating whether the initial navigation has committed for the web
   // contents. This is used to ensure product info is fetched when a tab is
   // being restored.
@@ -230,8 +262,14 @@ class ShoppingListUiTabHelper
   // The PriceInsightsInfo associated with the last committed URL.
   absl::optional<PriceInsightsInfo> price_insights_info_;
 
-  // The page action that should expand for the current page.
+  // The page action that should expand for the current page. This optional will
+  // be reset once the value is read by the UI.
   absl::optional<PageActionIconType> page_action_to_expand_;
+
+  // The page action that was expanded for the current page load, if any. This
+  // indicates that |page_action_to_expand_| was read by the UI and lets us keep
+  // track of which page action actually expanded.
+  absl::optional<PageActionIconType> page_action_expanded_;
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>

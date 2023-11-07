@@ -112,6 +112,7 @@ void PriceTrackingIconView::OnExecuting(
   CHECK(tab_helper);
 
   const gfx::Image& product_image = tab_helper->GetProductImage();
+  tab_helper->OnPriceTrackingIconClicked();
   DCHECK(!product_image.IsEmpty());
 
   base::RecordAction(
