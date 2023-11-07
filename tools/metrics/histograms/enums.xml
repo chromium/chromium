@@ -1201,12 +1201,6 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="With signed in, no match"/>
 </enum>
 
-<enum name="AccountWaaStatusForCommerce">
-  <int value="0" label="Account signed out"/>
-  <int value="1" label="Account signed in, WAA disabled"/>
-  <int value="2" label="Account signed in, WAA enabled"/>
-</enum>
-
 <enum name="AccuracyTipInteraction">
   <obsolete>
     Deprecated as of 12/2022.
@@ -1596,18 +1590,6 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="kPreconnect"/>
 </enum>
 
-<enum name="Android.Download.Rename.Dialog.Action">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <int value="0" label="RenameDialogConfirm"/>
-  <int value="1" label="RenameDialogCancel"/>
-  <int value="2" label="RenameDialogOther"/>
-  <int value="3" label="RenameExtensionDialogConfirm"/>
-  <int value="4" label="RenameExtensionDialogCancel"/>
-  <int value="5" label="RenameExtensionDialogOther"/>
-</enum>
-
 <enum name="Android.MemoryPressureNotification">
   <int value="0" label="Unknown onTrimMemory() level"/>
   <int value="1" label="TRIM_MEMORY_COMPLETE"/>
@@ -1908,18 +1890,6 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Text"/>
   <int value="3" label="Chrome Link"/>
   <int value="4" label="Chrome Image"/>
-</enum>
-
-<enum name="AndroidUtilsMimeTypes">
-  <summary>
-    A set of common MIME types resolved by Android MimeTypeUtils.
-  </summary>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Text"/>
-  <int value="2" label="Image"/>
-  <int value="3" label="Audio"/>
-  <int value="4" label="Video"/>
-  <int value="5" label="Pdf"/>
 </enum>
 
 <enum name="AndroidWebViewCrashCollectionState">
@@ -2693,19 +2663,6 @@ Unknown properties are collapsed to zero. -->
 
 <!-- These values must be in sync with ProvisionConstants in CloudDPC code -->
 
-<enum name="ArcTosScreenUserActions">
-  <summary>Actions which happen on the ARC ToS screen.</summary>
-  <int value="0" label="Accept button clicked"/>
-  <int value="1" label="Next button clicked"/>
-  <int value="2" label="Retry button clicked"/>
-  <int value="3" label="Back button clicked"/>
-  <int value="4" label="Learn more about usage stats button clicked"/>
-  <int value="5" label="Learn more about backup button clicked"/>
-  <int value="6" label="Learn more about location services button clicked"/>
-  <int value="7" label="Learn more about play auto install button clicked"/>
-  <int value="8" label="Privacy policy button clicked"/>
-</enum>
-
 <enum name="ArmCpuPart">
   <summary>
     Defines a subset of ARM CPU (implementer, part-number) pairs composed as a
@@ -2857,12 +2814,6 @@ Unknown properties are collapsed to zero. -->
   <int value="10" label="kLauncherOpen"/>
   <int value="11" label="kScreenshot"/>
   <int value="12" label="kOverviewMode"/>
-</enum>
-
-<enum name="AssistantGestureType">
-  <int value="0" label="Not recognized"/>
-  <int value="1" label="Horizontal stroke"/>
-  <int value="2" label="Closed shape"/>
 </enum>
 
 <enum name="AssistantInteractionResolution">
@@ -3463,25 +3414,6 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="NotShown, invalid legal message"/>
 </enum>
 
-<enum name="AutofillCreditCardMessage">
-  <obsolete>
-    Deprecated 10/2022. Will not launch save card Message UI.
-  </obsolete>
-  <int value="0" label="Shown"/>
-  <int value="1" label="Accepted"/>
-  <int value="2" label="Denied"/>
-  <int value="3" label="Ignored"/>
-</enum>
-
-<enum name="AutofillCreditCardMessageDialogPrompt">
-  <obsolete>
-    Deprecated 10/2022. Will not launch save card Message UI.
-  </obsolete>
-  <int value="0" label="Accepted"/>
-  <int value="1" label="Denied"/>
-  <int value="2" label="Ignored"/>
-</enum>
-
 <enum name="AutofillCreditCardOfferSelection">
   <int value="0" label="Selected card without offer"/>
   <int value="1" label="Selected card with offer"/>
@@ -3535,12 +3467,6 @@ Unknown properties are collapsed to zero. -->
 <enum name="AutofillCreditCardUnmaskDecisionMetric">
   <int value="0" label="WebAuthn only"/>
   <int value="1" label="CVC followed by WebAuthn"/>
-</enum>
-
-<enum name="AutofillCreditCardUploadFeedback">
-  <int value="0" label="Loading indicator shown"/>
-  <int value="1" label="Failure icon shown"/>
-  <int value="2" label="Failure bubble shown"/>
 </enum>
 
 <enum name="AutofillCreditCardUserPerceivedLatencyFollowUp">
@@ -4450,14 +4376,6 @@ Called by update_autofill_enums.py.-->
   <int value="0" label="Shown"/>
   <int value="1" label="Done button pressed"/>
   <int value="2" label="Manage cards button pressed"/>
-</enum>
-
-<enum name="AutofillMigrateUserOptedInToWalletSync">
-  <int value="0" label="Not migrated"/>
-  <int value="1" label="Migrated from canonical email"/>
-  <int value="2" label="Migrated from non canonical email"/>
-  <int value="3"
-      label="Not migrated (Unexpected primary account id with email format)."/>
 </enum>
 
 <enum name="AutofillOfferNotificationBubbleResult">
@@ -6387,12 +6305,6 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Expiration date did not match, masked server card"/>
 </enum>
 
-<enum name="AutofillSuggestionClick">
-  <int value="0" label="Accepted click, without prior ignored click"/>
-  <int value="1" label="Ignored click"/>
-  <int value="2" label="Accepted click, followed an ignored click"/>
-</enum>
-
 <enum name="AutofillSuggestionManageType">
   <int value="0" label="Other"/>
   <int value="1" label="Personal Information"/>
@@ -8001,11 +7913,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Consistent"/>
 </enum>
 
-<enum name="BooleanContained">
-  <int value="0" label="Not contained"/>
-  <int value="1" label="Contained"/>
-</enum>
-
 <enum name="BooleanContainsPrice">
   <int value="0" label="Does not contain price"/>
   <int value="1" label="Contains price"/>
@@ -8064,11 +7971,6 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BooleanDetected">
   <int value="0" label="Not detected"/>
   <int value="1" label="Detected"/>
-</enum>
-
-<enum name="BooleanDidScalePage">
-  <int value="0" label="User did not change scale"/>
-  <int value="1" label="User did change scale"/>
 </enum>
 
 <enum name="BooleanDirection">
@@ -8468,11 +8370,6 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BooleanReset">
   <int value="0" label="Not reset"/>
   <int value="1" label="Reset"/>
-</enum>
-
-<enum name="BooleanReused">
-  <int value="0" label="Not Reused"/>
-  <int value="1" label="Reused"/>
 </enum>
 
 <enum name="BooleanRevoked">
@@ -11266,13 +11163,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Missing"/>
 </enum>
 
-<enum name="CommerceSubscriptionValidationResult">
-  <int value="0" label="No fixes needed"/>
-  <int value="1" label="Bookmarks were fixed"/>
-  <int value="2" label="Subscriptions were fixed"/>
-  <int value="3" label="Bookmarks and Subscriptions were fixed"/>
-</enum>
-
 <enum name="CommittedRequestedWithHeaderMode">
   <int value="0" label="No header set"/>
   <int value="1" label="App package name"/>
@@ -11940,128 +11830,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Intelligent, not counted"/>
 </enum>
 
-<enum name="ContextualSearchEnterClosedStateChange">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <int value="0" label="From Other"/>
-  <int value="1" label="From Peeked (back press)"/>
-  <int value="2" label="From Peeked (base page scroll)"/>
-  <int value="3" label="From Peeked (text select tap)"/>
-  <int value="4" label="From Expanded (back press)"/>
-  <int value="5" label="From Expanded (base page tap)"/>
-  <int value="6" label="From Expanded (fling)"/>
-  <int value="7" label="From Maximized (back press)"/>
-  <int value="8" label="From Maximized (fling)"/>
-  <int value="9" label="From Maximized (tab promotion)"/>
-  <int value="10" label="From Maximized (SERP navigation)"/>
-</enum>
-
-<enum name="ContextualSearchEnterExpandedStateChange">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <int value="0" label="From Other"/>
-  <int value="1" label="From Peeked (search bar tap)"/>
-  <int value="2" label="From Peeked (swipe)"/>
-  <int value="3" label="From Peeked (fling)"/>
-  <int value="4" label="From Maximized (swipe)"/>
-  <int value="5" label="From Maximized (fling)"/>
-</enum>
-
-<enum name="ContextualSearchEnterMaximizedStateChange">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <int value="0" label="Other"/>
-  <int value="1" label="From Peeked (swipe)"/>
-  <int value="2" label="From Peeked (fling)"/>
-  <int value="3" label="From Expanded (swipe)"/>
-  <int value="4" label="From Expanded (fling)"/>
-  <int value="5" label="From Expanded (SERP navigation)"/>
-</enum>
-
-<enum name="ContextualSearchEnterPeekedStateChange">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <int value="0" label="From Other"/>
-  <int value="1" label="From Closed (text select tap)"/>
-  <int value="2" label="From Closed (text select long press)"/>
-  <int value="3" label="From Peeked (text select tap)"/>
-  <int value="4" label="From Peeked (text select long press)"/>
-  <int value="5" label="From Expanded (search bar tap)"/>
-  <int value="6" label="From Expanded (swipe)"/>
-  <int value="7" label="From Expanded (fling)"/>
-  <int value="8" label="From Maximized (swipe)"/>
-  <int value="9" label="From Maximized (fling)"/>
-</enum>
-
-<enum name="ContextualSearchExitClosedStateChange">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <int value="0" label="Other"/>
-  <int value="1" label="Peek (text select tap)"/>
-  <int value="2" label="Peek (text select long press)"/>
-</enum>
-
-<enum name="ContextualSearchExitExpandedStateChange">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <int value="0" label="Other"/>
-  <int value="1" label="Close (back press)"/>
-  <int value="2" label="Close (base page tap)"/>
-  <int value="3" label="Close (fling)"/>
-  <int value="4" label="Peek (search bar tap)"/>
-  <int value="5" label="Peek (swipe)"/>
-  <int value="6" label="Peek (fling)"/>
-  <int value="7" label="Maximize (swipe)"/>
-  <int value="8" label="Maximize (fling)"/>
-  <int value="9" label="Maximize (SERP navigation)"/>
-</enum>
-
-<enum name="ContextualSearchExitMaximizedStateChange">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <int value="0" label="Other"/>
-  <int value="1" label="Close (back press)"/>
-  <int value="2" label="Close (fling)"/>
-  <int value="3" label="Close (tab promotion)"/>
-  <int value="4" label="Close (SERP navigation)"/>
-  <int value="5" label="Peek (swipe)"/>
-  <int value="6" label="Peek (fling)"/>
-  <int value="7" label="Expand (swipe)"/>
-  <int value="8" label="Expand (fling)"/>
-</enum>
-
-<enum name="ContextualSearchExitPeekedStateChange">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <int value="0" label="Other"/>
-  <int value="1" label="Close (back press)"/>
-  <int value="2" label="Close (base page scroll)"/>
-  <int value="3" label="Close (text select tap)"/>
-  <int value="4" label="Peek (text select tap)"/>
-  <int value="5" label="Peek (text select long press)"/>
-  <int value="6" label="Expand (search bar tap)"/>
-  <int value="7" label="Expand (swipe)"/>
-  <int value="8" label="Expand (fling)"/>
-  <int value="9" label="Maximize (swipe)"/>
-  <int value="10" label="To Maximize (fling)"/>
-</enum>
-
-<enum name="ContextualSearchFirstRunPanelSeen">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <int value="0" label="Seen"/>
-  <int value="1" label="Unseen"/>
-</enum>
-
 <enum name="ContextualSearchGestureIsTap">
   <int value="0" label="Longpress"/>
   <int value="1" label="Tap"/>
@@ -12096,29 +11864,9 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Multiple matching apps"/>
 </enum>
 
-<enum name="ContextualSearchQuickAnswerSeen">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <int value="0" label="Activated, answered and seen"/>
-  <int value="1" label="Activated and answered but not seen"/>
-  <int value="2" label="Activated, not answered but seen"/>
-  <int value="3" label="Activated, not answered nor seen"/>
-  <int value="4" label="Not activated but seen"/>
-  <int value="5" label="Not activated nor seen"/>
-</enum>
-
 <enum name="ContextualSearchResultsSeen">
   <int value="0" label="Seen"/>
   <int value="1" label="Unseen"/>
-</enum>
-
-<enum name="ContextualSearchSearchRequestStatus">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <int value="0" label="Not Failed"/>
-  <int value="1" label="Failed"/>
 </enum>
 
 <enum name="ContextualSearchSeenByGesture">
@@ -12126,29 +11874,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Not seen, from Tap"/>
   <int value="2" label="Seen, from Long-press"/>
   <int value="3" label="Not seen, from Long-press"/>
-</enum>
-
-<enum name="ContextualSearchSelectionValid">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <int value="0" label="Valid"/>
-  <int value="1" label="Invalid"/>
-</enum>
-
-<enum name="ContextualSearchSuppressionResultsSeen">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <int value="0" label="Seen, heuristic satisfied"/>
-  <int value="1" label="Not seen, heuristic satisfied"/>
-  <int value="2" label="Seen, heuristic not satisfied"/>
-  <int value="3" label="Not seen, heuristic not satisfied"/>
-</enum>
-
-<enum name="ContextualSearchTapSuppression">
-  <int value="0" label="Tap suppressed"/>
-  <int value="1" label="Tap not suppressed"/>
 </enum>
 
 <enum name="ConversionAndroidRegistrationResult">
@@ -12680,11 +12405,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="32-bit only"/>
   <int value="2" label="64-bit only"/>
   <int value="3" label="Both 32-bit and 64-bit"/>
-</enum>
-
-<enum name="CpuAffinityMode">
-  <int value="0" label="kDefault"/>
-  <int value="1" label="kLittleCoresOnly"/>
 </enum>
 
 <enum name="CpuTimeMetricsThreadType">
@@ -14913,16 +14633,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="4" label="Google network TTS"/>
 </enum>
 
-<enum name="CrosSettingsOsBannerInteraction">
-  <obsolete>
-    Removed as of 07/2022 (crbug.com/1231142).
-  </obsolete>
-  <int value="0" label="Not shown"/>
-  <int value="1" label="Shown"/>
-  <int value="2" label="Clicked"/>
-  <int value="3" label="Closed"/>
-</enum>
-
 <enum name="CrossOriginAdStatus">
   <int value="0" label="Ad Origin indeterminable"/>
   <int value="1" label="Main Frame Origin same as Ad"/>
@@ -17139,45 +16849,10 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Dark"/>
 </enum>
 
-<enum name="DarkThemeEnabledReason">
-  <int value="0" label="User preference is set to force dark theme."/>
-  <int value="1" label="Power save mode is on."/>
-  <int value="2" label="Other."/>
-</enum>
-
-<enum name="DarkThemePreferences">
-  <int value="0" label="System default"/>
-  <int value="1" label="Light theme"/>
-  <int value="2" label="Dark theme"/>
-</enum>
-
 <enum name="DataFetchEventSource">
   <int value="0" label="PostLoginFullRestore"/>
   <int value="1" label="Overview"/>
   <int value="2" label="Calendar"/>
-</enum>
-
-<enum name="DataReductionProxyEnabledState">
-  <int value="0" label="Off-to-On"/>
-  <int value="1" label="On-to-Off"/>
-</enum>
-
-<enum name="DataReductionProxyProxyPrefMigrationResult">
-  <int value="0" label="Proxy pref not cleared"/>
-  <int value="1" label="Empty proxy pref was cleared"/>
-  <int value="2" label="System proxy pref was cleared"/>
-  <int value="3" label="Proxy pref containing a DRP was cleared"/>
-  <int value="4"
-      label="Proxy pref containing a *.googlezip.net proxy was cleared"/>
-  <int value="5"
-      label="Proxy pref of an embedded PAC script containing a
-             *.googlezip.net proxy was cleared"/>
-</enum>
-
-<enum name="DataReductionProxyStartupState">
-  <int value="0" label="Proxy not available"/>
-  <int value="1" label="Proxy available but not enabled"/>
-  <int value="2" label="Proxy available and enabled"/>
 </enum>
 
 <enum name="DataUseContentType">
@@ -17194,21 +16869,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="10" label="Video - App in background"/>
   <int value="11" label="Video - Tab in background"/>
   <int value="12" label="Video - Tab in foreground"/>
-</enum>
-
-<enum name="DataUsePageTransition">
-  <summary>PageTransitions in ui/base/page_transition_types.h.</summary>
-  <int value="0" label="LINK"/>
-  <int value="1" label="TYPED"/>
-  <int value="2" label="AUTO_BOOKMARK"/>
-  <int value="3" label="SUBFRAME"/>
-  <int value="4" label="GENERATED"/>
-  <int value="5" label="AUTO_TOPLEVEL"/>
-  <int value="6" label="FORM_SUBMIT"/>
-  <int value="7" label="RELOAD"/>
-  <int value="8" label="KEYWORD"/>
-  <int value="9" label="FORWARD_BACK"/>
-  <int value="10" label="HOME_PAGE"/>
 </enum>
 
 <enum name="DayOfWeek">
@@ -17563,20 +17223,6 @@ Called by update_debug_scenarios.py.-->
 <enum name="DeprecatedAcceleratorUsage">
   <int value="0" label="Deprecated key accelerator is used"/>
   <int value="1" label="New key accelerator is used"/>
-</enum>
-
-<enum name="DeprecatedWindowSnapActionSource">
-  <int value="0" label="Drag window to screen edge to snap"/>
-  <int value="1" label="Use window caption button to snap"/>
-  <int value="2" label="Use keyboard shortcut to snap"/>
-  <int value="3" label="Drag or select overview window to snap"/>
-  <int value="4" label="Long press overview button to snap"/>
-  <int value="5" label="Drag up from shelf to snap"/>
-  <int value="6" label="Drag down from top to snap"/>
-  <int value="7" label="Drag a tab to snap"/>
-  <int value="8" label="Auto snapped by splitview"/>
-  <int value="9" label="Window is snapped from window state restore"/>
-  <int value="10" label="Other ways to snap a window"/>
 </enum>
 
 <enum name="DescFailureReason">
@@ -18856,16 +18502,6 @@ Called by update_debug_scenarios.py.-->
   <int value="1" label="Classic Script"/>
 </enum>
 
-<enum name="DexFixerReason">
-  <int value="0" label="Os.stat() failed"/>
-  <int value="1" label="Runtime.exec() failed"/>
-  <int value="2" label="Dexopt not needed"/>
-  <int value="5" label="Preemptive Dexopt after app updated"/>
-  <int value="6" label="DexFile.isDexOptNeeded() returned true"/>
-  <int value="7" label="DexFile.isDexOptNeeded() threw"/>
-  <int value="8" label="Dex files not world-readable"/>
-</enum>
-
 <enum name="DiagnosticsRecoveryRun">
   <int value="0" label="Recovery not run"/>
   <int value="1" label="Recovery run because of crash"/>
@@ -19632,15 +19268,6 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="FAILURE_REASON_DRIVER"/>
   <int value="3" label="FAILURE_REASON_MODEL"/>
   <int value="4" label="FAILURE_REASON_FILE_MONITOR"/>
-</enum>
-
-<enum name="Download.Shelf.DragEvent">
-  <obsolete>
-    Deprecated 2022-06-06
-  </obsolete>
-  <int value="0" label="Started"/>
-  <int value="1" label="Canceled"/>
-  <int value="2" label="Dropped"/>
 </enum>
 
 <enum name="DownloadAddWarningActionEventOutcome">
@@ -23732,16 +23359,6 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="Programmatic API Call"/>
 </enum>
 
-<enum name="ExtensionActionSetIconFailureType">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <int value="0" label="Failed to parse function details"/>
-  <int value="1" label="Failed to decode image canvas string"/>
-  <int value="2" label="Failed to unpickle image canvas"/>
-  <int value="3" label="Arguments provided neither image data nor icon index"/>
-</enum>
-
 <enum name="ExtensionAllowlistOmahaAttributeValue">
   <int value="0" label="Undefined"/>
   <int value="1" label="Allowlisted"/>
@@ -27112,15 +26729,6 @@ Called by update_extension_permission.py.-->
   <int value="2" label="Http failure"/>
   <int value="3" label="Parsing failure"/>
   <int value="4" label="Failed"/>
-</enum>
-
-<enum name="FcmTokenRevocation">
-  <obsolete>
-    Removed 2023/01 with the removal of the relevant histogram.
-  </obsolete>
-  <int value="0" label="Reset grace period"/>
-  <int value="1" label="Revoke permission"/>
-  <int value="2" label="Grace period is not over"/>
 </enum>
 
 <enum name="FeatureManagementScopeLevel">
@@ -32696,32 +32304,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Commit"/>
 </enum>
 
-<enum name="FetchFontName">
-  <obsolete>
-    Removed 09/2022. No longer needed.
-  </obsolete>
-  <int value="0" label="Other"/>
-  <int value="1" label="Google Sans Regular"/>
-  <int value="2" label="Google Sans Medium"/>
-  <int value="3" label="Google Sans Bold"/>
-  <int value="4" label="Noto Color Emoji Compat"/>
-</enum>
-
-<enum name="FetchFontResult">
-  <obsolete>
-    Removed 09/2022. No longer needed.
-  </obsolete>
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed due to unexpected font name"/>
-  <int value="2" label="Failed with non-OK status code on result"/>
-  <int value="3" label="Failed with non-unique number of font results"/>
-  <int value="4" label="Failed with non-OK result code on font info"/>
-  <int value="5" label="Failed to open font file"/>
-  <int value="6" label="Failed with an exception"/>
-  <int value="7" label="Skipped to avoid retrying previous failure"/>
-  <int value="8" label="Font file descriptor was cached"/>
-</enum>
-
 <enum name="FetchKeepAliveBrowserMetricType">
   <int value="0"
       label="kLoadingSuceeded: Fetch keepalive request has succeeded toloaded">
@@ -32990,12 +32572,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="OPEN_MEDIA_DEVICE_NAVIGATION_ARC"/>
   <int value="3" label="OPEN_MEDIA_DEVICE_FAIL"/>
   <int value="4" label="OPEN_MEDIA_DEVICE_IMPORT"/>
-</enum>
-
-<enum name="FileManagerPrefsMigrationStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Fail to get existing preferences"/>
-  <int value="2" label="Fail to migrate preferences"/>
 </enum>
 
 <enum name="FileManagerQuickViewWayToOpen">
@@ -33493,12 +33069,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="No format with Native Pixmaps"/>
   <int value="1" label="NV12 format with Native Pixmaps"/>
   <int value="2" label="YV12 format with Native Pixmaps"/>
-</enum>
-
-<enum name="FormDataEquality">
-  <int value="0" label="Shallow comparison is enough to find difference"/>
-  <int value="1" label="Deep comparison is needed to find difference"/>
-  <int value="2" label="Equal forms"/>
 </enum>
 
 <enum name="FormInputAccessoryAction">
@@ -35411,14 +34981,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="kSidePanelFromToolbarButton">
     The Side Panel HistoryClusters UI was opened from side panel toolbar button.
   </int>
-</enum>
-
-<enum name="HistoryClustersSurvey">
-  <summary>
-    Logs which HaTS survey was requested by the History Clusters UI code.
-  </summary>
-  <int value="0" label="HistoryEntrypointSurveyRequested"/>
-  <int value="1" label="OmniboxEntrypointSurveyRequested"/>
 </enum>
 
 <enum name="HistoryInitStep">
@@ -37783,18 +37345,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 <!-- 6 is omitted, in case we ever merge this enum with GCMClientResult. -->
 
   <int value="7" label="Unknown error"/>
-</enum>
-
-<enum name="InstantTethering_BluetoothAdvertisementResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Error: Unsupported platform"/>
-  <int value="2" label="Error: Advertisement already exists"/>
-  <int value="3" label="Error: Advertisement does not exist"/>
-  <int value="4" label="Error: Advertisement invalid length"/>
-  <int value="5" label="Error: Invalid advertisement interval"/>
-  <int value="6" label="Error: Reset advertising"/>
-  <int value="7" label="Invalid advertisement error code"/>
-  <int value="8" label="Unknown result"/>
 </enum>
 
 <enum name="InstantTethering_ConnectionToHostResult_Failure">
@@ -52321,12 +51871,6 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Conflicting name resolution"/>
 </enum>
 
-<enum name="MediaCommand">
-  <int value="0" label="Resume"/>
-  <int value="1" label="Pause"/>
-  <int value="2" label="Seek"/>
-</enum>
-
 <enum name="MediaEncryptionType">
   <int value="0" label="None"/>
   <int value="1" label="Clear"/>
@@ -53437,18 +52981,6 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Gesture fling"/>
   <int value="4" label="Gesture scroll"/>
   <int value="5" label="Accelerator"/>
-</enum>
-
-<enum name="NaClAppTypeEnum">
-  <obsolete>
-    Deprecated in favor of NaClEmbedderTypeEnum.
-  </obsolete>
-  <int value="0" label="PNaCl Open Web"/>
-  <int value="1" label="PNaCl Hosted App"/>
-  <int value="2" label="PNaCl Packaged App"/>
-  <int value="3" label="NaCl Open Web"/>
-  <int value="4" label="NaCl Hosted App"/>
-  <int value="5" label="NaCl Packaged App"/>
 </enum>
 
 <enum name="NaClEmbedderTypeEnum">
@@ -55718,19 +55250,6 @@ Called by update_net_error_codes.py.-->
   <int value="1395980614" label="underwater">Seascapes</int>
 </enum>
 
-<enum name="NTPCustomizeAction">
-  <obsolete>
-    Removed 2022-10.
-  </obsolete>
-  <int value="0" label="'Chrome backgrounds' menu item clicked."/>
-  <int value="1" label="'Upload an image' menu item clicked."/>
-  <int value="2" label="'Restore default background' menu item clicked."/>
-  <int value="3" label="Attribution link on a customized background clicked."/>
-  <int value="4" label="'Add shortcut' link clicked."/>
-  <int value="5" label="'Edit shortcut' link clicked."/>
-  <int value="6" label="'Restore default shortcuts' menu item clicked."/>
-</enum>
-
 <enum name="NTPCustomizeChromeBackgroundAction">
   <int value="0"
       label="Collection selected in the 'Chrome backgrounds' dialog."/>
@@ -56910,31 +56429,6 @@ Called by update_net_error_codes.py.-->
       label="Missing glyph path, but a fallback was found (deprecated)"/>
 </enum>
 
-<enum name="OpaqueResponseBlocking_ResponseHeadersHeuristic">
-  <summary>
-    Initial decision taken by Opaque Response Blocking (ORB, see also
-    https://github.com/annevk/orb) based on just the response headers.
-  </summary>
-  <int value="0" label="NonOpaqueResponse">
-    ORB only applies to opaque respones - the NonOpaqueResponse value covers:
-    mode != no-cors (e.g. mode=navigate or mode=cors) and browser-initiated
-    requests.
-  </int>
-  <int value="1" label="ProcessedBasedOnHeaders">
-    ORB algorithm is *surely* able to make a decision based on the response
-    headers. The ProcessedBasedOnHeaders enum value covers all subresource
-    requests: scripts, images, video, etc. (both same-origin and cross-origin
-    requests).
-  </int>
-  <int value="2" label="RequiresJavascriptParsing">
-    ORB algorithm *might* requires parsing the response body as Javascript.
-
-    This might be a false positive if the response: 1) sniffs as an
-    audio/image/video format 2) represents a valid range response for a media
-    element
-  </int>
-</enum>
-
 <enum name="OpenLinkAs">
   <int value="0" label="Open Link as Profile displayed."/>
   <int value="1" label="Open Link as Profile clicked."/>
@@ -57997,30 +57491,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Mixed foreground/background"/>
 </enum>
 
-<enum name="PageScaleFactorRange">
-  <int value="0" label="&lt;25%"/>
-  <int value="1" label="25-49%"/>
-  <int value="2" label="50-74%"/>
-  <int value="3" label="75-99%"/>
-  <int value="4" label="100-124%"/>
-  <int value="5" label="125-149%"/>
-  <int value="6" label="150-174%"/>
-  <int value="7" label="175-199%"/>
-  <int value="8" label="200-224%"/>
-  <int value="9" label="225-249%"/>
-  <int value="10" label="250-274%"/>
-  <int value="11" label="275-299%"/>
-  <int value="12" label="300-324%"/>
-  <int value="13" label="325-349%"/>
-  <int value="14" label="350-374%"/>
-  <int value="15" label="375-399%"/>
-  <int value="16" label="400-424%"/>
-  <int value="17" label="425-449%"/>
-  <int value="18" label="450-474%"/>
-  <int value="19" label="475-499%"/>
-  <int value="20" label="&gt;=500%"/>
-</enum>
-
 <enum name="PageState">
   <int value="0" label="Focused"/>
   <int value="1" label="Visible"/>
@@ -58155,13 +57625,6 @@ Called by update_net_error_codes.py.-->
   <int value="54" label="SkGainmapInfo deserialize failure"/>
   <int value="55" label="HdrMetadata deserialize failure"/>
   <int value="56" label="SkColor4f has non-finite values"/>
-</enum>
-
-<enum name="PaletteModeCancelType">
-  <int value="0" label="Palette laser pointer mode is cancelled."/>
-  <int value="1" label="Palette laser pointer mode is switched out of"/>
-  <int value="2" label="Palette magnify mode is cancelled."/>
-  <int value="3" label="Palette magnify mode is switched out of."/>
 </enum>
 
 <enum name="PAMInitializePrimaryAccountInfoState">
@@ -59799,16 +59262,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Popup navigates to an unsafe safe-browsing site"/>
 </enum>
 
-<enum name="PortalDetectionMultiProbeResult">
-  <int value="0" label="Undefined result"/>
-  <int value="1" label="HTTPS traffic blocked, no HTTP redirect"/>
-  <int value="2" label="HTTPS traffic blocked, HTTP redirect received"/>
-  <int value="3" label="HTTPS traffic blocked, HTTP 204 received"/>
-  <int value="4" label="HTTPS traffic not blocked, no HTTP redirect"/>
-  <int value="5" label="HTTPS traffic not blocked, HTTP redirect received"/>
-  <int value="6" label="HTTPS traffic not blocked, HTTP 204 received"/>
-</enum>
-
 <enum name="PortalDetectorAggregateResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="No Connectivity"/>
@@ -59999,26 +59452,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 <enum name="PowerMLSmartDimWebPageInfoSource">
   <int value="0" label="Ash">Web page info comes from ash chrome.</int>
   <int value="1" label="Lacros">Web page info comes from lacros chrome.</int>
-</enum>
-
-<enum name="PowerMode">
-  <int value="0" label="kIdle"/>
-  <int value="1" label="kAudible"/>
-  <int value="2" label="kLoading"/>
-  <int value="3" label="kAnimation"/>
-  <int value="4" label="kResponse"/>
-  <int value="5" label="kOtherActivity"/>
-  <int value="6" label="kBackground"/>
-  <int value="7" label="kCharging"/>
-  <int value="8" label="kNopAnimation"/>
-  <int value="9" label="kVideoPlayback"/>
-  <int value="10" label="kLoadingAnimation"/>
-  <int value="11" label="kMainThreadAnimation"/>
-  <int value="12" label="kSmallAnimation"/>
-  <int value="13" label="kMediumAnimation"/>
-  <int value="14" label="kSmallMainThreadAnimation"/>
-  <int value="15" label="kMediumMainThreadAnimation"/>
-  <int value="16" label="kScriptExecution"/>
 </enum>
 
 <enum name="PowerwashDialogViewType">
@@ -62039,27 +61472,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Destination dialog has printers manage button"/>
 </enum>
 
-<enum name="PrintPreviewPrintDestinationBuckets">
-  <obsolete>
-    Deprecated 2022-06.
-  </obsolete>
-  <int value="0" label="DESTINATION_SHOWN"/>
-  <int value="1" label="DESTINATION_CLOSED_CHANGED"/>
-  <int value="2" label="DESTINATION_CLOSED_UNCHANGED"/>
-  <int value="3" label="SIGNIN_PROMPT_DEPRECATED"/>
-  <int value="4" label="SIGNIN_TRIGGERED_DEPRECATED"/>
-  <int value="5" label="PRIVET_DUPLICATE_SELECTED_DEPRECATED"/>
-  <int value="6" label="CLOUD_DUPLICATE_SELECTED_DEPRECATED"/>
-  <int value="7" label="REGISTER_PROMO_SHOWN_DEPRECATED"/>
-  <int value="8" label="REGISTER_PROMO_SELECTED_DEPRECATED"/>
-  <int value="9" label="ACCOUNT_CHANGED_DEPRECATED"/>
-  <int value="10" label="ADD_ACCOUNT_SELECTED_DEPRECATED"/>
-  <int value="11" label="INVITATION_AVAILABLE_DEPRECATED"/>
-  <int value="12" label="INVITATION_ACCEPTED_DEPRECATED"/>
-  <int value="13" label="INVITATION_REJECTED_DEPRECATED"/>
-  <int value="14" label="MANAGE_BUTTON_CLICKED"/>
-</enum>
-
 <enum name="PrintPreviewPrintDocumentTypeBuckets">
   <int value="0" label="HTML_DOCUMENT"/>
   <int value="1" label="PDF_DOCUMENT"/>
@@ -62885,18 +62297,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Red"/>
   <int value="4" label="Yellow"/>
   <int value="5" label="Magenta"/>
-</enum>
-
-<enum name="ProjectorPolicyChangeHandlingError">
-  <obsolete>
-    Deprecated in M116. No longer needed since no error reported and converted
-    to CHECK.
-  </obsolete>
-  <int value="0" label="SWA manager is not available"/>
-  <int value="1" label="Web app provider is not available"/>
-  <int value="2"
-      label="Web app provider is not available when registry is ready"/>
-  <int value="3" label="Sync bridge is not available"/>
 </enum>
 
 <enum name="ProjectorToolbar">
@@ -64827,43 +64227,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Unknown"/>
 </enum>
 
-<enum name="RequestInitiatorOriginLockCompatibility">
-  <int value="0" label="BrowserProcess">
-    Request came from a browser process and so the
-    |request_initiator_origin_lock| doesn't apply.
-  </int>
-  <int value="1" label="NoLock">
-    |request_initiator_origin_lock| is missing - see https://crbug.com/1098938.
-  </int>
-  <int value="2" label="NoInitiator">|request_initiator| is missing.</int>
-  <int value="3" label="CompatibleLock">
-    |request.request_initiator| is compatible with
-    |factory_params_.request_initiator_origin_lock| - either
-    |request.request_initiator| is opaque or it is equal to
-    |request_initiator_origin_lock|.
-  </int>
-  <int value="4" label="IncorrectLock">
-    |request.request_initiator| is non-opaque/unique and differs from
-    |factory_params_.request_initiator_origin_lock|.
-  </int>
-  <int value="5" label="ExcludedScheme">
-    Scheme excluded from request_initiator_origin_lock checks. Since ~M80 this
-    value can only be recorded during tests.
-  </int>
-  <int value="6" label="ExcludedCorbForPlugin">
-    Requests from a renderer process that embeds a plugin (e.g. Flash) that
-    needs to disable CORB and request_initiator_origin_lock enforcement.
-
-    Obsolete - this enum value was removed in Nov 2020 (M89).
-  </int>
-  <int value="7" label="AllowedRequestInitiatorForPlugin">
-    Requests from a renderer process that embeds a plugin (e.g. PDF) that needs
-    to poke small, targeted holes in request_initiator_origin_lock enforcement.
-
-    Obsolete - this enum value was removed in Mar 2022 (M101).
-  </int>
-</enum>
-
 <enum name="RequestStorageResult">
   <int value="0" label="Approved due to existing storage access"/>
   <int value="1" label="Approved with new grant"/>
@@ -65729,15 +65092,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Finished"/>
 </enum>
 
-<enum name="ScreenAILoadLibraryResult">
-  <int value="0" label="Succeeded to load ScreenAI libraries"/>
-  <int value="1" label="Failed to load VisualAnnotation library (deprecated)"/>
-  <int value="2" label="Failed to load MainContentExtraction library"/>
-  <int value="3" label="Failed to load Layout Extraction library"/>
-  <int value="4" label="Failed to load OCR library"/>
-  <int value="5" label="Failed to load library functions."/>
-</enum>
-
 <enum name="ScreenRotationAcceleratorAction">
   <int value="0" label="CancelledDialog"/>
   <int value="1" label="AcceptedDialog"/>
@@ -65843,21 +65197,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="SearchResumptionModule.ModuleShowStatus">
   <int value="0" label="Module is shown and expanded"/>
   <int value="1" label="Module is shown and collapsed"/>
-</enum>
-
-<enum name="SearchTemplateURLEvent">
-  <summary>
-    Events within the TemplateURL system we log, i.e. edge cases.
-  </summary>
-  <int value="0" label="SYNC_DELETE_SUCCESS"/>
-  <int value="1" label="SYNC_DELETE_FAIL_NONEXISTENT_ENGINE"/>
-  <int value="2" label="SYNC_DELETE_FAIL_DEFAULT_SEARCH_PROVIDER"/>
-  <int value="3" label="SYNC_ADD_SUCCESS"/>
-  <int value="4" label="SYNC_ADD_CONVERTED_TO_UPDATE"/>
-  <int value="5" label="SYNC_ADD_FAIL_OTHER_ERROR"/>
-  <int value="6" label="SYNC_UPDATE_SUCCESS"/>
-  <int value="7" label="SYNC_UPDATE_CONVERTED_TO_ADD"/>
-  <int value="8" label="MIGRATE_SAFE_FOR_AUTOREPLACE_PLAY_API_ENGINE"/>
 </enum>
 
 <enum name="SearchWidgetUseInfo">
@@ -68519,12 +67858,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Inline speculation rules failed parsing"/>
 </enum>
 
-<enum name="SpeculativeRenderFrameHostType">
-  <int value="0" label="Does not exist"/>
-  <int value="1" label="Exists, not pending commit"/>
-  <int value="2" label="Exists, pending commit"/>
-</enum>
-
 <enum name="SpeechRecognitionEndState">
   <int value="0" label="Speech recognition successfully stopped"/>
   <int value="1" label="Speech recognition enountered error while recognizing"/>
@@ -69820,30 +69153,6 @@ would be helpful to identify which type is being sent.
   <int value="0" label="New tab failed to open"/>
 </enum>
 
-<enum name="TabStripReasonToShow">
-  <obsolete>
-    Deprecated as of 01/2023.
-  </obsolete>
-  <summary>The reason why conditional tab strip is showing.</summary>
-  <int value="0" label="TabSwitched"/>
-  <int value="1" label="NewTab"/>
-  <int value="2" label="LongPress"/>
-</enum>
-
-<enum name="TabStripUserStatus">
-  <obsolete>
-    Deprecated as of 01/2023.
-  </obsolete>
-  <summary>
-    The user status of conditional tab strip in a feature-specific session.
-  </summary>
-  <int value="0" label="NonUser"/>
-  <int value="1" label="TabStripNotShown"/>
-  <int value="2" label="TabStripShown"/>
-  <int value="3" label="TabStripShownAndDismissed"/>
-  <int value="4" label="TabStripPermanentlyHidden"/>
-</enum>
-
 <enum name="TabSwitchResult2">
   <int value="0" label="Success"/>
   <int value="1" label="Tab hidden before a frame is presented"/>
@@ -69853,21 +69162,6 @@ would be helpful to identify which type is being sent.
 <enum name="TapDelayType">
   <int value="0" label="Delayed Tap"/>
   <int value="1" label="Undelayed Tap"/>
-</enum>
-
-<enum name="TextFragmentAnchorParameters">
-  <summary>
-    Indicates which parameters were specified in a text fragment anchor.
-  </summary>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="ExactText"/>
-  <int value="2" label="ExactTextWithPrefix"/>
-  <int value="3" label="ExactTextWithSuffix"/>
-  <int value="4" label="ExactTextWithContext"/>
-  <int value="5" label="TextRange"/>
-  <int value="6" label="TextRangeWithPrefix"/>
-  <int value="7" label="TextRangeWithSuffix"/>
-  <int value="8" label="TextRangeWithContext"/>
 </enum>
 
 <enum name="TextFragmentLinkOpenSource">
@@ -69938,51 +69232,6 @@ would be helpful to identify which type is being sent.
   <int value="0" label="Any blocked third-party site data accesses"/>
   <int value="1" label="Any allowed third-party site data accesses"/>
   <int value="2" label="No third-party site data accesses"/>
-</enum>
-
-<enum name="ThirdPartyStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="FilePathNotFoundInRegistry"/>
-  <int value="2" label="FileNotFound"/>
-  <int value="3" label="FileEmpty"/>
-  <int value="4" label="FileArraySizeZero"/>
-  <int value="5" label="FileAccessDenied"/>
-  <int value="6" label="FileUnexpectedFailure"/>
-  <int value="7" label="FileMetadataReadFailure"/>
-  <int value="8" label="FileInvalidFormatVersion"/>
-  <int value="9" label="FileArrayTooBig"/>
-  <int value="10" label="FileArrayReadFailure"/>
-  <int value="11" label="FileArrayNotSorted"/>
-  <int value="12" label="LogsCreateMutexFailure"/>
-  <int value="13" label="HookInitImportsFailure"/>
-  <int value="14" label="HookUnsupportedOs"/>
-  <int value="15" label="HookVirtualProtectFailure"/>
-  <int value="16" label="HookApplyFailure"/>
-  <int value="17" label="HookCreateMutexFailure"/>
-  <int value="18" label="StatusCodeResetFailure"/>
-</enum>
-
-<enum name="ThumbstripCloseByIOS">
-  <obsolete>
-    Deprecated as of 06/2023
-  </obsolete>
-  <int value="0" label="Closed by dragging the primary toolbar up"/>
-  <int value="1" label="Closed by tapping the fake tab at bottom"/>
-  <int value="2" label="Closed by user navigating in web page"/>
-  <int value="3" label="Closed by scrolling web page / ntp up"/>
-  <int value="4" label="Closed by tapping new tab button"/>
-  <int value="5" label="Closed by focusing the omnibox"/>
-  <int value="6" label="Closed by user tapping thumbstrip background"/>
-  <int value="7" label="Closed by user swiping thumbstrip background up"/>
-</enum>
-
-<enum name="ThumbstripOpenByIOS">
-  <obsolete>
-    Deprecated as of 06/2023
-  </obsolete>
-  <int value="0" label="Opened by dragging tab strip down"/>
-  <int value="1" label="Opened by dragging primary toolbar down"/>
-  <int value="2" label="Opened by scrolling web page / ntp down from top"/>
 </enum>
 
 <enum name="TimeZoneRequestEvent">
@@ -75965,26 +75214,6 @@ Called by update_scheduler_enums.py.-->
   <int value="39" label="onScaleChanged"/>
 </enum>
 
-<enum name="WebViewClientErrorCode">
-  <int value="-16" label="ERROR_UNSAFE_RESOURCE"/>
-  <int value="-15" label="ERROR_TOO_MANY_REQUESTS"/>
-  <int value="-14" label="ERROR_FILE_NOT_FOUND"/>
-  <int value="-13" label="ERROR_FILE"/>
-  <int value="-12" label="ERROR_BAD_URL"/>
-  <int value="-11" label="ERROR_FAILED_SSL_HANDSHAKE"/>
-  <int value="-10" label="ERROR_UNSUPPORTED_SCHEME"/>
-  <int value="-9" label="ERROR_REDIRECT_LOOP"/>
-  <int value="-8" label="ERROR_TIMEOUT"/>
-  <int value="-7" label="ERROR_IO"/>
-  <int value="-6" label="ERROR_CONNECT"/>
-  <int value="-5" label="ERROR_PROXY_AUTHENTICATION"/>
-  <int value="-4" label="ERROR_AUTHENTICATION"/>
-  <int value="-3" label="ERROR_UNSUPPORTED_AUTH_SCHEME"/>
-  <int value="-2" label="ERROR_HOST_LOOKUP"/>
-  <int value="-1" label="ERROR_UNKNOWN"/>
-  <int value="0" label="ERROR_OK"/>
-</enum>
-
 <enum name="WebViewClientTypeEnum">
   <int value="0" label="Regular WebViewClient"/>
   <int value="1" label="WebViewClientCompat (via AndroidX)"/>
@@ -76070,36 +75299,6 @@ Called by update_scheduler_enums.py.-->
   <int value="8" label="Night mode off, light theme yes"/>
 </enum>
 
-<enum name="WebViewNonembeddedService">
-  <int value="0" label="AwMinidumpUploadJobService"/>
-  <int value="1" label="AwVariationsSeedFetcher"/>
-  <int value="2" label="ComponentsProviderService"/>
-  <int value="3" label="CrashReceiverService.class"/>
-  <int value="4" label="DeveloperUiService"/>
-  <int value="5" label="MetricsBridgeService"/>
-  <int value="6" label="MetricsUploadService"/>
-  <int value="7" label="SafeModeService"/>
-  <int value="8" label="VariationsSeedServer"/>
-</enum>
-
-<enum name="WebViewOpenWebScreenPortion">
-  <obsolete>
-    Deprecated in March 2022.
-  </obsolete>
-  <int value="0" label="0-10%"/>
-  <int value="1" label="10-20%"/>
-  <int value="2" label="20-30%"/>
-  <int value="3" label="30-40%"/>
-  <int value="4" label="40-50%"/>
-  <int value="5" label="50-60%"/>
-  <int value="6" label="60-70%"/>
-  <int value="7" label="70-80%"/>
-  <int value="8" label="80-90%"/>
-  <int value="9" label="90-100%"/>
-  <int value="10" label="ExactlyOneHundredPercent"/>
-  <int value="11" label="ExactlyZeroPercent"/>
-</enum>
-
 <enum name="WebViewPrimaryTextLuminanceVsLightTheme">
   <int value="0" label="Text undefined, light theme undefined"/>
   <int value="1" label="Text undefined, light theme no"/>
@@ -76122,12 +75321,6 @@ Called by update_scheduler_enums.py.-->
   <int value="6" label="Text dark, night mode undefined"/>
   <int value="7" label="Text dark, night mode on"/>
   <int value="8" label="Text dark, night mode off"/>
-</enum>
-
-<enum name="WebViewRequestedWithHeaderMode">
-  <int value="0" label="No header set"/>
-  <int value="1" label="App package name"/>
-  <int value="2" label="Constant string 'WebView'"/>
 </enum>
 
 <enum name="WebViewUrlScheme">
