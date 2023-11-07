@@ -36,9 +36,6 @@ DlpInternalsUI::DlpInternalsUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::RequireTrustedTypesFor,
       "require-trusted-types-for 'script';");
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types static-types;");
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DlpInternalsUI)

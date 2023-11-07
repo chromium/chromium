@@ -1,0 +1,44 @@
+<style>
+  .button-group > cr-button {
+    margin-inline-start: 10px;
+  }
+
+  .list {
+    font-size: 16px;
+  }
+
+  #select-div {
+    display: flex;
+    height: 400px;
+    width: 500px;
+  }
+
+  iron-pages {
+    flex: 1;
+    position: relative;
+  }
+</style>
+
+<template is="dom-if" if="[[isOtr_]]">
+  <p>Data Leak Prevention policy is disabled in off-the-record contexts.</p>
+</template>
+
+<template is="dom-if" if="[[!doRulesManagerExist_]]">
+  <p>The Rules Manager of Data Leak Prevention policy doesn\'t exist.</p>
+</template>
+
+<template is="dom-if" if="[[showTabs_]]">
+  <cr-tabs tab-names="[[tabNames_]]" selected="{{selectedTabIdx_}}"> </cr-tabs>
+  <iron-pages selected="[[selectedTabIdx_]]">
+    <div class="tabpanel" id="clipboard">
+      <ul class="list">
+        <li>Clipboard data source Type: [[clipboardSourceType_]]</li>
+        <li>Clipboard data source URL: [[clipboardSourceUrl_]]</li>
+      </ul>
+    </div>
+
+    <div class="tabpanel" id="oncontent"></div>
+
+    <div class="tabpanel" id="reporting"></div>
+  </iron-pages>
+</template>
