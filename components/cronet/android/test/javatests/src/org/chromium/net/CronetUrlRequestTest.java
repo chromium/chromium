@@ -6,10 +6,10 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static com.google.common.truth.TruthJUnit.assume;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
@@ -39,6 +39,7 @@ import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDeleg
 import org.chromium.net.TestUrlRequestCallback.FailureType;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.apihelpers.UploadDataProviders;
+import org.chromium.net.impl.CronetExceptionImpl;
 import org.chromium.net.impl.CronetUrlRequest;
 import org.chromium.net.impl.NetworkExceptionImpl;
 import org.chromium.net.impl.UrlResponseInfoImpl;
@@ -2957,44 +2958,56 @@ public class CronetUrlRequestTest {
     }
 
     @Test
-    @SmallTest
     @RequiresMinAndroidApi(Build.VERSION_CODES.M)
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason = "crbug.com/1494845")
-    public void testBindToNetwork() {
+    public void testBindToInvalidNetworkFails() {
         String url = NativeTestServer.getEchoMethodURL();
-        // bind to invalid network handle
-        CronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder =
-                cronetEngine
-                        .newUrlRequestBuilder(url, callback, callback.getExecutor())
-                        .bindToNetwork(-150 /* invalid network handle */);
+        ExperimentalUrlRequest.Builder builder =
+                cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
+
+        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM) {
+            // android.net.http.UrlRequestBuilder#bindToNetwork requires an android.net.Network
+            // object. So, in this case, it
+            // will be the wrapper layer that will fail to translate that to a Network, not
+            // something in net's code. Hence, the failure will manifest itself at bind time, not at
+            // request execution time.
+            // Note: this will never happen in prod, as translation failure can only happen if we're
+            // given a fake networkHandle.
+            assertThrows(
+                    IllegalArgumentException.class,
+                    () -> builder.bindToNetwork(-150 /* invalid network handle */));
+            return;
+        }
+
+        builder.bindToNetwork(-150 /* invalid network handle */);
         builder.build().start();
         callback.blockForDone();
-
-        if (mTestRule.testingJavaImpl()) {
-            assertThat(callback.mError)
-                    .isInstanceOf(org.chromium.net.impl.CronetExceptionImpl.class);
+        assertThat(callback.mError).isNotNull();
+        if (mTestRule.implementationUnderTest() == CronetImplementation.FALLBACK) {
+            assertThat(callback.mError).isInstanceOf(CronetExceptionImpl.class);
             assertThat(callback.mError).hasCauseThat().isInstanceOf(NetworkExceptionImpl.class);
         } else {
             assertThat(callback.mError).isInstanceOf(NetworkExceptionImpl.class);
         }
+    }
 
-        // bind to the default network
+    @Test
+    @RequiresMinAndroidApi(Build.VERSION_CODES.M)
+    public void testBindToDefaultNetworkSucceeds() {
+        String url = NativeTestServer.getEchoMethodURL();
         ConnectivityManagerDelegate delegate =
                 new ConnectivityManagerDelegate(mTestRule.getTestFramework().getContext());
         Network defaultNetwork = delegate.getDefaultNetwork();
-        assumeTrue(defaultNetwork != null);
-        callback = new TestUrlRequestCallback();
-        builder =
-                cronetEngine
-                        .newUrlRequestBuilder(url, callback, callback.getExecutor())
-                        .bindToNetwork(defaultNetwork.getNetworkHandle());
+        assume().that(defaultNetwork).isNotNull();
+
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        ExperimentalUrlRequest.Builder builder =
+                cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
+        builder.bindToNetwork(defaultNetwork.getNetworkHandle());
         builder.build().start();
         callback.blockForDone();
-
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
     }
 

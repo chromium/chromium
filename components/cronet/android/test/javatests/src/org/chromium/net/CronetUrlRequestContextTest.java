@@ -5,9 +5,9 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.TruthJUnit.assume;
 
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.net.CronetEngine.Builder.HTTP_CACHE_IN_MEMORY;
 import static org.chromium.net.CronetTestRule.getTestStorage;
@@ -46,6 +46,7 @@ import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.httpflags.BaseFeature;
 import org.chromium.net.httpflags.FlagValue;
 import org.chromium.net.httpflags.Flags;
+import org.chromium.net.impl.CronetExceptionImpl;
 import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetManifest;
 import org.chromium.net.impl.CronetManifestInterceptor;
@@ -590,7 +591,7 @@ public class CronetUrlRequestContextTest {
         ConnectivityManagerDelegate delegate =
                 new ConnectivityManagerDelegate(mTestRule.getTestFramework().getContext());
         Network defaultNetwork = delegate.getDefaultNetwork();
-        assumeTrue(defaultNetwork != null);
+        assume().that(defaultNetwork).isNotNull();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         // Allows to check the underlying network-bound context state while the request is in
@@ -655,7 +656,7 @@ public class CronetUrlRequestContextTest {
         ConnectivityManagerDelegate delegate =
                 new ConnectivityManagerDelegate(mTestRule.getTestFramework().getContext());
         Network defaultNetwork = delegate.getDefaultNetwork();
-        assumeTrue(defaultNetwork != null);
+        assume().that(defaultNetwork).isNotNull();
 
         urlRequestBuilder.bindToNetwork(defaultNetwork.getNetworkHandle());
         UrlRequest urlRequest = urlRequestBuilder.build();
@@ -691,21 +692,31 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @RequiresMinAndroidApi(Build.VERSION_CODES.M)
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason = "crbug.com/1494917")
     public void testBindToInvalidNetworkFails() {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM) {
+            // HttpEngine#bindToNetwork requires an android.net.Network object. So, in this case, it
+            // will be the wrapper layer that will fail to translate that to a Network, not
+            // something in net's code. Hence, the failure will manifest itself at bind time, not at
+            // request execution time.
+            // Note: this will never happen in prod, as translation failure can only happen if we're
+            // given a fake networkHandle.
+            assertThrows(
+                    IllegalArgumentException.class,
+                    () -> cronetEngine.bindToNetwork(-150 /* invalid network handle */));
+            return;
+        }
+
         cronetEngine.bindToNetwork(-150 /* invalid network handle */);
         ExperimentalUrlRequest.Builder builder =
                 cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         builder.build().start();
         callback.blockForDone();
 
-        if (mTestRule.testingJavaImpl()) {
-            assertThat(callback.mError)
-                    .isInstanceOf(org.chromium.net.impl.CronetExceptionImpl.class);
+        assertThat(callback.mError).isNotNull();
+        if (mTestRule.implementationUnderTest() == CronetImplementation.FALLBACK) {
+            assertThat(callback.mError).isInstanceOf(CronetExceptionImpl.class);
             assertThat(callback.mError).hasCauseThat().isInstanceOf(NetworkExceptionImpl.class);
         } else {
             assertThat(callback.mError).isInstanceOf(NetworkExceptionImpl.class);
@@ -718,7 +729,7 @@ public class CronetUrlRequestContextTest {
         ConnectivityManagerDelegate delegate =
                 new ConnectivityManagerDelegate(mTestRule.getTestFramework().getContext());
         Network defaultNetwork = delegate.getDefaultNetwork();
-        assumeTrue(defaultNetwork != null);
+        assume().that(defaultNetwork).isNotNull();
 
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         cronetEngine.bindToNetwork(defaultNetwork.getNetworkHandle());

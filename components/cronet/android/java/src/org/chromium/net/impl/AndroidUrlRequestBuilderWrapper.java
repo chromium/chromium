@@ -4,7 +4,11 @@
 
 package org.chromium.net.impl;
 
+import android.net.Network;
+
 import androidx.annotation.RequiresApi;
+
+import org.chromium.net.CronetEngine;
 
 import java.util.concurrent.Executor;
 
@@ -50,6 +54,19 @@ class AndroidUrlRequestBuilderWrapper extends org.chromium.net.ExperimentalUrlRe
     @Override
     public org.chromium.net.ExperimentalUrlRequest.Builder allowDirectExecutor() {
         mBackend.setDirectExecutorAllowed(true);
+        return this;
+    }
+
+    @Override
+    public org.chromium.net.ExperimentalUrlRequest.Builder bindToNetwork(long networkHandle) {
+        // Network#fromNetworkHandle throws IAE if networkHandle does not translate to a valid
+        // Network. Though, this can only happen if we're given a fake networkHandle (in which case
+        // we will throw, which is fine).
+        Network network =
+                networkHandle == CronetEngine.UNBIND_NETWORK_HANDLE
+                        ? null
+                        : Network.fromNetworkHandle(networkHandle);
+        mBackend.bindToNetwork(network);
         return this;
     }
 

@@ -4,6 +4,7 @@
 
 package org.chromium.net.impl;
 
+import android.net.Network;
 import android.net.http.HttpEngine;
 
 import androidx.annotation.RequiresApi;
@@ -49,6 +50,18 @@ class AndroidHttpEngineWrapper extends ExperimentalCronetEngine {
     public byte[] getGlobalMetricsDeltas() {
         // TODO(danstahr): Hidden API access
         return new byte[0];
+    }
+
+    @Override
+    public void bindToNetwork(long networkHandle) {
+        // Network#fromNetworkHandle throws IAE if networkHandle does not translate to a valid
+        // Network. Though, this can only happen if we're given a fake networkHandle (in which case
+        // we will throw, which is fine).
+        Network network =
+                networkHandle == UNBIND_NETWORK_HANDLE
+                        ? null
+                        : Network.fromNetworkHandle(networkHandle);
+        mBackend.bindToNetwork(network);
     }
 
     @Override

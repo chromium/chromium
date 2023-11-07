@@ -4,7 +4,11 @@
 
 package org.chromium.net.impl;
 
+import android.net.Network;
+
 import androidx.annotation.RequiresApi;
+
+import org.chromium.net.CronetEngine;
 
 @RequiresApi(api = 34)
 class AndroidBidirectionalStreamBuilderWrapper
@@ -32,6 +36,20 @@ class AndroidBidirectionalStreamBuilderWrapper
     @Override
     public org.chromium.net.ExperimentalBidirectionalStream.Builder setPriority(int priority) {
         mBackend.setPriority(priority);
+        return this;
+    }
+
+    @Override
+    public org.chromium.net.ExperimentalBidirectionalStream.Builder bindToNetwork(
+            long networkHandle) {
+        // Network#fromNetworkHandle throws IAE if networkHandle does not translate to a valid
+        // Network. Though, this can only happen if we're given a fake networkHandle (in which case
+        // we will throw, which is fine).
+        Network network =
+                networkHandle == CronetEngine.UNBIND_NETWORK_HANDLE
+                        ? null
+                        : Network.fromNetworkHandle(networkHandle);
+        // TODO(b/309112420): Stop no-op'ing this.
         return this;
     }
 
