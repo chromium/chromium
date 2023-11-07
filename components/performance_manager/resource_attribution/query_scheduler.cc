@@ -47,11 +47,15 @@ void QueryScheduler::RequestCPUResults(
     scoped_refptr<base::TaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(cpu_monitor_.IsMonitoring());
-  // TODO(crbug.com/1471683): Keep track of which ResourceContexts are being
-  // queried, and return only those from `cpu_monitor_`.
+  QueryResultMap results;
+  for (auto& [context, cpu_time_result] :
+       cpu_monitor_.UpdateAndGetCPUMeasurements()) {
+    // TODO(crbug.com/1471683): Filter the results by ResourceContexts in the
+    // request.
+    results[context].push_back(std::move(cpu_time_result));
+  }
   task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                cpu_monitor_.UpdateAndGetCPUMeasurements()));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
 }
 
 CPUMeasurementMonitor& QueryScheduler::GetCPUMonitorForTesting() {

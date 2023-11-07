@@ -158,9 +158,8 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // If the kUseResourceAttributionCPUMonitor feature parameter is enabled, this
   // will cache the measurements of each page when UpdateCPUMeasurements is
   // called. Otherwise it's unused.
-  std::map<resource_attribution::ResourceContext,
-           resource_attribution::CPUTimeResult>
-      cached_cpu_measurements_ GUARDED_BY_CONTEXT(sequence_checker_);
+  resource_attribution::QueryResultMap cached_cpu_measurements_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<PageTimelineCPUMonitor> weak_factory_{this};
 };

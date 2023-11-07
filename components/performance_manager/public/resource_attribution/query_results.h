@@ -6,9 +6,13 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_QUERY_RESULTS_H_
 
 #include <map>
+#include <vector>
 
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/public/resource_attribution/type_helpers.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -41,7 +45,43 @@ struct CPUTimeResult {
   base::TimeDelta cumulative_cpu;
 };
 
-using QueryResultMap = std::map<ResourceContext, CPUTimeResult>;
+using QueryResult = absl::variant<CPUTimeResult>;
+using QueryResults = std::vector<QueryResult>;
+using QueryResultMap = std::map<ResourceContext, QueryResults>;
+
+// Returns true iff `results` contains any result of type T.
+template <typename T>
+constexpr bool ContainsResult(const QueryResults& results) {
+  return internal::VariantVectorContains<T>(results);
+}
+
+// If `results` contains any result of type T, returns a reference to that
+// result. Otherwise, returns nullopt.
+//
+// Note that a non-const ref can't be returned from a const QueryResults. The
+// following uses are valid:
+//
+//   base::optional_ref<CPUTimeResult> result =
+//       AsResult<CPUTimeResult>(mutable_query_results);
+//
+//   base::optional_ref<const CPUTimeResult> result =
+//       AsResult<CPUTimeResult>(const_query_results);
+//
+//   base::optional_ref<const CPUTimeResult> result =
+//       AsResult<const CPUTimeResult>(const_or_mutable_query_results);
+//
+// To make a copy of the result, use one of:
+//
+//    absl::optional<T> result = AsResult<T>(query_results).CopyAsOptional();
+//    T result = AsResult<T>(query_results).value();  // Crashes on nullopt.
+template <typename T>
+constexpr base::optional_ref<T> AsResult(QueryResults& results) {
+  return internal::GetFromVariantVector<T>(results);
+}
+template <typename T>
+constexpr base::optional_ref<const T> AsResult(const QueryResults& results) {
+  return internal::GetFromVariantVector<T>(results);
+}
 
 }  // namespace performance_manager::resource_attribution
 

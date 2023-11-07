@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -202,14 +203,17 @@ void PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements(
 
   // Swap a new measurement into `cached_cpu_measurements_`, storing the
   // previous contents in `previous_measurements`.
-  std::map<ResourceContext, resource_attribution::CPUTimeResult>
-      previous_measurements = std::exchange(cached_cpu_measurements_, results);
+  resource_attribution::QueryResultMap previous_measurements =
+      std::exchange(cached_cpu_measurements_, results);
 
   CPUUsageMap cpu_usage_map;
-  for (const auto& [context, result] : cached_cpu_measurements_) {
+  for (const auto& [context, query_result] : cached_cpu_measurements_) {
+    using CPUTimeResult = resource_attribution::CPUTimeResult;
     if (!resource_attribution::ContextIs<PageContext>(context)) {
       continue;
     }
+    const auto& result =
+        resource_attribution::AsResult<CPUTimeResult>(query_result).value();
 
     // Let time A be the last time UpdateCPUMeasurements() was called (with the
     // results saved in `previous_measurements`), or the time when
@@ -280,7 +284,9 @@ void PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements(
     base::TimeDelta current_cpu = result.cumulative_cpu;
     const auto it = previous_measurements.find(context);
     if (it != previous_measurements.end()) {
-      current_cpu -= it->second.cumulative_cpu;
+      const auto& previous_result =
+          resource_attribution::AsResult<CPUTimeResult>(it->second).value();
+      current_cpu -= previous_result.cumulative_cpu;
     }
     CHECK(!current_cpu.is_negative());
     cpu_usage_map.emplace(context, current_cpu / measurement_interval);
