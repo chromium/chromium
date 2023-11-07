@@ -12,9 +12,35 @@ import java.util.Map;
 @RequiresApi(api = 34)
 class AndroidUrlResponseInfoWrapper extends org.chromium.net.UrlResponseInfo {
     private final android.net.http.UrlResponseInfo mBackend;
+    /* org.chromium.net.UrlRequest and org.chromium.net.BidirectionalStream map the direct or
+     * no-proxy scenarios to different values of org.chromium.net.UrlResponseInfo#getProxyServer:
+     * UrlRequest will return ":0", while BidirectionalStream will return a null string.
+     * This variable is needed to maintain compatibility with this non-documented behavior, as
+     * android.net.http.UrlResponseInfo doesn't expose a getProxyServer method.
+     * TODO(b/309121551): Clean this up.
+     */
+    private final String mProxyServerCompat;
 
-    AndroidUrlResponseInfoWrapper(android.net.http.UrlResponseInfo backend) {
+    private AndroidUrlResponseInfoWrapper(
+            android.net.http.UrlResponseInfo backend, String proxyServerCompat) {
         this.mBackend = backend;
+        this.mProxyServerCompat = proxyServerCompat;
+    }
+
+    // See mProxyServerCompat's Javadoc.
+    public static AndroidUrlResponseInfoWrapper createForUrlRequest(
+            android.net.http.UrlResponseInfo backend) {
+        // From //components/cronet/cronet_url_request.cc's GetProxy.
+        return new AndroidUrlResponseInfoWrapper(backend, ":0");
+    }
+
+    // See mProxyServerCompat's Javadoc.
+    public static AndroidUrlResponseInfoWrapper createForBidirectionalStream(
+            android.net.http.UrlResponseInfo backend) {
+        // From
+        // //components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java
+        // prepareResponseInfoOnNetworkThread.
+        return new AndroidUrlResponseInfoWrapper(backend, null);
     }
 
     @Override
@@ -59,7 +85,7 @@ class AndroidUrlResponseInfoWrapper extends org.chromium.net.UrlResponseInfo {
 
     @Override
     public String getProxyServer() {
-        return null;
+        return mProxyServerCompat;
     }
 
     @Override

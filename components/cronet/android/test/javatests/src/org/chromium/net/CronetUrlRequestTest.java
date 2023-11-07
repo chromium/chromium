@@ -182,9 +182,6 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason = "crbug.com/1497531: Figure out what how to handle getProxy checks")
     public void testSimpleGet() throws Exception {
         String url = NativeTestServer.getEchoMethodURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
@@ -285,9 +282,6 @@ public class CronetUrlRequestTest {
      */
     @Test
     @SmallTest
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason = "crbug.com/1497531: Figure out what how to handle getProxy checks")
     public void testRedirectAsync() throws Exception {
         // Start the request and wait to see the redirect.
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -514,10 +508,8 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason =
-                    "No canonical exception to assert on. "
-                            + "crbug.com/1497531: Figure out what how to handle getProxy checks")
+            implementations = {CronetImplementation.FALLBACK},
+            reason = "No canonical exception to assert on")
     public void testContentLengthMismatchFailsOnce() throws Exception {
         String url = NativeTestServer.getFileURL("/content_length_mismatch.html");
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
@@ -1065,10 +1057,8 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason =
-                    "No canonical exception to assert on. "
-                            + "crbug.com/1497531: Figure out what how to handle getProxy checks")
+            implementations = {CronetImplementation.FALLBACK},
+            reason = "No canonical exception to assert on")
     public void testSimpleGetBufferUpdates() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
