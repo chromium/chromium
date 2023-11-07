@@ -379,17 +379,17 @@ void AudioToolboxAudioEncoder::DoEncode(const AudioBus* input_bus) {
       }
     }
 
+    int adts_header_size = 0;
+    std::unique_ptr<uint8_t[]> packet_buffer;
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     if (format == AudioEncoder::AacOutputFormat::ADTS) {
-      int header_size;
-      // TODO(https://crbug.com/1407013) Refactor AAC::ConvertEsdsToADTS() to
-      // work with more flexible buffers and not only with an std::vector.
-      // This will allow us to save extra memcpy-s that we are forced to do in
-      // this code.
-      adts_conversion_ok =
-          aac_config_parser_.ConvertEsdsToADTS(&temp_output_buf_, &header_size);
+      packet_buffer = aac_config_parser_.CreateAdtsFromEsds(temp_output_buf_,
+                                                            &adts_header_size);
+      adts_conversion_ok = packet_buffer != nullptr;
     }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
     if (!adts_conversion_ok) {
       OSSTATUS_DLOG(ERROR, result) << "Conversion to ADTS failed";
       std::move(current_done_cb_)
@@ -397,15 +397,22 @@ void AudioToolboxAudioEncoder::DoEncode(const AudioBus* input_bus) {
       return;
     }
 
-    auto packet_buffer = std::make_unique<uint8_t[]>(temp_output_buf_.size());
-    std::memcpy(packet_buffer.get(), temp_output_buf_.data(),
-                temp_output_buf_.size());
+    if (!packet_buffer) {
+      // There was no ADTS conversion, we should copy `temp_output_buf_` as is.
+      CHECK_EQ(adts_header_size, 0);
+      packet_buffer = std::make_unique<uint8_t[]>(temp_output_buf_.size());
+      std::memcpy(packet_buffer.get(), temp_output_buf_.data(),
+                  temp_output_buf_.size());
+    }
+
+    const size_t packet_buffer_size =
+        temp_output_buf_.size() + adts_header_size;
 
     EncodedAudioBuffer encoded_buffer(
         AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                         ChannelLayoutConfig::Guess(channel_count_),
                         sample_rate_, num_frames),
-        std::move(packet_buffer), temp_output_buf_.size(),
+        std::move(packet_buffer), packet_buffer_size,
         base::TimeTicks() + timestamp_helper_->GetTimestamp(),
         timestamp_helper_->GetFrameDuration(num_frames));
 
