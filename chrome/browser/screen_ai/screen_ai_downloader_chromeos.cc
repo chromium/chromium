@@ -97,7 +97,7 @@ void ScreenAIDownloaderChromeOS::SetLastUsageTime() {
 void ScreenAIDownloaderChromeOS::MaybeGetComponentFolderFromAsh(
     bool download_if_needed) {
   chromeos::LacrosService* impl = chromeos::LacrosService::Get();
-  if (!impl->IsAvailable<crosapi::mojom::ScreenAIDownloader>()) {
+  if (!impl || !impl->IsAvailable<crosapi::mojom::ScreenAIDownloader>()) {
     VLOG(0) << "ScreenAIDownloaderChromeOS is not available.";
     ScreenAIInstallState::GetInstance()->SetState(
         ScreenAIInstallState::State::kFailed);
@@ -134,7 +134,7 @@ void ScreenAIDownloaderChromeOS::MaybeGetComponentFolderFromAsh(
 
 void ScreenAIDownloaderChromeOS::MaybeSetLastUsageTimeInAsh() {
   chromeos::LacrosService* impl = chromeos::LacrosService::Get();
-  if (!impl->IsAvailable<crosapi::mojom::ScreenAIDownloader>()) {
+  if (!impl || !impl->IsAvailable<crosapi::mojom::ScreenAIDownloader>()) {
     VLOG(0) << "ScreenAIDownloaderChromeOS is not available.";
     return;
   }
