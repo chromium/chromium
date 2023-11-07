@@ -390,9 +390,7 @@ NSInteger kFeedSymbolPointSize = 17;
         [self.feedControlDelegate selectedFeed] == FeedTypeDiscover ? 0 : 1;
   }
 
-  if (@available(iOS 15.0, *)) {
-    sortButton.configuration = [UIButtonConfiguration plainButtonConfiguration];
-  }
+  sortButton.configuration = [UIButtonConfiguration plainButtonConfiguration];
 
   return sortButton;
 }
