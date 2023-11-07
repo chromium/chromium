@@ -594,9 +594,6 @@ public class TabContentManager {
                 return;
             }
 
-            // In portrait mode, we want to show thumbnails in squares.
-            // Therefore, the thumbnail saved in portrait mode needs to be cropped to
-            // a square, or it would become too tall and break the layout.
             final float downsamplingScale = 0.5f;
             Matrix matrix = new Matrix();
             matrix.setScale(downsamplingScale, downsamplingScale);
