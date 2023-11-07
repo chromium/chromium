@@ -1973,10 +1973,6 @@
       status: "experimental",
     },
     {
-      name: "FormRelAttribute",
-      status: "stable",
-    },
-    {
       // Bug fix for crbug.com/1429585
       name: "FormStateRestoreCallbackCallWithState",
       status: "stable",

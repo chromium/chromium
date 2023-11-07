@@ -677,8 +677,7 @@ void HTMLFormElement::ParseAttribute(
     attributes_.SetAcceptCharset(params.new_value);
   } else if (name == html_names::kDisabledAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kFormDisabledAttributePresent);
-  } else if (name == html_names::kRelAttr &&
-             RuntimeEnabledFeatures::FormRelAttributeEnabled()) {
+  } else if (name == html_names::kRelAttr) {
     rel_attribute_ = RelAttribute::kNone;
     rel_list_->DidUpdateAttributeValue(params.old_value, params.new_value);
     if (rel_list_->contains(AtomicString("noreferrer")))
