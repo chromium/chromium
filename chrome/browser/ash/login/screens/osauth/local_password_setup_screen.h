@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_LOCAL_PASSWORD_SETUP_SCREEN_H_
-#define CHROME_BROWSER_ASH_LOGIN_SCREENS_LOCAL_PASSWORD_SETUP_SCREEN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_LOCAL_PASSWORD_SETUP_SCREEN_H_
+#define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_LOCAL_PASSWORD_SETUP_SCREEN_H_
 
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
 
 namespace ash {
 
 class LocalPasswordSetupView;
 
-class LocalPasswordSetupScreen : public BaseScreen {
+class LocalPasswordSetupScreen : public BaseOSAuthSetupScreen {
  public:
   using TView = LocalPasswordSetupView;
 
@@ -42,12 +42,11 @@ class LocalPasswordSetupScreen : public BaseScreen {
  private:
   // BaseScreen:
   void ShowImpl() override;
-  void HideImpl() override;
+  void DoShow();
   void OnUserAction(const base::Value::List& args) override;
 
   void OnUpdateLocalPassword(auth::mojom::ConfigureResult result);
   void OnSetLocalPassword(auth::mojom::ConfigureResult result);
-  std::string GetToken() const;
 
   base::WeakPtr<LocalPasswordSetupView> view_;
 
@@ -58,4 +57,4 @@ class LocalPasswordSetupScreen : public BaseScreen {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_LOCAL_PASSWORD_SETUP_SCREEN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_LOCAL_PASSWORD_SETUP_SCREEN_H_

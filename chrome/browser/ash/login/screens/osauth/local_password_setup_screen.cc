@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/local_password_setup_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/local_password_setup_screen.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
-#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
@@ -45,8 +43,8 @@ std::string LocalPasswordSetupScreen::GetResultString(Result result) {
 LocalPasswordSetupScreen::LocalPasswordSetupScreen(
     base::WeakPtr<LocalPasswordSetupView> view,
     const ScreenExitCallback& exit_callback)
-    : BaseScreen(LocalPasswordSetupView::kScreenId,
-                 OobeScreenPriority::DEFAULT),
+    : BaseOSAuthSetupScreen(LocalPasswordSetupView::kScreenId,
+                            OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -58,12 +56,17 @@ void LocalPasswordSetupScreen::ShowImpl() {
   if (!view_) {
     return;
   }
-  bool can_go_back = !context()->knowledge_factor_setup.local_password_forced;
-  view_->Show(can_go_back, context()->knowledge_factor_setup.auth_setup_flow ==
-                               WizardContext::AuthChangeFlow::kRecovery);
+  EstablishKnowledgeFactorGuard(base::BindOnce(
+      &LocalPasswordSetupScreen::DoShow, weak_factory_.GetWeakPtr()));
 }
 
-void LocalPasswordSetupScreen::HideImpl() {}
+void LocalPasswordSetupScreen::DoShow() {
+  bool can_go_back = !context()->knowledge_factor_setup.local_password_forced;
+  bool is_recovery_flow = context()->knowledge_factor_setup.auth_setup_flow ==
+                          WizardContext::AuthChangeFlow::kRecovery;
+  view_->Show(/*can_go_back=*/can_go_back,
+              /*is_recovery_flow=*/is_recovery_flow);
+}
 
 void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
@@ -74,21 +77,20 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
         auth::GetPasswordFactorEditor(
             quick_unlock::QuickUnlockFactory::GetDelegate(),
             g_browser_process->local_state());
-
-    if (context()->knowledge_factor_setup.auth_setup_flow ==
-        WizardContext::AuthChangeFlow::kRecovery) {
-      password_factor_editor.UpdateLocalPassword(
-          GetToken(), password,
-          base::BindOnce(&LocalPasswordSetupScreen::OnSetLocalPassword,
-                         weak_factory_.GetWeakPtr()));
-      return;
+    switch (context()->knowledge_factor_setup.auth_setup_flow) {
+      case WizardContext::AuthChangeFlow::kInitialSetup:
+        password_factor_editor.SetLocalPassword(
+            GetToken(), password,
+            base::BindOnce(&LocalPasswordSetupScreen::OnSetLocalPassword,
+                           weak_factory_.GetWeakPtr()));
+        break;
+      case WizardContext::AuthChangeFlow::kRecovery:
+        password_factor_editor.UpdateLocalPassword(
+            GetToken(), password,
+            base::BindOnce(&LocalPasswordSetupScreen::OnSetLocalPassword,
+                           weak_factory_.GetWeakPtr()));
+        break;
     }
-
-    password_factor_editor.SetLocalPassword(
-        GetToken(), password,
-        base::BindOnce(&LocalPasswordSetupScreen::OnSetLocalPassword,
-                       weak_factory_.GetWeakPtr()));
-
     return;
   } else if (action_id == kUserActionBack) {
     exit_callback_.Run(Result::kBack);
@@ -97,7 +99,7 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
     exit_callback_.Run(Result::kDone);
     return;
   }
-  BaseScreen::OnUserAction(args);
+  BaseOSAuthSetupScreen::OnUserAction(args);
 }
 
 void LocalPasswordSetupScreen::OnUpdateLocalPassword(
@@ -124,22 +126,6 @@ void LocalPasswordSetupScreen::OnSetLocalPassword(
     return;
   }
   view_->ShowLocalPasswordSetupSuccess();
-}
-
-std::string LocalPasswordSetupScreen::GetToken() const {
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    CHECK(context()->extra_factors_token.has_value());
-    return context()->extra_factors_token.value();
-  } else {
-    CHECK(context()->extra_factors_auth_session);
-
-    quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-        quick_unlock::QuickUnlockFactory::GetForProfile(
-            ProfileManager::GetActiveUserProfile());
-    CHECK(quick_unlock_storage);
-    return quick_unlock_storage->CreateAuthToken(
-        *context()->extra_factors_auth_session);
-  }
 }
 
 }  // namespace ash

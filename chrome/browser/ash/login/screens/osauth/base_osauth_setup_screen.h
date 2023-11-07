@@ -22,8 +22,8 @@ class ScopedSessionRefresher;
 // See protected methods.
 
 class BaseOSAuthSetupScreen : public BaseScreen {
+ public:
   using InspectContextCallback = base::OnceCallback<void(UserContext*)>;
-
   BaseOSAuthSetupScreen(OobeScreenId screen_id,
                         OobeScreenPriority screen_priority);
 
