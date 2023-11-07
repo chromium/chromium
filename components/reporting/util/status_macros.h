@@ -23,8 +23,9 @@ absl::optional<base::unexpected<Status>> ShouldReturnStatus(
 
 template <typename T>
 void ShouldReturnStatus(T) {
-  static_assert(base::AlwaysFalse<T>,
-                "T must be either Status or base::expected<Status>");
+  static_assert(
+      base::AlwaysFalse<T>,
+      "RETURN_IF_ERROR_STATUS only accepts either Status or StatusOr");
 }
 }  // namespace reporting::internal
 
