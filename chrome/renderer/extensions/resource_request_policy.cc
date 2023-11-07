@@ -17,6 +17,7 @@
 #include "extensions/common/manifest_handlers/webview_info.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/renderer_extension_registry.h"
+#include "pdf/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -27,6 +28,11 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/feature_list.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
 
@@ -122,6 +128,26 @@ bool ResourceRequestPolicy::CanRequestResource(
   // unreachable app on this page).
   if (frame_url == content::kUnreachableWebDataURL)
     return true;
+
+#if BUILDFLAG(ENABLE_PDF)
+  // Handle specific cases for the PDF viewer.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+      extension_origin.scheme() == kExtensionScheme &&
+      extension_origin.host() == extension_misc::kPdfExtensionId) {
+    // For OOPIF PDF viewer, `page_origin` doesn't match the `extension_origin`,
+    // but the PDF extension frame should still be able to request resources
+    // from itself. The PDF content frame should also be able to request
+    // resources from the PDF extension. For both cases, the parent origin of
+    // the current frame matches the extension origin.
+    blink::WebFrame* parent = frame->Parent();
+    if (parent) {
+      GURL parent_origin = url::Origin(parent->GetSecurityOrigin()).GetURL();
+      if (parent_origin == extension_origin) {
+        return true;
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   bool is_dev_tools = page_origin.SchemeIs(content::kChromeDevToolsScheme);
   // Note: we check |web_accessible_ids_| (rather than first looking up the
