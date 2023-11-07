@@ -14,6 +14,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -209,11 +210,15 @@ struct Suggestion {
   std::string feature_for_iph;
 
   // If specified, this text will be played back as voice over for a11y.
-  absl::optional<std::u16string> voice_over;
+  std::optional<std::u16string> voice_over;
 
   // If specified, this text will be played back if the user accepts this
   // suggestion.
-  absl::optional<std::u16string> acceptance_a11y_announcement;
+  std::optional<std::u16string> acceptance_a11y_announcement;
+
+  // When `popup_item_id` is `PopupItemId::kFieldByFieldFilling`, specifies the
+  // `ServerFieldType` used to build the suggestion's `main_text`.
+  std::optional<ServerFieldType> field_by_field_filling_type_used;
 };
 
 std::string_view ConvertIconToPrintableString(Suggestion::Icon icon);

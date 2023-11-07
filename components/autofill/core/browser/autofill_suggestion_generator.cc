@@ -174,15 +174,25 @@ Suggestion GetFillEverythingFromAddressProfileSuggestion(
 // Append new suggestions to `suggestions` based on the `ServerFieldType` list
 // provided. Suggestions are not added if their info is not found in the
 // provided `profile`. Returns true if any suggestion was added.
-bool AddFieldByFieldSuggestions(const std::vector<ServerFieldType>& types,
+bool AddFieldByFieldSuggestions(const std::vector<ServerFieldType>& field_types,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale,
                                 std::vector<Suggestion>& suggestions) {
   bool any_suggestion_added = false;
-  for (auto type : types) {
-    std::u16string value = profile.GetInfo(type, app_locale);
-    if (!value.empty()) {
-      suggestions.emplace_back(value, PopupItemId::kFieldByFieldFilling);
+  for (auto field_type : field_types) {
+    // This is not how suggestion main text is built in general.
+    // (See AutofillSuggestionGenerator::GetProfileSuggestionMainText)
+    // However, since the only special case is ADDRESS_HOME_STREET_ADDRESS
+    // we can safely replace the function call by the line below, since field
+    // by field suggestions are not generated for that type.
+    CHECK(field_type != ADDRESS_HOME_STREET_ADDRESS);
+    std::u16string suggestion_main_text =
+        profile.GetInfo(field_type, app_locale);
+    if (!suggestion_main_text.empty()) {
+      suggestions.emplace_back(suggestion_main_text,
+                               PopupItemId::kFieldByFieldFilling);
+      suggestions.back().field_by_field_filling_type_used =
+          std::optional(field_type);
       any_suggestion_added = true;
     }
   }
@@ -320,7 +330,15 @@ void AddContactChildSuggestions(FieldTypeGroup trigger_field_type_group,
     phone_number_suggestion.popup_item_id =
         is_phone_field ? PopupItemId::kFillFullPhoneNumber
                        : PopupItemId::kFieldByFieldFilling;
-    phone_number_suggestion.payload = Suggestion::BackendId(profile.guid());
+    if (phone_number_suggestion.popup_item_id ==
+        PopupItemId::kFieldByFieldFilling) {
+      phone_number_suggestion.field_by_field_filling_type_used =
+          std::optional(PHONE_HOME_WHOLE_NUMBER);
+    } else {
+      // `PopupItemId::kFieldByFieldFilling` suggestions do not use profile,
+      // therefore only set the backend id in the group filling case.
+      phone_number_suggestion.payload = Suggestion::BackendId(profile.guid());
+    }
     suggestion.children.push_back(std::move(phone_number_suggestion));
     phone_number_suggestion_added = true;
   }
@@ -334,7 +352,15 @@ void AddContactChildSuggestions(FieldTypeGroup trigger_field_type_group,
     email_address_suggestion.popup_item_id =
         is_email_field ? PopupItemId::kFillFullEmail
                        : PopupItemId::kFieldByFieldFilling;
-    email_address_suggestion.payload = Suggestion::BackendId(profile.guid());
+    if (email_address_suggestion.popup_item_id ==
+        PopupItemId::kFieldByFieldFilling) {
+      email_address_suggestion.field_by_field_filling_type_used =
+          std::optional(EMAIL_ADDRESS);
+    } else {
+      // `PopupItemId::kFieldByFieldFilling` suggestions do not use profile,
+      // therefore only set the backend id in the group filling case.
+      email_address_suggestion.payload = Suggestion::BackendId(profile.guid());
+    }
     suggestion.children.push_back(std::move(email_address_suggestion));
     email_address_suggestion_added = true;
   }
