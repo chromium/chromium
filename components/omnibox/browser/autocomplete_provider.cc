@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -180,7 +181,13 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
       //   the provider in the proto and histograms.
       return metrics::OmniboxEventProto::SEARCH;
     default:
-      NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type_;
+      // TODO(crbug.com/1499235) This was a NOTREACHED that we converted to help
+      //   debug crbug.com/1499235 since NOTREACHED's don't log their message in
+      //   crash reports. Should be reverted back to a NOTREACHED or
+      //   NOTREACHED_NORETURN if their logs eventually begin being logged to
+      //   crash reports.
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "[NOTREACHED] Unhandled AutocompleteProvider::Type " << type_;
       return metrics::OmniboxEventProto::UNKNOWN_PROVIDER;
   }
 }
