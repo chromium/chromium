@@ -24,9 +24,12 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/image_fetcher/core/mock_image_decoder.h"
+#include "components/optimization_guide/core/model_quality/feature_type_map.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -50,6 +53,8 @@ using testing::DoAll;
 using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
+
+constexpr int64_t TEST_SESSION_ID = 123;
 
 class MockWallpaperSearchBackgroundManager
     : public WallpaperSearchBackgroundManager {
@@ -75,6 +80,37 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
   return profile;
 }
 
+class FakeModelQualityLogEntry
+    : public optimization_guide::ModelQualityLogEntry {
+ public:
+  using DestructionCallback = base::OnceCallback<void(
+      const optimization_guide::proto::WallpaperSearchQuality&)>;
+
+  explicit FakeModelQualityLogEntry(DestructionCallback destruction_callback)
+      : optimization_guide::ModelQualityLogEntry(
+            std::make_unique<optimization_guide::proto::LogAiDataRequest>()),
+        destruction_callback_(std::move(destruction_callback)) {}
+
+  ~FakeModelQualityLogEntry() override {
+    std::move(destruction_callback_)
+        .Run(
+            *quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>());
+  }
+
+ private:
+  DestructionCallback destruction_callback_;
+};
+
+std::unique_ptr<FakeModelQualityLogEntry> SaveQuality(
+    optimization_guide::proto::WallpaperSearchQuality* out_quality) {
+  return std::make_unique<FakeModelQualityLogEntry>(base::BindOnce(
+      [](optimization_guide::proto::WallpaperSearchQuality* out_quality,
+         const optimization_guide::proto::WallpaperSearchQuality& quality) {
+        *out_quality = quality;
+      },
+      out_quality));
+}
+
 }  // namespace
 
 class WallpaperSearchHandlerTest : public testing::Test {
@@ -94,7 +130,8 @@ class WallpaperSearchHandlerTest : public testing::Test {
                 side_panel::customize_chrome::mojom::WallpaperSearchHandler>(),
             profile_.get(),
             &mock_image_decoder_,
-            &mock_wallpaper_search_background_manager_) {}
+            &mock_wallpaper_search_background_manager_,
+            TEST_SESSION_ID) {}
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
@@ -413,7 +450,9 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   EXPECT_CALL(callback, Run(_, _))
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
-  std::move(done_callback).Run(base::ok(result), nullptr);
+  optimization_guide::proto::WallpaperSearchQuality quality;
+
+  std::move(done_callback).Run(base::ok(result), SaveQuality(&quality));
 
   std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
   std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));
@@ -439,6 +478,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   gfx::PNGCodec::EncodeBGRASkBitmap(
       resized_bitmap2, /*discard_transparency=*/false, &resized_encoded2);
   EXPECT_EQ(images[1]->image, base::Base64Encode(resized_encoded2));
+  EXPECT_EQ(TEST_SESSION_ID, quality.session_id());
 }
 
 TEST_F(WallpaperSearchHandlerTest,
@@ -532,6 +572,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
   EXPECT_CALL(callback, Run(_, _))
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
+  optimization_guide::proto::WallpaperSearchQuality quality;
+
   std::move(done_callback)
       .Run(
           base::unexpected(
@@ -539,11 +581,12 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
                   FromModelExecutionError(
                       optimization_guide::OptimizationGuideModelExecutionError::
                           ModelExecutionError::kGenericFailure)),
-          nullptr);
+          SaveQuality(&quality));
 
   EXPECT_EQ(status,
             side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
   EXPECT_EQ(images.size(), 0u);
+  EXPECT_EQ(TEST_SESSION_ID, quality.session_id());
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
@@ -586,11 +629,14 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
   EXPECT_CALL(callback, Run(_, _))
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
-  std::move(done_callback).Run(base::ok(result), nullptr);
+  optimization_guide::proto::WallpaperSearchQuality quality;
+
+  std::move(done_callback).Run(base::ok(result), SaveQuality(&quality));
 
   EXPECT_EQ(status,
             side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
   EXPECT_EQ(static_cast<int>(images.size()), response.images_size());
+  EXPECT_EQ(TEST_SESSION_ID, quality.session_id());
 }
 
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
@@ -626,6 +672,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
   EXPECT_CALL(callback, Run(_, _))
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
+  optimization_guide::proto::WallpaperSearchQuality quality;
+
   std::move(done_callback)
       .Run(
           base::unexpected(
@@ -633,11 +681,12 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
                   FromModelExecutionError(
                       optimization_guide::OptimizationGuideModelExecutionError::
                           ModelExecutionError::kRequestThrottled)),
-          nullptr);
+          SaveQuality(&quality));
 
   EXPECT_EQ(status, side_panel::customize_chrome::mojom::WallpaperSearchStatus::
                         kRequestThrottled);
   EXPECT_EQ(images.size(), 0u);
+  EXPECT_EQ(TEST_SESSION_ID, quality.session_id());
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
@@ -717,7 +766,9 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
       images;
   EXPECT_CALL(callback, Run(_, _)).WillOnce(MoveArg<1>(&images));
 
-  std::move(done_callback).Run(base::ok(result), nullptr);
+  optimization_guide::proto::WallpaperSearchQuality quality;
+
+  std::move(done_callback).Run(base::ok(result), SaveQuality(&quality));
 
   std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
   std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));
@@ -736,4 +787,5 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   // 2 bitmaps are different colors.
   EXPECT_EQ(bitmap.getColor(0, 0), bitmap2.getColor(0, 0));
   EXPECT_EQ(token, images[1]->id);
+  EXPECT_EQ(TEST_SESSION_ID, quality.session_id());
 }

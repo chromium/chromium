@@ -20,6 +20,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
@@ -71,12 +72,14 @@ WallpaperSearchHandler::WallpaperSearchHandler(
         pending_handler,
     Profile* profile,
     image_fetcher::ImageDecoder* image_decoder,
-    WallpaperSearchBackgroundManager* wallpaper_search_background_manager)
+    WallpaperSearchBackgroundManager* wallpaper_search_background_manager,
+    int64_t session_id)
     : profile_(profile),
       data_decoder_(std::make_unique<data_decoder::DataDecoder>()),
       image_decoder_(*image_decoder),
       wallpaper_search_background_manager_(
           *wallpaper_search_background_manager),
+      session_id_(session_id),
       receiver_(this, std::move(pending_handler)) {}
 
 WallpaperSearchHandler::~WallpaperSearchHandler() {}
@@ -292,6 +295,11 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     GetWallpaperSearchResultsCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  if (log_entry) {
+    log_entry->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>()
+        ->set_session_id(session_id_);
+  }
+
   if (!result.has_value()) {
     if (result.error().error() ==
         optimization_guide::OptimizationGuideModelExecutionError::

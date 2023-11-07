@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/rand_util.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
@@ -40,6 +41,16 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
+namespace {
+
+int64_t RandInt64() {
+  int64_t number;
+  base::RandBytes(&number, sizeof(number));
+  return number;
+}
+
+}  // namespace
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI,
                                       kChangeChromeThemeButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI,
@@ -59,7 +70,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
           NewTabPageUI::IsDriveModuleEnabledForProfile(profile_))),
       page_factory_receiver_(this),
       wallpaper_search_background_manager_(
-          std::make_unique<WallpaperSearchBackgroundManager>(profile_)) {
+          std::make_unique<WallpaperSearchBackgroundManager>(profile_)),
+      id_(RandInt64()) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUICustomizeChromeSidePanelHost);
 
@@ -253,7 +265,7 @@ void CustomizeChromeUI::BindInterface(
         pending_receiver) {
   wallpaper_search_handler_ = std::make_unique<WallpaperSearchHandler>(
       std::move(pending_receiver), profile_, image_decoder_.get(),
-      wallpaper_search_background_manager_.get());
+      wallpaper_search_background_manager_.get(), id_);
 }
 
 void CustomizeChromeUI::CreatePageHandler(

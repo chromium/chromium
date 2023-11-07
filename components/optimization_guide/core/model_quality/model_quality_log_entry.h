@@ -18,16 +18,16 @@ class ModelQualityLogEntry {
   explicit ModelQualityLogEntry(
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request);
 
-  ~ModelQualityLogEntry();
+  virtual ~ModelQualityLogEntry();
 
   proto::LoggingMetadata* logging_metadata() {
     return log_ai_data_request_.get()->mutable_logging_metadata();
   }
 
   template <typename FeatureType>
-  FeatureType::ModelQualityData* quality_data() {
-    return FeatureType::GetLoggingData(log_ai_data_request_)
-        .mutable_quality_data();
+  FeatureType::Quality* quality_data() {
+    return FeatureType::GetLoggingData(*log_ai_data_request_)
+        ->mutable_quality_data();
   }
 
  private:

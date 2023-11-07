@@ -39,7 +39,8 @@ class WallpaperSearchHandler
           pending_handler,
       Profile* profile,
       image_fetcher::ImageDecoder* image_decoder,
-      WallpaperSearchBackgroundManager* wallpaper_search_background_manager);
+      WallpaperSearchBackgroundManager* wallpaper_search_background_manager,
+      int64_t session_id);
 
   WallpaperSearchHandler(const WallpaperSearchHandler&) = delete;
   WallpaperSearchHandler& operator=(const WallpaperSearchHandler&) = delete;
@@ -78,6 +79,7 @@ class WallpaperSearchHandler
   const raw_ref<WallpaperSearchBackgroundManager>
       wallpaper_search_background_manager_;
   base::flat_map<base::Token, SkBitmap> wallpaper_search_results_;
+  const int64_t session_id_;
 
   mojo::Receiver<side_panel::customize_chrome::mojom::WallpaperSearchHandler>
       receiver_;

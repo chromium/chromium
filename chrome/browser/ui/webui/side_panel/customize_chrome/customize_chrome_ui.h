@@ -163,6 +163,7 @@ class CustomizeChromeUI
   std::unique_ptr<WallpaperSearchBackgroundManager>
       wallpaper_search_background_manager_;
   std::unique_ptr<WallpaperSearchHandler> wallpaper_search_handler_;
+  const int64_t id_;
 
   base::WeakPtrFactory<CustomizeChromeUI> weak_ptr_factory_{this};
 
