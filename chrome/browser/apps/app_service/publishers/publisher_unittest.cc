@@ -299,7 +299,6 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
 
   void ConfigureWebAppProvider() {
     auto url_loader = std::make_unique<web_app::TestWebAppUrlLoader>();
-    url_loader_ = url_loader.get();
 
     auto externally_managed_app_manager =
         std::make_unique<web_app::ExternallyManagedAppManager>(profile());
@@ -476,8 +475,6 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  raw_ptr<web_app::TestWebAppUrlLoader, DanglingUntriaged> url_loader_ =
-      nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
