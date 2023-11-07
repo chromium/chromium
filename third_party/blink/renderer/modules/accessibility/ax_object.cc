@@ -3829,8 +3829,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // Also children of <label> elements, for accname calculation purposes.
   // This checks to see whether this is a child of one of those.
   if (Node* parent_node = LayoutTreeBuilderTraversal::Parent(*node)) {
-    if (parent_node->IsCustomElement() ||
-        ToHTMLSlotElementIfSupportsAssignmentOrNull(parent_node)) {
+    if (parent_node->IsCustomElement() || IsA<HTMLSlotElement>(parent_node)) {
       return true;
     }
     // <span>s are ignored because they are considered uninteresting. Do not add
@@ -3892,7 +3891,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // information with their original location in the DOM. Therefore, we need to
   // ensure that in the accessibility tree no remnant information from the
   // unflattened DOM tree remains, such as the cached parent.
-  if (ToHTMLSlotElementIfSupportsAssignmentOrNull(element)) {
+  if (IsA<HTMLSlotElement>(element)) {
     return true;
   }
 
