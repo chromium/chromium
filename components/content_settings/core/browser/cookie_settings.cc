@@ -120,7 +120,8 @@ bool CookieSettings::IsAllowedByTpcdMetadataGrant(
 void CookieSettings::SetTemporaryCookieGrantForHeuristic(
     const GURL& url,
     const GURL& first_party_url,
-    base::TimeDelta ttl) {
+    base::TimeDelta ttl,
+    bool use_schemeless_patterns) {
   // If the new grant has an earlier TTL than the existing setting, keep the
   // existing TTL.
   SettingInfo info;
@@ -136,9 +137,24 @@ void CookieSettings::SetTemporaryCookieGrantForHeuristic(
   ContentSettingConstraints constraints;
   constraints.set_lifetime(ttl);
 
-  host_content_settings_map_->SetContentSettingDefaultScope(
-      url, first_party_url, ContentSettingsType::TPCD_HEURISTICS_GRANTS,
-      CONTENT_SETTING_ALLOW, constraints);
+  if (use_schemeless_patterns) {
+    ContentSettingsPattern url_pattern =
+        ContentSettingsPattern::ToHostOnlyPattern(
+            ContentSettingsPattern::FromURLToSchemefulSitePattern(url));
+    ContentSettingsPattern first_party_url_pattern =
+        ContentSettingsPattern::ToHostOnlyPattern(
+            ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                first_party_url));
+
+    host_content_settings_map_->SetContentSettingCustomScope(
+        url_pattern, first_party_url_pattern,
+        ContentSettingsType::TPCD_HEURISTICS_GRANTS, CONTENT_SETTING_ALLOW,
+        constraints);
+  } else {
+    host_content_settings_map_->SetContentSettingDefaultScope(
+        url, first_party_url, ContentSettingsType::TPCD_HEURISTICS_GRANTS,
+        CONTENT_SETTING_ALLOW, constraints);
+  }
 }
 
 void CookieSettings::SetCookieSettingForUserBypass(

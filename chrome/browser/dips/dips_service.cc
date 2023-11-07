@@ -651,12 +651,12 @@ void DIPSService::BackfillPopupHeuristicGrants(
       continue;
     }
 
-    // ContentSettingsPattern::FromURL returns a wildcard pattern for http
-    // schemes. So these modified URLs will match all sites with the same
-    // eTLD+1.
+    // Create cookie access grants scoped to the schemeless pattern, since the
+    // scheme is not available.
     GURL popup_url = GURL(base::StrCat({"http://", popup.popup_site}));
     GURL opener_url = GURL(base::StrCat({"http://", popup.opener_site}));
-    cookie_settings_->SetTemporaryCookieGrantForHeuristic(popup_url, opener_url,
-                                                          grant_duration);
+    cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+        popup_url, opener_url, grant_duration,
+        /*use_schemeless_patterns=*/true);
   }
 }
