@@ -248,6 +248,8 @@ bool InstallComInterfaces(UpdaterScope scope, bool is_internal) {
 bool AreComInterfacesPresent(UpdaterScope scope, bool is_internal) {
   VLOG(1) << __func__ << ": scope: " << scope
           << ": is_internal: " << is_internal;
+
+  bool are_interfaces_present = true;
   for (const auto& [iid, interface_name] : GetInterfaces(is_internal, scope)) {
     const HKEY root = UpdaterScopeToHKeyRoot(scope);
     const std::wstring iid_path = GetComIidRegistryPath(iid);
@@ -258,14 +260,15 @@ bool AreComInterfacesPresent(UpdaterScope scope, bool is_internal) {
       for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
         if (!base::win::RegKey(root, path.c_str(), KEY_QUERY_VALUE | key_flag)
                  .Valid()) {
-          VLOG(2) << __func__ << ": interface missing: " << iid_path;
-          return false;
+          VLOG(2) << __func__ << ": interface entry missing: " << interface_name
+                  << ": path: " << path << ": key_flag: " << key_flag;
+          are_interfaces_present = false;
         }
       }
     }
   }
-  VLOG(2) << __func__ << ": all interfaces present";
-  return true;
+  VLOG_IF(2, are_interfaces_present) << __func__ << ": all interfaces present";
+  return are_interfaces_present;
 }
 
 // Adds work items to `list` to install the interface `iid`.
