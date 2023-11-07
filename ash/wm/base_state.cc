@@ -121,7 +121,7 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
     const bool is_desired_primary_snapped =
         desired_snap_state == WindowStateType::kPrimarySnapped;
     if (shell->overview_controller()->InOverviewSession() &&
-        !window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+        !window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
       // |window| must already be in split view, and so we do not need to check
       // |SplitViewController::CanSnapWindow|, although in general it is more
       // restrictive than |WindowState::CanSnap|.

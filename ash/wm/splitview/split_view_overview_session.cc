@@ -69,7 +69,7 @@ SplitViewOverviewSession::SplitViewOverviewSession(
   window_observation_.Observe(window);
   WindowState::Get(window)->AddObserver(this);
 
-  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
     auto_snap_controller_ =
         std::make_unique<AutoSnapController>(window->GetRootWindow());
   }
@@ -80,7 +80,7 @@ SplitViewOverviewSession::~SplitViewOverviewSession() {
     return;
   }
   WindowState::Get(window_)->RemoveObserver(this);
-  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled() &&
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell() &&
       IsInOverviewSession()) {
     // `EndOverview()` will also try to end this again.
     base::AutoReset<bool> ignore(&is_shutting_down_, true);
@@ -146,8 +146,6 @@ void SplitViewOverviewSession::OnResizeLoopStarted(aura::Window* window) {
   // part of the window, we'll just end splitview and overview mode.
   if (WindowState::Get(window)->drag_details()->window_component !=
       GetWindowComponentForResize(window)) {
-    // Ending overview will also end clamshell split view unless
-    // `SnapGroupController::IsArm1AutomaticallyLockEnabled()` returns true.
     Shell::Get()->overview_controller()->EndOverview(
         OverviewEndAction::kSplitView);
     return;
@@ -193,7 +191,7 @@ void SplitViewOverviewSession::OnResizeLoopEnded(aura::Window* window) {
   // TODO(sophiewen): Only used by metrics. See if we can remove this.
   split_view_controller->NotifyWindowResized();
 
-  if (!window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+  if (!window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
     split_view_controller->MaybeEndOverviewOnWindowResize(window);
   }
   is_resizing_ = false;
@@ -224,8 +222,6 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
              window_state->drag_details()->bounds_change);
     if (window_state->drag_details()->bounds_change ==
         WindowResizer::kBoundsChange_Repositions) {
-      // Ending overview will also end clamshell split view unless
-      // `SnapGroupController::IsArm1AutomaticallyLockEnabled()` returns true.
       Shell::Get()->overview_controller()->EndOverview(
           OverviewEndAction::kSplitView);
       return;

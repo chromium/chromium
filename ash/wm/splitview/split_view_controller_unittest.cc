@@ -1368,8 +1368,7 @@ TEST_F(SplitViewControllerTest, SwapWindows) {
 
   // Verify that after swapping windows, the windows and their bounds have been
   // swapped.
-  split_view_controller()->SwapWindows(
-      SplitViewController::SwapWindowsSource::kDoubleTap);
+  split_view_controller()->SwapWindows();
   EXPECT_EQ(split_view_controller()->primary_window(), window2.get());
   EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_EQ(left_bounds, window2->GetBoundsInScreen());
@@ -1388,8 +1387,7 @@ TEST_F(SplitViewControllerTest, SwapWindows) {
   left_bounds = window2->GetBoundsInScreen();
   right_bounds = window1->GetBoundsInScreen();
 
-  split_view_controller()->SwapWindows(
-      SplitViewController::SwapWindowsSource::kDoubleTap);
+  split_view_controller()->SwapWindows();
   EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
   EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
   EXPECT_EQ(left_bounds, window1->GetBoundsInScreen());
@@ -1507,8 +1505,7 @@ TEST_F(SplitViewControllerTest, OverviewNotStealFocusOnSwapWindows) {
   split_view_controller()->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kPrimary);
   wm::ActivateWindow(window2.get());
-  split_view_controller()->SwapWindows(
-      SplitViewController::SwapWindowsSource::kDoubleTap);
+  split_view_controller()->SwapWindows();
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 }
 
@@ -3364,8 +3361,7 @@ TEST_F(SplitViewControllerTest, SwapPartialWindows) {
 
   // Verify that after swapping windows, the window widths remain the same, and
   // the divider is now at 1/3 of the work area.
-  split_view_controller()->SwapWindows(
-      SplitViewController::SwapWindowsSource::kDoubleTap);
+  split_view_controller()->SwapWindows();
   EXPECT_EQ(WindowState::Get(window1.get())->GetStateType(),
             chromeos::WindowStateType::kSecondarySnapped);
   EXPECT_EQ(WindowState::Get(window2.get())->GetStateType(),

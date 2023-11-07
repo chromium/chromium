@@ -40,8 +40,7 @@ void SplitViewTestApi::SnapWindow(
 }
 
 void SplitViewTestApi::SwapWindows() {
-  split_view_controller()->SwapWindows(
-      SplitViewController::SwapWindowsSource::kDoubleTap);
+  split_view_controller()->SwapWindows();
 }
 
 aura::Window* SplitViewTestApi::GetLeftWindow() const {

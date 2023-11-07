@@ -122,7 +122,7 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
   if (auto* split_view_overview_session =
           RootWindowController::ForWindow(window)
               ->split_view_overview_session();
-      window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled() &&
+      window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell() &&
       split_view_overview_session &&
       split_view_overview_session->window() != window) {
     if (!window_state->CanSnap()) {

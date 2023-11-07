@@ -179,12 +179,12 @@ ASH_EXPORT bool ShouldRoundThumbnailWindow(
     views::View* backdrop_view,
     const gfx::RectF& thumbnail_bounds_in_screen);
 
-// Returns true if either `kFasterSplitScreenSetup` is enabled or
-// `kSnapGroup` and `AutomaticLockGroup` is true. When this is true, snapping
-// one window will automatically start SplitViewOverviewSession.
-bool IsFasterSplitScreenOrSnapGroupArm1Enabled();
+// Returns true if either `kFasterSplitScreenSetup` or `kSnapGroup` is enabled.
+// When this is true, snapping one window will automatically start
+// SplitViewOverviewSession.
+bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell();
 
-// Starts SplitViewOverviewSession for `window`, if it wasn't already active.
+// Starts `SplitViewOverviewSession` for `window`, if it wasn't already active.
 void MaybeStartSplitViewOverview(aura::Window* window,
                                  WindowSnapActionSource snap_action_source);
 

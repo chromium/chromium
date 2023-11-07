@@ -152,15 +152,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     kFast,
   };
 
-  // Two ways that triggers the window(s) in the split view to be swapped to the
-  // other side. Note that these values are persisted to histograms so existing
-  // values should remain unchanged and new values should be added to the end.
-  enum class SwapWindowsSource {
-    kDoubleTap,
-    kSnapGroupSwapWindowsButton,
-    kMaxValue = kSnapGroupSwapWindowsButton,
-  };
-
   // Gets the |SplitViewController| for the root window of |window|. |window| is
   // important in clamshell mode. In tablet mode, the working assumption for now
   // is mirror mode (or just one display), and so |window| can be almost any
@@ -291,7 +282,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // window snapped, the window will be snapped to the other position. For all
   // other cases with `primary_window_` and `secondary_widnow_` available, the
   // two windows will be swapped together with their bounds.
-  void SwapWindows(SwapWindowsSource swap_windows_source);
+  void SwapWindows();
 
   // |window| should be |primary_window_| or |secondary_window_|, and this
   // function returns |LEFT| or |RIGHT| accordingly.

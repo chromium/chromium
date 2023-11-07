@@ -214,7 +214,7 @@ void RemoveSnappingWindowFromOverviewIfApplicable(
 }
 
 // If there is a window in the snap position, trigger a WMEvent to snap it in
-// the opposite position.
+// the corresponding position.
 void TriggerWMEventToSnapWindow(WindowState* window_state,
                                 WMEventType event_type) {
   CHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
@@ -808,10 +808,7 @@ void SplitViewController::AttachSnappingWindow(
       Shell::Get()->activation_client()->AddObserver(this);
     }
 
-    const bool is_flag_enabled =
-        window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled();
-
-    if (!is_flag_enabled) {
+    if (!window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
       // AutoSnapController will end overview in clamshell split view if a
       // window is not in transitional state. See
       // `AutoSnapController::AutoSnapWindowIfNeeded()`.
@@ -913,7 +910,7 @@ void SplitViewController::AttachSnappingWindow(
   base::RecordAction(base::UserMetricsAction("SplitView_SnapWindow"));
 }
 
-void SplitViewController::SwapWindows(SwapWindowsSource swap_windows_source) {
+void SplitViewController::SwapWindows() {
   DCHECK(InSplitViewMode());
 
   // Ignore `IsResizingWithDivider()` because it will be true in case of
@@ -951,19 +948,8 @@ void SplitViewController::SwapWindows(SwapWindowsSource swap_windows_source) {
   UpdateStateAndNotifyObservers();
   NotifyWindowSwapped();
 
-  // TODO(b/305251109): Remove this when the kebab button is removed.
-  switch (swap_windows_source) {
-    case SwapWindowsSource::kDoubleTap: {
-      base::RecordAction(
-          base::UserMetricsAction("SplitView_DoubleTapDividerSwapWindows"));
-      break;
-    }
-    case SwapWindowsSource::kSnapGroupSwapWindowsButton:
-      NOTREACHED();
-      break;
-  }
-  base::UmaHistogramEnumeration(kSplitViewSwapWindowsSource,
-                                swap_windows_source);
+  base::RecordAction(
+      base::UserMetricsAction("SplitView_DoubleTapDividerSwapWindows"));
 }
 
 SplitViewController::SnapPosition
@@ -2008,8 +1994,6 @@ void SplitViewController::MaybeEndOverviewOnWindowResize(aura::Window* window) {
   const int divider_end_position(GetDividerEndPosition());
   if (divider_position_ < divider_end_position * chromeos::kOneThirdSnapRatio ||
       divider_position_ > divider_end_position * chromeos::kTwoThirdSnapRatio) {
-    // Ending overview will also end clamshell split view unless
-    // `SnapGroupController::IsArm1AutomaticallyLockEnabled()` returns true.
     Shell::Get()->overview_controller()->EndOverview(
         OverviewEndAction::kSplitView);
     WindowState::Get(window)->Maximize();
@@ -2325,8 +2309,7 @@ void SplitViewController::OnWindowSnapped(
   SnapGroupController* snap_group_controller = SnapGroupController::Get();
   const bool snap_group_enabled_in_clamshell =
       IsSnapGroupEnabledInClamshellMode();
-  if (state_ == State::kBothSnapped && snap_group_enabled_in_clamshell &&
-      snap_group_controller->IsArm1AutomaticallyLockEnabled()) {
+  if (state_ == State::kBothSnapped && snap_group_enabled_in_clamshell) {
     // TODO(b/286963080): Move this to SnapGroupController.
     CHECK(primary_window_);
     CHECK(secondary_window_);

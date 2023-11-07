@@ -52,7 +52,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
       bool is_dragging);
 
   views::Widget* divider_widget() { return divider_widget_; }
+
   bool is_resizing_with_divider() const { return is_resizing_with_divider_; }
+
   const aura::Window::Windows& observed_windows() const {
     return observed_windows_;
   }
@@ -107,7 +109,7 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowAddedToRootWindow(aura::Window* window) override;
 
-  // ::wm::TransientWindowObserver:
+  // wm::TransientWindowObserver:
   void OnTransientChildAdded(aura::Window* window,
                              aura::Window* transient) override;
   void OnTransientChildRemoved(aura::Window* window,

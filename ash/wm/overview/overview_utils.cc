@@ -212,8 +212,7 @@ gfx::Rect GetGridBoundsInScreen(
   // When `kFasterSplitScreenSetup` or `kSnapGroup` is enabled, we would only
   // reach here if overview is in session and there is no divider.
   // TODO(b/296935443): Consolidate split view bounds calculations.
-  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled() &&
-      !Shell::Get()->IsInTabletMode()) {
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
     bounds = work_area;
     if (auto* split_view_overview_session =
             RootWindowController::ForWindow(target_root)

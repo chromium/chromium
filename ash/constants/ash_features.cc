@@ -2545,13 +2545,6 @@ BASE_FEATURE(kSmdsDbusMigration,
 // Controls whether the snap group feature is enabled or not.
 BASE_FEATURE(kSnapGroup, "SnapGroup", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to create the snap group automatically when two windows are
-// snapped if true. Otherwise, the user has to explicitly lock the two windows
-// when both are snapped via cliking on the lock button when hovering the mouse
-// over the shared edge of the two snapped windows.
-constexpr base::FeatureParam<bool> kAutomaticallyLockGroup{
-    &kSnapGroup, "AutomaticLockGroup", true};
-
 // Resets the speak-on-mute opt-in nudge relevant prefs to their default
 // settings, so the nudge can be shown again for debugging purposes.
 BASE_FEATURE(kSpeakOnMuteOptInNudgePrefsReset,

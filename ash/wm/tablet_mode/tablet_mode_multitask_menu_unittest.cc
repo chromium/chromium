@@ -531,8 +531,7 @@ TEST_F(TabletModeMultitaskMenuTest, AdjustedMenuBounds) {
             GetMultitaskMenu()->widget()->GetWindowBoundsInScreen().right());
 
   // Swap windows so the 1/3 window is on the left. Test that the menu fits.
-  split_view_controller->SwapWindows(
-      SplitViewController::SwapWindowsSource::kDoubleTap);
+  split_view_controller->SwapWindows();
   ShowMultitaskMenu(*window2);
   EXPECT_EQ(work_area.x(),
             GetMultitaskMenu()->widget()->GetWindowBoundsInScreen().x());

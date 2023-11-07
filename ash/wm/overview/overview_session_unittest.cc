@@ -8505,8 +8505,7 @@ TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
                     SplitViewController::SnapPosition::kSecondary,
                     /*window_for_minimum_size=*/nullptr)));
 
-  split_view_controller()->SwapWindows(
-      SplitViewController::SwapWindowsSource::kDoubleTap);
+  split_view_controller()->SwapWindows();
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kSecondarySnapped);
   EXPECT_EQ(split_view_controller()->default_snap_position(),

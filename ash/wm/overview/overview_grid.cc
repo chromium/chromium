@@ -2014,7 +2014,7 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
   // overview or the saved desk grid is visible.
   // TODO(b/307812315): Rename to `faster_splitscreen_widget_` if we'll always
   // show this.
-  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()
           ? !RootWindowController::ForWindow(root_window())
                  ->split_view_overview_session()
           : !no_items || IsShowingSavedDeskLibrary()) {
@@ -2031,7 +2031,7 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
     params.rounding_dp = kNoItemsIndicatorRoundingDp;
     params.preferred_height = kNoItemsIndicatorHeightDp;
     params.message = IDS_ASH_OVERVIEW_NO_RECENT_ITEMS;
-    if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+    if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
       params.message =
           no_items ? kFasterSplitScreenToastNoWindows : kFasterSplitScreenToast;
     }
@@ -2065,7 +2065,7 @@ void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
   const gfx::Rect grid_bounds(GetGridEffectiveBounds());
   no_windows_widget_->SetBoundsCenteredIn(grid_bounds, animate);
 
-  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
     // If there are no windows, set it in the center of the grid.
     if (window_list_.empty()) {
       return;
@@ -2308,10 +2308,10 @@ void OverviewGrid::OnSplitViewStateChanged(
     return;
   }
 
-  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
     // When an activated window is auto snapped, it will send a state change and
     // try to end overview here. Ignore split view state when
-    // `kFasterSplitScreenSetup` or `kSnapGroup` arm1 is enabled.
+    // `kFasterSplitScreenSetup` or `kSnapGroup` is enabled.
     return;
   }
 
@@ -2345,8 +2345,8 @@ void OverviewGrid::OnSplitViewStateChanged(
 }
 
 void OverviewGrid::OnSplitViewDividerPositionChanged() {
-  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
-    // If `IsFasterSplitScreenOrSnapGroupArm1Enabled` is true,
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+    // If `IsFasterSplitScreenOrSnapGroupEnabledInClamshell()` is true,
     // `SplitViewOverviewSession` will manually update the bounds so we don't
     // need to update here.
     return;

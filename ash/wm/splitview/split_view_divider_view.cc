@@ -5,18 +5,11 @@
 #include "ash/wm/splitview/split_view_divider_view.h"
 
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/system/screen_layout_observer.h"
 #include "ash/utility/cursor_setter.h"
 #include "ash/wm/snap_group/snap_group.h"
-#include "ash/wm/snap_group/snap_group_controller.h"
-#include "ash/wm/snap_group/snap_group_expanded_menu_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -28,28 +21,12 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
-
-namespace {
-
-constexpr int kKebabButtonDistanceFromBottom = 24;
-constexpr gfx::Size kKebabButtonSize{4, 24};
-constexpr int kDistanceBetweenKebabButtonAndExpandedMenu = 8;
-constexpr int kExpandedMenuHeight = 150;
-
-bool IsInTabletMode() {
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
-  return tablet_mode_controller && tablet_mode_controller->InTabletMode();
-}
-
-}  // namespace
 
 SplitViewDividerView::SplitViewDividerView(SplitViewController* controller,
                                            SplitViewDivider* divider)
@@ -73,20 +50,6 @@ SplitViewDividerView::SplitViewDividerView(SplitViewController* controller,
       is_jellyroll_enabled
           ? views::HighlightBorder::Type::kHighlightBorderNoShadow
           : views::HighlightBorder::Type::kHighlightBorder1));
-
-  if (IsSnapGroupEnabledInClamshellMode()) {
-    kebab_button_ = AddChildView(std::make_unique<IconButton>(
-        base::BindRepeating(&SplitViewDividerView::OnKebabButtonPressed,
-                            base::Unretained(this)),
-        IconButton::Type::kMediumFloating, &kSnapGroupKebabIcon,
-        IDS_ASH_SNAP_GROUP_MORE_OPTIONS,
-        /*is_togglable=*/false,
-        /*has_border=*/false));
-    kebab_button_->SetPaintToLayer();
-    kebab_button_->layer()->SetFillsBoundsOpaquely(false);
-    kebab_button_->SetPreferredSize(kKebabButtonSize);
-    kebab_button_->SetVisible(true);
-  }
 }
 
 SplitViewDividerView::~SplitViewDividerView() = default;
@@ -129,42 +92,28 @@ void SplitViewDividerView::Layout() {
   // `kSnapGroup` is enabled. If we are in clamshell mode without the feature
   // flag and params, then we must be transitioning from tablet mode, and the
   // divider will be destroyed and there is no need to update it.
-  if (!IsInTabletMode() && !IsSnapGroupEnabledInClamshellMode()) {
+  if (!Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      !IsSnapGroupEnabledInClamshellMode()) {
     return;
   }
 
   SetBoundsRect(GetLocalBounds());
   divider_handler_view_->Refresh(
       split_view_controller_->IsResizingWithDivider());
-
-  if (IsSnapGroupEnabledInClamshellMode()) {
-    const gfx::Size kebab_button_size = kebab_button_->GetPreferredSize();
-    const gfx::Rect kebab_button_bounds(
-        (width() - kebab_button_size.width()) / 2.f,
-        height() - kebab_button_size.height() - kKebabButtonDistanceFromBottom,
-        kebab_button_size.width(), kebab_button_size.height());
-    kebab_button_->SetBoundsRect(kebab_button_bounds);
-  }
 }
 
 void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
   gfx::Point screen_location = event.location();
   ConvertPointToScreen(this, &screen_location);
 
-  // Only set cursor type as the resize cursor when it's on the split view
-  // divider.
-  if (kebab_button_ &&
-      !kebab_button_->GetBoundsInScreen().Contains(screen_location)) {
-    // TODO(b/276801578): Use `kRowResize` cursor type for vertical split view.
-    cursor_setter_.UpdateCursor(split_view_controller_->root_window(),
-                                ui::mojom::CursorType::kColumnResize);
-  }
+  // Set cursor type as the resize cursor when it's on the split view divider.
+  cursor_setter_.UpdateCursor(split_view_controller_->root_window(),
+                              ui::mojom::CursorType::kColumnResize);
 }
 
 void SplitViewDividerView::OnMouseExited(const ui::MouseEvent& event) {
   // Since `notify_enter_exit_on_child_` in view.h is default to false, on mouse
-  // exit `this` the cursor will be reset, which includes resetting the cursor
-  // when hovering over the kebab button area.
+  // exit `this` the cursor will be reset.
   cursor_setter_.ResetCursor();
 }
 
@@ -239,8 +188,7 @@ void SplitViewDividerView::SwapWindows() {
     }
     return;
   }
-  split_view_controller_->SwapWindows(
-      SplitViewController::SwapWindowsSource::kDoubleTap);
+  split_view_controller_->SwapWindows();
 }
 
 void SplitViewDividerView::OnResizeStatusChanged() {
@@ -278,47 +226,6 @@ void SplitViewDividerView::OnResizeStatusChanged() {
 
   divider_handler_view_->Refresh(
       split_view_controller_->IsResizingWithDivider());
-}
-
-void SplitViewDividerView::OnKebabButtonPressed() {
-  should_show_expanded_menu_ = !should_show_expanded_menu_;
-  if (!should_show_expanded_menu_) {
-    snap_group_expanded_menu_widget_.reset();
-    snap_group_expanded_menu_view_ = nullptr;
-    return;
-  }
-
-  if (!snap_group_expanded_menu_widget_) {
-    snap_group_expanded_menu_widget_ = std::make_unique<views::Widget>();
-    snap_group_expanded_menu_widget_->Init(CreateWidgetInitParams(
-        split_view_controller_->root_window(), "SnapGroupExpandedMenuWidget"));
-    SnapGroupController* snap_group_controller = SnapGroupController::Get();
-    SnapGroup* snap_group = snap_group_controller->GetSnapGroupForGivenWindow(
-        split_view_controller_->primary_window());
-    CHECK(snap_group);
-    snap_group_expanded_menu_view_ =
-        snap_group_expanded_menu_widget_->SetContentsView(
-            std::make_unique<SnapGroupExpandedMenuView>(snap_group));
-  }
-  snap_group_expanded_menu_widget_->Show();
-  MaybeUpdateExpandedMenuWidgetBounds();
-}
-
-void SplitViewDividerView::MaybeUpdateExpandedMenuWidgetBounds() {
-  CHECK(snap_group_expanded_menu_widget_);
-  const auto kebab_button_bounds = kebab_button_->GetBoundsInScreen();
-  gfx::Rect divider_bounds_in_screen =
-      split_view_controller_->split_view_divider()->GetDividerBoundsInScreen(
-          /*is_dragging=*/false);
-  const gfx::Rect expanded_menu_bounds(
-      divider_bounds_in_screen.x() + kSplitviewDividerShortSideLength / 2 -
-          kExpandedMenuRoundedCornerRadius,
-      kebab_button_bounds.y() - kExpandedMenuHeight -
-          kDistanceBetweenKebabButtonAndExpandedMenu,
-      kExpandedMenuRoundedCornerRadius * 2, kExpandedMenuHeight);
-  divider_bounds_in_screen.ClampToCenteredSize(
-      gfx::Size(kExpandedMenuRoundedCornerRadius * 2, kExpandedMenuHeight));
-  snap_group_expanded_menu_widget_->SetBounds(expanded_menu_bounds);
 }
 
 BEGIN_METADATA(SplitViewDividerView, views::View)

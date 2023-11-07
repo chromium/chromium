@@ -6278,7 +6278,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.SwapWindowSource"
-    enum="SplitViewSwapWindowsSource" expires_after="2024-04-10">
+    enum="SplitViewSwapWindowsSource" expires_after="2023-12-10">
+  <obsolete>
+    Deprecated Nov 2023 as the swap entry point is deprecated.
+  </obsolete>
   <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>

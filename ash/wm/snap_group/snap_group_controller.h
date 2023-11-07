@@ -87,16 +87,6 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Returns true if the feature flag `kSnapGroup` is enabled and the feature
-  // param `kAutomaticallyLockGroup` is true, i.e. a snap group will be created
-  // automatically on two windows snapped.
-  bool IsArm1AutomaticallyLockEnabled() const;
-
-  // Returns true if the feature flag `kSnapGroup` is enabled and the feature
-  // param `kAutomaticallyLockGroup` is false, i.e. the user has to explicitly
-  // create the snap group when the lock option shows up on two windows snapped.
-  bool IsArm2ManuallyLockEnabled() const;
-
   // Minimizes the most recently used and unminimized snap groups.
   void MinimizeTopMostSnapGroup();
 

@@ -53,7 +53,7 @@ void SnapGroupController::OnWindowSnapped(
     aura::Window* window,
     WindowSnapActionSource snap_action_source) {
   // If `window` already belongs to a snap group, do nothing.
-  if (!IsArm1AutomaticallyLockEnabled() || GetSnapGroupForGivenWindow(window)) {
+  if (GetSnapGroupForGivenWindow(window)) {
     return;
   }
 
@@ -146,7 +146,7 @@ bool SnapGroupController::CanEnterOverview() const {
     return true;
   }
 
-  return IsArm1AutomaticallyLockEnabled() && can_enter_overview_;
+  return can_enter_overview_;
 }
 
 void SnapGroupController::AddObserver(Observer* observer) {
@@ -155,16 +155,6 @@ void SnapGroupController::AddObserver(Observer* observer) {
 
 void SnapGroupController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-bool SnapGroupController::IsArm1AutomaticallyLockEnabled() const {
-  return features::IsSnapGroupEnabled() &&
-         features::kAutomaticallyLockGroup.Get();
-}
-
-bool SnapGroupController::IsArm2ManuallyLockEnabled() const {
-  return features::IsSnapGroupEnabled() &&
-         !features::kAutomaticallyLockGroup.Get();
 }
 
 void SnapGroupController::MinimizeTopMostSnapGroup() {
