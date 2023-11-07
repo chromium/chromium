@@ -155,14 +155,14 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetAdapterState) {
       get_adapter_state.get(), "[]", browser()->profile());
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_dict());
-  api::bluetooth::AdapterState state;
-  ASSERT_TRUE(api::bluetooth::AdapterState::Populate(result->GetDict(), state));
+  auto state = api::bluetooth::AdapterState::FromValue(result->GetDict());
+  ASSERT_TRUE(state);
 
-  EXPECT_FALSE(state.available);
-  EXPECT_TRUE(state.powered);
-  EXPECT_FALSE(state.discovering);
-  EXPECT_EQ(kName, state.name);
-  EXPECT_EQ(kAdapterAddress, state.address);
+  EXPECT_FALSE(state->available);
+  EXPECT_TRUE(state->powered);
+  EXPECT_FALSE(state->discovering);
+  EXPECT_EQ(kName, state->name);
+  EXPECT_EQ(kAdapterAddress, state->address);
 }
 
 IN_PROC_BROWSER_TEST_F(BluetoothApiTest, DeviceEvents) {
