@@ -213,6 +213,7 @@ _UNESCAPE_SUBSTITUTIONS = {
     r'\n': '\n',
     r'\r': '\r',
     r'\0': '\0',
+    r'\\': '\\',
 }
 _ESCAPE_SUBSTITUTIONS = str.maketrans({
     unescaped: escaped

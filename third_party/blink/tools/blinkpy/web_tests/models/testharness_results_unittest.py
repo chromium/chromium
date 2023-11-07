@@ -251,8 +251,8 @@ class TestResultCheckerTest(unittest.TestCase):
                 This is a testharness.js-based test.
                 Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: ShadowRealm is not defined
                 [PASS] Query "geolocation" permission
-                [ FAIL, TIMEOUT ] Window interface: attribute\\n\\0\\revent
-                  assert_true: property should be enumerable\\n\\0\\r  expected true got false
+                [ FAIL, TIMEOUT ] Window interface: attribute\\n\\0\\r\\\\nevent
+                  assert_true: property should be enumerable\\n\\0\\r\\\\n  expected true got false
 
                 CONSOLE ERROR: Console error
                 Harness: the test ran to completion.
@@ -278,10 +278,10 @@ class TestResultCheckerTest(unittest.TestCase):
         self.assertIs(results[3].line_type, LineType.SUBTEST)
         self.assertEqual(results[3].statuses, {Status.FAIL, Status.TIMEOUT})
         self.assertEqual(results[3].subtest,
-                         'Window interface: attribute\n\0\revent')
+                         'Window interface: attribute\n\0\r\\nevent')
         self.assertEqual(
             results[3].message, 'assert_true: property should be enumerable'
-            '\n\0\r  expected true got false')
+            '\n\0\r\\n  expected true got false')
 
         self.assertIs(results[4].line_type, LineType.CONSOLE_ERROR)
         self.assertEqual(results[4].statuses, frozenset())
@@ -349,7 +349,7 @@ class TestResultCheckerTest(unittest.TestCase):
             TestharnessLine(LineType.HARNESS_ERROR, {Status.ERROR},
                             'SyntaxError'),
             TestharnessLine(LineType.SUBTEST, {Status.PASS, Status.TIMEOUT},
-                            'fake-message\n\r\0', 'subtest-1\n\r\0'),
+                            'fake-message\n\r\0\\n', 'subtest-1\n\r\0\\n'),
             TestharnessLine(LineType.SUBTEST, {Status.NOTRUN},
                             subtest='subtest-2'),
             TestharnessLine(LineType.FOOTER),
@@ -360,8 +360,8 @@ class TestResultCheckerTest(unittest.TestCase):
                 CONSOLE WARNING: warning before test
                 This is a testharness.js-based test.
                 Harness Error. harness_status.status = 1 , harness_status.message = SyntaxError
-                [PASS, TIMEOUT] subtest-1\\n\\r\\0
-                  fake-message\\n\\r\\0
+                [PASS, TIMEOUT] subtest-1\\n\\r\\0\\\\n
+                  fake-message\\n\\r\\0\\\\n
                 [NOTRUN] subtest-2
                 Harness: the test ran to completion.
                 """))
