@@ -69,17 +69,31 @@ PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
       prefetch_destruction_callback_(base::DoNothing()) {}
 
 PrefetchDocumentManager::~PrefetchDocumentManager() {
-  // On destruction, removes any owned prefetches from |PrefetchService|. Other
-  // prefetches associated by |this| are owned by |PrefetchService| and can
-  // still be used after the destruction of |this|.
   PrefetchService* prefetch_service = GetPrefetchService();
   if (!prefetch_service)
     return;
 
-  for (const auto& prefetch_iter : owned_prefetches_) {
-    DCHECK(prefetch_iter.second);
-    prefetch_service->RemovePrefetch(
-        prefetch_iter.second->GetPrefetchContainerKey());
+  // Invalidate weak pointers to `this` a little earlier to avoid callbacks to
+  // `this` (especially `PrefetchWillBeDestroyed()`) during `ResetPrefetch()`
+  // below.
+  weak_method_factory_.InvalidateWeakPtrs();
+
+  // On destruction, removes any prefetches that not yet start prefetching from
+  // |PrefetchService|. Other already started prefetches associated by |this|
+  // can still remain and be used after the destruction of |this|.
+  for (const auto& prefetch_iter : all_prefetches_) {
+    if (prefetch_iter.second) {
+      switch (prefetch_iter.second->GetLoadState()) {
+        case PrefetchContainer::LoadState::kNotStarted:
+        case PrefetchContainer::LoadState::kEligible:
+        case PrefetchContainer::LoadState::kFailedIneligible:
+        case PrefetchContainer::LoadState::kFailedHeldback:
+          prefetch_service->ResetPrefetch(prefetch_iter.second);
+          break;
+        case PrefetchContainer::LoadState::kStarted:
+          break;
+      }
+    }
   }
 }
 
@@ -257,6 +271,10 @@ void PrefetchDocumentManager::PrefetchUrl(
             mojo_no_vary_search_expected);
   }
   PrefetchService* prefetch_service = GetPrefetchService();
+  if (!prefetch_service) {
+    return;
+  }
+
   // Create a new |PrefetchContainer| and take ownership of it
   auto container = std::make_unique<PrefetchContainer>(
       render_frame_host().GetGlobalId(), document_token_, url, prefetch_type,
@@ -266,26 +284,13 @@ void PrefetchDocumentManager::PrefetchUrl(
           prefetch_service, PrefetchContainer::Key(document_token_, url)));
   container->SetDevToolsObserver(std::move(devtools_observer));
   DVLOG(1) << *container << ": created";
-  base::WeakPtr<PrefetchContainer> weak_container = container->GetWeakPtr();
-  owned_prefetches_[url] = std::move(container);
-  all_prefetches_[url] = weak_container;
+  all_prefetches_[url] = container->GetWeakPtr();
 
   referring_page_metrics_.prefetch_attempted_count++;
 
   // Send a reference of the new |PrefetchContainer| to |PrefetchService| to
   // start the prefetch process.
-  if (prefetch_service) {
-    prefetch_service->PrefetchUrl(weak_container);
-  }
-}
-
-std::unique_ptr<PrefetchContainer>
-PrefetchDocumentManager::ReleasePrefetchContainer(const GURL& url) {
-  DCHECK(owned_prefetches_.find(url) != owned_prefetches_.end());
-  std::unique_ptr<PrefetchContainer> prefetch_container =
-      std::move(owned_prefetches_[url]);
-  owned_prefetches_.erase(url);
-  return prefetch_container;
+  prefetch_service->AddPrefetchContainer(std::move(container));
 }
 
 bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
@@ -378,7 +383,6 @@ bool PrefetchDocumentManager::NoVarySearchSupportEnabled() const {
 
 std::tuple<bool, base::WeakPtr<PrefetchContainer>>
 PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
-  DCHECK(base::Contains(owned_prefetches_, prefetch->GetURL()));
   RenderFrameHost* rfh = &render_frame_host();
   // The document needs to be active, primary and in a visible WebContents for
   // the prefetch to be eligible.
@@ -440,14 +444,19 @@ void PrefetchDocumentManager::PrefetchWillBeDestroyed(
 void PrefetchDocumentManager::EvictPrefetch(
     base::WeakPtr<PrefetchContainer> prefetch) {
   DCHECK(prefetch);
-  const GURL url = prefetch->GetURL();
-  if (auto it = owned_prefetches_.find(url); it != owned_prefetches_.end()) {
-    owned_prefetches_.erase(it);
-  } else {
-    DCHECK(GetPrefetchService());
-    GetPrefetchService()->EvictPrefetch(prefetch->GetPrefetchContainerKey());
+  all_prefetches_.erase(prefetch->GetURL());
+  switch (prefetch->GetLoadState()) {
+    case PrefetchContainer::LoadState::kNotStarted:
+    case PrefetchContainer::LoadState::kEligible:
+    case PrefetchContainer::LoadState::kFailedIneligible:
+    case PrefetchContainer::LoadState::kFailedHeldback:
+      break;
+    case PrefetchContainer::LoadState::kStarted:
+      prefetch->SetPrefetchStatus(PrefetchStatus::kPrefetchEvicted);
+      break;
   }
-  all_prefetches_.erase(url);
+  DCHECK(GetPrefetchService());
+  GetPrefetchService()->ResetPrefetch(prefetch);
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PrefetchDocumentManager);

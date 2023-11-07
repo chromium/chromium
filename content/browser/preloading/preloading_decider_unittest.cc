@@ -56,15 +56,13 @@ class TestPrefetchService : public PrefetchService {
     ASSERT_LT(index, prefetches_.size());
     ASSERT_TRUE(prefetches_[index]);
     base::WeakPtr<PrefetchContainer> prefetch_container = prefetches_[index];
-    std::unique_ptr<PrefetchContainer> owned_prefetch_container =
-        prefetch_container->GetPrefetchDocumentManager()
-            ->ReleasePrefetchContainer(prefetch_container->GetURL());
     prefetches_.erase(prefetches_.begin() + index);
     PreloadingDecider::GetForCurrentDocument(
         RenderFrameHost::FromID(
             prefetch_container->GetReferringRenderFrameHostId()))
         ->OnPreloadDiscarded({prefetch_container->GetURL(),
                               blink::mojom::SpeculationAction::kPrefetch});
+    ResetPrefetch(std::move(prefetch_container));
   }
 
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;

@@ -106,6 +106,9 @@ class CONTENT_EXPORT PrefetchService {
   // |prefetch_container| to the default network context.
   virtual void CopyIsolatedCookies(const PrefetchContainer::Reader& reader);
 
+  void AddPrefetchContainer(
+      std::unique_ptr<PrefetchContainer> prefetch_container);
+
   // Removes the prefetch with the given |prefetch_container_key| from
   // |all_prefetches_|.
   void RemovePrefetch(const PrefetchContainer::Key& prefetch_container_key);
@@ -115,6 +118,8 @@ class CONTENT_EXPORT PrefetchService {
   // status to |PrefetchStatus::kPrefetchEvicted| before destruction to record
   // this.
   void EvictPrefetch(const PrefetchContainer::Key& prefetch_container_key);
+
+  void ResetPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Called by PrefetchDocumentManager when it finishes processing the latest
   // update of speculation candidates.
@@ -233,15 +238,11 @@ class CONTENT_EXPORT PrefetchService {
   std::tuple<base::WeakPtr<PrefetchContainer>, base::WeakPtr<PrefetchContainer>>
   PopNextPrefetchContainer();
 
-  // Once the network request for a prefetch starts, ownership is transferred
-  // from the referring |PrefetchDocumentManager| to |this|. After
-  // |PrefetchContainerLifetimeInPrefetchService| amount of time, the prefetch
-  // is deleted. Note that if |PrefetchContainerLifetimeInPrefetchService| is 0
-  // or less, then it is kept forever.
-  void TakeOwnershipOfPrefetch(
-      base::WeakPtr<PrefetchContainer> prefetch_container);
+  // After |PrefetchContainerLifetimeInPrefetchService| amount of time, the
+  // prefetch is deleted. Note that if
+  // |PrefetchContainerLifetimeInPrefetchService| is 0 or less, then it is kept
+  // forever.
   void OnPrefetchTimeout(base::WeakPtr<PrefetchContainer> prefetch);
-  void ResetPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Starts the given |prefetch_container|. If |prefetch_to_evict| is specified,
   // it is evicted immediately before starting |prefetch_container|.

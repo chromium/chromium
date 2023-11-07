@@ -353,8 +353,10 @@ PrefetchOriginProber* PrefetchService::GetPrefetchOriginProber() const {
   return origin_prober_.get();
 }
 
-void PrefetchService::PrefetchUrl(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
+void PrefetchService::AddPrefetchContainer(
+    std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
+  base::WeakPtr<PrefetchContainer> prefetch_container =
+      owned_prefetch_container->GetWeakPtr();
   DCHECK(prefetch_container);
   auto prefetch_container_key = prefetch_container->GetPrefetchContainerKey();
 
@@ -373,8 +375,16 @@ void PrefetchService::PrefetchUrl(
   if (prefetch_iter != all_prefetches_.end() && prefetch_iter->second) {
     ResetPrefetch(prefetch_iter->second);
   }
+
+  owned_prefetches_[prefetch_container_key] =
+      std::move(owned_prefetch_container);
   all_prefetches_[prefetch_container_key] = prefetch_container;
 
+  PrefetchUrl(std::move(prefetch_container));
+}
+
+void PrefetchService::PrefetchUrl(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
   if (delegate_) {
     // If pre* actions are disabled then don't prefetch.
     switch (delegate_->IsSomePreloadingEnabled()) {
@@ -929,24 +939,6 @@ PrefetchService::PopNextPrefetchContainer() {
   return std::make_tuple(next_prefetch_container, prefetch_to_evict);
 }
 
-void PrefetchService::TakeOwnershipOfPrefetch(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
-  DCHECK(prefetch_container);
-
-  // Take ownership of the |PrefetchContainer| from the
-  // |PrefetchDocumentManager|.
-  PrefetchDocumentManager* prefetch_document_manager =
-      prefetch_container->GetPrefetchDocumentManager();
-  DCHECK(prefetch_document_manager);
-  std::unique_ptr<PrefetchContainer> owned_prefetch_container =
-      prefetch_document_manager->ReleasePrefetchContainer(
-          prefetch_container->GetURL());
-  DCHECK(owned_prefetch_container.get() == prefetch_container.get());
-
-  owned_prefetches_[prefetch_container->GetPrefetchContainerKey()] =
-      std::move(owned_prefetch_container);
-}
-
 void PrefetchService::OnPrefetchTimeout(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   ResetPrefetch(prefetch_container);
@@ -1019,8 +1011,6 @@ void PrefetchService::StartSinglePrefetch(
              << ": not prefetched (holdback control group)";
     return;
   }
-
-  TakeOwnershipOfPrefetch(prefetch_container);
 
   prefetch_container->SetLoadState(PrefetchContainer::LoadState::kStarted);
 

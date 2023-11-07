@@ -75,11 +75,6 @@ class CONTENT_EXPORT PrefetchDocumentManager
       blink::mojom::SpeculationInjectionWorld world,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
-  // Releases ownership of the |PrefetchContainer| associated with |url|. The
-  // prefetch is removed from |owned_prefetches_|, but a pointer to it remains
-  // in |all_prefetches_|.
-  std::unique_ptr<PrefetchContainer> ReleasePrefetchContainer(const GURL& url);
-
   // Checking the canary cache can be a slow and blocking operation (see
   // crbug.com/1266018), so we only do this for the first non-decoy prefetch we
   // make on the page.
@@ -149,14 +144,8 @@ class CONTENT_EXPORT PrefetchDocumentManager
   blink::DocumentToken document_token_;
 
   // This map holds references to all |PrefetchContainer| associated with
-  // |this|, regardless of ownership.
+  // |this|.
   std::map<GURL, base::WeakPtr<PrefetchContainer>> all_prefetches_;
-
-  // This map holds all |PrefetchContainer| currently owned by |this|. |this|
-  // owns all |PrefetchContainer| from when they are created in |PrefetchUrl|
-  // until |PrefetchService| starts the network request for the prefetch, at
-  // which point |PrefetchService| takes ownership.
-  std::map<GURL, std::unique_ptr<PrefetchContainer>> owned_prefetches_;
 
   // Stores whether or not canary checks have been started for this page.
   bool have_canary_checks_started_{false};
