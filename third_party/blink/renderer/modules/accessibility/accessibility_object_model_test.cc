@@ -279,9 +279,7 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
      aria-details=details
      aria-invalid=true
      aria-errormessage=error>
-    <div role=listbox>
-      <div id=active role=option></div>
-    </div>
+    <div id=active role=option></div>
     <div id=active2 role=gridcell></div>
     <div id=details role=contentinfo></div>
     <div id=details2 role=form></div>
