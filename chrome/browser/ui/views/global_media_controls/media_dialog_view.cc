@@ -668,5 +668,5 @@ MediaDialogView::BuildMediaItemUIView(
                           entry_point_));
 }
 
-BEGIN_METADATA(MediaDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(MediaDialogView)
 END_METADATA

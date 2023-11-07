@@ -19,8 +19,9 @@ class StopCastingButton;
 // media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
 class MediaItemUICastFooterView
     : public global_media_controls::MediaItemUIFooter {
+  METADATA_HEADER(MediaItemUICastFooterView,
+                  global_media_controls::MediaItemUIFooter)
  public:
-  METADATA_HEADER(MediaItemUICastFooterView);
   explicit MediaItemUICastFooterView(
       base::RepeatingClosure stop_casting_callback,
       media_message_center::MediaColorTheme media_color_theme);

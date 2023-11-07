@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_observer.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/button/button.h"
 
@@ -20,6 +21,8 @@ class DeviceEntryButton;
 // available cast devices and volume controls.
 class MediaItemUIFooterView : public global_media_controls::MediaItemUIFooter,
                               public MediaItemUIDeviceSelectorObserver {
+  METADATA_HEADER(MediaItemUIFooterView,
+                  global_media_controls::MediaItemUIFooter)
  public:
   class Delegate {
    public:

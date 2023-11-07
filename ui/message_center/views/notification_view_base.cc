@@ -191,6 +191,9 @@ void CompactTitleMessageView::set_message(const std::u16string& message) {
   message_->SetText(message);
 }
 
+BEGIN_METADATA(CompactTitleMessageView)
+END_METADATA
+
 // ////////////////////////////////////////////////////////////
 // NotificationViewBase
 // ////////////////////////////////////////////////////////////

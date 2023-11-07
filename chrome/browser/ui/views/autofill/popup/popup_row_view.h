@@ -40,6 +40,7 @@ class PopupViewViews;
 // of the row can be achieved by injecting the respective `PopupRowStrategy`
 // objects in the constructor.
 class PopupRowView : public views::View, public views::ViewObserver {
+  METADATA_HEADER(PopupRowView, views::View)
  public:
   // Enum class describing the different cells that a `PopupRowView` can
   // contain.
@@ -99,7 +100,6 @@ class PopupRowView : public views::View, public views::ViewObserver {
     const char* action_name_;
   };
 
-  METADATA_HEADER(PopupRowView);
   PopupRowView(AccessibilitySelectionDelegate& a11y_selection_delegate,
                SelectionDelegate& selection_delegate,
                base::WeakPtr<AutofillPopupController> controller,
@@ -156,6 +156,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // handling only, `PopupViewViews` controls the logic of opening/closing.
   class ExpandChildSuggestionsView : public views::View {
    public:
+    METADATA_HEADER(ExpandChildSuggestionsView);
     ExpandChildSuggestionsView();
     ExpandChildSuggestionsView(const ExpandChildSuggestionsView&) = delete;
     ExpandChildSuggestionsView& operator=(const ExpandChildSuggestionsView&) =

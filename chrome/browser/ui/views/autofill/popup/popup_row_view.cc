@@ -156,6 +156,9 @@ void PopupRowView::ExpandChildSuggestionsView::SetChecked(bool checked) {
                            /*send_native_event=*/true);
 }
 
+BEGIN_METADATA(PopupRowView, ExpandChildSuggestionsView, views::View)
+END_METADATA
+
 PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
     ScopedNewBadgeTrackerWithAcceptAction(
         std::unique_ptr<ScopedNewBadgeTracker> tracker,
@@ -507,7 +510,7 @@ void PopupRowView::UpdateBackground() {
                               views::Emphasis::kMedium)));
 }
 
-BEGIN_METADATA(PopupRowView, views::View)
+BEGIN_METADATA(PopupRowView)
 ADD_PROPERTY_METADATA(absl::optional<PopupRowView::CellType>, SelectedCell)
 END_METADATA
 

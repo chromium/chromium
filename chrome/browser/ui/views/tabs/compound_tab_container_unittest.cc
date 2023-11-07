@@ -17,6 +17,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -24,6 +26,7 @@
 namespace {
 
 class FakeTabDragContext : public TabDragContextBase {
+  METADATA_HEADER(FakeTabDragContext, TabDragContextBase)
  public:
   FakeTabDragContext() = default;
   ~FakeTabDragContext() override = default;
@@ -35,6 +38,9 @@ class FakeTabDragContext : public TabDragContextBase {
   void CompleteEndDragAnimations() override {}
   int GetTabDragAreaWidth() const override { return width(); }
 };
+
+BEGIN_METADATA(FakeTabDragContext)
+END_METADATA
 
 class FakeTabContainerController final : public TabContainerController {
  public:

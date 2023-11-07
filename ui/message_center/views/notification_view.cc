@@ -156,6 +156,7 @@ class NotificationTextButton : public views::MdTextButton {
 // InlineSettingsRadioButton ///////////////////////////////////////////////////
 
 class InlineSettingsRadioButton : public views::RadioButton {
+  METADATA_HEADER(InlineSettingsRadioButton, views::RadioButton)
  public:
   explicit InlineSettingsRadioButton(const std::u16string& label_text)
       : views::RadioButton(label_text, 1 /* group */) {
@@ -176,6 +177,9 @@ class InlineSettingsRadioButton : public views::RadioButton {
     return GetColorProvider()->GetColor(ui::kColorLabelForeground);
   }
 };
+
+BEGIN_METADATA(InlineSettingsRadioButton)
+END_METADATA
 
 // NotificationInkDropImpl /////////////////////////////////////////////////////
 

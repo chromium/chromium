@@ -603,5 +603,5 @@ void MediaItemUIDeviceSelectorView::RegisterAudioDeviceCallbacks() {
                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
-BEGIN_METADATA(MediaItemUIDeviceSelectorView, views::View)
+BEGIN_METADATA(MediaItemUIDeviceSelectorView)
 END_METADATA

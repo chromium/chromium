@@ -48,8 +48,9 @@ class MediaItemUIDeviceSelectorView
       public IconLabelBubbleView::Delegate,
       public MediaItemUIFooterView::Delegate,
       public global_media_controls::mojom::DeviceListClient {
+  METADATA_HEADER(MediaItemUIDeviceSelectorView,
+                  global_media_controls::MediaItemUIDeviceSelector)
  public:
-  METADATA_HEADER(MediaItemUIDeviceSelectorView);
 
   // media_color_theme is only set when this device selector view is used on
   // Chrome OS ash and media::kGlobalMediaControlsCrOSUpdatedUI is enabled.

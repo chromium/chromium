@@ -193,3 +193,6 @@ void MediaItemUIFooterView::OnOverflowButtonClicked() {
                                 ? &kMediaControlsArrowDropUpIcon
                                 : &kMediaControlsArrowDropDownIcon);
 }
+
+BEGIN_METADATA(MediaItemUIFooterView)
+END_METADATA
