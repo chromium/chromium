@@ -114,6 +114,30 @@ const base::FeatureParam<int> kFledgeScoreReportingBits{
 const base::FeatureParam<int> kFledgeAdCostReportingBits{
     &kFledgeRounding, "fledge_ad_cost_reporting_bits", 8};
 
+InterestGroupAuctionReporter::PrivateAggregationKey::PrivateAggregationKey(
+    url::Origin reporting_origin,
+    absl::optional<url::Origin> aggregation_coordinator_origin)
+    : reporting_origin(std::move(reporting_origin)),
+      aggregation_coordinator_origin(
+          std::move(aggregation_coordinator_origin)) {}
+
+InterestGroupAuctionReporter::PrivateAggregationKey::PrivateAggregationKey(
+    const PrivateAggregationKey& other) = default;
+
+InterestGroupAuctionReporter::PrivateAggregationKey&
+InterestGroupAuctionReporter::PrivateAggregationKey::operator=(
+    const PrivateAggregationKey& other) = default;
+
+InterestGroupAuctionReporter::PrivateAggregationKey::PrivateAggregationKey(
+    PrivateAggregationKey&& other) = default;
+
+InterestGroupAuctionReporter::PrivateAggregationKey&
+InterestGroupAuctionReporter::PrivateAggregationKey::operator=(
+    PrivateAggregationKey&& other) = default;
+
+InterestGroupAuctionReporter::PrivateAggregationKey::~PrivateAggregationKey() =
+    default;
+
 InterestGroupAuctionReporter::SellerWinningBidInfo::SellerWinningBidInfo() =
     default;
 InterestGroupAuctionReporter::SellerWinningBidInfo::SellerWinningBidInfo(
@@ -152,7 +176,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     std::vector<GURL> debug_win_report_urls,
     std::vector<GURL> debug_loss_report_urls,
     base::flat_set<std::string> k_anon_keys_to_join,
-    std::map<url::Origin, PrivateAggregationRequests>
+    std::map<PrivateAggregationKey, PrivateAggregationRequests>
         private_aggregation_requests_reserved,
     std::map<std::string, PrivateAggregationRequests>
         private_aggregation_requests_non_reserved)
@@ -189,6 +213,8 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
           private_aggregation_manager_,
           main_frame_origin_,
           winning_bid_info_.storage_interest_group->interest_group.owner,
+          winning_bid_info_.storage_interest_group->interest_group
+              .aggregation_coordinator_origin,
           winning_bid_info_.allowed_reporting_origins)),
       browser_context_(browser_context) {
   DCHECK(interest_group_manager_);
@@ -265,7 +291,7 @@ InterestGroupAuctionReporter::OnNavigateToWinningAdCallback(
 void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
     PrivateAggregationManager* private_aggregation_manager,
     const url::Origin& main_frame_origin,
-    std::map<url::Origin,
+    std::map<PrivateAggregationKey,
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
         private_aggregation_requests) {
   // Empty vectors should've been filtered out.
@@ -280,10 +306,11 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
     return;
   }
 
-  for (auto& [origin, requests] : private_aggregation_requests) {
+  for (auto& [agg_key, requests] : private_aggregation_requests) {
     SplitContributionsIntoBatchesThenSendToHost(
         std::move(requests), *private_aggregation_manager,
-        /*reporting_origin=*/origin, main_frame_origin);
+        /*reporting_origin=*/agg_key.reporting_origin,
+        std::move(agg_key.aggregation_coordinator_origin), main_frame_origin);
   }
 }
 
@@ -500,7 +527,6 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
 
   log_private_aggregation_requests_callback_.Run(pa_requests);
 
-  const url::Origin& seller = seller_info->auction_config->seller;
   PrivateAggregationTimings timings;
   timings.script_run_time = reporting_latency;
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
@@ -520,7 +546,10 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     // seller.
     if (converted_request.has_value() &&
         !converted_request.value().event_type.has_value()) {
-      private_aggregation_requests_reserved_[seller].emplace_back(
+      PrivateAggregationKey agg_key = {
+          seller_info->auction_config->seller,
+          seller_info->auction_config->aggregation_coordinator_origin};
+      private_aggregation_requests_reserved_[std::move(agg_key)].emplace_back(
           std::move(converted_request.value().request));
     }
   }
@@ -798,8 +827,10 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
 
   log_private_aggregation_requests_callback_.Run(pa_requests);
 
-  const url::Origin& bidder =
-      winning_bid_info_.storage_interest_group->interest_group.owner;
+  PrivateAggregationKey agg_key = {
+      winning_bid_info_.storage_interest_group->interest_group.owner,
+      winning_bid_info_.storage_interest_group->interest_group
+          .aggregation_coordinator_origin};
   PrivateAggregationTimings timings;
   timings.script_run_time = reporting_latency;
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
@@ -825,7 +856,7 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
         private_aggregation_requests_non_reserved_[event_type.value()]
             .emplace_back(std::move(converted_request_value.request));
       } else {
-        private_aggregation_requests_reserved_[bidder].emplace_back(
+        private_aggregation_requests_reserved_[agg_key].emplace_back(
             std::move(converted_request_value.request));
       }
     }

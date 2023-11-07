@@ -57,6 +57,9 @@
 namespace content {
 namespace {
 
+using PrivateAggregationKey =
+    InterestGroupAuctionReporter::PrivateAggregationKey;
+
 InterestGroupAuctionReporter::SellerWinningBidInfo CreateSellerWinningBidInfo(
     blink::AuctionConfig* auction_config) {
   InterestGroupAuctionReporter::SellerWinningBidInfo out;
@@ -645,7 +648,7 @@ class InterestGroupAuctionReporterTest
   absl::optional<InterestGroupAuctionReporter::SellerWinningBidInfo>
       component_seller_winning_bid_info_;
   // The private aggregation requests passed in to the constructor.
-  std::map<url::Origin,
+  std::map<PrivateAggregationKey,
            InterestGroupAuctionReporter::PrivateAggregationRequests>
       private_aggregation_requests_reserved_;
 
@@ -1435,12 +1438,17 @@ TEST_F(InterestGroupAuctionReporterTest, RecordKAnonKeysToJoinLateNavigation) {
 // worklet that's invoked. This covers the case where a navigation occurs before
 // the seller's reporting script completes.
 TEST_F(InterestGroupAuctionReporterTest, PrivateAggregationRequests) {
-  private_aggregation_requests_reserved_[kSellerOrigin].push_back(
-      kScoreAdPrivateAggregationRequest.Clone());
-  private_aggregation_requests_reserved_[kWinningBidderOrigin].push_back(
-      kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
-  private_aggregation_requests_reserved_[kLosingBidderOrigin].push_back(
-      kLosingBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_requests_reserved_[PrivateAggregationKey(kSellerOrigin,
+                                                               absl::nullopt)]
+      .push_back(kScoreAdPrivateAggregationRequest.Clone());
+  private_aggregation_requests_reserved_[PrivateAggregationKey(
+                                             kWinningBidderOrigin,
+                                             absl::nullopt)]
+      .push_back(kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_requests_reserved_[PrivateAggregationKey(
+                                             kLosingBidderOrigin,
+                                             absl::nullopt)]
+      .push_back(kLosingBidderGenerateBidPrivateAggregationRequest.Clone());
 
   SetUpAndStartSingleSellerAuction();
 
@@ -1491,12 +1499,17 @@ TEST_F(InterestGroupAuctionReporterTest, PrivateAggregationRequests) {
 // all reporting scripts have completed.
 TEST_F(InterestGroupAuctionReporterTest,
        PrivateAggregationRequestsLateNavigation) {
-  private_aggregation_requests_reserved_[kSellerOrigin].push_back(
-      kScoreAdPrivateAggregationRequest.Clone());
-  private_aggregation_requests_reserved_[kWinningBidderOrigin].push_back(
-      kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
-  private_aggregation_requests_reserved_[kLosingBidderOrigin].push_back(
-      kLosingBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_requests_reserved_[PrivateAggregationKey(kSellerOrigin,
+                                                               absl::nullopt)]
+      .push_back(kScoreAdPrivateAggregationRequest.Clone());
+  private_aggregation_requests_reserved_[PrivateAggregationKey(
+                                             kWinningBidderOrigin,
+                                             absl::nullopt)]
+      .push_back(kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_requests_reserved_[PrivateAggregationKey(
+                                             kLosingBidderOrigin,
+                                             absl::nullopt)]
+      .push_back(kLosingBidderGenerateBidPrivateAggregationRequest.Clone());
 
   SetUpAndStartSingleSellerAuction();
   EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
@@ -1768,8 +1781,10 @@ TEST_F(InterestGroupAuctionReporterTest, DestroyedDuringReportWin) {
 // Test that nothing is recorded and no reports are sent in the case that the
 // reporting scripts are successfully run, but the frame is never navigated to.
 TEST_F(InterestGroupAuctionReporterTest, NoNavigation) {
-  private_aggregation_requests_reserved_[kWinningBidderOrigin].push_back(
-      kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_requests_reserved_[PrivateAggregationKey(
+                                             kWinningBidderOrigin,
+                                             absl::nullopt)]
+      .push_back(kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
   private_aggregation_event_map_["event_type"].push_back(
       kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
 
@@ -1806,8 +1821,10 @@ TEST_F(InterestGroupAuctionReporterTest, NoNavigation) {
 // Test multiple navigations result in only a single set of reports, and
 // metadata being recorded exactly once once by the InterestGroupManager.
 TEST_F(InterestGroupAuctionReporterTest, MultipleNavigations) {
-  private_aggregation_requests_reserved_[kWinningBidderOrigin].push_back(
-      kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_requests_reserved_[PrivateAggregationKey(
+                                             kWinningBidderOrigin,
+                                             absl::nullopt)]
+      .push_back(kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
   private_aggregation_event_map_["event_type"].push_back(
       kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
 

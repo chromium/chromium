@@ -1445,7 +1445,8 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
             *web_contents()->GetBrowserContext()),
         /*main_frame_origin=*/
         web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")));
+        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")),
+        /*winner_aggregation_coordinator_origin=*/absl::nullopt);
   }
 
  private:

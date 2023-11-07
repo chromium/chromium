@@ -5017,6 +5017,7 @@ class FencedFrameReportEventBrowserTest
         /*main_frame_origin=*/
         web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
         /*winner_origin=*/url::Origin::Create(GURL("https://a.test")),
+        /*winner_aggregation_coordinator_origin=*/absl::nullopt,
         /*allowed_reporting_origins=*/
         {{url::Origin::Create(https_server()->GetURL("a.test", "/")),
           url::Origin::Create(https_server()->GetURL("b.test", "/")),
@@ -6979,7 +6980,8 @@ class FencedFrameAutomaticBeaconBrowserTest
             ->GetPrivateAggregationManager(),
         /*main_frame_origin=*/
         web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")));
+        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")),
+        /*winner_aggregation_coordinator_origin=*/absl::nullopt);
   }
 
   // A helper function for specifying automatic beacon tests.

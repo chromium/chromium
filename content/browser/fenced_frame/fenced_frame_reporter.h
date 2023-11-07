@@ -144,6 +144,10 @@ class CONTENT_EXPORT FencedFrameReporter
   // `winner_origin` is the winning buyer's origin. Can be an opaque origin in
   // test iff the test does not have for event private aggregation requests.
   //
+  // `winner_aggregation_coordinator_origin` is the origin of the aggregation
+  // coordinator for the winning buyer. Set to absl::nullopt if the default
+  // coordinator should be used.
+  //
   // `allowed_reporting_origins` is the winning ad's allowedReportingOrigins. If
   //  any macro report is attempted to an unlisted origin, all further reports
   //  after it will be cancelled.
@@ -154,6 +158,7 @@ class CONTENT_EXPORT FencedFrameReporter
       PrivateAggregationManager* private_aggregation_manager,
       const url::Origin& main_frame_origin,
       const url::Origin& winner_origin,
+      const absl::optional<url::Origin>& winner_aggregation_coordinator_origin,
       const absl::optional<std::vector<url::Origin>>&
           allowed_reporting_origins = absl::nullopt);
 
@@ -167,6 +172,8 @@ class CONTENT_EXPORT FencedFrameReporter
       const url::Origin& main_frame_origin,
       PrivateAggregationManager* private_aggregation_manager = nullptr,
       const absl::optional<url::Origin>& winner_origin = absl::nullopt,
+      const absl::optional<url::Origin>& winner_aggregation_coordinator_origin =
+          absl::nullopt,
       const absl::optional<std::vector<url::Origin>>&
           allowed_reporting_origins = absl::nullopt);
 
@@ -422,6 +429,11 @@ class CONTENT_EXPORT FencedFrameReporter
 
   // The winning buyer's origin. Set to absl::nullopt for non-FLEDGE reporter.
   const absl::optional<url::Origin> winner_origin_;
+
+  // The aggregation coordinator origin for the winning buyer. Set to
+  // absl::nullopt for non-FLEDGE reporter or if the default coordinator should
+  // be used.
+  const absl::optional<url::Origin> winner_aggregation_coordinator_origin_;
 
   // Origins allowed to receive macro expanded reports.
   const absl::optional<std::vector<url::Origin>> allowed_reporting_origins_;

@@ -171,6 +171,33 @@ class CONTENT_EXPORT InterestGroupAuction
   };
 
   struct CONTENT_EXPORT BidState {
+    // Used as a key to group Private Aggregation API requests from worklets in
+    // a map. The `reporting_origin` and `aggregation_coordinator_origin` are
+    // passed into the Private Aggregation API.
+    struct PrivateAggregationPhaseKey {
+      PrivateAggregationPhaseKey(
+          url::Origin reporting_origin,
+          PrivateAggregationPhase phase,
+          absl::optional<url::Origin> aggregation_coordinator_origin);
+      PrivateAggregationPhaseKey(const PrivateAggregationPhaseKey& other);
+      PrivateAggregationPhaseKey& operator=(
+          const PrivateAggregationPhaseKey& other);
+      PrivateAggregationPhaseKey(PrivateAggregationPhaseKey&& other);
+      PrivateAggregationPhaseKey& operator=(PrivateAggregationPhaseKey&& other);
+      ~PrivateAggregationPhaseKey();
+
+      bool operator<(const PrivateAggregationPhaseKey& other) const {
+        return std::tie(reporting_origin, phase,
+                        aggregation_coordinator_origin) <
+               std::tie(other.reporting_origin, other.phase,
+                        other.aggregation_coordinator_origin);
+      }
+
+      url::Origin reporting_origin;
+      PrivateAggregationPhase phase;
+      absl::optional<url::Origin> aggregation_coordinator_origin;
+    };
+
     explicit BidState(const SingleStorageInterestGroup&& bidder);
     ~BidState();
 
@@ -298,13 +325,10 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // Requests made to Private aggregation API in generateBid() and scoreAd().
     // Keyed by reporting origin of the associated requests, i.e., buyer origin
-    // for generateBid() and seller origin for scoreAd(), plus an enum that
-    // determines exactly which phase of the auction made that request.
-    //
-    // TODO(qingxinwu): Consider only saving the requests without saving Origin,
-    // since copying Origin is expensive.
-    std::map<std::pair<url::Origin, PrivateAggregationPhase>,
-             PrivateAggregationRequests>
+    // for generateBid() and seller origin for scoreAd(), an enum that
+    // determines exactly which phase of the auction made that request, and an
+    // optional aggregation coordinator origin.
+    std::map<PrivateAggregationPhaseKey, PrivateAggregationRequests>
         private_aggregation_requests;
 
     // Requests made to Private aggregation API in generateBid() for the
@@ -623,11 +647,13 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Retrieves all requests with reserved event type to the Private Aggregation
   // API returned by GenerateBid() and ScoreAd(). The return value is keyed by
-  // reporting origin of the associated requests. May only be called by external
-  // consumers after an auction has failed (on success, used internally to pass
-  // them to the InterestGroupAuctionReporter). May only be called once, since
-  // it takes ownership of stored reporting URLs.
-  std::map<url::Origin, PrivateAggregationRequests>
+  // reporting origin and aggregation coordinator origin of the associated
+  // requests. May only be called by external consumers after an auction has
+  // failed (on success, used internally to pass them to the
+  // InterestGroupAuctionReporter). May only be called once, since it takes
+  // ownership of stored reporting URLs.
+  std::map<InterestGroupAuctionReporter::PrivateAggregationKey,
+           PrivateAggregationRequests>
   TakeReservedPrivateAggregationRequests();
 
   // Retrieves all requests with non-reserved event type to the Private
@@ -1287,8 +1313,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // Stores all pending Private Aggregation API report requests of reserved
   // event type from the bidding and scoring phase. These are passed to the
   // InterestGroupAuctionReporter when it's created. Keyed by the origin of the
-  // script that issued the request (i.e. the reporting origin).
-  std::map<url::Origin, PrivateAggregationRequests>
+  // script that issued the request (i.e. the reporting origin) and the
+  // aggregation coordinator origin.
+  std::map<InterestGroupAuctionReporter::PrivateAggregationKey,
+           PrivateAggregationRequests>
       private_aggregation_requests_reserved_;
 
   // Stores all pending Private Aggregation API report requests of non-reserved
