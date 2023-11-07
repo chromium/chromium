@@ -793,7 +793,7 @@ BASE_FEATURE(kFencedFramesM120FeaturesPart2,
 // TODO(crbug.com/1496395): Remove this after 3PCD.
 BASE_FEATURE(kFencedFramesAutomaticBeaconCredentials,
              "FencedFramesAutomaticBeaconCredentials",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // File handling icons. https://crbug.com/1218213
 BASE_FEATURE(kFileHandlingIcons,
