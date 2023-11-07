@@ -84,9 +84,12 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         return super().suite_start(data)
 
     def suite_end(self, data) -> str:
-        # Do not show test failures again in noninteractive mode. They are
-        # already shown during the run.
+        # Do not show test failures or flakes again in noninteractive mode.
+        # They are already shown during the run. We also don't need to
+        # differentiate between the primary expectation and "known
+        # intermittent" statuses.
         self.test_failure_text = ''
+        self.known_intermittent_results.clear()
         return super().suite_end(data)
 
 
