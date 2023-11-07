@@ -71,9 +71,21 @@
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:GURL(kFamilyGroupSiteURL)];
+      [OpenNewTabCommand commandWithURLFromChrome:[self familyManagementURL]];
   [handler closeSettingsUIAndOpenURL:command];
   [self.delegate familyPromoCoordinatorWasDismissed:self];
+}
+
+#pragma mark - Private
+
+// Returns family management url based on the `_familyPromoType`.
+- (GURL)familyManagementURL {
+  switch (_familyPromoType) {
+    case FamilyPromoType::kUserNotInFamilyGroup:
+      return GURL(kCreateFamilyGroupURL);
+    case FamilyPromoType::kUserWithNoOtherFamilyMembers:
+      return GURL(kManageFamilyGroupURL);
+  }
 }
 
 @end

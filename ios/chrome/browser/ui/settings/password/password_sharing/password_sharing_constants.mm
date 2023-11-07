@@ -15,7 +15,10 @@ NSString* const kPasswordPickerNextButtonId = @"PasswordPickerNextButtonId";
 
 NSString* const kSharingStatusDoneButtonId = @"SharingStatusDoneButtonId";
 
-const char kFamilyGroupSiteURL[] = "https://families.google.com/families/";
+const char kCreateFamilyGroupURL[] =
+    "https://myaccount.google.com/family/create?utm_source=cpwd";
+const char kManageFamilyGroupURL[] =
+    "https://myaccount.google.com/family/details?utm_source=cpwd";
 
 const char kPasswordSharingLearnMoreURL[] =
     "https://support.google.com/chrome/?p=password_sharing";
