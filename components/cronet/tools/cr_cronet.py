@@ -63,7 +63,7 @@ def test(out_dir, extra_options):
   remote_netlog_dir = '/data/data/org.chromium.net.tests/app_cronet_test/NetLog'
   run(['adb', 'shell', 'rm', '-rf', remote_netlog_dir])
   run([out_dir + '/bin/run_cronet_test_instrumentation_apk'] + extra_options)
-  local_netlog_dir = 'netlogs_for-' + datetime.now().strftime(
+  local_netlog_dir = out_dir + '/netlogs_for-' + datetime.now().strftime(
       "%y_%m_%d-%H_%M_%S")
   return run(['adb', 'pull', remote_netlog_dir, local_netlog_dir])
 
