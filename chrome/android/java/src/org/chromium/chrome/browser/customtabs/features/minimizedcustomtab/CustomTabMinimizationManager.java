@@ -65,21 +65,31 @@ public class CustomTabMinimizationManager
     private final AppCompatActivity mActivity;
     private final ActivityTabProvider mTabProvider;
     private final MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
+    private final Runnable mCloseTabRunnable;
     private long mMinimizationSystemTime;
 
     /**
      * @param activity The {@link AppCompatActivity} to minimize.
      * @param tabProvider The {@link ActivityTabProvider} that provides the Tab that will be
      *     minimized.
+     * @param featureEngagementDelegate The {@link MinimizedCustomTabFeatureEngagementDelegate}.
+     * @param closeTabRunnable The {@link Runnable} to close the Custom Tab when the minimized tab
+     *     is dismissed.
      */
     public CustomTabMinimizationManager(
             AppCompatActivity activity,
             ActivityTabProvider tabProvider,
-            MinimizedCustomTabFeatureEngagementDelegate featureEngagementDelegate) {
+            MinimizedCustomTabFeatureEngagementDelegate featureEngagementDelegate,
+            Runnable closeTabRunnable) {
         mActivity = activity;
         mActivity.addOnPictureInPictureModeChangedListener(this);
         mTabProvider = tabProvider;
         mFeatureEngagementDelegate = featureEngagementDelegate;
+        mCloseTabRunnable = closeTabRunnable;
+    }
+
+    public void destroy() {
+        mActivity.removeOnPictureInPictureModeChangedListener(this);
     }
 
     /** Minimize the Custom Tab into picture-in-picture. */
@@ -120,6 +130,7 @@ public class CustomTabMinimizationManager
                             TimeUnit.MILLISECONDS.toSeconds(
                                     SystemClock.elapsedRealtime() - mMinimizationSystemTime));
                 }
+                mCloseTabRunnable.run();
                 return;
             }
 

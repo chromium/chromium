@@ -408,12 +408,21 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             mActivityTabProvider,
                             new UserEducationHelper(mActivity, new Handler(Looper.getMainLooper())),
                             mProfileSupplier);
+            Runnable closeTabRunnable =
+                    () -> {
+                        if (mNavigationController.hasValue()) {
+                            mNavigationController.get().navigateOnClose();
+                        }
+                    };
             // The method above already checks for the minimum API level.
             //
             // noinspection NewApi
             mMinimizationManager =
                     new CustomTabMinimizationManager(
-                            mActivity, mActivityTabProvider, mMinimizedCustomTabIPHController);
+                            mActivity,
+                            mActivityTabProvider,
+                            mMinimizedCustomTabIPHController,
+                            closeTabRunnable);
         }
     }
 
@@ -485,6 +494,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (mPageInsightsCoordinator != null) {
             mPageInsightsCoordinator.destroy();
             mPageInsightsCoordinator = null;
+        }
+
+        if (mMinimizationManager != null) {
+            mMinimizationManager.destroy();
+            mMinimizationManager = null;
         }
 
         if (mMinimizedCustomTabIPHController != null) {

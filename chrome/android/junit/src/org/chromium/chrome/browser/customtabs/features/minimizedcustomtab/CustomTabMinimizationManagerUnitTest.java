@@ -74,6 +74,7 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
+    @Mock private Runnable mCloseTabRunnable;
 
     private CustomTabMinimizationManager mManager;
 
@@ -90,7 +91,7 @@ public class CustomTabMinimizationManagerUnitTest {
                 .thenReturn(true);
         mManager =
                 new CustomTabMinimizationManager(
-                        mActivity, mTabProvider, mFeatureEngagementDelegate);
+                        mActivity, mTabProvider, mFeatureEngagementDelegate, mCloseTabRunnable);
     }
 
     @Test
@@ -158,6 +159,7 @@ public class CustomTabMinimizationManagerUnitTest {
         mManager.accept(new PictureInPictureModeChangedInfo(false));
 
         verify(mTab, never()).show(anyInt(), anyInt());
+        verify(mCloseTabRunnable).run();
 
         minimizationEventsWatcher.assertExpected(
                 "CustomTabs.MinimizedEvents.DESTROY should be recorded once");
