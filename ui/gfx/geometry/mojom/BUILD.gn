@@ -78,7 +78,6 @@ mojom("mojom") {
   cpp_typemaps = [ shared_cpp_typemap ]
   blink_cpp_typemaps = [ shared_cpp_typemap ]
   webui_module_path = "chrome://resources/mojo/ui/gfx/geometry/mojom"
-  use_typescript_sources = true
   generate_legacy_js_bindings = true
 }
 

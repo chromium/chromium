@@ -9,9 +9,6 @@ mojom("mojom") {
 
   webui_module_path = "chrome://resources/mojo/ui/gfx/image/mojom"
 
-  # Generate WebUI bindings in TypeScript.
-  use_typescript_sources = true
-
   # Used by content/common so need legacy JS bindings for Blink.
   generate_legacy_js_bindings = true
 

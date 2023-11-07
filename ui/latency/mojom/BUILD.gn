@@ -47,7 +47,6 @@ mojom("mojom") {
 
   # Generate WebUI bindings in TypeScript and legacy bindings in JS (for Blink)
   webui_module_path = "chrome://resources/mojo/ui/latency/mojom"
-  use_typescript_sources = true
   generate_legacy_js_bindings = true
 }
 
