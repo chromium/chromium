@@ -133,8 +133,14 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetEnabledTextColors(color_provider->GetColor(
         selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
     if (Cr2023ExpandedStateColorsEnabled()) {
-      ConfigureInkDropForRefresh2023(this, kColorOmniboxResultsButtonInkDrop,
-                                     kColorOmniboxResultsButtonInkDropSelected);
+      ConfigureInkDropForRefresh2023(
+          this,
+          /*hover_color_id=*/
+          selected ? kColorOmniboxResultsButtonInkDropRowSelected
+                   : kColorOmniboxResultsButtonInkDropRowHovered,
+          /*ripple_color_id=*/
+          selected ? kColorOmniboxResultsButtonInkDropSelectedRowSelected
+                   : kColorOmniboxResultsButtonInkDropSelectedRowHovered);
     } else {
       views::InkDrop::Get(this)->SetBaseColorId(
           selected ? kColorOmniboxResultsButtonInkDropSelected
