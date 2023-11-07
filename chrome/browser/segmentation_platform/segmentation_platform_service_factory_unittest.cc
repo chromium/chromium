@@ -4,7 +4,6 @@
 
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_command_line.h"
@@ -25,14 +24,12 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/result.h"
-#include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/service_proxy.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
 
 namespace segmentation_platform {
 namespace {
@@ -191,8 +188,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
     PrefService* pref_service_ = testing_profile_->GetPrefs();
     std::unique_ptr<ClientResultPrefs> result_prefs_ =
         std::make_unique<ClientResultPrefs>(pref_service_);
-    return result_prefs_->ReadClientResultFromPrefs(segmentation_key)
-        .has_value();
+    return result_prefs_->ReadClientResultFromPrefs(segmentation_key) !=
+           nullptr;
   }
 
   void OnClientResultPrefUpdated(const std::string& segmentation_key) {

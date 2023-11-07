@@ -132,7 +132,7 @@ TEST(StatsTest, SegmentSwitchWithMultiOutput) {
       /*timestamp=*/base::Time::Now(), /*model_version=*/1);
 
   // Low -> Low. No switched histograms.
-  RecordClassificationResultUpdated(config, result_low, result_low);
+  RecordClassificationResultUpdated(config, &result_low, result_low);
   EXPECT_THAT(tester.GetAllSamples(switched_histogram), testing::ElementsAre());
 
   // Verify all possible combinations in a 3-label classifier.
@@ -145,15 +145,15 @@ TEST(StatsTest, SegmentSwitchWithMultiOutput) {
   // label 1 -> label 2 : 102
   // label 2 -> label 0 : 200
   // label 2 -> label 1 : 201
-  RecordClassificationResultUpdated(config, absl::nullopt, result_low);
-  RecordClassificationResultUpdated(config, absl::nullopt, result_medium);
-  RecordClassificationResultUpdated(config, absl::nullopt, result_high);
-  RecordClassificationResultUpdated(config, result_low, result_medium);
-  RecordClassificationResultUpdated(config, result_low, result_high);
-  RecordClassificationResultUpdated(config, result_medium, result_low);
-  RecordClassificationResultUpdated(config, result_medium, result_high);
-  RecordClassificationResultUpdated(config, result_high, result_low);
-  RecordClassificationResultUpdated(config, result_high, result_medium);
+  RecordClassificationResultUpdated(config, nullptr, result_low);
+  RecordClassificationResultUpdated(config, nullptr, result_medium);
+  RecordClassificationResultUpdated(config, nullptr, result_high);
+  RecordClassificationResultUpdated(config, &result_low, result_medium);
+  RecordClassificationResultUpdated(config, &result_low, result_high);
+  RecordClassificationResultUpdated(config, &result_medium, result_low);
+  RecordClassificationResultUpdated(config, &result_medium, result_high);
+  RecordClassificationResultUpdated(config, &result_high, result_low);
+  RecordClassificationResultUpdated(config, &result_high, result_medium);
 
   tester.ExpectTotalCount(switched_histogram, 9);
   EXPECT_THAT(tester.GetAllSamples(switched_histogram),

@@ -41,20 +41,20 @@ class ClientResultPrefsTest : public testing::Test {
 };
 
 TEST_F(ClientResultPrefsTest, ReadClientResultFromEmptyPrefs) {
-  absl::optional<proto::ClientResult> current_result =
+  const proto::ClientResult* current_result =
       result_prefs_->ReadClientResultFromPrefs(kClientKey);
-  EXPECT_FALSE(current_result.has_value());
+  EXPECT_FALSE(current_result);
 }
 
 TEST_F(ClientResultPrefsTest, SaveClientResultToEmptyPrefs) {
   const proto::ClientResult& client_result = CreateClientResult({0.8});
   result_prefs_->SaveClientResultToPrefs(kClientKey, client_result);
 
-  absl::optional<proto::ClientResult> current_result =
+  const proto::ClientResult* current_result =
       result_prefs_->ReadClientResultFromPrefs(kClientKey);
-  EXPECT_TRUE(current_result.has_value());
+  EXPECT_TRUE(current_result);
   EXPECT_EQ(client_result.SerializeAsString(),
-            current_result.value().SerializeAsString());
+            current_result->SerializeAsString());
 }
 
 TEST_F(ClientResultPrefsTest, SaveMultipleClientResults) {
@@ -65,40 +65,40 @@ TEST_F(ClientResultPrefsTest, SaveMultipleClientResults) {
   const proto::ClientResult& client_result2 = CreateClientResult({0.7, 0.9});
   result_prefs_->SaveClientResultToPrefs(kClientKey2, client_result2);
 
-  absl::optional<proto::ClientResult> current_result =
+  const proto::ClientResult* current_result =
       result_prefs_->ReadClientResultFromPrefs(kClientKey);
-  EXPECT_TRUE(current_result.has_value());
+  EXPECT_TRUE(current_result);
   EXPECT_EQ(client_result.SerializeAsString(),
-            current_result.value().SerializeAsString());
+            current_result->SerializeAsString());
 
   current_result = result_prefs_->ReadClientResultFromPrefs(kClientKey2);
-  EXPECT_TRUE(current_result.has_value());
+  EXPECT_TRUE(current_result);
   EXPECT_EQ(client_result2.SerializeAsString(),
-            current_result.value().SerializeAsString());
+            current_result->SerializeAsString());
 
   // Save empty result. It should delete the current result.
   result_prefs_->SaveClientResultToPrefs(kClientKey2, absl::nullopt);
   current_result = result_prefs_->ReadClientResultFromPrefs(kClientKey2);
-  EXPECT_FALSE(current_result.has_value());
+  EXPECT_FALSE(current_result);
 
   current_result = result_prefs_->ReadClientResultFromPrefs(kClientKey);
-  EXPECT_TRUE(current_result.has_value());
+  EXPECT_TRUE(current_result);
   EXPECT_EQ(client_result.SerializeAsString(),
-            current_result.value().SerializeAsString());
+            current_result->SerializeAsString());
 
   // Updating client result for `kClientKey2`. It should overwrite the
   // result.
   const proto::ClientResult& client_result3 = CreateClientResult({});
   result_prefs_->SaveClientResultToPrefs(kClientKey2, client_result3);
   current_result = result_prefs_->ReadClientResultFromPrefs(kClientKey2);
-  EXPECT_TRUE(current_result.has_value());
+  EXPECT_TRUE(current_result);
   EXPECT_EQ(client_result3.SerializeAsString(),
-            current_result.value().SerializeAsString());
+            current_result->SerializeAsString());
 
   current_result = result_prefs_->ReadClientResultFromPrefs(kClientKey);
-  EXPECT_TRUE(current_result.has_value());
+  EXPECT_TRUE(current_result);
   EXPECT_EQ(client_result.SerializeAsString(),
-            current_result.value().SerializeAsString());
+            current_result->SerializeAsString());
 }
 
 }  // namespace segmentation_platform

@@ -14,38 +14,42 @@ ClientResultPrefs::ClientResultPrefs(PrefService* pref_service)
 
 void ClientResultPrefs::SaveClientResultToPrefs(
     const std::string& client_key,
-    const absl::optional<proto::ClientResult>& client_result) {
-  proto::ClientResults client_results;
+    absl::optional<proto::ClientResult> client_result) {
+  InitializeIfNeeded();
 
-  auto decoded_client_results =
-      base::Base64Decode(prefs_->GetString(kSegmentationClientResultPrefs));
-  const std::string& decoded_client_results_as_string =
-      decoded_client_results.has_value()
-          ? std::string(decoded_client_results.value().begin(),
-                        decoded_client_results.value().end())
-          : std::string();
-
-  client_results.ParseFromString(decoded_client_results_as_string);
   if (client_result.has_value()) {
-    (*client_results.mutable_client_result_map())[client_key] =
-        client_result.value();
+    (*cached_results_.mutable_client_result_map())[client_key] =
+        std::move(client_result.value());
   } else {
     // Erasing the entry if the new `client_result` is null.
     auto client_result_iter =
-        client_results.client_result_map().find(client_key);
-    if (client_result_iter != client_results.client_result_map().end()) {
-      client_results.mutable_client_result_map()->erase(client_key);
+        cached_results_.client_result_map().find(client_key);
+    if (client_result_iter != cached_results_.client_result_map().end()) {
+      cached_results_.mutable_client_result_map()->erase(client_key);
     }
   }
   std::string output;
-  base::Base64Encode(client_results.SerializeAsString(), &output);
+  base::Base64Encode(cached_results_.SerializeAsString(), &output);
   prefs_->SetString(kSegmentationClientResultPrefs, output);
 }
 
-absl::optional<proto::ClientResult>
-ClientResultPrefs::ReadClientResultFromPrefs(const std::string& client_key) {
-  proto::ClientResults client_results;
+const proto::ClientResult* ClientResultPrefs::ReadClientResultFromPrefs(
+    const std::string& client_key) {
+  InitializeIfNeeded();
 
+  const auto& it = cached_results_.client_result_map().find(client_key);
+  if (it != cached_results_.client_result_map().end()) {
+    return &it->second;
+  }
+  return nullptr;
+}
+
+void ClientResultPrefs::InitializeIfNeeded() {
+  if (initialized_) {
+    return;
+  }
+
+  initialized_ = true;
   auto decoded_client_results =
       base::Base64Decode(prefs_->GetString(kSegmentationClientResultPrefs));
   const std::string& decoded_client_results_as_string =
@@ -54,11 +58,7 @@ ClientResultPrefs::ReadClientResultFromPrefs(const std::string& client_key) {
                         decoded_client_results.value().end())
           : std::string();
 
-  client_results.ParseFromString(decoded_client_results_as_string);
-  if (client_results.client_result_map().contains(client_key)) {
-    return client_results.client_result_map().at(client_key);
-  }
-  return absl::nullopt;
+  cached_results_.ParseFromString(decoded_client_results_as_string);
 }
 
 }  // namespace segmentation_platform

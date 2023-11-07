@@ -110,8 +110,8 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
     PrefService* pref_service = chrome_test_utils::GetProfile(this)->GetPrefs();
     std::unique_ptr<ClientResultPrefs> result_prefs_ =
         std::make_unique<ClientResultPrefs>(pref_service);
-    return result_prefs_->ReadClientResultFromPrefs(segmentation_key)
-        .has_value();
+    return result_prefs_->ReadClientResultFromPrefs(segmentation_key) !=
+           nullptr;
   }
 
   void OnClientResultPrefUpdated() {

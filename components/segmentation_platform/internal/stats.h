@@ -71,7 +71,7 @@ void RecordClassificationResultComputed(
 // to when prefs expired and is updated with new result.
 void RecordClassificationResultUpdated(
     const Config& config,
-    const absl::optional<proto::PredictionResult>& old_result,
+    const proto::PredictionResult* old_result,
     const proto::PredictionResult& new_result);
 
 // Database Maintenance metrics.

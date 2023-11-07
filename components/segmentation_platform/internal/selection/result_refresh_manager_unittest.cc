@@ -132,17 +132,17 @@ class ResultRefreshManagerTest : public testing::Test {
 
   void VerifyIfResultUpdatedInPrefs(const std::string& segmentation_key,
                                     proto::PredictionResult expected_result) {
-    absl::optional<proto::ClientResult> client_result =
+    const proto::ClientResult* client_result =
         client_result_prefs_->ReadClientResultFromPrefs(segmentation_key);
-    EXPECT_TRUE(client_result.has_value());
+    EXPECT_TRUE(client_result);
     EXPECT_EQ(expected_result.SerializeAsString(),
-              client_result.value().client_result().SerializeAsString());
+              client_result->client_result().SerializeAsString());
   }
 
   void VerifyIfResultNotUpdatedInPrefs(const std::string& segmentation_key) {
-    absl::optional<proto::ClientResult> client_result =
+    const proto::ClientResult* client_result =
         client_result_prefs_->ReadClientResultFromPrefs(segmentation_key);
-    EXPECT_FALSE(client_result.has_value());
+    EXPECT_FALSE(client_result);
   }
 
   base::test::TaskEnvironment task_environment_{

@@ -35,14 +35,19 @@ class ClientResultPrefs {
   // with the new result.
   virtual void SaveClientResultToPrefs(
       const std::string& client_key,
-      const absl::optional<proto::ClientResult>& client_result);
+      absl::optional<proto::ClientResult> client_result);
 
   // Reads the `ClientResult` from prefs, if present.
-  virtual absl::optional<proto::ClientResult> ReadClientResultFromPrefs(
+  virtual const proto::ClientResult* ReadClientResultFromPrefs(
       const std::string& client_key);
 
  private:
-  raw_ptr<PrefService> prefs_;
+  void InitializeIfNeeded();
+
+  const raw_ptr<PrefService> prefs_;
+
+  bool initialized_{false};
+  proto::ClientResults cached_results_;
 };
 
 }  // namespace segmentation_platform
