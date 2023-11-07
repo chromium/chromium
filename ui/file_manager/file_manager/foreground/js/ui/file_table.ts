@@ -246,8 +246,6 @@ export class FileTableColumnModel extends TableColumnModel {
 }
 
 /**
- * TODO: Move this to be a method of TableColumn.
- *
  * Customize the column header to decorate with a11y attributes that announces
  * the sorting used when clicked.
  *

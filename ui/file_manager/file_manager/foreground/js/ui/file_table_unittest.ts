@@ -7,11 +7,9 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 import {FileTableColumnModel, MIN_WIDTH} from './file_table.js';
 import {TableColumn} from './table/table_column.js';
 
-/** @type {!FileTableColumnModel} */
-let model;
+let model: FileTableColumnModel;
 
-/** @type {!Array<TableColumn>} */
-let columns;
+let columns: TableColumn[];
 
 export function setUp() {
   columns = [
@@ -27,9 +25,8 @@ export function setUp() {
 
 /**
  * Extracts column widths from the model.
- * @param {!FileTableColumnModel} model
  */
-function getColumnWidths(model) {
+function getColumnWidths(model: FileTableColumnModel) {
   const widths = [];
   for (let i = 0; i < model.size; i++) {
     widths[i] = model.getWidth(i);

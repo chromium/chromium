@@ -20,6 +20,8 @@ import {TableColumnModel} from './table_column_model.js';
 import {TableHeader} from './table_header.js';
 import {TableList} from './table_list.js';
 
+
+type RenderFunction = (item: any, table: Table) => ListItem;
 /**
  * Creates a new table element.
  */
@@ -137,7 +139,7 @@ export class Table extends HTMLDivElement {
    * Returns render function for row.
    * @return Render function.
    */
-  getRenderFunction(): (_: unknown, _t: Table) => ListItem {
+  getRenderFunction(): RenderFunction {
     return this.renderFunction_;
   }
 
@@ -171,7 +173,7 @@ export class Table extends HTMLDivElement {
    * Sets render function for row.
    * @param renderFunction Render function.
    */
-  setRenderFunction(renderFunction: (_item: any, _t: Table) => ListItem) {
+  setRenderFunction(renderFunction: RenderFunction) {
     if (renderFunction === this.renderFunction_) {
       return;
     }
