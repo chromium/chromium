@@ -704,7 +704,8 @@ Color LayoutTheme::DefaultSystemColor(
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED() << getValueName(css_value_id)
+               << " is not a recognized system color";
   return Color();
 }
 
