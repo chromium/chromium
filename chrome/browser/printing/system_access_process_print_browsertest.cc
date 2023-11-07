@@ -3780,17 +3780,18 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
       SetNumExpectedMessages(/*num=*/5);
     } else {
       // The expected events for this are:
-      // 1.  Wait for the actual printing job to be destroyed, to ensure
+      // 1.  Update print settings.
+      // 2.  Wait for the actual printing job to be destroyed, to ensure
       //     printing finished cleanly before completing the test.
-      SetNumExpectedMessages(/*num=*/1);
+      SetNumExpectedMessages(/*num=*/2);
     }
   } else {
     print_view_manager->set_on_print_preview_done_closure(base::BindOnce(
         &ContentAnalysisBeforePrintPreviewBrowserTest::CheckForQuit,
         base::Unretained(this)));
-    // Expect an extra message for the print job created after content
-    // analysis to be destroyed.
-    SetNumExpectedMessages(/*num=*/PrintAllowedOrNonBlockingPolicy() ? 2 : 1);
+    // The expected events for this are:
+    // 1.  Print Preview is done.
+    SetNumExpectedMessages(/*num=*/1);
   }
   OpenPdfInPreviewOnceReadyAndLoaded();
 
