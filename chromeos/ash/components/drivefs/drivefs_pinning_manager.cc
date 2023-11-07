@@ -682,6 +682,7 @@ PinningManager::PinningManager(Path profile_path,
 }
 
 PinningManager::~PinningManager() {
+  Stop();
   VLOG(1) << "Deleting bulk-pinning manager";
 }
 
