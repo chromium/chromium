@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #include "chrome/browser/extensions/api/printing/printing_test_utils.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/test_extension_dir.h"
@@ -19,9 +20,10 @@
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/extensions/api/printing/fake_print_job_controller.h"
-#include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
+#include "chrome/test/chromeos/printing/mock_local_printer_chromeos.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/printing/printer_configuration.h"
 #endif
 
 namespace extensions {
@@ -42,54 +44,6 @@ using testing::WithArg;
 using testing::WithArgs;
 using testing::WithoutArgs;
 
-class MockLocalPrinter : public FakeLocalPrinter {
- public:
-  MOCK_METHOD(void, GetPrinters, (GetPrintersCallback callback), (override));
-  MOCK_METHOD(void,
-              GetCapability,
-              (const std::string& printer_id, GetCapabilityCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              AddPrintJobObserver,
-              (mojo::PendingRemote<crosapi::mojom::PrintJobObserver> remote,
-               crosapi::mojom::PrintJobSource source,
-               AddPrintJobObserverCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              CreatePrintJob,
-              (crosapi::mojom::PrintJobPtr job,
-               CreatePrintJobCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              CancelPrintJob,
-              (const std::string& printer_id,
-               uint32_t job_id,
-               CancelPrintJobCallback callback),
-              (override));
-};
-
-crosapi::mojom::LocalDestinationInfoPtr PrinterToMojom(
-    const std::string& printer_id,
-    const std::string& printer_name) {
-  return crosapi::mojom::LocalDestinationInfo::New(
-      /*id=*/printer_id, /*name=*/printer_name, /*description=*/"",
-      /*configured_via_policy=*/false);
-}
-
-crosapi::mojom::CapabilitiesResponsePtr CreatePrinterWithCapabilities(
-    const std::string& printer_id,
-    std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> caps) {
-  return crosapi::mojom::CapabilitiesResponse::New(
-      PrinterToMojom(printer_id, /*printer_name=*/""),
-      /*has_secure_protocol=*/false, std::move(*caps),
-      // everything else is deprecated!
-      0, 0, 0,                                         // deprecated
-      printing::mojom::PinModeRestriction::kUnset,     // deprecated
-      printing::mojom::ColorModeRestriction::kUnset,   // deprecated
-      printing::mojom::DuplexModeRestriction::kUnset,  // deprecated
-      printing::mojom::PinModeRestriction::kUnset      // deprecated
-  );
-}
 #endif
 
 }  // namespace
@@ -212,8 +166,11 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinters) {
   // trick with RunOnceCallback<0>(std::move(printers)) doesn't work.
   EXPECT_CALL(local_printer(), GetPrinters(_))
       .WillOnce([](MockLocalPrinter::GetPrintersCallback callback) {
+        chromeos::Printer printer;
+        printer.set_id(kId);
+        printer.set_display_name(kName);
         std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers;
-        printers.push_back(PrinterToMojom(kId, kName));
+        printers.push_back(printing::PrinterToMojom(printer));
         std::move(callback).Run(std::move(printers));
       });
 #endif
@@ -227,7 +184,8 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinterInfo) {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_CALL(local_printer(), GetCapability(kId, _))
       .WillOnce(base::test::RunOnceCallback<1>(
-          CreatePrinterWithCapabilities(kId, ConstructPrinterCapabilities())));
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId), *ConstructPrinterCapabilities())));
 #endif
 
   RunTest("get_printer_info.html");
@@ -250,7 +208,8 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJob) {
 
   EXPECT_CALL(local_printer(), GetCapability(kId, _))
       .WillOnce(base::test::RunOnceCallback<1>(
-          CreatePrinterWithCapabilities(kId, ConstructPrinterCapabilities())));
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId), *ConstructPrinterCapabilities())));
 
   // Acknowledge print job creation so that the mojo callback doesn't hang.
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
@@ -271,7 +230,8 @@ IN_PROC_BROWSER_TEST_P(PrintingPromiseApiTest, SubmitJob) {
 
   EXPECT_CALL(local_printer(), GetCapability(kId, _))
       .WillOnce(base::test::RunOnceCallback<1>(
-          CreatePrinterWithCapabilities(kId, ConstructPrinterCapabilities())));
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId), *ConstructPrinterCapabilities())));
 
   // Acknowledge print job creation so that the mojo callback doesn't hang.
   EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
@@ -294,7 +254,8 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, CancelJob) {
 
   EXPECT_CALL(local_printer(), GetCapability(kId, _))
       .WillOnce(base::test::RunOnceCallback<1>(
-          CreatePrinterWithCapabilities(kId, ConstructPrinterCapabilities())));
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId), *ConstructPrinterCapabilities())));
 
   absl::optional<uint32_t> job_id;
   // Pretends to acknowledge the incoming Lacros print job creation request and

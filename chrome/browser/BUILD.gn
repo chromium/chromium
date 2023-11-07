@@ -6961,16 +6961,15 @@ static_library("browser") {
     if (is_mac) {
       sources += [ "printing/printer_manager_dialog_mac.cc" ]
     }
-    if (is_chromeos_lacros) {
-      sources += [
-        "printing/print_job_utils_lacros.cc",
-        "printing/print_job_utils_lacros.h",
-      ]
-    }
     if (is_chromeos) {
+      sources += [
+        "printing/local_printer_utils_chromeos.cc",
+        "printing/local_printer_utils_chromeos.h",
+      ]
       deps += [
         "//chrome/browser/chromeos/extensions/telemetry/api:keyed_service_factory",
         "//chromeos/crosapi/mojom",
+        "//chromeos/printing",
       ]
     }
     if (is_linux) {

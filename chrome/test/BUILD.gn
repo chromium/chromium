@@ -494,6 +494,8 @@ static_library("test_support") {
       sources += [
         "chromeos/printing/fake_local_printer_chromeos.cc",
         "chromeos/printing/fake_local_printer_chromeos.h",
+        "chromeos/printing/mock_local_printer_chromeos.cc",
+        "chromeos/printing/mock_local_printer_chromeos.h",
       ]
       if (use_cups) {
         sources += [
@@ -5626,7 +5628,10 @@ if (is_chromeos_lacros) {
         "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc",
         "../browser/extensions/api/printing/printing_apitest.cc",
       ]
-      deps += [ "//chrome/browser/chromeos/extensions/printing_metrics" ]
+      deps += [
+        "//chrome/browser/chromeos/extensions/printing_metrics",
+        "//chromeos/printing",
+      ]
     }
 
     data = [

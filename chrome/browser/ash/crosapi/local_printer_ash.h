@@ -33,9 +33,7 @@ class IppClientInfoCalculator;
 }  // namespace ash
 
 namespace chromeos {
-class CupsPrinterStatus;
 class PpdProvider;
-class Printer;
 }  // namespace chromeos
 
 namespace crosapi {
@@ -63,16 +61,6 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   // PrintServersConfig object.
   static mojom::PrintServersConfigPtr ConfigToMojom(
       const ash::PrintServersConfig& config);
-
-  // The mojom LocalDestinationInfo object is a subset of the chromeos Printer
-  // object.
-  static mojom::LocalDestinationInfoPtr PrinterToMojom(
-      const chromeos::Printer& printer);
-
-  // The mojom PrinterStatus object contains all information in the
-  // CupsPrinterStatus object.
-  static mojom::PrinterStatusPtr StatusToMojom(
-      const chromeos::CupsPrinterStatus& status);
 
   void BindReceiver(mojo::PendingReceiver<mojom::LocalPrinter> receiver);
 

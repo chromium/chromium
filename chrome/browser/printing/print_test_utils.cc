@@ -106,6 +106,8 @@ std::unique_ptr<PrintSettings> MakeDefaultPrintSettings(
   settings->set_dpi(kPrinterDefaultRenderDpi);
   settings->set_page_setup_device_units(kPageSetup);
   settings->set_device_name(base::ASCIIToUTF16(printer_name));
+  settings->set_duplex_mode(mojom::DuplexMode::kSimplex);
+  settings->set_color(mojom::ColorModel::kGray);
   return settings;
 }
 

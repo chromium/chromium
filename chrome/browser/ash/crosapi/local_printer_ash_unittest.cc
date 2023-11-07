@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
 #include "chrome/browser/ash/printing/oauth2/mock_authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
+#include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -1128,21 +1129,21 @@ TEST(LocalPrinterAsh, PrinterToMojom) {
                          crosapi::mojom::StatusReason::Severity::kWarning);
   printer.set_printer_status(status);
   crosapi::mojom::LocalDestinationInfoPtr mojom =
-      crosapi::LocalPrinterAsh::PrinterToMojom(printer);
+      printing::PrinterToMojom(printer);
   ASSERT_TRUE(mojom);
   EXPECT_EQ("id", mojom->id);
   EXPECT_EQ("name", mojom->name);
   EXPECT_EQ("description", mojom->description);
   EXPECT_FALSE(mojom->configured_via_policy);
-  EXPECT_EQ(crosapi::LocalPrinterAsh::StatusToMojom(status),
-            mojom->printer_status);
+
+  EXPECT_EQ(printing::StatusToMojom(status), mojom->printer_status);
 }
 
 TEST(LocalPrinterAsh, PrinterToMojom_ConfiguredViaPolicy) {
   Printer printer("id");
   printer.set_source(Printer::SRC_POLICY);
   crosapi::mojom::LocalDestinationInfoPtr mojom =
-      crosapi::LocalPrinterAsh::PrinterToMojom(printer);
+      printing::PrinterToMojom(printer);
   ASSERT_TRUE(mojom);
   EXPECT_EQ("id", mojom->id);
   EXPECT_TRUE(mojom->configured_via_policy);
@@ -1152,8 +1153,7 @@ TEST(LocalPrinterAsh, StatusToMojom) {
   chromeos::CupsPrinterStatus status("id");
   status.AddStatusReason(crosapi::mojom::StatusReason::Reason::kOutOfInk,
                          crosapi::mojom::StatusReason::Severity::kWarning);
-  crosapi::mojom::PrinterStatusPtr mojom =
-      crosapi::LocalPrinterAsh::StatusToMojom(status);
+  crosapi::mojom::PrinterStatusPtr mojom = printing::StatusToMojom(status);
   ASSERT_TRUE(mojom);
   EXPECT_EQ("id", mojom->printer_id);
   EXPECT_EQ(status.GetTimestamp(), mojom->timestamp);
