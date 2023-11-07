@@ -987,7 +987,7 @@
   },
   "keyboard_accessory_junit_tests": {
     "label": "//chrome/android/features/keyboard_accessory:keyboard_accessory_junit_tests",
-    "type": "junit_test",
+    "type": "generated_script",
   },
   "keyboard_unittests": {
     "label": "//ash/keyboard/ui:keyboard_unittests",

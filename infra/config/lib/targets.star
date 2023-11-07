@@ -117,10 +117,13 @@ def _generated_script(*, name, label, skip_usage_check = False, args = None):
         args = args,
     )
 
-def _junit_test(*, name, label, skip_usage_check = False):
+def _junit_test(*, name, label, skip_usage_check = False, args = None):
     """Define a junit test target to use in targets specs.
 
     A junit test target is a test using the JUnit test framework.
+
+    crbug/1401052: we're migrating these tests to isolated scripts,
+    but leaving the junit_tests defs around as documentation.
 
     Args:
         name: The name that can be used to refer to the target.
@@ -128,12 +131,7 @@ def _junit_test(*, name, label, skip_usage_check = False):
         skip_usage_check: Disables checking that the target is actually
             referenced in a targets spec for some builder.
     """
-    _create_target(
-        name = name,
-        type = "junit_test",
-        label = label,
-        skip_usage_check = skip_usage_check,
-    )
+    _generated_script(name = name, label = label, skip_usage_check = skip_usage_check, args = args)
 
 def _script(*, name, label, script, skip_usage_check = False, args = None):
     """Define a script target to use in targets specs.
