@@ -189,6 +189,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/mega_cq_launcher",
+)
+
+build_recipe(
     name = "recipe:chromium_clang_coverage_tot",
 )
 
