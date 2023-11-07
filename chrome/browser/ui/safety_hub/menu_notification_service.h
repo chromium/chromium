@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
@@ -65,7 +66,9 @@ class SafetyHubMenuNotificationService : public KeyedService {
   explicit SafetyHubMenuNotificationService(
       PrefService* pref_service,
       UnusedSitePermissionsService* unused_site_permissions_service,
-      NotificationPermissionsReviewService* notification_permissions_service);
+      NotificationPermissionsReviewService* notification_permissions_service,
+      extensions::CWSInfoService* extension_info_service,
+      Profile* profile);
   SafetyHubMenuNotificationService(const SafetyHubMenuNotificationService&) =
       delete;
   SafetyHubMenuNotificationService& operator=(
@@ -120,6 +123,7 @@ class SafetyHubMenuNotificationService : public KeyedService {
           {safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
            "notification-permissions"},
           {safety_hub::SafetyHubModuleType::SAFE_BROWSING, "safe-browsing"},
+          {safety_hub::SafetyHubModuleType::EXTENSIONS, "extensions"},
       };
 
   // Preference service that persists the notifications.

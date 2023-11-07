@@ -10,10 +10,12 @@
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -94,9 +96,12 @@ SafetyHubExtensionsResult::~SafetyHubExtensionsResult() = default;
 absl::optional<std::unique_ptr<SafetyHubService::Result>>
 SafetyHubExtensionsResult::GetResult(
     const extensions::CWSInfoService* extension_info_service,
-    const extensions::ExtensionPrefs* extension_prefs,
-    const extensions::ExtensionRegistry* extension_registry,
+    Profile* profile,
     bool only_unpublished_extensions = false) {
+  extensions::ExtensionPrefs* extension_prefs =
+      extensions::ExtensionPrefsFactory::GetForBrowserContext(profile);
+  extensions::ExtensionRegistry* extension_registry =
+      extensions::ExtensionRegistry::Get(profile);
   std::set<extensions::ExtensionId> triggering_extensions;
   if (base::FeatureList::IsEnabled(extensions::kCWSInfoService)) {
     const extensions::ExtensionSet all_installed_extensions =
