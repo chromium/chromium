@@ -137,6 +137,14 @@ class QuickStartController : public OobeUI::Observer,
   // Invoked whenever OOBE transitions into the QuickStart screen.
   void HandleTransitionToQuickStartScreen();
 
+  // Starts transferring the user account from the phone.
+  void StartAccountTransfer();
+
+  // Steps to take when the connection with the phone is fully established.
+  // Either transfers WiFi credentials if early in the OOBE flow, or starts
+  // to transfer the user's credentials.
+  void OnPhoneConnectionEstablished();
+
   void SavePhoneInstanceID();
 
   // Resets all internal values. Invoked when the flow is interrupted.

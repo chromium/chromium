@@ -182,13 +182,7 @@ void QuickStartController::OnStatusChanged(
       return;
     case Step::CONNECTED:
       controller_state_ = ControllerState::CONNECTED;
-      if (IsConnectedToWiFi()) {
-        // This will cause the QuickStartScreen to exit and the NetworkScreen
-        // will be shown next.
-        UpdateUiState(UiState::WIFI_CREDENTIALS_RECEIVED);
-      } else {
-        bootstrap_controller_->AttemptWifiCredentialTransfer();
-      }
+      OnPhoneConnectionEstablished();
       return;
     case Step::REQUESTING_WIFI_CREDENTIALS:
       UpdateUiState(UiState::CONNECTING_TO_WIFI);
@@ -210,14 +204,12 @@ void QuickStartController::OnStatusChanged(
       return;
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
       // Intermediate state. Nothing to do.
-      CHECK(controller_state_ ==
-            ControllerState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
+      CHECK(controller_state_ == ControllerState::CONNECTED);
       // TODO(b/298042953): Record Gaia Transfer screen shown once UI is
       // implemented.
       return;
     case Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
-      CHECK(controller_state_ ==
-            ControllerState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
+      CHECK(controller_state_ == ControllerState::CONNECTED);
       if (absl::holds_alternative<FidoAssertionInfo>(status.payload)) {
         QS_LOG(INFO) << "Successfully received FIDO assertion.";
         fido_ = absl::get<FidoAssertionInfo>(status.payload);
@@ -303,12 +295,35 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     CHECK(LoginDisplayHost::default_host()
               ->GetWizardContext()
               ->quick_start_setup_ongoing);
-    controller_state_ = ControllerState::CONTINUING_AFTER_ENROLLMENT_CHECKS;
+
     // OOBE flow cannot go back after enrollment checks, update exit point.
     exit_point_ = QuickStartController::EntryPoint::GAIA_SCREEN;
 
-    bootstrap_controller_->RequestGoogleAccountInfo();
-    UpdateUiState(UiState::TRANSFERRING_GAIA_CREDENTIALS);
+    StartAccountTransfer();
+  }
+}
+
+void QuickStartController::StartAccountTransfer() {
+  UpdateUiState(UiState::TRANSFERRING_GAIA_CREDENTIALS);
+  bootstrap_controller_->RequestGoogleAccountInfo();
+}
+
+void QuickStartController::OnPhoneConnectionEstablished() {
+  // If cancelling the flow would end on the welcome or network screen,
+  // we are still early in the OOBE flow. Transfer WiFi creds if not already
+  // connected.
+  if (exit_point_ == EntryPoint::WELCOME_SCREEN ||
+      exit_point_ == EntryPoint::NETWORK_SCREEN) {
+    if (IsConnectedToWiFi()) {
+      // This will cause the QuickStartScreen to exit and the NetworkScreen
+      // will be shown next.
+      UpdateUiState(UiState::WIFI_CREDENTIALS_RECEIVED);
+    } else {
+      bootstrap_controller_->AttemptWifiCredentialTransfer();
+    }
+  } else {
+    // We are after the 'User Creation' screen. Transfer credentials.
+    StartAccountTransfer();
   }
 }
 

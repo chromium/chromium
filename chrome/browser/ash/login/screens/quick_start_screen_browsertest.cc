@@ -16,12 +16,14 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
@@ -39,6 +41,7 @@ constexpr char kQuickStartButton[] = "quick-start-welcome-button";
 constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kPinCodeWrapper[] = "pinWrapper";
+constexpr char kGaiaTransferDialog[] = "gaiaTransferDialog";
 constexpr char kScreenOpenedHistogram[] = "QuickStart.ScreenOpened";
 constexpr test::UIPath kQuickStartButtonPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartButton};
@@ -50,6 +53,12 @@ constexpr test::UIPath kQuickStartPinCode = {QuickStartView::kScreenId.name,
                                              kPinCodeWrapper};
 constexpr test::UIPath kQuickStartQrCodeCanvas = {
     QuickStartView::kScreenId.name, "qrCodeCanvas"};
+constexpr test::UIPath kGaiaTransferDialogPath = {
+    QuickStartView::kScreenId.name, kGaiaTransferDialog};
+constexpr test::UIPath kCancelButtonGaiaTransferDialog = {
+    QuickStartView::kScreenId.name, kGaiaTransferDialog, kCancelButton};
+constexpr test::UIPath kQuickStartButtonGaia = {
+    "gaia-signin", "signin-frame-dialog", "quick-start-signin-button"};
 
 std::string NetworkElementSelector(const std::string& network_name) {
   return test::GetOobeElementPath(
@@ -95,6 +104,16 @@ class QuickStartBrowserTest : public OobeBaseTest {
     quick_start::TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
         nullptr);
     OobeBaseTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  void SetupAndWaitForGaiaScreen() {
+    // We should be connected in order to test the entry point on the Gaia
+    // screen.
+    SetUpConnectedWifiNetwork();
+
+    WaitForSigninScreen();
+    WaitForGaiaPageLoad();
+    OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();
   }
 
   void EnterQuickStartFlowFromWelcomeScreen() {
@@ -202,7 +221,11 @@ class QuickStartBrowserTest : public OobeBaseTest {
     return connection_broker_factory_.instances().front();
   }
 
-  void SetUpDisconnectedWifiNetwork() {
+  void SetUpDisconnectedWifiNetwork() { SetupNetwork(/*connected=*/false); }
+
+  void SetUpConnectedWifiNetwork() { SetupNetwork(/*connected=*/true); }
+
+  void SetupNetwork(bool connected = false) {
     network_helper_->device_test()->ClearDevices();
     network_helper_->service_test()->ClearServices();
 
@@ -210,7 +233,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
         "/device/stub_wifi_device", shill::kTypeWifi, "stub_wifi_device");
     network_helper_->service_test()->AddService(
         "stub_wifi", "wifi_guid", kWifiNetworkName, shill::kTypeWifi,
-        shill::kStateIdle, true);
+        connected ? shill::kStateOnline : shill::kStateIdle, true);
     network_helper_->service_test()->SetServiceProperty(
         "stub_wifi", shill::kConnectableProperty, base::Value(false));
     network_helper_->service_test()->SetServiceProperty(
@@ -232,6 +255,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
  private:
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
   base::test::ScopedFeatureList feature_list_;
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 class QuickStartNotDeterminedBrowserTest : public QuickStartBrowserTest {
@@ -476,6 +500,60 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PhoneAbortOnManualNetworkNeeded) {
   // Abort should be handled gracefully and the standard OOBE flow is expected.
   test::WaitForUserCreationScreen();
   EnsureFlowNotActive();
+}
+
+// Test that the flow can be started on the Gaia screen and also cancelled.
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
+                       GaiaEntryPoint_StartAndCancelFlow) {
+  SetupAndWaitForGaiaScreen();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonGaia)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kQuickStartButtonGaia);
+
+  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+  EnsureFlowActive();
+
+  // Cancel button must be present.
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kCancelButtonLoadingDialog)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kCancelButtonLoadingDialog);
+
+  // Returns to the Gaia screen
+  OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();
+}
+
+// Test that the flow can be started on the Gaia screen and also cancelled.
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
+                       GaiaEntryPoint_TransfersGaiaCredentialsOnceConnected) {
+  SetupAndWaitForGaiaScreen();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonGaia)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kQuickStartButtonGaia);
+  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+  EnsureFlowActive();
+
+  SimulatePhoneConnection();
+  SimulateUserVerification();
+
+  // Gaia credential transfer step should become visible
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kGaiaTransferDialogPath)
+      ->Wait();
+
+  // Cancel and return to the Gaia screen.
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true,
+                              kCancelButtonGaiaTransferDialog)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kCancelButtonGaiaTransferDialog);
+
+  // Returns to the Gaia screen
+  OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();
 }
 
 }  // namespace ash
