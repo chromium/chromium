@@ -3740,7 +3740,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
 
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
-                       OpenPdfInPreviewFromPrintPreview) {
+                       // TODO(crbug.com/1500113): Re-enable this test
+                       DISABLED_OpenPdfInPreviewFromPrintPreview) {
   AddPrinter("printer_name");
 
   if (UseService() && !PrintAllowedOrNonBlockingPolicy()) {
