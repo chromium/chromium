@@ -64,6 +64,7 @@ class ArcAppDialogView : public views::DialogDelegateView,
   void OnAppImageUpdated(
       const std::string& app_id,
       const gfx::ImageSkia& image,
+      bool is_placeholder_icon,
       const absl::optional<gfx::ImageSkia>& badge_image) override;
 
   void AddMultiLineLabel(views::View* parent, const std::u16string& label_text);
@@ -184,6 +185,7 @@ void ArcAppDialogView::OnDialogCancelled() {
 void ArcAppDialogView::OnAppImageUpdated(
     const std::string& app_id,
     const gfx::ImageSkia& image,
+    bool is_placeholder_icon,
     const absl::optional<gfx::ImageSkia>& badge_image) {
   DCHECK_EQ(app_id, app_id_);
   DCHECK(!image.isNull());

@@ -41,6 +41,7 @@ class CrostiniAppWindow::IconLoader : public AppServiceAppIconLoader,
   void OnAppImageUpdated(
       const std::string& app_id,
       const gfx::ImageSkia& image,
+      bool is_placeholder_icon,
       const absl::optional<gfx::ImageSkia>& badge_image) override {
     if (!widget_ || !widget_->widget_delegate())
       return;

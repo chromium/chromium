@@ -75,6 +75,7 @@ void NotificationManager::Close(bool by_user) {
 void NotificationManager::OnAppImageUpdated(
     const std::string& id,
     const gfx::ImageSkia& image,
+    bool is_placeholder_icon,
     const absl::optional<gfx::ImageSkia>& badge_image) {
   extension_icon_ = ui::ImageModel::FromImageSkia(image);
   ShowNotification();

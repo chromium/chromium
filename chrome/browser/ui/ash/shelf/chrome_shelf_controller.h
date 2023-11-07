@@ -289,6 +289,7 @@ class ChromeShelfController
   void OnAppImageUpdated(
       const std::string& app_id,
       const gfx::ImageSkia& image,
+      bool is_placeholder_icon,
       const absl::optional<gfx::ImageSkia>& badge_image) override;
 
   // Inserts a shelf item for an app at |index|. Note that |index| may be
@@ -313,6 +314,7 @@ class ChromeShelfController
   // Updates images of shelf items representing the app.
   void UpdateAppImage(const std::string& app_id,
                       const absl::optional<gfx::ImageSkia>& badge_image,
+                      bool is_placeholder_icon,
                       const gfx::ImageSkia& image);
 
   // Remembers / restores list of running applications.

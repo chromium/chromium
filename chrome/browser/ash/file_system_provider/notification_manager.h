@@ -52,6 +52,7 @@ class NotificationManager : public NotificationManagerInterface,
   void OnAppImageUpdated(
       const std::string& id,
       const gfx::ImageSkia& image,
+      bool is_placeholder_icon,
       const absl::optional<gfx::ImageSkia>& badge_image) override;
 
   // message_center::NotificationObserver overrides:

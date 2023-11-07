@@ -52,7 +52,9 @@ void AppServiceShortcutIconLoader::FetchImage(const std::string& id) {
   ShortcutIDToIconMap::const_iterator it = icon_map_.find(id);
   if (it != icon_map_.end()) {
     if (!it->second.image.isNull()) {
-      delegate()->OnAppImageUpdated(id, it->second.image, it->second.badge);
+      delegate()->OnAppImageUpdated(id, it->second.image,
+                                    /*is_placeholder_icon=*/false,
+                                    it->second.badge);
     }
     return;
   }
@@ -71,7 +73,9 @@ void AppServiceShortcutIconLoader::UpdateImage(const std::string& id) {
     return;
   }
 
-  delegate()->OnAppImageUpdated(id, it->second.image, it->second.badge);
+  delegate()->OnAppImageUpdated(id, it->second.image,
+                                /*is_placeholder_icon=*/false,
+                                it->second.badge);
 }
 
 void AppServiceShortcutIconLoader::OnShortcutUpdated(
@@ -121,5 +125,6 @@ void AppServiceShortcutIconLoader::OnLoadIcon(
           : gfx::ImageSkia();
 
   icon_map_[shortcut_id.value()] = {.image = image, .badge = badge};
-  delegate()->OnAppImageUpdated(shortcut_id.value(), image, badge);
+  delegate()->OnAppImageUpdated(shortcut_id.value(), image,
+                                /*is_placeholder_icon=*/false, badge);
 }

@@ -171,6 +171,7 @@ class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
   void OnAppImageUpdated(
       const std::string& app_id,
       const gfx::ImageSkia& image,
+      bool is_placeholder_icon,
       const absl::optional<gfx::ImageSkia>& badge_image) override {
     app_id_ = app_id;
     image_ = image;

@@ -61,6 +61,7 @@ class AppNotificationLauncher : public AppIconLoaderDelegate,
   void OnAppImageUpdated(
       const std::string& id,
       const gfx::ImageSkia& image,
+      bool is_placeholder_icon,
       const absl::optional<gfx::ImageSkia>& badge_image) override {
     pending_notification_->set_icon(ui::ImageModel::FromImageSkia(image));
     auto* notification_display_service =
