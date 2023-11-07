@@ -1068,7 +1068,7 @@ BASE_FEATURE(kPrintPreviewSetupAssistance,
 // updates.
 BASE_FEATURE(kLocalPrinterObserving,
              "LocalPrinterObserving",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

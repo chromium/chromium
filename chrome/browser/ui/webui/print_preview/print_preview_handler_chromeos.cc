@@ -33,6 +33,7 @@
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printing_constants.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -89,10 +90,12 @@ PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
-    LOG(ERROR) << "Local printer not available";
+    PRINTER_LOG(DEBUG) << "Local printer not available";
     return;
   }
   local_printer_ = service->GetRemote<crosapi::mojom::LocalPrinter>().get();
+  local_printer_version_ =
+      service->GetInterfaceVersion<crosapi::mojom::LocalPrinter>();
 #endif
 }
 
@@ -147,7 +150,7 @@ void PrintPreviewHandlerChromeOS::RegisterMessages() {
 void PrintPreviewHandlerChromeOS::OnJavascriptAllowed() {
   receiver_.reset();  // Just in case this method is called multiple times.
   if (!local_printer_) {
-    LOG(ERROR) << "Local printer not available";
+    PRINTER_LOG(DEBUG) << "Local printer not available";
     return;
   }
   local_printer_->AddPrintServerObserver(
@@ -317,7 +320,7 @@ void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(
   MaybeAllowJavascript();
   FireWebUIListener("server-printers-loading", base::Value(true));
   if (!local_printer_) {
-    LOG(ERROR) << "Local printer not available";
+    PRINTER_LOG(DEBUG) << "Local printer not available";
     return;
   }
   local_printer_->ChoosePrintServers(print_server_ids, base::DoNothing());
@@ -330,7 +333,7 @@ void PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig(
   CHECK(!callback_id.empty());
   MaybeAllowJavascript();
   if (!local_printer_) {
-    LOG(ERROR) << "Local printer not available";
+    PRINTER_LOG(DEBUG) << "Local printer not available";
     ResolveJavascriptCallback(base::Value(callback_id), base::Value());
     return;
   }
@@ -399,9 +402,24 @@ void PrintPreviewHandlerChromeOS::HandleObserveLocalPrinters(
   CHECK(args[0].is_string());
   const std::string& callback_id = args[0].GetString();
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (int{crosapi::mojom::LocalPrinter::MethodMinVersions::
+              kAddLocalPrintersObserverMinVersion} > local_printer_version_) {
+    PRINTER_LOG(DEBUG) << "Local printer version incompatible";
+    ResolveJavascriptCallback(callback_id, base::Value::List());
+    return;
+  }
+#endif
+
+  if (!local_printer_) {
+    PRINTER_LOG(DEBUG) << "Local printer not available";
+    ResolveJavascriptCallback(callback_id, base::Value::List());
+    return;
+  }
+
   // Each instance of Print Preview only needs to subscribe once.
   if (local_printers_receiver_.is_bound()) {
-    ResolveJavascriptCallback(callback_id, base::Value());
+    ResolveJavascriptCallback(callback_id, base::Value::List());
     return;
   }
 

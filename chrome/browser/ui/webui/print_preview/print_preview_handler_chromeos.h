@@ -135,6 +135,10 @@ class PrintPreviewHandlerChromeOS
 
   void SetInitiatorForTesting(content::WebContents* test_initiator);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  int GetLocalPrinterVersionForTesting() { return local_printer_version_; }
+#endif
+
   mojo::Receiver<crosapi::mojom::PrintServerObserver> receiver_{this};
 
   mojo::Receiver<crosapi::mojom::LocalPrintersObserver>
@@ -152,6 +156,11 @@ class PrintPreviewHandlerChromeOS
   // lacros will automatically be restarted.
   raw_ptr<crosapi::mojom::LocalPrinter, DanglingUntriaged> local_printer_ =
       nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Version number of the LocalPrinter mojo service.
+  int local_printer_version_ = 0;
+#endif
 
   base::WeakPtrFactory<PrintPreviewHandlerChromeOS> weak_factory_{this};
 };

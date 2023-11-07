@@ -376,7 +376,7 @@ interface LocalPrinter {
     => (array<printing.mojom.IppClientInfo> settings);
 
   // Adds a local printers observer.
-  [MinVersion=6]
+  [MinVersion=7]
   AddLocalPrintersObserver@16(pending_remote<LocalPrintersObserver> observer)
       => (array<LocalDestinationInfo> printers);
 };
