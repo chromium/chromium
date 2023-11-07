@@ -19,6 +19,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimator.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutConstants.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutController.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutDependencyHolder.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutScrimController.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManager.java",
@@ -40,6 +41,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:guava_android_java",
@@ -52,6 +54,7 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     "//base:base_java",
+    "//chrome/browser/tab:java",
     "//components/browser_ui/widget/android:java",
   ]
 

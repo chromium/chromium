@@ -45,6 +45,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -53,16 +55,16 @@ import org.chromium.ui.resources.ResourceManager;
 import java.util.Collections;
 
 /**
- * A {@link Layout} for Hub that has an empty or single tab {@link SceneLayer}. Android UI for
- * a toolbar and panes will be rendered atop this layout.
+ * A {@link Layout} for Hub that has an empty or single tab {@link SceneLayer}. Android UI for a
+ * toolbar and panes will be rendered atop this layout.
  *
- * This implementation is a heavily modified fork of {@link TabSwitcherLayout} that will delegate
+ * <p>This implementation is a heavily modified fork of {@link TabSwitcherLayout} that will delegate
  * animations to the current pane.
  *
- * Normally, this layout will show an empty {@link SceneLayer}. However, to facilitate thumbnail
+ * <p>Normally, this layout will show an empty {@link SceneLayer}. However, to facilitate thumbnail
  * capture and animations it may transiently host a {@link StaticTabSceneLayer}.
  */
-public class HubLayout extends Layout {
+public class HubLayout extends Layout implements HubLayoutController {
     private SceneLayer mCurrentSceneLayer;
     /** Scene layer to facilitate thumbnail capture prior to starting a transition animation. */
     private StaticTabSceneLayer mTabSceneLayer;
@@ -111,6 +113,7 @@ public class HubLayout extends Layout {
 
         HubManager hubManager = dependencyHolder.getHubManager();
         mHubController = hubManager.getHubController();
+        mHubController.setHubLayoutController(this);
         mPaneManager = hubManager.getPaneManager();
         mScrimController = dependencyHolder.getScrimController();
     }
@@ -123,7 +126,20 @@ public class HubLayout extends Layout {
                 : HubLayoutAnimationType.NONE;
     }
 
-    // Layout.java Implementation:
+    @Override
+    public void selectTabAndHideHubLayout(int tabId) {
+        if (tabId != Tab.INVALID_TAB_ID) {
+            TabModel model = mTabModelSelector.getModelForTabId(tabId);
+            if (model != null) {
+                TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tabId), false);
+            }
+        }
+
+        // Don't forward a tabId as it is only used to select the tab again in doneHiding() which is
+        // redundant work.
+        // TODO(crbug/1495121): Find a way to remove the tabId parameter from start hiding.
+        startHiding(Tab.INVALID_TAB_ID);
+    }
 
     @Override
     public void onFinishNativeInitialization() {
@@ -329,9 +345,8 @@ public class HubLayout extends Layout {
 
     @Override
     public boolean onBackPressed() {
-        // TODO(crbug/1487209): Forward this to the HubManager. This is for the legacy backpress
-        // handler which will soon be obsolete.
-        return false;
+        // This is for the legacy backpress handler which will soon be obsolete.
+        return mHubController.onHubLayoutBackPressed();
     }
 
     @Override
@@ -345,7 +360,8 @@ public class HubLayout extends Layout {
 
         // Tablet Hub doesn't handle new tab animations.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
-            hideOnForegroundTabCreation(tabId);
+            // TODO(crbug/1497472): Trigger this from inside Hub when the tab is created.
+            selectTabAndHideHubLayout(tabId);
             return;
         }
 
@@ -396,16 +412,7 @@ public class HubLayout extends Layout {
                     }
                 });
 
-        hideOnForegroundTabCreation(tabId);
-    }
-
-    private void hideOnForegroundTabCreation(int tabId) {
-        // TODO(crbug/1497472): In TabSwitcherLayout, the layout transition is triggered
-        // automatically by setting onTabSelecting() as an observer on the TabSwitcher.
-        // Consider a similar approach where an observer set on HubController can be invoked
-        // from inside the Hub to trigger the Hub to hide. Once this is fixed this method
-        // can be deleted.
-        startHiding(tabId);
+        selectTabAndHideHubLayout(tabId);
     }
 
     @Override
@@ -501,8 +508,6 @@ public class HubLayout extends Layout {
         }
         return pane.createHideHubLayoutAnimatorProvider(containerView);
     }
-
-    // Internal helpers
 
     private void queueAnimation() {
         if (mCurrentAnimationRunner == null) return;

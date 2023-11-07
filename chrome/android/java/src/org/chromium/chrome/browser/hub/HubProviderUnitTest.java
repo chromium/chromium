@@ -23,7 +23,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link HubProvider}. */
@@ -36,6 +38,7 @@ public class HubProviderUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private Pane mMockPane;
+    @Mock private ObservableSupplier<Tab> mTabSupplierMock;
 
     private Activity mActivity;
 
@@ -51,7 +54,8 @@ public class HubProviderUnitTest {
     @Test
     @SmallTest
     public void testHubProvider() {
-        HubProvider provider = new HubProvider(mActivity, new DefaultPaneOrderController());
+        HubProvider provider =
+                new HubProvider(mActivity, new DefaultPaneOrderController(), mTabSupplierMock);
 
         PaneListBuilder builder = provider.getPaneListBuilder();
 

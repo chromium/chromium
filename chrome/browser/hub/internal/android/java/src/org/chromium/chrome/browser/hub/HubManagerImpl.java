@@ -8,6 +8,10 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+
 /**
  * Implementation of {@link HubManager} and {@link HubController}.
  *
@@ -15,24 +19,24 @@ import androidx.annotation.NonNull;
  * created and torn down as needed when {@link HubLayout} visibility changes.
  */
 public class HubManagerImpl implements HubManager, HubController {
-    // Dependencies:
-    private final Context mContext;
+    private final @NonNull Context mContext;
+    private final @NonNull PaneManagerImpl mPaneManager;
+    private final @NonNull HubContainerView mHubContainerView;
+    private final @NonNull ObservableSupplier<Tab> mTabSupplier;
 
-    // Final Hub specific fields:
-    private final PaneManagerImpl mPaneManager;
-    private final HubContainerView mHubContainerView;
+    // This is effectively NonNull and final once the HubLayout is initialized.
+    private HubLayoutController mHubLayoutController;
 
     private HubCoordinator mHubCoordinator;
 
-    /**
-     * Create a {@link HubManagerImpl}.
-     *
-     * @param context The current {@link Context}.
-     * @param paneListBuilder The {@link PaneListBuilder} consumed to build the {@link PaneManager}.
-     */
-    public HubManagerImpl(Context context, PaneListBuilder paneListBuilder) {
+    /** See {@link HubManagerFactory#createHubManager}. */
+    public HubManagerImpl(
+            @NonNull Context context,
+            @NonNull PaneListBuilder paneListBuilder,
+            @NonNull ObservableSupplier<Tab> tabSupplier) {
         mContext = context;
         mPaneManager = new PaneManagerImpl(paneListBuilder);
+        mTabSupplier = tabSupplier;
 
         // TODO(crbug/1487315): Consider making this a xml file so the entire core UI is inflated.
         mHubContainerView = new HubContainerView(mContext);
@@ -51,6 +55,12 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     // HubController implementation.
+
+    @Override
+    public void setHubLayoutController(@NonNull HubLayoutController hubLayoutController) {
+        assert mHubLayoutController == null : "setHubLayoutController should only be called once.";
+        mHubLayoutController = hubLayoutController;
+    }
 
     @Override
     public @NonNull HubContainerView getContainerView() {
@@ -73,10 +83,30 @@ public class HubManagerImpl implements HubManager, HubController {
         }
     }
 
+    @Override
+    public boolean onHubLayoutBackPressed() {
+        if (mHubCoordinator == null) return false;
+
+        switch (mHubCoordinator.handleBackPress()) {
+            case BackPressResult.SUCCESS:
+                return true;
+            case BackPressResult.FAILURE:
+                return false;
+            default:
+                assert false : "Not reached.";
+                return false;
+        }
+    }
+
     private void ensureHubCoordinatorIsInitialized() {
         if (mHubCoordinator != null) return;
 
-        mHubCoordinator = new HubCoordinator(mHubContainerView, mPaneManager);
+        assert mHubLayoutController != null
+                : "HubLayoutController should be set before creating HubCoordinator.";
+
+        mHubCoordinator =
+                new HubCoordinator(
+                        mHubContainerView, mPaneManager, mHubLayoutController, mTabSupplier);
     }
 
     HubCoordinator getHubCoordinatorForTesting() {

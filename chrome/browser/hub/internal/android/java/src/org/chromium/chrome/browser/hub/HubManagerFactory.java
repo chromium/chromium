@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.hub;
 
 import android.content.Context;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.tab.Tab;
+
 /** Factory for creating {@link HubManager}. */
 public class HubManagerFactory {
     /**
@@ -14,9 +17,11 @@ public class HubManagerFactory {
      * @param context The {@link Context} hosting the Hub.
      * @param paneListBuilder The {@link PaneListBuilder} which is consumed to build a {@link
      *     PaneManager}
+     * @param tabSupplier The supplier of the current tab in the current tab model.
      * @return an instance of {@link HubManagerImpl}.
      */
-    public static HubManager createHubManager(Context context, PaneListBuilder paneListBuilder) {
-        return new HubManagerImpl(context, paneListBuilder);
+    public static HubManager createHubManager(
+            Context context, PaneListBuilder paneListBuilder, ObservableSupplier<Tab> tabSupplier) {
+        return new HubManagerImpl(context, paneListBuilder, tabSupplier);
     }
 }

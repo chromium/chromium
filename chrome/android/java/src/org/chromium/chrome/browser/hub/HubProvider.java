@@ -9,6 +9,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * Main entrypoint for providing core Hub objects to Chrome.
@@ -22,12 +24,18 @@ public class HubProvider {
     /**
      * @param context The Android {@link Context} for the Hub.
      * @param orderController The {@link PaneOrderController} for the Hub.
+     * @param tabSupplier The supplier of the current tab in the current tab model.
      */
-    public HubProvider(@NonNull Context context, @NonNull PaneOrderController orderController) {
+    public HubProvider(
+            @NonNull Context context,
+            @NonNull PaneOrderController orderController,
+            @NonNull ObservableSupplier<Tab> tabSupplier) {
         mPaneListBuilder = new PaneListBuilder(orderController);
         mHubManagerSupplier =
                 LazyOneshotSupplier.fromSupplier(
-                        () -> HubManagerFactory.createHubManager(context, mPaneListBuilder));
+                        () ->
+                                HubManagerFactory.createHubManager(
+                                        context, mPaneListBuilder, tabSupplier));
     }
 
     /** Returns the lazy supplier for {@link HubManager}. */

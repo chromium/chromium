@@ -8,6 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.widget.FrameLayout;
@@ -15,6 +19,7 @@ import android.widget.FrameLayout;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,29 +30,38 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.ui.base.TestActivity;
 
 /** Tests for {@link HubCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HubCoordinatorUnitTest {
+    private static final int TAB_ID = 7;
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private Tab mTab;
+    @Mock private HubLayoutController mHubLayoutController;
     @Mock private Pane mTabSwitcherPane;
     @Mock private Pane mIncognitoTabSwitcherPane;
 
+    private ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
     private PaneManager mPaneManager;
     private FrameLayout mRootView;
+    private HubCoordinator mHubCoordinator;
 
     @Before
     public void setUp() {
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        when(mTab.getId()).thenReturn(TAB_ID);
 
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -66,33 +80,76 @@ public class HubCoordinatorUnitTest {
     private void onActivity(TestActivity activity) {
         mRootView = new FrameLayout(activity);
         activity.setContentView(mRootView);
-    }
 
-    @Test
-    @SmallTest
-    public void testCreateAndDestroy() {
-        HubCoordinator hubCoordinator = new HubCoordinator(mRootView, mPaneManager);
+        mHubCoordinator =
+                new HubCoordinator(mRootView, mPaneManager, mHubLayoutController, mTabSupplier);
+        ShadowLooper.runUiThreadTasks();
         mRootView.getChildCount();
         assertNotEquals(0, mRootView.getChildCount());
-        hubCoordinator.destroy();
+    }
+
+    @After
+    public void tearDown() {
+        mHubCoordinator.destroy();
         assertEquals(0, mRootView.getChildCount());
     }
 
     @Test
     @SmallTest
     public void testBackNavigationBetweenPanes() {
-        HubCoordinator hubCoordinator = new HubCoordinator(mRootView, mPaneManager);
-        ShadowLooper.runUiThreadTasks();
-        assertFalse(hubCoordinator.getHandleBackPressChangedSupplier().get());
+        assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
 
         assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
         assertEquals(mIncognitoTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
-        assertTrue(hubCoordinator.getHandleBackPressChangedSupplier().get());
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
 
-        assertEquals(BackPressResult.SUCCESS, hubCoordinator.handleBackPress());
+        assertEquals(BackPressResult.SUCCESS, mHubCoordinator.handleBackPress());
         assertEquals(mTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
-        assertFalse(hubCoordinator.getHandleBackPressChangedSupplier().get());
+        assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+    }
 
-        hubCoordinator.destroy();
+    @Test
+    @SmallTest
+    public void testBackNavigationWithNullTab() {
+        assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+        assertEquals(BackPressResult.FAILURE, mHubCoordinator.handleBackPress());
+
+        mTabSupplier.set(mTab);
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+        mTabSupplier.set(null);
+
+        assertEquals(BackPressResult.FAILURE, mHubCoordinator.handleBackPress());
+        verify(mHubLayoutController, never()).selectTabAndHideHubLayout(anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testBackNavigationWithTab() {
+        assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+        assertEquals(BackPressResult.FAILURE, mHubCoordinator.handleBackPress());
+
+        mTabSupplier.set(mTab);
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        assertEquals(BackPressResult.SUCCESS, mHubCoordinator.handleBackPress());
+        verify(mHubLayoutController).selectTabAndHideHubLayout(eq(TAB_ID));
+    }
+
+    @Test
+    @SmallTest
+    public void testBackNavigationPriority() {
+        mTabSupplier.set(mTab);
+        assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
+        assertEquals(mIncognitoTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        // Between pane naviation
+        assertEquals(BackPressResult.SUCCESS, mHubCoordinator.handleBackPress());
+        assertEquals(mTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        // Exit Hub navigation.
+        assertEquals(BackPressResult.SUCCESS, mHubCoordinator.handleBackPress());
+        verify(mHubLayoutController).selectTabAndHideHubLayout(eq(TAB_ID));
     }
 }
