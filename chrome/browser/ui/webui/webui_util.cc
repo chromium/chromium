@@ -39,11 +39,7 @@ namespace webui {
 void SetJSModuleDefaults(content::WebUIDataSource* source) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://webui-test "
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      "chrome://test "
-#endif
-      "'self';");
+      "script-src chrome://resources chrome://webui-test 'self';");
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
