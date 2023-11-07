@@ -10,6 +10,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_background_service_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_cpu_throttle_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_display_power_observer.h"
@@ -89,6 +90,8 @@ ArcIdleManager::ArcIdleManager(content::BrowserContext* context,
   }
   AddObserver(std::make_unique<ArcDisplayPowerObserver>());
 
+  enable_delay_ = base::Milliseconds(kEnableArcIdleManagerDelayMs.Get());
+
   arc_power_bridge_ = ArcPowerBridge::GetForBrowserContext(context);
 
   // This maybe null in unit tests.
@@ -160,7 +163,21 @@ void ArcIdleManager::ThrottleInstance(bool should_throttle) {
   }
   first_idle_happened_ = true;
   LogScreenOffTimer(/*toggle_timer*/ should_throttle);
-  delegate_->SetInteractiveMode(arc_power_bridge_, bridge_, !should_throttle);
+  if (should_throttle) {
+    // Enable Doze mode. May need to postpone the request.
+    if (!enable_delay_.is_zero()) {
+      enable_timer_.Start(FROM_HERE, enable_delay_,
+                          base::BindOnce(&ArcIdleManager::RequestDoze,
+                                         weak_ptr_factory_.GetWeakPtr(), true));
+    } else {
+      RequestDoze(true);
+    }
+  } else {
+    // Disable Doze mode should execute immediately, otherwise app launch may be
+    // blocked.
+    enable_timer_.Stop();
+    RequestDoze(false);
+  }
 }
 
 void ArcIdleManager::OnVmResumed() {
@@ -171,7 +188,7 @@ void ArcIdleManager::OnVmResumed() {
 
     // Just sync up Android state with internal state.
     // No need for logging metrics, not a state change.
-    delegate_->SetInteractiveMode(arc_power_bridge_, bridge_, true);
+    RequestDoze(false);
   }
 }
 
@@ -198,6 +215,10 @@ void ArcIdleManager::LogScreenOffTimer(bool toggle_timer) {
                                   /*min=*/base::Milliseconds(1),
                                   /*max=*/base::Hours(8), /*buckets=*/100);
   }
+}
+
+void ArcIdleManager::RequestDoze(bool enabled) {
+  delegate_->SetInteractiveMode(arc_power_bridge_, bridge_, !enabled);
 }
 
 }  // namespace arc

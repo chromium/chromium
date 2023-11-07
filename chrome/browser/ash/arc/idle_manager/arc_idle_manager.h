@@ -83,21 +83,25 @@ class ArcIdleManager : public KeyedService,
   void ThrottleInstance(bool should_idle) override;
 
  private:
+  void LogScreenOffTimer(bool toggle_timer);
+  void RequestDoze(bool enabled);
+
   bool first_idle_happened_ = false;
+  base::TimeDelta enable_delay_;
   std::unique_ptr<Delegate> delegate_;
   bool is_connected_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  void LogScreenOffTimer(bool toggle_timer);
 
   // Owned by ArcServiceManager.
   const raw_ptr<ArcBridgeService, ExperimentalAsh> bridge_;
   raw_ptr<ArcPowerBridge> arc_power_bridge_;
 
   base::ElapsedTimer interactive_off_span_timer_;
+  base::OneShotTimer enable_timer_;
 
   base::ScopedObservation<ArcPowerBridge, ArcPowerBridge::Observer>
       powerbridge_observation_{this};
+  base::WeakPtrFactory<ArcIdleManager> weak_ptr_factory_{this};
 };
 
 }  // namespace arc
