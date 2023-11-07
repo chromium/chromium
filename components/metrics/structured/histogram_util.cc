@@ -15,7 +15,8 @@ void LogInternalError(StructuredMetricsError error) {
 }
 
 void LogEventRecordingState(EventRecordingState state) {
-  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.EventRecordingState", state);
+  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.EventRecordingState2",
+                            state);
 }
 
 void LogNumEventsInUpload(const int num_events) {
@@ -25,11 +26,6 @@ void LogNumEventsInUpload(const int num_events) {
 
 void LogKeyValidation(KeyValidationState state) {
   UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.KeyValidationState", state);
-}
-
-void LogIsEventRecordedUsingMojo(bool used_mojo_api) {
-  UMA_HISTOGRAM_BOOLEAN("UMA.StructuredMetrics.EventsRecordedUsingMojo",
-                        used_mojo_api);
 }
 
 void LogNumEventsRecordedBeforeInit(int num_events) {
