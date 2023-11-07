@@ -1,0 +1,2 @@
+Tests fullscreen browser window size.
+Success

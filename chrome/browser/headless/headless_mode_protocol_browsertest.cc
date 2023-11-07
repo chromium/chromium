@@ -275,10 +275,16 @@ HEADLESS_MODE_PROTOCOL_TEST(MaximizeRestoreWindow,
                             "sanity/maximize-restore-window.js")
 HEADLESS_MODE_PROTOCOL_TEST(FullscreenRestoreWindow,
                             "sanity/fullscreen-restore-window.js")
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 HEADLESS_MODE_PROTOCOL_TEST(MaximizedWindowSize,
                             "sanity/maximized-window-size.js")
+
+// This currently fails on Mac,see https://crbug.com/1500046
+#if !BUILDFLAG(IS_MAC)
+HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSize,
+                            "sanity/fullscreen-window-size.js")
+#endif  // !BUILDFLAG(IS_MAC)
 
 HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
                             "sanity/print-to-pdf-tiny-page.js")
