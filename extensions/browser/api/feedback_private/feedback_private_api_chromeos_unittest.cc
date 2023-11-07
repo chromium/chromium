@@ -90,20 +90,20 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     if (!result_value)
       return testing::AssertionFailure() << "No result";
 
-    ReadLogSourceResult result;
-    if (!ReadLogSourceResult::Populate(*result_value, result)) {
+    auto result = ReadLogSourceResult::FromValue(*result_value);
+    if (!result) {
       return testing::AssertionFailure()
              << "Unable to parse a valid result from " << *result_value;
     }
 
-    if (result.log_lines.size() != 1) {
+    if (result->log_lines.size() != 1) {
       return testing::AssertionFailure()
              << "Expected |log_lines| to contain 1 string, actual number: "
-             << result.log_lines.size();
+             << result->log_lines.size();
     }
 
-    *result_reader_id = result.reader_id;
-    *result_string = result.log_lines[0];
+    *result_reader_id = result->reader_id;
+    *result_string = result->log_lines[0];
 
     return testing::AssertionSuccess();
   }
