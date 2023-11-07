@@ -65,6 +65,8 @@ aggregate_vector_icons("components_vector_icons") {
     "cookie_off_chrome_refresh.icon",
     "dangerous.icon",
     "dangerous_chrome_refresh.icon",
+    "database.icon",
+    "database_off.icon",
     "description.icon",
     "devices.icon",
     "devices_chrome_refresh.icon",

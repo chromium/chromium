@@ -271,8 +271,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     const gfx::VectorIcon* icon = nullptr;
     switch (info.type) {
       case ContentSettingsType::COOKIES:
-        icon = show_blocked_badge ? &vector_icons::kCookieOffChromeRefreshIcon
-                                  : &vector_icons::kCookieChromeRefreshIcon;
+        icon = show_blocked_badge ? &vector_icons::kDatabaseOffIcon
+                                  : &vector_icons::kDatabaseIcon;
         break;
       case ContentSettingsType::FEDERATED_IDENTITY_API:
         icon = show_blocked_badge
@@ -417,7 +417,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
   const gfx::VectorIcon* icon = &gfx::kNoneIcon;
   switch (info.type) {
     case ContentSettingsType::COOKIES:
-      icon = &vector_icons::kCookieIcon;
+      icon = &vector_icons::kDatabaseIcon;
       break;
     case ContentSettingsType::FEDERATED_IDENTITY_API:
       icon = &vector_icons::kAccountCircleIcon;
@@ -687,6 +687,13 @@ const ui::ImageModel PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon() {
   return GetImageModel(features::IsChromeRefresh2023()
                            ? views::kEyeCrossedRefreshIcon
                            : views::kEyeCrossedIcon);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetCookiesAndSiteDataIcon() {
+  return GetImageModel(features::IsChromeRefresh2023()
+                           ? vector_icons::kCookieChromeRefreshIcon
+                           : vector_icons::kCookieIcon);
 }
 
 // static
