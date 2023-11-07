@@ -48,6 +48,8 @@
 
 namespace blink {
 
+class RuleSet;
+
 using AddRuleFlags = unsigned;
 
 enum AddRuleFlag {
@@ -108,7 +110,8 @@ class CORE_EXPORT RuleData {
   // give to the constructor), you will need to call
   // MovedToDifferentRuleSet() below. Otherwise,
   // DescendantSelectorIdentifierHashes() will return a slice
-  // into a nonexistent backing.
+  // into a nonexistent backing (and GetPosition() will return
+  // a bogus value, which cannot be used for Seeker lookups).
   RuleData(StyleRule*,
            unsigned selector_index,
            unsigned position,
@@ -153,7 +156,8 @@ class CORE_EXPORT RuleData {
   void ComputeBloomFilterHashes(const StyleScope* style_scope,
                                 Vector<unsigned>& backing);
   void MovedToDifferentRuleSet(const Vector<unsigned>& old_backing,
-                               Vector<unsigned>& new_backing);
+                               Vector<unsigned>& new_backing,
+                               unsigned new_position);
 
   void Trace(Visitor*) const;
 
@@ -250,8 +254,8 @@ class RuleMap {
   void AddFilteredRulesFromOtherSet(
       const RuleMap& other,
       const HeapHashSet<Member<StyleRule>>& only_include,
-      const Vector<unsigned>& old_bloom_hash_backing,
-      Vector<unsigned>& new_bloom_hash_backing);
+      const RuleSet& old_rule_set,
+      RuleSet& new_rule_set);
   base::span<const RuleData> Find(const AtomicString& key) const {
     if (buckets.IsNull()) {
       return {};
@@ -572,6 +576,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   FRIEND_TEST_ALL_PREFIXES(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData);
   FRIEND_TEST_ALL_PREFIXES(RuleSetTest, RuleDataPositionLimit);
   friend class RuleSetCascadeLayerTest;
+  friend class RuleMap;  // For scope_intervals_ and
+                         // NewlyAddedFromDifferentRuleSet().
 
   using SubstringMatcherMap =
       HashMap<AtomicString, std::unique_ptr<base::SubstringSetMatcher>>;
@@ -613,6 +619,19 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                const ContainerQuery*,
                const CascadeLayer*,
                const StyleScope*);
+
+  // Must be called when a RuleData has been added to this RuleSet
+  // through some form that does not go through AddRule();
+  // used during creation of diff rulesets (AddFilteredRulesFromOtherSet()).
+  // In particular, it will adjust the position of new_rule_data,
+  // add it to the necessary intervals for diff rulesets, and adjust
+  // rule_count_.
+  //
+  // Used only by RuleSet itself, and RuleMap (through a friend declaration).
+  void NewlyAddedFromDifferentRuleSet(const RuleData& old_rule_data,
+                                      const StyleScope* style_scope,
+                                      const RuleSet& old_rule_set,
+                                      RuleData& new_rule_data);
 
   void SortKeyframesRulesIfNeeded();
 
