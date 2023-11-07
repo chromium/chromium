@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"

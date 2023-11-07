@@ -4,6 +4,7 @@
 
 #include "base/native_library.h"
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/native_library_test_utils.h"

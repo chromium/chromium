@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/check.h"
 #import "base/ios/ios_util.h"
 
 namespace {

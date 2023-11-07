@@ -9,6 +9,7 @@
 #include <iosfwd>
 #include <string>
 
+#include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/status.pb.h"
 

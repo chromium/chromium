@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
+
+#include "base/dcheck_is_on.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/dcheck_is_on.h"
 #include "base/strings/string_piece.h"
 #include "headless/public/headless_export.h"
 

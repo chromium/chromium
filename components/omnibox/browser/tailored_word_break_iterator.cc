@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/i18n/break_iterator.h"
 #include "base/strings/string_piece.h"
 
