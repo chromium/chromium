@@ -1,24 +1,60 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Definitions of builders in the chromium.build builder group."""
+"""Definitions of builders in `build` bucket."""
 
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "os", "reclient", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//project.star", "settings")
+
+luci.bucket(
+    name = "build",
+    acls = [
+        acl.entry(
+            roles = acl.BUILDBUCKET_READER,
+            groups = "all",
+        ),
+        acl.entry(
+            roles = acl.BUILDBUCKET_TRIGGERER,
+            groups = [
+                "project-chromium-ci-schedulers",
+                "mdb/foundry-x-team",
+            ],
+        ),
+        acl.entry(
+            roles = acl.BUILDBUCKET_OWNER,
+            groups = "project-chromium-admins",
+        ),
+        acl.entry(
+            roles = acl.SCHEDULER_TRIGGERER,
+            groups = "project-chromium-scheduler-triggerers",
+        ),
+    ],
+)
+
+luci.gitiles_poller(
+    name = "chrome-build-gitiles-trigger",
+    bucket = "build",
+    repo = "https://chromium.googlesource.com/chromium/src",
+    refs = [settings.ref],
+)
 
 ci.defaults.set(
+    bucket = "build",
+    triggered_by = ["chrome-build-gitiles-trigger"],
     builder_group = "chromium.build",
     pool = ci.DEFAULT_POOL,
     builderless = False,
     # rely on the builder dimension for the bot selection.
     cores = None,
+    build_numbers = True,
+    contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 10 * time.hour,
     notifies = ["chrome-build-perf"],
     priority = ci.DEFAULT_FYI_PRIORITY,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_configs = [],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
