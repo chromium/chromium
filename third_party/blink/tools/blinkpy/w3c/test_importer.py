@@ -245,17 +245,16 @@ class TestImporter(object):
 
         if try_results and self.git_cl.some_failed(try_results):
             self.fetch_new_expectations_and_baselines()
-            if self.project_git.has_working_directory_changes():
-                # Skip slow and timeout tests so that presubmit check passes
-                port = self.host.port_factory.get()
-                if self.expectations_updater.skip_slow_timeout_tests(port):
-                    path = port.path_to_generic_test_expectations_file()
-                    self.project_git.add_list([path])
+            # Skip slow and timeout tests so that presubmit check passes
+            port = self.host.port_factory.get()
+            if self.expectations_updater.skip_slow_timeout_tests(port):
+                path = port.path_to_generic_test_expectations_file()
+                self.project_git.add_list([path])
 
-                self._generate_manifest()
-                message = 'Update test expectations and baselines.'
-                self._commit_changes(message)
-                self._upload_patchset(message)
+            self._generate_manifest()
+            message = 'Update test expectations and baselines.'
+            self._commit_changes(message)
+            self._upload_patchset(message)
         return True
 
     def _trigger_try_jobs(self):
