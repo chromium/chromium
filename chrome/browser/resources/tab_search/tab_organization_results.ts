@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
@@ -77,6 +78,18 @@ export class TabOrganizationResultsElement extends PolymerElement {
       composed: true,
       detail: {name: this.name, tabs: this.tabs},
     }));
+  }
+
+  private onLearnMoreClick_() {
+    // TODO(emshack): Implement this
+  }
+
+  private onThumbsUpClick_() {
+    // TODO(emshack): Implement this
+  }
+
+  private onThumbsDownClick_() {
+    // TODO(emshack): Implement this
   }
 }
 

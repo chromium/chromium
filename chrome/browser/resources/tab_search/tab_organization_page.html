@@ -53,12 +53,6 @@
     animation: fadeOut 100ms linear,
                displayOut 200ms linear;
   }
-
-  .link {
-    color: var(--color-link-foreground-on-bubble-footer);
-    cursor: pointer;
-    text-decoration: underline;
-  }
 </style>
 
 <div class="body">
@@ -86,7 +80,7 @@
 </div>
 <div class="footer" hidden="[[!showFooter_(state_, showFRE_)]]">
   <div class="tab-organization-body"><b>$i18n{tipTitle}</b> $i18n{tipBody}</div>
-  <div class="tab-organization-body link" on-click="onTipClick_">
+  <div class="tab-organization-link" on-click="onTipClick_">
     $i18n{tipAction}
   </div>
 </div>

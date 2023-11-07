@@ -5,6 +5,12 @@
     width: fit-content;
   }
 
+  cr-icon-button {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+    margin: 0;
+  }
+
   cr-input {
     --cr-input-background-color: transparent;
     --cr-input-border: 1px solid var(--color-side-panel-textfield-border);
@@ -22,6 +28,12 @@
     --cr-input-padding-top: 8px;
   }
 
+  .feedback {
+    align-items: center;
+    display: flex;
+    gap: 4px;
+  }
+
   .mwb-list-item {
     background-color: transparent;
   }
@@ -32,6 +44,10 @@
     display: flex;
     flex-direction: column;
     padding: 16px 0;
+  }
+
+  .tab-organization-link {
+    flex: 1;
   }
 </style>
 
@@ -50,5 +66,14 @@
     <cr-button class="action-button" on-click="onCreateGroupClick_">
       $i18n{createGroup}
     </cr-button>
+  </div>
+  <div class="feedback">
+    <div class="tab-organization-link" on-click="onLearnMoreClick_">
+      $i18n{learnMore}
+    </div>
+    <cr-icon-button iron-icon="cr:thumbs-up" on-click="onThumbsUpClick_">
+    </cr-icon-button>
+    <cr-icon-button iron-icon="cr:thumbs-down" on-click="onThumbsDownClick_">
+    </cr-icon-button>
   </div>
 </div>

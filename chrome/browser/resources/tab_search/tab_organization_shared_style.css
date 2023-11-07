@@ -25,6 +25,14 @@
   font-weight: 500;
 }
 
+.tab-organization-link {
+  color: var(--color-link-foreground-on-bubble-footer);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  text-decoration: underline;
+}
+
 .tab-organization-text-container {
   display: flex;
   flex-direction: column;
