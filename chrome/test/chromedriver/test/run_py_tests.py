@@ -6243,6 +6243,8 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
              '--user-data-dir=%s' % temp_dir,
              '--use-mock-keychain',
              '--password-store=basic']
+      if _BROWSER_NAME == 'chrome-headless-shell':
+        cmd.append('data:,')
       process = subprocess.Popen(cmd)
       try:
         driver = self.CreateDriver(debugger_address='localhost:%d' % port)
