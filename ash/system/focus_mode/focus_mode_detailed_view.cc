@@ -281,10 +281,9 @@ void FocusModeDetailedView::AddedToWidget() {
 }
 
 void FocusModeDetailedView::OnFocusModeChanged(bool in_focus_session) {
-  // TODO(b/302194469): centralize bubble-closing logic.
   if (in_focus_session) {
-    // Close the system tray bubble. Deletes `this`.
-    CloseBubble();
+    // The system tray bubble is closed by the `FocusModeController` whenever we
+    // toggle focus mode on, so do nothing here.
     return;
   }
 

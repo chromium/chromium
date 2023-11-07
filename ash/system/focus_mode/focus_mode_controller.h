@@ -69,6 +69,8 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   void SetSessionDuration(const base::TimeDelta& new_session_duration);
 
  private:
+  void SetEnabled(bool enabled);
+
   void OnTimerTick();
 
   // This is called when the active user changes, and is important to update our
@@ -78,6 +80,10 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // Saves the current selected settings to user prefs so we can provide the
   // same set-up the next time the user comes back to Focus Mode.
   void SaveSettingsToUserPrefs();
+
+  // Closes any open system tray bubbles. This is done whenever we start a focus
+  // session.
+  void CloseSystemTrayBubble();
 
   // Sets the visibility of the focus tray on the shelf.
   void SetFocusTrayVisibility(bool visible);

@@ -11,6 +11,7 @@
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -85,50 +86,7 @@ void FocusModeController::RemoveObserver(Observer* observer) {
 }
 
 void FocusModeController::ToggleFocusMode() {
-  auto* message_center = message_center::MessageCenter::Get();
-  CHECK(message_center);
-
-  in_focus_session_ = !in_focus_session_;
-  if (in_focus_session_) {
-    SaveSettingsToUserPrefs();
-
-    // Start timer for the specified `session_duration_`. Set `end_time_` before
-    // `SetQuietMode` called, because we may indirectly use `end_time_` to
-    // create a notification.
-    end_time_ = base::Time::Now() + session_duration_;
-    timer_.Start(FROM_HERE, base::Seconds(1), this,
-                 &FocusModeController::OnTimerTick, base::TimeTicks::Now());
-
-    // Only for the case DND is not enabled before starting a session and
-    // `turn_on_do_not_disturb_` is true, we set `QuietModeSourceType` with
-    // `kFocusMode` type.
-    if (!message_center->IsQuietMode() && turn_on_do_not_disturb_) {
-      message_center->SetQuietMode(
-          true, message_center::QuietModeSourceType::kFocusMode);
-    }
-
-    SetFocusTrayVisibility(true);
-  } else {
-    timer_.Stop();
-
-    SetFocusTrayVisibility(false);
-
-    if (IsQuietModeOnSetByFocusMode()) {
-      message_center->SetQuietMode(
-          false, message_center::QuietModeSourceType::kFocusMode);
-    }
-
-    // Reset the `session_duration_` as it may have been changed during the
-    // focus session.
-    session_duration_ = Shell::Get()
-                            ->session_controller()
-                            ->GetActivePrefService()
-                            ->GetTimeDelta(prefs::kFocusModeSessionDuration);
-  }
-
-  for (auto& observer : observers_) {
-    observer.OnFocusModeChanged(in_focus_session_);
-  }
+  SetEnabled(!in_focus_session_);
 }
 
 void FocusModeController::OnActiveUserSessionChanged(
@@ -180,6 +138,58 @@ void FocusModeController::SetSessionDuration(
   session_duration_ = valid_new_session_duration;
 }
 
+void FocusModeController::SetEnabled(bool enabled) {
+  if (in_focus_session_ == enabled) {
+    return;
+  }
+
+  auto* message_center = message_center::MessageCenter::Get();
+  CHECK(message_center);
+
+  in_focus_session_ = enabled;
+  if (in_focus_session_) {
+    SaveSettingsToUserPrefs();
+
+    // Start timer for the specified `session_duration_`. Set `end_time_` before
+    // `SetQuietMode` called, because we may indirectly use `end_time_` to
+    // create a notification.
+    end_time_ = base::Time::Now() + session_duration_;
+    timer_.Start(FROM_HERE, base::Seconds(1), this,
+                 &FocusModeController::OnTimerTick, base::TimeTicks::Now());
+
+    // Only for the case DND is not enabled before starting a session and
+    // `turn_on_do_not_disturb_` is true, we set `QuietModeSourceType` with
+    // `kFocusMode` type.
+    if (!message_center->IsQuietMode() && turn_on_do_not_disturb_) {
+      message_center->SetQuietMode(
+          true, message_center::QuietModeSourceType::kFocusMode);
+    }
+
+    CloseSystemTrayBubble();
+    SetFocusTrayVisibility(true);
+  } else {
+    timer_.Stop();
+
+    SetFocusTrayVisibility(false);
+
+    if (IsQuietModeOnSetByFocusMode()) {
+      message_center->SetQuietMode(
+          false, message_center::QuietModeSourceType::kFocusMode);
+    }
+
+    // Reset the `session_duration_` as it may have been changed during the
+    // focus session.
+    session_duration_ = Shell::Get()
+                            ->session_controller()
+                            ->GetActivePrefService()
+                            ->GetTimeDelta(prefs::kFocusModeSessionDuration);
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnFocusModeChanged(in_focus_session_);
+  }
+}
+
 void FocusModeController::OnTimerTick() {
   if (in_focus_session_ && base::Time::Now() >= end_time_) {
     ToggleFocusMode();
@@ -219,10 +229,20 @@ void FocusModeController::SaveSettingsToUserPrefs() {
   }
 }
 
+void FocusModeController::CloseSystemTrayBubble() {
+  for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
+    if (root_window_controller->IsSystemTrayVisible()) {
+      root_window_controller->GetStatusAreaWidget()
+          ->unified_system_tray()
+          ->CloseBubble();
+    }
+  }
+}
+
 void FocusModeController::SetFocusTrayVisibility(bool visible) {
-  for (auto* root_window : Shell::GetAllRootWindows()) {
-    if (auto* status_area_widget = RootWindowController::ForWindow(root_window)
-                                       ->GetStatusAreaWidget()) {
+  for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
+    if (auto* status_area_widget =
+            root_window_controller->GetStatusAreaWidget()) {
       status_area_widget->focus_mode_tray()->SetVisiblePreferred(visible);
     }
   }

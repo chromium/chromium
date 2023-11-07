@@ -66,15 +66,8 @@ QsFeatureCatalogName FocusModeFeaturePodController::GetCatalogName() {
 
 void FocusModeFeaturePodController::OnIconPressed() {
   auto* controller = FocusModeController::Get();
+  TrackToggleUMA(/*target_toggle_state=*/!controller->in_focus_session());
   controller->ToggleFocusMode();
-  const bool new_state = controller->in_focus_session();
-  TrackToggleUMA(new_state);
-
-  // TODO(b/302194469): centralize bubble-closing logic.
-  if (new_state) {
-    // Close the system tray bubble. Deletes `this`.
-    tray_controller_->CloseBubble();
-  }
 }
 
 void FocusModeFeaturePodController::OnLabelPressed() {

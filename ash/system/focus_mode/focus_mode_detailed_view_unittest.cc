@@ -135,16 +135,11 @@ TEST_F(FocusModeDetailedViewTest, DndOffBeforeStart) {
   // 1. Before turning on a focus session, the system do not disturb is off. The
   // default value for the toggle button is set to enabled.
   EXPECT_FALSE(message_center->IsQuietMode());
-
-  EXPECT_EQ(0u, detailed_view_delegate_.close_bubble_call_count());
   EXPECT_TRUE(toggle_button->GetIsOn());
 
-  // Start a focus session and the bubble will be closed.
+  // Start a focus session and verify that quiet mode is on.
   focus_mode_controller->ToggleFocusMode();
   EXPECT_TRUE(focus_mode_controller->in_focus_session());
-  EXPECT_EQ(1u, detailed_view_delegate_.close_bubble_call_count());
-
-  // The quiet mode is on during the focus session.
   EXPECT_TRUE(message_center->IsQuietMode());
 
   // End the focus session. The system do not disturb will be back to its
@@ -152,7 +147,6 @@ TEST_F(FocusModeDetailedViewTest, DndOffBeforeStart) {
   // state will be back to its state before the focus session.
   focus_mode_controller->ToggleFocusMode();
   EXPECT_FALSE(focus_mode_controller->in_focus_session());
-  EXPECT_EQ(1u, detailed_view_delegate_.close_bubble_call_count());
   EXPECT_FALSE(message_center->IsQuietMode());
   EXPECT_TRUE(toggle_button->GetIsOn());
 
@@ -161,12 +155,9 @@ TEST_F(FocusModeDetailedViewTest, DndOffBeforeStart) {
   LeftClickOn(toggle_button);
   EXPECT_FALSE(toggle_button->GetIsOn());
 
-  // Start a focus session and the bubble will be closed.
+  // Start a focus session and verify that quiet mode is off.
   focus_mode_controller->ToggleFocusMode();
   EXPECT_TRUE(focus_mode_controller->in_focus_session());
-  EXPECT_EQ(2u, detailed_view_delegate_.close_bubble_call_count());
-
-  // The quiet mode is off and the bubble will be closed.
   EXPECT_FALSE(message_center->IsQuietMode());
 
   // End the focus session. The system do not disturb will be back to its
@@ -174,7 +165,6 @@ TEST_F(FocusModeDetailedViewTest, DndOffBeforeStart) {
   // state will be back to its state before the focus session.
   focus_mode_controller->ToggleFocusMode();
   EXPECT_FALSE(focus_mode_controller->in_focus_session());
-  EXPECT_EQ(2u, detailed_view_delegate_.close_bubble_call_count());
   EXPECT_FALSE(message_center->IsQuietMode());
   EXPECT_FALSE(toggle_button->GetIsOn());
 }
@@ -192,15 +182,11 @@ TEST_F(FocusModeDetailedViewTest, DndOnBeforeStart) {
   message_center->SetQuietMode(true);
   EXPECT_TRUE(message_center->IsQuietMode());
 
-  EXPECT_EQ(0u, detailed_view_delegate_.close_bubble_call_count());
   EXPECT_TRUE(toggle_button->GetIsOn());
 
-  // Start a focus session and the bubble will be closed.
+  // Start a focus session and verify that quiet mode is on.
   focus_mode_controller->ToggleFocusMode();
   EXPECT_TRUE(focus_mode_controller->in_focus_session());
-  EXPECT_EQ(1u, detailed_view_delegate_.close_bubble_call_count());
-
-  // The quiet mode is on.
   EXPECT_TRUE(message_center->IsQuietMode());
 
   // During the focus session, the user turned off the DND.
@@ -212,7 +198,6 @@ TEST_F(FocusModeDetailedViewTest, DndOnBeforeStart) {
   // its state before the focus session.
   focus_mode_controller->ToggleFocusMode();
   EXPECT_FALSE(focus_mode_controller->in_focus_session());
-  EXPECT_EQ(1u, detailed_view_delegate_.close_bubble_call_count());
   EXPECT_FALSE(message_center->IsQuietMode());
   EXPECT_TRUE(toggle_button->GetIsOn());
 
@@ -224,12 +209,9 @@ TEST_F(FocusModeDetailedViewTest, DndOnBeforeStart) {
   LeftClickOn(toggle_button);
   EXPECT_FALSE(toggle_button->GetIsOn());
 
-  // Start a focus session and the bubble will be closed.
+  // Start a focus session and verify that quiet mode is on.
   focus_mode_controller->ToggleFocusMode();
   EXPECT_TRUE(focus_mode_controller->in_focus_session());
-  EXPECT_EQ(2u, detailed_view_delegate_.close_bubble_call_count());
-
-  // The quiet mode is on.
   EXPECT_TRUE(message_center->IsQuietMode());
 
   // End the focus session. The system do not disturb will be back to its
@@ -237,7 +219,6 @@ TEST_F(FocusModeDetailedViewTest, DndOnBeforeStart) {
   // state will be back to its state before the focus session.
   focus_mode_controller->ToggleFocusMode();
   EXPECT_FALSE(focus_mode_controller->in_focus_session());
-  EXPECT_EQ(2u, detailed_view_delegate_.close_bubble_call_count());
   EXPECT_TRUE(message_center->IsQuietMode());
   EXPECT_FALSE(toggle_button->GetIsOn());
 }
@@ -264,8 +245,8 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
 
   validate_labels(/*active=*/false);
 
-  // Starting the focus session closes the bubble, so we need to recreate the
-  // detailed view.
+  // Starting the focus session closes the bubble, so we need to simulate
+  // recreating the detailed view.
   LeftClickOn(GetToggleRowButton());
   CreateFakeFocusModeDetailedView();
 
@@ -279,8 +260,8 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
   // Verify that the time displays correctly in the 24-hour clock format.
   Shell::Get()->system_tray_model()->SetUse24HourClock(true);
 
-  // Starting the focus session closes the bubble, so we need to recreate the
-  // detailed view.
+  // Starting the focus session closes the bubble, so we need to simulate
+  // recreating the detailed view.
   LeftClickOn(GetToggleRowButton());
   CreateFakeFocusModeDetailedView();
 
@@ -500,8 +481,8 @@ TEST_F(FocusModeDetailedViewTest, TimerViewVisibility) {
   // hidden.
   focus_mode_controller->ToggleFocusMode();
   EXPECT_TRUE(focus_mode_controller->in_focus_session());
-  // Starting the focus session closes the bubble, so we need to recreate the
-  // detailed view.
+  // Starting the focus session closes the bubble, so we need to simulate
+  // recreating the detailed view.
   CreateFakeFocusModeDetailedView();
   timer_setting_view = GetTimerSettingView();
   countdown_view = GetTimerCountdownView();
