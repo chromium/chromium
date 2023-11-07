@@ -1,1 +1,48 @@
-<div>This is template query.</div>
+<style include="common cros-button-style">
+  .main {
+    margin-inline-start: 8px;
+  }
+
+  #placeholder {
+    height: 40px;
+  }
+
+  #template {
+    display: flex;
+    font: var(--cros-button-1-font);
+    gap: 4px;
+  }
+
+  .clickable {
+    text-decoration: underline;
+  }
+
+  #options {
+    display: flex;
+    gap: 8px
+  }
+</style>
+<div class="main">
+  <div id="template">
+    <template is="dom-repeat" items="[[templateText_]]" as="word">
+      <div>
+        <template is="dom-if" if="[[isChip_(word)]]">
+          <div class$="[[computeChipClassName_(word)]]" on-click="onClickChip_">
+            [[getChipDefaultValue_(word)]]
+          </div>
+        </template>
+        <template is="dom-if" if="[[!isChip_(word)]]">
+          <div>[[word]]</div>
+        </template>
+      </div>
+    </template>
+  </div>
+  <div id="placeholder"></div>
+  <div id="options">
+    <template is="dom-repeat" items="[[options_]]" as="option">
+      <cr-button class="primary" on-click="onClickOption_" value$="[[option.value]]">
+        [[option.translation]]
+      </cr-button>
+    </template>
+  </div>
+</div>

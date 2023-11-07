@@ -425,16 +425,17 @@ suite('PersonalizationBreadcrumbElementTest', function() {
   });
 
   test('show breadcrumbs for SeaPen template content', async () => {
-    breadcrumbElement = initElement(
-        PersonalizationBreadcrumbElement,
-        {'path': Paths.SEA_PEN_COLLECTION, 'seaPenTemplateId': '2'});
+    breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+      'path': Paths.SEA_PEN_COLLECTION,
+      'seaPenTemplateId': 'ChromeOSWallpaperTemplateSamplePark',
+    });
 
     const breadcrumbContainer =
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
         breadcrumbContainer,
-        [breadcrumbElement.i18n('wallpaperLabel'), 'Sea Pen', 'faster']);
+        [breadcrumbElement.i18n('wallpaperLabel'), 'Sea Pen', 'Park']);
 
     const original = PersonalizationRouterElement.instance;
     const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
@@ -448,7 +449,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       };
     });
 
-    // current breadcrumbs: Home > Wallpaper > Sea Pen > faster
+    // current breadcrumbs: Home > Wallpaper > Sea Pen > Park
     // navigate to Sea Pen subpage when Sea Pen breadcrumb is clicked on.
     const seaPenBreadcrumb =
         breadcrumbElement!.shadowRoot!.getElementById('breadcrumb1');

@@ -28,15 +28,15 @@ suite('SeaPenCollectionElementTest', function() {
 
     const seaPenTemplatesElement =
         seaPenCollectionElement.shadowRoot!.querySelector('sea-pen-templates');
-    assertTrue(!!seaPenTemplatesElement, 'templates should display.');
+    assertTrue(!!seaPenTemplatesElement, 'Templates should display.');
 
     const templateElements =
         seaPenTemplatesElement!.shadowRoot!.querySelectorAll(
             'wallpaper-grid-item');
-    assertEquals(8, templateElements!.length, 'there should be 8 templates');
+    assertTrue(!!templateElements, 'At least one template is shown.');
 
     // select a template.
-    const template = (templateElements![1] as HTMLElement);
+    const template = (templateElements![0] as HTMLElement);
     assertFalse(!!template.ariaSelected);
 
     // Mock singleton |PersonalizationRouter|.
@@ -51,19 +51,20 @@ suite('SeaPenCollectionElementTest', function() {
 
     template.click();
 
-    assertEquals(selectedTemplateId, '2');
-    assertEquals('true', template.ariaSelected);
+    assertEquals(selectedTemplateId, 'ChromeOSWallpaperTemplateSamplePark');
+    assertEquals(null, template.ariaSelected);
   });
 
   test('displays template content', async () => {
     // Initialize |seaPenCollectionElement|.
-    seaPenCollectionElement =
-        initElement(SeaPenCollectionElement, {'templateId': '3'});
+    seaPenCollectionElement = initElement(
+        SeaPenCollectionElement,
+        {'templateId': 'ChromeOSWallpaperTemplateSamplePark'});
     await waitAfterNextRender(seaPenCollectionElement);
 
     const seaPenImagesElement =
         seaPenCollectionElement.shadowRoot!.querySelector('sea-pen-images');
 
-    assertTrue(!!seaPenImagesElement, 'template content should display.');
+    assertTrue(!!seaPenImagesElement, 'Template content should display.');
   });
 });

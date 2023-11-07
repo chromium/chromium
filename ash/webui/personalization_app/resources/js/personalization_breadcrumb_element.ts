@@ -226,7 +226,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
           const template = this.seaPenTemplates_.find(
               template => template.id === this.seaPenTemplateId);
           if (template) {
-            breadcrumbs.push(template.text);
+            breadcrumbs.push(template.title);
           }
         }
         break;

@@ -48,11 +48,6 @@ export class SeaPenTemplatesElement extends WithPersonalizationStore {
     return i + 1;
   }
 
-  private isTemplateSelected_(
-      template: SeaPenTemplate, selected: SeaPenTemplate) {
-    return selected && selected.id === template.id;
-  }
-
   private onTemplateSelected_(e: Event&{model: {template: SeaPenTemplate}}) {
     assert(e.model.template, 'no template selected');
     this.selected_ = e.model.template;

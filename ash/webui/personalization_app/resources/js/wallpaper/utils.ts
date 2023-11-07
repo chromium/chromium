@@ -205,63 +205,54 @@ export function findAlbumById(
   return null;
 }
 
+/**
+ * Split the template string into an array of strings, where each string is
+ * either a literal string or a placeholder for a chip.
+ * @example
+ * // returns ['A park in ', '<city>', ' in the style of ', '<style>']
+ * parseTemplateText('A park in <city> in the style of <style>');
+ */
+export function parseTemplateText(template: string): string[] {
+  return template.split(/(<\w+>)/g);
+}
+
 export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
   return [
     {
       preview: [{
-        url: 'chrome://personalization/images/google_photos.svg',
-      }],
-      text: 'the',
-      id: '1',
-    },
-    {
-      preview: [{
-        url: 'chrome://personalization/images/ambient_mode_disabled.svg',
-      }],
-      text: 'faster',
-      id: '2',
-    },
-    {
-      preview: [{
-        url: 'chrome://personalization/images/google_photos.svg',
-      }],
-      text: 'you',
-      id: '3',
-    },
-    {
-      preview: [{
-        url: 'chrome://personalization/images/no_google_photos_images.svg',
-      }],
-      text: 'go',
-      id: '4',
-    },
-    {
-      preview: [{
-        url: 'chrome://personalization/images/ambient_mode_disabled_dark.svg',
-      }],
-      text: 'the',
-      id: '5',
-    },
-    {
-      preview: [{
-        url: 'chrome://personalization/images/no_google_photos_images.svg',
-      }],
-      text: 'shorter',
-      id: '6',
-    },
-    {
-      preview: [{
         url: 'chrome://personalization/images/no_images.svg',
       }],
-      text: 'you',
-      id: '7',
-    },
-    {
-      preview: [{
-        url: 'chrome://personalization/images/no_google_photos_images_dark.svg',
-      }],
-      text: 'are',
-      id: '8',
+      title: 'Park',
+      text: loadTimeData.getStringF('templatePark', '<city>', '<style>'),
+      id: 'ChromeOSWallpaperTemplateSamplePark',
+      options: new Map([
+        [
+          '<city>',
+          [
+            {
+              value: 'Paris',
+              translation: loadTimeData.getString('templateOptionParis'),
+            },
+            {
+              value: 'New York',
+              translation: loadTimeData.getString('templateOptionNewYork'),
+            },
+          ],
+        ],
+        [
+          '<style>',
+          [
+            {
+              value: 'photography',
+              translation: loadTimeData.getString('templateOptionPhotography'),
+            },
+            {
+              value: 'watercolor',
+              translation: loadTimeData.getString('templateOptionWatercolor'),
+            },
+          ],
+        ],
+      ]),
     },
   ];
 }
