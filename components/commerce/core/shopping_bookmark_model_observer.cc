@@ -130,6 +130,15 @@ void ShoppingBookmarkModelObserver::BookmarkNodeMoved(
     base::RecordAction(base::UserMetricsAction(
         "Commerce.PriceTracking.ShoppingCollection.ParentChanged"));
   }
+
+  // Record movement of bookmarks into or out of the collection.
+  if (IsShoppingCollectionBookmarkFolder(old_parent)) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.ShoppingCollection.MovedFromCollection"));
+  } else if (IsShoppingCollectionBookmarkFolder(new_parent)) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.ShoppingCollection.MovedToCollection"));
+  }
 }
 
 void ShoppingBookmarkModelObserver::OnWillRemoveBookmarks(

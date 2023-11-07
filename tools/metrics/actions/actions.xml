@@ -6725,6 +6725,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceTracking.ShoppingCollection.MovedFromCollection">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a user moves a bookmark out of the shopping collection folder.
+    This also represents a user selecting a different folder when the shopping
+    collection is recommended in the bookmark save flow.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.ShoppingCollection.MovedToCollection">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a user moves a bookmark into the shopping collection folder.
+    This does not capture the initial save event if the shopping collection was
+    suggested as the save location for the user.
+  </description>
+</action>
+
 <action name="Commerce.PriceTracking.ShoppingCollection.NameChanged">
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
