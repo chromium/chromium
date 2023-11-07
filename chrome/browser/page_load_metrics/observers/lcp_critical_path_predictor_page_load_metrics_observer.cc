@@ -189,6 +189,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
   if (!lcpp_data_inputs_) {
     lcpp_data_inputs_.emplace();
   }
+  ++lcpp_data_inputs_->font_url_count;
   if (lcpp_data_inputs_->font_urls.size() >=
       GetLCPPFontURLPredictorMaxUrlCountPerOrigin()) {
     return;
