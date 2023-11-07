@@ -1,0 +1,570 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ContentClassification">
+  <int value="0" label="Other"/>
+  <int value="1" label="Long article"/>
+</enum>
+
+<enum name="ContentClassificationOpenGraph">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Website"/>
+  <int value="2" label="Music"/>
+  <int value="3" label="Video"/>
+  <int value="4" label="Article"/>
+  <int value="5" label="Book"/>
+  <int value="6" label="Profile"/>
+</enum>
+
+<enum name="ContentSettingBubbleAction">
+  <int value="1" label="kOpened"/>
+  <int value="2" label="kPermissionAllowed"/>
+  <int value="3" label="kPermissionBlocked"/>
+  <int value="4" label="KManageButtonClicked"/>
+</enum>
+
+<enum name="ContentSettingImageType">
+  <int value="0" label="COOKIES"/>
+  <int value="1" label="IMAGES"/>
+  <int value="2" label="JAVASCRIPT"/>
+  <int value="3" label="PPAPI_BROKER"/>
+  <int value="4" label="PLUGINS"/>
+  <int value="5" label="POPUPS"/>
+  <int value="6" label="GEOLOCATION"/>
+  <int value="7" label="MIXEDSCRIPT"/>
+  <int value="8" label="PROTOCOL_HANDLERS"/>
+  <int value="9" label="MEDIASTREAM"/>
+  <int value="10" label="ADS"/>
+  <int value="11" label="AUTOMATIC_DOWNLOADS"/>
+  <int value="12" label="MIDI_SYSEX"/>
+  <int value="13" label="SOUND"/>
+  <int value="14" label="FRAMEBUST"/>
+  <int value="16" label="SENSORS"/>
+  <int value="18" label="CLIPBOARD_READ_WRITE"/>
+</enum>
+
+<enum name="ContentSettingPopupAction">
+  <int value="0" label="Displayed popup-blocked icon in Omnibox"/>
+  <int value="1" label="Displayed bubble"/>
+  <int value="2" label="Clicked 'Always allow pop-ups from'"/>
+  <int value="3" label="Clicked one of the list items"/>
+  <int value="4" label="Clicked 'Manage pop-up blocking'"/>
+  <int value="5" label="Displayed popup-blocked infobar on mobile"/>
+  <int value="6" label="Clicked 'Always show on mobile'"/>
+</enum>
+
+<enum name="ContentSuggestionsDisplayStatus">
+  <int value="0" label="Visible"/>
+  <int value="1" label="Collapsed"/>
+  <int value="2" label="Disabled by policy"/>
+  <int value="3" label="Disabled"/>
+  <int value="4" label="Disabled by default search engine"/>
+</enum>
+
+<enum name="FeedActivityBucket">
+  <int value="0" label="No Activity">
+    The user has no activity in the last 28 days.
+  </int>
+  <int value="1" label="Low Activity">
+    The user has 1-7 days of activity in the last 28 days.
+  </int>
+  <int value="2" label="Medium Activity">
+    The user has 8-15 days of activity in the last 28 days.
+  </int>
+  <int value="3" label="High Activity">
+    The user has 16+ days of activity in the last 28 days.
+  </int>
+</enum>
+
+<enum name="FeedContentOrder">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Grouped"/>
+  <int value="2" label="Reverse Chronological"/>
+</enum>
+
+<enum name="FeedControlsActions">
+  <int value="0" label="Clicked on My activity"/>
+  <int value="1" label="Clicked on Manage interests"/>
+  <int value="2" label="Clicked on Learn more"/>
+  <int value="3" label="Toggled the feed"/>
+  <int value="4" label="Clicked on the feed menu button"/>
+  <int value="5" label="Clicked on autoplay"/>
+  <int value="6" label="Clicked on Manage"/>
+</enum>
+
+<enum name="FeedEngagementType">
+  <int value="0" label="Engaged">
+    Visit - user scrolled an inch or interacted
+  </int>
+  <int value="1" label="Engaged Simple">
+    Visit - user scrolled any amount or interacted&quot;
+  </int>
+  <int value="2" label="Interacted">
+    Interaction - Opening a page or using the menu&quot;
+  </int>
+<!-- <int value="3" label="Scrolled">Deprecated - formerly scrolled any amount</int> -->
+
+  <int value="4" label="Scrolled">Interaction - Scrolled any amount</int>
+  <int value="5" label="Good Visit">
+    Visit - user (a) had a good explicit interaction, (b) spent a minute in the
+    feed and scrolled, or (c) spent ten seconds viewing or opening a piece of
+    content.
+  </int>
+</enum>
+
+<enum name="FeedInfoCardType">
+  <int value="1" label="INFO_CARD_MAIN_PRIVACY_NOTICE"/>
+  <int value="2" label="INFO_CARD_YOUTUBE_PRIVACY_NOTICE"/>
+</enum>
+
+<enum name="FeedLoadStreamStatus">
+  <int value="0" label="Loading wasn't attempted"/>
+  <int value="1" label="Success loading from persistent store"/>
+  <int value="2" label="Success loading from network"/>
+  <int value="3" label="Failed - store error"/>
+  <int value="4" label="Failed - no data in store"/>
+  <int value="5" label="Failed - model is already loaded"/>
+  <int value="6" label="Failed - network response has no body"/>
+  <int value="7" label="Failed - error translating to internal protos"/>
+  <int value="8" label="Failed - data in store is stale"/>
+  <int value="9" label="Failed - data in store has timestamp from the future"/>
+  <int value="10"
+      label="Failed - loading from network is suppressed due to recent
+             history deletion"/>
+  <int value="11" label="Failed - cannot load from network while offline"/>
+  <int value="12" label="Failed - network request throttled"/>
+  <int value="13" label="Failed - EULA not accepted"/>
+  <int value="14" label="Failed - articles list hidden"/>
+  <int value="15" label="Failed - cannot parse network response body"/>
+  <int value="16"
+      label="Failed - cannot load more content because the model is not yet
+             loaded"/>
+  <int value="17" label="Failed - feed is disabled by enterprise policy"/>
+  <int value="18"
+      label="Failed - network fetch failed or returned a non-200 status"/>
+  <int value="19" label="Failed - cannot load more, no next page token"/>
+  <int value="20" label="Failed - data in store is stale, last refresh missed"/>
+  <int value="21" label="Success loading stale data, after network failure"/>
+  <int value="22" label="Failed - data in store is expired"/>
+  <int value="23" label="Failed - data in store is for another user"/>
+  <int value="24" label="Failed - cannot load stream with pending clear all"/>
+  <int value="25" label="Failed - already has unread content available"/>
+  <int value="26" label="Failed - user does not follow any web feeds"/>
+  <int value="27"
+      label="Failed - account token fetch failed because it was for the wrong
+             account"/>
+  <int value="28" label="Failed - account token fetch timed out"/>
+  <int value="29" label="Failed - network fetch timed out"/>
+</enum>
+
+<enum name="FeedNoticeAcknowledgementPath">
+  <obsolete>
+    Deprecated in 05/2022 since we removed feed notice card related codes.
+  </obsolete>
+  <int value="0"
+      label="The acknowledgment is reached after the user views the notice
+             for a required number of times."/>
+  <int value="1"
+      label="The acknowledgment is reached after the user taps the notice to
+             perform an open action for a required number of times."/>
+  <int value="2"
+      label="The acknowledgment is reached after the user fter the user taps
+             X button to close the notice."/>
+</enum>
+
+<enum name="FeedRefreshTrigger">
+  <int value="0" label="Other"/>
+  <int value="1" label="Background cold start"/>
+  <int value="2" label="Background warm start"/>
+  <int value="3" label="Foreground feed start"/>
+  <int value="4" label="Foreground account change"/>
+  <int value="5" label="Foreground user triggered"/>
+  <int value="6" label="Foreground feed visible other">
+    The feed is visible and trigger is not already one of the other foreground
+    visible triggers.
+  </int>
+  <int value="7" label="Foreground not forced">
+    A server request is only made if the feed model is considered stale.
+  </int>
+  <int value="8" label="Foreground but feed not visible">
+    The feed is not visible but the app is in the foreground (e.g., user is in
+    another tab).
+  </int>
+  <int value="9" label="Foreground new feed view controller">
+    A new feed view controller has been configured and has become visible to the
+    user.
+  </int>
+  <int value="10" label="Foreground app close">
+    The app is backgrounding from the foreground and the refresh is running on
+    an app extended execution time.
+  </int>
+  <int value="11" label="Background cold start app close">
+    Refresh is triggered in a background cold start with app close enabled.
+  </int>
+  <int value="12" label="Background warm start app close">
+    Refresh is triggered in a background warm start with app close enabled.
+  </int>
+</enum>
+
+<enum name="FeedSendFeedbackType">
+  <int value="0" label="Feedback tapped on card"/>
+  <int value="1" label="Feedback tapped on page from card"/>
+</enum>
+
+<enum name="FeedSignInUI">
+  <int value="0" label="Showing a sign-in half sheet triggered from feed."/>
+  <int value="1" label="Showing a sign-in only flow triggered from feed."/>
+  <int value="2"
+      label="Showing a sign-in disabled snackbar triggered from feed."/>
+</enum>
+
+<enum name="FeedSortType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Grouped by publisher"/>
+  <int value="2" label="Sorted by latest"/>
+</enum>
+
+<enum name="FeedSyncPromo">
+  <int value="0"
+      label="The sync flow was shown when the user tapped on the Feed sync
+             promo."/>
+  <int value="1"
+      label="The service disable message was shown when the user tapped on
+             the Feed sync promo."/>
+</enum>
+
+<enum name="FeedUploadActionsBatchStatus">
+  <int value="0" label="Actions batch store/upload not attempted"/>
+  <int value="1" label="Failed to update store"/>
+  <int value="2" label="Failed to upload (got empty response body)"/>
+  <int value="3" label="Failed to remove uploaded actions from store"/>
+  <int value="4" label="Ran out of actions upload quota"/>
+  <int value="5" label="All actions were stale"/>
+  <int value="6" label="Successfully uploaded batch"/>
+</enum>
+
+<enum name="FeedUploadActionsStatus">
+  <int value="0" label="Action store/upload task not attempted"/>
+  <int value="1" label="No pending actions to upload"/>
+  <int value="2" label="Failed to store pending action"/>
+  <int value="3" label="Pending action was stored for later upload"/>
+  <int value="4"
+      label="Successfully uploaded some actions and stored a new consistency
+             token"/>
+  <int value="5"
+      label="Updated and tried to upload all pending actions and finished
+             without receiving a new consistency token"/>
+  <int value="6"
+      label="Upload attempt was aborted because the account is now signed-out"/>
+  <int value="7" label="Could not upload because does not meet conditions"/>
+  <int value="8" label="Can not upload actions for another user"/>
+  <int value="9" label="Could not upload because pending clear all"/>
+</enum>
+
+<enum name="FeedUserActionType">
+  <int value="0" label="Tapped on card"/>
+  <int value="1" label="Shown card (REMOVED, never reported)"/>
+  <int value="2" label="Tapped Send Feedback"/>
+  <int value="3" label="Tapped Learn More"/>
+  <int value="4" label="Tapped Hide Story"/>
+  <int value="5" label="Tapped Not Interested In"/>
+  <int value="6" label="Tapped Manage Interests"/>
+  <int value="7" label="Tapped Download"/>
+  <int value="8" label="Tapped Open in New Tab"/>
+  <int value="9" label="Opened context menu"/>
+  <int value="10" label="Opened feed surface"/>
+  <int value="11" label="Tapped Open in Incognito tab"/>
+  <int value="12"
+      label="Ephemeral change, likely due to hide story or not interested in"/>
+  <int value="13"
+      label="Ephemeral change undone, likely due to pressing 'undo' on the
+             snackbar"/>
+  <int value="14" label="Turn on"/>
+  <int value="15" label="Turn off"/>
+  <int value="16" label="Tapped Manage Activity"/>
+  <int value="17" label="Added to Read Later"/>
+  <int value="18" label="Close context menu"/>
+  <int value="19"
+      label="Ephemeral change committed, likely due to dismissing the 'undo'
+             snackbar"/>
+  <int value="20" label="Open Dialog e.g. Report Content Dialog"/>
+  <int value="21" label="Close Dialog e.g. Report Content Dialog"/>
+  <int value="22" label="Show Snackbar"/>
+  <int value="23" label="Opened native back-of-card action sheet. (iOS Only)"/>
+  <int value="24" label="Opened native back-of-card context menu. (iOS Only)"/>
+  <int value="25" label="Closed native back-of-card context menu. (iOS Only)"/>
+  <int value="26" label="Opened native back-of-card pulldown menu. (iOS Only)"/>
+  <int value="27" label="Closed native back-of-card pulldown menu. (iOS Only)"/>
+  <int value="28" label="Tapped manage reactions"/>
+  <int value="29" label="Tapped on share for an article"/>
+  <int value="30"
+      label="Tapped the 'Following' option inside the Feed's 'Manage'
+             interstitial."/>
+  <int value="31"
+      label="User tapped to follow a web feed on the management surface."/>
+  <int value="32"
+      label="User tapped to unfollow a web feed on the management surface."/>
+  <int value="33" label="User tapped to follow using the follow accelerator."/>
+  <int value="34"
+      label="User tapped to follow using the snackbar 'try again' option."/>
+  <int value="35"
+      label="User tapped to follow using the snackbar, after successfully
+             unfollowing."/>
+  <int value="36"
+      label="User tapped to unfollow using the snackbar 'try again' option."/>
+  <int value="37"
+      label="After following an active web feed, the user tapped to go to
+             feed using the post-follow help dialog."/>
+  <int value="38"
+      label="After following an active web feed, the user tapped to dismiss
+             the post-follow help dialog."/>
+  <int value="39"
+      label="After long-pressing on the feed and seeing the preview, the user
+             tapped on the preview."/>
+  <int value="40"
+      label="User tapped Settings link to open feed autoplay settings."/>
+  <int value="41"
+      label="User tapped 'Add to Reading List' in the context menu."/>
+  <int value="42"
+      label="User tapped the Manage icon to visit the feed management
+             interstitial."/>
+  <int value="43"
+      label="User tapped 'Hidden' in the feed management interstitial."/>
+  <int value="44"
+      label="User tapped the Follow button on the page overflow menu."/>
+  <int value="45"
+      label="User selected the Discover feed from the feed header."/>
+  <int value="46"
+      label="User selected the Following feed from the feed header."/>
+  <int value="47"
+      label="User tapped the Unfollow button on the page overflow menu."/>
+  <int value="48" label="Show Follow Succeed Snackbar."/>
+  <int value="49" label="Show Follow Failed Snackbar."/>
+  <int value="50" label="Show Unfollow Succeed Snackbar."/>
+  <int value="51" label="Show Unfollow Failed Snackbar."/>
+  <int value="52"
+      label="User tapped to go to Following feed using the snackbar 'go to
+             Following' option."/>
+  <int value="53" label="User tapped the Crow button in the context menu."/>
+  <int value="54" label="Show First Follow Sheet."/>
+  <int value="55"
+      label="User tapped the 'Go To Feed' button on the first follow sheet."/>
+  <int value="56"
+      label="User tapped the 'Got It' button on the first follow sheet."/>
+  <int value="57"
+      label="Show Follow Recommendation IPH telling users that they are able
+             to follow a website."/>
+  <int value="58"
+      label="User opened the article in a new tab in group from the back of
+             card menu."/>
+  <int value="59"
+      label="User selected the 'Group by Publisher' Following feed sort type."/>
+  <int value="60"
+      label="User selected the 'Sort by Latest' Following feed sort type."/>
+  <int value="61"
+      label="After following an active web feed, the user tapped on 'got it'
+             to close the post-follow help dialog."/>
+  <int value="62"
+      label="User tapped the follow accelerator which is presented after a
+             user taps on a recommendation that is in the feed."/>
+  <int value="63"
+      label="User requested to refresh the Following feed using the
+             post-follow snackbar 'refresh' action."/>
+  <int value="64"
+      label="User tapped on the 'Continue' of the sign-in promo UI."/>
+  <int value="65" label="User tapped on the 'Cancel' of the sign-in promo UI."/>
+  <int value="66" label="User initiated a non-swipe manual refresh."/>
+</enum>
+
+<enum name="FeedUserCommandType">
+  <int value="0" label="Enum placerholder. See crbug/1179826"/>
+</enum>
+
+<enum name="FeedUserSettingsOnStart">
+  <int value="0" label="The Feed is disabled by enterprise policy"/>
+  <int value="1" label="The user is signed out, and has disabled the Feed."/>
+  <int value="2" label="The user is signed in, and has disabled the Feed."/>
+  <int value="3" label="Feed enabled, user signed out"/>
+  <int value="4"
+      label="Feed enabled, user signed in, WAA on, Discover Personalization
+             on"/>
+  <int value="5"
+      label="Feed enabled, user signed in, WAA on, Discover Personalization
+             off"/>
+  <int value="6"
+      label="Feed enabled, user signed in, WAA off, Discover Personalization
+             on"/>
+  <int value="7"
+      label="Feed enabled, user signed in, WAA off, Discover Personalization
+             off"/>
+  <int value="8" label="Feed enabled, user signed in, no recent Feed data"/>
+  <int value="9" label="The Feed is disabled by flag"/>
+</enum>
+
+<enum name="FeedVideoInitializationError">
+  <int value="0" label="Client library update required."/>
+  <int value="1" label="Developer key invalid."/>
+  <int value="2" label="Error connecting to service."/>
+  <int value="3" label="Internal error."/>
+  <int value="4" label="Invalid application signature."/>
+  <int value="5" label="Network error."/>
+  <int value="6" label="Service disabled."/>
+  <int value="7" label="Service invalid."/>
+  <int value="8" label="Service missing."/>
+  <int value="9" label="Service version update required."/>
+  <int value="10" label="Unknown error."/>
+</enum>
+
+<enum name="FeedVideoPlayError">
+  <int value="0" label="Not playable."/>
+  <int value="1" label="Unauthorized overlay."/>
+  <int value="2" label="Internal error."/>
+  <int value="3" label="Unknown error."/>
+  <int value="4" label="Autoplay disabled."/>
+  <int value="5" label="Unexpected service disconnection."/>
+  <int value="6" label="Not playable muted."/>
+  <int value="7" label="Network error."/>
+</enum>
+
+<enum name="FeedVideoPlayEvent">
+  <int value="0" label="Auto-play stops before reaching the end."/>
+  <int value="1" label="Auto-play reaches the end."/>
+  <int value="2" label="User clicks on the auto-play video."/>
+  <int value="3" label="Video playing is triggered, but not started yet."/>
+  <int value="4" label="The player starts to play the video."/>
+  <int value="5" label="An error occurs during the video playing."/>
+</enum>
+
+<enum name="NTPBrokenViewHierarchyRelationship">
+  <int value="0" label="ELM collection containing Content Suggestions fixed"/>
+  <int value="1" label="Discover feed containing ELM collection fixed"/>
+  <int value="2" label="Discover feed wrapper containing Discover feed fixed"/>
+  <int value="3" label="NTP containing Discover feed wrapper fixed"/>
+  <int value="4"
+      label="Content suggestions view controller not cleaned up on restart"/>
+  <int value="5" label="ELM collection view containing feed header fixed"/>
+</enum>
+
+<enum name="PopupBlockerAction">
+  <int value="0" label="Popup initiated"/>
+  <int value="1" label="Popup blocked"/>
+  <int value="2" label="Popup clicked through (no gesture)"/>
+  <int value="3" label="Popup clicked through (abusive)"/>
+</enum>
+
+<enum name="SingleWebFeedEntryPoint">
+  <int value="0" label="Menu"/>
+  <int value="1" label="Attribtuion"/>
+  <int value="2" label="Recommendation"/>
+  <int value="3" label="Group Header"/>
+  <int value="4" label="Other"/>
+</enum>
+
+<enum name="StrongPopupBlockerAction">
+  <int value="0" label="Navigation commit"/>
+  <int value="1" label="Commit warn site"/>
+  <int value="2" label="Commit enforced site"/>
+  <int value="3" label="Popup considered"/>
+  <int value="4" label="Popup blocked"/>
+</enum>
+
+<enum name="WebFeedChangeReason">
+  <int value="0" label="Unspecified">Unknown change reason</int>
+  <int value="1" label="Web page menu">
+    The user tapped the Follow/Unfollow option from the three dot menu while on
+    a web page.
+  </int>
+  <int value="2" label="Web page accelerator">
+    The user tapped the Follow accelerator while visiting a site.
+  </int>
+  <int value="3" label="Management page">
+    The user tapped to Follow/Unfollow on the Follow Management page.
+  </int>
+  <int value="4" label="In feed recommendation">
+    The user tapped to Follow/Unfollow a recommendation embedded in feed
+    content.
+  </int>
+  <int value="5" label="Back of card unfollow">
+    The user tapped 'Unfollow' on the back of card menu.
+  </int>
+  <int value="6" label="Recommendation web page accelerator">
+    The user tapped a web page on a recommendation card.
+  </int>
+</enum>
+
+<enum name="WebFeedPageInformationRequestReason">
+  <int value="0" label="User Requested Follow">
+    The user requested to Follow the current web page.
+  </int>
+  <int value="1" label="Follow Recommendation">
+    A Follow recommendation is being considered the current web page.
+  </int>
+  <int value="2" label="Menu Item Presentation">
+    The Follow menu item state needs to reflect the current web page.
+  </int>
+</enum>
+
+<enum name="WebFeedPostFollowDialogPresentation">
+  <int value="0"
+      label="Available - Post-follow dialog for an available web feed"/>
+  <int value="1"
+      label="Unavailable - Post-follow dialog for an unavailable web feed"/>
+</enum>
+
+<enum name="WebFeedQueryRequestStatus">
+  <int value="0" label="Unknown status"/>
+  <int value="1" label="Success. The query succeeded."/>
+  <int value="2" label="Failed because the device is offline"/>
+  <int value="3" label="Failed for an unknown reason"/>
+  <int value="4" label="Failed due to pending ClearAll action"/>
+</enum>
+
+<enum name="WebFeedRefreshStatus">
+  <int value="0" label="Unknown status"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failed due to a network error"/>
+  <int value="3" label="Failed because the request was throttled client-side"/>
+  <int value="4" label="Failed because there is a pending ClearAll operation"/>
+</enum>
+
+<enum name="WebFeedSubscriptionRequestStatus">
+  <int value="0" label="Unknown status"/>
+  <int value="1"
+      label="Success. The follow/unfollow succeeded. Also reported when
+             following an already-followed web feed, or unfollowing a web
+             feed which is not followed."/>
+  <int value="2" label="Failed because the device is offline"/>
+  <int value="3"
+      label="Failed because the user has reached the subscription limit"/>
+  <int value="4" label="Failed for an unknown reason"/>
+  <int value="5" label="Failed due to pending ClearAll action"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
