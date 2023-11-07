@@ -1715,6 +1715,22 @@
       "features": [
         "accelerated_video_decode"
       ]
+    },
+    {
+      "id": 179,
+      "cr_bugs": [1253962],
+      "description": "Older Adreno 4xx drivers drop draws sometimes with oop-c",
+      "os": {
+        "type" : "android"
+      },
+      "driver_version": {
+        "op": "<",
+        "value": "145"
+      },
+      "gl_renderer": ".*Adreno \\(TM\\) 4.*",
+      "features": [
+        "accelerated_2d_canvas"
+      ]
     }
   ]
 }

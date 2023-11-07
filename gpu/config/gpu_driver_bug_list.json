@@ -3239,22 +3239,6 @@
       ]
     },
     {
-      "id": 386,
-      "cr_bugs": [1253962],
-      "description": "Older Adreno 4xx drivers drop draws sometimes with oop-c",
-      "os": {
-        "type" : "android"
-      },
-      "driver_version": {
-        "op": "<",
-        "value": "145"
-      },
-      "gl_renderer": ".*Adreno \\(TM\\) 4.*",
-      "features": [
-        "disable_canvas_oop_rasterization"
-      ]
-    },
-    {
       "id": 387,
       "description": "Windows hardware decoding doesn't support a set of legacy AMD GPUs",
       "cr_bugs": [822644, 1187900],
