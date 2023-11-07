@@ -520,7 +520,8 @@ views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view) {
 }
 
 void MaybeUpdateCaptureModePrivacyIndicators() {
-  if (!features::IsPrivacyIndicatorsEnabled()) {
+  // Privacy indicator is only enabled when Video Conference is disabled.
+  if (features::IsVideoConferenceEnabled()) {
     return;
   }
 

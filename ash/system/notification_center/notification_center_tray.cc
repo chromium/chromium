@@ -118,7 +118,9 @@ void NotificationCenterTray::Initialize() {
   // `NotificationCenterTray` from the controller. We should make sure views are
   // only added by host views.
   notification_icons_controller_->AddNotificationTrayItems(tray_container());
-  if (features::IsPrivacyIndicatorsEnabled()) {
+
+  // Privacy indicator is only enabled when Video Conference is disabled.
+  if (!features::IsVideoConferenceEnabled()) {
     privacy_indicators_view_ = tray_container()->AddChildView(
         std::make_unique<PrivacyIndicatorsTrayItemView>(shelf()));
   }
@@ -218,7 +220,7 @@ views::Widget* NotificationCenterTray::GetBubbleWidget() const {
 void NotificationCenterTray::UpdateLayout() {
   TrayBackgroundView::UpdateLayout();
 
-  if (features::IsPrivacyIndicatorsEnabled()) {
+  if (privacy_indicators_view_) {
     privacy_indicators_view_->UpdateAlignmentForShelf(shelf());
   }
 }

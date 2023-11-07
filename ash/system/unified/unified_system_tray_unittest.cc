@@ -18,8 +18,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
-#include "ash/system/privacy/privacy_indicators_controller.h"
-#include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/time/time_tray_item_view.h"
@@ -916,30 +914,6 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithBigMainPage) {
   tray->CloseBubble();
 }
 
-TEST_P(UnifiedSystemTrayTest, NoPrivacyIndicators) {
-  // No privacy indicators when the feature is not enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kVideoConference,
-                             features::kPrivacyIndicators});
-
-  auto tray = std::make_unique<UnifiedSystemTray>(GetPrimaryShelf());
-  EXPECT_FALSE(tray->privacy_indicators_view());
-}
-
-TEST_P(UnifiedSystemTrayTest, NoPrivacyIndicatorsWhenVcEnabled) {
-  // No privacy indicators when `kVideoConference` is enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kVideoConference,
-                            features::kPrivacyIndicators},
-      /*disabled_features=*/{});
-
-  auto tray = std::make_unique<UnifiedSystemTray>(GetPrimaryShelf());
-  EXPECT_FALSE(tray->privacy_indicators_view());
-}
-
 // Tests that there's no bubble in the kiosk mode.
 TEST_P(UnifiedSystemTrayTest, NoBubbleAndNoDetailedViewInKioskMode) {
   SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
@@ -959,76 +933,6 @@ TEST_P(UnifiedSystemTrayTest, NoBubbleAndNoDetailedViewInKioskMode) {
 
   tray->ShowDisplayDetailedViewBubble();
   EXPECT_FALSE(IsBubbleShown());
-}
-
-// Test suite for the system tray when `kPrivacyIndicators` is enabled.
-class UnifiedSystemTrayPrivacyIndicatorsTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  UnifiedSystemTrayPrivacyIndicatorsTest() = default;
-  UnifiedSystemTrayPrivacyIndicatorsTest(
-      const UnifiedSystemTrayPrivacyIndicatorsTest&) = delete;
-  UnifiedSystemTrayPrivacyIndicatorsTest& operator=(
-      const UnifiedSystemTrayPrivacyIndicatorsTest&) = delete;
-  ~UnifiedSystemTrayPrivacyIndicatorsTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kPrivacyIndicators, true},
-         {features::kVideoConference, false},
-         {features::kQsRevamp, IsQsRevampEnabled()}});
-
-    AshTestBase::SetUp();
-  }
-
-  // TODO(b/305075031) clean up after the flag is removed.
-  bool IsQsRevampEnabled() { return true; }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         UnifiedSystemTrayPrivacyIndicatorsTest,
-                         testing::Bool() /* IsQsRevampEnabled() */);
-
-// Tests that privacy indicators view is created and show/hide accordingly when
-// updated.
-TEST_P(UnifiedSystemTrayPrivacyIndicatorsTest, PrivacyIndicatorsVisibility) {
-  auto* system_tray =
-      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->unified_system_tray();
-  auto* privacy_indicators_view = system_tray->privacy_indicators_view();
-
-  // No privacy indicators when `kQsRevamp` is enabled.
-  if (IsQsRevampEnabled()) {
-    EXPECT_FALSE(privacy_indicators_view);
-    return;
-  }
-
-  // Privacy indicators should be created and show/hide when updated.
-  EXPECT_TRUE(privacy_indicators_view);
-
-  EXPECT_FALSE(privacy_indicators_view->GetVisible());
-
-  scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate =
-      base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>();
-
-  // Updates the controller to simulate camera access, the privacy indicators
-  // should become visible.
-  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
-      /*app_id=*/"app_id", /*app_name=*/u"App Name",
-      /*is_camera_used=*/true,
-      /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
-  EXPECT_TRUE(privacy_indicators_view->GetVisible());
-
-  // Updates the controller to simulate that camera and microphone are not
-  // accessed, the privacy indicators should be hidden.
-  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
-      /*app_id=*/"app_id", /*app_name=*/u"App Name",
-      /*is_camera_used=*/false,
-      /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
-  EXPECT_FALSE(privacy_indicators_view->GetVisible());
 }
 
 }  // namespace ash

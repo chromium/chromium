@@ -40,7 +40,6 @@ class ImeModeView;
 class ManagedDeviceTrayItemView;
 class NetworkTrayView;
 class NotificationIconsController;
-class PrivacyIndicatorsTrayItemView;
 class PrivacyScreenToastController;
 class Shelf;
 class TrayBubbleView;
@@ -237,10 +236,6 @@ class ASH_EXPORT UnifiedSystemTray
   scoped_refptr<UnifiedSystemTrayModel> model() { return model_; }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }
 
-  PrivacyIndicatorsTrayItemView* privacy_indicators_view() {
-    return privacy_indicators_view_;
-  }
-
   ChannelIndicatorView* channel_indicator_view() {
     return channel_indicator_view_;
   }
@@ -304,8 +299,6 @@ class ASH_EXPORT UnifiedSystemTray
   raw_ptr<CameraMicTrayItemView, ExperimentalAsh> camera_view_ = nullptr;
   raw_ptr<CameraMicTrayItemView, ExperimentalAsh> mic_view_ = nullptr;
   raw_ptr<TimeTrayItemView, ExperimentalAsh> time_view_ = nullptr;
-  raw_ptr<PrivacyIndicatorsTrayItemView, ExperimentalAsh>
-      privacy_indicators_view_ = nullptr;
   raw_ptr<HotspotTrayView, ExperimentalAsh> hotspot_tray_view_ = nullptr;
   raw_ptr<NetworkTrayView, ExperimentalAsh> network_tray_view_ = nullptr;
   raw_ptr<ChannelIndicatorView, ExperimentalAsh> channel_indicator_view_ =

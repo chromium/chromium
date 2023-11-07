@@ -24,7 +24,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_tray_view.h"
 #include "ash/system/power/tray_power.h"
-#include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
@@ -165,13 +164,6 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     channel_indicator_view_ =
         AddTrayItemToContainer(std::make_unique<ChannelIndicatorView>(
             shelf, Shell::Get()->shell_delegate()->GetChannel()));
-  }
-
-  // We do not show privacy indicators here in the new Quick Settings UI.
-  if (features::IsPrivacyIndicatorsEnabled() &&
-      !features::IsQsRevampEnabled()) {
-    privacy_indicators_view_ = AddTrayItemToContainer(
-        std::make_unique<PrivacyIndicatorsTrayItemView>(shelf));
   }
 
   set_separator_visibility(false);
@@ -560,15 +552,6 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
     status.push_back(network_string);
   }
 
-  if (privacy_indicators_view_) {
-    status.push_back(
-        privacy_indicators_view_->GetVisible()
-            ? privacy_indicators_view_->GetTooltipText(gfx::Point())
-            : base::EmptyString16());
-  } else {
-    status.push_back(base::EmptyString16());
-  }
-
   status.push_back(managed_device_view_->GetVisible()
                        ? managed_device_view_->image_view()->GetTooltipText()
                        : base::EmptyString16());
@@ -604,9 +587,6 @@ void UnifiedSystemTray::ClickedOutsideBubble() {
 void UnifiedSystemTray::UpdateLayout() {
   TrayBackgroundView::UpdateLayout();
   time_view_->UpdateAlignmentForShelf(shelf());
-  if (privacy_indicators_view_) {
-    privacy_indicators_view_->UpdateAlignmentForShelf(shelf());
-  }
 }
 
 void UnifiedSystemTray::ShowBubbleInternal() {

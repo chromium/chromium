@@ -106,7 +106,7 @@ void ModifyPrivacyIndicatorsNotification(
     bool is_camera_used,
     bool is_microphone_used,
     scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
-  if (!features::IsPrivacyIndicatorsEnabled()) {
+  if (features::IsVideoConferenceEnabled()) {
     return;
   }
 
@@ -135,9 +135,10 @@ void UpdatePrivacyIndicatorsView(bool is_camera_used,
                                  bool is_new_app,
                                  bool was_camera_in_use,
                                  bool was_microphone_in_use) {
-  if (!features::IsPrivacyIndicatorsEnabled()) {
+  if (features::IsVideoConferenceEnabled()) {
     return;
   }
+
   DCHECK(Shell::HasInstance());
   for (auto* root_window_controller :
        Shell::Get()->GetAllRootWindowControllers()) {
@@ -377,8 +378,9 @@ bool PrivacyIndicatorsController::IsMicrophoneUsed() const {
 }
 
 void UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing) {
-  if (!features::IsPrivacyIndicatorsEnabled())
+  if (features::IsVideoConferenceEnabled()) {
     return;
+  }
 
   DCHECK(Shell::HasInstance());
   for (auto* root_window_controller :
