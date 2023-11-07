@@ -564,10 +564,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return IsHorizontalWritingMode() ? ClientHeight() : ClientWidth();
   }
 
-  // TODO(crbug.com/962299): This is incorrect in some cases.
-  int PixelSnappedClientWidth() const;
-  int PixelSnappedClientHeight() const;
-
   LayoutUnit ClientWidthWithTableSpecialBehavior() const;
   LayoutUnit ClientHeightWithTableSpecialBehavior() const;
 
@@ -582,9 +578,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // TODO(cathiechen): We should do the same with ScrollWidth|Height .
   virtual LayoutUnit ScrollWidth() const;
   virtual LayoutUnit ScrollHeight() const;
-  // TODO(crbug.com/962299): This is incorrect in some cases.
-  int PixelSnappedScrollWidth() const;
-  int PixelSnappedScrollHeight() const;
 
   PhysicalBoxStrut MarginBoxOutsets() const;
   LayoutUnit MarginTop() const override {
@@ -883,19 +876,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool HasScrollableOverflowX() const {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled()) {
-      return ScrollsOverflowX() && ScrollWidth() != ClientWidth();
-    }
-    return ScrollsOverflowX() &&
-           PixelSnappedScrollWidth() != PixelSnappedClientWidth();
+    return ScrollsOverflowX() && ScrollWidth() != ClientWidth();
   }
   bool HasScrollableOverflowY() const {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled()) {
-      return ScrollsOverflowY() && ScrollHeight() != ClientHeight();
-    }
-    return ScrollsOverflowY() &&
-           PixelSnappedScrollHeight() != PixelSnappedClientHeight();
+    return ScrollsOverflowY() && ScrollHeight() != ClientHeight();
   }
   bool ScrollsOverflowX() const {
     NOT_DESTROYED();

@@ -1003,19 +1003,6 @@ LayoutUnit LayoutBox::ClientHeightFrom(LayoutUnit height) const {
   }
 }
 
-int LayoutBox::PixelSnappedClientWidth() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
-  return SnapSizeToPixel(ClientWidth(), PhysicalLocation().left + ClientLeft());
-}
-
-DISABLE_CFI_PERF
-int LayoutBox::PixelSnappedClientHeight() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
-  return SnapSizeToPixel(ClientHeight(), PhysicalLocation().top + ClientTop());
-}
-
 LayoutUnit LayoutBox::ClientWidthWithTableSpecialBehavior() const {
   NOT_DESTROYED();
   // clientWidth/Height is the visual portion of the box content, not including
@@ -1094,25 +1081,6 @@ LayoutUnit LayoutBox::ScrollHeight() const {
   // FIXME: Need to work right with writing modes.
   return std::max(ClientHeight(),
                   PhysicalLayoutOverflowRect().Bottom() - BorderTop());
-}
-
-int LayoutBox::PixelSnappedScrollWidth() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
-  return SnapSizeToPixel(ScrollWidth(), PhysicalLocation().left + ClientLeft());
-}
-
-int LayoutBox::PixelSnappedScrollHeight() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNewOverflowLogicEnabled());
-  LayoutUnit top = PhysicalLocation().top;
-  if (IsScrollContainer()) {
-    return SnapSizeToPixel(GetScrollableArea()->ScrollHeight(),
-                           top + ClientTop());
-  }
-  // For objects with visible overflow, this matches IE.
-  // FIXME: Need to work right with writing modes.
-  return SnapSizeToPixel(ScrollHeight(), top + ClientTop());
 }
 
 PhysicalBoxStrut LayoutBox::MarginBoxOutsets() const {

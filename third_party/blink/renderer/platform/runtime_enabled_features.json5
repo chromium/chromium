@@ -2298,10 +2298,6 @@
       status: "stable",
     },
     {
-      name: "LayoutNewOverflowLogic",
-      status: "stable",
-    },
-    {
       name: "LayoutNGShapeCache",
       status: "test",
       base_feature: "LayoutNGShapeCache",
