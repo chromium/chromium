@@ -61,10 +61,9 @@ class NewTabButton : public views::ImageButton,
   // Returns the radius to use for the button corners.
   virtual int GetCornerRadius() const;
 
-  // Returns the path for the given |origin| and |scale|.  If |extend_to_top| is
+  // Returns the path for the given |origin|.  If |extend_to_top| is
   // true, the path is extended vertically to y = 0.
   virtual SkPath GetBorderPath(const gfx::Point& origin,
-                               float scale,
                                bool extend_to_top) const;
 
   // views::ImageButton:
@@ -88,6 +87,11 @@ class NewTabButton : public views::ImageButton,
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override;
 
+  // The NewTabButton consists of a foreground image on top of a background
+  // texture. First we paint the background with PaintFill. This is clipped to a
+  // circle to make the button appear circular. Then we paint the
+  // foreground image with PaintIcon.
+  //
   // Paints the fill region of the button into |canvas|.
   void PaintFill(gfx::Canvas* canvas) const;
 
