@@ -139,6 +139,20 @@ base::StringPiece InvokingAPIAsString(
   NOTREACHED();
 }
 
+std::string AutomaticBeaconTypeAsString(
+    const blink::mojom::AutomaticBeaconType type) {
+  switch (type) {
+    case blink::mojom::AutomaticBeaconType::kDeprecatedTopNavigation:
+      return blink::kDeprecatedFencedFrameTopNavigationBeaconType;
+    case blink::mojom::AutomaticBeaconType::kTopNavigationStart:
+      return blink::kFencedFrameTopNavigationStartBeaconType;
+    case blink::mojom::AutomaticBeaconType::kTopNavigationCommit:
+      return blink::kFencedFrameTopNavigationCommitBeaconType;
+    default:
+      return "";
+  }
+}
+
 }  // namespace
 
 FencedFrameReporter::PendingEvent::PendingEvent(
@@ -382,9 +396,16 @@ bool FencedFrameReporter::SendReportInternal(
 
   // Compute the destination url for the report.
   GURL destination_url;
-  if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
-    std::string event_type =
-        absl::get<DestinationEnumEvent>(event_variant).type;
+  if (absl::holds_alternative<DestinationEnumEvent>(event_variant) ||
+      absl::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
+    std::string event_type;
+
+    if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
+      event_type = absl::get<DestinationEnumEvent>(event_variant).type;
+    } else {
+      event_type = AutomaticBeaconTypeAsString(
+          absl::get<AutomaticBeaconEvent>(event_variant).type);
+    }
 
     // Since the event references a destination enum, resolve the lookup based
     // on the given destination and event type using the reporting metadata.
@@ -548,19 +569,17 @@ bool FencedFrameReporter::SendReportInternal(
   // removed.
   if (base::FeatureList::IsEnabled(
           blink::features::kFencedFramesAutomaticBeaconCredentials) &&
-      absl::holds_alternative<DestinationEnumEvent>(event_variant) &&
-      absl::get<DestinationEnumEvent>(event_variant).type ==
-          blink::kFencedFrameTopNavigationBeaconType &&
+      absl::holds_alternative<AutomaticBeaconEvent>(event_variant) &&
       GetContentClient()
           ->browser()
           ->AreDeprecatedAutomaticBeaconCredentialsAllowed(
               browser_context_, destination_url, main_frame_origin_)) {
     request->credentials_mode = network::mojom::CredentialsMode::kInclude;
   }
-  if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
-    request->method = net::HttpRequestHeaders::kPostMethod;
-  } else {
+  if (absl::holds_alternative<DestinationURLEvent>(event_variant)) {
     request->method = net::HttpRequestHeaders::kGetMethod;
+  } else {
+    request->method = net::HttpRequestHeaders::kPostMethod;
   }
   request->trusted_params = network::ResourceRequest::TrustedParams();
   request->trusted_params->isolation_info =
@@ -604,6 +623,11 @@ bool FencedFrameReporter::SendReportInternal(
   if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
     simple_url_loader->AttachStringForUpload(
         absl::get<DestinationEnumEvent>(event_variant).data,
+        /*upload_content_type=*/"text/plain;charset=UTF-8");
+  }
+  if (absl::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
+    simple_url_loader->AttachStringForUpload(
+        absl::get<AutomaticBeaconEvent>(event_variant).data,
         /*upload_content_type=*/"text/plain;charset=UTF-8");
   }
 

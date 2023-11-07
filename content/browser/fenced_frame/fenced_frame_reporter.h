@@ -64,6 +64,20 @@ struct DestinationURLEvent {
   }
 };
 
+// An event to be sent to a preregistered url as the result of an automatic
+// beacon. `type` is the key for the `ReportingUrlMap`, and `data` is sent with
+// the request as a POST.
+struct AutomaticBeaconEvent {
+  blink::mojom::AutomaticBeaconType type;
+  std::string data;
+
+  // The equal to operator is defined in order to enable comparison of
+  // DestinationVariant.
+  bool operator==(const AutomaticBeaconEvent& other) const {
+    return std::tie(type, data) == std::tie(other.type, other.data);
+  }
+};
+
 // Class that receives report events from fenced frames, and uses a
 // per-destination-type maps of events to URLs to send reports. The maps may be
 // received after the report event calls, in which case the reports will be
@@ -78,8 +92,8 @@ class CONTENT_EXPORT FencedFrameReporter
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
-  using DestinationVariant =
-      absl::variant<DestinationEnumEvent, DestinationURLEvent>;
+  using DestinationVariant = absl::
+      variant<DestinationEnumEvent, DestinationURLEvent, AutomaticBeaconEvent>;
 
   // TODO(crbug.com/1492125): Once the CL that stops repeating checks for fenced
   // frame reporting beacons is landed, this observer will be extended to
@@ -201,8 +215,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // * a `DestinationEnumEvent`, which contains a `type` and `data`
   //   * Sends a POST to the url specified by `type` in the ReportingUrlMap,
   //     with `data` attached.
-  //   * If there's no matching `type`, no beacon is sent.
-  //   sent.
+  //   * If there's no matching `type`, no beacon is sent. sent.
   // * a `DestinationURLEvent`, which contains a `url`
   //   * Sends a GET to `url`.
   //   * Substitutes macros from the ReportingMacros.
@@ -216,11 +229,10 @@ class CONTENT_EXPORT FencedFrameReporter
   // `initiator_frame_tree_node_id` is used for DevTools support only.
   //
   // Note: `navigation_id` will only be non-null in the case of an automatic
-  // beacon `reserved.top_navigation` sent as a result of a top-level navigation
-  // from a fenced frame. It will be set to the ID of the navigation request
-  // initiated from the fenced frame and targeting the new top-level frame.
-  // In all other cases (including the fence.reportEvent() case), the navigation
-  // id will be null.
+  // beacon sent as a result of a top-level navigation from a fenced frame. It
+  // will be set to the ID of the navigation request initiated from the fenced
+  // frame and targeting the new top-level frame. In all other cases (including
+  // the fence.reportEvent() case), the navigation id will be null.
   bool SendReport(
       const DestinationVariant& event_variant,
       blink::FencedFrame::ReportingDestination reporting_destination,

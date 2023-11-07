@@ -680,9 +680,11 @@ interface LocalFrameHost {
 
   // Fenced frames can send beacons automatically when an event happens.
   //
-  // For now, only "reserved.top_navigation" is supported. The `event_data` is
-  // installed in the RenderFrameHost and will be sent toward `destinations` on
-  // the next cross-document top-frame navigation.
+  // For now, only "reserved.top_navigation_start" and
+  // "reserved.top_navigation_commit" is supported ("reserved.top_navigation"
+  // will still work, but is deprecated). The `event_data` is installed in the
+  // RenderFrameHost and will be sent toward `destinations` on the next
+  // cross-document top-frame navigation.
   // `attribution_reporting_runtime_features` indicates whether Attribution
   // Reporting API related runtime features are enabled and is needed for
   // integration with Attribution Reporting API.
@@ -691,6 +693,7 @@ interface LocalFrameHost {
   // `attribution_reporting_runtime_features` when Runtime Feature State fully
   // supports runtime feature access from the browser process.
   SetFencedFrameAutomaticBeaconReportEventData(
+      AutomaticBeaconType event_type,
       string event_data,
       array<ReportingDestination> destinations,
       network.mojom.AttributionReportingRuntimeFeatures

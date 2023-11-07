@@ -101,8 +101,12 @@ BLINK_COMMON_EXPORT void RecordFencedFrameFailedSandboxLoadInTopLevelFrame(
     bool is_main_frame);
 
 // Automatic beacon type definitions
-inline constexpr char kFencedFrameTopNavigationBeaconType[] =
+inline constexpr char kDeprecatedFencedFrameTopNavigationBeaconType[] =
     "reserved.top_navigation";
+inline constexpr char kFencedFrameTopNavigationStartBeaconType[] =
+    "reserved.top_navigation_start";
+inline constexpr char kFencedFrameTopNavigationCommitBeaconType[] =
+    "reserved.top_navigation_commit";
 
 // Prefix of reserved event types for private aggregation API
 inline constexpr char kFencedFrameReservedPAEventPrefix[] = "reserved.";

@@ -2242,6 +2242,11 @@ void NavigationRequest::BeginNavigation() {
     return;
   }
 
+  // Send any potential navigation start automatic beacons for this frame.
+  frame_tree_node_->current_frame_host()
+      ->MaybeSendFencedFrameAutomaticReportingBeacon(
+          *this, blink::mojom::AutomaticBeaconType::kTopNavigationStart);
+
   // Log a histogram for a top-level navigation that initiates from a fenced
   // frame or URN iframe.
   if (GetInitiatorDocumentRenderFrameHost() &&

@@ -8722,9 +8722,9 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
 }
 
 void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
-    NavigationRequest& navigation_request) {
-  // The fenced frame "reserved.top_navigation" automatic beacon only cares
-  // about top-frame navigations.
+    NavigationRequest& navigation_request,
+    blink::mojom::AutomaticBeaconType event_type) {
+  // The automatic beacon only cares about top-frame navigations.
   if (!IsOutermostMainFrame()) {
     return;
   }
@@ -8747,11 +8747,19 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
   // there is a fenced frame reporter.
   const absl::optional<FencedFrameProperties>& properties =
       initiator_rfh->frame_tree_node()->GetFencedFrameProperties();
-  if (properties.has_value()) {
+  if (properties.has_value() &&
+      event_type == blink::mojom::AutomaticBeaconType::kTopNavigationCommit) {
     base::UmaHistogramEnumeration(blink::kFencedFrameTopNavigationHistogram,
                                   blink::FencedFrameNavigationState::kCommit);
   }
   if (!properties.has_value() || !properties->fenced_frame_reporter_) {
+    return;
+  }
+
+  // If there is no automatic beacon declared, there is nothing to send.
+  absl::optional<AutomaticBeaconInfo> info =
+      properties->GetAutomaticBeaconInfo(event_type);
+  if (!info.has_value()) {
     return;
   }
 
@@ -8770,13 +8778,6 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
       !navigation_request.common_params().has_user_gesture) {
     RecordAutomaticBeaconOutcome(
         blink::AutomaticBeaconOutcome::kNoUserActivation);
-    return;
-  }
-
-  // If there is no automatic beacon declared, there is nothing to send.
-  absl::optional<AutomaticBeaconInfo> info =
-      properties->automatic_beacon_info();
-  if (!info.has_value()) {
     return;
   }
 
@@ -8815,9 +8816,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
         data = info->data;
       }
       initiator_rfh->SendFencedFrameReportingBeaconInternal(
-          DestinationEnumEvent(blink::kFencedFrameTopNavigationBeaconType,
-                               data),
-          destination,
+          AutomaticBeaconEvent(event_type, data), destination,
           /*from_renderer=*/false, attribution_reporting_features,
           navigation_request.GetNavigationId());
     }
@@ -8829,16 +8828,14 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
     for (blink::FencedFrame::ReportingDestination destination :
          info->destinations) {
       initiator_rfh->SendFencedFrameReportingBeaconInternal(
-          DestinationEnumEvent(blink::kFencedFrameTopNavigationBeaconType,
-                               info->data),
-          destination,
+          AutomaticBeaconEvent(event_type, info->data), destination,
           /*from_renderer=*/false, info->attribution_reporting_runtime_features,
           navigation_request.GetNavigationId());
     }
   }
 
   initiator_rfh->frame_tree_node()
-      ->MaybeResetFencedFrameAutomaticBeaconReportEventData();
+      ->MaybeResetFencedFrameAutomaticBeaconReportEventData(event_type);
 }
 
 void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
@@ -8868,11 +8865,8 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
           "fence.reportEvent.");
       return;
     }
-    // The only allowed event type from an ad component is
-    // `reserved.top_navigation`.
-    CHECK(absl::holds_alternative<DestinationEnumEvent>(event_variant));
-    CHECK_EQ(absl::get<DestinationEnumEvent>(event_variant).type,
-             blink::kFencedFrameTopNavigationBeaconType);
+    // Only automatic beacon events are allowed from ad components.
+    CHECK(absl::holds_alternative<AutomaticBeaconEvent>(event_variant));
   }
 
   if (!fenced_frame_properties.has_value() ||
@@ -8911,6 +8905,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
 }
 
 void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
+    blink::mojom::AutomaticBeaconType event_type,
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
     network::AttributionReportingRuntimeFeatures
@@ -8943,7 +8938,8 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
   CHECK(owner_);  // See `owner_` invariants about `IsActive()`.
 
   owner_->SetFencedFrameAutomaticBeaconReportEventData(
-      event_data, destinations, attribution_reporting_runtime_features, once);
+      event_type, event_data, destinations,
+      attribution_reporting_runtime_features, once);
 }
 
 void RenderFrameHostImpl::OnViewTransitionOptInChanged(
@@ -13761,7 +13757,12 @@ void RenderFrameHostImpl::SendCommitNavigation(
   // 2. The initiator hasn't been unloaded yet due to this navigation, and
   //    still exists at this point (unless explicitly removed from the DOM
   //    otherwise).
-  MaybeSendFencedFrameAutomaticReportingBeacon(*navigation_request);
+  MaybeSendFencedFrameAutomaticReportingBeacon(
+      *navigation_request,
+      blink::mojom::AutomaticBeaconType::kDeprecatedTopNavigation);
+  MaybeSendFencedFrameAutomaticReportingBeacon(
+      *navigation_request,
+      blink::mojom::AutomaticBeaconType::kTopNavigationCommit);
 
   // If this commit is for a main frame in another browsing context group, warn
   // the renderer that it should update the browsing context group information

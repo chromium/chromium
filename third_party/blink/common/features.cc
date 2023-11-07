@@ -782,6 +782,8 @@ BASE_FEATURE(kFencedFramesM120FeaturesPart1,
 // * Support leaving interest group from ad components.
 // * Relax the attestation requirement of post-impression beacons from Protected
 // Audience only to either Protected Audience or Attribution Reporting.
+// * Split off the `reserved.top_navigation` automatic beacon type into
+//   `reserved.top_navigation_start` and `reserved.top_navigation_commit.
 BASE_FEATURE(kFencedFramesM120FeaturesPart2,
              "FencedFramesM120FeaturesPart2",
              base::FEATURE_DISABLED_BY_DEFAULT);

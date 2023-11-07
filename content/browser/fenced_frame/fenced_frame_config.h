@@ -389,9 +389,9 @@ struct CONTENT_EXPORT FencedFrameProperties {
   // any server-side redirects.
   void UpdateMappedURL(GURL url);
 
-  // Stores the payload that will be sent as part of the
-  // `reserved.top_navigation` automatic beacon.
+  // Stores the payload that will be sent as part of an automatic beacon.
   void UpdateAutomaticBeaconData(
+      blink::mojom::AutomaticBeaconType event_type,
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
@@ -400,11 +400,12 @@ struct CONTENT_EXPORT FencedFrameProperties {
 
   // Automatic beacon data is cleared out after one automatic beacon if `once`
   // was set to true when calling `setReportEventDataForAutomaticBeacons()`.
-  void MaybeResetAutomaticBeaconData();
+  void MaybeResetAutomaticBeaconData(
+      blink::mojom::AutomaticBeaconType event_type);
 
-  const absl::optional<AutomaticBeaconInfo>& automatic_beacon_info() const {
-    return automatic_beacon_info_;
-  }
+  // Attempts to retrieve the automatic beacon data for a given event type.
+  const absl::optional<AutomaticBeaconInfo> GetAutomaticBeaconInfo(
+      blink::mojom::AutomaticBeaconType event_type) const;
 
   absl::optional<FencedFrameProperty<gfx::Size>> container_size_;
 
@@ -452,13 +453,13 @@ struct CONTENT_EXPORT FencedFrameProperties {
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
 
   // Stores data registered by one of the documents in a FencedFrame using
-  // the `Fence.setReportEventDataForAutomaticBeacons` API.
-  //
-  // Currently, only the `reserved.top_navigation` event exists.
+  // the `Fence.setReportEventDataForAutomaticBeacons` API. Maps an event type
+  // to an AutomaticBeaconInfo object.
   //
   // The data will be sent directly to the network, without going back to any
   // renderer process, so they are not made part of the redacted properties.
-  absl::optional<AutomaticBeaconInfo> automatic_beacon_info_;
+  std::map<blink::mojom::AutomaticBeaconType, AutomaticBeaconInfo>
+      automatic_beacon_info_;
 
   // Whether this is an ad component fenced frame. An ad component fenced frame
   // is a nested fenced frame which loads the config from its parent fenced

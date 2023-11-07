@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCE_H_
 
 #include "base/gtest_prod_util.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -42,7 +43,8 @@ class CORE_EXPORT Fence final : public ScriptWrappable,
 
   // Saves the event data that will be used when an automatic beacon of type
   // event.eventType is sent. Right now, it only supports saving data for the
-  // "reserved.top_navigation" beacon.
+  // "reserved.top_navigation_start", "reserved.top_navigation_commit", and the
+  // deprecated "reserved.top_navigation" beacons.
   void setReportEventDataForAutomaticBeacons(ScriptState* script_state,
                                              const FenceEvent* event,
                                              ExceptionState& exception_state);
@@ -81,7 +83,9 @@ class CORE_EXPORT Fence final : public ScriptWrappable,
                                      const String& event,
                                      ExceptionState& exception_state);
 
-  void AddConsoleMessage(const String& message);
+  void AddConsoleMessage(const String& message,
+                         mojom::blink::ConsoleMessageLevel level =
+                             mojom::blink::ConsoleMessageLevel::kError);
 
   FRIEND_TEST_ALL_PREFIXES(FenceTest, ReportPrivateAggregationEvent);
   FRIEND_TEST_ALL_PREFIXES(FenceTest, ReportPrivateAggregationReservedEvent);

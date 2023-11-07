@@ -1652,20 +1652,21 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
   // Set valid reporting metadata for buyer.
   fenced_frame_reporter->OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination::kBuyer,
-      {{blink::kFencedFrameTopNavigationBeaconType, reporting_url}});
+      {{blink::kDeprecatedFencedFrameTopNavigationBeaconType, reporting_url}});
 
   FrameTreeNode* fenced_frame_root_node =
       AddFencedFrame(root, fenced_frame_url, std::move(fenced_frame_reporter));
 
-  ASSERT_TRUE(ExecJs(fenced_frame_root_node,
-                     JsReplace(R"(
+  ASSERT_TRUE(
+      ExecJs(fenced_frame_root_node,
+             JsReplace(R"(
     window.fence.setReportEventDataForAutomaticBeacons({
       eventType: $1,
       eventData: 'This is the event data!',
       destination: ['buyer']
     });
     )",
-                               blink::kFencedFrameTopNavigationBeaconType)));
+                       blink::kDeprecatedFencedFrameTopNavigationBeaconType)));
 
   GURL navigation_url(
       https_server()->GetURL("a.test", "/page_with_impression_creator.html"));
