@@ -27,21 +27,26 @@ ReadAnythingIconView::ReadAnythingIconView(
 
   SetActive(false);
   SetLabel(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE));
+
+  coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_);
+  if (coordinator_) {
+    coordinator_observer_.Observe(coordinator_);
+  }
 }
 
 ReadAnythingIconView::~ReadAnythingIconView() = default;
 
 void ReadAnythingIconView::UpdateImpl() {
   // TODO(crbug.com/1266555): Only show icon when the active tab is distillable.
-  SetVisible(true);
+  if (!IsReadAnythingEntryShowing(browser_)) {
+    SetVisible(true);
+  }
 }
 
 void ReadAnythingIconView::ExecuteCommand(ExecuteSource source) {
   OnExecuting(source);
   ShowReadAnythingSidePanel(browser_,
                             SidePanelOpenTrigger::kReadAnythingOmniboxIcon);
-  // TODO(crbug.com/1266555): Icon should disappear and never be shown again for
-  // this tab.
 }
 
 views::BubbleDialogDelegate* ReadAnythingIconView::GetBubble() const {
@@ -55,6 +60,16 @@ const gfx::VectorIcon& ReadAnythingIconView::GetVectorIcon() const {
 bool ReadAnythingIconView::ShouldShowLabel() const {
   // TODO(crbug.com/1266555): Only show label the first 3 times.
   return true;
+}
+
+void ReadAnythingIconView::Activate(bool active) {
+  if (active) {
+    SetVisible(false);
+  }
+}
+
+void ReadAnythingIconView::OnCoordinatorDestroyed() {
+  coordinator_ = nullptr;
 }
 
 BEGIN_METADATA(ReadAnythingIconView, PageActionIconView)

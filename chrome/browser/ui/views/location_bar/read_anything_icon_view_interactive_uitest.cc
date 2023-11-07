@@ -56,4 +56,21 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, OpensReadingModeOnClick) {
   EXPECT_TRUE(IsReadAnythingEntryShowing(browser()));
 }
 
+// When reading mode is opened, hides the icon.
+IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, OpenReadingModeHidesIcon) {
+  PageActionIconView* icon = GetReadAnythingOmniboxIcon();
+  EXPECT_TRUE(icon->GetVisible());
+  ClickReadAnythingOmniboxIcon(icon);
+  EXPECT_FALSE(icon->GetVisible());
+}
+
+// When reading mode is already opened, the icon does not show.
+IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest,
+                       IconNotVisibleIfReadingModeOpen) {
+  ShowReadAnythingSidePanel(browser(),
+                            SidePanelOpenTrigger::kReadAnythingOmniboxIcon);
+  PageActionIconView* icon = GetReadAnythingOmniboxIcon();
+  EXPECT_FALSE(icon->GetVisible());
+}
+
 }  // namespace
