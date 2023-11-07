@@ -47,11 +47,6 @@ class ToolbarActionHoverCardBubbleView
   class FadeLabel;
   class FootnoteView;
 
-  bool using_rounded_corners() const { return corner_radius_.has_value(); }
-
-  // views::BubbleDialogDelegateView:
-  void OnThemeChanged() override;
-
   raw_ptr<FadeLabel> title_label_ = nullptr;
   raw_ptr<FadeLabel> site_access_title_label_ = nullptr;
   raw_ptr<FadeLabel> site_access_description_label_ = nullptr;
@@ -59,8 +54,6 @@ class ToolbarActionHoverCardBubbleView
 
   raw_ptr<views::Separator> site_access_separator_;
   raw_ptr<views::Separator> policy_separator_;
-
-  absl::optional<int> corner_radius_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_BUBBLE_VIEW_H_

@@ -271,9 +271,6 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   layout->SetCollapseMargins(true);
 
-  corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kHigh);
-
   // Set up content.
   auto create_label = [](int context, gfx::Insets insets) {
     auto label = std::make_unique<FadeLabel>(context);
@@ -318,9 +315,9 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   GetBubbleFrameView()->set_hit_test_transparent(true);
-
-  if (using_rounded_corners())
-    GetBubbleFrameView()->SetCornerRadius(corner_radius_.value());
+  GetBubbleFrameView()->SetCornerRadius(
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kHigh));
 
   // Start in the fully "faded-in" position so that whatever text we initially
   // display is visible.
@@ -383,17 +380,6 @@ bool ToolbarActionHoverCardBubbleView::IsPolicySeparatorVisible() const {
 
 bool ToolbarActionHoverCardBubbleView::IsPolicyLabelVisible() const {
   return policy_label_->GetVisible();
-}
-
-void ToolbarActionHoverCardBubbleView::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-
-  // Bubble closes if the theme changes to the point where the border has to be
-  // regenerated. See crbug.com/1140256
-  if (!using_rounded_corners()) {
-    GetWidget()->Close();
-    return;
-  }
 }
 
 ToolbarActionHoverCardBubbleView::~ToolbarActionHoverCardBubbleView() = default;
