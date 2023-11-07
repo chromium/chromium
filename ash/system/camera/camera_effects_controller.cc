@@ -17,11 +17,13 @@
 #include "ash/system/video_conference/video_conference_utils.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -39,6 +41,9 @@ namespace {
 // - `BlurLevel` that specifies how much blur to apply
 // - `bool` that's 'true' if background blur is enabled, false otherwise
 using CameraHalBackgroundBlurState = std::pair<cros::mojom::BlurLevel, bool>;
+
+// Directory that can be accessed by the camera module.
+constexpr char kImageDirForCameraModule[] = "/run/camera/";
 
 // Returns 'true' if `pref_value` is an allowable value of
 // `CameraEffectsController::BackgroundBlurPrefValue`, 'false' otherwise.
@@ -137,10 +142,40 @@ CameraEffectsController::BackgroundBlurState MapBackgroundBlurPrefValueToState(
   return CameraEffectsController::BackgroundBlurState::kOff;
 }
 
+// Copies image file from `camera_background_img_dir` to
+// `camera_background_run_dir`; Returns either the input `config` if the copy
+// succeeds or config with background-replace disabled if the copy fails.
+cros::mojom::EffectsConfigPtr CopyBackgroundImageFile(
+    cros::mojom::EffectsConfigPtr config,
+    const base::FilePath& camera_background_img_dir,
+    const base::FilePath& camera_background_run_dir) {
+  const base::FilePath background_image_filepath =
+      camera_background_img_dir.Append(config->background_filepath->value());
+  const base::FilePath background_run_filepath =
+      camera_background_run_dir.Append(config->background_filepath->value());
+
+  if (base::CreateDirectory(background_run_filepath.DirName()) &&
+      base::CopyFile(background_image_filepath, background_run_filepath)) {
+    base::File::Info file_info;
+    base::GetFileInfo(background_image_filepath, &file_info);
+    base::TouchFile(background_image_filepath, base::Time::Now(),
+                    file_info.last_modified);
+
+    return config;
+  } else {
+    // Return null if copy failed.
+    return cros::mojom::EffectsConfigPtr();
+  }
+}
+
 }  // namespace
 
 CameraEffectsController::CameraEffectsController()
-    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
+    : camera_background_run_dir_(kImageDirForCameraModule),
+      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   auto* session_controller = Shell::Get()->session_controller();
   DCHECK(session_controller);
   session_observation_.Observe(session_controller);
@@ -188,6 +223,18 @@ void CameraEffectsController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kBackgroundReplace, false);
 
   registry->RegisterBooleanPref(prefs::kPortraitRelighting, false);
+
+  registry->RegisterFilePathPref(prefs::kBackgroundImagePath, base::FilePath());
+}
+
+void CameraEffectsController::SetBackgroundImage(
+    const base::FilePath& relative_path) {
+  cros::mojom::EffectsConfigPtr new_effects = current_effects_.Clone();
+  new_effects->replace_enabled = true;
+  new_effects->blur_enabled = false;
+  new_effects->background_filepath = relative_path;
+
+  SetCameraEffects(std::move(new_effects));
 }
 
 void CameraEffectsController::OnActiveUserPrefServiceChanged(
@@ -387,13 +434,17 @@ void CameraEffectsController::SetCameraEffects(
     config->light_intensity = intensity;
   }
 
-  // Directly calls the callback for testing case.
-  if (in_testing_mode_) {
-    CHECK_IS_TEST();
-    OnCameraEffectChanged(std::move(config));
+  if (config->replace_enabled) {
+    // Copy image file on the IO thread first.
+    blocking_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&CopyBackgroundImageFile, std::move(config),
+                       camera_background_img_dir_, camera_background_run_dir_),
+        base::BindOnce(
+            &CameraEffectsController::SetCameraEffectsInCameraHalDispatcherImpl,
+            weak_factory_.GetWeakPtr()));
   } else {
-    media::CameraHalDispatcherImpl::GetInstance()->SetCameraEffects(
-        std::move(config));
+    SetCameraEffectsInCameraHalDispatcherImpl(std::move(config));
   }
 }
 
@@ -420,6 +471,10 @@ CameraEffectsController::GetEffectsConfigFromPref() {
 
   effects->replace_enabled =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kBackgroundReplace);
+  if (effects->replace_enabled) {
+    effects->background_filepath = pref_change_registrar_->prefs()->GetFilePath(
+        prefs::kBackgroundImagePath);
+  }
   effects->relight_enabled =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kPortraitRelighting);
   return effects;
@@ -442,6 +497,13 @@ void CameraEffectsController::SetEffectsConfigToPref(
   if (new_config->replace_enabled != current_effects_->replace_enabled) {
     pref_change_registrar_->prefs()->SetBoolean(prefs::kBackgroundReplace,
                                                 new_config->replace_enabled);
+    if (new_config->replace_enabled) {
+      pref_change_registrar_->prefs()->SetFilePath(
+          prefs::kBackgroundImagePath, new_config->background_filepath.value());
+    } else {
+      pref_change_registrar_->prefs()->SetFilePath(prefs::kBackgroundImagePath,
+                                                   base::FilePath());
+    }
   }
 
   if (new_config->relight_enabled != current_effects_->relight_enabled) {
@@ -553,6 +615,23 @@ void CameraEffectsController::AddBackgroundBlurStateToEffect(
                           /*effect_id=*/VcEffectId::kBackgroundBlur,
                           /*value=*/state_value),
       /*state=*/state_value));
+}
+
+void CameraEffectsController::SetCameraEffectsInCameraHalDispatcherImpl(
+    cros::mojom::EffectsConfigPtr config) {
+  // Skip if a null EffectsConfigPtr is passed in.
+  if (config.is_null()) {
+    return;
+  }
+
+  // Directly calls the callback for testing case.
+  if (in_testing_mode_) {
+    CHECK_IS_TEST();
+    OnCameraEffectChanged(std::move(config));
+  } else {
+    media::CameraHalDispatcherImpl::GetInstance()->SetCameraEffects(
+        std::move(config));
+  }
 }
 
 }  // namespace ash

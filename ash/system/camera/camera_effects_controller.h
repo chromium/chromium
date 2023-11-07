@@ -84,6 +84,9 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // Called inside ash/ash_prefs.cc to register related prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Sets an image as the camera background.
+  void SetBackgroundImage(const base::FilePath& relative_path);
+
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
@@ -102,6 +105,16 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
 
   void bypass_set_camera_effects_for_testing(bool in_testing_mode) {
     in_testing_mode_ = in_testing_mode;
+  }
+
+  void set_camera_background_img_dir_for_testing(
+      const base::FilePath& camera_background_img_dir) {
+    camera_background_img_dir_ = camera_background_img_dir;
+  }
+
+  void set_camera_background_run_dir_for_testing(
+      const base::FilePath& camera_background_run_dir) {
+    camera_background_run_dir_ = camera_background_run_dir;
   }
 
  private:
@@ -132,9 +145,19 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
                                       int state_value,
                                       int string_id);
 
+  // A helper for easier binding.
+  void SetCameraEffectsInCameraHalDispatcherImpl(
+      cros::mojom::EffectsConfigPtr config);
+
   // Used to bypass the CameraHalDispatcherImpl::SetCameraEffects for
   // testing purpose.
   bool in_testing_mode_ = false;
+
+  // Directory that stores the camera background images.
+  base::FilePath camera_background_img_dir_;
+
+  // Directory that stores the background images for the camera module to use.
+  base::FilePath camera_background_run_dir_;
 
   // Used for pref registration.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
@@ -142,6 +165,10 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // This task runner is used to ensure `current_effects_` is always accessed
   // from the same thread.
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+
+  // This task runner is used to copy background image file to
+  // `camera_background_run_dir_`.
+  const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   // Records current effects that is applied to camera hal server.
   cros::mojom::EffectsConfigPtr current_effects_;

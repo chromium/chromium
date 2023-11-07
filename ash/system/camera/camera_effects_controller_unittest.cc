@@ -21,6 +21,8 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -49,6 +51,19 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
 
     // Enable test mode to mock the SetCameraEffects calls.
     camera_effects_controller_->bypass_set_camera_effects_for_testing(true);
+
+    // Create fake camera_background_img_dir_ and camera_background_run_dir_.
+    ASSERT_TRUE(file_tmp_dir_.CreateUniqueTempDir());
+    camera_background_img_dir_ =
+        file_tmp_dir_.GetPath().AppendASCII("camera_background_img_dir_");
+    camera_background_run_dir_ =
+        file_tmp_dir_.GetPath().AppendASCII("camera_background_run_dir_");
+    ASSERT_TRUE(base::CreateDirectory(camera_background_img_dir_));
+    ASSERT_TRUE(base::CreateDirectory(camera_background_run_dir_));
+    camera_effects_controller_->set_camera_background_img_dir_for_testing(
+        camera_background_img_dir_);
+    camera_effects_controller_->set_camera_background_run_dir_for_testing(
+        camera_background_run_dir_);
   }
 
   void TearDown() override {
@@ -77,6 +92,15 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
         ->session_controller()
         ->GetActivePrefService()
         ->GetInteger(prefs::kBackgroundBlur);
+  }
+
+  // Returns a pair of <replace-enabled, background-image-filepath>.
+  std::pair<bool, std::string> GetBackgroundReplacePref() {
+    const auto* prefs =
+        Shell::Get()->session_controller()->GetActivePrefService();
+
+    return {prefs->GetBoolean(prefs::kBackgroundReplace),
+            prefs->GetFilePath(prefs::kBackgroundImagePath).value()};
   }
 
   // Simulates toggling portrait relighting effect state. Note that the `state`
@@ -135,6 +159,10 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
 
  protected:
+  base::ScopedTempDir file_tmp_dir_;
+  base::FilePath camera_background_img_dir_;
+  base::FilePath camera_background_run_dir_;
+
   raw_ptr<CameraEffectsController, DanglingUntriaged | ExperimentalAsh>
       camera_effects_controller_ = nullptr;
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
@@ -173,6 +201,18 @@ TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kPortraitRelight));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
+        cros::mojom::CameraEffect::kBackgroundReplace));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {features::kVideoConference, features::kVcBackgroundReplace}, {});
+    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
+        cros::mojom::CameraEffect::kBackgroundBlur));
+    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
+        cros::mojom::CameraEffect::kPortraitRelight));
+    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundReplace));
   }
 }
@@ -413,6 +453,62 @@ TEST_F(CameraEffectsControllerTest, CameraFramingToggle) {
   ToggleCameraFramingEffectState();
   EXPECT_EQ(Shell::Get()->autozoom_controller()->GetState(),
             cros::mojom::CameraAutoFramingState::OFF);
+}
+
+TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileExists) {
+  SimulateUserLogin("testuser@gmail.com");
+
+  // Apply background blur first.
+  const auto state = CameraEffectsController::BackgroundBlurPrefValue::kLowest;
+  SetBackgroundBlurEffectState(state);
+  EXPECT_EQ(GetBackgroundBlurPref(), state);
+
+  // Create fake image file.
+  const std::string relative_path = "background/test.png";
+  base::FilePath file_fullpath =
+      camera_background_img_dir_.Append(relative_path);
+  ASSERT_TRUE(base::CreateDirectory(file_fullpath.DirName()));
+  ASSERT_TRUE(base::WriteFile(file_fullpath, ""));
+
+  // Set background image.
+  camera_effects_controller_->SetBackgroundImage(base::FilePath(relative_path));
+  base::RunLoop().RunUntilIdle();
+
+  // Check background replace result from pref.
+  EXPECT_THAT(GetBackgroundReplacePref(), testing::Pair(true, relative_path));
+
+  // Check the background blur is turned off.
+  EXPECT_EQ(GetBackgroundBlurPref(),
+            CameraEffectsController::BackgroundBlurPrefValue::kOff);
+
+  // Apply background blur again.
+  SetBackgroundBlurEffectState(state);
+  EXPECT_EQ(GetBackgroundBlurPref(), state);
+
+  // Background replace should be turned off.
+  EXPECT_THAT(GetBackgroundReplacePref(), testing::Pair(false, ""));
+}
+
+TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
+  SimulateUserLogin("testuser@gmail.com");
+
+  // Apply background blur first.
+  const auto state = CameraEffectsController::BackgroundBlurPrefValue::kLowest;
+  SetBackgroundBlurEffectState(state);
+  EXPECT_EQ(GetBackgroundBlurPref(), state);
+
+  const std::string relative_path = "background/test.png";
+
+  // Set background image.
+  camera_effects_controller_->SetBackgroundImage(base::FilePath(relative_path));
+  base::RunLoop().RunUntilIdle();
+
+  // Because the image is not created, the above SetBackgroundImage should fail,
+  // so that the background replace pref should not be set.
+  EXPECT_THAT(GetBackgroundReplacePref(), testing::Pair(false, ""));
+
+  // Check the background blur is not changed.
+  EXPECT_EQ(GetBackgroundBlurPref(), state);
 }
 
 }  // namespace ash

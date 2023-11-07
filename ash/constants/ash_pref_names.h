@@ -1594,6 +1594,10 @@ inline constexpr char kBackgroundBlur[] = "ash.camera.background_blur";
 // An boolean pref that indicates whether background replacement is applied.
 inline constexpr char kBackgroundReplace[] = "ash.camera.background_replace";
 
+// An string pref that indicates the image path of the camera background.
+inline constexpr char kBackgroundImagePath[] =
+    "ash.camera.background_image_path";
+
 // An boolean pref that indicates whether portrait relighting is applied.
 inline constexpr char kPortraitRelighting[] = "ash.camera.portrait_relighting";
 
