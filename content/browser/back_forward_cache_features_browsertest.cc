@@ -4789,8 +4789,9 @@ class BackForwardCacheBrowserTestWithMediaSessionNoTestingConfig
     : public BackForwardCacheBrowserTestWithMediaSession {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    BackForwardCacheBrowserTestWithMediaSession::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");
+    DisableFeature(features::kBackForwardCacheMediaSessionService);
+    BackForwardCacheBrowserTestWithMediaSession::SetUpCommandLine(command_line);
   }
 };
 
