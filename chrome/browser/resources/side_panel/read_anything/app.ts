@@ -17,7 +17,7 @@ import {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {ReadAnythingToolbar} from './read_anything_toolbar.js';
+import {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -137,6 +137,12 @@ if (chrome.readingMode) {
     const readAnythingApp = document.querySelector('read-anything-app');
     assert(readAnythingApp);
     readAnythingApp.updateFonts();
+  };
+}
+
+export interface ReadAnythingElement {
+  $: {
+    toolbar: ReadAnythingToolbarElement,
   };
 }
 
@@ -487,19 +493,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // TODO(crbug.com/1474951): Add tests for pause button
     utterance.onstart = event => {
-      const toolbar = this.shadowRoot?.getElementById('toolbar');
-      assert(toolbar);
-      if (toolbar instanceof ReadAnythingToolbar) {
-        toolbar.showVoicePreviewPlaying(event.utterance.voice);
-      }
+      this.$.toolbar.showVoicePreviewPlaying(event.utterance.voice);
     };
 
     utterance.onend = () => {
-      const toolbar = this.shadowRoot?.getElementById('toolbar');
-      assert(toolbar);
-      if (toolbar instanceof ReadAnythingToolbar) {
-        toolbar.showVoicePreviewDone();
-      }
+      this.$.toolbar.showVoicePreviewDone();
     };
 
     this.synth.speak(utterance);
@@ -753,13 +751,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.currentUtteranceIndex_ = 0;
     this.utterancesToSpeak_ = [];
     this.previousHighlight_ = null;
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const toolbar = shadowRoot.getElementById('toolbar');
-    assert(toolbar);
-    if (toolbar instanceof ReadAnythingToolbar) {
-      toolbar.updateUiForPausing();
-    }
+    this.$.toolbar.updateUiForPausing();
   }
 
   // TODO(b/1465029): Once the IsReadAnythingWebUIEnabled flag is removed
@@ -847,11 +839,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
     // TODO(crbug.com/1474951): investigate using parent/child relationshiop
     // instead of element by id.
-    const toolbar = this.shadowRoot?.getElementById('toolbar');
-    assert(toolbar);
-    if (toolbar instanceof ReadAnythingToolbar) {
-      toolbar.restoreSettingsFromPrefs(colorSuffix);
-    }
+    this.$.toolbar.restoreSettingsFromPrefs(colorSuffix);
   }
 
   private restoreVoiceFromPrefs_() {
@@ -898,12 +886,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
 
     // Also update the font on the toolbar itself with the validated font name.
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const toolbar = shadowRoot.getElementById('toolbar');
-    if (toolbar) {
-      toolbar.style.fontFamily = validatedFontName;
-    }
+    this.$.toolbar.style.fontFamily = validatedFontName;
   }
 
   updateFontSize() {
@@ -990,24 +973,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   updateFonts() {
     // Also update the font on the toolbar itself with the validated font name.
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const toolbar = shadowRoot.getElementById('toolbar');
-    if (toolbar instanceof ReadAnythingToolbar) {
-      toolbar.updateFonts();
-    }
+    this.$.toolbar.updateFonts();
   }
 
   private onKeyDown_(e: KeyboardEvent) {
     if (e.key === 'k') {
       e.stopPropagation();
-      const shadowRoot = this.shadowRoot;
-      assert(shadowRoot);
-      const toolbar = shadowRoot.getElementById('toolbar');
-      assert(toolbar);
-      if (toolbar instanceof ReadAnythingToolbar) {
-        toolbar.onPlayPauseClick();
-      }
+      this.$.toolbar.onPlayPauseClick();
     }
   }
 }
