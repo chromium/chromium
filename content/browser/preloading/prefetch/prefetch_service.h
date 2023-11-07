@@ -113,12 +113,6 @@ class CONTENT_EXPORT PrefetchService {
   // |all_prefetches_|.
   void RemovePrefetch(const PrefetchContainer::Key& prefetch_container_key);
 
-  // Destroys the prefetch with the given |prefetch_container_key|. Called
-  // to remove a prefetch when making room for a new prefetch, and sets the
-  // status to |PrefetchStatus::kPrefetchEvicted| before destruction to record
-  // this.
-  void EvictPrefetch(const PrefetchContainer::Key& prefetch_container_key);
-
   void ResetPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Called by PrefetchDocumentManager when it finishes processing the latest

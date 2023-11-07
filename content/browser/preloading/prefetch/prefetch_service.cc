@@ -977,17 +977,6 @@ void PrefetchService::RemovePrefetch(
   }
 }
 
-void PrefetchService::EvictPrefetch(
-    const PrefetchContainer::Key& prefetch_container_key) {
-  DCHECK(PrefetchNewLimitsEnabled());
-  DCHECK(base::Contains(owned_prefetches_, prefetch_container_key));
-  base::WeakPtr<PrefetchContainer> prefetch_container =
-      owned_prefetches_[prefetch_container_key]->GetWeakPtr();
-  DCHECK(prefetch_container);
-  prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchEvicted);
-  ResetPrefetch(prefetch_container);
-}
-
 void PrefetchService::OnCandidatesUpdated() {
   if (active_prefetches_.size() <
       PrefetchServiceMaximumNumberOfConcurrentPrefetches()) {
@@ -1038,7 +1027,9 @@ void PrefetchService::StartSinglePrefetch(
   }
 
   if (prefetch_to_evict) {
-    EvictPrefetch(prefetch_to_evict->GetPrefetchContainerKey());
+    DCHECK(PrefetchNewLimitsEnabled());
+    prefetch_to_evict->SetPrefetchStatus(PrefetchStatus::kPrefetchEvicted);
+    ResetPrefetch(prefetch_to_evict);
   }
 
   active_prefetches_.insert(prefetch_container->GetPrefetchContainerKey());

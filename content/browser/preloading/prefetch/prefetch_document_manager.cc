@@ -200,7 +200,18 @@ void PrefetchDocumentManager::ProcessCandidates(
       }
     }
     for (const auto& prefetch : prefetches_to_evict) {
-      EvictPrefetch(prefetch);
+      all_prefetches_.erase(prefetch->GetURL());
+      switch (prefetch->GetLoadState()) {
+        case PrefetchContainer::LoadState::kNotStarted:
+        case PrefetchContainer::LoadState::kEligible:
+        case PrefetchContainer::LoadState::kFailedIneligible:
+        case PrefetchContainer::LoadState::kFailedHeldback:
+          break;
+        case PrefetchContainer::LoadState::kStarted:
+          prefetch->SetPrefetchStatus(PrefetchStatus::kPrefetchEvicted);
+          break;
+      }
+      GetPrefetchService()->ResetPrefetch(prefetch);
     }
   }
 
@@ -439,24 +450,6 @@ void PrefetchDocumentManager::PrefetchWillBeDestroyed(
       completed_prefetches.erase(it);
     }
   }
-}
-
-void PrefetchDocumentManager::EvictPrefetch(
-    base::WeakPtr<PrefetchContainer> prefetch) {
-  DCHECK(prefetch);
-  all_prefetches_.erase(prefetch->GetURL());
-  switch (prefetch->GetLoadState()) {
-    case PrefetchContainer::LoadState::kNotStarted:
-    case PrefetchContainer::LoadState::kEligible:
-    case PrefetchContainer::LoadState::kFailedIneligible:
-    case PrefetchContainer::LoadState::kFailedHeldback:
-      break;
-    case PrefetchContainer::LoadState::kStarted:
-      prefetch->SetPrefetchStatus(PrefetchStatus::kPrefetchEvicted);
-      break;
-  }
-  DCHECK(GetPrefetchService());
-  GetPrefetchService()->ResetPrefetch(prefetch);
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PrefetchDocumentManager);

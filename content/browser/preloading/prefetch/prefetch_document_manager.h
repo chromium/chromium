@@ -124,10 +124,6 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // Called when a PrefetchContainer started by |this| is being destroyed.
   void PrefetchWillBeDestroyed(PrefetchContainer* prefetch);
 
-  // Destroys |prefetch|. |prefetch| could either be owned by |this| or by
-  // PrefetchService.
-  void EvictPrefetch(base::WeakPtr<PrefetchContainer> prefetch);
-
   base::WeakPtr<PrefetchDocumentManager> GetWeakPtr() {
     return weak_method_factory_.GetWeakPtr();
   }
