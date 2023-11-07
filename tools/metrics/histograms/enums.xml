@@ -26322,6 +26322,8 @@ Called by update_extension_histograms.py.-->
   <int value="1838" label="USERSCRIPTS_CONFIGUREWORLD"/>
   <int value="1839" label="ENTERPRISE_KIOSKINPUT_SETCURRENTINPUTMETHOD"/>
   <int value="1840" label="AUTOFILLPRIVATE_BULKDELETEALLCVCS"/>
+  <int value="1841" label="PDFVIEWERPRIVATE_GETSTREAMINFO"/>
+  <int value="1842" label="PDFVIEWERPRIVATE_SETPDFPLUGINATTRIBUTES"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">

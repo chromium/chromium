@@ -9548,11 +9548,13 @@ test("unit_tests") {
 
   if (enable_pdf) {
     sources += [
+      "../browser/extensions/api/pdf_viewer_private/pdf_viewer_private_api_unittest.cc",
       "../browser/pdf/pdf_viewer_stream_manager_unittest.cc",
       "../common/pdf_util_unittest.cc",
     ]
     deps += [
       "//base",
+      "//chrome/browser/extensions/api/pdf_viewer_private",
       "//chrome/browser/pdf",
       "//chrome/browser/pdf:pdf_test_utils",
       "//extensions/browser",
