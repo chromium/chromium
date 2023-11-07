@@ -369,11 +369,6 @@ class CreditCard : public AutofillDataModel {
   // TODO(crbug.com/1019660): Rename to "CardIconForAutofillSuggestion"
   Suggestion::Icon CardIconStringForAutofillSuggestion() const;
 
-  // Same as previous method, but returns an std::string.
-  // TODO(crbug.com/1019660): Remove this method when Android side supports enum
-  // for icons
-  std::string StringCardIconStringForAutofillSuggestion() const;
-
   // A label for this card formatted as 'IssuerNetwork ****2345'. By default,
   // the `obfuscation_length` is set to 4 which would add **** to the last four
   // digits of the card.

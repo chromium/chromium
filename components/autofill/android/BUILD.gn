@@ -143,6 +143,7 @@ java_cpp_enum("autofill_core_browser_java_enums") {
     "../core/browser/ui/accessory_sheet_enums.h",
     "../core/browser/ui/payments/payments_bubble_closed_reasons.h",
     "../core/browser/ui/popup_item_ids.h",
+    "../core/browser/ui/suggestion.h",
   ]
 }
 

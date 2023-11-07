@@ -1074,10 +1074,6 @@ Suggestion::Icon CreditCard::CardIconStringForAutofillSuggestion() const {
   return Suggestion::ConvertIconStringIntoIcon(network_);
 }
 
-std::string CreditCard::StringCardIconStringForAutofillSuggestion() const {
-  return network_;
-}
-
 std::u16string CreditCard::NetworkAndLastFourDigits(
     int obfuscation_length) const {
   const std::u16string network = NetworkForDisplay();
