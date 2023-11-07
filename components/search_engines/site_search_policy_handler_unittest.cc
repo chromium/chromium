@@ -182,6 +182,14 @@ TestProvider kShortcutSameAsDSPKeywordTestProviders[] = {
      .favicon = "https://work.com/favicon.ico"},
 };
 
+// Used for tests that require a provider with non-HTTPS URL.
+TestProvider kNonHttpsUrlTestProviders[] = {
+    {.name = "work name",
+     .shortcut = "work",
+     .url = "http://work.com/q={searchTerms}",
+     .favicon = "http://work.com/favicon.ico"},
+};
+
 // Creates a simple list item for the site search policy.
 base::Value::Dict GenerateSiteSearchPolicyEntry(const std::string& name,
                                                 const std::string& shortcut,
@@ -789,6 +797,41 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
   EXPECT_THAT(providers->GetList(),
               ElementsAre(IsSiteSearchEntry(
                   kShortcutSameAsDSPKeywordTestProviders[1])));
+}
+
+TEST(SiteSearchPolicyHandlerTest, NonHttpsUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::Value::List policy_value;
+  policy_value.Append(
+      GenerateSiteSearchPolicyEntry(kNonHttpsUrlTestProviders[0]));
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_THAT(&errors,
+              HasValidationError(l10n_util::GetStringFUTF16(
+                  IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS,
+                  base::UTF8ToUTF16(kNonHttpsUrlTestProviders[0].url))));
+
+  handler.ApplyPolicySettings(policies, &prefs);
+  base::Value* providers = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+  ASSERT_NE(providers, nullptr);
+  ASSERT_TRUE(providers->is_list());
+  EXPECT_THAT(providers->GetList(),
+              ElementsAre(IsSiteSearchEntry(kNonHttpsUrlTestProviders[0])));
 }
 
 TEST(SiteSearchPolicyHandlerTest, NoValidEntry) {

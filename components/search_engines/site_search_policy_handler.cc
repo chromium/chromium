@@ -196,6 +196,16 @@ bool ReplacementStringIsMissingFromUrl(const std::string& policy_name,
   return true;
 }
 
+void WarnIfNonHttpsUrl(const std::string& policy_name,
+                       const std::string& url,
+                       PolicyErrorMap* errors) {
+  GURL gurl(url);
+  if (!gurl.SchemeIs(url::kHttpsScheme)) {
+    errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS,
+                     url);
+  }
+}
+
 bool ShortcutAlreadySeen(
     const std::string& policy_name,
     const std::string& shortcut,
@@ -265,7 +275,8 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     const std::string& shortcut = GetShortcut(provider);
     const std::string& url = GetUrl(provider);
 
-    if (ShortcutIsEmpty(policy_name(), shortcut, errors) ||
+    bool invalid_entry =
+        ShortcutIsEmpty(policy_name(), shortcut, errors) ||
         NameIsEmpty(policy_name(), GetName(provider), errors) ||
         UrlIsEmpty(policy_name(), url, errors) ||
         ShortcutHasWhitespace(policy_name(), shortcut, errors) ||
@@ -274,8 +285,12 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                    policies, errors) ||
         ShortcutAlreadySeen(policy_name(), shortcut, shortcuts_already_seen,
                             errors, &duplicated_shortcuts) ||
-        ReplacementStringIsMissingFromUrl(policy_name(), url, errors)) {
+        ReplacementStringIsMissingFromUrl(policy_name(), url, errors);
+
+    if (invalid_entry) {
       ignored_shortcuts_.insert(shortcut);
+    } else {
+      WarnIfNonHttpsUrl(policy_name(), url, errors);
     }
 
     shortcuts_already_seen.insert(shortcut);
