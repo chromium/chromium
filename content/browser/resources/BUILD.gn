@@ -18,7 +18,7 @@ group("resources") {
     "service_worker:resources",
   ]
 
-  if (!is_android) {
+  if (!is_android && !is_ios) {
     public_deps += [ "traces_internals:resources" ]
   }
 

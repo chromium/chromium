@@ -3327,8 +3327,6 @@ source_set("browser") {
       "speech/speech_recognition_engine.h",
       "speech/speech_recognizer_impl.cc",
       "speech/speech_recognizer_impl.h",
-      "tracing/trace_report/trace_report_internals_ui.cc",
-      "tracing/trace_report/trace_report_internals_ui.h",
       "tracing/tracing_ui.cc",
       "tracing/tracing_ui.h",
 
@@ -3366,11 +3364,15 @@ source_set("browser") {
     ]
   }
 
-  # Devtools frontend not included in Android and iOS
   if (!is_android && !is_ios) {
     sources += [
+      # Devtools frontend not included in Android and iOS
       "devtools/devtools_frontend_host_impl.cc",
       "devtools/devtools_frontend_host_impl.h",
+
+      # Trace report internal UI is not adapted for mobile use.
+      "tracing/trace_report/trace_report_internals_ui.cc",
+      "tracing/trace_report/trace_report_internals_ui.h",
     ]
 
     deps += [ "//content/browser/devtools:devtools_resources_extern" ]

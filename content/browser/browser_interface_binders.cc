@@ -1211,7 +1211,7 @@ void PopulateBinderMapWithContext(
                                          ProcessInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::QuotaInternalsHandler,
                                          QuotaInternalsUI>(map);
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   RegisterWebUIControllerInterfaceBinder<
       trace_report::mojom::TraceReportHandlerFactory, TraceReportInternalsUI>(
       map);
