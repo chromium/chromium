@@ -67,7 +67,7 @@ static jlong JNI_Origin_CreateNative(
 
   Origin origin;
   if (is_opaque) {
-    absl::optional<base::UnguessableToken> nonce_token =
+    std::optional<base::UnguessableToken> nonce_token =
         base::UnguessableToken::Deserialize(token_high_bits, token_low_bits);
     origin =
         CreateOpaqueOriginForAndroid(scheme, host, port, nonce_token.value());

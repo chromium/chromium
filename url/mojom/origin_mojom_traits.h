@@ -5,11 +5,11 @@
 #ifndef URL_MOJOM_ORIGIN_MOJOM_TRAITS_H_
 #define URL_MOJOM_ORIGIN_MOJOM_TRAITS_H_
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/mojom/origin.mojom-shared.h"
 #include "url/origin.h"
 

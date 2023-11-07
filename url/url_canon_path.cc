@@ -4,9 +4,9 @@
 
 #include <limits.h>
 
+#include <optional>
 #include "base/check.h"
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_features.h"
