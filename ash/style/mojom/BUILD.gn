@@ -10,5 +10,4 @@ mojom("color_scheme") {
   sources = [ "color_scheme.mojom" ]
 
   webui_module_path = ""
-  use_typescript_sources = true
 }

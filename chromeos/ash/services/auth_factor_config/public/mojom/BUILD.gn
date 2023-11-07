@@ -10,5 +10,4 @@ assert(is_chromeos_ash, "Only ash builds can depend on //chromeos/ash")
 mojom("mojom") {
   sources = [ "auth_factor_config.mojom" ]
   webui_module_path = "chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom"
-  use_typescript_sources = true
 }

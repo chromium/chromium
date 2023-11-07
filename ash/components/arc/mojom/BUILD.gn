@@ -367,7 +367,6 @@ mojom("media") {
 mojom("camera_intent") {
   sources = [ "camera_intent.mojom" ]
   webui_module_path = "/ash/components/arc/mojom"
-  use_typescript_sources = true
 
   # Since this is a dependency of the very large target above that is still
   # generating legacy JS bindings/closure targets, generate legacy bindings
