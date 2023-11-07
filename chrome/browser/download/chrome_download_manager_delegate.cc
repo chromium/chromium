@@ -839,6 +839,10 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     if (!blink::IsSupportedMimeType(mime_type)) {
       download_message_bridge_->ShowUnsupportedDownloadMessage(web_contents);
+      base::UmaHistogramEnumeration(
+          "Download.Blocked.ContentType.Automotive",
+          download::DownloadContentFromMimeType(mime_type, false),
+          download::DownloadContent::MAX);
       return true;
     }
   }
