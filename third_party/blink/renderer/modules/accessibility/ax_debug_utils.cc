@@ -20,7 +20,7 @@ std::string NewlineToSpaceReplacer(std::string str) {
 
 }  // namespace
 
-std::string TreeToStringHelper(const AXObject* obj, int indent, bool verbose) {
+std::string TreeToStringHelper(const AXObject* obj, bool verbose) {
   return TreeToStringWithMarkedObjectHelper(obj, nullptr, verbose);
 }
 
