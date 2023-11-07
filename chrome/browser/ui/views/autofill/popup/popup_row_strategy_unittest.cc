@@ -103,7 +103,8 @@ class PopupRowStrategyTest : public ChromeViewsTestBase {
     suggestions.reserve(popup_item_ids.size());
     for (PopupItemId popup_item_id : popup_item_ids) {
       // Create a suggestion with empty labels.
-      suggestions.emplace_back("Main text", "", "", popup_item_id);
+      suggestions.emplace_back("Main text", "", Suggestion::Icon::kNoIcon,
+                               popup_item_id);
     }
     controller().set_suggestions(std::move(suggestions));
   }

@@ -249,26 +249,30 @@ std::vector<autofill::Suggestion> CreateTestSuggestions(
     bool has_re_signin) {
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(
-      /*value=*/"User1", /*label=*/"PW1", /*icon=*/"",
+      /*value=*/"User1", /*label=*/"PW1", /*icon=*/Suggestion::Icon::kNoIcon,
       /*popup_item_id=*/autofill::PopupItemId::kPasswordEntry);
   suggestions.emplace_back(
-      /*value=*/"Show all pwds", /*label=*/"", /*icon=*/"",
+      /*value=*/"Show all pwds", /*label=*/"",
+      /*icon=*/Suggestion::Icon::kNoIcon,
       /*popup_item_id=*/autofill::PopupItemId::kAllSavedPasswordsEntry);
   if (has_opt_in_and_fill) {
     suggestions.emplace_back(
-        /*value=*/"Unlock passwords and fill", /*label=*/"", /*icon=*/"",
+        /*value=*/"Unlock passwords and fill", /*label=*/"",
+        /*icon=*/Suggestion::Icon::kNoIcon,
         /*popup_item_id=*/
         autofill::PopupItemId::kPasswordAccountStorageOptIn);
   }
   if (has_opt_in_and_generate) {
     suggestions.emplace_back(
-        /*value=*/"Unlock passwords and generate", /*label=*/"", /*icon=*/"",
+        /*value=*/"Unlock passwords and generate", /*label=*/"",
+        /*icon=*/Suggestion::Icon::kNoIcon,
         /*popup_item_id=*/
         autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate);
   }
   if (has_re_signin) {
     suggestions.emplace_back(
-        /*value=*/"Sign in to access passwords", /*label=*/"", /*icon=*/"",
+        /*value=*/"Sign in to access passwords", /*label=*/"",
+        /*icon=*/Suggestion::Icon::kNoIcon,
         /*popup_item_id=*/
         autofill::PopupItemId::kPasswordAccountStorageReSignin);
   }
@@ -956,7 +960,8 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInMayShowEmptyState) {
   // Only the unlock button was available. After being clicked, it's in a
   // loading state which the DeleteFillData() call will end.
   Suggestion unlock_suggestion(
-      /*main_text=*/"Unlock passwords and fill", /*label=*/"", /*icon=*/"",
+      /*main_text=*/"Unlock passwords and fill", /*label=*/"",
+      /*icon=*/Suggestion::Icon::kNoIcon,
       /*popup_item_id=*/
       autofill::PopupItemId::kPasswordAccountStorageOptIn);
   unlock_suggestion.is_loading = Suggestion::IsLoading(true);

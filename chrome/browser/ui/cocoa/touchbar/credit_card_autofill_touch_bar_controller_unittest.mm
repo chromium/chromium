@@ -52,7 +52,8 @@ class CreditCardAutofillTouchBarControllerUnitTest : public CocoaTest {
     std::vector<Suggestion> suggestions;
     suggestions.reserve(popup_item_ids.size());
     for (autofill::PopupItemId popup_item_id : popup_item_ids) {
-      suggestions.emplace_back("", "", "", popup_item_id);
+      suggestions.emplace_back("", "", Suggestion::Icon::kNoIcon,
+                               popup_item_id);
     }
     SetSuggestions(std::move(suggestions));
   }
@@ -106,8 +107,9 @@ TEST_F(CreditCardAutofillTouchBarControllerUnitTest, TouchBarCardLimit) {
 // Tests for for the credit card button.
 TEST_F(CreditCardAutofillTouchBarControllerUnitTest, CreditCardButtonCheck) {
   [touch_bar_controller_ setIsCreditCardPopup:true];
-  SetSuggestions({Suggestion("bufflehead", "canvasback", "",
-                             PopupItemId::kCreditCardEntry)});
+  SetSuggestions(
+      {Suggestion("bufflehead", "canvasback", Suggestion::Icon::kNoIcon,
+                  PopupItemId::kCreditCardEntry)});
   NSButton* button = [touch_bar_controller_ createCreditCardButtonAtRow:0];
   EXPECT_TRUE(button);
   EXPECT_EQ(0, [button tag]);

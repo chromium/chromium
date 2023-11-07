@@ -438,7 +438,8 @@ TEST_F(PopupViewViewsTest, SelectionOnTouchAndUnselectionOnCancel) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(PopupViewViewsTest, ClickDisabledEntry) {
-  Suggestion opt_int_suggestion("dummy_main_text", "", "",
+  Suggestion opt_int_suggestion("dummy_main_text", "",
+                                Suggestion::Icon::kNoIcon,
                                 PopupItemId::kPasswordAccountStorageOptIn);
   opt_int_suggestion.is_loading = Suggestion::IsLoading(true);
   controller().set_suggestions({opt_int_suggestion});

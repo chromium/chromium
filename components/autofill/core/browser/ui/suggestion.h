@@ -109,7 +109,7 @@ struct Suggestion {
   // UTF-16.
   Suggestion(base::StringPiece main_text,
              base::StringPiece label,
-             std::string_view icon_str,
+             Icon icon,
              PopupItemId popup_item_id);
   Suggestion(base::StringPiece main_text,
              base::StringPiece minor_text,

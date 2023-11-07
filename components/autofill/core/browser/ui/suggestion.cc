@@ -165,14 +165,13 @@ Suggestion::Suggestion(std::u16string main_text, PopupItemId popup_item_id)
     : popup_item_id(popup_item_id),
       main_text(std::move(main_text), Text::IsPrimary(true)) {}
 
-// TODO(crbug.com/1019660): Make this constructor accept Icon enum.
 Suggestion::Suggestion(base::StringPiece main_text,
                        base::StringPiece label,
-                       std::string_view icon_str,
+                       Icon icon,
                        PopupItemId popup_item_id)
     : popup_item_id(popup_item_id),
       main_text(base::UTF8ToUTF16(main_text), Text::IsPrimary(true)),
-      icon(ConvertIconStringIntoIcon(icon_str)) {
+      icon(icon) {
   if (!label.empty())
     this->labels = {{Text(base::UTF8ToUTF16(label))}};
 }

@@ -413,8 +413,9 @@ TEST_F(PopupRowViewTest, SelectSuggestionOnFocusedContent) {
 }
 
 TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
-  ShowView(/*line_number=*/0, {Suggestion("dummy_value", "dummy_label", "",
-                                          PopupItemId::kAddressEntry)});
+  ShowView(/*line_number=*/0,
+           {Suggestion("dummy_value", "dummy_label", Suggestion::Icon::kNoIcon,
+                       PopupItemId::kAddressEntry)});
 
   views::ViewAccessibility& accessibility =
       row_view().GetContentView().GetViewAccessibility();

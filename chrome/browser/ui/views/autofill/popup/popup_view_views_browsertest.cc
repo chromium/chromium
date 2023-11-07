@@ -34,9 +34,11 @@ using CellType = PopupRowView::CellType;
 
 std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back("123 Apple St.", "Charles", "accountIcon",
+  suggestions.emplace_back("123 Apple St.", "Charles",
+                           Suggestion::Icon::kAccount,
                            PopupItemId::kAddressEntry);
-  suggestions.emplace_back("3734 Elvis Presley Blvd.", "Elvis", "accountIcon",
+  suggestions.emplace_back("3734 Elvis Presley Blvd.", "Elvis",
+                           Suggestion::Icon::kAccount,
                            PopupItemId::kAddressEntry);
 
   suggestions.emplace_back(PopupItemId::kSeparator);
@@ -50,9 +52,9 @@ std::vector<Suggestion> CreateAutofillProfileSuggestions() {
 }
 
 std::vector<Suggestion> CreateAutocompleteSuggestions() {
-  return {Suggestion("Autocomplete entry 1", "", "",
+  return {Suggestion("Autocomplete entry 1", "", Suggestion::Icon::kNoIcon,
                      PopupItemId::kAutocompleteEntry),
-          Suggestion("Autocomplete entry 2", "", "",
+          Suggestion("Autocomplete entry 2", "", Suggestion::Icon::kNoIcon,
                      PopupItemId::kAutocompleteEntry)};
 }
 

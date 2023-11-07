@@ -58,7 +58,8 @@ class MockAccessoryView
 Suggestion createPasswordEntry(std::string password,
                                std::string username,
                                std::string psl_origin) {
-  Suggestion s(/*main_text=*/username, /*label=*/psl_origin, /*icon=*/"",
+  Suggestion s(/*main_text=*/username, /*label=*/psl_origin,
+               /*icon=*/Suggestion::Icon::kNoIcon,
                PopupItemId::kAutocompleteEntry);
   s.additional_label = ASCIIToUTF16(password);
   return s;
@@ -74,8 +75,8 @@ std::vector<Suggestion> createSuggestions() {
 
 std::vector<Suggestion> createSuggestions(int clearItemOffset) {
   std::vector<Suggestion> suggestions = createSuggestions();
-  suggestions.emplace(suggestions.begin() + clearItemOffset, "Clear", "", "",
-                      PopupItemId::kClearForm);
+  suggestions.emplace(suggestions.begin() + clearItemOffset, "Clear", "",
+                      Suggestion::Icon::kNoIcon, PopupItemId::kClearForm);
   return suggestions;
 }
 
