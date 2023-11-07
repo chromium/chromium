@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_REPORTING_UTIL_STATUS_MACROS_H_
 #define COMPONENTS_REPORTING_UTIL_STATUS_MACROS_H_
 
+#include "base/types/always_false.h"
 #include "base/types/expected.h"
 #include "components/reporting/util/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,16 +21,9 @@ absl::optional<base::unexpected<Status>> ShouldReturnStatus(
 absl::optional<base::unexpected<Status>> ShouldReturnStatus(
     base::unexpected<Status>&& status);
 
-// Helper struct to display T in error message for the static_assert
-// failure.
-template <typename...>
-struct always_false {
-  static constexpr bool value = false;
-};
-
 template <typename T>
 void ShouldReturnStatus(T) {
-  static_assert(always_false<T>::value,
+  static_assert(base::AlwaysFalse<T>,
                 "T must be either Status or base::expected<Status>");
 }
 }  // namespace reporting::internal
