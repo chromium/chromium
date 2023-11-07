@@ -4711,6 +4711,14 @@
         ],
       },
     },
+    'replacements': {
+      'Mac Pro FYI Release (AMD)': {
+        'args': {
+          # Causes problems on older hardware. crbug.com/1499911.
+          '--enable-metal-debug-layers': None,
+        },
+      },
+    },
   },
   'webgl2_conformance_validating_tests': {
     'remove_from': [
@@ -4780,6 +4788,14 @@
         'args': [
           '--extra-browser-args=--disable-metal-shader-cache',
         ],
+      },
+    },
+    'replacements': {
+      'Mac Pro FYI Release (AMD)': {
+        'args': {
+          # Causes problems on older hardware. crbug.com/1499911.
+          '--enable-metal-debug-layers': None,
+        },
       },
     },
   },
