@@ -610,7 +610,136 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
   graphics_tablet.device_key = kGraphicsTabletId;
   graphics_tablet.settings = mojom::GraphicsTabletSettings::New();
 
-  // Pen button_remappings
+  graphics_tablet.settings->tablet_button_remappings.push_back(
+      mojom::ButtonRemapping::New("tablet-vkey",
+                                  mojom::Button::NewVkey(ui::VKEY_B),
+                                  mojom::RemappingAction::NewAcceleratorAction(
+                                      AcceleratorAction::kMediaStop)));
+  graphics_tablet.settings->tablet_button_remappings.push_back(
+      mojom::ButtonRemapping::New(
+          "tablet-right-button",
+          mojom::Button::NewCustomizableButton(
+              mojom::CustomizableButton::kRight),
+          mojom::RemappingAction::NewStaticShortcutAction(
+              mojom::StaticShortcutAction::kPaste)));
+  mojom::RemappingActionPtr key_event_for_tablet =
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::KeyboardCode::VKEY_Z, (int)ui::DomCode::US_Z,
+          (int)ui::DomKey::FromCharacter('Z'),
+          (int)ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, /*key_display=*/""));
+  graphics_tablet.settings->tablet_button_remappings.push_back(
+      mojom::ButtonRemapping::New("tablet-vkey-keyevent",
+                                  mojom::Button::NewVkey(ui::VKEY_E),
+                                  key_event_for_tablet->Clone()));
+
+  base::HistogramTester histogram_tester;
+  SimulateUserLogin(kUser1);
+  manager_.get()->RecordGraphicsTabletInitialMetrics(graphics_tablet);
+
+  // AcceleratorAction button remappings:
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "AcceleratorAction.Initial",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "AcceleratorAction.Initial",
+      /*sample=*/AcceleratorAction::kMediaStop,
+      /*expected_count=*/1u);
+
+  // KeyEvent button remappings:
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "KeyEvent.Initial",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "KeyEvent.Initial",
+      /*sample=*/
+      GetEncodedShortcut(key_event_for_tablet->get_key_event()->modifiers,
+                         key_event_for_tablet->get_key_event()->vkey),
+      /*expected_count=*/1u);
+
+  // StaticShortcutAction button remappings:
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "StaticShortcutAction.Initial",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "StaticShortcutAction.Initial",
+      /*sample=*/mojom::StaticShortcutAction::kPaste,
+      /*expected_count=*/1u);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "StaticShortcutAction.Initial",
+      /*sample=*/mojom::StaticShortcutAction::kCopy,
+      /*expected_count=*/0u);
+
+  // Call RecordGraphicsTabletInitialMetrics with the same user and same
+  // graphics tablet, ExpectTotalCount for the metric won't increase.
+  manager_.get()->RecordGraphicsTabletInitialMetrics(graphics_tablet);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "AcceleratorAction.Initial",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "KeyEvent.Initial",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "StaticShortcutAction.Initial",
+      /*expected_count=*/1u);
+
+  // Call RecordGraphicsTabletInitialMetrics with the different user but same
+  // graphics tablet, ExpectTotalCount for the metric will increase.
+  SimulateUserLogin(kUser2);
+  manager_.get()->RecordGraphicsTabletInitialMetrics(graphics_tablet);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "AcceleratorAction.Initial",
+      /*expected_count=*/2u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "KeyEvent.Initial",
+      /*expected_count=*/2u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
+      "StaticShortcutAction.Initial",
+      /*expected_count=*/2u);
+
+  // Call record changed settings metrics.
+  const auto old_setting = graphics_tablet.settings->Clone();
+  graphics_tablet.settings->tablet_button_remappings.at(0)->name =
+      "renamed vkey";
+  graphics_tablet.settings->tablet_button_remappings.at(1)->name =
+      "renamed customizable button";
+  manager_.get()->RecordGraphicsTabletChangedMetrics(graphics_tablet,
+                                                     *old_setting);
+  // Test tablet button remappings.
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping.Name.Changed."
+      "Vkey",
+      /*sample=*/ui::KeyboardCode::VKEY_B,
+      /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping.Name.Changed."
+      "CustomizableButton",
+      /*sample=*/mojom::CustomizableButton::kRight,
+      /*expected_count=*/1u);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping.Name.Changed."
+      "CustomizableButton",
+      /*sample=*/mojom::CustomizableButton::kMiddle,
+      /*expected_count=*/0u);
+}
+
+TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletPenSettings) {
+  mojom::GraphicsTablet graphics_tablet;
+  graphics_tablet.device_key = kGraphicsTabletId;
+  graphics_tablet.settings = mojom::GraphicsTabletSettings::New();
+
   graphics_tablet.settings->pen_button_remappings.push_back(
       mojom::ButtonRemapping::New("pen-vkey",
                                   mojom::Button::NewVkey(ui::VKEY_C),
@@ -633,34 +762,11 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
                                   mojom::Button::NewVkey(ui::VKEY_B),
                                   key_event_for_pen->Clone()));
 
-  // Tablet button_remappings
-  graphics_tablet.settings->tablet_button_remappings.push_back(
-      mojom::ButtonRemapping::New("tablet-vkey",
-                                  mojom::Button::NewVkey(ui::VKEY_B),
-                                  mojom::RemappingAction::NewAcceleratorAction(
-                                      AcceleratorAction::kMediaStop)));
-  graphics_tablet.settings->tablet_button_remappings.push_back(
-      mojom::ButtonRemapping::New(
-          "tablet-right-button",
-          mojom::Button::NewCustomizableButton(
-              mojom::CustomizableButton::kRight),
-          mojom::RemappingAction::NewStaticShortcutAction(
-              mojom::StaticShortcutAction::kPaste)));
-  mojom::RemappingActionPtr key_event_for_tablet =
-      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
-          ui::KeyboardCode::VKEY_Z, (int)ui::DomCode::US_Z,
-          (int)ui::DomKey::FromCharacter('Z'),
-          (int)ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, /*key_display=*/""));
-  graphics_tablet.settings->tablet_button_remappings.push_back(
-      mojom::ButtonRemapping::New("pen-vkey-keyevent",
-                                  mojom::Button::NewVkey(ui::VKEY_E),
-                                  key_event_for_tablet->Clone()));
-
   base::HistogramTester histogram_tester;
   SimulateUserLogin(kUser1);
   manager_.get()->RecordGraphicsTabletInitialMetrics(graphics_tablet);
 
-  // AcceleratorAction button remappings (pen):
+  // AcceleratorAction button remappings:
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping."
       "AcceleratorAction.Initial",
@@ -670,18 +776,8 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
       "AcceleratorAction.Initial",
       /*sample=*/AcceleratorAction::kBrightnessDown,
       /*expected_count=*/1u);
-  // AcceleratorAction button remappings (tablet):
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
-      "AcceleratorAction.Initial",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
-      "AcceleratorAction.Initial",
-      /*sample=*/AcceleratorAction::kMediaStop,
-      /*expected_count=*/1u);
 
-  // KeyEvent button remappings (pen):
+  // KeyEvent button remappings:
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping."
       "KeyEvent.Initial",
@@ -693,20 +789,8 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
       GetEncodedShortcut(key_event_for_pen->get_key_event()->modifiers,
                          key_event_for_pen->get_key_event()->vkey),
       /*expected_count=*/1u);
-  // KeyEvent button remappings (tablet):
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
-      "KeyEvent.Initial",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
-      "KeyEvent.Initial",
-      /*sample=*/
-      GetEncodedShortcut(key_event_for_tablet->get_key_event()->modifiers,
-                         key_event_for_tablet->get_key_event()->vkey),
-      /*expected_count=*/1u);
 
-  // StaticShortcutAction button remappings (pen):
+  // StaticShortcutAction button remappings:
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping."
       "StaticShortcutAction.Initial",
@@ -720,22 +804,6 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping."
       "StaticShortcutAction.Initial",
       /*sample=*/mojom::StaticShortcutAction::kPaste,
-      /*expected_count=*/0u);
-
-  // StaticShortcutAction button remappings (tablet):
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
-      "StaticShortcutAction.Initial",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
-      "StaticShortcutAction.Initial",
-      /*sample=*/mojom::StaticShortcutAction::kPaste,
-      /*expected_count=*/1u);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
-      "StaticShortcutAction.Initial",
-      /*sample=*/mojom::StaticShortcutAction::kCopy,
       /*expected_count=*/0u);
 
   // Call RecordGraphicsTabletInitialMetrics with the same user and same
@@ -746,23 +814,11 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
       "AcceleratorAction.Initial",
       /*expected_count=*/1u);
   histogram_tester.ExpectTotalCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
-      "AcceleratorAction.Initial",
-      /*expected_count=*/1u);
-  histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping."
       "KeyEvent.Initial",
       /*expected_count=*/1u);
   histogram_tester.ExpectTotalCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
-      "KeyEvent.Initial",
-      /*expected_count=*/1u);
-  histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping."
-      "StaticShortcutAction.Initial",
-      /*expected_count=*/1u);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
       "StaticShortcutAction.Initial",
       /*expected_count=*/1u);
 
@@ -775,23 +831,11 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
       "AcceleratorAction.Initial",
       /*expected_count=*/2u);
   histogram_tester.ExpectTotalCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
-      "AcceleratorAction.Initial",
-      /*expected_count=*/2u);
-  histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping."
       "KeyEvent.Initial",
       /*expected_count=*/2u);
   histogram_tester.ExpectTotalCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
-      "KeyEvent.Initial",
-      /*expected_count=*/2u);
-  histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping."
-      "StaticShortcutAction.Initial",
-      /*expected_count=*/2u);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping."
       "StaticShortcutAction.Initial",
       /*expected_count=*/2u);
 
@@ -800,13 +844,8 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
   graphics_tablet.settings->pen_button_remappings.at(0)->name = "renamed vkey";
   graphics_tablet.settings->pen_button_remappings.at(1)->name =
       "renamed customizable button";
-  graphics_tablet.settings->tablet_button_remappings.at(0)->name =
-      "renamed vkey";
-  graphics_tablet.settings->tablet_button_remappings.at(1)->name =
-      "renamed customizable button";
   manager_.get()->RecordGraphicsTabletChangedMetrics(graphics_tablet,
                                                      *old_setting);
-  // Test pen button remappings.
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping.Name."
       "Changed.Vkey",
@@ -821,23 +860,6 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
       "ChromeOS.Settings.Device.GraphicsTabletPen.ButtonRemapping.Name."
       "Changed.CustomizableButton",
       /*sample=*/mojom::CustomizableButton::kRight,
-      /*expected_count=*/0u);
-
-  // Test tablet button remappings.
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping.Name.Changed."
-      "Vkey",
-      /*sample=*/ui::KeyboardCode::VKEY_B,
-      /*expected_bucket_count=*/1u);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping.Name.Changed."
-      "CustomizableButton",
-      /*sample=*/mojom::CustomizableButton::kRight,
-      /*expected_count=*/1u);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Settings.Device.GraphicsTablet.ButtonRemapping.Name.Changed."
-      "CustomizableButton",
-      /*sample=*/mojom::CustomizableButton::kMiddle,
       /*expected_count=*/0u);
 }
 
