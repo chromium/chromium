@@ -166,7 +166,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebApk.Install.RequestTokenDurationV2" units="ms"
     expires_after="2024-05-05">
   <owner>hartmanng@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
     Records the amount of time which has elapsed from the &quot;install infobar
