@@ -28,6 +28,15 @@ bool SupportsMultiplanarRendering(SharedContextState* context_state) {
   return dawn_context_provider->SupportsFeature(
       wgpu::FeatureName::MultiPlanarRenderTargets);
 }
+
+bool SupportsMultiplanarCopy(SharedContextState* context_state) {
+  auto* dawn_context_provider = context_state->dawn_context_provider();
+  if (!dawn_context_provider) {
+    return false;
+  }
+  return dawn_context_provider->SupportsFeature(
+      wgpu::FeatureName::MultiPlanarFormatExtendedUsages);
+}
 }  // namespace
 
 // static method.
@@ -44,8 +53,11 @@ SkiaGraphiteDawnImageRepresentation::Create(
       backing->usage() & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
   const bool supports_multiplanar_rendering =
       SupportsMultiplanarRendering(context_state.get());
+  const bool supports_multiplanar_copy =
+      SupportsMultiplanarCopy(context_state.get());
   wgpu::TextureUsage supported_tex_usages = GetSupportedDawnTextureUsage(
-      is_yuv_plane, is_dcomp_surface, supports_multiplanar_rendering);
+      is_yuv_plane, is_dcomp_surface, supports_multiplanar_rendering,
+      supports_multiplanar_copy);
   return base::WrapUnique(new SkiaGraphiteDawnImageRepresentation(
       std::move(dawn_representation), recorder, std::move(context_state),
       manager, backing, tracker, is_yuv_plane, supported_tex_usages));
@@ -84,6 +96,8 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
   std::vector<skgpu::graphite::BackendTexture> backend_textures;
   const bool supports_multiplanar_rendering =
       SupportsMultiplanarRendering(context_state_.get());
+  const bool supports_multiplanar_copy =
+      SupportsMultiplanarCopy(context_state_.get());
   if (format() == viz::MultiPlaneFormat::kNV12 ||
       format() == viz::MultiPlaneFormat::kP010) {
     backend_textures.reserve(format().NumberOfPlanes());
@@ -93,7 +107,8 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
           gfx::SizeToSkISize(format().GetPlaneSize(plane_index, size()));
       skgpu::graphite::DawnTextureInfo plane_info = GetGraphiteDawnTextureInfo(
           format(), plane_index, /*is_yuv_plane=*/true, /*mipmapped=*/false,
-          /*scanout_dcomp_surface=*/false, supports_multiplanar_rendering);
+          /*scanout_dcomp_surface=*/false, supports_multiplanar_rendering,
+          supports_multiplanar_copy);
       backend_textures.emplace_back(plane_size, plane_info, texture.Get());
     }
   } else if (is_yuv_plane_) {
@@ -101,7 +116,8 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
     SkISize plane_size = gfx::SizeToSkISize(size());
     skgpu::graphite::DawnTextureInfo plane_info = GetGraphiteDawnTextureInfo(
         format(), /*plane_index=*/0, /*is_yuv_plane=*/true, /*mipmapped=*/false,
-        /*scanout_dcomp_surface=*/false, supports_multiplanar_rendering);
+        /*scanout_dcomp_surface=*/false, supports_multiplanar_rendering,
+        supports_multiplanar_copy);
     backend_textures = {
         skgpu::graphite::BackendTexture(plane_size, plane_info, texture.Get())};
   } else {
