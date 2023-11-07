@@ -106,7 +106,7 @@ TEST_F(CreditCardAutofillTouchBarControllerUnitTest, TouchBarCardLimit) {
 // Tests for for the credit card button.
 TEST_F(CreditCardAutofillTouchBarControllerUnitTest, CreditCardButtonCheck) {
   [touch_bar_controller_ setIsCreditCardPopup:true];
-  SetSuggestions({Suggestion("bufflehead", "canvasback", "goldeneye",
+  SetSuggestions({Suggestion("bufflehead", "canvasback", "",
                              PopupItemId::kCreditCardEntry)});
   NSButton* button = [touch_bar_controller_ createCreditCardButtonAtRow:0];
   EXPECT_TRUE(button);

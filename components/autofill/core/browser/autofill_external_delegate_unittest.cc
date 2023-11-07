@@ -61,6 +61,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::AnyOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Matcher;
@@ -1746,13 +1747,19 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {
   const auto kExpectedSuggestions =
   // On Desktop, the GPay icon should be stored in the store indicator icon.
 #if BUILDFLAG(IS_ANDROID)
-      SuggestionVectorIconsAre(std::string(), StartsWith("googlePay"));
+      SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
+                               AnyOf(Suggestion::Icon::kGooglePay,
+                                     Suggestion::Icon::kGooglePayDark));
 #elif BUILDFLAG(IS_IOS)
-      SuggestionVectorIconsAre(std::string(), std::string(),
-                               StartsWith("googlePay"));
+      SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
+                               Suggestion::Icon::kNoIcon,
+                               AnyOf(Suggestion::Icon::kGooglePay,
+                                     Suggestion::Icon::kGooglePayDark));
 #else
-      SuggestionVectorStoreIndicatorIconsAre(std::string(), std::string(),
-                                             StartsWith("googlePay"));
+      SuggestionVectorStoreIndicatorIconsAre(
+          Suggestion::Icon::kNoIcon, Suggestion::Icon::kNoIcon,
+          AnyOf(Suggestion::Icon::kGooglePay,
+                Suggestion::Icon::kGooglePayDark));
 #endif
   EXPECT_CALL(autofill_client_,
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
@@ -1767,11 +1774,12 @@ TEST_F(AutofillExternalDelegateUnitTest,
        ShouldNotShowGooglePayIconIfSuggestionsContainLocalCards) {
   IssueOnQuery();
 
-  const auto kExpectedSuggestions = SuggestionVectorIconsAre(std::string(),
+  const auto kExpectedSuggestions =
+      SuggestionVectorIconsAre(Suggestion::Icon::kNoIcon,
 #if !BUILDFLAG(IS_ANDROID)
-                                                             std::string(),
+                               Suggestion::Icon::kNoIcon,
 #endif
-                                                             "settingsIcon");
+                               Suggestion::Icon::kSettings);
   EXPECT_CALL(autofill_client_,
               ShowAutofillPopup(PopupOpenArgsAre(kExpectedSuggestions), _));
   std::vector<Suggestion> autofill_item;

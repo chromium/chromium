@@ -113,7 +113,7 @@ Suggestion GetEditAddressProfileSuggestion(Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
   suggestion.popup_item_id = PopupItemId::kEditAddressProfile;
-  suggestion.icon = "editIcon";
+  suggestion.icon = Suggestion::Icon::kEdit;
   suggestion.payload = backend_id;
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
@@ -125,7 +125,7 @@ Suggestion GetDeleteAddressProfileSuggestion(Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
   suggestion.popup_item_id = PopupItemId::kDeleteAddressProfile;
-  suggestion.icon = "deleteIcon";
+  suggestion.icon = Suggestion::Icon::kDelete;
   suggestion.payload = backend_id;
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
@@ -164,7 +164,7 @@ Suggestion GetFillEverythingFromAddressProfileSuggestion(
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
   suggestion.popup_item_id = PopupItemId::kFillEverythingFromAddressProfile;
-  suggestion.icon = "magicIcon";
+  suggestion.icon = Suggestion::Icon::kMagic;
   suggestion.payload = backend_id;
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
@@ -663,7 +663,7 @@ absl::optional<Suggestion> GetSuggestionForTestAddresses(
   Suggestion suggestion(u"Devtools", PopupItemId::kDevtoolsTestAddresses);
   suggestion.labels = {{Suggestion::Text(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_TEST_DATA))}};
-  suggestion.icon = "codeIcon";
+  suggestion.icon = Suggestion::Icon::kCode;
   for (const AutofillProfile& test_address : test_addresses) {
     const std::u16string test_address_country =
         test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale);
@@ -795,9 +795,10 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
       const bool fill_full_form = true;
       if (base::FeatureList::IsEnabled(
               features::kAutofillGranularFillingAvailable)) {
-        suggestions.back().icon = fill_full_form ? "locationIcon" : "";
+        suggestions.back().icon = fill_full_form ? Suggestion::Icon::kLocation
+                                                 : Suggestion::Icon::kNoIcon;
       } else {
-        suggestions.back().icon = "accountIcon";
+        suggestions.back().icon = Suggestion::Icon::kAccount;
       }
     }
 
@@ -1150,7 +1151,7 @@ Suggestion AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
   suggestion.popup_item_id = PopupItemId::kAutofillOptions;
-  suggestion.icon = "settingsIcon";
+  suggestion.icon = Suggestion::Icon::kSettings;
   return suggestion;
 }
 
@@ -1276,7 +1277,7 @@ AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
     // will navigate to the url in |footer_offer_details_url| if the footer is
     // selected in AutofillExternalDelegate::DidAcceptSuggestion().
     suggestion.payload = std::move(footer_offer_details_url);
-    suggestion.trailing_icon = "google";
+    suggestion.trailing_icon = Suggestion::Icon::kGoogle;
   }
   return suggestions;
 }
@@ -1388,7 +1389,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 #if BUILDFLAG(IS_ANDROID)
       suggestion.feature_for_iph =
           feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature.name;
-      suggestion.icon = "offerTag";
+      suggestion.icon = Suggestion::Icon::kOfferTag;
 #endif
     } else {
       // On Desktop/Android dropdown, populate an offer label.

@@ -352,15 +352,14 @@ class PasswordAutofillManagerTest : public testing::Test {
     return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS);
   }
 
-  std::string GetManagePasswordsIcon() {
+  Suggestion::Icon GetManagePasswordsIcon() {
     // The "Manage passwords" entry only has an icon if
     // kEnablePasswordsAccountStorage is enabled.
-    std::string settings_icon;
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnablePasswordsAccountStorage)) {
-      return "settingsIcon";
+      return Suggestion::Icon::kSettings;
     }
-    return std::string();
+    return Suggestion::Icon::kNoIcon;
   }
 
   void ExpectAndAllowAuthentication(
@@ -1379,13 +1378,14 @@ TEST_F(PasswordAutofillManagerTest,
   histograms.ExpectUniqueSample(
       kDropdownShownHistogram,
       metrics_util::PasswordDropdownState::kStandardGenerate, 1);
-  EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorIconsAre("globeIcon", "keyIcon",
+  EXPECT_THAT(
+      open_args.suggestions,
+      SuggestionVectorIconsAre(Suggestion::Icon::kGlobe, Suggestion::Icon::kKey,
 #if !BUILDFLAG(IS_ANDROID)
-                                       "",
+                               Suggestion::Icon::kNoIcon,
 #endif
 
-                                       GetManagePasswordsIcon()));
+                               GetManagePasswordsIcon()));
   EXPECT_THAT(
       open_args.suggestions,
       SuggestionVectorMainTextsAre(
@@ -1438,9 +1438,9 @@ TEST_F(PasswordAutofillManagerTest,
           element_bounds, base::i18n::RIGHT_TO_LEFT,
           /*show_password_suggestions=*/false));
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorIconsAre("keyIcon",
+              SuggestionVectorIconsAre(Suggestion::Icon::kKey,
 #if !BUILDFLAG(IS_ANDROID)
-                                       "",
+                                       Suggestion::Icon::kNoIcon,
 #endif
                                        GetManagePasswordsIcon()));
 
@@ -1517,7 +1517,8 @@ TEST_F(PasswordAutofillManagerTest, DisplayAccountSuggestionsIndicatorIcon) {
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   ASSERT_THAT(open_args.suggestions.size(),
               testing::Ge(1u));  // No footer on Android.
-  EXPECT_THAT(open_args.suggestions[0].trailing_icon, "google");
+  EXPECT_THAT(open_args.suggestions[0].trailing_icon,
+              Suggestion::Icon::kGoogle);
   EXPECT_EQ(open_args.trigger_source,
             autofill::AutofillSuggestionTriggerSource::kPasswordManager);
 }

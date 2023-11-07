@@ -100,7 +100,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutCreditCard(
       ConvertUTF8ToJavaString(env,
                               payment_request_data.basic_card_issuer_network),
       ConvertUTF8ToJavaString(
-          env, credit_card.CardIconStringForAutofillSuggestion()),
+          env, credit_card.StringCardIconStringForAutofillSuggestion()),
       ConvertUTF8ToJavaString(env, credit_card.billing_address_id()),
       ConvertUTF8ToJavaString(env, credit_card.server_id()),
       credit_card.instrument_id(),

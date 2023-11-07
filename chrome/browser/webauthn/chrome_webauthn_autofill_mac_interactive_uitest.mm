@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
             l10n_util::GetStringUTF16(
                 IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE));
-  EXPECT_EQ(webauthn_entry.icon, "globeIcon");
+  EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
   popup_controller->AcceptSuggestion(

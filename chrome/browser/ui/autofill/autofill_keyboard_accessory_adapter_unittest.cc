@@ -101,20 +101,23 @@ std::string SuggestionLabelsToString(
 // Matcher returning true if suggestions have equal members.
 MATCHER_P(equalsSuggestion, other, "") {
   if (arg.popup_item_id != other.popup_item_id) {
-    *result_listener << "has popup_item_id "
-                     << base::to_underlying(arg.popup_item_id);
+    *result_listener << "has a different popup_item_id:\n"
+                     << ::testing::PrintToString(arg) << "\n";
     return false;
   }
   if (arg.main_text != other.main_text) {
-    *result_listener << "has main_text " << arg.main_text.value;
+    *result_listener << "has a different main_text:\n"
+                     << ::testing::PrintToString(arg) << "\n";
     return false;
   }
   if (arg.labels != other.labels) {
-    *result_listener << "has labels " << SuggestionLabelsToString(arg.labels);
+    *result_listener << "has different labels:\n"
+                     << SuggestionLabelsToString(arg.labels) << "\n";
     return false;
   }
   if (arg.icon != other.icon) {
-    *result_listener << "has icon " << arg.icon;
+    *result_listener << "has a different icon:\n"
+                     << ::testing::PrintToString(arg) << "\n";
     return false;
   }
   return true;

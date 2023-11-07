@@ -97,8 +97,9 @@ std::u16string GetUsernameFromSuggestion(const std::u16string& suggestion) {
 
 // Returns a string representing the icon of either the account store or the
 // local password store.
-std::string CreateStoreIcon(bool for_account_store) {
-  return for_account_store ? "google" : std::string();
+autofill::Suggestion::Icon CreateStoreIcon(bool for_account_store) {
+  return for_account_store ? autofill::Suggestion::Icon::kGoogle
+                           : autofill::Suggestion::Icon::kNoIcon;
 }
 
 // If |field_suggestion| matches |field_content|, creates a Suggestion out of it
@@ -148,7 +149,7 @@ void AppendSuggestionIfMatching(
     }
     suggestion.custom_icon = custom_icon;
     // The UI code will pick up an icon from the resources based on the string.
-    suggestion.icon = "globeIcon";
+    suggestion.icon = autofill::Suggestion::Icon::kGlobe;
     suggestion.trailing_icon = CreateStoreIcon(from_account_store);
     suggestions->push_back(suggestion);
   }
@@ -224,10 +225,10 @@ void MaybeAppendManagePasswordsEntry(
   if (base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordsAccountStorage)) {
     // The UI code will pick up an icon from the resources based on the string.
-    suggestion.icon = "settingsIcon";
+    suggestion.icon = autofill::Suggestion::Icon::kSettings;
   }
   // The UI code will pick up an icon from the resources based on the string.
-  suggestion.trailing_icon = "googlePasswordManager";
+  suggestion.trailing_icon = autofill::Suggestion::Icon::kGooglePasswordManager;
   suggestions->push_back(std::move(suggestion));
 }
 
@@ -236,7 +237,7 @@ autofill::Suggestion CreateWebAuthnEntry(bool listed_passkeys) {
   autofill::Suggestion suggestion(l10n_util::GetStringUTF16(
       listed_passkeys ? IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY
                       : IDS_PASSWORD_MANAGER_USE_PASSKEY));
-  suggestion.icon = "device";
+  suggestion.icon = autofill::Suggestion::Icon::kDevice;
   suggestion.popup_item_id =
       autofill::PopupItemId::kWebauthnSignInWithAnotherDevice;
   return suggestion;
@@ -247,7 +248,7 @@ autofill::Suggestion CreateGenerationEntry() {
   autofill::Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD));
   // The UI code will pick up an icon from the resources based on the string.
-  suggestion.icon = "keyIcon";
+  suggestion.icon = autofill::Suggestion::Icon::kKey;
   suggestion.popup_item_id = autofill::PopupItemId::kGeneratePasswordEntry;
   return suggestion;
 }
@@ -265,7 +266,7 @@ autofill::Suggestion CreateEntryToOptInToAccountStorageThenFill() {
           : IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE));
   suggestion.popup_item_id =
       autofill::PopupItemId::kPasswordAccountStorageOptIn;
-  suggestion.icon = "google";
+  suggestion.icon = autofill::Suggestion::Icon::kGoogle;
   return suggestion;
 }
 
@@ -275,7 +276,7 @@ autofill::Suggestion CreateEntryToOptInToAccountStorageThenGenerate() {
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD));
   suggestion.popup_item_id =
       autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate;
-  suggestion.icon = "keyIcon";
+  suggestion.icon = autofill::Suggestion::Icon::kKey;
   return suggestion;
 }
 
@@ -285,7 +286,7 @@ autofill::Suggestion CreateEntryToReSignin() {
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_RE_SIGNIN_ACCOUNT_STORE));
   suggestion.popup_item_id =
       autofill::PopupItemId::kPasswordAccountStorageReSignin;
-  suggestion.icon = "google";
+  suggestion.icon = autofill::Suggestion::Icon::kGoogle;
   return suggestion;
 }
 
@@ -295,7 +296,7 @@ autofill::Suggestion CreateAccountStorageEmptyEntry() {
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_NO_ACCOUNT_STORE_MATCHES));
   suggestion.popup_item_id =
       autofill::PopupItemId::kPasswordAccountStorageEmpty;
-  suggestion.icon = "empty";
+  suggestion.icon = autofill::Suggestion::Icon::kEmpty;
   return suggestion;
 }
 
@@ -732,7 +733,7 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
         *delegate->GetPasskeys(), std::back_inserter(suggestions),
         [this](const auto& passkey) {
           autofill::Suggestion suggestion(ToUsernameString(passkey.username()));
-          suggestion.icon = "globeIcon";
+          suggestion.icon = autofill::Suggestion::Icon::kGlobe;
           suggestion.popup_item_id = autofill::PopupItemId::kWebauthnCredential;
           suggestion.custom_icon = page_favicon_;
           suggestion.payload = autofill::Suggestion::BackendId(

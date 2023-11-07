@@ -72,40 +72,40 @@ constexpr char kHistogramGetImageViewByName[] =
 
 // Returns the name of the network for payment method icons, empty string
 // otherwise.
-std::u16string GetIconAccessibleName(const std::string& icon_text) {
+std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
   // Networks for which icons are currently shown.
-  if (icon_text == autofill::kAmericanExpressCard) {
+  if (icon == Suggestion::Icon::kCardAmericanExpress) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_AMEX);
   }
-  if (icon_text == autofill::kDinersCard) {
+  if (icon == Suggestion::Icon::kCardDiners) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_DINERS);
   }
-  if (icon_text == autofill::kDiscoverCard) {
+  if (icon == Suggestion::Icon::kCardDiscover) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_DISCOVER);
   }
-  if (icon_text == autofill::kEloCard) {
+  if (icon == Suggestion::Icon::kCardElo) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_ELO);
   }
-  if (icon_text == autofill::kJCBCard) {
+  if (icon == Suggestion::Icon::kCardJCB) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_JCB);
   }
-  if (icon_text == autofill::kMasterCard) {
+  if (icon == Suggestion::Icon::kCardMasterCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MASTERCARD);
   }
-  if (icon_text == autofill::kMirCard) {
+  if (icon == Suggestion::Icon::kCardMir) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MIR);
   }
-  if (icon_text == autofill::kTroyCard) {
+  if (icon == Suggestion::Icon::kCardTroy) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_TROY);
   }
-  if (icon_text == autofill::kUnionPay) {
+  if (icon == Suggestion::Icon::kCardUnionPay) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_UNION_PAY);
   }
-  if (icon_text == autofill::kVisaCard) {
+  if (icon == Suggestion::Icon::kCardVisa) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA);
   }
   // Other networks.
-  if (icon_text == autofill::kGenericCard) {
+  if (icon == Suggestion::Icon::kCardGeneric) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
   }
   return std::u16string();
@@ -122,76 +122,76 @@ std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
 }
 
 std::unique_ptr<views::ImageView> GetIconImageViewByName(
-    const std::string& icon_str) {
-  if (icon_str.empty()) {
+    Suggestion::Icon icon) {
+  if (icon == Suggestion::Icon::kNoIcon) {
     return nullptr;
   }
 
   // For http warning message, get icon images from VectorIcon, which is the
   // same as security indicator icons in location bar.
-  if (icon_str == "httpWarning") {
+  if (icon == Suggestion::Icon::kHttpWarning) {
     return ImageViewFromVectorIcon(omnibox::kHttpIcon, kIconSize);
   }
 
-  if (icon_str == "httpsInvalid") {
+  if (icon == Suggestion::Icon::kHttpsInvalid) {
     return std::make_unique<views::ImageView>(
         ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
                                        ui::kColorAlertHighSeverity, kIconSize));
   }
 
-  if (icon_str == "keyIcon") {
+  if (icon == Suggestion::Icon::kKey) {
     return ImageViewFromVectorIcon(kKeyIcon, kIconSize);
   }
 
-  if (icon_str == "editIcon") {
+  if (icon == Suggestion::Icon::kEdit) {
     return ImageViewFromVectorIcon(vector_icons::kEditIcon, kIconSize);
   }
 
-  if (icon_str == "codeIcon") {
+  if (icon == Suggestion::Icon::kCode) {
     return ImageViewFromVectorIcon(vector_icons::kCodeIcon, kIconSize);
   }
 
-  if (icon_str == "locationIcon") {
+  if (icon == Suggestion::Icon::kLocation) {
     return ImageViewFromVectorIcon(vector_icons::kLocationOnIcon, kIconSize);
   }
 
-  if (icon_str == "deleteIcon") {
+  if (icon == Suggestion::Icon::kDelete) {
     return ImageViewFromVectorIcon(kTrashCanLightIcon, kIconSize);
   }
 
-  if (icon_str == "clearIcon") {
+  if (icon == Suggestion::Icon::kClear) {
     return ImageViewFromVectorIcon(kBackspaceIcon, kIconSize);
   }
 
-  if (icon_str == "undoIcon") {
+  if (icon == Suggestion::Icon::kUndo) {
     return ImageViewFromVectorIcon(vector_icons::kUndoIcon, kIconSize);
   }
 
-  if (icon_str == "globeIcon") {
+  if (icon == Suggestion::Icon::kGlobe) {
     return ImageViewFromVectorIcon(kGlobeIcon, kIconSize);
   }
 
-  if (icon_str == "magicIcon") {
+  if (icon == Suggestion::Icon::kMagic) {
     return ImageViewFromVectorIcon(vector_icons::kMagicButtonIcon, kIconSize);
   }
 
-  if (icon_str == "accountIcon") {
+  if (icon == Suggestion::Icon::kAccount) {
     return ImageViewFromVectorIcon(kAccountCircleIcon, kIconSize);
   }
 
-  if (icon_str == "settingsIcon") {
+  if (icon == Suggestion::Icon::kSettings) {
     return ImageViewFromVectorIcon(omnibox::kProductIcon, kIconSize);
   }
 
-  if (icon_str == "empty") {
+  if (icon == Suggestion::Icon::kEmpty) {
     return ImageViewFromVectorIcon(omnibox::kHttpIcon, kIconSize);
   }
 
-  if (icon_str == "device") {
+  if (icon == Suggestion::Icon::kDevice) {
     return ImageViewFromVectorIcon(kDevicesIcon, kIconSize);
   }
 
-  if (icon_str == "google") {
+  if (icon == Suggestion::Icon::kGoogle) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     return ImageViewFromImageSkia(gfx::CreateVectorIcon(
         vector_icons::kGoogleGLogoIcon, kIconSize, gfx::kPlaceholderColor));
@@ -200,7 +200,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
 #endif
   }
 
-  if (icon_str == "penSparkIcon") {
+  if (icon == Suggestion::Icon::kPenSpark) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     return ImageViewFromVectorIcon(vector_icons::kPenSparkIcon, kIconSize);
 #else
@@ -208,18 +208,19 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
 #endif
   }
 
-  if (icon_str == "googlePasswordManager") {
+  if (icon == Suggestion::Icon::kGooglePasswordManager) {
     return ImageViewFromVectorIcon(GooglePasswordManagerVectorIcon(),
                                    kGooglePasswordManagerIconSize);
   }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (icon_str == "googlePay" || icon_str == "googlePayDark") {
+  if (icon == Suggestion::Icon::kGooglePay ||
+      icon == Suggestion::Icon::kGooglePayDark) {
     return nullptr;
   }
 #endif
   // For other suggestion entries, get icon from PNG files.
-  int icon_id = GetIconResourceID(icon_str);
+  int icon_id = GetIconResourceID(icon);
   DCHECK_NE(icon_id, 0);
   return ImageViewFromImageSkia(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_id));

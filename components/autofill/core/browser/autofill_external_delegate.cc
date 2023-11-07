@@ -218,7 +218,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     Suggestion scan_credit_card(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD));
     scan_credit_card.popup_item_id = PopupItemId::kScanCreditCard;
-    scan_credit_card.icon = "scanCreditCardIcon";
+    scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
     suggestions.push_back(scan_credit_card);
   }
 
@@ -226,7 +226,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     suggestions.emplace_back(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS));
     suggestions.back().popup_item_id = PopupItemId::kShowAccountCards;
-    suggestions.back().icon = "google";
+    suggestions.back().icon = Suggestion::Icon::kGoogle;
   }
 
   if (has_autofill_suggestions_)
@@ -865,8 +865,9 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
     suggestions->emplace_back(value);
     suggestions->back().popup_item_id = PopupItemId::kClearForm;
     suggestions->back().icon =
-        base::FeatureList::IsEnabled(features::kAutofillUndo) ? "undoIcon"
-                                                              : "clearIcon";
+        base::FeatureList::IsEnabled(features::kAutofillUndo)
+            ? Suggestion::Icon::kUndo
+            : Suggestion::Icon::kClear;
     suggestions->back().acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
   }
@@ -875,18 +876,18 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   // popup layout experiment.
   suggestions->emplace_back(GetSettingsSuggestionValue());
   suggestions->back().popup_item_id = PopupItemId::kAutofillOptions;
-  suggestions->back().icon = "settingsIcon";
+  suggestions->back().icon = Suggestion::Icon::kSettings;
 
   // On Android and Desktop, Google Pay branding is shown along with Settings.
   // So Google Pay Icon is just attached to an existing menu item.
   if (is_all_server_suggestions) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    suggestions->back().icon = "googlePay";
+    suggestions->back().icon = Suggestion::Icon::kGooglePay;
 #else
     suggestions->back().trailing_icon =
         ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-            ? "googlePayDark"
-            : "googlePay";
+            ? Suggestion::Icon::kGooglePayDark
+            : Suggestion::Icon::kGooglePay;
 #endif
   }
 }

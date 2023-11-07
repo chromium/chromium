@@ -57,7 +57,7 @@ namespace {
 using testing::Field;
 using testing::Matcher;
 
-constexpr char kAddressEntryIcon[] = "accountIcon";
+constexpr Suggestion::Icon kAddressEntryIcon = Suggestion::Icon::kAccount;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 std::vector<std::vector<Suggestion::Text>> ConstructLabelLineMatrix(
@@ -2262,7 +2262,7 @@ TEST_F(AutofillSuggestionGeneratorTest, TestAddressSuggestion) {
   EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
   EXPECT_EQ(suggestions[0].labels[0][0],
             Suggestion::Text(u"Address test data"));
-  EXPECT_EQ(suggestions[0].icon, "codeIcon");
+  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kCode);
   EXPECT_EQ(suggestions[0].children.size(), 1u);
 
   const Suggestion& child = suggestions[0].children.back();

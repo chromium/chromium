@@ -8647,11 +8647,12 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   std::string label = std::string("Expires on 04/99");
 #endif
 
-  Suggestion virtual_card_suggestion = Suggestion(
-      "Virtual card",
-      std::string("nickname  ") +
-          test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength()),
-      label, kVisaCard, autofill::PopupItemId::kVirtualCreditCardEntry);
+  Suggestion virtual_card_suggestion =
+      Suggestion("Virtual card",
+                 std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                 "3456", ObfuscationLength()),
+                 label, Suggestion::Icon::kCardVisa,
+                 autofill::PopupItemId::kVirtualCreditCardEntry);
 
   CheckSuggestions(
       form.fields[1].global_id(), virtual_card_suggestion,
@@ -8671,7 +8672,8 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
 #endif
 
   virtual_card_suggestion =
-      Suggestion("Virtual card", std::string("Elvis Presley"), label, kVisaCard,
+      Suggestion("Virtual card", std::string("Elvis Presley"), label,
+                 Suggestion::Icon::kCardVisa,
                  autofill::PopupItemId::kVirtualCreditCardEntry);
 
   CheckSuggestions(form.fields[0].global_id(), virtual_card_suggestion,

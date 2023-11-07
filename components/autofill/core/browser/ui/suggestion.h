@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
@@ -55,9 +56,11 @@ struct Suggestion {
   };
 
   enum class Icon {
+    kNoIcon,
     kAccount,
     kClear,
     kCreate,
+    kCode,
     kDelete,
     kDevice,
     kEdit,
@@ -73,8 +76,10 @@ struct Suggestion {
     kLocation,
     kMagic,
     kOfferTag,
+    kPenSpark,
     kScanCreditCard,
     kSettings,
+    kSettingsAndroid,
     kUndo,
     // Credit card icons
     kCardGeneric,
@@ -83,12 +88,17 @@ struct Suggestion {
     kCardDiscover,
     kCardElo,
     kCardJCB,
-    kCardMaster,
+    kCardMasterCard,
     kCardMir,
     kCardTroy,
     kCardUnionPay,
     kCardVisa,
   };
+
+  // TODO(crbug.com/1019660): Remove this method, pass Suggestion::Icon from the
+  // beginning.
+  static Suggestion::Icon ConvertIconStringIntoIcon(
+      std::string_view icon_string);
 
   Suggestion();
   explicit Suggestion(std::u16string main_text);
@@ -98,12 +108,12 @@ struct Suggestion {
   // UTF-16.
   Suggestion(base::StringPiece main_text,
              base::StringPiece label,
-             std::string icon,
+             std::string_view icon_str,
              PopupItemId popup_item_id);
   Suggestion(base::StringPiece main_text,
              base::StringPiece minor_text,
              base::StringPiece label,
-             std::string icon,
+             Icon icon,
              PopupItemId popup_item_id);
   Suggestion(const Suggestion& other);
   Suggestion(Suggestion&& other);
@@ -179,10 +189,9 @@ struct Suggestion {
   bool is_icon_at_start = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // TODO(crbug.com/1019660): Identify icons with enum instead of strings.
   // This is the icon which is shown on the side of a suggestion.
-  // If |custom_icon| is empty, the name of the fallback built-in icon.
-  std::string icon;
+  // If |custom_icon| is empty, the fallback built-in icon.
+  Icon icon = Icon::kNoIcon;
 
   // An icon that appears after the suggestion in the suggestion view. For
   // passwords, this icon string shows whether the suggestion originates from
@@ -190,7 +199,7 @@ struct Suggestion {
   // credit card Autofill popup to indicate if all credit cards are server
   // cards. It also holds Google Password Manager icon on the settings entry for
   // the passwords Autofill popup.
-  std::string trailing_icon;
+  Icon trailing_icon = Icon::kNoIcon;
 
   // Whether suggestion was interacted with and is now in a loading state.
   IsLoading is_loading = IsLoading(false);
@@ -207,20 +216,8 @@ struct Suggestion {
   absl::optional<std::u16string> acceptance_a11y_announcement;
 };
 
-#if defined(UNIT_TEST)
-inline void PrintTo(const Suggestion& suggestion, std::ostream* os) {
-  *os << std::endl
-      << "Suggestion (popup_item_id:"
-      << base::to_underlying(suggestion.popup_item_id) << ", main_text:\""
-      << suggestion.main_text.value << "\""
-      << (suggestion.main_text.is_primary ? "(Primary)" : "(Not Primary)")
-      << ", minor_text:\"" << suggestion.minor_text.value << "\""
-      << (suggestion.minor_text.is_primary ? "(Primary)" : "(Not Primary)")
-      << ", additional_label: \"" << suggestion.additional_label << "\""
-      << ", icon:" << suggestion.icon
-      << ", trailing_icon:" << suggestion.trailing_icon << ")";
-}
-#endif
+std::string_view ConvertIconToPrintableString(Suggestion::Icon icon);
+void PrintTo(const Suggestion& suggestion, std::ostream* os);
 
 }  // namespace autofill
 

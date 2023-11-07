@@ -221,49 +221,61 @@ std::u16string CreditCard::NetworkForDisplay(const std::string& network) {
 }
 
 // static
-int CreditCard::IconResourceId(const std::string& network) {
+int CreditCard::IconResourceId(Suggestion::Icon icon) {
   bool should_show_metadata_icon = base::FeatureList::IsEnabled(
       features::kAutofillEnableNewCardArtAndNetworkImages);
 
-  if (network == kAmericanExpressCard)
+  if (icon == Suggestion::Icon::kCardAmericanExpress) {
     return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_AMEX
                                      : IDR_AUTOFILL_CC_AMEX;
-  if (network == kDinersCard)
+  }
+  if (icon == Suggestion::Icon::kCardDiners) {
     return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_DINERS
                                      : IDR_AUTOFILL_CC_DINERS;
-  if (network == kDiscoverCard) {
+  }
+  if (icon == Suggestion::Icon::kCardDiscover) {
     return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_DISCOVER
                                      : IDR_AUTOFILL_CC_DISCOVER;
   }
-  if (network == kEloCard)
+  if (icon == Suggestion::Icon::kCardElo) {
     return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_ELO
                                      : IDR_AUTOFILL_CC_ELO;
-  if (network == kJCBCard)
+  }
+  if (icon == Suggestion::Icon::kCardJCB) {
     return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_JCB
                                      : IDR_AUTOFILL_CC_JCB;
-  if (network == kMasterCard) {
+  }
+  if (icon == Suggestion::Icon::kCardMasterCard) {
     return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_MASTERCARD
                                      : IDR_AUTOFILL_CC_MASTERCARD;
   }
-  if (network == kMirCard)
+  if (icon == Suggestion::Icon::kCardMir) {
     return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_MIR
                                      : IDR_AUTOFILL_CC_MIR;
-  if (network == kTroyCard)
+  }
+  if (icon == Suggestion::Icon::kCardTroy) {
     return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_TROY
                                      : IDR_AUTOFILL_CC_TROY;
-  if (network == kUnionPay) {
+  }
+  if (icon == Suggestion::Icon::kCardUnionPay) {
     return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_UNIONPAY
                                      : IDR_AUTOFILL_CC_UNIONPAY;
   }
-  if (network == kVisaCard)
+  if (icon == Suggestion::Icon::kCardVisa) {
     return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_VISA
                                      : IDR_AUTOFILL_CC_VISA;
+  }
 
-  // If you hit this DCHECK, the above list of cases needs to be updated to
+  // If you hit this CHECK, the above list of cases needs to be updated to
   // include a new card.
-  DCHECK_EQ(kGenericCard, network);
+  CHECK_EQ(Suggestion::Icon::kCardGeneric, icon);
   return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_GENERIC
                                    : IDR_AUTOFILL_CC_GENERIC;
+}
+
+// static
+int CreditCard::IconResourceId(std::string_view icon_str) {
+  return IconResourceId(Suggestion::ConvertIconStringIntoIcon(icon_str));
 }
 
 // static
@@ -1058,7 +1070,11 @@ CreditCard::ObfuscatedNumberWithVisibleLastFourDigitsForSplitFields() const {
   return std::u16string(12, kMidlineEllipsisPlainDot) + LastFourDigits();
 }
 
-std::string CreditCard::CardIconStringForAutofillSuggestion() const {
+Suggestion::Icon CreditCard::CardIconStringForAutofillSuggestion() const {
+  return Suggestion::ConvertIconStringIntoIcon(network_);
+}
+
+std::string CreditCard::StringCardIconStringForAutofillSuggestion() const {
   return network_;
 }
 

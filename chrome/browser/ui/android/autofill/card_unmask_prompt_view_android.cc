@@ -170,7 +170,7 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
   return java_object_internal_ = Java_CardUnmaskBridge_create(
              env, reinterpret_cast<intptr_t>(this), dialog_title, instructions,
              ResourceMapper::MapToJavaDrawableId(
-                 GetIconResourceID(controller_->GetCardIconString())),
+                 GetIconResourceID(controller_->GetCardIcon())),
              card_name, card_last_four_digits, card_expiration, card_art_url,
              confirm,
              ResourceMapper::MapToJavaDrawableId(controller_->GetCvcImageRid()),

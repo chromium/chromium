@@ -78,7 +78,7 @@ void AutofillKeyboardAccessoryView::Show() {
   for (int i = 0; i < controller_->GetLineCount(); ++i) {
     const Suggestion& suggestion = controller_->GetSuggestionAt(i);
     int android_icon_id = 0;
-    if (!suggestion.icon.empty()) {
+    if (suggestion.icon != Suggestion::Icon::kNoIcon) {
       android_icon_id = ResourceMapper::MapToJavaDrawableId(
           GetIconResourceID(suggestion.icon));
     }

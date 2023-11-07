@@ -64,7 +64,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   int GetCvcImageRid() const override;
   bool ShouldRequestExpirationDate() const override;
 #if BUILDFLAG(IS_ANDROID)
-  std::string GetCardIconString() const override;
+  Suggestion::Icon GetCardIcon() const override;
   std::u16string GetCardName() const override;
   std::u16string GetCardLastFourDigits() const override;
   std::u16string GetCardExpiration() const override;

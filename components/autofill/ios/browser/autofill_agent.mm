@@ -713,7 +713,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                                        scale:icon.scale * ratio
                                  orientation:icon.imageOrientation];
           }
-        } else if (!popup_suggestion.icon.empty()) {
+        } else if (popup_suggestion.icon !=
+                   autofill::Suggestion::Icon::kNoIcon) {
           const int resourceID =
               autofill::CreditCard::IconResourceId(popup_suggestion.icon);
           icon = ui::ResourceBundle::GetSharedInstance()

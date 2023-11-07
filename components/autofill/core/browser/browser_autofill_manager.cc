@@ -3853,7 +3853,7 @@ absl::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
   Suggestion suggestion(std::move(suggestion_text));
   suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
   suggestion.popup_item_id = PopupItemId::kCompose;
-  suggestion.icon = "keyIcon";
+  suggestion.icon = Suggestion::Icon::kKey;
   return suggestion;
 }
 

@@ -298,7 +298,7 @@ bool CardUnmaskPromptControllerImpl::ShouldRequestExpirationDate() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-std::string CardUnmaskPromptControllerImpl::GetCardIconString() const {
+Suggestion::Icon CardUnmaskPromptControllerImpl::GetCardIcon() const {
   return card_.CardIconStringForAutofillSuggestion();
 }
 
