@@ -177,11 +177,16 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::SetLcpElementLocator(
-    const std::string& lcp_element_locator) {
+    const std::string& lcp_element_locator,
+    bool lcp_timing_was_predicted) {
   if (!lcpp_data_inputs_) {
     lcpp_data_inputs_.emplace();
   }
   lcpp_data_inputs_->lcp_element_locator = lcp_element_locator;
+  // At most one element can be predicted.
+  // TODO(crbug.com/1493255): Check below condition.
+  // CHECK(!lcp_timing_was_predicted_ || !lcp_timing_was_predicted);
+  lcp_timing_was_predicted_ |= lcp_timing_was_predicted;
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
@@ -219,9 +224,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
   if (!hint || !hint->lcp_element_locators.size()) {
     return;
   }
-  // Predicted the most frequent LCP would be next LCP and record the
-  // actual result. see PredictLcpElementLocators() for the `hint` contents.
-  const bool predicted =
-      (hint->lcp_element_locators[0] == lcpp_data_inputs_->lcp_element_locator);
-  base::UmaHistogramBoolean(internal::kHistogramLCPPPredictSuccess, predicted);
+
+  base::UmaHistogramBoolean(internal::kHistogramLCPPPredictSuccess,
+                            lcp_timing_was_predicted_);
 }

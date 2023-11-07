@@ -94,10 +94,12 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     hint.lcp_element_locators = {"foo"};
     navigation->GetNavigationHandle()->SetLCPPNavigationHint(hint);
   }
-  void SetMockLcpElementLocator(
-      GURL url,
-      const std::string& mock_element_locator = "foo") {
-    lcpp_observers_[url]->SetLcpElementLocator(mock_element_locator);
+
+  void SetMockLcpElementLocator(GURL url,
+                                const std::string& mock_element_locator = "foo",
+                                bool is_predicted = false) {
+    lcpp_observers_[url]->SetLcpElementLocator(mock_element_locator,
+                                               is_predicted);
   }
 
   void ConfirmResult(GURL url,
@@ -175,6 +177,28 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
                   /*learn_lcpp=*/false, /*record_uma=*/activate);
   }
 
+  void TestLCPPrediction(bool is_predicted) {
+    const GURL main_frame_url("https://test.example");
+    // Let predictor learn pseudo("lcp_previous") LCP locator
+    predictors::ResourcePrefetchPredictor* predictor =
+        predictors::LoadingPredictorFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
+            ->resource_prefetch_predictor();
+    CHECK(predictor);
+    predictors::LcppDataInputs lcpp_data_inputs;
+    lcpp_data_inputs.lcp_element_locator = "lcp_previous";
+    predictor->LearnLcpp(main_frame_url.host(), lcpp_data_inputs);
+
+    // Predict LCP with the learned result.
+    NavigationWithLCPPHint(main_frame_url, /*provide_lcpp_hint=*/true);
+    SetMockLcpElementLocator(main_frame_url, "lcp_actual", is_predicted);
+    tester()->NavigateToUntrackedUrl();
+    // Result only depends `is_predicted` parameter.
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                    internal::kHistogramLCPPPredictSuccess),
+                base::BucketsAre(base::Bucket(is_predicted, 1)));
+  }
+
   page_load_metrics::mojom::PageLoadTiming timing_;
   std::map<GURL, LcpCriticalPathPredictorPageLoadMetricsObserver*>
       lcpp_observers_;
@@ -201,40 +225,9 @@ TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest,
 }
 
 TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPSuccess) {
-  const GURL main_frame_url("https://test.example");
-  const bool provide_lcpp_hint = true;
-  // Navigate main and reload to learn lcpp.
-  NavigationWithLCPPHint(main_frame_url, provide_lcpp_hint);
-  SetMockLcpElementLocator(main_frame_url);
-  // Predict LCP with the learned result.
-  NavigationWithLCPPHint(main_frame_url, provide_lcpp_hint);
-  SetMockLcpElementLocator(main_frame_url);
-  tester()->NavigateToUntrackedUrl();
-  // Expect hit.
-  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  internal::kHistogramLCPPPredictSuccess),
-              base::BucketsAre(base::Bucket(true, 1)));
+  TestLCPPrediction(/*is_predicted=*/true);
 }
 
 TEST_F(LcpCriticalPathPredictorPageLoadMetricsObserverTest, PredictLCPFailed) {
-  const GURL main_frame_url("https://test.example");
-  // Let predictor learn pseudo("lcp_previous") LCP locator different from
-  // "actual" LCP locator (which is also pseudo or "lcp_actual" in test BTW.)
-  predictors::ResourcePrefetchPredictor* predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
-          ->resource_prefetch_predictor();
-  CHECK(predictor);
-  predictors::LcppDataInputs lcpp_data_inputs;
-  lcpp_data_inputs.lcp_element_locator = "lcp_previous";
-  predictor->LearnLcpp(main_frame_url.host(), lcpp_data_inputs);
-
-  // Predict LCP with the learned result.
-  NavigationWithLCPPHint(main_frame_url, /*provide_lcpp_hint=*/true);
-  SetMockLcpElementLocator(main_frame_url, "lcp_actual");
-  tester()->NavigateToUntrackedUrl();
-  // Expect failed.
-  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  internal::kHistogramLCPPPredictSuccess),
-              base::BucketsAre(base::Bucket(false, 1)));
+  TestLCPPrediction(/*is_predicted=*/false);
 }

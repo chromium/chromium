@@ -59,7 +59,7 @@ ElementLocator OfElement(const Element& element) {
   return locator;
 }
 
-String ToString(const ElementLocator& locator) {
+String ToStringForTesting(const ElementLocator& locator) {
   StringBuilder builder;
 
   for (const auto& c : locator.components()) {

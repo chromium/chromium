@@ -27,7 +27,7 @@ CORE_EXPORT ElementLocator OfElement(const Element& element);
 // Intended for testing and debugging purposes.
 // Note: Since we are using the MessageLite runtime, TextFormat is not
 //       available, so we need something on our own.
-CORE_EXPORT String ToString(const ElementLocator&);
+CORE_EXPORT String ToStringForTesting(const ElementLocator&);
 
 // An item of `stack of open elements`
 // https://html.spec.whatwg.org/multipage/parsing.html#stack-of-open-elements

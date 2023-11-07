@@ -39,7 +39,8 @@ class LCPCriticalPathPredictorHost
   ~LCPCriticalPathPredictorHost() override;
 
   // Implements blink::mojom::LCPCriticalPathPredictorHost.
-  void SetLcpElementLocator(const std::string& lcp_element_locator) override;
+  void SetLcpElementLocator(const std::string& lcp_element_locator,
+                            bool lcp_timing_was_predicted) override;
   void SetLcpInfluencerScriptUrls(
       const std::vector<GURL>& lcp_influencer_scripts) override;
   void NotifyFetchedFont(const GURL& font_url) override;

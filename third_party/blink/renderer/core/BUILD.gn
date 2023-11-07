@@ -471,6 +471,7 @@ source_set("testing") {
 
   deps = [
     ":core",
+    ":element_locator_proto",
     ":generated_testing_idls",
     "//build:chromeos_buildflags",
     "//components/ukm:test_support",

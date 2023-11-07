@@ -70,7 +70,7 @@ TEST_F(ElementLocatorTest, OfElement) {
     auto locator = element_locator::OfElement(*target);
 
     if (test_case.expected_locator_string) {
-      String locator_string = element_locator::ToString(locator);
+      String locator_string = element_locator::ToStringForTesting(locator);
       EXPECT_EQ(String(test_case.expected_locator_string), locator_string);
     }
   }
@@ -177,7 +177,8 @@ TEST_F(TokenStreamMatcherTest, CloseAPElement) {
   auto* c1 = locator.add_components()->mutable_id();
   c1->set_id_attr("container");
 
-  EXPECT_EQ(String("/p[2]/#container"), element_locator::ToString(locator));
+  EXPECT_EQ(String("/p[2]/#container"),
+            element_locator::ToStringForTesting(locator));
 
   element_locator::TokenStreamMatcher matcher({locator});
   Vector<Expectation> exps = {
@@ -204,7 +205,7 @@ TEST_F(TokenStreamMatcherTest, Complicated) {
   c2->set_id_attr("container");
 
   EXPECT_EQ(String("/img[1]/article[2]/#container"),
-            element_locator::ToString(locator));
+            element_locator::ToStringForTesting(locator));
 
   element_locator::TokenStreamMatcher matcher({locator});
   Vector<Expectation> exps = {

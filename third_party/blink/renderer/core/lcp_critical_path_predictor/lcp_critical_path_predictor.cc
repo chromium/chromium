@@ -43,6 +43,10 @@ bool LCPCriticalPathPredictor::HasAnyHintData() const {
 void LCPCriticalPathPredictor::set_lcp_element_locators(
     Vector<ElementLocator> locators) {
   lcp_element_locators_ = std::move(locators);
+  if (lcp_element_locators_.size()) {
+    first_lcp_element_locator_string_ =
+        lcp_element_locators_[0].SerializeAsString();
+  }
 }
 
 void LCPCriticalPathPredictor::set_lcp_influencer_scripts(
@@ -65,6 +69,19 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
   if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor)) {
     std::string lcp_element_locator_string =
         element_locator::OfElement(lcp_element).SerializeAsString();
+
+    bool lcp_timing_was_predicted = false;
+    // Predicted the most frequent LCP would be next LCP and record the
+    // actual result. see PredictLcpElementLocators() for the `hint` contents.
+    // TODO(crbug.com/1493255): We might need another predictor e.g. checking
+    // other element_locators as well.
+    if (first_lcp_element_locator_string_ &&
+        *first_lcp_element_locator_string_ == lcp_element_locator_string) {
+      // TODO(crbug.com/1493255): Trigger callbacks for the entire frame tree.
+      frame_->GetDocument()->RunLCPPredictedCallbacks(lcp_element);
+      lcp_timing_was_predicted = true;
+    }
+
     features::LcppRecordedLcpElementTypes recordable_lcp_element_type =
         features::kLCPCriticalPathPredictorRecordedLcpElementTypes.Get();
     bool should_record_element_locator =
@@ -83,7 +100,8 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
           base::checked_cast<size_t>(
               features::kLCPCriticalPathPredictorMaxElementLocatorLength
                   .Get())) {
-        GetHost().SetLcpElementLocator(lcp_element_locator_string);
+        GetHost().SetLcpElementLocator(lcp_element_locator_string,
+                                       lcp_timing_was_predicted);
       }
     }
   }

@@ -55,7 +55,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
       const LcpCriticalPathPredictorPageLoadMetricsObserver&) = delete;
   ~LcpCriticalPathPredictorPageLoadMetricsObserver() override;
 
-  void SetLcpElementLocator(const std::string& lcp_element_locator);
+  void SetLcpElementLocator(const std::string& lcp_element_locator,
+                            bool is_predicted);
   void SetLcpInfluencerScriptUrls(
       const std::vector<GURL>& lcp_influencer_scripts);
   // Append fetched font URLs to the list to be passed to LCPP.
@@ -93,6 +94,10 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   bool is_lcpp_hinted_navigation_ = false;
 
   absl::optional<predictors::LcppDataInputs> lcpp_data_inputs_;
+
+  // True iff one of `lcp_element_locator` via SetLcpElementLocator was
+  // predicted as true LCP.
+  bool lcp_timing_was_predicted_ = false;
 
   base::WeakPtrFactory<LcpCriticalPathPredictorPageLoadMetricsObserver>
       weak_factory_{this};

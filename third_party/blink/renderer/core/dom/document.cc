@@ -9142,6 +9142,18 @@ void Document::RunPostPrerenderingActivationSteps() {
   post_prerendering_activation_callbacks_.clear();
 }
 
+void Document::AddLCPPredictedCallback(LCPCallback callback) {
+  lcp_predicted_callbacks_.push_back(std::move(callback));
+}
+
+void Document::RunLCPPredictedCallbacks(const Element& lcp_element) {
+  Vector<LCPCallback> callbacks;
+  callbacks.swap(lcp_predicted_callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(lcp_element);
+  }
+}
+
 bool Document::InStyleRecalc() const {
   return lifecycle_.GetState() == DocumentLifecycle::kInStyleRecalc ||
          style_engine_->InContainerQueryStyleRecalc() ||

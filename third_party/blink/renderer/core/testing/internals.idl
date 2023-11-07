@@ -450,4 +450,9 @@ interface Internals {
     void setBackForwardCacheRestorationBufferSize(long maxSize);
 
     sequence<DOMString> getCreatorScripts(HTMLImageElement img);
+
+    // Wait until predicted LCP is painted. Never called if prediction is
+    // failed. Returns element_locator format string.
+    [CallWith=ScriptState] Promise<DOMString> LCPPrediction(Document document);
+
 };
