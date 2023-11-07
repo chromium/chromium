@@ -1066,14 +1066,14 @@ def _GenerateDefaultValue(value):
   elif type(value) == str:
     return [], 'base::Value("%s")' % value
   elif type(value) == list:
-    setup = ['base::Value default_value(base::Value::Type::LIST);']
+    setup = ['base::Value::List default_value;']
     for entry in value:
       decl, fetch = _GenerateDefaultValue(entry)
       # Nested lists are not supported.
       if decl:
         return [], None
       setup.append('default_value.Append(%s);' % fetch)
-    return setup, 'std::move(default_value)'
+    return setup, 'base::Value(std::move(default_value))'
   return [], None
 
 

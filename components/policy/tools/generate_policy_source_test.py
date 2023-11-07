@@ -267,18 +267,17 @@ class PolicyGenerationTest(unittest.TestCase):
 
     # Empty list
     stmts, expr = generate_policy_source._GenerateDefaultValue([])
-    self.assertListEqual(
-        ['base::Value default_value(base::Value::Type::LIST);'], stmts)
-    self.assertEqual('std::move(default_value)', expr)
+    self.assertListEqual(['base::Value::List default_value;'], stmts)
+    self.assertEqual('base::Value(std::move(default_value))', expr)
 
     # List with values
     stmts, expr = generate_policy_source._GenerateDefaultValue([1, '2'])
     self.assertListEqual([
-        'base::Value default_value(base::Value::Type::LIST);',
+        'base::Value::List default_value;',
         'default_value.Append(base::Value(1));',
         'default_value.Append(base::Value("2"));'
     ], stmts)
-    self.assertEqual('std::move(default_value)', expr)
+    self.assertEqual('base::Value(std::move(default_value))', expr)
 
     # Recursive lists are not supported.
     stmts, expr = generate_policy_source._GenerateDefaultValue([1, []])
