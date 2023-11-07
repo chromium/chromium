@@ -212,8 +212,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
   }
 
-  if ([self isRunningTest:@selector(testOpenSignInAndSyncFromNTP)] ||
-      [self isRunningTest:@selector
+  if ([self isRunningTest:@selector
             (testOpenManageSyncSettingsFromNTPWhenSyncDisabledByPolicy)] ||
       [self
           isRunningTest:@selector(testSignOutWithClearDataForSupervisedUser)] ||
@@ -255,7 +254,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
-  if ([self isRunningTest:@selector
+  if ([self isRunningTest:@selector(testOpenSignInFromNTP)] ||
+      [self isRunningTest:@selector
             (testOpenSigninSheetFromNTPIfHasDeviceAccount)] ||
       [self isRunningTest:@selector
             (testOpenAuthActivityFromNTPIfNoDeviceAccount)] ||
@@ -1057,20 +1057,19 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests that a signed-out user can open "Sign in and sync" screen from the NTP.
-- (void)testOpenSignInAndSyncFromNTP {
+- (void)testOpenSignInFromNTP {
   // Select the identity disc particle.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityLabel(GetNSString(
-              IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL_WITH_SYNC))]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
       performAction:grey_tap()];
 
-  // Ensure the sign-in and sync menu is displayed. The existence of the skip
-  // accessibility button on screen verifies that tha sign-in screen was
-  // shown.
+  // Ensure the fake add-account menu is displayed. The existence of the "add
+  // account" accessibility button on screen verifies that the screen
+  // was shown.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSkipSigninAccessibilityIdentifier)]
-      performAction:grey_tap()];
+                                          kFakeAuthAddAccountButtonIdentifier)]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that a signed-out user with device accounts can open "Sign in" sheet
