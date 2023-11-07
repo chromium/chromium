@@ -47,6 +47,7 @@ class _Generator(object):
                self._namespace.short_filename))
       .Append()
       .Append('#include <memory>')
+      .Append('#include <optional>')
       .Append('#include <ostream>')
       .Append('#include <string>')
       .Append('#include <utility>')
@@ -499,7 +500,7 @@ class _Generator(object):
       c.Append('DCHECK(!error.empty());')
       c.Append('return base::unexpected(std::move(error));')
     else:
-      c.Append('return absl::nullopt;')
+      c.Append('return std::nullopt;')
     c.Eblock('}')
 
     c.Append('return out;')
@@ -1011,12 +1012,12 @@ class _Generator(object):
     c = Code()
 
     (c.Append('// static')
-      .Sblock('absl::optional<Params> Params::Create(%s) {' %
+      .Sblock('std::optional<Params> Params::Create(%s) {' %
                   self._GenerateParams([
                       'const base::Value::List& args']))
     )
 
-    failure_value = 'absl::nullopt'
+    failure_value = 'std::nullopt'
     (c.Concat(self._GenerateParamsCheck(function, 'args', failure_value))
       .Append('Params params;')
     )
@@ -1132,14 +1133,14 @@ class _Generator(object):
                 type_.name,
                 self._util_cc_helper.GetValueTypeString('%%(src_var)s')))))
       if is_ptr:
-        if cpp_util.ShouldUseAbslOptional(underlying_type):
-          c.Append('%(dst_var)s = absl::nullopt;')
+        if cpp_util.ShouldUseStdOptional(underlying_type):
+          c.Append('%(dst_var)s = std::nullopt;')
         else:
           c.Append('%(dst_var)s.reset();')
       c.Append('return %(failure_value)s;')
       (c.Eblock('}'))
       if is_ptr:
-        if cpp_util.ShouldUseAbslOptional(underlying_type):
+        if cpp_util.ShouldUseStdOptional(underlying_type):
           c.Append('%(dst_var)s = *temp;')
         elif is_string_or_function:
           c.Append('%(dst_var)s = std::make_unique<%(cpp_type)s>(*temp);')

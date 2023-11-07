@@ -84,11 +84,11 @@ bool ParseFromDictionary(const base::Value::Dict& dict,
                          std::u16string& error,
                          std::vector<base::StringPiece>& error_path_reversed);
 
-// This overload is used for optional types wrapped as absl::optional<T>.
+// This overload is used for optional types wrapped as std::optional<T>.
 template <typename T>
 bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
-                         absl::optional<T>& out_opt,
+                         std::optional<T>& out_opt,
                          std::u16string& error,
                          std::vector<base::StringPiece>& error_path_reversed);
 
@@ -147,7 +147,7 @@ bool ParseFromDictionary(const base::Value::Dict& dict,
 template <typename T>
 bool ParseFromDictionary(const base::Value::Dict& dict,
                          base::StringPiece key,
-                         absl::optional<T>& out_opt,
+                         std::optional<T>& out_opt,
                          std::u16string& error,
                          std::vector<base::StringPiece>& error_path_reversed) {
   // Ignore optional keys if they are not present without raising an error.
@@ -247,7 +247,7 @@ bool ParseEnumArrayFromDictionary(
     base::StringPiece key,
     StringToEnumConverter<T> converter,
     T none_value,
-    absl::optional<std::vector<T>>& out,
+    std::optional<std::vector<T>>& out,
     std::u16string& error,
     std::vector<base::StringPiece>& error_path_reversed) {
   // Ignore optional keys if they are not present without raising an error.

@@ -112,7 +112,7 @@ bool PopulateArrayFromList(const base::Value::List& list,
 // if anything other than a list of |T| is at the specified key.
 template <class T>
 bool PopulateOptionalArrayFromList(const base::Value::List& list,
-                                   absl::optional<std::vector<T>>& out) {
+                                   std::optional<std::vector<T>>& out) {
   std::vector<T> populated;
   if (!PopulateArrayFromList(list, populated)) {
     return false;
@@ -123,7 +123,7 @@ bool PopulateOptionalArrayFromList(const base::Value::List& list,
 
 template <class T>
 bool PopulateOptionalArrayFromList(const base::Value::List& list,
-                                   absl::optional<std::vector<T>>& out,
+                                   std::optional<std::vector<T>>& out,
                                    std::u16string& error) {
   std::vector<T> populated;
   if (!PopulateArrayFromList(list, populated, error)) {

@@ -38,7 +38,7 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsAsTypes) {
     base::Value::List args;
     args.Append("one");
 
-    absl::optional<enums::TakesEnumAsType::Params> params(
+    std::optional<enums::TakesEnumAsType::Params> params(
         enums::TakesEnumAsType::Params::Create(args));
     ASSERT_TRUE(params.has_value());
     EXPECT_EQ(enums::Enumeration::kOne, params->enumeration);
@@ -82,7 +82,7 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsArrayAsType) {
   {
     base::Value::List params_value;
     params_value.Append(List(base::Value("one"), base::Value("two")));
-    absl::optional<enums::TakesEnumArrayAsType::Params> params(
+    std::optional<enums::TakesEnumArrayAsType::Params> params(
         enums::TakesEnumArrayAsType::Params::Create(params_value));
     ASSERT_TRUE(params);
     EXPECT_EQ(2U, params->values.size());
@@ -92,7 +92,7 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsArrayAsType) {
   {
     base::Value::List params_value;
     params_value.Append(List(base::Value("invalid")));
-    absl::optional<enums::TakesEnumArrayAsType::Params> params(
+    std::optional<enums::TakesEnumArrayAsType::Params> params(
         enums::TakesEnumArrayAsType::Params::Create(params_value));
     EXPECT_FALSE(params);
   }
@@ -153,7 +153,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesEnumParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append("two");
-    absl::optional<enums::TakesEnum::Params> params(
+    std::optional<enums::TakesEnum::Params> params(
         enums::TakesEnum::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::Enumeration::kTwo, params->state);
@@ -161,7 +161,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesEnumParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append("invalid");
-    absl::optional<enums::TakesEnum::Params> params(
+    std::optional<enums::TakesEnum::Params> params(
         enums::TakesEnum::Params::Create(params_value));
     EXPECT_FALSE(params.has_value());
   }
@@ -171,7 +171,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesEnumArrayParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append(List(base::Value("one"), base::Value("two")));
-    absl::optional<enums::TakesEnumArray::Params> params(
+    std::optional<enums::TakesEnumArray::Params> params(
         enums::TakesEnumArray::Params::Create(params_value));
     ASSERT_TRUE(params);
     EXPECT_EQ(2U, params->values.size());
@@ -181,7 +181,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesEnumArrayParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append(List(base::Value("invalid")));
-    absl::optional<enums::TakesEnumArray::Params> params(
+    std::optional<enums::TakesEnumArray::Params> params(
         enums::TakesEnumArray::Params::Create(params_value));
     EXPECT_FALSE(params);
   }
@@ -191,14 +191,14 @@ TEST(JsonSchemaCompilerEnumsTest, TakesOptionalEnumParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append("three");
-    absl::optional<enums::TakesOptionalEnum::Params> params(
+    std::optional<enums::TakesOptionalEnum::Params> params(
         enums::TakesOptionalEnum::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::Enumeration::kThree, params->state);
   }
   {
     base::Value::List params_value;
-    absl::optional<enums::TakesOptionalEnum::Params> params(
+    std::optional<enums::TakesOptionalEnum::Params> params(
         enums::TakesOptionalEnum::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::Enumeration::kNone, params->state);
@@ -206,7 +206,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesOptionalEnumParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append("invalid");
-    absl::optional<enums::TakesOptionalEnum::Params> params(
+    std::optional<enums::TakesOptionalEnum::Params> params(
         enums::TakesOptionalEnum::Params::Create(params_value));
     EXPECT_FALSE(params.has_value());
   }
@@ -217,7 +217,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesMultipleOptionalEnumsParamsCreate) {
     base::Value::List params_value;
     params_value.Append("one");
     params_value.Append("ham");
-    absl::optional<enums::TakesMultipleOptionalEnums::Params> params(
+    std::optional<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::Enumeration::kOne, params->state);
@@ -226,7 +226,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesMultipleOptionalEnumsParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append("one");
-    absl::optional<enums::TakesMultipleOptionalEnums::Params> params(
+    std::optional<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::Enumeration::kOne, params->state);
@@ -234,7 +234,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesMultipleOptionalEnumsParamsCreate) {
   }
   {
     base::Value::List params_value;
-    absl::optional<enums::TakesMultipleOptionalEnums::Params> params(
+    std::optional<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::Enumeration::kNone, params->state);
@@ -244,7 +244,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesMultipleOptionalEnumsParamsCreate) {
     base::Value::List params_value;
     params_value.Append("three");
     params_value.Append("invalid");
-    absl::optional<enums::TakesMultipleOptionalEnums::Params> params(
+    std::optional<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
     EXPECT_FALSE(params.has_value());
   }

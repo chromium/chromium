@@ -104,9 +104,9 @@ def GetValueType(type_):
 
   raise ValueError('Invalid type: %s' % type_.name)
 
-def ShouldUseAbslOptional(type_):
+def ShouldUseStdOptional(type_):
   """Called to validate whether or not an optional value should be represented
-  with absl::optional. This function is a temporary utility, while optional
+  with std::optional. This function is a temporary utility, while optional
   fields are gradually migrated away from using std::unique_ptr.
   """
 

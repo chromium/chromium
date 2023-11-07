@@ -32,7 +32,7 @@ static base::Value::Dict CreateTestTypeDictionary() {
 
 void GetManifestParseError(base::StringPiece manifest_json,
                            std::string* error) {
-  absl::optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
+  std::optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
   ASSERT_TRUE(manifest) << "Invalid json \n" << manifest_json;
 
   simple_api::ManifestKeys manifest_keys;
@@ -46,7 +46,7 @@ void GetManifestParseError(base::StringPiece manifest_json,
 
 void PopulateManifestKeys(base::StringPiece manifest_json,
                           simple_api::ManifestKeys* manifest_keys) {
-  absl::optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
+  std::optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
   ASSERT_TRUE(manifest.has_value());
 
   std::u16string error_16;
@@ -69,7 +69,7 @@ TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerResultCreate) {
 TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerParamsCreate) {
   base::Value::List params_value;
   params_value.Append(6);
-  absl::optional<simple_api::IncrementInteger::Params> params(
+  std::optional<simple_api::IncrementInteger::Params> params(
       simple_api::IncrementInteger::Params::Create(params_value));
   EXPECT_TRUE(params.has_value());
   EXPECT_EQ(6, params->num);
@@ -80,13 +80,13 @@ TEST(JsonSchemaCompilerSimpleTest, NumberOfParams) {
     base::Value::List params_value;
     params_value.Append("text");
     params_value.Append("text");
-    absl::optional<simple_api::OptionalString::Params> params(
+    std::optional<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_FALSE(params.has_value());
   }
   {
     base::Value::List params_value;
-    absl::optional<simple_api::IncrementInteger::Params> params(
+    std::optional<simple_api::IncrementInteger::Params> params(
         simple_api::IncrementInteger::Params::Create(params_value));
     EXPECT_FALSE(params.has_value());
   }
@@ -95,7 +95,7 @@ TEST(JsonSchemaCompilerSimpleTest, NumberOfParams) {
 TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsCreate) {
   {
     base::Value::List params_value;
-    absl::optional<simple_api::OptionalString::Params> params(
+    std::optional<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_FALSE(params->str);
@@ -103,7 +103,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append("asdf");
-    absl::optional<simple_api::OptionalString::Params> params(
+    std::optional<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_TRUE(params->str);
@@ -115,7 +115,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalParamsTakingNull) {
   {
     base::Value::List params_value;
     params_value.Append(base::Value());
-    absl::optional<simple_api::OptionalString::Params> params(
+    std::optional<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_FALSE(params->str);
@@ -126,7 +126,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsWrongType) {
   {
     base::Value::List params_value;
     params_value.Append(5);
-    absl::optional<simple_api::OptionalString::Params> params(
+    std::optional<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_FALSE(params.has_value());
   }
@@ -137,7 +137,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalBeforeRequired) {
     base::Value::List params_value;
     params_value.Append(base::Value());
     params_value.Append("asdf");
-    absl::optional<simple_api::OptionalBeforeRequired::Params> params(
+    std::optional<simple_api::OptionalBeforeRequired::Params> params(
         simple_api::OptionalBeforeRequired::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_FALSE(params->first);
@@ -205,7 +205,7 @@ TEST(JsonSchemaCompilerSimpleTest, OnTestTypeFiredCreate) {
     simple_api::TestType some_test_type;
     base::Value::Dict expected = CreateTestTypeDictionary();
 
-    absl::optional<double> number_value = expected.FindDouble("number");
+    std::optional<double> number_value = expected.FindDouble("number");
     ASSERT_TRUE(number_value);
     some_test_type.number = *number_value;
 
@@ -213,11 +213,11 @@ TEST(JsonSchemaCompilerSimpleTest, OnTestTypeFiredCreate) {
     ASSERT_TRUE(string_value);
     some_test_type.string = *string_value;
 
-    absl::optional<int> int_value = expected.FindInt("integer");
+    std::optional<int> int_value = expected.FindInt("integer");
     ASSERT_TRUE(int_value);
     some_test_type.integer = *int_value;
 
-    absl::optional<bool> boolean_value = expected.FindBool("boolean");
+    std::optional<bool> boolean_value = expected.FindBool("boolean");
     ASSERT_TRUE(boolean_value);
     some_test_type.boolean = *boolean_value;
 

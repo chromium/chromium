@@ -57,6 +57,7 @@ class _Generator(object):
       .Append()
       .Append('#include <map>')
       .Append('#include <memory>')
+      .Append('#include <optional>')
       .Append('#include <string>')
       .Append('#include <vector>')
       .Append()
@@ -412,7 +413,7 @@ class _Generator(object):
           'returning errors with `base::expected`.')
       )
 
-    (c.Append('static absl::optional<Params> Create(%s);' %
+    (c.Append('static std::optional<Params> Create(%s);' %
                 self._GenerateParams(
                     ('const base::Value::List& args',)))
       .Append('Params(const Params&) = delete;')

@@ -42,7 +42,7 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
   base::Value param_object_value(std::move(param_object_dict));
   base::Value::List params_value;
   params_value.Append(param_object_value.Clone());
-  absl::optional<ap::AdditionalProperties::Params> params(
+  std::optional<ap::AdditionalProperties::Params> params(
       ap::AdditionalProperties::Params::Create(params_value));
   EXPECT_TRUE(params.has_value());
   EXPECT_EQ(params->param_object.additional_properties, param_object_value);

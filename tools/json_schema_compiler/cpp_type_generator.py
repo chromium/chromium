@@ -41,7 +41,7 @@ class CppTypeGenerator(object):
     when it should support string errors.
     """
     return (('base::expected<{typename}, std::u16string>'
-        if support_errors else 'absl::optional<{typename}>')
+        if support_errors else 'std::optional<{typename}>')
           .format(typename=typename))
 
   def IsEnumModernised(self, type_):
@@ -225,8 +225,8 @@ class CppTypeGenerator(object):
     # TODO(kalman): change this - but it's an exceedingly far-reaching change.
     if not self.FollowRef(type_).property_type == PropertyType.ENUM:
       if is_optional:
-        if cpp_util.ShouldUseAbslOptional(self.FollowRef(type_)):
-          cpp_type = 'absl::optional<%s>' % cpp_type
+        if cpp_util.ShouldUseStdOptional(self.FollowRef(type_)):
+          cpp_type = 'std::optional<%s>' % cpp_type
         else:
           cpp_type = 'std::unique_ptr<%s>' % cpp_type
 

@@ -203,7 +203,7 @@ TEST(JsonSchemaCompilerArrayTest, IntegerArrayParamsCreate) {
   integer_array.Append(4);
   integer_array.Append(8);
   params_value.Append(std::move(integer_array));
-  absl::optional<arrays::IntegerArray::Params> params(
+  std::optional<arrays::IntegerArray::Params> params(
       arrays::IntegerArray::Params::Create(params_value));
   EXPECT_TRUE(params.has_value());
   ASSERT_EQ(3u, params->nums.size());
@@ -219,7 +219,7 @@ TEST(JsonSchemaCompilerArrayTest, AnyArrayParamsCreate) {
   any_array.Append("test");
   any_array.Append(CreateItemValue(2));
   params_value.Append(std::move(any_array));
-  absl::optional<arrays::AnyArray::Params> params(
+  std::optional<arrays::AnyArray::Params> params(
       arrays::AnyArray::Params::Create(params_value));
   EXPECT_TRUE(params.has_value());
   ASSERT_EQ(3u, params->anys.size());
@@ -233,7 +233,7 @@ TEST(JsonSchemaCompilerArrayTest, ObjectArrayParamsCreate) {
   item_array.Append(CreateItemValue(1));
   item_array.Append(CreateItemValue(2));
   params_value.Append(std::move(item_array));
-  absl::optional<arrays::ObjectArray::Params> params(
+  std::optional<arrays::ObjectArray::Params> params(
       arrays::ObjectArray::Params::Create(params_value));
   EXPECT_TRUE(params.has_value());
   ASSERT_EQ(2u, params->objects.size());
@@ -247,7 +247,7 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayParamsCreate) {
   item_array.Append(CreateItemValue(1));
   item_array.Append(CreateItemValue(2));
   params_value.Append(std::move(item_array));
-  absl::optional<arrays::RefArray::Params> params(
+  std::optional<arrays::RefArray::Params> params(
       arrays::RefArray::Params::Create(params_value));
   EXPECT_TRUE(params.has_value());
   ASSERT_EQ(2u, params->refs.size());
