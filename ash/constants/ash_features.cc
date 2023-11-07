@@ -1992,6 +1992,9 @@ BASE_FEATURE(kOverviewDeskNavigation,
              "OverviewDeskNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the updated Palette feature.
+BASE_FEATURE(kPalette, "Palette", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Jelly colors and components to appear in the Parent Access Widget
 // if jelly-colors is also enabled.
 BASE_FEATURE(kParentAccessJelly,
