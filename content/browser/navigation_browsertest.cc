@@ -803,8 +803,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
             controller.GetLastCommittedEntry()->GetVirtualURL());
 }
 
-// TODO(https://crbug.com/1467626): Test is flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/1467626): Test is flaky on Android, Linux.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MAYBE_BackFollowedByReload DISABLED_BackFollowedByReload
 #else
 #define MAYBE_BackFollowedByReload BackFollowedByReload
