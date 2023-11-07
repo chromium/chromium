@@ -277,14 +277,11 @@ void AddInstallComInterfaceWorkItems(HKEY root,
   const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
   const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
 
-  // Delete any old registrations first.
-  for (const auto& reg_path : {iid_reg_path, typelib_reg_path}) {
-    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
-      list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
-    }
-  }
-
   for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+    // Delete any old typelib registrations first. The IID is registered to both
+    // the 32 and 64 bit keys, and does not need to be deleted.
+    list->AddDeleteRegKeyWorkItem(root, typelib_reg_path, key_flag);
+
     // Registering the Ole Automation marshaler with the CLSID
     // {00020424-0000-0000-C000-000000000046} as the proxy/stub for the
     // interfaces.
