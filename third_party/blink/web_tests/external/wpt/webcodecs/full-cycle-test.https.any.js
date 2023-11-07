@@ -156,8 +156,12 @@ async function runFullCycleTest(t, options) {
   await decoder.flush();
   encoder.close();
   decoder.close();
-  assert_equals(frames_encoded, frames_to_encode, "frames_encoded");
-  assert_equals(frames_decoded, frames_to_encode, "frames_decoded");
+  if (options.realTimeLatencyMode) {
+    assert_greater_than(frames_encoded, 0, "frames_encoded");
+  } else {
+    assert_equals(frames_encoded, frames_to_encode, "frames_encoded");
+  }
+  assert_equals(frames_decoded, frames_encoded, "frames_decoded");
 }
 
 promise_test(async t => {

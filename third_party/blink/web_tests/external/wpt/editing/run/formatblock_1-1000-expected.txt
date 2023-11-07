@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 978 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 980 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "foo[]bar<p>extra": execCommand("defaultparagraphseparator", false, "div") return value
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "foo[]bar<p>extra": execCommand("formatblock", false, "<div>") return value
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "foo[]bar<p>extra" checks for modifications to non-editable content
@@ -770,8 +770,7 @@ Found 1000 tests; 978 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandIndeterm("defaultparagraphseparator") after
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandState("defaultparagraphseparator") after
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandValue("defaultparagraphseparator") after
-[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandIndeterm("formatblock") before
-  assert_equals: Wrong result returned expected true but got false
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandIndeterm("formatblock") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandState("formatblock") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandValue("formatblock") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandIndeterm("formatblock") after
@@ -788,8 +787,7 @@ Found 1000 tests; 978 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandIndeterm("defaultparagraphseparator") after
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandState("defaultparagraphseparator") after
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandValue("defaultparagraphseparator") after
-[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandIndeterm("formatblock") before
-  assert_equals: Wrong result returned expected true but got false
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandIndeterm("formatblock") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandState("formatblock") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandValue("formatblock") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<dl><dt>[foo<dd>bar]</dl>" queryCommandIndeterm("formatblock") after
