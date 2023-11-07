@@ -302,4 +302,25 @@ absl::optional<gfx::ImageSkia> ResizeImageIfExceedSizeLimit(
       gfx::ToFlooredSize(resized_size));
 }
 
+bool IsAshNotificationView(views::View* sender) {
+  auto* message_view = static_cast<message_center::MessageView*>(sender);
+  std::string notification_id = message_view->notification_id();
+
+  message_center::Notification* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id);
+
+  return IsAshNotification(notification);
+}
+
+bool IsAshNotification(const message_center::Notification* notification) {
+  if (!notification ||
+      (notification->type() == message_center::NOTIFICATION_TYPE_CUSTOM &&
+       notification->notifier_id().type ==
+           message_center::NotifierType::ARC_APPLICATION)) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace ash::message_center_utils

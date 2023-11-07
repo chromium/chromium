@@ -368,12 +368,11 @@ void NotificationGroupingController::OnNotificationAdded(
       message_center->FindParentNotification(notification);
   std::string parent_id = parent_notification->id();
 
+  // TODO(b/308814203): clean the static_cast checks by replacing
+  // AshNotificationView* with a base class.
   auto* parent_view =
       (GetActiveNotificationViewController() &&
-       (parent_notification->type() !=
-            message_center::NOTIFICATION_TYPE_CUSTOM ||
-        parent_notification->notifier_id().type !=
-            message_center::NotifierType::ARC_APPLICATION))
+       message_center_utils::IsAshNotification(parent_notification))
           ? static_cast<AshNotificationView*>(
                 GetActiveNotificationViewController()
                     ->GetMessageViewForNotificationId(parent_id))
