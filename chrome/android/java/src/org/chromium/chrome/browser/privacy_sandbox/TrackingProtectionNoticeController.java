@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.Browser;
 
 import androidx.annotation.IntDef;
@@ -23,6 +24,8 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -312,8 +315,19 @@ public class TrackingProtectionNoticeController {
                 int clickedItemID = clickedItem.get(ListMenuItemProperties.MENU_ITEM_ID);
 
                 if (clickedItemID == SETTINGS_ITEM_ID) {
-                    mSettingsLauncher.launchSettingsActivity(
-                            mContext, TrackingProtectionSettings.class);
+                    if (getNoticeType() == NoticeType.ONBOARDING) {
+                        mSettingsLauncher.launchSettingsActivity(
+                                mContext, TrackingProtectionSettings.class);
+                    } else {
+                        Bundle fragmentArguments = new Bundle();
+                        fragmentArguments.putString(
+                                SingleCategorySettings.EXTRA_CATEGORY,
+                                SiteSettingsCategory.preferenceKey(
+                                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES));
+                        mSettingsLauncher.launchSettingsActivity(
+                                mContext, SingleCategorySettings.class, fragmentArguments);
+                    }
+
                     TrackingProtectionBridge.noticeActionTaken(
                             getNoticeType(),
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.SETTINGS);

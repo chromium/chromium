@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+
+<org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/PreferenceLayout"
+    tools:showIn="@layout/tri_state_cookie_settings_preference">
+
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/card_main_icon"
+        android:layout_width="0dp"
+        android:layout_height="26dp"
+        android:layout_weight="1"
+        android:importantForAccessibility="no" />
+
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/card_summary"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="6"
+        style="@style/PreferenceSummary" />
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/close_icon"
+        app:srcCompat="@drawable/btn_close"
+        android:layout_width="0dp"
+        android:layout_height="26dp"
+        android:layout_weight="1"
+        android:contentDescription="@string/close"
+        android:tint="@macro/default_icon_color" />
+
+  </LinearLayout>
+
+</org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>

@@ -1469,8 +1469,8 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesThirdPartyCookies() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
-                new String[] {"info_text", "tri_state_cookie_toggle", "add_exception"},
-                new String[] {"info_text", "tri_state_cookie_toggle"});
+                new String[] {"tri_state_cookie_toggle", "add_exception"},
+                new String[] {"tri_state_cookie_toggle"});
     }
 
     @Test
