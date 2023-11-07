@@ -9537,8 +9537,20 @@ test("unit_tests") {
   }
 
   if (enable_pdf) {
-    sources += [ "../common/pdf_util_unittest.cc" ]
-    deps += [ "//pdf:content_restriction" ]
+    sources += [
+      "../browser/pdf/pdf_viewer_stream_manager_unittest.cc",
+      "../common/pdf_util_unittest.cc",
+    ]
+    deps += [
+      "//base",
+      "//chrome/browser/pdf",
+      "//chrome/browser/pdf:pdf_test_utils",
+      "//extensions/browser",
+      "//net",
+      "//pdf:content_restriction",
+      "//services/network/public/mojom:url_loader_base",
+      "//url",
+    ]
   }
 
   if (enable_plugins) {
