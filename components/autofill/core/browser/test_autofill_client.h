@@ -483,8 +483,6 @@ class TestAutofillClientTemplate : public T {
     return form_origin_.SchemeIs("https");
   }
 
-  void OpenPromoCodeOfferDetailsURL(const GURL& url) override {}
-
   LogManager* GetLogManager() const override { return log_manager_.get(); }
 
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override {

@@ -326,10 +326,6 @@ bool AwAutofillClient::IsContextSecure() const {
            content::SSLStatus::RAN_INSECURE_CONTENT);
 }
 
-void AwAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
-  NOTIMPLEMENTED();
-}
-
 autofill::FormInteractionsFlowId
 AwAutofillClient::GetCurrentFormInteractionsFlowId() {
   // Currently not in use here. See `ChromeAutofillClient` for a proper

@@ -222,10 +222,6 @@ class MockAutofillClient : public autofill::AutofillClient {
               LoadRiskData,
               (base::OnceCallback<void(const std::string&)>),
               (override));
-  MOCK_METHOD(void,
-              OpenPromoCodeOfferDetailsURL,
-              (const GURL& url),
-              (override));
   MOCK_METHOD(autofill::FormInteractionsFlowId,
               GetCurrentFormInteractionsFlowId,
               (),

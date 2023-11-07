@@ -345,6 +345,11 @@ const AutofillAblationStudy& AutofillClient::GetAblationStudy() const {
   return *ablation_study;
 }
 
+void AutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
+  // This is overridden by platform subclasses.
+  NOTIMPLEMENTED();
+}
+
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 AutofillClient::GetDeviceAuthenticator() {
   return nullptr;
