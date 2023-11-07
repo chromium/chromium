@@ -290,7 +290,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_EQ(menu_button->width(), original_menu_button_width);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
+// TODO(crbug.com/1500064): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ThemeChange DISABLED_ThemeChange
+#else
+#define MAYBE_ThemeChange ThemeChange
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, MAYBE_ThemeChange) {
   ASSERT_TRUE(https_server()->Start());
   const GURL app_url = https_server()->GetURL("/banners/theme-color.html");
   helper()->InstallAndLaunchWebApp(browser(), app_url);
