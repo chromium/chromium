@@ -26,7 +26,6 @@ class QuickStartScreen : public BaseScreen,
     CANCEL_AND_RETURN_TO_NETWORK,
     CANCEL_AND_RETURN_TO_SIGNIN,
     WIFI_CREDENTIALS_RECEIVED,
-    WIFI_CONNECTED
   };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;

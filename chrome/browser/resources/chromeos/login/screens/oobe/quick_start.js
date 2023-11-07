@@ -66,14 +66,6 @@ class QuickStartScreen extends QuickStartScreenBase {
         value: {CIRCLE: 0, DIAMOND: 1, TRIANGLE: 2, SQUARE: 3},
         readOnly: true,
       },
-      ssid_: {
-        type: String,
-        value: '',
-      },
-      password_: {
-        type: String,
-        value: '',
-      },
       discoverableName_: {
         type: String,
         value: '',
@@ -97,8 +89,6 @@ class QuickStartScreen extends QuickStartScreenBase {
   constructor() {
     super();
     this.UI_STEPS = QuickStartUIState;
-    this.password_ = '';
-    this.ssid_ = '';
     this.discoverableName_ = '';
     this.usePinInsteadOfQrForVerification_ = false;
     this.qrCodeCanvas = null;
@@ -109,7 +99,6 @@ class QuickStartScreen extends QuickStartScreenBase {
       'setQRCode',
       'setPin',
       'showConnectingToWifi',
-      'showConnectedToWifi',
       'setDiscoverableName',
       'showTransferringGaiaCredentials',
       'showFidoAssertionReceived',
@@ -139,16 +128,6 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   showConnectingToWifi() {
     this.setUIStep(QuickStartUIState.CONNECTING_TO_WIFI);
-  }
-
-  /**
-   * @param {string} ssid
-   * @param {string?} password
-   */
-  showConnectedToWifi(ssid, password) {
-    this.setUIStep(QuickStartUIState.CONNECTED_TO_WIFI);
-    this.ssid_ = ssid;
-    this.password_ = password ? password : '';
   }
 
   /**
@@ -184,10 +163,6 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   getCanvas_() {
     return this.shadowRoot.querySelector('#qrCodeCanvas');
-  }
-
-  onWifiConnectedNextClicked_() {
-    this.userActed('wifi_connected');
   }
 
   onCancelClicked_() {

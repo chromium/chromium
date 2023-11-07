@@ -39,8 +39,6 @@ std::string QuickStartScreen::GetResultString(Result result) {
       return "CancelAndReturnToSignin";
     case Result::WIFI_CREDENTIALS_RECEIVED:
       return "WifiCredentialsReceived";
-    case Result::WIFI_CONNECTED:
-      return "WifiConnected";
   }
 }
 

@@ -1767,7 +1767,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       id: 'quick-start',
       kind: ScreenKind.NORMAL,
       handledSteps:
-          'verification,connecting_to_wifi,connected_to_wifi,gaia_credentials,fido_assertion_received',
+        'verification,connecting_to_wifi,gaia_credentials,fido_assertion_received',
       states: [
         {
           id: 'PinVerification',
@@ -1786,12 +1786,6 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           id: 'ConnectingToWifi',
           trigger: (screen) => {
             screen.showConnectingToWifi();
-          },
-        },
-        {
-          id: 'ConnectedToWifi',
-          trigger: (screen) => {
-            screen.showConnectedToWifi('TestNetwork', 'TestPassword');
           },
         },
         {

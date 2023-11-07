@@ -30,8 +30,6 @@ class QuickStartView : public base::SupportsWeakPtr<QuickStartView> {
   virtual void SetQRCode(base::Value::List blob) = 0;
   virtual void SetDiscoverableName(const std::string& discoverable_name) = 0;
   virtual void ShowConnectingToWifi() = 0;
-  virtual void ShowConnectedToWifi(std::string ssid,
-                                   absl::optional<std::string> password) = 0;
   virtual void ShowTransferringGaiaCredentials() = 0;
   virtual void ShowFidoAssertionReceived(std::string email) = 0;
 };
@@ -55,8 +53,6 @@ class QuickStartScreenHandler : public QuickStartView,
   void SetQRCode(base::Value::List blob) override;
   void SetDiscoverableName(const std::string& discoverable_name) override;
   void ShowConnectingToWifi() override;
-  void ShowConnectedToWifi(std::string ssid,
-                           absl::optional<std::string> password) override;
   void ShowTransferringGaiaCredentials() override;
   void ShowFidoAssertionReceived(std::string email) override;
 

@@ -36,16 +36,6 @@ void QuickStartScreenHandler::ShowConnectingToWifi() {
   CallExternalAPI("showConnectingToWifi");
 }
 
-void QuickStartScreenHandler::ShowConnectedToWifi(
-    std::string ssid,
-    absl::optional<std::string> password) {
-  if (password.has_value()) {
-    CallExternalAPI("showConnectedToWifi", ssid, password.value());
-  } else {
-    CallExternalAPI("showConnectedToWifi", ssid);
-  }
-}
-
 void QuickStartScreenHandler::ShowTransferringGaiaCredentials() {
   CallExternalAPI("showTransferringGaiaCredentials");
 }
