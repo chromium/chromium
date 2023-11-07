@@ -82,6 +82,9 @@ class TestPrintingContext : public PrintingContext {
 
   // Enables tests to fail with a failed error.
   void SetNewDocumentFails() { new_document_fails_ = true; }
+  void SetUpdatePrinterSettingsFails() {
+    update_printer_settings_fails_ = true;
+  }
   void SetUseDefaultSettingsFails() { use_default_settings_fails_ = true; }
 
   // Enables tests to fail with a canceled error.
@@ -144,6 +147,7 @@ class TestPrintingContext : public PrintingContext {
   bool destination_is_preview_ = false;
 #endif
 
+  bool update_printer_settings_fails_ = false;
   bool use_default_settings_fails_ = false;
   bool ask_user_for_settings_cancel_ = false;
   bool new_document_cancels_ = false;

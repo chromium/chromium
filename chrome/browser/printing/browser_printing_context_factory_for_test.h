@@ -27,6 +27,7 @@ class BrowserPrintingContextFactoryForTest
       PrintingContext::ProcessBehavior process_behavior) override;
 
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name);
+  void SetFailedErrorOnUpdatePrinterSettings();
   void SetCancelErrorOnNewDocument(bool cause_errors);
   void SetFailedErrorOnNewDocument(bool cause_errors);
   void SetAccessDeniedErrorOnNewDocument(bool cause_errors);
@@ -45,6 +46,7 @@ class BrowserPrintingContextFactoryForTest
 
  private:
   std::string printer_name_;
+  bool failed_error_for_update_printer_settings_ = false;
   bool cancels_in_new_document_ = false;
   bool failed_error_for_new_document_ = false;
   bool access_denied_errors_for_new_document_ = false;

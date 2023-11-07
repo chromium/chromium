@@ -136,6 +136,10 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
     const PrinterSettings& printer_settings) {
   DCHECK(!in_print_job_);
 
+  if (update_printer_settings_fails_) {
+    return mojom::ResultCode::kFailed;
+  }
+
   // The printer name is to be embedded in the printing context's existing
   // settings.
   const std::string& device_name = base::UTF16ToUTF8(settings_->device_name());

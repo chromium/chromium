@@ -44,6 +44,9 @@ BrowserPrintingContextFactoryForTest::CreatePrintingContext(
   auto context =
       MakeDefaultTestPrintingContext(delegate, process_behavior, printer_name_);
 
+  if (failed_error_for_update_printer_settings_) {
+    context->SetUpdatePrinterSettingsFails();
+  }
   if (cancels_in_new_document_) {
     context->SetNewDocumentCancels();
   }
@@ -87,6 +90,11 @@ BrowserPrintingContextFactoryForTest::CreatePrintingContext(
 void BrowserPrintingContextFactoryForTest::SetPrinterNameForSubsequentContexts(
     const std::string& printer_name) {
   printer_name_ = printer_name;
+}
+
+void BrowserPrintingContextFactoryForTest::
+    SetFailedErrorOnUpdatePrinterSettings() {
+  failed_error_for_update_printer_settings_ = true;
 }
 
 void BrowserPrintingContextFactoryForTest::SetCancelErrorOnNewDocument(
