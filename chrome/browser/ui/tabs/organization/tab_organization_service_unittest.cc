@@ -159,6 +159,11 @@ TEST_F(TabOrganizationServiceTest, SessionFromBrowserPopulatesRequest) {
   session->StartRequest();
   EXPECT_NE(session->request()->response(), nullptr);
   EXPECT_EQ(session->tab_organizations().size(), 1u);
+
+  TabOrganization* organization = session->GetNextTabOrganization();
+  EXPECT_TRUE(organization);
+
+  organization->Accept();
   EXPECT_EQ(browser1->tab_strip_model()->group_model()->ListTabGroups().size(),
             1u);
 }

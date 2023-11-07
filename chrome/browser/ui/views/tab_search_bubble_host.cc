@@ -70,7 +70,9 @@ TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
   if (features::IsTabOrganization()) {
     auto* const tab_organization_service =
         TabOrganizationServiceFactory::GetForProfile(profile);
-    tab_organization_service->AddObserver(this);
+    if (tab_organization_service) {
+      tab_organization_service->AddObserver(this);
+    }
   }
   auto menu_button_controller = std::make_unique<views::MenuButtonController>(
       button,

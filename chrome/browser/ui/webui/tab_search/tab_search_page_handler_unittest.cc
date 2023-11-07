@@ -853,7 +853,7 @@ TEST_F(TabSearchPageHandlerTest, TabOrganizationSessionToMojo) {
       std::make_unique<TabOrganizationSession>(
           nullptr, std::make_unique<TabOrganizationRequest>());
   tab_search::mojom::TabOrganizationSessionPtr mojo_session_ptr =
-      handler()->GetMojoForTabOrganizationSession(*session.get());
+      handler()->GetMojoForTabOrganizationSession(session.get());
 
   EXPECT_EQ(mojo_session_ptr->session_id, session->session_id());
 }

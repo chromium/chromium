@@ -92,3 +92,33 @@ void TabOrganizationService::StartRequest(const Browser* browser) {
     session->StartRequest();
   }
 }
+
+void TabOrganizationService::AcceptTabOrganization(
+    Browser* browser,
+    TabOrganization::ID session_id,
+    TabOrganization::ID organization_id) {
+  TabOrganizationSession* session = GetSessionForBrowser(browser);
+  if (!session || session->session_id() != session_id) {
+    return;
+  }
+
+  TabOrganization* organization = nullptr;
+  for (const std::unique_ptr<TabOrganization>& maybe_organization :
+       session->tab_organizations()) {
+    if (maybe_organization->organization_id() == organization_id) {
+      organization = maybe_organization.get();
+      break;
+    }
+  }
+
+  if (!organization) {
+    return;
+  }
+
+  organization->Accept();
+
+  // if the session is completed, then destroy it.
+  if (session->IsComplete()) {
+    browser_session_map_.erase(browser);
+  }
+}

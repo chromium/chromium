@@ -773,14 +773,10 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionCreation) {
 
   EXPECT_EQ(session->tab_organizations().size(), 1u);
 
-  /*
-    TODO, once completion does not call PopulateAndCreate, the organization must
-    be accepted for the group to be created.
+  TabOrganization* next_organization = session->GetNextTabOrganization();
+  EXPECT_NE(next_organization, nullptr);
+  next_organization->Accept();
 
-    TabOrganization* next_organization = session->GetNextTabOrganization();
-    EXPECT_NE(next_organization, nullptr);
-    next_organization->Accept();
-  */
   EXPECT_EQ(tab_strip_model()->group_model()->ListTabGroups().size(), 1u);
   const tab_groups::TabGroupId group_id =
       tab_strip_model()->group_model()->ListTabGroups().at(0);

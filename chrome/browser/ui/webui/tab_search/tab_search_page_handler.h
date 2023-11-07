@@ -47,7 +47,8 @@ enum class TabSearchRecentlyClosedToggleAction {
 
 class TabSearchPageHandler : public tab_search::mojom::PageHandler,
                              public TabStripModelObserver,
-                             public BrowserTabStripTrackerDelegate {
+                             public BrowserTabStripTrackerDelegate,
+                             public TabOrganizationSession::Observer {
  public:
   TabSearchPageHandler(
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
@@ -92,8 +93,6 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
                     int index,
                     TabChangeType change_type) override;
 
-  void OnTabOrganizationSessionChanged();
-
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(Browser* browser) override;
 
@@ -106,7 +105,13 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   tab_search::mojom::TabOrganizationPtr GetMojoForTabOrganization(
       const TabOrganization* organization) const;
   tab_search::mojom::TabOrganizationSessionPtr GetMojoForTabOrganizationSession(
-      const TabOrganizationSession& session) const;
+      const TabOrganizationSession* session) const;
+
+  // TabOrganizationSession::Observer
+  void OnTabOrganizationSessionUpdated(
+      const TabOrganizationSession* session) override;
+  void OnTabOrganizationSessionDestroyed(
+      TabOrganizationSession::ID session_id) override;
 
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
@@ -192,6 +197,9 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   // Tracks whether the user has evoked |SwitchToTab()| for metric collection
   // purposes.
   bool called_switch_to_tab_ = false;
+
+  // Listened TabOrganization sessions.
+  std::vector<TabOrganizationSession*> listened_sessions_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_

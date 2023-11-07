@@ -127,7 +127,7 @@ void TabOrganizationSession::NotifyObserversOfUpdate() {
 void TabOrganizationSession::OnRequestResponse(
     const TabOrganizationResponse* response) {
   if (response) {
-    PopulateAndCreate(response);
+    PopulateOrganizations(response);
   }
   NotifyObserversOfUpdate();
 }

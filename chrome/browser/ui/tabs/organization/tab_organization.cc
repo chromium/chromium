@@ -119,6 +119,7 @@ void TabOrganization::Accept() {
           tab_strip_model->GetIndexOfWebContents(tab_data->web_contents()));
     }
   }
+  std::sort(valid_indices.begin(), valid_indices.end());
 
   tab_groups::TabGroupId group_id =
       tab_strip_model->AddToNewGroup(valid_indices);
