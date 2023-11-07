@@ -547,6 +547,14 @@ const char kAutofillEnableNewSaveCardBubbleUiDescription[] =
     "When enabled, the user will see a new banner logo and text in the bubble "
     "offering to upload their cards to Google Pay.";
 
+const char kAutofillEnableVcnEnrollLoadingAndConfirmationName[] =
+    "Enable showing loading and confirmation screens for virtual card "
+    "enrollment";
+const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[] =
+    "When enabled, the virtual card enrollment screen will present a loading "
+    "spinner while enrolling the card to the server and present a confirmation "
+    "screen with the result when completed.";
+
 const char kAutofillEnableVirtualCardMetadataName[] =
     "Enable showing metadata for virtual cards";
 const char kAutofillEnableVirtualCardMetadataDescription[] =

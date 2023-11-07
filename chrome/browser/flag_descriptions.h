@@ -325,6 +325,9 @@ extern const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[];
 extern const char kAutofillEnableNewSaveCardBubbleUiName[];
 extern const char kAutofillEnableNewSaveCardBubbleUiDescription[];
 
+extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationName[];
+extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[];
+
 extern const char kAutofillEnableVirtualCardMetadataName[];
 extern const char kAutofillEnableVirtualCardMetadataDescription[];
 

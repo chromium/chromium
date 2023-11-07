@@ -178,6 +178,13 @@ BASE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment,
 #endif
 );
 
+// When enabled, the vcn enroll screen will present a loading spinner while
+// enrolling the card to the server and present a confirmation screen with the
+// result when completed.
+BASE_FEATURE(kAutofillEnableVcnEnrollLoadingAndConfirmation,
+             "AutofillEnableVcnEnrollLoadingAndConfirmation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will show metadata along with other card information
 // when the virtual card is presented to users.
 BASE_FEATURE(kAutofillEnableVirtualCardMetadata,

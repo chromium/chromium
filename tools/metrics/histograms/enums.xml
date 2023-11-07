@@ -42997,6 +42997,8 @@ from previous Chrome versions.
       label="RTCDisallowPlanBOutsideDeprecationTrial:disabled"/>
   <int value="-1641384018" label="SideSearchClearCacheWhenClosed:enabled"/>
   <int value="-1640944841" label="HardwareSecureDecryption:disabled"/>
+  <int value="-1640077990"
+      label="AutofillEnableVcnEnrollLoadingAndConfirmation:disabled"/>
   <int value="-1639631778"
       label="EnableWebHidOnExtensionServiceWorker:enabled"/>
   <int value="-1639534120" label="VaapiVp9kSVCHWEncoding:enabled"/>
@@ -43122,6 +43124,8 @@ from previous Chrome versions.
   <int value="-1588702520" label="WebOTPCrossDevice:disabled"/>
   <int value="-1588221814" label="NtpReducedLogoSpace:disabled"/>
   <int value="-1588015999" label="ParcelTrackingTestData:disabled"/>
+  <int value="-1587103154"
+      label="AutofillEnableVcnEnrollLoadingAndConfirmation:enabled"/>
   <int value="-1586642651" label="MaterialDesignExtensions:disabled"/>
   <int value="-1586295595" label="SidePanelWebView:disabled"/>
   <int value="-1585733447" label="ContextualSearchUnityIntegration:disabled"/>

@@ -663,6 +663,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "autofill-enable-vcn-enroll-loading-and-confirmation",
+    "owners": [ "kavitasoni@chromium.org", "chrome-payments-team@google.com" ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "autofill-enable-virtual-card-metadata",
     "owners": [ "siyua@chromium.org", "siashah@chromium.org"],
     "expiry_milestone": 120

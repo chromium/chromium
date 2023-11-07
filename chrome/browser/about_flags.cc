@@ -11261,6 +11261,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)},
 
+    {"autofill-enable-vcn-enroll-loading-and-confirmation",
+     flag_descriptions::kAutofillEnableVcnEnrollLoadingAndConfirmationName,
+     flag_descriptions::
+         kAutofillEnableVcnEnrollLoadingAndConfirmationDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
