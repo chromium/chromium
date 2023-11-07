@@ -26,6 +26,16 @@ html {
 
   --settings-menu-width: 250px;
   --settings-menu-item-border-width: 2px;
+
+  --settings-toolbar-height: var(--cr-toolbar-height);
+  --settings-toolbar-padding-inline-end: 10px;
+  --settings-toolbar-padding-inline-start: 14px;
+  --settings-toolbar-padding-inline-start-narrow: 14px;
+  --settings-toolbar-padding-top: var(--cr-toolbar-padding-top);
+  --settings-toolbar-search-box-height: 40px;
+  --settings-toolbar-search-box-width: 480px;
+  --settings-toolbar-narrow-search-box-width: 680px;
+  --settings-toolbar-search-field-border-radius: 20px;
 }
 
 /* TODO(b/302374851) Move these vars into the html block above once the feature
@@ -33,6 +43,14 @@ html {
  */
 body.revamp-wayfinding-enabled {
   --settings-menu-width: 280px;
+  --settings-toolbar-height: 72px;
+  --settings-toolbar-padding-inline-end: 16px;
+  --settings-toolbar-padding-inline-start: 32px;
+  --settings-toolbar-padding-inline-start-narrow: 16px;
+  --settings-toolbar-padding-top: 0;
+  --settings-toolbar-search-box-height: 48px;
+  --settings-toolbar-narrow-search-box-width: 512px;
+  --settings-toolbar-search-field-border-radius: 24px;
 }
 
 @media (prefers-color-scheme: dark) {

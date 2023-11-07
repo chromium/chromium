@@ -37,7 +37,8 @@
 
   cr-toolbar-search-field {
     --cr-toolbar-search-field-term-margin: 0;
-    --cr-toolbar-search-field-border-radius: 20px;
+    --cr-toolbar-search-field-border-radius:
+        var(--settings-toolbar-search-field-border-radius);
     --cr-toolbar-search-field-paper-spinner-margin: 0 12px;
     --cr-toolbar-search-field-input-icon-color:
         var(--cros-icon-color-primary);
@@ -48,6 +49,8 @@
         var(--cros-text-color-secondary);
     --cr-toolbar-icon-button-focus-outline-color:
         var(--cros-focus-ring-color);
+    --cr-toolbar-field-max-width: var(--cr-toolbar-field-width);
+    height: var(--settings-toolbar-search-box-height);
     font-size: 13px;
   }
 
@@ -56,7 +59,7 @@
   }
 
   :host([narrow]:not([showing-search])) cr-toolbar-search-field {
-    padding-inline-end: 10px;
+    padding-inline-end: var(--settings-toolbar-padding-inline-end);
   }
 
   :host(:focus-within[showing-search]) cr-toolbar-search-field {
