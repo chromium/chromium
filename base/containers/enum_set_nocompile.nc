@@ -10,9 +10,7 @@
 namespace base {
 namespace {
 
-#if defined(NCTEST_ALL_METHOD_DISALLOWED_ON_LARGE_SPARSE_ENUM) // [r"fatal error: constexpr variable 'set' must be initialized by a constant expression"]
-
-size_t WontCompile() {
+size_t LargeSparseEnum() {
   enum class TestEnumSparse {
     TEST_1 = 1,
     TEST_MIN = 1,
@@ -25,11 +23,9 @@ size_t WontCompile() {
 
   // TestEnumSparseSet::All() does not compile as constexpr because there are
   // more than 64 possible values.
-  constexpr auto set = TestEnumSparseSet::All();
+  constexpr auto set = TestEnumSparseSet::All();  // expected-error {{constexpr variable 'set' must be initialized by a constant expression}}
   return set.Size();
 }
-
-#endif
 
 }  // namespace
 }  // namespace base

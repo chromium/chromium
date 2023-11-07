@@ -9,317 +9,89 @@
 
 namespace base {
 
-#if defined(NCTEST_CHECKED_ITERATORS_CONSTRUCTOR_START_END)  // [r"constexpr variable 'iter' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // start can't be larger than end
-  constexpr CheckedContiguousIterator<const int> iter(kArray + 1, kArray);
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_CONSTRUCTOR_START_CURRENT)  // [r"constexpr variable 'iter' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // current can't be larger than start
-  constexpr CheckedContiguousIterator<const int> iter(kArray + 1, kArray, kArray + 5);
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_CONSTRUCTOR_CURRENT_END)  // [r"constexpr variable 'iter' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // current can't be larger than end
-  constexpr CheckedContiguousIterator<const int> iter(kArray, kArray + 2, kArray + 1);
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_EQ_DIFFERENT_ITER)  // [r"constexpr variable 'equal' must be initialized by a constant expression"]
-
 constexpr int kArray1[] = {1, 2, 3, 4, 5};
 constexpr int kArray2[] = {1, 2, 3, 4, 5};
 
-void WontCompile() {
-  // Can't compare iterators into different containers
-  constexpr CheckedContiguousIterator<const int> iter1(kArray1, kArray1 + 5);
+constexpr auto GetBeginIter() {
+  return CheckedContiguousIterator<const int>(kArray1, kArray1 + 5);
+}
+
+constexpr auto GetEndIter() {
+  return CheckedContiguousIterator<const int>(kArray1, kArray1 + 5,
+                                              kArray1 + 5);
+}
+
+void ConstructorOrdering() {
+  // Start can't be larger than end.
+  constexpr CheckedContiguousIterator<const int> iter1(kArray1 + 1, kArray1);  // expected-error {{constexpr variable 'iter1' must be initialized by a constant expression}}
+
+  // Current can't be larger than start.
+  constexpr CheckedContiguousIterator<const int> iter2(kArray1 + 1, kArray1,  // expected-error {{constexpr variable 'iter2' must be initialized by a constant expression}}
+                                                       kArray1 + 5);
+
+  // Current can't be larger than end.
+  constexpr CheckedContiguousIterator<const int> iter3(kArray1, kArray1 + 2,  // expected-error {{constexpr variable 'iter3' must be initialized by a constant expression}}
+                                                       kArray1 + 1);
+}
+
+void CompareItersFromDifferentContainers() {
+  // Can't compare iterators into different containers.
+  constexpr auto iter1 = GetBeginIter();
   constexpr CheckedContiguousIterator<const int> iter2(kArray2, kArray2 + 5);
-  constexpr bool equal = iter1 == iter2;
+  constexpr bool equal = iter1 == iter2;          // expected-error {{constexpr variable 'equal' must be initialized by a constant expression}}
+  constexpr bool not_equal = iter1 != iter2;      // expected-error {{constexpr variable 'not_equal' must be initialized by a constant expression}}
+  constexpr bool less_than = iter1 < iter2;       // expected-error {{constexpr variable 'less_than' must be initialized by a constant expression}}
+  constexpr bool less_equal = iter1 <= iter2;     // expected-error {{constexpr variable 'less_equal' must be initialized by a constant expression}}
+  constexpr bool greater_than = iter1 > iter2;    // expected-error {{constexpr variable 'greater_than' must be initialized by a constant expression}}
+  constexpr bool greater_equal = iter1 >= iter2;  // expected-error {{constexpr variable 'greater_equal' must be initialized by a constant expression}}
+  constexpr auto difference = iter1 - iter2;      // expected-error {{constexpr variable 'difference' must be initialized by a constant expression}}
 }
 
-#elif defined(NCTEST_CHECKED_ITERATORS_NE_DIFFERENT_ITER)  // [r"constexpr variable 'not_equal' must be initialized by a constant expression"]
-
-constexpr int kArray1[] = {1, 2, 3, 4, 5};
-constexpr int kArray2[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't compare iterators into different containers
-  constexpr CheckedContiguousIterator<const int> iter1(kArray1, kArray1 + 5);
-  constexpr CheckedContiguousIterator<const int> iter2(kArray2, kArray2 + 5);
-  constexpr bool not_equal = iter1 != iter2;
+void DecrementBegin() {
+  constexpr auto past_begin1 = --GetBeginIter();        // expected-error {{constexpr variable 'past_begin1' must be initialized by a constant expression}}
+  constexpr auto past_begin2 = GetBeginIter()--;        // expected-error {{constexpr variable 'past_begin2' must be initialized by a constant expression}}
+  constexpr auto past_begin3 = (GetBeginIter() += -1);  // expected-error {{constexpr variable 'past_begin3' must be initialized by a constant expression}}
+  constexpr auto past_begin4 = GetBeginIter() + -1;     // expected-error {{constexpr variable 'past_begin4' must be initialized by a constant expression}}
+  constexpr auto past_begin5 = (GetBeginIter() -= 1);   // expected-error {{constexpr variable 'past_begin5' must be initialized by a constant expression}}
+  constexpr auto past_begin6 = GetBeginIter() - 1;      // expected-error {{constexpr variable 'past_begin6' must be initialized by a constant expression}}
 }
 
-#elif defined(NCTEST_CHECKED_ITERATORS_LT_DIFFERENT_ITER)  // [r"constexpr variable 'less_than' must be initialized by a constant expression"]
-
-constexpr int kArray1[] = {1, 2, 3, 4, 5};
-constexpr int kArray2[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't compare iterators into different containers
-  constexpr CheckedContiguousIterator<const int> iter1(kArray1, kArray1 + 5);
-  constexpr CheckedContiguousIterator<const int> iter2(kArray2, kArray2 + 5);
-  constexpr bool less_than = iter1 < iter2;
+void IncrementBeginPastEnd() {
+  constexpr auto past_end1 = (GetBeginIter() += 6);   // expected-error {{constexpr variable 'past_end1' must be initialized by a constant expression}}
+  constexpr auto past_end2 = GetBeginIter() + 6;      // expected-error {{constexpr variable 'past_end2' must be initialized by a constant expression}}
+  constexpr auto past_end3 = (GetBeginIter() -= -6);  // expected-error {{constexpr variable 'past_end3' must be initialized by a constant expression}}
+  constexpr auto past_end4 = GetBeginIter() - -6;     // expected-error {{constexpr variable 'past_end4' must be initialized by a constant expression}}
 }
 
-#elif defined(NCTEST_CHECKED_ITERATORS_LE_DIFFERENT_ITER)  // [r"constexpr variable 'less_equal' must be initialized by a constant expression"]
-
-constexpr int kArray1[] = {1, 2, 3, 4, 5};
-constexpr int kArray2[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't compare iterators into different containers
-  constexpr CheckedContiguousIterator<const int> iter1(kArray1, kArray1 + 5);
-  constexpr CheckedContiguousIterator<const int> iter2(kArray2, kArray2 + 5);
-  constexpr bool less_equal = iter1 <= iter2;
+void IncrementEnd() {
+  constexpr auto past_end1 = ++GetEndIter();        // expected-error {{constexpr variable 'past_end1' must be initialized by a constant expression}}
+  constexpr auto past_end2 = GetEndIter()++;        // expected-error {{constexpr variable 'past_end2' must be initialized by a constant expression}}
+  constexpr auto past_end3 = (GetEndIter() += 1);   // expected-error {{constexpr variable 'past_end3' must be initialized by a constant expression}}
+  constexpr auto past_end4 = GetEndIter() + 1;      // expected-error {{constexpr variable 'past_end4' must be initialized by a constant expression}}
+  constexpr auto past_end5 = (GetEndIter() -= -1);  // expected-error {{constexpr variable 'past_end5' must be initialized by a constant expression}}
+  constexpr auto past_end6 = GetEndIter() - -1;     // expected-error {{constexpr variable 'past_end6' must be initialized by a constant expression}}
 }
 
-#elif defined(NCTEST_CHECKED_ITERATORS_GT_DIFFERENT_ITER)  // [r"constexpr variable 'greater_than' must be initialized by a constant expression"]
-
-constexpr int kArray1[] = {1, 2, 3, 4, 5};
-constexpr int kArray2[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't compare iterators into different containers
-  constexpr CheckedContiguousIterator<const int> iter1(kArray1, kArray1 + 5);
-  constexpr CheckedContiguousIterator<const int> iter2(kArray2, kArray2 + 5);
-  constexpr bool greater_than = iter1 > iter2;
+void DecrementEndPastBegin() {
+  constexpr auto past_begin1 = (GetEndIter() += -6);  // expected-error {{constexpr variable 'past_begin1' must be initialized by a constant expression}}
+  constexpr auto past_begin2 = GetEndIter() + -6;     // expected-error {{constexpr variable 'past_begin2' must be initialized by a constant expression}}
+  constexpr auto past_begin3 = (GetEndIter() -= 6);   // expected-error {{constexpr variable 'past_begin3' must be initialized by a constant expression}}
+  constexpr auto past_begin4 = GetEndIter() - 6;      // expected-error {{constexpr variable 'past_begin4' must be initialized by a constant expression}}
 }
 
-#elif defined(NCTEST_CHECKED_ITERATORS_GE_DIFFERENT_ITER)  // [r"constexpr variable 'greater_equal' must be initialized by a constant expression"]
-
-constexpr int kArray1[] = {1, 2, 3, 4, 5};
-constexpr int kArray2[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't compare iterators into different containers
-  constexpr CheckedContiguousIterator<const int> iter1(kArray1, kArray1 + 5);
-  constexpr CheckedContiguousIterator<const int> iter2(kArray2, kArray2 + 5);
-  constexpr bool greater_equal = iter1 >= iter2;
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_PRE_INCR_END)  // [r"constexpr variable 'pre_incr' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-constexpr int PreIncr() {
-  // Can't pre-increment the end iterator.
-  CheckedContiguousIterator<const int> end_iter(kArray, kArray + 5, kArray + 5);
-  ++end_iter;
-  return 0;
-}
-
-void WontCompile() {
-  constexpr int pre_incr = PreIncr();
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_POST_INCR_END)  // [r"constexpr variable 'post_incr' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-constexpr int PostIncr() {
-  // Can't post-increment the end iterator.
-  CheckedContiguousIterator<const int> end_iter(kArray, kArray + 5, kArray + 5);
-  end_iter++;
-  return 0;
-}
-
-void WontCompile() {
-  constexpr int post_incr = PostIncr();
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_PRE_DECR_BEGIN)  // [r"constexpr variable 'pre_decr' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-constexpr int PreDecr() {
-  // Can't pre-decrement the begin iterator.
-  CheckedContiguousIterator<const int> begin_iter(kArray, kArray + 5);
-  --begin_iter;
-  return 0;
-}
-
-void WontCompile() {
-  constexpr int pre_decr = PreDecr();
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_POST_DECR_BEGIN)  // [r"constexpr variable 'post_decr' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-constexpr int PostDecr() {
-  // Can't post-decrement the begin iterator.
-  CheckedContiguousIterator<const int> begin_iter(kArray, kArray + 5);
-  begin_iter--;
-  return 0;
-}
-
-void WontCompile() {
-  constexpr int post_decr = PostDecr();
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_INCR_PAST_END)  // [r"constexpr variable 'incr_past_end' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-constexpr int IncrPastEnd() {
-  // Can't increment iterator past the end.
-  CheckedContiguousIterator<const int> iter(kArray, kArray + 5);
-  iter += 6;
-  return 0;
-}
-
-void WontCompile() {
-  constexpr int incr_past_end = IncrPastEnd();
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_DECR_PAST_BEGIN)  // [r"constexpr variable 'decr_past_begin' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-constexpr int DecrPastBegin() {
-  // Can't decrement iterator past the begin.
-  CheckedContiguousIterator<const int> iter(kArray, kArray + 5);
-  iter += -1;
-  return 0;
-}
-
-void WontCompile() {
-  constexpr int decr_past_begin = DecrPastBegin();
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_INCR_PAST_END_2)  // [r"constexpr variable 'iter_past_end' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't increment iterator past the end.
-  constexpr CheckedContiguousIterator<const int> iter(kArray, kArray + 5);
-  constexpr auto iter_past_end = iter + 6;
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_DECR_PAST_BEGIN_2)  // [r"constexpr variable 'iter_past_begin' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't decrement iterator past the begin.
-  constexpr CheckedContiguousIterator<const int> iter(kArray, kArray + 5);
-  constexpr auto iter_past_begin = iter + (-1);
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_DECR_PAST_BEGIN_3)  // [r"constexpr variable 'decr_past_begin' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-constexpr int DecrPastBegin() {
-  // Can't decrement iterator past the begin.
-  CheckedContiguousIterator<const int> iter(kArray, kArray + 5);
-  iter -= 1;
-  return 0;
-}
-
-void WontCompile() {
-  constexpr int decr_past_begin = DecrPastBegin();
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_INCR_PAST_END_3)  // [r"constexpr variable 'incr_past_end' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-constexpr int IncrPastEnd() {
-  // Can't increment iterator past the end.
-  CheckedContiguousIterator<const int> iter(kArray, kArray + 5);
-  iter -= (-6);
-  return 0;
-}
-
-void WontCompile() {
-  constexpr int incr_past_end = IncrPastEnd();
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_DECR_PAST_BEGIN_4)  // [r"constexpr variable 'iter_past_begin' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't decrement iterator past the begin.
-  constexpr CheckedContiguousIterator<const int> iter(kArray, kArray + 5);
-  constexpr auto iter_past_begin = iter - 1;
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_INCR_PAST_END_4)  // [r"constexpr variable 'iter_past_end' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't increment iterator past the end.
-  constexpr CheckedContiguousIterator<const int> iter(kArray, kArray + 5);
-  constexpr auto iter_past_end = iter - (-6);
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_DIFFERENCE_DIFFERENT_ITER)  // [r"constexpr variable 'difference' must be initialized by a constant expression"]
-
-constexpr int kArray1[] = {1, 2, 3, 4, 5};
-constexpr int kArray2[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't compare iterators into different containers
-  constexpr CheckedContiguousIterator<const int> iter1(kArray1, kArray1 + 5);
-  constexpr CheckedContiguousIterator<const int> iter2(kArray2, kArray2 + 5);
-  constexpr auto difference = iter1 - iter2;
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_STAR_END)  // [r"constexpr variable 'ref' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't dereference the end iterator by star.
-  constexpr CheckedContiguousIterator<const int> end_iter(kArray, kArray + 5, kArray + 5);
-  constexpr auto& ref = *end_iter;
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_ARROW_END)  // [r"constexpr variable 'ptr' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
-  // Can't dereference the end iterator by arrow.
-  constexpr CheckedContiguousIterator<const int> end_iter(kArray, kArray + 5, kArray + 5);
-  constexpr auto* ptr = end_iter.operator->();
-}
-
-#elif defined(NCTEST_CHECKED_ITERATORS_NEGATIVE_OPERATOR_AT)  // [r"constexpr variable 'ref' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
+void DerefBegin() {
   // Can't use a negative index in operator[].
-  constexpr CheckedContiguousIterator<const int> iter(kArray, kArray + 5);
-  constexpr auto& ref = iter[-1];
-}
+  constexpr auto& ref1 = GetBeginIter()[-1];  // expected-error {{constexpr variable 'ref1' must be initialized by a constant expression}}
 
-#elif defined(NCTEST_CHECKED_ITERATORS_OPERATOR_AT_END)  // [r"constexpr variable 'ref' must be initialized by a constant expression"]
-
-constexpr int kArray[] = {1, 2, 3, 4, 5};
-
-void WontCompile() {
   // Can't use a operator[] to deref the end.
-  constexpr CheckedContiguousIterator<const int> iter(kArray, kArray + 5);
-  constexpr auto& ref = iter[5];
+  constexpr auto& ref2 = GetBeginIter()[5];  // expected-error {{constexpr variable 'ref2' must be initialized by a constant expression}}
 }
 
-#endif
+void DerefEnd() {
+  // Can't dereference the end iterator.
+  constexpr auto& ref1 = *GetEndIter();             // expected-error {{constexpr variable 'ref1' must be initialized by a constant expression}}
+  constexpr auto* ptr = GetEndIter().operator->();  // expected-error {{constexpr variable 'ptr' must be initialized by a constant expression}}
+  constexpr auto& ref2 = GetEndIter()[0];           // expected-error {{constexpr variable 'ref2' must be initialized by a constant expression}}
+}
 
 }  // namespace base

@@ -22,12 +22,10 @@ namespace base {
 // (in this case `set.find()` accepts any type that is comparable to a
 // std::string), or pass an explicit projection parameter to Contains, at which
 // point it will always perform a linear search.
-#if defined(NCTEST_CONTAINS_UNEXPECTED_LINEAR_SEARCH)  // [r"Error: About to perform linear search on an associative container."]
-void WontCompile() {
+void UnexpectedLinearSearch() {
   constexpr StringPiece kFoo = "foo";
   std::set<std::string> set = {"foo", "bar", "baz"};
-  Contains(set, kFoo);
+  Contains(set, kFoo);  // expected-error@*:* {{About to perform linear search on an associative container}}
 }
-#endif
 
 }  // namespace base
