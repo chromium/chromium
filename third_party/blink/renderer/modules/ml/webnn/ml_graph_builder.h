@@ -149,8 +149,13 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   // Element-wise unary operations
   MLOperand* abs(const MLOperand* input, ExceptionState& exception_state);
   MLOperand* ceil(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* cos(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* exp(const MLOperand* input, ExceptionState& exception_state);
   MLOperand* floor(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* log(const MLOperand* input, ExceptionState& exception_state);
   MLOperand* neg(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* sin(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* tan(const MLOperand* input, ExceptionState& exception_state);
 
   MLOperand* elu(const MLOperand* input,
                  const MLEluOptions* options,
@@ -247,6 +252,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
   MLActivation* softmax(ExceptionState& exception_state);
+
+  MLOperand* softsign(const MLOperand* input, ExceptionState& exception_state);
+  MLActivation* softsign(ExceptionState& exception_state);
 
   HeapVector<Member<const MLOperand>> split(const MLOperand* input,
                                             const uint32_t splits,

@@ -5622,13 +5622,16 @@ interface MLGraphBuilder
     method constructor
     method conv2d
     method convTranspose2d
+    method cos
     method div
     method elu
+    method exp
     method floor
     method gemm
     method hardSwish
     method input
     method leakyRelu
+    method log
     method matmul
     method max
     method maxPool2d
@@ -5652,10 +5655,13 @@ interface MLGraphBuilder
     method resample2d
     method reshape
     method sigmoid
+    method sin
     method slice
     method softmax
+    method softsign
     method split
     method sub
+    method tan
     method tanh
     method transpose
 interface MLModelLoader

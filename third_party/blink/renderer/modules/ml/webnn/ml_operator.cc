@@ -32,10 +32,20 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "abs";
     case MLOperator::OperatorKind::kCeil:
       return "ceil";
+    case MLOperator::OperatorKind::kCos:
+      return "cos";
+    case MLOperator::OperatorKind::kExp:
+      return "exp";
     case MLOperator::OperatorKind::kFloor:
       return "floor";
+    case MLOperator::OperatorKind::kLog:
+      return "log";
     case MLOperator::OperatorKind::kNeg:
       return "neg";
+    case MLOperator::OperatorKind::kSin:
+      return "sin";
+    case MLOperator::OperatorKind::kTan:
+      return "tan";
     case MLOperator::OperatorKind::kLeakyRelu:
       return "leakyRelu";
     case MLOperator::OperatorKind::kMax:
@@ -88,6 +98,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "resample2d";
     case MLOperator::OperatorKind::kSigmoid:
       return "sigmoid";
+    case MLOperator::OperatorKind::kSoftsign:
+      return "softsign";
     case MLOperator::OperatorKind::kSlice:
       return "slice";
     case MLOperator::OperatorKind::kSoftmax:

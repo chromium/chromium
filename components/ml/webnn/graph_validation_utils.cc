@@ -14,6 +14,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
 namespace webnn {
@@ -157,6 +158,34 @@ bool Operand::operator==(const Operand& other) const {
 
 bool Operand::operator!=(const Operand& other) const {
   return !(*this == other);
+}
+
+std::string DataTypeToString(Operand::DataType data_type) {
+  switch (data_type) {
+    case Operand::DataType::kFloat32:
+      return "float32";
+    case Operand::DataType::kFloat16:
+      return "float16";
+    case Operand::DataType::kInt32:
+      return "int32";
+    case Operand::DataType::kUint32:
+      return "uint32";
+    case Operand::DataType::kInt8:
+      return "int8";
+    case Operand::DataType::kUint8:
+      return "uint8";
+  }
+  NOTREACHED_NORETURN();
+}
+
+std::string DataTypeConstraintToString(
+    const DataTypeConstraintSet& constraint_set) {
+  std::vector<std::string> data_types;
+  data_types.reserve(constraint_set.Size());
+  for (auto data_type : constraint_set) {
+    data_types.push_back(DataTypeToString(data_type));
+  }
+  return base::JoinString(data_types, /* saperator */ ",");
 }
 
 base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
@@ -1075,17 +1104,7 @@ absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
 }
 
 bool IsFloatingPointType(Operand::DataType data_type) {
-  switch (data_type) {
-    case Operand::DataType::kFloat32:
-    case Operand::DataType::kFloat16:
-      return true;
-    case Operand::DataType::kInt32:
-    case Operand::DataType::kUint32:
-    case Operand::DataType::kInt8:
-    case Operand::DataType::kUint8:
-      return false;
-  }
-  NOTREACHED_NORETURN();
+  return DataTypeConstraint::kFloat.Has(data_type);
 }
 
 }  // namespace webnn

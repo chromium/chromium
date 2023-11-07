@@ -51,19 +51,6 @@ namespace {
 
 MLGraphBuilder::BackendForTesting* g_backend_for_testing = nullptr;
 
-bool IsFloatingPointType(V8MLOperandType::Enum operand_type) {
-  switch (operand_type) {
-    case V8MLOperandType::Enum::kFloat32:
-    case V8MLOperandType::Enum::kFloat16:
-      return true;
-    case V8MLOperandType::Enum::kInt32:
-    case V8MLOperandType::Enum::kUint32:
-    case V8MLOperandType::Enum::kInt8:
-    case V8MLOperandType::Enum::kUint8:
-      return false;
-  }
-}
-
 blink::V8MLOperandType::Enum ComponentOperandTypeToBlink(
     webnn::Operand::DataType type) {
   switch (type) {
@@ -347,26 +334,27 @@ MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
   return output.value();
 }
 
-MLOperand* BuildElementWiseUnary(MLGraphBuilder* builder,
-                                 MLOperator::OperatorKind kind,
-                                 const MLOperand* input,
-                                 ExceptionState& exception_state) {
-  // The input type must be one of the floating point types. Although this
-  // constraint is not specified in current WebNN spec, there is a feature
-  // request for that: https://github.com/webmachinelearning/webnn/issues/283
-  if (!IsFloatingPointType(input->Type())) {
+MLOperand* BuildUnaryOperator(
+    MLGraphBuilder* builder,
+    ExceptionState& exception_state,
+    MLOperator::OperatorKind kind,
+    const webnn::DataTypeConstraintSet& data_type_constraint,
+    const MLOperand* input,
+    const bindings::DictionaryBase* options = nullptr) {
+  // The output tensor of unary operator has the same type and dimensions as its
+  // input tensor.
+  if (!data_type_constraint.Has(BlinkOperandTypeToComponent(input->Type()))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "The input type must be one of the floating point types.");
+        String::Format(
+            "The input type must be one of the %s types.",
+            webnn::DataTypeConstraintToString(data_type_constraint).c_str()));
     return nullptr;
   }
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-unary, the shape of the
-  // output tensor is the same as the shape of input tensor.
-  Vector<uint32_t> dims_output = input->Dimensions();
-  auto* unary = MakeGarbageCollected<MLOperator>(builder, kind);
+
+  auto* unary = MakeGarbageCollected<MLOperator>(builder, kind, options);
   auto output = MLOperand::ValidateAndCreateOutput(builder, input->Type(),
-                                                   dims_output, unary);
+                                                   input->Dimensions(), unary);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       output.error());
@@ -705,20 +693,12 @@ MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
   if (!ValidateClampOptions(options, exception_state)) {
     return nullptr;
   }
-  auto* clamp = MakeGarbageCollected<MLOperator>(
-      this, MLOperator::OperatorKind::kClamp, options);
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-clamp, the output tensor of
   // clamp has the same type and dimensions as its input.
-  auto output = MLOperand::ValidateAndCreateOutput(this, input->Type(),
-                                                   input->Dimensions(), clamp);
-  if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
-    return nullptr;
-  }
-  clamp->Connect({input}, {output.value()});
-  return output.value();
+  return BuildUnaryOperator(
+      this, exception_state, MLOperator::OperatorKind::kClamp,
+      webnn::DataTypeConstraintSet::All(), input, options);
 }
 
 MLActivation* MLGraphBuilder::clamp(const MLClampOptions* options,
@@ -995,17 +975,29 @@ BUILD_ELEMENTWISE_BINARY_OP(min, kMin)
 BUILD_ELEMENTWISE_BINARY_OP(max, kMax)
 BUILD_ELEMENTWISE_BINARY_OP(pow, kPow)
 
-#define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind)                           \
-  MLOperand* MLGraphBuilder::op(const MLOperand* input,                   \
-                                ExceptionState& exception_state) {        \
-    return BuildElementWiseUnary(this, MLOperator::OperatorKind::op_kind, \
-                                 input, exception_state);                 \
+#define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind, data_type_constraint) \
+  MLOperand* MLGraphBuilder::op(const MLOperand* input,               \
+                                ExceptionState& exception_state) {    \
+    return BuildUnaryOperator(this, exception_state,                  \
+                              MLOperator::OperatorKind::op_kind,      \
+                              data_type_constraint, input);           \
   }
 
-BUILD_ELEMENTWISE_UNARY_OP(abs, kAbs)
-BUILD_ELEMENTWISE_UNARY_OP(ceil, kCeil)
-BUILD_ELEMENTWISE_UNARY_OP(floor, kFloor)
-BUILD_ELEMENTWISE_UNARY_OP(neg, kNeg)
+BUILD_ELEMENTWISE_UNARY_OP(abs,
+                           kAbs,
+                           Union(webnn::DataTypeConstraint::kFloat,
+                                 webnn::DataTypeConstraint::kSignedInteger))
+BUILD_ELEMENTWISE_UNARY_OP(ceil, kCeil, webnn::DataTypeConstraint::kFloat)
+BUILD_ELEMENTWISE_UNARY_OP(cos, kCos, webnn::DataTypeConstraint::kFloat)
+BUILD_ELEMENTWISE_UNARY_OP(exp, kExp, webnn::DataTypeConstraint::kFloat)
+BUILD_ELEMENTWISE_UNARY_OP(floor, kFloor, webnn::DataTypeConstraint::kFloat)
+BUILD_ELEMENTWISE_UNARY_OP(log, kLog, webnn::DataTypeConstraint::kFloat)
+BUILD_ELEMENTWISE_UNARY_OP(neg,
+                           kNeg,
+                           Union(webnn::DataTypeConstraint::kFloat,
+                                 webnn::DataTypeConstraint::kSignedInteger))
+BUILD_ELEMENTWISE_UNARY_OP(sin, kSin, webnn::DataTypeConstraint::kFloat)
+BUILD_ELEMENTWISE_UNARY_OP(tan, kTan, webnn::DataTypeConstraint::kFloat)
 
 #define BUILD_REDUCE_OP(op, op_kind)                                   \
   MLOperand* MLGraphBuilder::op(const MLOperand* input,                \
@@ -1029,15 +1021,6 @@ BUILD_REDUCE_OP(reduceSumSquare, kReduceSumSquare)
 MLOperand* MLGraphBuilder::elu(const MLOperand* input,
                                const MLEluOptions* options,
                                ExceptionState& exception_state) {
-  // The current spec doesn't specify the operand type constraints of elu. An
-  // issue has been filed to track it:
-  // https://github.com/webmachinelearning/webnn/issues/283.
-  if (!IsFloatingPointType(input->Type())) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The type of input must be one of the floating point types.");
-    return nullptr;
-  }
   // The current spec doesn't restrict the value of alpha. An issue has been
   // filed to track it: https://github.com/webmachinelearning/webnn/issues/383
   if (options->alpha() <= 0.0f) {
@@ -1046,20 +1029,16 @@ MLOperand* MLGraphBuilder::elu(const MLOperand* input,
         "The value of alpha must be greater than 0.");
     return nullptr;
   }
-  auto* elu = MakeGarbageCollected<MLOperator>(
-      this, MLOperator::OperatorKind::kElu, options);
+  // The current spec doesn't specify the operand type constraints of elu. An
+  // issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/283.
+  //
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-elu, the output tensor of
   // elu has the same type and dimensions as its input.
-  auto output = MLOperand::ValidateAndCreateOutput(this, input->Type(),
-                                                   input->Dimensions(), elu);
-  if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
-    return nullptr;
-  }
-  elu->Connect({input}, {output.value()});
-  return output.value();
+  return BuildUnaryOperator(this, exception_state,
+                            MLOperator::OperatorKind::kElu,
+                            webnn::DataTypeConstraint::kFloat, input, options);
 }
 
 MLActivation* MLGraphBuilder::elu(const MLEluOptions* options,
@@ -1114,26 +1093,13 @@ MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,
   // The input type must be one of the floating point types. Although this
   // constraint is not specified in current WebNN spec, there is a feature
   // request for that: https://github.com/webmachinelearning/webnn/issues/283
-  if (!IsFloatingPointType(input->Type())) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The input type must be one of the floating point types.");
-    return nullptr;
-  }
-  auto* hard_swish = MakeGarbageCollected<MLOperator>(
-      this, MLOperator::OperatorKind::kHardSwish);
+  //
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-hard-swish, the output
   // tensor of hard-swish has the same type and dimensions as its input.
-  auto output = MLOperand::ValidateAndCreateOutput(
-      this, input->Type(), input->Dimensions(), hard_swish);
-  if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
-    return nullptr;
-  }
-  hard_swish->Connect({input}, {output.value()});
-  return output.value();
+  return BuildUnaryOperator(this, exception_state,
+                            MLOperator::OperatorKind::kHardSwish,
+                            webnn::DataTypeConstraint::kFloat, input);
 }
 
 MLActivation* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
@@ -1149,27 +1115,13 @@ MLOperand* MLGraphBuilder::leakyRelu(const MLOperand* input,
   // The current spec doesn't specify the operand type constraints of leakyRelu.
   // An issue has been filed to track it:
   // https://github.com/webmachinelearning/webnn/issues/283.
-  if (!IsFloatingPointType(input->Type())) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The type of input must be one of the floating point types.");
-    return nullptr;
-  }
-
-  auto* leaky_relu = MakeGarbageCollected<MLOperator>(
-      this, MLOperator::OperatorKind::kLeakyRelu, options);
+  //
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-relu, the output tensor of
   // relu has the same type and dimensions as its input.
-  auto output = MLOperand::ValidateAndCreateOutput(
-      this, input->Type(), input->Dimensions(), leaky_relu);
-  if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
-    return nullptr;
-  }
-  leaky_relu->Connect({input}, {output.value()});
-  return output.value();
+  return BuildUnaryOperator(this, exception_state,
+                            MLOperator::OperatorKind::kLeakyRelu,
+                            webnn::DataTypeConstraint::kFloat, input, options);
 }
 
 MLActivation* MLGraphBuilder::leakyRelu(const MLLeakyReluOptions* options,
@@ -1287,20 +1239,12 @@ MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
 
 MLOperand* MLGraphBuilder::relu(const MLOperand* input,
                                 ExceptionState& exception_state) {
-  auto* relu =
-      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kRelu);
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-relu, the output tensor of
   // relu has the same type and dimensions as its input.
-  auto output = MLOperand::ValidateAndCreateOutput(this, input->Type(),
-                                                   input->Dimensions(), relu);
-  if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
-    return nullptr;
-  }
-  relu->Connect({input}, {output.value()});
-  return output.value();
+  return BuildUnaryOperator(this, exception_state,
+                            MLOperator::OperatorKind::kRelu,
+                            webnn::DataTypeConstraintSet::All(), input);
 }
 
 MLActivation* MLGraphBuilder::relu(ExceptionState& exception_state) {
@@ -1447,27 +1391,13 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
 
 MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
                                    ExceptionState& exception_state) {
-  auto* sigmoid = MakeGarbageCollected<MLOperator>(
-      this, MLOperator::OperatorKind::kSigmoid);
   // According to WebNN spec
   // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-sigmoid, the
   // output tensor of sigmoid has the same type and dimensions as its input.
   // And the input type must be one of the floating point types.
-  if (!IsFloatingPointType(input->Type())) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The input type must be one of the floating point types.");
-    return nullptr;
-  }
-  auto output = MLOperand::ValidateAndCreateOutput(
-      this, input->Type(), input->Dimensions(), sigmoid);
-  if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
-    return nullptr;
-  }
-  sigmoid->Connect({input}, {output.value()});
-  return output.value();
+  return BuildUnaryOperator(this, exception_state,
+                            MLOperator::OperatorKind::kSigmoid,
+                            webnn::DataTypeConstraint::kFloat, input);
 }
 
 MLActivation* MLGraphBuilder::sigmoid(ExceptionState& exception_state) {
@@ -1533,6 +1463,27 @@ MLActivation* MLGraphBuilder::softmax(ExceptionState& exception_state) {
   // Create the softmax operator that would be used as an activation function.
   return MakeGarbageCollected<MLActivation>(this,
                                             MLOperator::OperatorKind::kSoftmax);
+}
+
+MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
+                                    ExceptionState& exception_state) {
+  // The input type must be one of the floating point types.
+  // The current spec doesn't specify the operand type constraints of softsign,
+  // an issue has been filed to track it-
+  // https://github.com/webmachinelearning/webnn/issues/283.
+  //
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softsign, the output tensor
+  // of softsign has the same type and dimensions as its input.
+  return BuildUnaryOperator(this, exception_state,
+                            MLOperator::OperatorKind::kSoftsign,
+                            webnn::DataTypeConstraint::kFloat, input);
+}
+
+MLActivation* MLGraphBuilder::softsign(ExceptionState& exception_state) {
+  // Create the softsign operator that would be used as an activation function.
+  return MakeGarbageCollected<MLActivation>(
+      this, MLOperator::OperatorKind::kSoftsign);
 }
 
 HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
@@ -1612,26 +1563,13 @@ MLOperand* MLGraphBuilder::tanh(const MLOperand* input,
   // The current spec doesn't specify the operand type constraints of tanh, an
   // issue has been filed to track it-
   // https://github.com/webmachinelearning/webnn/issues/283.
-  if (!IsFloatingPointType(input->Type())) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The input type must be one of the floating point types.");
-    return nullptr;
-  }
-  auto* tanh =
-      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kTanh);
+  //
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-tanh, the output tensor of
   // tanh has the same type and dimensions as its input.
-  auto output = MLOperand::ValidateAndCreateOutput(this, input->Type(),
-                                                   input->Dimensions(), tanh);
-  if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
-    return nullptr;
-  }
-  tanh->Connect({input}, {output.value()});
-  return output.value();
+  return BuildUnaryOperator(this, exception_state,
+                            MLOperator::OperatorKind::kTanh,
+                            webnn::DataTypeConstraint::kFloat, input);
 }
 
 MLActivation* MLGraphBuilder::tanh(ExceptionState& exception_state) {

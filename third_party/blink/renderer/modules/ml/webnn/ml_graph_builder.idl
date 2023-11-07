@@ -141,8 +141,13 @@ dictionary MLSplitOptions {
   // Element-wise unary operations
   [RaisesException] MLOperand abs(MLOperand x);
   [RaisesException] MLOperand ceil(MLOperand x);
+  [RaisesException] MLOperand cos(MLOperand x);
+  [RaisesException] MLOperand exp(MLOperand x);
   [RaisesException] MLOperand floor(MLOperand x);
+  [RaisesException] MLOperand log(MLOperand x);
   [RaisesException] MLOperand neg(MLOperand x);
+  [RaisesException] MLOperand sin(MLOperand x);
+  [RaisesException] MLOperand tan(MLOperand x);
 
   [RaisesException] MLOperand elu(MLOperand x, optional MLEluOptions options = {});
   [RaisesException] MLActivation elu(optional MLEluOptions options = {});
@@ -192,6 +197,9 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand transpose(MLOperand input, optional MLTransposeOptions options = {});
 
   [RaisesException] MLOperand softmax(MLOperand input);
+
+  [RaisesException] MLOperand softsign(MLOperand input);
+  [RaisesException] MLActivation softsign();
 
   [RaisesException] sequence<MLOperand> split(MLOperand input, [EnforceRange] unsigned long splits, optional MLSplitOptions options = {});
   [RaisesException] sequence<MLOperand> split(MLOperand input, sequence<[EnforceRange] unsigned long> splits, optional MLSplitOptions options = {});

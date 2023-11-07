@@ -309,12 +309,27 @@ struct ElementWiseUnaryTester {
         output_operand =
             builder->ceil(input_operand, scope.GetExceptionState());
         break;
+      case ElementWiseUnaryKind::kCos:
+        output_operand = builder->cos(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kExp:
+        output_operand = builder->exp(input_operand, scope.GetExceptionState());
+        break;
       case ElementWiseUnaryKind::kFloor:
         output_operand =
             builder->floor(input_operand, scope.GetExceptionState());
         break;
+      case ElementWiseUnaryKind::kLog:
+        output_operand = builder->log(input_operand, scope.GetExceptionState());
+        break;
       case ElementWiseUnaryKind::kNeg:
         output_operand = builder->neg(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kSin:
+        output_operand = builder->sin(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kTan:
+        output_operand = builder->tan(input_operand, scope.GetExceptionState());
         break;
     }
     auto [graph, build_exception] =

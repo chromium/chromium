@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -49,6 +50,25 @@ struct Operand {
   // The dimensions of the operand.
   std::vector<uint32_t> dimensions;
 };
+
+// TODO(crbug.com/1273291): Use the data type constraint in service side to
+// validate operators.
+using DataTypeConstraintSet = base::EnumSet<Operand::DataType,
+                                            Operand::DataType::kFloat32,
+                                            Operand::DataType::kUint8>;
+
+namespace DataTypeConstraint {
+
+static constexpr DataTypeConstraintSet kFloat = {Operand::DataType::kFloat32,
+                                                 Operand::DataType::kFloat16};
+
+static constexpr DataTypeConstraintSet kSignedInteger = {
+    Operand::DataType::kInt32, Operand::DataType::kInt8};
+
+}  // namespace DataTypeConstraint
+
+std::string DataTypeConstraintToString(
+    const DataTypeConstraintSet& constraint_set);
 
 // Represents the `MLInputOperandLayout` that specifies the layout format of
 // the input tensor. N is the batch, C is input channels, H is height and W is
