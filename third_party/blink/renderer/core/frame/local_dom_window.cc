@@ -456,16 +456,14 @@ bool LocalDOMWindow::CanExecuteScripts(
     return false;
   }
 
-  bool allow_script_renderer = GetFrame()->GetSettings()->GetScriptEnabled();
-  bool allow_script_content_setting =
-      GetFrame()->GetContentSettings()->allow_script;
-  bool script_enabled = allow_script_renderer && allow_script_content_setting;
-  if (!script_enabled && reason == kAboutToExecuteScript) {
-    WebContentSettingsClient* settings_client =
-        GetFrame()->GetContentSettingsClient();
-    if (settings_client) {
-      settings_client->DidNotAllowScript();
-    }
+  WebContentSettingsClient* settings_client =
+      GetFrame()->GetContentSettingsClient();
+  bool script_enabled = GetFrame()->GetSettings()->GetScriptEnabled();
+  if (settings_client) {
+    script_enabled = settings_client->AllowScript(script_enabled);
+  }
+  if (!script_enabled && reason == kAboutToExecuteScript && settings_client) {
+    settings_client->DidNotAllowScript();
   }
   return script_enabled;
 }

@@ -138,14 +138,11 @@ void ImageDocumentParser::AppendBytes(const char* data, size_t length) {
 
   LocalFrame* frame = GetDocument()->GetFrame();
   Settings* settings = frame->GetSettings();
-  bool allow_image_renderer = !settings || settings->GetImagesEnabled();
-  bool allow_image_content_setting = frame->GetContentSettings()->allow_image;
-  bool allow_image = allow_image_renderer && allow_image_content_setting;
+  bool allow_image = !settings || settings->GetImagesEnabled();
+  if (auto* client = frame->GetContentSettingsClient()) {
+    allow_image = client->AllowImage(allow_image, GetDocument()->Url());
+  }
   if (!allow_image) {
-    auto* client = frame->GetContentSettingsClient();
-    if (client) {
-      client->DidNotAllowImage();
-    }
     return;
   }
 

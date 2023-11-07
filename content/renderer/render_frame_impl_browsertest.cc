@@ -56,7 +56,6 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -1121,107 +1120,6 @@ TEST_F(RenderFrameImplTest, SendUpdateCancelsPending) {
   EXPECT_TRUE(main_frame->delayed_state_sync_timer_.IsRunning());
   main_frame->SendUpdateState();
   EXPECT_FALSE(main_frame->delayed_state_sync_timer_.IsRunning());
-}
-
-namespace {
-
-// All content setting tests use the same data url, which contains html which
-// has different behavior depending on whether script is enabled or disabled.
-blink::mojom::CommonNavigationParamsPtr
-GetCommonParamsForContentSettingsTest() {
-  const char kHtml[] =
-      "<html>"
-      "<noscript>JS_DISABLED</noscript>"
-      "<script>document.write('JS_ENABLED');</script>"
-      "</html>";
-  std::string data_url_contents = "data:text/html,";
-  data_url_contents += kHtml;
-
-  auto common_params = blink::CreateCommonNavigationParams();
-  common_params->url = GURL(data_url_contents);
-  return common_params;
-}
-
-// Dump the layout tree and see whether it contains "text".
-bool HasText(blink::WebLocalFrame* frame, const std::string& text) {
-  std::string layout_tree =
-      blink::TestWebFrameContentDumper::DumpLayoutTreeAsText(
-          frame, blink::TestWebFrameContentDumper::kLayoutAsTextNormal)
-          .Utf8();
-
-  return base::Contains(layout_tree, text);
-}
-
-// Waits for the navigation to finish.
-void NavigateAndWait(content::TestRenderFrame* frame,
-                     blink::mojom::CommonNavigationParamsPtr common_params,
-                     blink::mojom::CommitNavigationParamsPtr commit_params,
-                     blink::WebView* web_view) {
-  FrameLoadWaiter waiter(frame);
-  frame->Navigate(std::move(common_params), std::move(commit_params));
-  waiter.Wait();
-}
-
-}  // namespace
-
-// Regression test for crbug.com/232410: Load a page with JS blocked. Then,
-// allow JS and reload the page. In each case, only one of noscript or script
-// tags should be enabled, but never both.
-TEST_F(RenderFrameImplTest, ContentSettingsNoscriptTag) {
-  // Navigate to a URL with script disabled.
-  auto common_params = GetCommonParamsForContentSettingsTest();
-  common_params->navigation_type =
-      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
-  blink::mojom::CommitNavigationParamsPtr commit_params =
-      blink::CreateCommitNavigationParams();
-  commit_params->content_settings->allow_script = false;
-  content::TestRenderFrame* frame =
-      static_cast<TestRenderFrame*>(GetMainRenderFrame());
-
-  NavigateAndWait(frame, common_params->Clone(), commit_params->Clone(),
-                  web_view_);
-  EXPECT_TRUE(HasText(GetMainFrame(), "JS_DISABLED"));
-  EXPECT_FALSE(HasText(GetMainFrame(), "JS_ENABLED"));
-
-  // Reload the page but allow Javascript.
-  common_params->navigation_type = blink::mojom::NavigationType::RELOAD;
-  commit_params->content_settings->allow_script = true;
-  NavigateAndWait(frame, common_params->Clone(), commit_params->Clone(),
-                  web_view_);
-  EXPECT_FALSE(HasText(GetMainFrame(), "JS_DISABLED"));
-  EXPECT_TRUE(HasText(GetMainFrame(), "JS_ENABLED"));
-}
-
-// Checks that same document navigations don't update content settings for the
-// page.
-TEST_F(RenderFrameImplTest, ContentSettingsSameDocumentNavigation) {
-  // Load a page which contains a script.
-  auto common_params = GetCommonParamsForContentSettingsTest();
-  common_params->navigation_type =
-      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
-  blink::mojom::CommitNavigationParamsPtr commit_params =
-      blink::CreateCommitNavigationParams();
-  content::TestRenderFrame* frame =
-      static_cast<TestRenderFrame*>(GetMainRenderFrame());
-
-  NavigateAndWait(frame, common_params->Clone(), commit_params->Clone(),
-                  web_view_);
-
-  // Verify that the script was not blocked.
-  EXPECT_FALSE(HasText(GetMainFrame(), "JS_DISABLED"));
-  EXPECT_TRUE(HasText(GetMainFrame(), "JS_ENABLED"));
-
-  RenderFrameImpl* main_frame = GetMainRenderFrame();
-
-  main_frame->DidFinishSameDocumentNavigation(
-      blink::kWebStandardCommit,
-      /*is_synchronously_committed=*/true,
-      blink::mojom::SameDocumentNavigationType::kFragment,
-      /*is_client_redirect=*/false);
-
-  // Verify that the script was not blocked.
-  EXPECT_FALSE(HasText(GetMainFrame(), "JS_DISABLED"));
-  EXPECT_TRUE(HasText(GetMainFrame(), "JS_ENABLED"));
 }
 
 }  // namespace content

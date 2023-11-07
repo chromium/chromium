@@ -452,6 +452,28 @@ TEST_P(ContentSettingsAgentImplBrowserTest, ContentSettingsBlockScripts) {
   EXPECT_EQ(1, mock_agent.on_content_blocked_count());
 }
 
+TEST_P(ContentSettingsAgentImplBrowserTest, ContentSettingsAllowScripts) {
+  MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
+  // Set the content settings for scripts.
+  RendererContentSettingRules content_setting_rules;
+  ContentSettingsForOneType& script_setting_rules =
+      content_setting_rules.script_rules;
+  script_setting_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+      std::string(), false));
+
+  ContentSettingsAgentImpl* agent =
+      ContentSettingsAgentImpl::Get(GetMainRenderFrame());
+  agent->SetRendererContentSettingRulesForTest(content_setting_rules);
+
+  // Load a page which contains a script.
+  LoadHTML(kScriptHtml);
+
+  // Verify that the script was not blocked.
+  EXPECT_EQ(0, mock_agent.on_content_blocked_count());
+}
+
 TEST_P(ContentSettingsAgentImplBrowserTest,
        ContentSettingsAllowScriptsWithSrc) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
@@ -473,6 +495,103 @@ TEST_P(ContentSettingsAgentImplBrowserTest,
 
   // Verify that the script was not blocked.
   EXPECT_EQ(0, mock_agent.on_content_blocked_count());
+}
+
+// Regression test for crbug.com/232410: Load a page with JS blocked. Then,
+// allow JS and reload the page. In each case, only one of noscript or script
+// tags should be enabled, but never both.
+TEST_P(ContentSettingsAgentImplBrowserTest, ContentSettingsNoscriptTag) {
+  MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
+
+  // 1. Block JavaScript.
+  RendererContentSettingRules content_setting_rules;
+  ContentSettingsForOneType& script_setting_rules =
+      content_setting_rules.script_rules;
+  script_setting_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK),
+      std::string(), false));
+
+  ContentSettingsAgentImpl* agent =
+      ContentSettingsAgentImpl::Get(GetMainRenderFrame());
+  agent->SetRendererContentSettingRulesForTest(content_setting_rules);
+
+  // 2. Load a page which contains a noscript tag and a script tag. Note that
+  // the page doesn't have a body tag.
+  const char kHtml[] =
+      "<html>"
+      "<noscript>JS_DISABLED</noscript>"
+      "<script>document.write('JS_ENABLED');</script>"
+      "</html>";
+  LoadHTML(kHtml);
+  EXPECT_NE(
+      std::string::npos,
+      blink::TestWebFrameContentDumper::DumpLayoutTreeAsText(
+          GetMainFrame(), blink::TestWebFrameContentDumper::kLayoutAsTextNormal)
+          .Utf8()
+          .find("JS_DISABLED"));
+  EXPECT_EQ(
+      std::string::npos,
+      blink::TestWebFrameContentDumper::DumpLayoutTreeAsText(
+          GetMainFrame(), blink::TestWebFrameContentDumper::kLayoutAsTextNormal)
+          .Utf8()
+          .find("JS_ENABLED"));
+
+  // 3. Allow JavaScript.
+  script_setting_rules.clear();
+  script_setting_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+      std::string(), false));
+  agent->SetRendererContentSettingRulesForTest(content_setting_rules);
+
+  // 4. Reload the page.
+  std::string url_str = "data:text/html;charset=utf-8,";
+  url_str.append(kHtml);
+  GURL url(url_str);
+  Reload(url);
+  EXPECT_NE(
+      std::string::npos,
+      blink::TestWebFrameContentDumper::DumpLayoutTreeAsText(
+          GetMainFrame(), blink::TestWebFrameContentDumper::kLayoutAsTextNormal)
+          .Utf8()
+          .find("JS_ENABLED"));
+  EXPECT_EQ(
+      std::string::npos,
+      blink::TestWebFrameContentDumper::DumpLayoutTreeAsText(
+          GetMainFrame(), blink::TestWebFrameContentDumper::kLayoutAsTextNormal)
+          .Utf8()
+          .find("JS_DISABLED"));
+}
+
+// Checks that same document navigations don't update content settings for the
+// page.
+TEST_P(ContentSettingsAgentImplBrowserTest,
+       ContentSettingsSameDocumentNavigation) {
+  MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
+  // Load a page which contains a script.
+  LoadHTML(kScriptHtml);
+
+  // Verify that the script was not blocked.
+  EXPECT_EQ(0, mock_agent.on_content_blocked_count());
+
+  // Block JavaScript.
+  RendererContentSettingRules content_setting_rules;
+  ContentSettingsForOneType& script_setting_rules =
+      content_setting_rules.script_rules;
+  script_setting_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK),
+      std::string(), false));
+
+  ContentSettingsAgentImpl* agent =
+      ContentSettingsAgentImpl::Get(GetMainRenderFrame());
+  agent->SetRendererContentSettingRulesForTest(content_setting_rules);
+
+  // The page shouldn't see the change to script blocking setting after a
+  // same document navigation.
+  OnSameDocumentNavigation(GetMainFrame(), true);
+  EXPECT_TRUE(agent->AllowScript(true));
 }
 
 TEST_P(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesDisabledByRules) {

@@ -62,7 +62,6 @@
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_cache.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-blink-forward.h"
@@ -902,10 +901,6 @@ class CORE_EXPORT LocalFrame final
   GetV8LocalCompileHintsProducer() {
     return *v8_local_compile_hints_producer_;
   }
-
-  // Gets the content settings associated with the current navigation commit.
-  // Can only be called while the frame is not detached.
-  const mojom::RendererContentSettingsPtr& GetContentSettings();
 
  private:
   friend class FrameNavigationDisabler;

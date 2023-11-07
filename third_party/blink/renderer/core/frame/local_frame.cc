@@ -2001,8 +2001,10 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
       return true;
     }
 
-    if (GetContentSettings()->allow_popup) {
-      return true;
+    if (auto* settings_client = Client()->GetContentSettingsClient()) {
+      if (settings_client->AllowPopupsAndRedirects(false /* default_value*/)) {
+        return true;
+      }
     }
     PrintNavigationErrorMessage(
         target_frame,
@@ -3722,11 +3724,6 @@ bool LocalFrame::IsSameOrigin() {
       Tree().Top().GetSecurityContext()->GetSecurityOrigin();
 
   return security_origin->IsSameOriginWith(top_security_origin);
-}
-
-const mojom::RendererContentSettingsPtr& LocalFrame::GetContentSettings() {
-  DCHECK(!IsDetached());
-  return loader_.GetDocumentLoader()->GetContentSettings();
 }
 
 }  // namespace blink
