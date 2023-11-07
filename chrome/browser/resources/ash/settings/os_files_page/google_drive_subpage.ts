@@ -37,7 +37,7 @@ const GOOGLE_DRIVE_DISABLED_PREF = 'gdata.disabled';
 /**
  * The preference containing the value whether bulk pinning is enabled or not.
  */
-const GOOGLE_DRIVE_BULK_PINNING_PREF = 'drivefs.bulk_pinning_enabled';
+const GOOGLE_DRIVE_BULK_PINNING_ENABLED_PREF = 'drivefs.bulk_pinning_enabled';
 
 /**
  * A list of possible confirmation dialogs that may be shown.
@@ -411,7 +411,7 @@ export class SettingsGoogleDriveSubpageElement extends
           'googleDriveCleanUpStorageDisabledUnknownStorageTooltip');
     }
 
-    if (this.getPref(GOOGLE_DRIVE_BULK_PINNING_PREF).value &&
+    if (this.getPref(GOOGLE_DRIVE_BULK_PINNING_ENABLED_PREF).value &&
         this.contentCacheSize_ !== '0 B') {
       return this.i18n('googleDriveCleanUpStorageDisabledFileSyncTooltip');
     }
@@ -447,10 +447,10 @@ export class SettingsGoogleDriveSubpageElement extends
     switch (closedDialogType) {
       case ConfirmationDialogType.DISCONNECT:
         this.setPrefValue(GOOGLE_DRIVE_DISABLED_PREF, true);
-        this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, false);
+        this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_ENABLED_PREF, false);
         break;
       case ConfirmationDialogType.BULK_PINNING_DISABLE:
-        this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, false);
+        this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_ENABLED_PREF, false);
         break;
       case ConfirmationDialogType.BULK_PINNING_CLEAN_UP_STORAGE:
         await this.proxy_.handler.clearPinnedFiles();
@@ -500,7 +500,7 @@ export class SettingsGoogleDriveSubpageElement extends
   private onToggleBulkPinning_(e: Event): void {
     const target = e.target as SettingsToggleButtonElement;
     const newValueAfterToggle =
-        !this.getPref(GOOGLE_DRIVE_BULK_PINNING_PREF).value;
+        !this.getPref(GOOGLE_DRIVE_BULK_PINNING_ENABLED_PREF).value;
 
     if (newValueAfterToggle) {
       this.tryEnableBulkPinning_(target);
@@ -551,18 +551,23 @@ export class SettingsGoogleDriveSubpageElement extends
     }
 
     target.checked = true;
-    this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, true);
+    this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_ENABLED_PREF, true);
     this.proxy_.handler.recordBulkPinningEnabledMetric();
   }
 
   /**
-   * Returns true if the bulk pinning preference is disabled.
+   * Returns true if the "Clean up storage" button should be enabled.
    */
-  private shouldEnableCleanUpStorageButton_(): boolean {
-    return !this.getPref(GOOGLE_DRIVE_BULK_PINNING_PREF).value &&
-        this.contentCacheSize_ !== ContentCacheSizeType.UNKNOWN &&
-        this.contentCacheSize_ !== ContentCacheSizeType.CALCULATING &&
-        this.contentCacheSize_ !== '0 B';
+  private shouldEnableCleanUpStorageButton_(
+      status: Status|null, cacheSize: string|ContentCacheSizeType): boolean {
+    const stage = status?.stage;
+    return (stage == null || stage === Stage.kStopped ||
+            stage === Stage.kSuccess || stage === Stage.kNotEnoughSpace ||
+            stage === Stage.kCannotGetFreeSpace ||
+            stage === Stage.kCannotListFiles ||
+            stage === Stage.kCannotEnableDocsOffline) &&
+        cacheSize !== ContentCacheSizeType.UNKNOWN &&
+        cacheSize !== ContentCacheSizeType.CALCULATING && cacheSize !== '0 B';
   }
 
   /**
