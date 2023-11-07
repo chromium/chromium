@@ -386,8 +386,10 @@ export class DirectoryTreeContainer {
           [fileData.entry as Entry], DRIVE_ENTRY_METADATA_PROPERTY_NAMES);
     }
 
-    if (!navigationRoot?.type ||
-        !NAVIGATION_TYPES_WITHOUT_CHILDREN.has(navigationRoot.type)) {
+    if (!(navigationRoot?.type &&
+          NAVIGATION_TYPES_WITHOUT_CHILDREN.has(navigationRoot.type)) &&
+        // For disabled tree root, we don't render any children inside.
+        !fileData.disabled) {
       // Handle navigation item's children.
       const newChildren = fileData.children || [];
       // Remove non-exist navigation items.

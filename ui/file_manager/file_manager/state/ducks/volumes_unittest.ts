@@ -90,7 +90,10 @@ export async function testAddMyFilesVolume(done: () => void) {
     allEntries: {
       [playFilesEntry.toURL()]: convertEntryToFileData(playFilesEntry),
       [linuxFilesEntry.toURL()]: convertEntryToFileData(linuxFilesEntry),
-      [myFilesVolumeEntry.toURL()]: fileData,
+      [myFilesVolumeEntry.toURL()]: {
+        ...fileData,
+        children: [playFilesEntry.toURL(), linuxFilesEntry.toURL()],
+      },
     },
     volumes: {
       [linuxFilesVolumeInfo.volumeId]: {
@@ -219,7 +222,22 @@ export async function testAddDriveVolume(done: () => void) {
       // My Files entry list.
       [myFilesFileData.entry.toURL()]: myFilesFileData,
       // Fake Drive root entry list.
-      [driveRootEntryListKey]: convertEntryToFileData(driveFakeRootEntryList),
+      [driveRootEntryListKey]: {
+        ...convertEntryToFileData(driveFakeRootEntryList),
+        children: [
+          driveVolumeEntry.toURL(),
+          sharedDriveDisplayRoot.toURL(),
+          computersDisplayRoot.toURL(),
+          fakeSharedWithMeEntry.toURL(),
+          fakeOfflineEntry.toURL(),
+        ],
+      },
+      // Computers.
+      [computersDisplayRoot.toURL()]:
+          convertEntryToFileData(computersDisplayRoot),
+      // Team drives.
+      [sharedDriveDisplayRoot.toURL()]:
+          convertEntryToFileData(sharedDriveDisplayRoot),
       // Shared with me.
       [fakeSharedWithMeEntry.toURL()]:
           convertEntryToFileData(fakeSharedWithMeEntry),
@@ -299,6 +317,7 @@ async function addVolumeForSinglePartitionRemovable(done: () => void) {
         [parentEntry.toURL()]: {
           ...convertEntryToFileData(parentEntry),
           isEjectable: true,
+          children: [volumeEntry.toURL()],
         },
       } :
                              {}),
@@ -394,6 +413,8 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
       [parentEntry.toURL()]: {
         ...convertEntryToFileData(parentEntry),
         isEjectable: true,
+        children:
+            [partition1VolumeEntry.toURL(), partition2VolumeEntry.toURL()],
       },
     },
     volumes: {
@@ -587,6 +608,7 @@ export async function testRemoveVolumeFromMyFiles(done: () => void) {
   const crostiniVolumeEntry = new VolumeEntry(crostiniVolumeInfo);
   const crostiniFileData = convertEntryToFileData(crostiniVolumeEntry);
   initialState.allEntries[crostiniVolumeEntry.toURL()] = crostiniFileData;
+  crostiniVolume.prefixKey = myFilesVolumeEntry.toURL();
   initialState.volumes[crostiniVolume.volumeId] = crostiniVolume;
   fileData.children.push(crostiniVolumeEntry.toURL());
   myFilesVolumeEntry.addEntry(crostiniVolumeEntry);
