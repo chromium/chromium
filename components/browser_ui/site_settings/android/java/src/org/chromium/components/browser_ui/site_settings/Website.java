@@ -179,15 +179,6 @@ public final class Website implements WebsiteEntry {
         assert !info.getSecondaryPattern().equals("*");
         var list = mEmbeddedPermissionInfos.computeIfAbsent(
                 info.getContentSettingType(), k -> new ArrayList<>());
-        for (var existing_info : list) {
-            if (existing_info.getContentSettingType() == info.getContentSettingType()
-                    && existing_info.getPrimaryPattern().equals(info.getPrimaryPattern())
-                    && existing_info.getSecondaryPattern().equals(info.getSecondaryPattern())) {
-                // In incognito mode we can have two exceptions with the same pattern. Only keep
-                // the first one.
-                return;
-            }
-        }
         list.add(info);
     }
 

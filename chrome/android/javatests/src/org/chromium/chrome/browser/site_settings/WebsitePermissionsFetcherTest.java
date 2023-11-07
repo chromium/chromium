@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.site_settings;
 
-import static org.junit.Assert.assertEquals;
-
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
 import static java.util.Map.entry;
@@ -299,17 +297,9 @@ public class WebsitePermissionsFetcherTest {
 
     private static class WebsitePermissionsWaiter extends CallbackHelper
             implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
-
-        private Collection<Website> mSites;
-
         @Override
         public void onWebsitePermissionsAvailable(Collection<Website> sites) {
-            mSites = sites;
             notifyCalled();
-        }
-
-        public Collection<Website> getSites() {
-            return mSites;
         }
     }
 
@@ -353,9 +343,9 @@ public class WebsitePermissionsFetcherTest {
         Assert.assertTrue(map.containsKey(nullOrigin));
         Assert.assertTrue(map.containsKey(nullEmbedder));
 
-        assertEquals("nullBoth", map.get(nullBoth));
-        assertEquals("nullOrigin", map.get(nullOrigin));
-        assertEquals("nullEmbedder", map.get(nullEmbedder));
+        Assert.assertEquals("nullBoth", map.get(nullBoth));
+        Assert.assertEquals("nullOrigin", map.get(nullOrigin));
+        Assert.assertEquals("nullEmbedder", map.get(nullEmbedder));
     }
 
     @Test
@@ -600,7 +590,7 @@ public class WebsitePermissionsFetcherTest {
         // If the ContentSettingsType.NUM_TYPES value changes *and* a new value has been exposed on
         // Android, then please update this code block to include a test for your new type.
         // Otherwise, just update count in the assert.
-        assertEquals(95, ContentSettingsType.NUM_TYPES);
+        Assert.assertEquals(95, ContentSettingsType.NUM_TYPES);
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.COOKIES,
@@ -731,7 +721,7 @@ public class WebsitePermissionsFetcherTest {
 
         fetcher.fetchAllPreferences(
                 (sites) -> {
-                    assertEquals(1, sites.size());
+                    Assert.assertEquals(1, sites.size());
                     Website site = sites.iterator().next();
 
                     Assert.assertTrue(site.getAddress().matches(googleOrigin));
@@ -756,92 +746,92 @@ public class WebsitePermissionsFetcherTest {
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.AR));
 
                     // Check content setting exception types.
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE, ContentSettingsType.COOKIES));
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE, ContentSettingsType.POPUPS));
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE, ContentSettingsType.ADS));
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE, ContentSettingsType.JAVASCRIPT));
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE, ContentSettingsType.SOUND));
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE,
                                     ContentSettingsType.BACKGROUND_SYNC));
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE,
                                     ContentSettingsType.AUTOMATIC_DOWNLOADS));
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE,
                                     ContentSettingsType.JAVASCRIPT_JIT));
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE,
                                     ContentSettingsType.AUTO_DARK_WEB_CONTENT));
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE,
                                     ContentSettingsType.REQUEST_DESKTOP_SITE));
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE,
                                     ContentSettingsType.FEDERATED_IDENTITY_API));
-                    assertEquals(
+                    Assert.assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE, ContentSettingsType.ANTI_ABUSE));
 
                     // Check storage info.
                     ArrayList<StorageInfo> storageInfos = new ArrayList<>(site.getStorageInfo());
-                    assertEquals(1, storageInfos.size());
+                    Assert.assertEquals(1, storageInfos.size());
 
                     StorageInfo storageInfo = storageInfos.get(0);
-                    assertEquals(googleOrigin, storageInfo.getHost());
-                    assertEquals(storageSize, storageInfo.getSize());
+                    Assert.assertEquals(googleOrigin, storageInfo.getHost());
+                    Assert.assertEquals(storageSize, storageInfo.getSize());
 
                     // Check local storage info.
                     LocalStorageInfo localStorageInfo = site.getLocalStorageInfo();
-                    assertEquals(googleOrigin, localStorageInfo.getOrigin());
-                    assertEquals(storageSize, localStorageInfo.getSize());
+                    Assert.assertEquals(googleOrigin, localStorageInfo.getOrigin());
+                    Assert.assertEquals(storageSize, localStorageInfo.getSize());
                     Assert.assertFalse(localStorageInfo.isDomainImportant());
 
                     // Check shared dictionary info.
                     ArrayList<SharedDictionaryInfo> sharedDictionaryInfos =
                             new ArrayList<>(site.getSharedDictionaryInfo());
-                    assertEquals(1, sharedDictionaryInfos.size());
+                    Assert.assertEquals(1, sharedDictionaryInfos.size());
 
                     SharedDictionaryInfo sharedDictionaryInfo = sharedDictionaryInfos.get(0);
-                    assertEquals(googleOrigin, sharedDictionaryInfo.getOrigin());
-                    assertEquals(sharedDictionarySize, sharedDictionaryInfo.getSize());
+                    Assert.assertEquals(googleOrigin, sharedDictionaryInfo.getOrigin());
+                    Assert.assertEquals(sharedDictionarySize, sharedDictionaryInfo.getSize());
 
                     // Check chooser info types.
                     ArrayList<ChosenObjectInfo> chosenObjectInfos =
                             new ArrayList<>(site.getChosenObjectInfo());
-                    assertEquals(2, chosenObjectInfos.size());
-                    assertEquals(
+                    Assert.assertEquals(2, chosenObjectInfos.size());
+                    Assert.assertEquals(
                             ContentSettingsType.BLUETOOTH_CHOOSER_DATA,
                             chosenObjectInfos.get(0).getContentSettingsType());
-                    assertEquals(
+                    Assert.assertEquals(
                             ContentSettingsType.USB_CHOOSER_DATA,
                             chosenObjectInfos.get(1).getContentSettingsType());
                 });
@@ -873,7 +863,7 @@ public class WebsitePermissionsFetcherTest {
 
         fetcher.fetchAllPreferences(
                 (sites) -> {
-                    assertEquals(2, sites.size());
+                    Assert.assertEquals(2, sites.size());
 
                     // The order of |sites| is unknown, so check if the array contains a geolocation
                     // permission for each of the sites.
@@ -904,7 +894,7 @@ public class WebsitePermissionsFetcherTest {
 
         fetcher.fetchAllPreferences(
                 (sites) -> {
-                    assertEquals(3, sites.size());
+                    Assert.assertEquals(3, sites.size());
 
                     ArrayList<Website> siteArray = new ArrayList<>(sites);
                     boolean containsGoogleOriginPermission = false;
@@ -931,13 +921,13 @@ public class WebsitePermissionsFetcherTest {
 
     public void assertContentSettingExceptionEquals(
             ContentSettingException expected, ContentSettingException actual) {
-        assertEquals(expected.getSource(), actual.getSource());
-        assertEquals(expected.isEmbargoed(), actual.isEmbargoed());
-        assertEquals(expected.getPrimaryPattern(), actual.getPrimaryPattern());
-        assertEquals(expected.getSecondaryPattern(), actual.getSecondaryPattern());
-        assertEquals(expected.getContentSetting(), actual.getContentSetting());
-        assertEquals(expected.getExpirationInDays(), actual.getExpirationInDays());
-        assertEquals(expected.hasExpiration(), actual.hasExpiration());
+        Assert.assertEquals(expected.getSource(), actual.getSource());
+        Assert.assertEquals(expected.isEmbargoed(), actual.isEmbargoed());
+        Assert.assertEquals(expected.getPrimaryPattern(), actual.getPrimaryPattern());
+        Assert.assertEquals(expected.getSecondaryPattern(), actual.getSecondaryPattern());
+        Assert.assertEquals(expected.getContentSetting(), actual.getContentSetting());
+        Assert.assertEquals(expected.getExpirationInDays(), actual.getExpirationInDays());
+        Assert.assertEquals(expected.hasExpiration(), actual.hasExpiration());
     }
 
     @Test
@@ -974,7 +964,7 @@ public class WebsitePermissionsFetcherTest {
                     SiteSettingsCategory.createFromContentSettingsType(
                             UNUSED_BROWSER_CONTEXT_HANDLE, type),
                     (sites) -> {
-                        assertEquals(1, sites.size());
+                        Assert.assertEquals(1, sites.size());
 
                         Website site = sites.iterator().next();
                         Assert.assertNotNull(site.getPermissionInfo(type));
@@ -1021,7 +1011,7 @@ public class WebsitePermissionsFetcherTest {
                         SiteSettingsCategory.createFromContentSettingsType(
                                 UNUSED_BROWSER_CONTEXT_HANDLE, type),
                         (sites) -> {
-                            assertEquals(1, sites.size());
+                            Assert.assertEquals(1, sites.size());
 
                             Website site = sites.iterator().next();
                             assertContentSettingExceptionEquals(
@@ -1045,7 +1035,7 @@ public class WebsitePermissionsFetcherTest {
                         SiteSettingsCategory.createFromContentSettingsType(
                                 UNUSED_BROWSER_CONTEXT_HANDLE, type),
                         (sites) -> {
-                            assertEquals(1, sites.size());
+                            Assert.assertEquals(1, sites.size());
 
                             Website site = sites.iterator().next();
                             assertContentSettingExceptionEquals(
@@ -1100,7 +1090,7 @@ public class WebsitePermissionsFetcherTest {
                         SiteSettingsCategory.createFromContentSettingsType(
                                 UNUSED_BROWSER_CONTEXT_HANDLE, contentSettingsType),
                         (sites) -> {
-                            assertEquals(1, sites.size());
+                            Assert.assertEquals(1, sites.size());
 
                             Website site = sites.iterator().next();
                             assertContentSettingExceptionEquals(
@@ -1126,7 +1116,7 @@ public class WebsitePermissionsFetcherTest {
                         SiteSettingsCategory.createFromContentSettingsType(
                                 UNUSED_BROWSER_CONTEXT_HANDLE, contentSettingsType),
                         (sites) -> {
-                            assertEquals(1, sites.size());
+                            Assert.assertEquals(1, sites.size());
 
                             Website site = sites.iterator().next();
                             assertContentSettingExceptionEquals(
@@ -1166,29 +1156,30 @@ public class WebsitePermissionsFetcherTest {
                 SiteSettingsCategory.createFromType(
                         UNUSED_BROWSER_CONTEXT_HANDLE, SiteSettingsCategory.Type.USE_STORAGE),
                 (sites) -> {
-                    assertEquals(1, sites.size());
+                    Assert.assertEquals(1, sites.size());
 
                     Website site = sites.iterator().next();
                     List<StorageInfo> storageInfos = site.getStorageInfo();
-                    assertEquals(1, storageInfos.size());
+                    Assert.assertEquals(1, storageInfos.size());
 
                     StorageInfo storageInfo = storageInfos.get(0);
-                    assertEquals(fakeStorageInfo.getSize(), storageInfo.getSize());
-                    assertEquals(fakeStorageInfo.getHost(), storageInfo.getHost());
+                    Assert.assertEquals(fakeStorageInfo.getSize(), storageInfo.getSize());
+                    Assert.assertEquals(fakeStorageInfo.getHost(), storageInfo.getHost());
 
                     LocalStorageInfo localStorageInfo = site.getLocalStorageInfo();
                     Assert.assertFalse(localStorageInfo.isDomainImportant());
-                    assertEquals(fakeLocalStorageInfo.getSize(), localStorageInfo.getSize());
-                    assertEquals(fakeLocalStorageInfo.getOrigin(), localStorageInfo.getOrigin());
+                    Assert.assertEquals(fakeLocalStorageInfo.getSize(), localStorageInfo.getSize());
+                    Assert.assertEquals(
+                            fakeLocalStorageInfo.getOrigin(), localStorageInfo.getOrigin());
 
                     List<SharedDictionaryInfo> sharedDictionaryInfos =
                             site.getSharedDictionaryInfo();
-                    assertEquals(1, sharedDictionaryInfos.size());
+                    Assert.assertEquals(1, sharedDictionaryInfos.size());
 
                     SharedDictionaryInfo sharedDictionaryInfo = sharedDictionaryInfos.get(0);
-                    assertEquals(
+                    Assert.assertEquals(
                             fakeSharedDictionaryInfo.getOrigin(), sharedDictionaryInfo.getOrigin());
-                    assertEquals(
+                    Assert.assertEquals(
                             fakeSharedDictionaryInfo.getSize(), sharedDictionaryInfo.getSize());
                 });
 
@@ -1199,47 +1190,47 @@ public class WebsitePermissionsFetcherTest {
                 SiteSettingsCategory.createFromType(
                         UNUSED_BROWSER_CONTEXT_HANDLE, SiteSettingsCategory.Type.USE_STORAGE),
                 (sites) -> {
-                    assertEquals(2, sites.size());
+                    Assert.assertEquals(2, sites.size());
 
                     for (Website site : sites) {
                         if (site.getAddress().matches(googleOrigin)) {
                             List<StorageInfo> storageInfos = site.getStorageInfo();
-                            assertEquals(1, storageInfos.size());
+                            Assert.assertEquals(1, storageInfos.size());
 
                             StorageInfo storageInfo = storageInfos.get(0);
-                            assertEquals(fakeStorageInfo.getSize(), storageInfo.getSize());
-                            assertEquals(fakeStorageInfo.getHost(), storageInfo.getHost());
+                            Assert.assertEquals(fakeStorageInfo.getSize(), storageInfo.getSize());
+                            Assert.assertEquals(fakeStorageInfo.getHost(), storageInfo.getHost());
 
                             Assert.assertNull(site.getLocalStorageInfo());
 
                             List<SharedDictionaryInfo> sharedDictionaryInfos =
                                     site.getSharedDictionaryInfo();
-                            assertEquals(1, sharedDictionaryInfos.size());
+                            Assert.assertEquals(1, sharedDictionaryInfos.size());
 
                             SharedDictionaryInfo sharedDictionaryInfo =
                                     sharedDictionaryInfos.get(0);
-                            assertEquals(
+                            Assert.assertEquals(
                                     fakeSharedDictionaryInfo.getOrigin(),
                                     sharedDictionaryInfo.getOrigin());
-                            assertEquals(
+                            Assert.assertEquals(
                                     fakeSharedDictionaryInfo.getSize(),
                                     sharedDictionaryInfo.getSize());
                         } else if (site.getAddress().matches(chromiumOrigin)) {
                             List<StorageInfo> storageInfos = site.getStorageInfo();
-                            assertEquals(0, storageInfos.size());
+                            Assert.assertEquals(0, storageInfos.size());
 
                             LocalStorageInfo localStorageInfo = site.getLocalStorageInfo();
                             Assert.assertTrue(localStorageInfo.isDomainImportant());
-                            assertEquals(
+                            Assert.assertEquals(
                                     fakeImportantLocalStorageInfo.getSize(),
                                     localStorageInfo.getSize());
-                            assertEquals(
+                            Assert.assertEquals(
                                     fakeImportantLocalStorageInfo.getOrigin(),
                                     localStorageInfo.getOrigin());
 
                             List<SharedDictionaryInfo> sharedDictionaryInfos =
                                     site.getSharedDictionaryInfo();
-                            assertEquals(0, sharedDictionaryInfos.size());
+                            Assert.assertEquals(0, sharedDictionaryInfos.size());
                         } else {
                             Assert.fail(
                                     "The WebsitePermissionsFetcher should only return "
@@ -1282,12 +1273,12 @@ public class WebsitePermissionsFetcherTest {
             fetcher.fetchPreferencesForCategory(
                     SiteSettingsCategory.createFromType(UNUSED_BROWSER_CONTEXT_HANDLE, type),
                     (sites) -> {
-                        assertEquals(1, sites.size());
+                        Assert.assertEquals(1, sites.size());
 
                         List<ChosenObjectInfo> objectInfos =
                                 new ArrayList<>(sites.iterator().next().getChosenObjectInfo());
-                        assertEquals(1, objectInfos.size());
-                        assertEquals(fakeObjectInfo, objectInfos.get(0));
+                        Assert.assertEquals(1, objectInfos.size());
+                        Assert.assertEquals(fakeObjectInfo, objectInfos.get(0));
                     });
         }
     }
@@ -1361,7 +1352,7 @@ public class WebsitePermissionsFetcherTest {
                             (sites) -> {
                                 // Verify the number of sites is the same of the origins with
                                 // exceptions.
-                                assertEquals(origins.size(), sites.size());
+                                Assert.assertEquals(origins.size(), sites.size());
 
                                 ArrayList<Website> siteArray = new ArrayList<>(sites);
                                 for (Website site : siteArray) {
@@ -1369,68 +1360,29 @@ public class WebsitePermissionsFetcherTest {
                                     // members within the group of sites with data.
                                     if (site.compareByAddressTo(expectedYoutubeWebsite) == 0) {
                                         Assert.assertNotNull(site.getFPSCookieInfo());
-                                        assertEquals(
+                                        Assert.assertEquals(
                                                 "google.com", site.getFPSCookieInfo().getOwner());
-                                        assertEquals(4, site.getFPSCookieInfo().getMembersCount());
+                                        Assert.assertEquals(
+                                                4, site.getFPSCookieInfo().getMembersCount());
                                     }
                                     // Verify verizonconnect.com has verizon.com as FPS owner which
                                     // has 2 members within the group of sites with data.
                                     if (site.compareByAddressTo(expectedVerizonConnectWebsite)
                                             == 0) {
                                         Assert.assertNotNull(site.getFPSCookieInfo());
-                                        assertEquals(
+                                        Assert.assertEquals(
                                                 "verizon.com", site.getFPSCookieInfo().getOwner());
-                                        assertEquals(2, site.getFPSCookieInfo().getMembersCount());
+                                        Assert.assertEquals(
+                                                2, site.getFPSCookieInfo().getMembersCount());
                                     }
 
                                     // Verify a website with data which is not in a FPS has no FPS
                                     // data set.
                                     if (site.compareByAddressTo(expectedNoInFPSWebsite) == 0) {
-                                        assertEquals(null, site.getFPSCookieInfo());
+                                        Assert.assertEquals(null, site.getFPSCookieInfo());
                                     }
                                 }
                             });
                 });
-    }
-
-    @Test
-    @SmallTest
-    public void testIncognitoFetching() throws TimeoutException {
-        WebsitePermissionsFetcher fetcher =
-                new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
-        FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
-        fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
-        String origin = "https://example.com";
-        final WebsitePermissionsWaiter waiter = new WebsitePermissionsWaiter();
-
-        // Add a ALLOW exception and a ASK exception for the same pattern to simulate a permission
-        // from regular mode that was inherited as ASK and a permission from incognito mode.
-        websitePreferenceBridge.addContentSettingException(
-                new ContentSettingException(
-                        ContentSettingsType.STORAGE_ACCESS,
-                        origin,
-                        origin,
-                        ContentSettingValues.ALLOW,
-                        "source",
-                        null,
-                        false));
-        websitePreferenceBridge.addContentSettingException(
-                new ContentSettingException(
-                        ContentSettingsType.STORAGE_ACCESS,
-                        origin,
-                        origin,
-                        ContentSettingValues.ASK,
-                        "source",
-                        null,
-                        false));
-        fetcher.fetchAllPreferences(waiter);
-        waiter.waitForFirst();
-
-        // Check that only the ALLOW exception is fetched.
-        assertEquals(1, waiter.getSites().size());
-        var site = waiter.getSites().iterator().next();
-        var permission = site.getEmbeddedPermissions().get(ContentSettingsType.STORAGE_ACCESS);
-        assertEquals(1, permission.size());
-        assertEquals(ContentSettingValues.ALLOW, (int) permission.get(0).getContentSetting());
     }
 }
