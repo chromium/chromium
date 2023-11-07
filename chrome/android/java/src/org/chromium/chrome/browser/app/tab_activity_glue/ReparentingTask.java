@@ -146,6 +146,11 @@ public class ReparentingTask implements UserData {
         // because many code paths (including navigation) expect the tab to always be associated
         // with an activity, and will crash. crbug.com/657007
         WebContents webContents = mTab.getWebContents();
+
+        // TODO(crbug/1463737): We shouldn't be detaching tabs with null WebContents as it can
+        // put the tab into an unexpected detached = false state if a navigation happens on the
+        // detached tab.
+        assert webContents != null : "WebContents should not be null when detaching a tab.";
         if (webContents != null) webContents.setTopLevelNativeWindow(null);
 
         // TabModelSelector of this Tab, if present, gets notified to remove the tab from
