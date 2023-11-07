@@ -213,15 +213,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1796561540704213354">Sitios web que inclúen as páxinas que visitaches e as abertas</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="1816896987747843206">Desta forma, poderán acceder á cámara todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
-<translation id="1823280932251546115">Bandexa de estado, hora: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Activar acceso á localización</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> (soltouse)</translation>

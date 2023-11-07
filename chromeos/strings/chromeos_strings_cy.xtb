@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
+<translation id="1003363546227723021">Pan fydd eich sgrîn yn segur, dangoswch luniau, yr amser, y tywydd a gwybodaeth am y cyfryngau</translation>
 <translation id="1014750484722996375">Desgiau</translation>
 <translation id="1018219910092211213">Methu â datrys DNS</translation>
 <translation id="1018656279737460067">Canslwyd</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Gosod ChromeOS Flex</translation>
 <translation id="1856388568474281774">Saeth i lawr</translation>
 <translation id="1858620243986915808">Atodi sgrinlun</translation>
+<translation id="1871413952174074704">Ni all APN gael mwy na <ph name="CHAR_LIMIT" /> nod</translation>
 <translation id="1871569928317311284">Diffodd y thema dywyll</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Diffodd y modd tywyll</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Cuddio'r adroddiad</translation>
 <translation id="500920857929044050">Stopio'r prawf</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Pan fydd eich sgrîn yn segur, dangoswch luniau, yr amser, y tywydd a gwybodaeth am y cyfryngau.</translation>
 <translation id="5035083460461104704">Lliw thema</translation>
 <translation id="5038292761217083259">bysellfwrdd amryliw</translation>
 <translation id="5039804452771397117">Caniatáu</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Pinc golau</translation>
 <translation id="982713511914535780">Rhedeg prawf Dadwefru</translation>
 <translation id="987264212798334818">Cyffredinol</translation>
+<translation id="995062385528875723">Methu â defnyddio llythrennau ag acenion, yr wyddor nad yw'n Lladin, na symbolau</translation>
 </translationbundle>

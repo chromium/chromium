@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1003363546227723021">Wenn der Bildschirm inaktiv ist, können Sie sich Fotos, die Zeit sowie Wetter- und Medieninformationen anzeigen lassen</translation>
 <translation id="1014750484722996375">Desktops</translation>
 <translation id="1018219910092211213">DNS kann nicht aufgelöst werden</translation>
 <translation id="1018656279737460067">Abgebrochen</translation>
@@ -42,6 +43,7 @@
 <translation id="1290331692326790741">Schwaches Signal</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Wird aktualisiert (<ph name="PERCENTAGE_VALUE" /> % abgeschlossen)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> Minuten</translation>
 <translation id="1310380015393971138">Kein Netzwerk (<ph name="NETWORK_NAME" />) verfügbar</translation>
 <translation id="131421566576084655">Datum, an dem die Datennutzung zuletzt zurückgesetzt wurde, nicht verfügbar</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -133,6 +135,7 @@
 <translation id="1852934301711881861">Chrome OS Flex installieren</translation>
 <translation id="1856388568474281774">Abwärtspfeil</translation>
 <translation id="1858620243986915808">Screenshot anhängen</translation>
+<translation id="1871413952174074704">Der APN darf maximal <ph name="CHAR_LIMIT" /> Zeichen enthalten</translation>
 <translation id="1871569928317311284">Dunkles Design ausschalten</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Dunklen Modus ausschalten</translation>
@@ -531,7 +534,6 @@
 <translation id="4999333166442584738">Bericht ausblenden</translation>
 <translation id="500920857929044050">Test beenden</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Wenn der Bildschirm inaktiv ist, kannst du dir Fotos, die Zeit sowie Wetter- und Medieninformationen anzeigen lassen.</translation>
 <translation id="5035083460461104704">Designfarbe</translation>
 <translation id="5038292761217083259">Mehrfarbige Tastatur</translation>
 <translation id="5039804452771397117">Zulassen</translation>
@@ -947,6 +949,7 @@
 <translation id="8227119283605456246">Datei anhängen</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8246209727385807362">Unbekannter Mobilfunkanbieter</translation>
+<translation id="8262870577632766028">1 Stunde</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Stelle bitte eine Verbindung zu einem Netzwerk her und lade die Seite neu, um den Hintergrund anzusehen.</translation>
 <translation id="8291967909914612644">Land des Homepageanbieters</translation>
@@ -1099,4 +1102,5 @@
 <translation id="979450713603643090">Hellrosa</translation>
 <translation id="982713511914535780">Entladetest ausführen</translation>
 <translation id="987264212798334818">Allgemein</translation>
+<translation id="995062385528875723">Buchstaben mit Akzent, Zeichen, die nicht aus dem lateinischen Alphabet stammen, und Symbole sind nicht zulässig</translation>
 </translationbundle>

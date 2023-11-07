@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1003363546227723021">When your screen is idle, show photos, time, weather and media info</translation>
 <translation id="1014750484722996375">Desks</translation>
 <translation id="1018219910092211213">Can't resolve DNS</translation>
 <translation id="1018656279737460067">Cancelled</translation>
@@ -535,7 +536,6 @@
 <translation id="4999333166442584738">Hide report</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">When your screen is idle, show photos, time, weather and media info.</translation>
 <translation id="5035083460461104704">Theme colour</translation>
 <translation id="5038292761217083259">keyboard multicolour</translation>
 <translation id="5039804452771397117">Allow</translation>

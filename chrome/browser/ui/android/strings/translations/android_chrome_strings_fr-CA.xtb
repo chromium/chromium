@@ -140,6 +140,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1750259112639922169">Groupe d'onglets – <ph name="TAB_COUNT" /> onglet(s)</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="1757620656501361327">Mise à jour du gestionnaire de mots de passe Google</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pages, 1 page dans la liste}one{Pages, # page dans la liste}other{Pages, # pages dans la liste}}</translation>
 <translation id="1778457539567749232">Marquer comme non lu</translation>
 <translation id="1779766957982586368">Fermer la fenêtre</translation>
 <translation id="1791662854739702043">Module installé</translation>
@@ -249,6 +250,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2414886740292270097">Foncé</translation>
 <translation id="2421705177906985956">Aucun site à afficher pour le moment</translation>
 <translation id="2426805022920575512">Choisir un autre compte</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vidéos, 1 vidéo dans la liste}one{Vidéos, # vidéo dans la liste}other{Vidéos, # vidéos dans la liste}}</translation>
 <translation id="2433507940547922241">Apparence</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
 <translation id="2439153523196674349">Aperçu de <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4864369630010738180">Connexion en cours…</translation>
 <translation id="4866368707455379617">Impossible d'installer <ph name="MODULE" /> dans Chrome</translation>
 <translation id="4871568871368204250">Désactiver la synchronisation</translation>
+<translation id="4874961007154620743">Si l'option est désactivée, vous verrez toujours les suggestions fournies par Chrome localement</translation>
 <translation id="4875775213178255010">Suggestions de contenu</translation>
 <translation id="4877678010818027629">Activer le mode de navigation privée</translation>
 <translation id="4878404682131129617">Échec de l'établissement d'un tunnel par l'intermédiaire d'un serveur mandataire</translation>
@@ -1100,6 +1103,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6795633245022906657">Ouvrez rapidement un nouvel onglet. Pour modifier ce raccourci, accédez à Paramètres.</translation>
 <translation id="6802555630140434547">La fenêtre sera fermée</translation>
 <translation id="6811034713472274749">La page est prête pour consultation</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Images, 1 image dans la liste}one{Images, # image dans la liste}other{Images, # images dans la liste}}</translation>
 <translation id="6813446258015311409">Se connecter à Chrome, ouvert.</translation>
 <translation id="6817747507826986771">Partagez rapidement cette page. Pour modifier ce raccourci, maintenez le doigt sur celui-ci.</translation>
 <translation id="6819199143469632133">Pour diffuser vos données Google sur tous les appareils, connectez-vous</translation>
@@ -1113,6 +1117,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6846298663435243399">Chargement en cours...</translation>
 <translation id="6850409657436465440">Votre téléchargement est toujours en cours</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> onglets fermés</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Fichiers audio, 1 fichier audio dans la liste}one{Fichiers audio, # fichier audio dans la liste}other{Fichiers audio, # fichiers audio dans la liste}}</translation>
 <translation id="685850645784703949">Découvertes par Google (désactivé)</translation>
 <translation id="686366188661646310">Supprimer le mot de passe?</translation>
 <translation id="6864459304226931083">Télécharger l'image</translation>
@@ -1218,6 +1223,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7379900596734708416">Le thème sombre pour les sites est accessible</translation>
 <translation id="7388615499319468910">Les sites et les annonceurs peuvent mieux comprendre la performance des annonces. Ce paramètre est désactivé.</translation>
 <translation id="7397416715506917976">Afficher stat. de la page</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Autre, 1 fichier dans la liste}one{Autre, # fichier dans la liste}other{Autre, # fichiers dans la liste}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Expérience de première utilisation de Chrome</translation>
 <translation id="7411224099004328643">Utilisateur du compte Google</translation>
@@ -1311,6 +1317,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="780301667611848630">Non merci</translation>
 <translation id="7808889146555843082">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="SITE" />. Changez votre mot de passe ou supprimez votre compte sur <ph name="SITE" /> pour le protéger des autres.</translation>
 <translation id="7810647596859435254">Ouvrir avec…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tous les fichiers, 1 fichier dans la liste}one{Tous les fichiers, # fichier dans la liste}other{Tous les fichiers, # fichiers dans la liste}}</translation>
 <translation id="7815484226266492798">Capture d'écran longue</translation>
 <translation id="7822705602465980873">Lorsque vous êtes connecté, ces données sont associées à votre compte Google pour vous protéger dans l'ensemble des services Google. Elles permettent, par exemple, de renforcer la protection dans Gmail à la suite d'un incident de sécurité.</translation>
 <translation id="782705168687182233">Votre activité est enregistrée dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" />.</translation>
@@ -1535,6 +1542,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> est prêt</translation>
 <translation id="8937772741022875483">Supprimer votre activité Chrome de Bien-être numérique?</translation>
+<translation id="893938492099608175">Selon vos paramètres, Chrome peut également envoyer des témoins, votre URL actuelle et votre position</translation>
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
 <translation id="8945143127965743188">Impossible de télécharger cette langue : <ph name="LANG" />. Réessayez plus tard.</translation>
 <translation id="8955719471735800169">Retour en haut de la page</translation>

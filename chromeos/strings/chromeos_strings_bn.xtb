@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1003363546227723021">আপনার স্ক্রিন ব্যবহার না হলে ফটো, সময়, আবহাওয়া এবং মিডিয়া সম্পর্কিত তথ্য দেখুন</translation>
 <translation id="1014750484722996375">ডেস্ক</translation>
 <translation id="1018219910092211213">ডিএনএস (DNS) সংক্রান্ত সমস্যার সমাধান করা যায়নি</translation>
 <translation id="1018656279737460067">বাতিল হয়েছে</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">রিপোর্ট লুকান</translation>
 <translation id="500920857929044050">টেস্ট বন্ধ করুন</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">আপনার স্ক্রিন ব্যবহার না হলে ফটো, সময়, আবহাওয়া এবং মিডিয়া সম্পর্কিত তথ্য দেখুন।</translation>
 <translation id="5035083460461104704">থিমের রঙ</translation>
 <translation id="5038292761217083259">কীবোর্ড মাল্টিকালার</translation>
 <translation id="5039804452771397117">অনুমতি দিন</translation>

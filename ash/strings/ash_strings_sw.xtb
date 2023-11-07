@@ -213,15 +213,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1796561540704213354">Tovuti zinajumuisha kurasa ulizotembelea na kurasa zilizofunguliwa</translation>
 <translation id="181103072419391116">Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>
 <translation id="1816896987747843206">Hatua hii huruhusu ufikiaji wa kamera katika programu na tovuti zote zilizo na ruhusa ya kufikia kamera</translation>
-<translation id="1823280932251546115">Trei ya hali, saa <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethaneti: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Washa kipengele cha kufikia data ya mahali</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> imebanduliwa</translation>
@@ -1197,6 +1188,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5788127256798019331">Faili za Google Play</translation>
 <translation id="5788535737706478207">Fungua tena kichupo au dirisha la mwisho lililofungwa</translation>
 <translation id="5790085346892983794">Mafanikio</translation>
+<translation id="5802516411616338943">Fungua Mipangilio ya Haraka</translation>
 <translation id="5804651031882187592">Zima mipangilio ya "Kufunga SIM"</translation>
 <translation id="5805809050170488595">Bofya ili uwashe <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Majukumu kwenye wavuti</translation>
@@ -1222,6 +1214,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5901630391730855834">Manjano</translation>
 <translation id="5911231045062997865">Vidirisha vya Lacros haviwezi kutumika kwa sasa. Programu nyingine zitahifadhiwa.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Arifa mpya, jumla ni <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5920710855273935292">Umezima maikrofoni.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> kimewashwa.</translation>

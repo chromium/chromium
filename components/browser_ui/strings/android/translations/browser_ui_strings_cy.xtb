@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ac <ph name="NUM_MORE" /> arall}zero{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}two{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}few{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}many{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}other{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}}</translation>
 <translation id="2410940059315936967">Gall gwefan rydych yn ymweld â hi fewnosod cynnwys o wefannau eraill, er enghraifft lluniau, hysbysebion a thestun. Gelwir cwcis a osodwyd gan wefannau eraill yn gwcis trydydd parti.</translation>
 <translation id="2434158240863470628">Mae'r lawrlwythiad wedi'i gwblhau <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Rydych wedi caniatáu i'r wefan hon ddefnyddio cwcis trydydd parti dros dro, sy'n golygu llai o amddiffyniad pori ond mae nodweddion y wefan yn fwy tebygol o weithio yn ôl y disgwyl. <ph name="BEGIN_LINK" />Anfon adborth<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio yn y modd anhysbys</translation>
 <translation id="2442870161001914531">Gofyn am wefan bwrdd gwaith bob amser</translation>
 <translation id="2469312991797799607">Bydd y weithred hon yn dileu'r holl ddata a chwcis ar gyfer <ph name="ORIGIN" /> a'r holl wefannau oddi tano</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Teitl</translation>
 <translation id="4008040567710660924">Caniatáu cwcis ar gyfer gwefan benodol.</translation>
 <translation id="4046123991198612571">Trac nesaf</translation>
-<translation id="4053720452172726777">Personoleiddio a rheoli Google Chrome</translation>
 <translation id="4149890623864272035">Ydych chi'n siŵr eich bod chi am ddileu'r holl ddata lleol, gan gynnwys cwcis, ac ailosod yr holl ganiatadau ar gyfer y wefan hon?</translation>
 <translation id="4149994727733219643">Gwedd syml ar gyfer tudalennau gwe</translation>
 <translation id="4151930093518524179">Chwyddo diofyn</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Dileu ac ailosod</translation>
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
 <translation id="4670064810192446073">Realiti rhithwir</translation>
+<translation id="4673958474310291465">Rhowch gynnig ar ganiatáu cwcis trydydd parti dros dro, sy'n golygu llai o amddiffyniad ond mae nodweddion y wefan yn fwy tebygol o weithio fel y disgwyl</translation>
 <translation id="4751476147751820511">Synwyryddion ystumiau/goleuadau</translation>
 <translation id="4779083564647765204">Chwyddo</translation>
 <translation id="4811450222531576619">Dysgu am ei ffynhonnell a'i bwnc</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Rhwystro cwcis trydydd parti</translation>
 <translation id="6205314730813004066">Preifatrwydd hysbyseb</translation>
 <translation id="6207207788774442484">Dileu data ac ailosod caniatadau</translation>
-<translation id="6216432067784365534">Dewisiadau <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Dadosod '<ph name="APP_NAME" />'?</translation>
 <translation id="6262191102408817757">Yn seiliedig ar eich tab olaf</translation>
 <translation id="6262279340360821358">Mae <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> wedi'u rhwystro</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Rhwystro</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Mae 1 wedi'i ddewis}zero{Mae # wedi'u dewis}two{Mae # wedi'u dewis}few{Mae # wedi'u dewis}many{Mae # wedi'u dewis}other{Mae # wedi'u dewis}}</translation>
 <translation id="7087918508125750058">Dewiswyd <ph name="ITEM_COUNT" />.  Mae dewisiadau ar gael yn agos at waelod y sgrîn</translation>
+<translation id="7137403271056944713">Rheoli / ailraglennu dyfais MIDI</translation>
 <translation id="7141896414559753902">Rhwystro gwefannau rhag dangos ffenestri naid ac ailgyfeiriadau (argymhellir)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>

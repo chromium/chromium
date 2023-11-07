@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1003363546227723021">Cuando la pantalla está inactiva, muestra fotos, la hora, el tiempo e información multimedia</translation>
 <translation id="1014750484722996375">Escritorios</translation>
 <translation id="1018219910092211213">No se puede resolver el DNS</translation>
 <translation id="1018656279737460067">Cancelado</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Instalar ChromeOS Flex</translation>
 <translation id="1856388568474281774">Flecha hacia abajo</translation>
 <translation id="1858620243986915808">Adjuntar captura de pantalla</translation>
+<translation id="1871413952174074704">El APN no puede tener más de <ph name="CHAR_LIMIT" /> caracteres</translation>
 <translation id="1871569928317311284">Desactivar el tema oscuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Desactivar el modo oscuro</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Ocultar informe</translation>
 <translation id="500920857929044050">Detener la prueba</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Cuando la pantalla está inactiva, muestra fotos, la hora, el clima e información multimedia.</translation>
 <translation id="5035083460461104704">Color del tema</translation>
 <translation id="5038292761217083259">teclado multicolor</translation>
 <translation id="5039804452771397117">Permitir</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Rosa claro</translation>
 <translation id="982713511914535780">Ejecutar prueba de descarga</translation>
 <translation id="987264212798334818">General</translation>
+<translation id="995062385528875723">No se pueden usar letras con acentos, alfabetos no latinos ni símbolos</translation>
 </translationbundle>

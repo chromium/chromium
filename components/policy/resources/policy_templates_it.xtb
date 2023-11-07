@@ -1532,9 +1532,6 @@ Se questo criterio non viene configurato o se viene disattivato, il trasferiment
 Se il criterio viene disattivato o se non viene configurato, gli utenti potranno trasferire i file su Drive tramite la rete cellulare.</translation>
 <translation id="2269319728625047531">Abilita la visualizzazione del consenso alla sincronizzazione durante l'accesso</translation>
 <translation id="2269837888511509900">Attiva la condivisione delle credenziali utente</translation>
-<translation id="2270113153862588648">Se il criterio viene impostato su Attivato, l'attestazione remota è consentita per il dispositivo. Un certificato viene generato e caricato automaticamente sul server di gestione del dispositivo.
-
-Se il criterio viene impostato su Disattivato o se non viene configurato, non viene generato alcun certificato e le chiamate a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> non vengono eseguite correttamente.</translation>
 <translation id="2270747976331889601">Attiva una funzionalità di sicurezza TLS 1.3 per i trust anchor locali</translation>
 <translation id="22754818344448444">Gli utenti possono selezionare un layout di modelli di scrivanie da caricare</translation>
 <translation id="2277117728011250860">Non consentire l'uso del filtro delle prestazioni di accessibilità.</translation>

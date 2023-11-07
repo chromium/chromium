@@ -140,6 +140,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="1750259112639922169">Grup de pestanyes: <ph name="TAB_COUNT" /> pestanyes</translation>
 <translation id="17513872634828108">Pestanyes obertes</translation>
 <translation id="1757620656501361327">Actualització del gestor de contrasenyes de Google</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pàgines, 1 pàgina a la llista}other{Pàgines, # pàgines a la llista}}</translation>
 <translation id="1778457539567749232">Marca com a no llegit</translation>
 <translation id="1779766957982586368">Tanca la finestra</translation>
 <translation id="1791662854739702043">Instal·lat</translation>
@@ -249,6 +250,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="2414886740292270097">Fosc</translation>
 <translation id="2421705177906985956">No hi ha cap lloc web per mostrar en aquest moment</translation>
 <translation id="2426805022920575512">Tria un altre compte</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vídeos, 1 vídeo a la llista}other{Vídeos, # vídeos a la llista}}</translation>
 <translation id="2433507940547922241">Aparença</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
 <translation id="2439153523196674349">Previsualització de <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4864369630010738180">S'està iniciant la sessió...</translation>
 <translation id="4866368707455379617">No es pot instal·lar <ph name="MODULE" /> per a Chrome</translation>
 <translation id="4871568871368204250">Desactiva la sincronització</translation>
+<translation id="4874961007154620743">Encara que aquesta opció estigui desactivada, continuaràs veient els suggeriments que Chrome proporciona localment</translation>
 <translation id="4875775213178255010">Suggeriments de contingut</translation>
 <translation id="4877678010818027629">Entra al mode d'incògnit</translation>
 <translation id="4878404682131129617">S'ha produït un error en establir un túnel mitjançant el servidor intermediari</translation>
@@ -1100,6 +1103,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6795633245022906657">Obre ràpidament una pestanya nova. Per editar aquesta drecera, ves a Configuració.</translation>
 <translation id="6802555630140434547">Es tancarà la finestra</translation>
 <translation id="6811034713472274749">Ja es pot veure la pàgina</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Imatges, 1 imatge a la llista}other{Imatges, # imatges a la llista}}</translation>
 <translation id="6813446258015311409">S'ha obert Inicia la sessió a Chrome.</translation>
 <translation id="6817747507826986771">Comparteix ràpidament aquesta pàgina. Mantingues premuda aquesta drecera per editar-la.</translation>
 <translation id="6819199143469632133">Per accedir al teu contingut de Google en diferents dispositius, inicia la sessió</translation>
@@ -1113,6 +1117,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6846298663435243399">S'està carregant…</translation>
 <translation id="6850409657436465440">La baixada encara està en curs</translation>
 <translation id="6850830437481525139">S'han tancat <ph name="TAB_COUNT" /> pestanyes</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Fitxers d'àudio, 1 fitxer d'àudio a la llista}other{Fitxers d'àudio, # fitxers d'àudio a la llista}}</translation>
 <translation id="685850645784703949">Discover de Google: desactivat</translation>
 <translation id="686366188661646310">Vols suprimir la contrasenya?</translation>
 <translation id="6864459304226931083">Baixa la imatge</translation>
@@ -1218,6 +1223,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7379900596734708416">El tema fosc per als llocs web està disponible</translation>
 <translation id="7388615499319468910">Els llocs web i els anunciants poden entendre el rendiment dels anuncis. Aquesta opció de configuració està desactivada.</translation>
 <translation id="7397416715506917976">Mostra Page Insights</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Altres, 1 fitxer a la llista}other{Altres, # fitxers a la llista}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Experiència de primera execució de Chrome</translation>
 <translation id="7411224099004328643">Usuari del Compte de Google</translation>
@@ -1311,6 +1317,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="780301667611848630">No, gràcies</translation>
 <translation id="7808889146555843082">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte de <ph name="SITE" />. Canvia la contrasenya o suprimeix el teu compte de <ph name="SITE" /> per protegir-lo dels altres.</translation>
 <translation id="7810647596859435254">Obre amb…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tots els fitxers, 1 fitxer a la llista}other{Tots els fitxers, # fitxers a la llista}}</translation>
 <translation id="7815484226266492798">Captura de pantalla llarga</translation>
 <translation id="7822705602465980873">Si tens la sessió iniciada, aquestes dades s'enllacen al teu Compte de Google per protegir-te als serveis de Google; per exemple, augmentant la protecció a Gmail després d'un incident de seguretat.</translation>
 <translation id="782705168687182233">L'activitat es desa al teu <ph name="BEGIN_LINK" />Compte de Google<ph name="END_LINK" />.</translation>
@@ -1535,6 +1542,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> està a punt</translation>
 <translation id="8937772741022875483">Vols suprimir l'activitat de Chrome a Benestar digital?</translation>
+<translation id="893938492099608175">En funció de la configuració que tinguis, Chrome també pot enviar galetes, el teu URL actual i la teva ubicació</translation>
 <translation id="8942627711005830162">Obre en una altra finestra</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: no s'ha pogut baixar aquest idioma. Torna-ho a provar més tard.</translation>
 <translation id="8955719471735800169">Torna a dalt</translation>

@@ -3172,13 +3172,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="346298925039590474">Ce réseau mobile sera accessible à tous les utilisateurs de cet appareil</translation>
 <translation id="3464145797867108663">Ajouter un profil professionnel</translation>
 <translation id="346546413339447252">Obtenir des remises pour <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> et d'autres</translation>
-<translation id="3466476162566821406">Suivez les instructions sur votre téléphone pour valider le code. Assurez-vous que le Bluetooth et le Wi-Fi y sont activés.
-    <ph name="BR" />
-    <ph name="BR" />
-    Vous pouvez utiliser votre téléphone pour ajouter les données de votre compte Google et les informations de votre connexion Wi-Fi à votre <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visible sur les appareils à proximité avec le nom " <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />"…</translation>
 <translation id="3468298837301810372">Libellé</translation>
 <translation id="3468999815377931311">Téléphone Android</translation>
 <translation id="3469583217479686109">Outil Sélection</translation>
@@ -4815,7 +4808,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4769632191812288342">Vous bénéficiez de la protection standard</translation>
 <translation id="4770119228883592393">Autorisation demandée, appuyez sur ⌘+Option+Flèche vers le bas pour répondre</translation>
 <translation id="4773112038801431077">Mettre à niveau Linux</translation>
-<translation id="4774456473286455263">Configurer avec votre téléphone Android</translation>
 <translation id="4775228465764358468">Un site peut enregistrer votre langue préférée ou les articles que vous voulez acheter. Le site et ses sous-domaines peuvent accéder à ces informations.</translation>
 <translation id="477548766361111120">Autoriser l'extension à lire et modifier ce site</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> a été connecté(e)</translation>
@@ -6157,13 +6149,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5865508026715185451">L'application <ph name="APP_NAME" /> sera bientôt suspendue</translation>
 <translation id="586567932979200359">Vous exécutez <ph name="PRODUCT_NAME" /> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et bénéficierez de mises à jour automatiques.</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
-<translation id="5867855474018538405">Suivez les instructions affichées sur votre téléphone pour scanner le code QR. Assurez-vous que le Bluetooth et le Wi-Fi y sont activés.
-    <ph name="BR" />
-    <ph name="BR" />
-    Vous pouvez utiliser votre téléphone pour ajouter les données de votre compte Google et les informations de votre connexion Wi-Fi à votre <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visible sur les appareils à proximité avec le nom " <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />"…</translation>
 <translation id="5868434909835797817">Le micro est désactivé sur votre appareil</translation>
 <translation id="5868822853313956582">Suivre les couleurs de l'appareil</translation>
 <translation id="5869029295770560994">OK</translation>
@@ -7735,6 +7720,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7125932261198019860">Assurez-vous que votre imprimante est connectée au même réseau Wi-Fi que votre Chromebook ou utilisez un câble USB. <ph name="LINK_BEGIN" />En savoir plus sur la compatibilité<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historique des téléchargements</translation>
 <translation id="7128151990937044829">Afficher un symbole dans la barre d'adresse lorsqu'une notification est bloquée</translation>
+<translation id="7130438335435247835">Nom du point d'accès (APN)</translation>
 <translation id="7131040479572660648">Lire vos données sur <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> et <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Ajouter une pa&amp;ge...</translation>
 <translation id="7131431455372521159">Tous les trackpoints ont été déconnectés</translation>

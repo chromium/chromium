@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">Вэб-сайты, у тым ліку наведаныя і адкрытыя вамі старонкі</translation>
 <translation id="181103072419391116">Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />; сетка знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="1816896987747843206">Доступ да камеры атрымаюць усе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру</translation>
-<translation id="1823280932251546115">Панэль стану, час <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Уключыць доступ да геаданых</translation>
 <translation id="1830308660060964064">Элемент "<ph name="ITEM_TITLE" />" адмацаваны</translation>

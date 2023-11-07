@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}}</translation>
 <translation id="2410940059315936967">Auf einer Website, die du besuchst, können Inhalte von anderen Websites eingebettet sein, z. B. Bilder, Werbung und Text. Cookies, die von diesen anderen Websites gesetzt werden, werden als Drittanbieter-Cookies bezeichnet.</translation>
 <translation id="2434158240863470628">Download abgeschlossen <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Du hast dieser Website vorübergehend erlaubt, Drittanbieter-Cookies zu verwenden. Das bedeutet zwar weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren. <ph name="BEGIN_LINK" />Feedback geben<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Einige Websites funktionieren im Inkognitomodus möglicherweise nicht richtig</translation>
 <translation id="2442870161001914531">Desktopwebsite immer anfordern</translation>
 <translation id="2469312991797799607">Durch diese Aktion werden alle Daten und Cookies für <ph name="ORIGIN" /> und alle untergeordneten Websites gelöscht</translation>
@@ -177,7 +178,6 @@
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4008040567710660924">Cookies für eine bestimmte Website werden zugelassen.</translation>
 <translation id="4046123991198612571">Nächster Titel</translation>
-<translation id="4053720452172726777">Google Chrome anpassen und verwalten</translation>
 <translation id="4149890623864272035">Möchtest du wirklich alle lokalen Daten einschließlich Cookies löschen und alle Berechtigungen für diese Website zurücksetzen?</translation>
 <translation id="4149994727733219643">Vereinfachte Ansicht für Webseiten</translation>
 <translation id="4151930093518524179">Standardeinstellung für den Zoom</translation>
@@ -207,6 +207,7 @@
 <translation id="4644713492825682049">Löschen und zurücksetzen</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
+<translation id="4673958474310291465">Versuche, Drittanbieter-Cookies vorübergehend zuzulassen. Das bedeutet zwar weniger Schutz, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren.</translation>
 <translation id="4751476147751820511">Bewegungs- oder Lichtsensoren</translation>
 <translation id="4779083564647765204">Zoomen</translation>
 <translation id="4811450222531576619">Informationen zur Quelle und zum Thema</translation>
@@ -296,7 +297,6 @@
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6205314730813004066">Datenschutz bei Anzeigen</translation>
 <translation id="6207207788774442484">Daten löschen und Berechtigungen zurücksetzen</translation>
-<translation id="6216432067784365534">Optionen für <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">„<ph name="APP_NAME" />“ deinstallieren?</translation>
 <translation id="6262191102408817757">Basierend auf deinem letzten Tab</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> blockiert</translation>
@@ -344,6 +344,7 @@
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ausgewählt}other{# ausgewählt}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ausgewählt. Optionen sind oben auf dem Bildschirm verfügbar</translation>
+<translation id="7137403271056944713">MIDI-Gerätesteuerung/‑Neuprogrammierung</translation>
 <translation id="7141896414559753902">Anzeige von Pop-ups und Weiterleitungen für Websites blockieren (empfohlen)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
@@ -355,6 +356,7 @@
 <translation id="7243308994586599757">Optionen unten auf dem Bildschirm verfügbar</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ausgewählt</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> zugelassen</translation>
+<translation id="7284451015630589124">Du hast Websites daran gehindert, Drittanbieter-Cookies zu verwenden, mit denen deine Aktivitäten während des Surfens erfasst werden. Rufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Normalerweise blockierst du Benachrichtigungen. Du kannst auf Details tippen, um sie zuzulassen.</translation>
 <translation id="7366415735885268578">Website hinzufügen</translation>
 <translation id="7368695150573390554">Sämtliche Offlinedaten werden gelöscht</translation>
@@ -433,6 +435,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies zugelassen für <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-Website}other{Cookies zugelassen für <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-Websites}}</translation>
 <translation id="857943718398505171">Zugelassen (empfohlen)</translation>
 <translation id="8609465669617005112">Nach oben</translation>
+<translation id="8649036394979866943">Chrome schränkt die Verwendung von Drittanbieter-Cookies, mit denen deine Aktivitäten während des Surfens erfasst werden, für die meisten Websites ein. Rufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Eingabe löschen</translation>
 <translation id="8681886425883659911">Werbung auf Websites, die bekanntermaßen aufdringliche oder irreführende Anzeigen präsentieren, wird blockiert</translation>
 <translation id="868929229000858085">Kontakte durchsuchen</translation>

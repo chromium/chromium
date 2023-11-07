@@ -213,15 +213,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1796561540704213354">Gwefannau gan gynnwys tudalennau rydych wedi ymweld â nhw a thudalennau agored</translation>
 <translation id="181103072419391116">Cryfder Signal <ph name="SIGNAL_STRENGTH" />, Rheolir gan eich Gweinyddwr</translation>
 <translation id="1816896987747843206">Mae hyn yn caniatáu mynediad camera i bob ap a gwefan gyda chaniatâd y camera</translation>
-<translation id="1823280932251546115">Hambwrdd statws, amser <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ether-rwyd: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Troi mynediad lleoliad ymlaen</translation>
 <translation id="1830308660060964064">Cafodd <ph name="ITEM_TITLE" /> ei ddadbinio</translation>
@@ -1197,6 +1188,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5788127256798019331">Ffeiliau Play</translation>
 <translation id="5788535737706478207">Ailagor y tab neu'r ffenestr olaf ar gau</translation>
 <translation id="5790085346892983794">Llwyddiant</translation>
+<translation id="5802516411616338943">Agor Gosodiadau Cyflym</translation>
 <translation id="5804651031882187592">Diffodd y gosodiad "Cloi SIM"</translation>
 <translation id="5805809050170488595">Cliciwch i weithredu <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Tasks ar y we</translation>
@@ -1222,6 +1214,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5901630391730855834">Melyn</translation>
 <translation id="5911231045062997865">Nid yw ffenestri Lacros yn cael eu cefnogi ar hyn o bryd. Bydd apiau eraill yn cael eu cadw.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Hysbysiad newydd, <ph name="NOTIFICATION_COUNT" /> i gyd</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5920710855273935292">Mae'r meic wedi'i ddistewi.</translation>
 <translation id="5946788582095584774">Mae <ph name="FEATURE_NAME" /> wedi'i droi ymlaen.</translation>

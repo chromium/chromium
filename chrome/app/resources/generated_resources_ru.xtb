@@ -3167,13 +3167,6 @@
 <translation id="346298925039590474">Эта мобильная сеть будет доступна всем пользователям данного устройства.</translation>
 <translation id="3464145797867108663">Добавить рабочий профиль</translation>
 <translation id="346546413339447252">Получайте скидки в магазинах "<ph name="MERCHANT_NAME_1" />", "<ph name="MERCHANT_NAME_2" />" и не только.</translation>
-<translation id="3466476162566821406">Следуйте инструкциям на телефоне, чтобы подтвердить код. Убедитесь, что на телефоне включены Bluetooth и Wi-Fi.
-    <ph name="BR" />
-    <ph name="BR" />
-    Воспользуйтесь телефоном, чтобы добавить информацию о сети Wi-Fi и аккаунте Google на <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Видно устройствам поблизости как <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="3468298837301810372">Ярлык:</translation>
 <translation id="3468999815377931311">Телефон Android</translation>
 <translation id="3469583217479686109">Инструмент "Выделение"</translation>
@@ -4073,7 +4066,7 @@
 <translation id="4159784952369912983">Фиолетовый</translation>
 <translation id="4163560723127662357">Неизвестная клавиатура</translation>
 <translation id="4165942112764990069">Адрес <ph name="USER_EMAIL" /> не принадлежит действительной организации. Обратитесь к администратору. Если вы администратор, перейдите на страницу g.co/ChromeEnterpriseAccount и настройте аккаунт организации.</translation>
-<translation id="4165986682804962316">Настройки сайтов</translation>
+<translation id="4165986682804962316">Настройки сайта</translation>
 <translation id="4167212649627589331">Приложение "<ph name="APP_NAME" />" пытается получить доступ к устройству "<ph name="DEVICE_NAME" />". Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="4167393659000039775">Google не несет ответственности за потерю данных. Операционная система <ph name="DEVICE_OS" /> может не работать на несертифицированных моделях устройств. Подробная информация доступна на странице g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Другие действия для быстрой команды "<ph name="SHORTCUT_TITLE" />"</translation>
@@ -4807,7 +4800,6 @@
 <translation id="4769632191812288342">Выбрана стандартная защита.</translation>
 <translation id="4770119228883592393">Требуется разрешение. Нажмите ⌘ + Option + Стрелка вниз, чтобы ответить.</translation>
 <translation id="4773112038801431077">Обновление Linux</translation>
-<translation id="4774456473286455263">Настройка с помощью телефона Android</translation>
 <translation id="4775228465764358468">Сайт может сохранять информацию о предпочтительном языке или товарах, которые вы хотите купить. Эти данные доступны сайту и его субдоменам.</translation>
 <translation id="477548766361111120">Разрешить расширению просматривать и менять сайт</translation>
 <translation id="4776311127346151860">Устройство "<ph name="DEVICE_NAME" />" подключено</translation>
@@ -6146,13 +6138,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" />: работа скоро будет приостановлена</translation>
 <translation id="586567932979200359">Вы запускаете <ph name="PRODUCT_NAME" /> с образа на диске. Установка его на компьютере позволит запускать браузер без использования образа и обеспечит его регулярное обновление.</translation>
 <translation id="5865733239029070421">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
-<translation id="5867855474018538405">Чтобы отсканировать QR-код, следуйте инструкциям на телефоне. Убедитесь, что на нем включены Bluetooth и Wi-Fi.
-    <ph name="BR" />
-    <ph name="BR" />
-    Воспользуйтесь телефоном, чтобы добавить информацию о сети Wi-Fi и аккаунте Google на <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Видно устройствам поблизости как <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="5868434909835797817">На устройстве отключен микрофон</translation>
 <translation id="5868822853313956582">Использовать настройки цветопередачи устройства</translation>
 <translation id="5869029295770560994">ОК</translation>
@@ -7722,6 +7707,7 @@
 <translation id="7125932261198019860">Подключите принтер к той же сети Wi-Fi, что и Chromebook, или воспользуйтесь USB-кабелем. Подробнее <ph name="LINK_BEGIN" />о совместимости<ph name="LINK_END" />…</translation>
 <translation id="7127980134843952133">История скачиваний</translation>
 <translation id="7128151990937044829">Показывать значок блокировки в адресной строке при блокировке уведомлений</translation>
+<translation id="7130438335435247835">Точка доступа</translation>
 <translation id="7131040479572660648">Просмотр данных на сайтах <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Добавить &amp;страницу</translation>
 <translation id="7131431455372521159">Все джойстики TrackPoint отключены</translation>
@@ -9202,7 +9188,7 @@
 <translation id="828642162569365647">Этот пароль или PIN-код будет защищать ваши данные на текущем устройстве <ph name="DEVICE_TYPE" />, а также информацию, получаемую с телефона. Чтобы выйти из спящего режима, потребуется разблокировать устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8287902281644548111">Поиск по URL или запросу к API</translation>
 <translation id="8288032458496410887">Удалить приложение "<ph name="APP" />"...</translation>
-<translation id="8288553158681886528">Извлекать текст из файлов PDF</translation>
+<translation id="8288553158681886528">Извлечь текст из PDF-файла</translation>
 <translation id="8289128870594824098">Размер диска</translation>
 <translation id="8289509909262565712">Представляем <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Скачать Chrome</translation>

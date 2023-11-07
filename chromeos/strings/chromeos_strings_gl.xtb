@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1003363546227723021">Cando a pantalla está inactiva, nela móstranse fotos, a hora, o tempo e información dos medios de comunicación</translation>
 <translation id="1014750484722996375">Escritorios</translation>
 <translation id="1018219910092211213">Non se puido resolver o DNS</translation>
 <translation id="1018656279737460067">Cancelados</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">Ocultar informe</translation>
 <translation id="500920857929044050">Deter proba</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Cando a pantalla está inactiva, nela móstranse fotos, a hora, o tempo e información dos medios de comunicación.</translation>
 <translation id="5035083460461104704">Cor do tema</translation>
 <translation id="5038292761217083259">teclado multicolor</translation>
 <translation id="5039804452771397117">Permitir</translation>

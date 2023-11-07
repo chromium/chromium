@@ -140,6 +140,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1750259112639922169">Kikundi cha vichupo - vichupo <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Vichupo vilivyo wazi</translation>
 <translation id="1757620656501361327">Sasisho la Kidhibiti cha Manenosiri cha Google</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Kurasa, ukurasa 1 kwenye orodha}other{Kurasa, kurasa # kwenye orodha}}</translation>
 <translation id="1778457539567749232">Tia alama kuwa hujasoma</translation>
 <translation id="1779766957982586368">Funga dirisha</translation>
 <translation id="1791662854739702043">Imesakinishwa</translation>
@@ -249,6 +250,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2414886740292270097">Giza</translation>
 <translation id="2421705177906985956">Hakuna tovuti za kuonyesha sasa hivi</translation>
 <translation id="2426805022920575512">Chagua akaunti nyingine</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video, video 1 kwenye orodha}other{Video, video # kwenye orodha}}</translation>
 <translation id="2433507940547922241">Sura</translation>
 <translation id="2435457462613246316">Onyesha nenosiri</translation>
 <translation id="2439153523196674349">Onyesho la kukagua la <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="4864369630010738180">Unaingia katika akaunti...</translation>
 <translation id="4866368707455379617">Imeshindwa kusakinisha <ph name="MODULE" /> kwenye Chrome</translation>
 <translation id="4871568871368204250">Zima usawazishaji</translation>
+<translation id="4874961007154620743">Ukizima kipengele hiki, bado utaona mapendekezo ambayo Chrome hutoa kwenye kivinjari</translation>
 <translation id="4875775213178255010">Mapendekezo ya Maudhui</translation>
 <translation id="4877678010818027629">Ingia katika hali fiche</translation>
 <translation id="4878404682131129617">Imeshindwa kuanzisha mkondo kupitia seva mbadala</translation>
@@ -1100,6 +1103,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6795633245022906657">Fungua kichupo kipya kwa haraka. Ili ubadilishe njia hii ya mkato, nenda kwenye Mipangilio.</translation>
 <translation id="6802555630140434547">Dirisha hili litafungwa</translation>
 <translation id="6811034713472274749">Unaweza kuona ukurasa</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Picha, picha 1 kwenye orodha}other{Picha, picha # kwenye orodha}}</translation>
 <translation id="6813446258015311409">Ingia katika akaunti kwenye Chrome, imefunguliwa.</translation>
 <translation id="6817747507826986771">Shiriki ukurasa huu kwa haraka. Ili ubadilishe njia hii ya mkato, gusa na ushikilie.</translation>
 <translation id="6819199143469632133">Ili upate vitu vyako vya Google kwenye vifaa mbalimbali, ingia katika akaunti</translation>
@@ -1113,6 +1117,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6846298663435243399">Inapakia…</translation>
 <translation id="6850409657436465440">Bado inapakua faili</translation>
 <translation id="6850830437481525139">Vichupo <ph name="TAB_COUNT" /> vimefungwa</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Faili za sauti, faili 1 ya sauti kwenye orodha}other{Faili za sauti, faili # za sauti kwenye orodha}}</translation>
 <translation id="685850645784703949">Dokezo kutoka Google - imezimwa</translation>
 <translation id="686366188661646310">Ungependa kufuta nenosiri?</translation>
 <translation id="6864459304226931083">Pakua picha</translation>
@@ -1218,6 +1223,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7379900596734708416">Mandhari meusi ya tovuti yanapatikana</translation>
 <translation id="7388615499319468910">Tovuti na watangazaji wanaweza kuelewa utendaji wa matangazo. Mipangilio hii imezimwa.</translation>
 <translation id="7397416715506917976">Angalia Maarifa ya Ukurasa</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Nyingine, faili 1 kwenye orodha}other{Nyingine, faili # kwenye orodha}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Hali ya Utekelezaji wa Kwanza wa Chrome</translation>
 <translation id="7411224099004328643">Mtumiaji wa Akaunti ya Google</translation>
@@ -1311,6 +1317,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="780301667611848630">Hapana</translation>
 <translation id="7808889146555843082">Hatua ya kufuta nenosiri hili haitafuta akaunti yako kwenye <ph name="SITE" />. Badilisha nenosiri au futa akaunti yako kwenye <ph name="SITE" /> ili uilinde dhidi ya watu wengine.</translation>
 <translation id="7810647596859435254">Fungua ukitumia...</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Faili zote, faili 1 kwenye orodha}other{Faili zote, faili # kwenye orodha}}</translation>
 <translation id="7815484226266492798">Picha Ndefu ya Skrini</translation>
 <translation id="7822705602465980873">Unapoingia katika akaunti, data hii huunganishwa kwenye Akaunti yako ya Google ili kukulinda kwenye huduma zote za Google, kwa mfano kuongeza ulinzi katika Gmail baada ya tukio lililotishia usalama.</translation>
 <translation id="782705168687182233">Shughuli zako zinahifadhiwa kwenye <ph name="BEGIN_LINK" />Akaunti yako ya Google<ph name="END_LINK" />.</translation>
@@ -1535,6 +1542,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Pata Maelezo Zaidi<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Lugha ya <ph name="LANG" /> iko tayari</translation>
 <translation id="8937772741022875483">Ungependa kuondoa Shughuli zako za Chrome kwenye mpango wa Nidhamu Dijitali?</translation>
+<translation id="893938492099608175">Kulingana na mipangilio yako, Chrome inaweza pia kutuma vidakuzi, URL unayotumia na maelezo ya mahali ulipo</translation>
 <translation id="8942627711005830162">Fungua katika dirisha jingine</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Imeshindwa kupakua lugha hii. Jaribu tena baadaye.</translation>
 <translation id="8955719471735800169">Rudi juu</translation>

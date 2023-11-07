@@ -1191,6 +1191,7 @@
 <translation id="3427342743765426898">&amp;ଏଡିଟ୍‍ ପୁନଃବତ୍ କରନ୍ତୁ</translation>
 <translation id="342781501876943858">ଆପଣ ଯଦି ନିଜର ପାସ୍‌ୱର୍ଡକୁ ଅନ୍ୟ ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକରେ ପୁନଃ ବ୍ୟବହାର କରିଛନ୍ତି, ତେବେ Chromium ଆପଣଙ୍କୁ ଏହି ପାସ୍‌ୱର୍ଡକୁ ରିସେଟ୍ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates ସର୍ଭର୍ ଟେମ୍ପଲେଟ୍‍ର ଏକ କିମ୍ବା ଏକାଧିକ URI ଅବୈଧ ଅଟେ ଏବଂ ଏହା ବ୍ୟବହାର କରାଯିବ ନାହିଁ।</translation>
+<translation id="3428789896412418755">ଗୋଷ୍ଠୀଭୁକ୍ତ ଇତିହାସ</translation>
 <translation id="3431216045099978607">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯାଇ ଡାଉନଲୋଡ ଦେଖିବା ପାଇଁ |<ph name="ACCELERATOR" />|କୁ ଦବାନ୍ତୁ।</translation>
 <translation id="3432601291244612633">ପୃଷ୍ଠାକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3433111389595862568">ସହଯୋଗ ଏବଂ କନଫରେନସିଂ ସଫ୍ଟୱେର</translation>
@@ -3175,6 +3176,7 @@
 <translation id="7423283032694727565">'କୁକୀଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ଆପଣଙ୍କ କୁକୀ ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="7427366580982928791">ପିଲାଙ୍କ ପାଇଁ ଇଣ୍ଟରନେଟ ସୁରକ୍ଷା</translation>
 <translation id="7429429656042611765">ଏକ୍ସିକ୍ୟୁଟିଭ</translation>
+<translation id="7432774160230062882">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ ଯାହା ଫଳରେ Chromium ଆପଣଙ୍କ ପେମେଣ୍ଟ ସୂଚନା ପୂରଣ କରିପାରିବ।</translation>
 <translation id="7437289804838430631">ଯୋଗାଯୋଗ ସୂଚନା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7437490109271760224">କାର୍ଡ ଗେମଗୁଡ଼ିକ</translation>
 <translation id="7438338505272634288">ଆପଣ ଭିଜିଟ କରିବାକୁ ଚେଷ୍ଟା କରୁଥିବା ସାଇଟରେ ଆକ୍ରମଣକାରୀମାନେ ଆପଣଙ୍କୁ କ୍ଷତିକାରକ ସଫ୍ଟୱେର ଇନଷ୍ଟଲ କରିବା ପାଇଁ ପ୍ରତାରଣା କରିପାରନ୍ତି, ଯାହା ଆପଣଙ୍କ ବ୍ରାଉଜ କରିବାର ପ୍ରକ୍ରିୟାକୁ ପ୍ରଭାବିତ କରିପାରେ - ଉଦାହରଣ ସ୍ୱରୂପ, ଆପଣଙ୍କ ହୋମପେଜ ପରିବର୍ତ୍ତନ କରି କିମ୍ବା ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟରେ ଅତିରିକ୍ତ ବିଜ୍ଞାପନ ଦେଖାଇ। କ୍ଷତିକୁ ଏଡ଼ାଇବା ପାଇଁ ସୁରକ୍ଷାକୁ ଫେରିବା ନିମନ୍ତେ Chrome ଦୃଢ଼ ଭାବେ ସୁପାରିଶ କରେ। <ph name="BEGIN_LEARN_MORE_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3409,6 +3411,7 @@
 <translation id="7831993212387676366">ସପିଂ ତାଲିକା କଣ?</translation>
 <translation id="7840103971441592723">ସ୍କ୍ରିନ କେପଚର ଆରମ୍ଭ କରାଯାଇଛି</translation>
 <translation id="784137052867620416">ସପିଂ ଇନସାଇଟ୍ସ</translation>
+<translation id="784404208867107517">ଗୋଷ୍ଠୀଭୁକ୍ତ ଇତିହାସ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{କିଛିନାହିଁ}=1{1ଟି ଆପ୍ (<ph name="EXAMPLE_APP_1" />)}=2{2ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{#ଟି ଆପ୍‌ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">ପରେ, ଆପଣ ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ, ଆପଣ ଦେଖୁଥିବା ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ Chromeକୁ ଆପଣଙ୍କ ବିଷୟଗୁଡ଼ିକ ସମ୍ପର୍କରେ ପଚାରିପାରେ। Chrome ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ଏବଂ ପରିଚୟକୁ ସୁରକ୍ଷିତ ରଖିବା ସହିତ 3ଟି ପର୍ଯ୍ଯନ୍ତ ବିଷୟକୁ ସେୟାର କରେ।</translation>
@@ -3435,6 +3438,7 @@
 <translation id="79338296614623784">ଏକ ବୈଧ ଫୋନ୍ ନମ୍ଵର୍ ଲେଖନ୍ତୁ</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ ଚଳାଇବାକୁ ଚାହୁଁଛି। ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ପରିଚୟ Google ଦ୍ୱାରା ଯାଞ୍ଚ ହେବ।</translation>
 <translation id="7935318582918952113">DOM ଡିଷ୍ଟିଲର୍</translation>
+<translation id="7936775433939783906">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ ଯାହା ଫଳରେ Google Chrome ଆପଣଙ୍କ ପେମେଣ୍ଟ ସୂଚନା ପୂରଣ କରିପାରିବ।</translation>
 <translation id="7937163678541954811">ଦ୍ରୁତ ଚେକଆଉଟ ପାଇଁ ଏହି କାର୍ଡର CVCକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇ ଆପଣଙ୍କ ଡିଭାଇସରେ ସେଭ କରାଯିବ</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />ରେ ସମୟ ସୀମା ସମାପ୍ତ ହେବ</translation>
 <translation id="7938958445268990899">ଏବେ ସୁଦ୍ଧା ସର୍ଭର୍‍‍ର ସାର୍ଟିଫିକେଟ୍‍‍ଟି ବୈଧ ନୁହେଁ।</translation>

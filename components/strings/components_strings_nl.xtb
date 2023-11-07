@@ -1187,6 +1187,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3427342743765426898">&amp;Opnieuw bewerken</translation>
 <translation id="342781501876943858">Chromium raadt je aan je wachtwoord te resetten als je het voor andere sites hebt hergebruikt.</translation>
 <translation id="3428151540071562330">Een of meer van de servertemplate-URI's voor DnsOverHttpsTemplates zijn ongeldig en worden niet gebruikt.</translation>
+<translation id="3428789896412418755">Gegroepeerde geschiedenis</translation>
 <translation id="3431216045099978607">Druk op |<ph name="ACCELERATOR" />| om het volledige scherm te sluiten en de download te bekijken.</translation>
 <translation id="3432601291244612633">Pagina sluiten</translation>
 <translation id="3433111389595862568">Samenwerkings- en conferentiesoftware</translation>
@@ -3162,6 +3163,7 @@ Aanvullende informatie:
 <translation id="7423283032694727565">Knop Cookies beheren. Activeer deze om je cookievoorkeuren te beheren in de Chrome-instellingen.</translation>
 <translation id="7427366580982928791">Internetveiligheid van kinderen</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Laat verifiëren dat jij het bent zodat Chromium je betalingsgegevens kan invullen.</translation>
 <translation id="7437289804838430631">Contactgegevens toevoegen</translation>
 <translation id="7437490109271760224">Kaartspellen</translation>
 <translation id="7438338505272634288">Aanvallers op de site die je wilt bezoeken, kunnen je misleiden zodat je schadelijke software installeert die van invloed is op de manier waarop je browst, bijvoorbeeld door je homepage te wijzigen of extra advertenties te tonen op sites die je bezoekt. Chrome raadt je sterk aan terug te gaan naar een beveiligde website om schade te voorkomen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3392,6 +3394,7 @@ Aanvullende informatie:
 <translation id="7831993212387676366">Wat is het boodschappenlijstje?</translation>
 <translation id="7840103971441592723">Schermopname is gestart</translation>
 <translation id="784137052867620416">Shopping-inzichten</translation>
+<translation id="784404208867107517">Gegroepeerde geschiedenis</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Later kan een site die je bezoekt Chrome om relevante onderwerpen vragen om de advertenties te personaliseren die je te zien krijgt. Chrome deelt maximaal 3 onderwerpen en beschermt je browsegeschiedenis en identiteit.</translation>
@@ -3418,6 +3421,7 @@ Aanvullende informatie:
 <translation id="79338296614623784">Geef een geldig telefoonnummer op</translation>
 <translation id="7934414805353235750"><ph name="URL" /> wil beschermde content afspelen. De identiteit van je apparaat wordt geverifieerd door Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Laat verifiëren dat jij het bent zodat Google Chrome je betalingsgegevens kan invullen.</translation>
 <translation id="7937163678541954811">De CVC van deze kaart wordt versleuteld en opgeslagen op je apparaat zodat je sneller kunt betalen</translation>
 <translation id="7937554595067888181">Verloopt op <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Het servercertificaat is nog niet geldig.</translation>

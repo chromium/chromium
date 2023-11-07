@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Umeruhusu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine<ph name="NUM_MORE" />}other{Umeruhusu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine<ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Tovuti unayoitembelea inaweza kupachika maudhui kutoka kwenye tovuti zingine, kwa mfano, picha, matangazo na maandishi. Vidakuzi vinavyowekwa na tovuti hizi zingine vinaitwa vidakuzi vya washirika wengine.</translation>
 <translation id="2434158240863470628">Upakuaji umekamilika <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Uliruhusu kwa muda tovuti hii itumie vidakuzi vya washirika wengine. Hatua hii inamaanisha kuwa ulinzi wa kuvinjari utapungua lakini vipengele vya tovuti vina uwezekano mkubwa wa kufanya kazi inavyotarajiwa. <ph name="BEGIN_LINK" />Tuma maoni<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Huenda vipengele kwenye baadhi ya tovuti visifanye kazi katika Hali fiche</translation>
 <translation id="2442870161001914531">Omba tovuti katika mwonekano wa kompyuta kila wakati</translation>
 <translation id="2469312991797799607">Kitendo hiki kitafuta data na vidakuzi vyote vya <ph name="ORIGIN" /> na tovuti zote ambazo inasimamia</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Kichwa</translation>
 <translation id="4008040567710660924">Ruhusu vidakuzi katika tovuti maalum.</translation>
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
-<translation id="4053720452172726777">Dhibiti  na ugeuze Google Chrome ikufae</translation>
 <translation id="4149890623864272035">Je, una uhakika ungependa kufuta data yote iliyo kwenye kifaa, ikiwa ni pamoja na vidakuzi na kuweka upya ruhusa zote za tovuti hii?</translation>
 <translation id="4149994727733219643">Mwonekano uliorahisishwa kwa ajili ya kurasa za wavuti</translation>
 <translation id="4151930093518524179">Kiwango chaguomsingi cha kukuza</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Futa na uweke upya</translation>
 <translation id="4645575059429386691">Inadhibitiwa na wazazi wako</translation>
 <translation id="4670064810192446073">Uhalisia pepe</translation>
+<translation id="4673958474310291465">Jaribu kuruhusu kwa muda vidakuzi vya washirika wengine. Hatua hii inaamaanisha kuwa ulinzi utapungua lakini vipengele vya tovuti vina uwezekano mkubwa wa kufanya kazi inavyotarajiwa</translation>
 <translation id="4751476147751820511">Vitambuzi vya mwendo au mwangaza</translation>
 <translation id="4779083564647765204">Kuza</translation>
 <translation id="4811450222531576619">Fahamu kuhusu mada na chanzo chake</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Zuia vidakuzi vya tovuti nyingine</translation>
 <translation id="6205314730813004066">Faragha ya matangazo</translation>
 <translation id="6207207788774442484">Futa data na uweke upya ruhusa</translation>
-<translation id="6216432067784365534">Chaguo za <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Ungependa kuondoa '<ph name="APP_NAME" />'?</translation>
 <translation id="6262191102408817757">Kulingana na kichupo chako ulichofungua mara ya mwisho</translation>
 <translation id="6262279340360821358">Umezuia <ph name="PERMISSION_1" /> na <ph name="PERMISSION_2" /></translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Zuia</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Umechagua 1}other{Umechagua #}}</translation>
 <translation id="7087918508125750058">Imechagua <ph name="ITEM_COUNT" />. Chaguo zinapatikana karibu na sehemu ya juu ya skrini</translation>
+<translation id="7137403271056944713">Kudhibiti au kusanidi upya vifaa vya MIDI</translation>
 <translation id="7141896414559753902">Zuia tovuti zisionyeshe madirisha ibukizi na kuelekeza kwingine (inapendekezwa)</translation>
 <translation id="7176368934862295254">KB <ph name="KILOBYTES" /></translation>
 <translation id="7180611975245234373">Onyesha upya</translation>

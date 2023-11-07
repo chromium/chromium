@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">เว็บไซต์จะรวมหน้าเว็บที่คุณเคยเข้าชมและหน้าเว็บที่เคยเปิด</translation>
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="1816896987747843206">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้</translation>
-<translation id="1823280932251546115">ถาดสถานะ เวลา <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">อีเทอร์เน็ต: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">เปิดการเข้าถึงตำแหน่ง</translation>
 <translation id="1830308660060964064">เลิกปักหมุด <ph name="ITEM_TITLE" /> แล้ว</translation>
@@ -1192,6 +1183,7 @@
 <translation id="5788127256798019331">ไฟล์ Play</translation>
 <translation id="5788535737706478207">เปิดแท็บหรือหน้าต่างที่ปิดล่าสุดขึ้นมาอีกครั้ง</translation>
 <translation id="5790085346892983794">สำเร็จ</translation>
+<translation id="5802516411616338943">เปิดการตั้งค่าด่วน</translation>
 <translation id="5804651031882187592">ปิดการตั้งค่า "ล็อกซิม"</translation>
 <translation id="5805809050170488595">คลิกเพื่อเปิดใช้ <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Tasks บนเว็บ</translation>
@@ -1217,6 +1209,7 @@
 <translation id="5901630391730855834">สีเหลือง</translation>
 <translation id="5911231045062997865">ขณะนี้ยังไม่รองรับหน้าต่าง Lacros ระบบจะบันทึกแอปอื่นๆ</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">การแจ้งเตือนใหม่ ทั้งหมด <ph name="NOTIFICATION_COUNT" /> รายการ</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5920710855273935292">ปิดเสียงไมค์อยู่</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> เปิดอยู่</translation>

@@ -3176,13 +3176,6 @@
 <translation id="346298925039590474">Гэта мабільная сетка будзе даступнай усім карыстальнікам прылады</translation>
 <translation id="3464145797867108663">Дадаць працоўны профіль</translation>
 <translation id="346546413339447252">Атрымлівайце скідкі ў крамах "<ph name="MERCHANT_NAME_1" />", "<ph name="MERCHANT_NAME_2" />" і не толькі</translation>
-<translation id="3466476162566821406">Каб праверыць код, выконвайце ўказанні на тэлефоне. Упэўніцеся, што на ім уключаны Bluetooth і Wi-Fi.
-    <ph name="BR" />
-    <ph name="BR" />
-    Скарыстайцеся тэлефонам, каб дадаць інфармацыю пра Wi-Fi і Уліковы запіс Google на <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Прылады паблізу бачаць вашу прыладу як "<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />"...</translation>
 <translation id="3468298837301810372">Метка</translation>
 <translation id="3468999815377931311">Тэлефон Android</translation>
 <translation id="3469583217479686109">Інструмент "Выбар"</translation>
@@ -4820,7 +4813,6 @@
 <translation id="4769632191812288342">Выбрана стандартная абарона</translation>
 <translation id="4770119228883592393">Запытаны дазвол. Каб адказаць, націсніце ⌘ + Option + стрэлка ўніз</translation>
 <translation id="4773112038801431077">Абнаўленне Linux</translation>
-<translation id="4774456473286455263">Наладзіць з дапамогай тэлефона Android</translation>
 <translation id="4775228465764358468">Сайт можа захоўваць даныя пра прыярытэтную мову або пра тавары, якія вы хочаце купіць. Гэта інфармацыя даступная для сайта і яго субдаменаў.</translation>
 <translation id="477548766361111120">Дазволіць пашырэнню чытаць і змяняць гэты сайт</translation>
 <translation id="4776311127346151860">Прылада (<ph name="DEVICE_NAME" />) падключана</translation>
@@ -6166,13 +6158,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> хутка прыпыніцца</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> працуе з вобраза дыска. Калі ўсталяваць праграму на камп'ютар, вы зможаце запускаць яе без вобраза, і яна будзе рэгулярна абнаўляцца.</translation>
 <translation id="5865733239029070421">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях</translation>
-<translation id="5867855474018538405">Каб адсканіраваць QR-код, выканайце ўказанні на тэлефоне. Упэўніцеся, што на ім уключаны Bluetooth і Wi-Fi.
-    <ph name="BR" />
-    <ph name="BR" />
-    Скарыстайцеся тэлефонам, каб дадаць інфармацыю пра Wi-Fi і Уліковы запіс Google на <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Прылады паблізу бачаць вашу прыладу як "<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />"...</translation>
 <translation id="5868434909835797817">Мікрафон выключаны на гэтай прыладзе</translation>
 <translation id="5868822853313956582">Выкарыстоўваць колеравую схему прылады</translation>
 <translation id="5869029295770560994">OK</translation>
@@ -7747,6 +7732,7 @@
 <translation id="7125932261198019860">Пераканайцеся, што прынтар падключаны да той жа сеткі Wi-Fi, што і Chromebook, або скарыстайце кабель USB. <ph name="LINK_BEGIN" />Даведацца больш пра сумяшчальнасць<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Гісторыя спампоўвання</translation>
 <translation id="7128151990937044829">Паказваць індыкатар у адрасным радку пры блакіраванні апавяшчэнняў</translation>
+<translation id="7130438335435247835">Назва пункта доступу (APN)</translation>
 <translation id="7131040479572660648">Прагляд вашых даных на вэб-сайтах <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> і <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Дадаць ста&amp;ронку...</translation>
 <translation id="7131431455372521159">Усе джойсцікі TrackPoint адключаны</translation>

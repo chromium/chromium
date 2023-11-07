@@ -3168,13 +3168,6 @@
 <translation id="346298925039590474">Бұл мобильдік желі осы құрылғыдағы барлық пайдаланушыға қолжетімді болады.</translation>
 <translation id="3464145797867108663">Жұмыс профилін қосу</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> және басқа дүкендердің жеңілдіктерін алыңыз</translation>
-<translation id="3466476162566821406">Кодты растау үшін телефоныңыздағы нұсқауларды орындаңыз. Телефонда Bluetooth және Wi-Fi қосылып тұрғанына көз жеткізіңіз.
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="DEVICE_TYPE" /> құрылғыңызға Wi-Fi мен Google аккаунтын қосу үшін телефоныңызды пайдалана аласыз.
-    <ph name="BR" />
-    <ph name="BR" />
-    Маңайдағы құрылғыларда <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> деп шығып тұрады...</translation>
 <translation id="3468298837301810372">Белгі</translation>
 <translation id="3468999815377931311">Android телефоны</translation>
 <translation id="3469583217479686109">Таңдау құралы</translation>
@@ -4811,7 +4804,6 @@
 <translation id="4769632191812288342">Стандартты қорғаныс деңгейін пайдаланып жатырсыз.</translation>
 <translation id="4770119228883592393">Рұқсат сұралды, жауап беру үшін ⌘ + Option + төменге бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="4773112038801431077">Linux жүйесін жаңарту</translation>
-<translation id="4774456473286455263">Android телефоныңызбен реттеу</translation>
 <translation id="4775228465764358468">Сайт сіз қолданатын тіл мен сатып алатын тауарларды сақтай алады. Бұл ақпарат сайтта және оның ішкі домендерінде болады.</translation>
 <translation id="477548766361111120">Кеңейтімнің осы сайтты оқуына және өзгертуіне рұқсат ету</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> қосылды.</translation>
@@ -6150,13 +6142,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> сәлден кейін кідіртіледі</translation>
 <translation id="586567932979200359">Сіз <ph name="PRODUCT_NAME" /> бағдарламасын диск бейнесінен іске қостыңыз. Оны компьютеріңізге орнату оны дисктегі бейнесіз іске қосуға мүмкіндік береді және оның жаңартылуын қамтамасыз етеді.</translation>
 <translation id="5865733239029070421">Қолданыс статистикасын және жаңылыс туралы есептерді Google жүйесіне автоматты түрде жібереді</translation>
-<translation id="5867855474018538405">QR кодын сканерлеу үшін телефоныңыздағы нұсқауларды орындаңыз. Телефонда Bluetooth және Wi-Fi қосылып тұрғанына көз жеткізіңіз.
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="DEVICE_TYPE" /> құрылғыңызға Wi-Fi мен Google аккаунтын қосу үшін телефоныңызды пайдалана аласыз.
-    <ph name="BR" />
-    <ph name="BR" />
-    Маңайдағы құрылғыларда <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> деп шығып тұрады...</translation>
 <translation id="5868434909835797817">Құрылғыңызда микрофон өшірулі</translation>
 <translation id="5868822853313956582">Құрылғы түстерін пайдалану</translation>
 <translation id="5869029295770560994">Жарайды, түсінікті</translation>
@@ -7724,6 +7709,7 @@
 <translation id="7125932261198019860">Принтер Chromebook құрылғыңызбен бірдей Wi-Fi желісіне қосылғанына көз жеткізіңіз немесе USB кабелін пайдаланыңыз. <ph name="LINK_BEGIN" />Үйлесімділік туралы толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Жүктеу журналы</translation>
 <translation id="7128151990937044829">Хабарландыруға тыйым салынған кезде мекенжай жолағында индикатор көрсету</translation>
+<translation id="7130438335435247835">Кіру нүктесінің атауы (APN)</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> және <ph name="WEBSITE_3" /> сайттарындағы деректеріңізді оқу</translation>
 <translation id="713122686776214250">Б&amp;ет қосу…</translation>
 <translation id="7131431455372521159">Барлық TrackPoint құрылғысы ажыратылды.</translation>

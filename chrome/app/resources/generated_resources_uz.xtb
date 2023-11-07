@@ -3173,13 +3173,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="346298925039590474">Bu mobil tarmoqdan qurilmadagi barcha foydalanuvchilar foydalana oladi</translation>
 <translation id="3464145797867108663">Ish profilini kiritish</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> va boshqa xaridlar uchun chegirma olish</translation>
-<translation id="3466476162566821406">Kodni tasdiqlash uchun telefonda koʻrsatmalarni bajaring. Telefonda Bluetooth va Wi-Fi yoqilganini tekshiring.
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="DEVICE_TYPE" /> qurilmasiga Wi-Fi va Google hisobi axborotini telefon orqali kiritish mumkin.
-    <ph name="BR" />
-    <ph name="BR" />
-    Atrofdagi qurilmalarga chiqadigan nom: <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="3468298837301810372">Yorliq</translation>
 <translation id="3468999815377931311">Android telefon</translation>
 <translation id="3469583217479686109">Tanlash vositasi</translation>
@@ -4817,7 +4810,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4769632191812288342">Standart himoya ostidasiz</translation>
 <translation id="4770119228883592393">Ruxsat talabi keldi, javob berish uchun ⌘ + Option + Pastga strelka tugmalarini bosing</translation>
 <translation id="4773112038801431077">Linux tizimini yangilash</translation>
-<translation id="4774456473286455263">Android telefoni orqali sozlang</translation>
 <translation id="4775228465764358468">Sayt til tanlovi yoki xarid istaklarini saqlashi mumkin. Bu maʼlumotlar sayt va uning quyi domenlariga koʻrinadi.</translation>
 <translation id="477548766361111120">Kengaytmaga bu saytni oʻqish va oʻzgartirishga ruxsat berish</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> ulandi</translation>
@@ -6158,13 +6150,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5865508026715185451"><ph name="APP_NAME" /> tez orada pauza qilinadi</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> tizimini diskdagi tasviridan ishga tushirgansiz. Uni kompyuteringizga o‘rnatsangiz, disk tasviri kerak bo‘lmaydi hamda tizim muntazam yangilanib turadi.</translation>
 <translation id="5865733239029070421">Foydalanish statistikasi va ishdan chiqish hisobotlari avtomatik tarzda Google serverlariga yuborilsin</translation>
-<translation id="5867855474018538405">QR kodni skanerlash uchun telefonda koʻrsatmalarni bajaring. Telefonda Bluetooth va Wi-Fi yoqilganini tekshiring.
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="DEVICE_TYPE" /> qurilmasiga Wi-Fi va Google hisobi axborotini telefon orqali kiritish mumkin.
-    <ph name="BR" />
-    <ph name="BR" />
-    Atrofdagi qurilmalarga chiqadigan nom: <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="5868434909835797817">Qurilma mikofoni oʻchiq</translation>
 <translation id="5868822853313956582">Tizim ranglarini ishlatish</translation>
 <translation id="5869029295770560994">OK</translation>
@@ -7733,6 +7718,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7125932261198019860">Printer va Chromebook bir xil Wi-Fi tarmoq yoki USB kabel orqali ulanganini tekshiring. <ph name="LINK_BEGIN" />Mos qurilmalar haqida batafsil<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Yuklanishlar tarixi</translation>
 <translation id="7128151990937044829">Bildirishnoma bloklanganda belgisi manzillar qatorida chiqsin</translation>
+<translation id="7130438335435247835">Ulanish nuqtasi nomi (APN)</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> va <ph name="WEBSITE_3" /> saytlaridagi ma’lumotlarni ko‘rish</translation>
 <translation id="713122686776214250">Sahifa &amp;qo‘shish...</translation>
 <translation id="7131431455372521159">Barcha TrackPoint uzildi</translation>

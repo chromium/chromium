@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Baimena eman zaie hauei: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}other{Baimena eman zaie hauei: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Bisitatzen dituzun webguneek beste webgune batzuetako edukia kapsula dezakete; adibidez, irudiak, iragarkiak eta testua. Beste webgune horiek ezarritako cookieei "hirugarrenen cookie" deritze.</translation>
 <translation id="2434158240863470628">Deskargatu da <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Hirugarrenen cookieak aldi baterako erabiltzeko baimena eman diozu webgune honi. Babes txikiagoa izango duzu, baina webgunearen eginbideek espero bezala funtzionatzeko probabilitate handiagoa izango dute. <ph name="BEGIN_LINK" />Bidali oharrak<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Baliteke ezkutuko modua aktibatuta dagoenean webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="2442870161001914531">Eskatu beti ordenagailuetarako webgunea</translation>
 <translation id="2469312991797799607"><ph name="ORIGIN" /> webgunearen eta haren mendeko webgune guztien datu eta cookie guztiak ezabatuko dira</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Izena</translation>
 <translation id="4008040567710660924">Onartu webgune zehatz baten cookieak.</translation>
 <translation id="4046123991198612571">Hurrengo pista</translation>
-<translation id="4053720452172726777">Pertsonalizatu eta kontrolatu Google Chrome</translation>
 <translation id="4149890623864272035">Ziur gailuko datu guztiak ezabatu nahi dituzula, cookieak barne, eta webgune honetako baimen guztiak berrezarri?</translation>
 <translation id="4149994727733219643">Web-orrien ikuspegi sinplifikatua</translation>
 <translation id="4151930093518524179">Zoom lehenetsia</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Ezabatu eta berrezarri</translation>
 <translation id="4645575059429386691">Gurasoek kudeatuta</translation>
 <translation id="4670064810192446073">Errealitate birtuala</translation>
+<translation id="4673958474310291465">Eman hirugarrenen cookieak erabiltzeko baimena aldi baterako. Babes txikiagoa izango duzu, baina webgunearen eginbideek espero bezala funtzionatzeko probabilitate handiagoa izango dute.</translation>
 <translation id="4751476147751820511">Mugimenduaren eta argiaren sentsoreak</translation>
 <translation id="4779083564647765204">Zooma</translation>
 <translation id="4811450222531576619">Lortu haren iturburuari eta bertan jorratzen den gaiari buruzko informazio gehiago</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
 <translation id="6205314730813004066">Iragarkien pribatutasuna</translation>
 <translation id="6207207788774442484">Ezabatu datuak eta berrezarri baimenak</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> - Aukerak</translation>
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" desinstalatu nahi duzu?</translation>
 <translation id="6262191102408817757">Azken fitxaren arabera</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> blokeatu egin dira</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Blokeatu</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 hautatuta}other{# hautatuta}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> hautatu dira. Pantailaren goialdean daude aukera erabilgarriak.</translation>
+<translation id="7137403271056944713">MIDI gailua kontrolatu/berriro programatu</translation>
 <translation id="7141896414559753902">Ez utzi webguneei leiho gainerakorrak eta birbideratzeak erakusten (gomendatua)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Freskatu</translation>

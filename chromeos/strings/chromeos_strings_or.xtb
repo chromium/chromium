@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
+<translation id="1003363546227723021">ଆପଣଙ୍କ ସ୍କ୍ରିନ୍ ନିଷ୍କ୍ରିୟ ଥିବା ବେଳେ ଫଟୋ, ସମୟ, ପାଣିପାଗ ଏବଂ ମିଡିଆର ସୂଚନା ଦେଖାନ୍ତୁ</translation>
 <translation id="1014750484722996375">ଡେସ୍କଗୁଡ଼ିକ</translation>
 <translation id="1018219910092211213">DNSର ସମାଧାନ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="1018656279737460067">ବାତିଲ୍‌ କରାଗଲା</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">ChromeOS Flexକୁ ଇନଷ୍ଟଲ କରନ୍ତୁ</translation>
 <translation id="1856388568474281774">ତଳ ତୀର</translation>
 <translation id="1858620243986915808">ସ୍କ୍ରିନସଟ ଆଟାଚ କରନ୍ତୁ</translation>
+<translation id="1871413952174074704">APNରେ <ph name="CHAR_LIMIT" />ରୁ ଅଧିକ କେରେକ୍ଟର ରହିପାରିବ ନାହିଁ</translation>
 <translation id="1871569928317311284">ଗାଢ଼ା ଥିମ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">ଡାର୍କ ମୋଡ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">ରିପୋର୍ଟ ଲୁଚାନ୍ତୁ</translation>
 <translation id="500920857929044050">ଟେଷ୍ଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">ଆପଣଙ୍କ ସ୍କ୍ରିନ ନିଷ୍କ୍ରିୟ ଥିବା ବେଳେ ଫଟୋ, ସମୟ, ପାଣିପାଗ ଏବଂ ମିଡିଆ ସମ୍ବନ୍ଧିତ ସୂଚନା ଦେଖାନ୍ତୁ।</translation>
 <translation id="5035083460461104704">ଥିମର ରଙ୍ଗ</translation>
 <translation id="5038292761217083259">କୀବୋର୍ଡକୁ ଏକାଧିକ ରଙ୍ଗର କରନ୍ତୁ</translation>
 <translation id="5039804452771397117">ଅନୁମତି</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">ହାଲୁକା ଗୋଲାପି</translation>
 <translation id="982713511914535780">ବ୍ୟାଟେରୀ ଡିସଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="987264212798334818">ସାଧାରଣ</translation>
+<translation id="995062385528875723">ଆକ୍ସେଣ୍ଟେଡ ଅକ୍ଷର, ଅଣ-ଲାଟିନ ବର୍ଣ୍ଣମାଳା କିମ୍ବା ଚିହ୍ନଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ</translation>
 </translationbundle>

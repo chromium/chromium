@@ -140,6 +140,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1750259112639922169">Sekme grubu: <ph name="TAB_COUNT" /> sekme</translation>
 <translation id="17513872634828108">Açık sekmeler</translation>
 <translation id="1757620656501361327">Google Şifre Yöneticisi güncellemesi</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sayfalar, listede 1 sayfa var}other{Sayfalar, listede # sayfa var}}</translation>
 <translation id="1778457539567749232">Okunmadı olarak işaretle</translation>
 <translation id="1779766957982586368">Pencereyi kapat</translation>
 <translation id="1791662854739702043">Yüklendi</translation>
@@ -249,6 +250,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2414886740292270097">Koyu</translation>
 <translation id="2421705177906985956">Şu anda gösterilecek site yok</translation>
 <translation id="2426805022920575512">Başka hesap seç</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videolar, listede 1 video var}other{Videolar, listede # video var}}</translation>
 <translation id="2433507940547922241">Görünüm</translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> Önizleme</translation>
@@ -724,6 +726,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="4864369630010738180">Oturum açılıyor...</translation>
 <translation id="4866368707455379617">Chrome için <ph name="MODULE" /> yüklenemiyor</translation>
 <translation id="4871568871368204250">Senkronizasyonu kapatma</translation>
+<translation id="4874961007154620743">Bu özellik kapalıyken Chrome'un yerel olarak sağladığı önerileri görmeye devam edersiniz</translation>
 <translation id="4875775213178255010">İçerik Önerileri</translation>
 <translation id="4877678010818027629">Gizli moda geç</translation>
 <translation id="4878404682131129617">Proxy sunucu üzerinden tünel oluşturulamadı</translation>
@@ -1100,6 +1103,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6795633245022906657">Hızlıca yeni bir sekme açın. Bu kısayolu düzenlemek için Ayarlar'a gidin.</translation>
 <translation id="6802555630140434547">Pencere kapatılacak</translation>
 <translation id="6811034713472274749">Sayfa görüntülenmeye hazır</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Resimler, listede 1 resim var}other{Resimler, listede # resim var}}</translation>
 <translation id="6813446258015311409">Chrome'da oturum açma sayfası açıldı.</translation>
 <translation id="6817747507826986771">Bu sayfayı hızlıca paylaşın. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
 <translation id="6819199143469632133">Google'daki öğelerinizi cihazlar arasında paylaşmak için oturum açın</translation>
@@ -1113,6 +1117,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6846298663435243399">Yükleniyor...</translation>
 <translation id="6850409657436465440">İndirme işleminiz hâlâ devam ediyor</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> sekme kapatıldı</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Ses dosyaları, listede 1 ses dosyası var}other{Ses dosyaları, listede # ses dosyası var}}</translation>
 <translation id="685850645784703949">Google'dan Keşfet - kapalı</translation>
 <translation id="686366188661646310">Şifre silinsin mi?</translation>
 <translation id="6864459304226931083">Resmi indir</translation>
@@ -1218,6 +1223,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="7379900596734708416">Sitelerde koyu tema kullanılabilir</translation>
 <translation id="7388615499319468910">Siteler ve reklamverenler, reklamların nasıl performans gösterdiğini anlayabilir. Bu ayar kapalı.</translation>
 <translation id="7397416715506917976">Page Insgihts'ı göster</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Listede 1 dosya daha var}other{Listede # dosya daha var}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome İlk Çalıştırma Deneyimi</translation>
 <translation id="7411224099004328643">Google Hesabı kullanıcısı</translation>
@@ -1311,6 +1317,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7808889146555843082">Bu şifre kaldırıldığında <ph name="SITE" /> üzerindeki hesabınız silinmez. <ph name="SITE" /> üzerindeki hesabınıza başka kişilerin ulaşmaması için şifrenizi değiştirin veya hesabı silin.</translation>
 <translation id="7810647596859435254">Birlikte aç…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tüm dosyalar, listede 1 dosya var}other{Tüm dosyalar, listede # dosya var}}</translation>
 <translation id="7815484226266492798">Uzun Ekran Görüntüsü</translation>
 <translation id="7822705602465980873">Oturum açtığınızda bu veriler, Google hizmetlerinde korunmanızı sağlamak için Google Hesabınıza bağlanır. Örneğin, bir güvenlik olayından sonra Gmail'deki koruma artırılır.</translation>
 <translation id="782705168687182233">Etkinliğiniz <ph name="BEGIN_LINK" />Google Hesabınıza<ph name="END_LINK" /> kaydedilir.</translation>
@@ -1535,6 +1542,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> hazır</translation>
 <translation id="8937772741022875483">Chrome etkinliğiniz Dijital Denge'den kaldırılsın mı?</translation>
+<translation id="893938492099608175">Chrome, ayarlarınıza bağlı olarak çerezleri, geçerli URL'nizi ve konumunuzu da gönderebilir</translation>
 <translation id="8942627711005830162">Yeni pencerede aç</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Bu dil indirilemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="8955719471735800169">Başa dön</translation>

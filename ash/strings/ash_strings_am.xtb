@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">የጎበኟቸውን ገፆች እና የተከፈቱ ገፆችን የሚያካትቱ ድር ጣቢያዎች</translation>
 <translation id="181103072419391116">የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በየእርስዎ አስተዳዳሪ የሚተዳደር</translation>
 <translation id="1816896987747843206">ይህ የካሜራ ፈቃድ ላላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች የካሜራ መዳረሻ ይፈቅዳል</translation>
-<translation id="1823280932251546115">የሁኔታ ትሪ፣ ሰዓት <ph name="TIME" />፣
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />፣
-        <ph name="PRIVACY" />፣
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />፣
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ኤተርኔት፦ <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">የመገኛ አካባቢ መዳረሻን አብራ</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ተላቋል</translation>

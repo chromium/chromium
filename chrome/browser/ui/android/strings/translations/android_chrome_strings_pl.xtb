@@ -140,6 +140,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="1750259112639922169">Grupa <ph name="TAB_COUNT" /> kart</translation>
 <translation id="17513872634828108">Otwarte karty</translation>
 <translation id="1757620656501361327">Aktualizacja Menedżera haseł Google</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Strony, 1 strona na liście}few{Strony, # strony na liście}many{Strony, # stron na liście}other{Strony, # strony na liście}}</translation>
 <translation id="1778457539567749232">Oznacz jako nieprzeczytane</translation>
 <translation id="1779766957982586368">Zamknij okno</translation>
 <translation id="1791662854739702043">Zainstalowano</translation>
@@ -249,6 +250,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="2414886740292270097">Ciemny</translation>
 <translation id="2421705177906985956">Obecnie nie ma witryn do wyświetlenia</translation>
 <translation id="2426805022920575512">Wybierz inne konto</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Filmy, 1 film na liście}few{Filmy, # filmy na liście}many{Filmy, # filmów na liście}other{Filmy, # filmu na liście}}</translation>
 <translation id="2433507940547922241">Wygląd</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="2439153523196674349">Podgląd strony <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="4864369630010738180">Loguję...</translation>
 <translation id="4866368707455379617">Nie można zainstalować modułu <ph name="MODULE" /> do Chrome</translation>
 <translation id="4871568871368204250">Wyłączanie synchronizacji</translation>
+<translation id="4874961007154620743">Po wyłączeniu tej funkcji nadal będziesz widzieć sugestie wyświetlane lokalnie w Chrome</translation>
 <translation id="4875775213178255010">Polecane treści</translation>
 <translation id="4877678010818027629">Włącz tryb incognito</translation>
 <translation id="4878404682131129617">Nie udało się utworzyć tunelu przez serwer proxy</translation>
@@ -1100,6 +1103,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6795633245022906657">Szybko otwórz nową kartę. Aby edytować ten skrót, otwórz Ustawienia.</translation>
 <translation id="6802555630140434547">Okno zostanie zamknięte</translation>
 <translation id="6811034713472274749">Strona jest gotowa do wyświetlenia</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Obrazy, 1 obraz na liście}few{Obrazy, # obrazy na liście}many{Obrazy, # obrazów na liście}other{Obrazy, # obrazu na liście}}</translation>
 <translation id="6813446258015311409">Logowanie się w Chrome, otwarte.</translation>
 <translation id="6817747507826986771">Szybko udostępnij tę stronę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
 <translation id="6819199143469632133">Aby mieć dostęp do swoich treści w Google na różnych urządzeniach, zaloguj się</translation>
@@ -1113,6 +1117,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6846298663435243399">Wczytuję…</translation>
 <translation id="6850409657436465440">Pobieranie wciąż trwa</translation>
 <translation id="6850830437481525139">Zamknięte karty: <ph name="TAB_COUNT" /></translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Pliki audio, 1 plik audio na liście}few{Pliki audio, # pliki audio na liście}many{Pliki audio, # plików audio na liście}other{Pliki audio, # pliku audio na liście}}</translation>
 <translation id="685850645784703949">Discover od Google – wyłączone</translation>
 <translation id="686366188661646310">Usunąć hasło?</translation>
 <translation id="6864459304226931083">Pobierz obraz</translation>
@@ -1218,6 +1223,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7379900596734708416">Dostępny jest ciemny motyw dla witryn</translation>
 <translation id="7388615499319468910">Witryny i reklamodawcy mogą poznać skuteczność reklam. To ustawienie jest wyłączone.</translation>
 <translation id="7397416715506917976">Wyświetl statystyki strony</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{1 inny plik na liście}few{# inne pliki na liście}many{# innych plików na liście}other{# innego pliku na liście}}</translation>
 <translation id="7400418766976504921">Adres URL</translation>
 <translation id="7403691278183511381">Pierwsze uruchomienie Chrome</translation>
 <translation id="7411224099004328643">Użytkownik konta Google</translation>
@@ -1311,6 +1317,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7808889146555843082">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="SITE" />. Aby uniemożliwić innym osobom dostęp do konta w serwisie <ph name="SITE" />, usuń je lub zmień do niego hasło.</translation>
 <translation id="7810647596859435254">Otwórz za pomocą…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Wszystkie pliki, 1 plik na liście}few{Wszystkie pliki, # pliki na liście}many{Wszystkie pliki, # plików na liście}other{Wszystkie pliki, # pliku na liście}}</translation>
 <translation id="7815484226266492798">Długi zrzut ekranu</translation>
 <translation id="7822705602465980873">Gdy się zalogujesz, dane te będą powiązane z Twoim kontem Google, co pozwoli chronić Cię we wszystkich usługach Google. Na przykład w razie incydentu związanego z bezpieczeństwem zwiększy się ochrona w Gmailu.</translation>
 <translation id="782705168687182233">Twoja aktywność jest zapisywana na <ph name="BEGIN_LINK" />koncie Google<ph name="END_LINK" />.</translation>
@@ -1535,6 +1542,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Język <ph name="LANG" /> jest gotowy</translation>
 <translation id="8937772741022875483">Usunąć Twoją aktywność w Chrome z Cyfrowej równowagi?</translation>
+<translation id="893938492099608175">W zależności od ustawień Chrome może też wysyłać pliki cookie oraz Twój aktualny adres URL i lokalizację</translation>
 <translation id="8942627711005830162">Otwórz w innym oknie</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – nie udało się pobrać tego języka. Spróbuj później.</translation>
 <translation id="8955719471735800169">Powrót do góry</translation>

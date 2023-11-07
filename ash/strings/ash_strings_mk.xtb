@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">Веб-сајтовите, заедно со страниците што сте ги посетиле, како и отворените страници</translation>
 <translation id="181103072419391116">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="1816896987747843206">Ова дозволува пристап до камерата за сите апликации и веб-сајтови со дозвола за камерата</translation>
-<translation id="1823280932251546115">Фиока за статусот, време <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Вклучи пристап до локацијата</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> веќе не е закачена</translation>
@@ -1198,6 +1189,7 @@
 <translation id="5788127256798019331">Датотеки на Play</translation>
 <translation id="5788535737706478207">Ја отвора повторно последната картичка или затворениот прозорец</translation>
 <translation id="5790085346892983794">Успешно</translation>
+<translation id="5802516411616338943">Отворете „Брзи поставки“</translation>
 <translation id="5804651031882187592">Исклучете ја поставката „Заклучи SIM“</translation>
 <translation id="5805809050170488595">Кликнете за активирање на <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Задачи во Google Tasks на интернет</translation>
@@ -1223,6 +1215,7 @@
 <translation id="5901630391730855834">Жолта боја</translation>
 <translation id="5911231045062997865">Прозорци Lacros не се поддржани во моментов. Другите апликации ќе се зачуваат.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Ново известување, вкупно: <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5920710855273935292">Звукот на микрофонот е исклучен.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> е вклучено.</translation>

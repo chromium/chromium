@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ଅନୁମତି ଦିଆଯାଇଛି}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ଅନୁମତି ଦିଆଯାଇଛି}}</translation>
 <translation id="2410940059315936967">ଆପଣ ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକରୁ ବିଷୟବସ୍ତୁକୁ ଏମ୍ବେଡ କରିପାରିବ, ଉଦାହରଣ ସ୍ୱରୂପ, ଇମେଜ, ବିଜ୍ଞାପନ ଏବଂ ଟେକ୍ସଟ। ଏହି ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ସେଟ କରାଯାଇଥିବା କୁକୀଗୁଡ଼ିକୁ ତୃତୀୟ-ପକ୍ଷ କୁକୀ କୁହାଯାଏ।</translation>
 <translation id="2434158240863470628">ଡାଉନ୍‌ଲୋଡ୍ ଶେଷ ହେଲା <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">କମ ବ୍ରାଉଜିଂ ସୁରକ୍ଷା ଥିବା କିନ୍ତୁ ସାଇଟ ଫିଚରଗୁଡ଼ିକ ଆଶାନୁରୂପେ କାମ କରିବାର ସମ୍ଭାବନା ଅଧିକ ଥିବା ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣ ଅସ୍ଥାୟୀ ଭାବରେ ଏହି ସାଇଟକୁ ଅନୁମତି ଦେଇଛନ୍ତି। <ph name="BEGIN_LINK" />ମତାମତ ପଠାନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">କିଛି ସାଇଟରେ ଫିଚରଗୁଡ଼ିକ ଇନକଗ୍ନିଟୋ ମୋଡରେ କାମ କରିନପାରେ</translation>
 <translation id="2442870161001914531">ସର୍ବଦା ଡେସ୍କଟପ ସାଇଟର ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="2469312991797799607">ଏହି କାର୍ଯ୍ୟ <ph name="ORIGIN" /> ଏବଂ ଏହା ଅଧୀନରେ ଥିବା ସବୁ ସାଇଟ ପାଇଁ ସମସ୍ତ ଡାଟା ଓ କୁକୀକୁ ଡିଲିଟ କରିବ</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">ଆଖ୍ୟା</translation>
 <translation id="4008040567710660924">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଏ।</translation>
 <translation id="4046123991198612571">ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
-<translation id="4053720452172726777">Google Chromeକୁ କଷ୍ଟମାଇଜ୍ ଓ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ।</translation>
 <translation id="4149890623864272035">ଆପଣ କୁକୀଗୁଡ଼ିକ ସମେତ ସମସ୍ତ ସ୍ଥାନୀୟ ଡାଟାକୁ ଡିଲିଟ କରିବା ଏବଂ ଏହି ୱେବସାଇଟ ପାଇଁ ସମସ୍ତ ଅନୁମତିକୁ ରିସେଟ କରିବା ପାଇଁ ଚାହୁଁଥିବା ନିଶ୍ଚିତ?</translation>
 <translation id="4149994727733219643">ୱେବ୍ ପୃଷ୍ଠାଗୁଡ଼ିକ ପାଇଁ ସରଳୀକୃତ ଭ୍ୟୁ</translation>
 <translation id="4151930093518524179">ଡିଫଲ୍ଟ ଜୁମ</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">ଡିଲିଟ କରି ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="4645575059429386691">ଆପଣଙ୍କର ଅଭିବାବକଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="4670064810192446073">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ</translation>
+<translation id="4673958474310291465">କମ ସୁରକ୍ଷା ଥିବା କିନ୍ତୁ ସାଇଟ ଫିଚରଗୁଡ଼ିକ ଆଶାନୁରୂପେ କାମ କରିବାର ସମ୍ଭାବନା ଅଧିକ ଥିବା ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅସ୍ଥାୟୀ ଭାବରେ ଅନୁମତି ଦେବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="4751476147751820511">ମୋସନ୍ କିମ୍ବା ଲାଇଟ୍ ସେନ୍ସର୍</translation>
 <translation id="4779083564647765204">ଜୁମ୍</translation>
 <translation id="4811450222531576619">ଏହାର ସୋର୍ସ ଏବଂ ବିଷୟ ସମ୍ବନ୍ଧରେ ଜାଣନ୍ତୁ</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">ତୃତୀୟ ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="6205314730813004066">ବିଜ୍ଞାପନ ଗୋପନୀୟତା</translation>
 <translation id="6207207788774442484">ଡାଟାକୁ ଡିଲିଟ କରି ଅନୁମତିଗୁଡ଼ିକୁ ରିସେଟ କରନ୍ତୁ</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> ବିକଳ୍ପ</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' କୁ ଅନଇନଷ୍ଟଲ୍ କରିବେ?</translation>
 <translation id="6262191102408817757">ଆପଣଙ୍କ ଶେଷ ଟାବ ଆଧାରରେ</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ଏବଂ <ph name="PERMISSION_2" />କୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">ଅବରୋଧ କରନ୍ତୁ</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1ଟି ଚୟନ କରାଯାଇଛି}other{#ଟି ଚୟନ କରାଯାଇଛି}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />ଟି ଚୟନ କରାଯାଇଛି।  ସ୍କ୍ରିନ୍‌ର ଶୀର୍ଷଭାଗରେ ବିକଳ୍ପଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି</translation>
+<translation id="7137403271056944713">MIDI ଡିଭାଇସ ନିୟନ୍ତ୍ରଣ / ପୁଣି ପ୍ରୋଗ୍ରାମ</translation>
 <translation id="7141896414559753902">ସାଇଟ୍‌ଗୁଡ଼ିକର ପପ୍‌-ଅପ୍‌ ଏବଂ ରିଡାଇରେକ୍ଟ ଦେଖାଇବାକୁ ଅବରୋଧ କରନ୍ତୁ (ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>

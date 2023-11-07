@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">നിങ്ങൾ സന്ദർശിച്ച പേജുകളും തുറന്ന പേജുകളും ഉൾപ്പെടെയുള്ള വെബ്‌സൈറ്റുകൾ</translation>
 <translation id="181103072419391116">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="1816896987747843206">ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
-<translation id="1823280932251546115">സ്റ്റാറ്റസ് ട്രേ, സമയം <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ഇതർനെറ്റ്: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കുക</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> അൺപിൻ ചെയ്‌തു</translation>

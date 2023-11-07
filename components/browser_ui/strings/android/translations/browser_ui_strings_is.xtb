@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót leyft}one{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót leyft}other{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót leyft}}</translation>
 <translation id="2410940059315936967">Vefsvæði sem þú skoðar getur fellt inn efni frá öðrum vefsvæðum, til dæmis myndir, auglýsingar og texta. Fótspor sem viðkomandi önnur vefsvæði nota kallast fótspor þriðju aðila.</translation>
 <translation id="2434158240863470628">Niðurhali lokið <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Þú leyfðir þessu vefsvæði að nota fótspor þriðju aðila tímabundið. Þetta þýðir minni vernd við vefskoðun en líklegra er að eiginleikar vefsvæðisins virki sem skyldi. <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Eiginleikar sumra vefsvæða virka e.t.v. ekki í huliðsstillingu</translation>
 <translation id="2442870161001914531">Biðja alltaf um tölvuútgáfu vefsvæða</translation>
 <translation id="2469312991797799607">Þessi aðgerð eyðir öllum gögnum og fótsporum fyrir <ph name="ORIGIN" /> og öll undirvefsvæði þess</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Heiti</translation>
 <translation id="4008040567710660924">Leyfa fótspor fyrir tiltekið vefsvæði.</translation>
 <translation id="4046123991198612571">Næsta lag</translation>
-<translation id="4053720452172726777">Sérsníða og stjórna Google Chrome</translation>
 <translation id="4149890623864272035">Viltu örugglega eyða öllum staðbundnum gögnum, þar á meðal fótsporum, og endurstilla allar heimildir fyrir þetta vefsvæði?</translation>
 <translation id="4149994727733219643">Einfaldað yfirlit fyrir vefsíður</translation>
 <translation id="4151930093518524179">Sjálfgefinn aðdráttur</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Eyða og endurstilla</translation>
 <translation id="4645575059429386691">Stjórnað af foreldri þínu</translation>
 <translation id="4670064810192446073">Sýndarveruleiki</translation>
+<translation id="4673958474310291465">Prófaðu að leyfa fótspor þriðju aðila tímabundið, það þýðir minni vernd en líklegra er að eiginleikar vefsvæðisins virki sem skyldi</translation>
 <translation id="4751476147751820511">Hreyfi- eða birtuskynjarar</translation>
 <translation id="4779083564647765204">Aðdráttur</translation>
 <translation id="4811450222531576619">Kynntu þér uppruna og umfjöllunarefni síðunnar</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Loka á fótspor frá þriðja aðila</translation>
 <translation id="6205314730813004066">Persónuvernd auglýsinga</translation>
 <translation id="6207207788774442484">Eyða gögnum og endurstilla heimildir</translation>
-<translation id="6216432067784365534">Valkostir fyrir <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Fjarlægja „<ph name="APP_NAME" />“?</translation>
 <translation id="6262191102408817757">Byggt á síðasta flipa hjá þér</translation>
 <translation id="6262279340360821358">Lokað er fyrir <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Setja á bannlista</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valið}one{# valið}other{# valin}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> valin.  Valkostir eru ofarlega á skjánum</translation>
+<translation id="7137403271056944713">Stjórn/endurforritun MIDI-tækis</translation>
 <translation id="7141896414559753902">Banna síðum að birta sprettiglugga og framsendingar (ráðlagt)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Endurnýja</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="1003363546227723021">திரை செயல்படாத நிலையில் இருக்கும்போது படங்கள், நேரம், வானிலை, மீடியா தகவல் ஆகியவற்றைப் பார்க்கலாம்</translation>
 <translation id="1014750484722996375">டெஸ்க்குகள்</translation>
 <translation id="1018219910092211213">DNSஸைத் தீர்க்க முடியவில்லை</translation>
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">அறிக்கையை மறை</translation>
 <translation id="500920857929044050">சோதனையை நிறுத்து</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">திரை செயலில் இல்லாதபோது படங்கள், நேரம், வானிலை, மீடியா தகவல்கள் ஆகியவற்றைக் காட்டு.</translation>
 <translation id="5035083460461104704">தீமின் வண்ணம்</translation>
 <translation id="5038292761217083259">கீபோர்டு பலவண்ணம்</translation>
 <translation id="5039804452771397117">அனுமதி</translation>

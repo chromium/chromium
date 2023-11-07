@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1003363546227723021">Показване на снимки, часа, времето и информация за мултимедията, когато екранът е неактивен</translation>
 <translation id="1014750484722996375">Работни кътове</translation>
 <translation id="1018219910092211213">Преобразуването от DNS не е възможно</translation>
 <translation id="1018656279737460067">Отказано</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Инсталиране на ChromeOS Flex</translation>
 <translation id="1856388568474281774">Стрелка за надолу</translation>
 <translation id="1858620243986915808">Прикачване на екранна снимка</translation>
+<translation id="1871413952174074704">Името на точката за достъп (APN) не може да съдържа повече от <ph name="CHAR_LIMIT" /> знака</translation>
 <translation id="1871569928317311284">Изключване на тъмната тема</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Изключване на тъмния режим</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Скриване на отчета</translation>
 <translation id="500920857929044050">Спиране на теста</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Показване на снимки, часа, времето и информация за мултимедията, когато екранът е неактивен.</translation>
 <translation id="5035083460461104704">Цвят на темата</translation>
 <translation id="5038292761217083259">многоцветна клавиатура</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Светлорозов</translation>
 <translation id="982713511914535780">Тестване на разреждането</translation>
 <translation id="987264212798334818">Общи</translation>
+<translation id="995062385528875723">Не можете да използвате букви с диакритични знаци, символи и букви, които не са на латиница</translation>
 </translationbundle>

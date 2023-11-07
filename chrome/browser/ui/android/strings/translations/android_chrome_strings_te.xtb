@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">ట్యాబ్ గ్రూప్ - <ph name="TAB_COUNT" /> ట్యాబ్‌లు</translation>
 <translation id="17513872634828108">తెరిచిన ట్యాబ్‍లు</translation>
 <translation id="1757620656501361327">Google Password Manager అప్‌డేట్</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{పేజీలు, లిస్ట్‌లో 1 పేజీ ఉంది}other{పేజీలు, లిస్ట్‌లో # పేజీలు ఉన్నాయి}}</translation>
 <translation id="1778457539567749232">చదవనిదిగా మార్క్ చేస్తుంది</translation>
 <translation id="1779766957982586368">విండోను మూసివేస్తుంది</translation>
 <translation id="1791662854739702043">వ్యవస్థాపించబడింది</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">ముదురు</translation>
 <translation id="2421705177906985956">ప్రస్తుతం చూపించడానికి సైట్‌లు ఏవీ లేవు</translation>
 <translation id="2426805022920575512">మరొక ఖాతాను ఎంచుకోండి</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{వీడియోలు, లిస్ట్‌లో 1 వీడియో ఉంది}other{వీడియోలు, లిస్ట్‌లో # వీడియోలు ఉన్నాయి}}</translation>
 <translation id="2433507940547922241">కనిపించే తీరు</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> ప్రివ్యూ</translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">సైన్ ఇన్ అవుతోంది...</translation>
 <translation id="4866368707455379617">Chromeలో <ph name="MODULE" />ని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="4871568871368204250">సింక్‌ని ఆఫ్ చేయి</translation>
+<translation id="4874961007154620743">ఆఫ్‌లో ఉన్నప్పటికీ, Chrome లోకల్‌గా అందించే సూచనలు మీకు కనిపిస్తాయి</translation>
 <translation id="4875775213178255010">కంటెంట్ సూచనలు</translation>
 <translation id="4877678010818027629">అజ్ఞాత మోడ్‌లోకి ఎంటర్ అవ్వండి</translation>
 <translation id="4878404682131129617">ప్రాక్సీ సర్వర్ ద్వారా ఒక సొరంగంను ఏర్పాటు చేయడం విఫలమైంది</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">కొత్త ట్యాబ్‌ను వేగంగా తెరవండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="6802555630140434547">విండో మూసివేయబడుతుంది</translation>
 <translation id="6811034713472274749">పేజీ చూడటానికి సిద్ధంగా ఉంది</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{ఇమేజ్‌లు, లిస్ట్‌లో 1 ఇమేజ్ ఉంది}other{ఇమేజ్‌లు, లిస్ట్‌లో # ఇమేజ్‌లు ఉన్నాయి}}</translation>
 <translation id="6813446258015311409">Chromeకు సైన్ ఇన్ చేయండి, తెరవబడింది.</translation>
 <translation id="6817747507826986771">త్వరగా ఈ పేజీని షేర్ చేయండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, నొక్కి, పట్టుకోండి.</translation>
 <translation id="6819199143469632133">మీ పరికరాలన్నింటిలో Google ప్రయోజనాలను పొందడానికి, సైన్ ఇన్ చేయండి</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">లోడ్ చేస్తున్నాము…</translation>
 <translation id="6850409657436465440">మీ డౌన్‌లోడ్‌‌ ఇప్పటికీ జరుగుతోంది</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ట్యాబ్‌లు మూసివేయబడ్డాయి</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{ఆడియో ఫైల్స్, లిస్ట్‌లో 1 ఆడియో ఫైల్ ఉంది}other{ఆడియో ఫైల్స్, లిస్ట్‌లో # ఆడియో ఫైల్స్ ఉన్నాయి}}</translation>
 <translation id="685850645784703949">Google ద్వారా Discover - ఆఫ్‌లో ఉంది</translation>
 <translation id="686366188661646310">పాస్‌వర్డ్‌ను తొలగించాలా?</translation>
 <translation id="6864459304226931083">చిత్రాన్ని డౌన్‌లోడ్ చేయి</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">సైట్‌ల కోసం ముదురు రంగు రూపం అందుబాటులో ఉంది</translation>
 <translation id="7388615499319468910">యాడ్‌ల పనితీరు ఎలా ఉంది అనేది సైట్‌లు, అడ్వర్టయిజర్‌లు అర్థం చేసుకోగలరు. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>
 <translation id="7397416715506917976">పేజీ గణాంకాలను చూడండి</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{లిస్ట్‌లో మరో 1 ఫైల్ ఉంది}other{లిస్ట్‌లో మరో # ఫైల్స్ ఉన్నాయి}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome మొదటి అమలు అనుభవం</translation>
 <translation id="7411224099004328643">Google ఖాతా యూజర్</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">వద్దు , ధన్యవాదాలు</translation>
 <translation id="7808889146555843082">ఈ పాస్‌వర్డ్‌ను తొలగించడం వలన <ph name="SITE" />లో మీ ఖాతా తొలగించబడదు. మీ ఖాతాను ఇతరుల నుండి కాపాడుకోవడానికి, మీ పాస్‌వర్డ్‌ను మార్చండి లేదా <ph name="SITE" />లో దానిని తొలగించండి.</translation>
 <translation id="7810647596859435254">దీనితో తెరువు…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{అన్ని ఫైల్స్, లిస్ట్‌లో 1 ఫైల్ ఉంది}other{అన్ని ఫైల్స్, లిస్ట్‌లో # ఫైల్స్ ఉన్నాయి}}</translation>
 <translation id="7815484226266492798">పొడవైన స్క్రీన్‌షాట్</translation>
 <translation id="7822705602465980873">మీరు సైన్ ఇన్ చేసినప్పుడు, Google సర్వీస్‌లన్నింటిలో మిమ్మల్ని సురక్షితంగా ఉంచడం కోసం ఈ డేటా మీ Google ఖాతాకు లింక్ చేయబడుతుంది, ఉదాహరణకు సెక్యూరిటీకి సంబంధించిన ఒక సంఘటన జరిగిన తర్వాత Gmailలో రక్షణను పెంచడం జరుగుతుంది.</translation>
 <translation id="782705168687182233">మీ యాక్టివిటీ మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />లో సేవ్ చేయబడుతుంది.</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> సిద్ధంగా ఉంది</translation>
 <translation id="8937772741022875483">డిజిటల్ సంక్షేమం నుండి మీ Chrome యాక్టివిటీ తీసివేయాలా?</translation>
+<translation id="893938492099608175">మీ సెట్టింగ్‌లను బట్టి, కుక్కీలను, మీ ప్రస్తుత URLను, మీ లొకేషన్‌ను కూడా Chrome పంపవచ్చు</translation>
 <translation id="8942627711005830162">మరొక విండోలో తెరువు</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ఈ భాషను డౌన్‌లోడ్ చేయడం సాధ్యపడదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8955719471735800169">ఎగువకు తిరిగి వెళ్ళు</translation>

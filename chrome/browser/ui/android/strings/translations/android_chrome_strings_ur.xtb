@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">ٹیب گروپ - <ph name="TAB_COUNT" /> ٹیبز</translation>
 <translation id="17513872634828108">کھلے ٹیبز</translation>
 <translation id="1757620656501361327">‏Google پاس ورڈ مینیجر کی اپ ڈیٹ</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{صفحات، فہرست میں 1 صفحہ}other{صفحات، فہرست میں # صفحات}}</translation>
 <translation id="1778457539567749232">نہ پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="1779766957982586368">ونڈو بند کریں</translation>
 <translation id="1791662854739702043">انسٹال ہو گیا</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">گہری</translation>
 <translation id="2421705177906985956">ابھی دکھانے کے لیے کوئی سائٹ نہیں ہے</translation>
 <translation id="2426805022920575512">دوسرا اکاؤنٹ منتخب کریں</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{ویڈیوز، فہرست میں 1 ویڈیو}other{ویڈیوز، فہرست میں # ویڈیوز}}</translation>
 <translation id="2433507940547922241">موجودگی</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> کا پیش منظر</translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">سائن ان کر رہا ہے…</translation>
 <translation id="4866368707455379617">‏Chrome کیلئے <ph name="MODULE" /> انسٹال کرنے سے قاصر</translation>
 <translation id="4871568871368204250">مطابقت پذیری آف کریں</translation>
+<translation id="4874961007154620743">‏آف ہونے پر بھی آپ کو وہ تجاویز نظر آئیں گی جنہیں Chrome مقامی طور پر فراہم کرتا ہے</translation>
 <translation id="4875775213178255010">مواد کی تجاویز</translation>
 <translation id="4877678010818027629">پوشیدگی وضع میں داخل ہوں</translation>
 <translation id="4878404682131129617">پراکسی سرور کے ذریعہ سرنگ بنانا ناکام ہو گیا</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">فوری طور پر ایک نیا ٹیب کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ترتیبات پر جائیں۔</translation>
 <translation id="6802555630140434547">ونڈو بند کر دی جائے گی</translation>
 <translation id="6811034713472274749">صفحہ دیکھے جانے کیلئے تیار ہے</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{تصاویر، فہرست میں 1 تصویر}other{تصاویر، فہرست میں # تصاویر}}</translation>
 <translation id="6813446258015311409">‏کھولے گئے Chrome میں سائن ان کریں۔</translation>
 <translation id="6817747507826986771">فوری طور پر اس صفحے کا اشتراک کریں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="6819199143469632133">‏تمام آلات پر اپنی Google کی چیزیں حاصل کرنے کے لیے سائن ان کریں</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">لوڈ ہو رہا ہے…</translation>
 <translation id="6850409657436465440">آپ کا ڈاؤن لوڈ ابھی بھی پیشرفت میں ہے</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ٹیبز بند کر دیے گئے</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{آڈیو فائلز، فہرست میں 1 آڈیو فائل}other{آڈیو فائلز، فہرست میں # آڈیو فائلز}}</translation>
 <translation id="685850645784703949">‏Discover منجانب Google - آف</translation>
 <translation id="686366188661646310">پاس ورڈ حذف کریں؟</translation>
 <translation id="6864459304226931083">تصویر ڈاؤن لوڈ کریں</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">سائٹس کے لیے گہری تھیم دستیاب ہے</translation>
 <translation id="7388615499319468910">سائٹس اور مشتہرین اشتہارات کی کارکردگی کا طریقہ سمجھ سکتے ہیں۔ یہ ترتیب آف ہے۔</translation>
 <translation id="7397416715506917976">صفحے کی بصیرتیں دیکھیں</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{فہرست میں دیگر 1 فائل}other{فہرست میں دیگر # فائلز}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">‏Chrome کے پہلی بار چلانے کا تجربہ</translation>
 <translation id="7411224099004328643">‏Google اکاؤنٹ کا صارف</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7808889146555843082">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="SITE" /> سے حذف نہیں ہوگا۔ اپنا اکاؤنٹ دوسروں سے محفوظ رکھنے کیلئے اپنا پاس ورڈ تبدیل کریں یا <ph name="SITE" /> سے اپنا اکاؤنٹ حذف کریں۔</translation>
 <translation id="7810647596859435254">اس کے ساتھ کھولیں…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{تمام فائلز، فہرست میں 1 فائل}other{تمام فائلز، فہرست میں # فائلز}}</translation>
 <translation id="7815484226266492798">طویل اسکرین شاٹ</translation>
 <translation id="7822705602465980873">‏آپ کے سائن ان ہونے پر یہ ڈیٹا آپ کے Google اکاؤنٹ سے لنک کر دیا جاتا ہے تاکہ آپ کو تمام Google سروسز پر تحفظ فراہم کیا جا سکے، مثال کے طور پر سیکیورٹی کے واقعے کے بعد Gmail میں تحفظ میں اضافہ کرنا۔</translation>
 <translation id="782705168687182233">‏آپ کی سرگرمی آپ کے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> میں محفوظ ہوتی ہے۔</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> تیار ہے</translation>
 <translation id="8937772741022875483">‏ڈیجیٹل فلاح و بہبود سے آپ کی Chrome سرگرمی ہٹائیں؟</translation>
+<translation id="893938492099608175">‏آپ کی ترتیبات کی بنیاد پر، Chrome کوکیز، آپ کا موجودہ URL اور آپ کا مقام بھی بھیج سکتا ہے</translation>
 <translation id="8942627711005830162">دوسری ونڈو میں کھولیں</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - اس زبان کو ڈاؤن لوڈ نہیں کیا جا سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="8955719471735800169">واپس اوپر جائیں</translation>

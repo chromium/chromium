@@ -3187,13 +3187,6 @@
 <translation id="346298925039590474">এই ডিভাইস ব্যবহারকারী সকলেই এই মোবাইল নেটওয়ার্ক ব্যবহার করতে পারবেন</translation>
 <translation id="3464145797867108663">অফিস প্রোফাইল যোগ করুন</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> এবং আরও অনেক কিছুতে ছাড় পান</translation>
-<translation id="3466476162566821406">কোড যাচাইকরণের জন্য আপনার ফোনে দেখানো নির্দেশাবলী মেনে চলুন। ফোনের ব্লুটুথ ও ওয়াই-ফাই চালু আছে কিনা তা দেখে নিন।
-    <ph name="BR" />
-    <ph name="BR" />
-    আপনার <ph name="DEVICE_TYPE" />-এ ওয়াই-ফাই ও Google অ্যাকাউন্টের তথ্য যোগ করার জন্য আপনার ফোন ব্যবহার করতে পারবেন।
-    <ph name="BR" />
-    <ph name="BR" />
-    আপনার ডিভাইস আশেপাশের ডিভাইসে <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> নামে দেখা যাচ্ছে...</translation>
 <translation id="3468298837301810372">লেবেল</translation>
 <translation id="3468999815377931311">Android ফোন</translation>
 <translation id="3469583217479686109">বেছে নেওয়ার টুল</translation>
@@ -4832,7 +4825,6 @@
 <translation id="4769632191812288342">আপনি স্ট্যান্ডার্ড সুরক্ষা পাচ্ছেন</translation>
 <translation id="4770119228883592393">অনুমতি চাওয়া হয়েছে, উত্তর দিতে ⌘ + 'বিকল্প' বোতাম + 'নিম্নমুখী তীরচিহ্ন' বোতাম প্রেস করুন</translation>
 <translation id="4773112038801431077">Linux আপগ্রেড করুন</translation>
-<translation id="4774456473286455263">Android ফোন দিয়ে সেট-আপ করুন</translation>
 <translation id="4775228465764358468">সাইট আপনার পছন্দের ভাষা বা আপনি যে আইটেম কিনতে চান সেভ করতে পারে। এই তথ্য সাইট ও তার সাবডোমেনে উপলভ্য আছে।</translation>
 <translation id="477548766361111120">এই সাইট দেখতে ও পরিবর্তন করার জন্য এক্সটেনশনকে অনুমতি দিন</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> কানেক্ট করা হয়েছে</translation>
@@ -6174,13 +6166,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> শীঘ্রই পজ করা হবে</translation>
 <translation id="586567932979200359">আপনি <ph name="PRODUCT_NAME" /> থেকে এটির ডিস্ক ছবি চালাচ্ছেন৷ এটিকে আপনার কম্পিউটারে ইনস্টল করা হলে তা ডিস্ক ছবি ছাড়াই এটিকে চালাতে দেয় এবং এটিকে আপ টু ডেট আছে কিনা তা নিশ্চিত করে৷</translation>
 <translation id="5865733239029070421">ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট নিজে থেকেই Google-কে পাঠায়</translation>
-<translation id="5867855474018538405">QR কোড স্ক্যান করার জন্য আপনার ফোনে দেখানো নির্দেশ মেনে চলুন। ফোনের ব্লুটুথ ও ওয়াই-ফাই চালু আছে কিনা তা দেখে নিন।
-    <ph name="BR" />
-    <ph name="BR" />
-    আপনার <ph name="DEVICE_TYPE" />-এ ওয়াই-ফাই ও Google অ্যাকাউন্টের তথ্য যোগ করার জন্য আপনার ফোন ব্যবহার করতে পারবেন।
-    <ph name="BR" />
-    <ph name="BR" />
-    আপনার ডিভাইস আশেপাশের ডিভাইসে <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> নামে দেখা যাচ্ছে...</translation>
 <translation id="5868434909835797817">আপনার ডিভাইসে মাইক্রোফোন বন্ধ আছে</translation>
 <translation id="5868822853313956582">ডিভাইসের রঙ ফলো করুন</translation>
 <translation id="5869029295770560994">ঠিক আছে, বুঝেছি</translation>
@@ -7753,6 +7738,7 @@
 <translation id="7125932261198019860">আপনার Chromebook-এর মতো প্রিন্টারও একই ওয়াই-ফাই নেটওয়ার্কের সাথে কানেক্ট করা আছে কিনা তা নিশ্চিত করুন অথবা ইউএসবি কেবেল ব্যবহার করুন। <ph name="LINK_BEGIN" />কম্প্যাটিবিলিটি সম্পর্কে আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ইতিহাস ডাউনলোড করুন</translation>
 <translation id="7128151990937044829">বিজ্ঞপ্তি ব্লক করা থাকলে, অ্যাড্রেস বারে একটি সূচক দেখুন</translation>
+<translation id="7130438335435247835">অ্যাক্সেস পয়েন্ট নাম (APN)</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, এবং <ph name="WEBSITE_3" />-এ আপনার ডেটা পড়ে</translation>
 <translation id="713122686776214250">&amp;পৃষ্ঠা জুড়ুন...</translation>
 <translation id="7131431455372521159">সব TrackPoints ডিসকানেক্ট করা হয়েছে</translation>

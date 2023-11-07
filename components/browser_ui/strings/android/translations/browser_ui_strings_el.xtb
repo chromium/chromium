@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}other{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}}</translation>
 <translation id="2410940059315936967">Ένας ιστότοπος που επισκέπτεστε μπορεί να ενσωματώνει περιεχόμενο από άλλους ιστοτόπους, για παράδειγμα εικόνες, διαφημίσεις και κείμενο. Τα cookie που ορίζονται από αυτούς τους άλλους ιστοτόπους ονομάζονται cookie τρίτου μέρους.</translation>
 <translation id="2434158240863470628">Η λήψη ολοκληρώθηκε <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Επιτρέψατε προσωρινά σε αυτόν τον ιστότοπο να χρησιμοποιεί cookie τρίτου μέρους, κάτι που σημαίνει ότι έχει λιγότερη προστασία περιήγησης, αλλά οι λειτουργίες του ιστοτόπου είναι πιο πιθανό να λειτουργούν με τον αναμενόμενο τρόπο. <ph name="BEGIN_LINK" />Αποστολή σχολίων<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Οι λειτουργίες σε ορισμένους ιστοτόπους ενδέχεται να μην λειτουργούν σε Κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="2442870161001914531">Να ζητείται πάντα ιστότοπος για υπολογιστές</translation>
 <translation id="2469312991797799607">Με αυτή την ενέργεια, θα διαγραφούν όλα τα δεδομένα και τα cookie για το <ph name="ORIGIN" /> και όλους τους ιστοτόπους που περιλαμβάνονται σε αυτό.</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Τίτλος</translation>
 <translation id="4008040567710660924">Επιτρέπει τα cookie για έναν συγκεκριμένο ιστότοπο.</translation>
 <translation id="4046123991198612571">Επόμενο κομμάτι</translation>
-<translation id="4053720452172726777">Προσαρμογή και έλεγχος του Google Chrome</translation>
 <translation id="4149890623864272035">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλα τα τοπικά δεδομένα, συμπεριλαμβανομένων των cookie, και να επαναφέρετε όλες τις άδειες για αυτόν τον ιστότοπο;</translation>
 <translation id="4149994727733219643">Απλοποιημένη προβολή για ιστοσελίδες</translation>
 <translation id="4151930093518524179">Προεπιλεγμένη εστίαση</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Διαγραφή και επαναφορά</translation>
 <translation id="4645575059429386691">Διαχειρίζεται από τους γονείς σου</translation>
 <translation id="4670064810192446073">Εικονική πραγματικότητα</translation>
+<translation id="4673958474310291465">Δοκιμάστε να επιτρέψετε προσωρινά τα cookie τρίτου μέρους, κάτι που σημαίνει ότι θα έχετε λιγότερη προστασία, αλλά οι λειτουργίες του ιστοτόπου είναι πιο πιθανό να λειτουργούν με τον αναμενόμενο τρόπο</translation>
 <translation id="4751476147751820511">Αισθητήρες κίνησης ή φωτός</translation>
 <translation id="4779083564647765204">Μεγέθυνση</translation>
 <translation id="4811450222531576619">Μάθετε σχετικά με την πηγή και το θέμα της</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Αποκλεισμός cookie τρίτων</translation>
 <translation id="6205314730813004066">Απόρρητο διαφημίσεων</translation>
 <translation id="6207207788774442484">Διαγραφή δεδομένων και επαναφορά αδειών</translation>
-<translation id="6216432067784365534">Επιλογές <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Απεγκατάσταση <ph name="APP_NAME" />;</translation>
 <translation id="6262191102408817757">Με βάση την τελευταία σας καρτέλα</translation>
 <translation id="6262279340360821358">Οι άδειες <ph name="PERMISSION_1" /> και <ph name="PERMISSION_2" /> αποκλείστηκαν.</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 επιλεγμένο}other{# επιλεγμένα}}</translation>
 <translation id="7087918508125750058">Επιλέχθηκαν <ph name="ITEM_COUNT" />. Οι επιλογές είναι διαθέσιμες κοντά στο επάνω μέρος της οθόνης</translation>
+<translation id="7137403271056944713">Έλεγχος συσκ. MIDI/επαναπρογρ.</translation>
 <translation id="7141896414559753902">Αποκλεισμός εμφάνισης αναδυόμενων παραθύρων και ανακατευθύνσεων σε ιστοτόπους (συνιστάται)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>

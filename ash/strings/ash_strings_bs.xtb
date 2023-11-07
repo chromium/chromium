@@ -213,15 +213,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1796561540704213354">Web lokacije uključujući posjećene i otvorene stranice</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="1816896987747843206">Ovo omogućava pristup kameri za sve aplikacije i web lokacije s odobrenjem za nju</translation>
-<translation id="1823280932251546115">Statusna traka, vrijeme <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Uključi pristup lokaciji</translation>
 <translation id="1830308660060964064">Stavka <ph name="ITEM_TITLE" /> je otkačena</translation>

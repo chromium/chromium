@@ -213,15 +213,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1796561540704213354">Mga website kasama ang mga page na binisita mo at nakabukas na page</translation>
 <translation id="181103072419391116">Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="1816896987747843206">Pinapayagan nito ang access sa camera para sa lahat ng app at website na may pahintulot sa camera</translation>
-<translation id="1823280932251546115">Status tray, oras <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">I-on ang access sa lokasyon</translation>
 <translation id="1830308660060964064">Na-unpin ang <ph name="ITEM_TITLE" /></translation>
@@ -1197,6 +1188,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5788127256798019331">Mga Play file</translation>
 <translation id="5788535737706478207">Buksan ulit ang huling tab o window na isinara</translation>
 <translation id="5790085346892983794">Tagumpay</translation>
+<translation id="5802516411616338943">Buksan ang Mga Mabilisang Setting</translation>
 <translation id="5804651031882187592">I-off ang setting na "I-lock ang SIM"</translation>
 <translation id="5805809050170488595">I-click para ma-activate ang <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Tasks sa web</translation>
@@ -1222,6 +1214,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5901630391730855834">Dilaw</translation>
 <translation id="5911231045062997865">Kasalukuyang hindi sinusuportahan ang mga Lacros window. Mase-save ang iba pang app.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Bagong notification, <ph name="NOTIFICATION_COUNT" /> sa kabuuan</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5920710855273935292">Naka-mute ang mikropono.</translation>
 <translation id="5946788582095584774">Naka-on ang <ph name="FEATURE_NAME" />.</translation>

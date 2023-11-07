@@ -1193,6 +1193,7 @@
 <translation id="3427342743765426898">重做編輯(&amp;R)</translation>
 <translation id="342781501876943858">如果您已在其他網站上重用密碼，Chromium 建議您重設密碼。</translation>
 <translation id="3428151540071562330">一或多個 DnsOverHttpsTemplates 伺服器範本 URI 無效，因此系統不會採用這些伺服器範本 URI。</translation>
+<translation id="3428789896412418755">分類記錄</translation>
 <translation id="3431216045099978607">按下 |<ph name="ACCELERATOR" />| 以離開全螢幕，並查看下載項目。</translation>
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3433111389595862568">協作和會議軟件</translation>
@@ -3177,6 +3178,7 @@
 <translation id="7423283032694727565">管理 Cookie 按鈕，啟動之後就可以喺 Chrome 設定度管理 Cookie 偏好設定</translation>
 <translation id="7427366580982928791">兒童互聯網安全</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">先驗證你的身分，Chromium 才能填入付款資料。</translation>
 <translation id="7437289804838430631">新增聯絡人資料</translation>
 <translation id="7437490109271760224">卡類遊戲</translation>
 <translation id="7438338505272634288">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝有害軟件，影響你的瀏覽方式，例如變更首頁，或在你瀏覽的網站上顯示額外廣告。Chrome 強烈建議你不要瀏覽這個網站，避免受攻擊。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3411,6 +3413,7 @@
 <translation id="7831993212387676366">什麼是購物清單？</translation>
 <translation id="7840103971441592723">已開始擷取螢幕截圖</translation>
 <translation id="784137052867620416">購物分析資料</translation>
+<translation id="784404208867107517">分類記錄</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式 (<ph name="EXAMPLE_APP_1" />)}=2{2 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />)}other{# 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">您日後瀏覽的網站可向 Chrome 要求取得主題資料，以便向您顯示個人化廣告。Chrome 最多可分享 3 個主題，同時亦會保護您的瀏覽記錄和身分。</translation>
@@ -3437,6 +3440,7 @@
 <translation id="79338296614623784">請輸入有效的電話號碼</translation>
 <translation id="7934414805353235750"><ph name="URL" /> 想播放受保護的內容。Google 將對裝置進行身分驗證。</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">先驗證你的身分，Google Chrome 才能填入付款資料。</translation>
 <translation id="7937163678541954811">此付款卡的 CVC 經已加密並儲存至你的裝置，以便快速結帳</translation>
 <translation id="7937554595067888181">到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">伺服器憑證尚未生效。</translation>

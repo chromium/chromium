@@ -212,15 +212,6 @@
 <translation id="1796561540704213354">वेबसाइटों की कैटगरी में वे पेज दिखाए जाते हैं जिन्हें आपने देखा या खोला होता है</translation>
 <translation id="181103072419391116">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="1816896987747843206">यह ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरा ऐक्सेस करने देता है जिनके पास इसकी अनुमति है</translation>
-<translation id="1823280932251546115">स्टेटस ट्रे, समय <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />,
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />,
-        <ph name="NOTIFICATION" />
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ईथरनेट: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">जगह की जानकारी शेयर करने की सुविधा चालू करें</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> को अनपिन किया गया</translation>

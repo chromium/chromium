@@ -140,6 +140,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1750259112639922169">Gruppo di schede - <ph name="TAB_COUNT" /> schede</translation>
 <translation id="17513872634828108">Schede aperte</translation>
 <translation id="1757620656501361327">Aggiornamento di Gestore delle password di Google</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pagine, 1 pagina nell'elenco}other{Pagine, # pagine nell'elenco}}</translation>
 <translation id="1778457539567749232">Segna come da leggere</translation>
 <translation id="1779766957982586368">Chiudi finestra</translation>
 <translation id="1791662854739702043">Installato</translation>
@@ -249,6 +250,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2414886740292270097">Scuro</translation>
 <translation id="2421705177906985956">Nessun sito da mostrare al momento</translation>
 <translation id="2426805022920575512">Scegli un altro account</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video, 1 video nell'elenco}other{Video, # video nell'elenco}}</translation>
 <translation id="2433507940547922241">Aspetto</translation>
 <translation id="2435457462613246316">Mostra password</translation>
 <translation id="2439153523196674349">Anteprima di <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4864369630010738180">Accesso in corso...</translation>
 <translation id="4866368707455379617">Impossibile installare <ph name="MODULE" /> per Chrome</translation>
 <translation id="4871568871368204250">Disattiva sincronizzazione</translation>
+<translation id="4874961007154620743">Quando l'opzione è disattivata, continuerai a vedere i suggerimenti forniti da Chrome a livello locale</translation>
 <translation id="4875775213178255010">Contenuti suggeriti</translation>
 <translation id="4877678010818027629">Attiva la modalità di navigazione in incognito</translation>
 <translation id="4878404682131129617">Creazione di un tunnel tramite server proxy non riuscita</translation>
@@ -1100,6 +1103,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6795633245022906657">Apri rapidamente una nuova scheda. Per modificare questa scorciatoia, vai a Impostazioni.</translation>
 <translation id="6802555630140434547">La finestra verrà chiusa</translation>
 <translation id="6811034713472274749">La pagina è pronta per essere visualizzata</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Immagini, 1 immagine nell'elenco}other{Immagini, # immagini nell'elenco}}</translation>
 <translation id="6813446258015311409">Accedi a Chrome, foglio aperto.</translation>
 <translation id="6817747507826986771">Condividi rapidamente questa pagina. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="6819199143469632133">Accedi per poter usufruire dei tuoi dati Google sui vari dispositivi</translation>
@@ -1113,6 +1117,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6846298663435243399">Caricamento in corso…</translation>
 <translation id="6850409657436465440">Il download è ancora in corso</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> schede chiuse</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{File audio, 1 file audio nell'elenco}other{File audio, # file audio nell'elenco}}</translation>
 <translation id="685850645784703949">Discover di Google - disattivato</translation>
 <translation id="686366188661646310">Vuoi eliminare la password?</translation>
 <translation id="6864459304226931083">Scarica immagine</translation>
@@ -1218,6 +1223,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7379900596734708416">Il tema scuro per i siti è disponibile</translation>
 <translation id="7388615499319468910">Siti e inserzionisti possono conoscere il rendimento degli annunci. Questa impostazione non è attiva.</translation>
 <translation id="7397416715506917976">Mostra statistiche pagine</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Altro, 1 file nell'elenco}other{Altro, # file nell'elenco}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Esperienza prima esecuzione di Chrome</translation>
 <translation id="7411224099004328643">Utente dell'Account Google</translation>
@@ -1311,6 +1317,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="780301667611848630">No, grazie</translation>
 <translation id="7808889146555843082">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="SITE" />. Cambia la password o elimina il tuo account su <ph name="SITE" /> per proteggerlo dagli altri.</translation>
 <translation id="7810647596859435254">Apri con…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Tutti i file, 1 file nell'elenco}other{Tutti i file, # file nell'elenco}}</translation>
 <translation id="7815484226266492798">Screenshot lungo</translation>
 <translation id="7822705602465980873">Se hai eseguito l'accesso, questi dati vengono collegati al tuo Account Google per proteggerti nei servizi Google, ad esempio aumentando la protezione in Gmail dopo un incidente di sicurezza.</translation>
 <translation id="782705168687182233">Le tue attività vengono salvate nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" />.</translation>
@@ -1535,6 +1542,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">La lingua <ph name="LANG" /> è pronta</translation>
 <translation id="8937772741022875483">Vuoi rimuovere la tua attività di Chrome da Benessere digitale?</translation>
+<translation id="893938492099608175">In base alle tue impostazioni, Chrome potrebbe anche inviare i cookie, l'URL corrente e la tua posizione</translation>
 <translation id="8942627711005830162">Apri nell'altra finestra</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: impossibile scaricare questa lingua. Riprova più tardi.</translation>
 <translation id="8955719471735800169">Torna all'inizio</translation>

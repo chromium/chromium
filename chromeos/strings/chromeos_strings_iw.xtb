@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1003363546227723021">כשהמסך לא פעיל, יוצגו בו תמונות, השעה הנוכחית, נתוני מזג האוויר ופרטי מדיה נוספים</translation>
 <translation id="1014750484722996375">שולחנות עבודה וירטואליים</translation>
 <translation id="1018219910092211213">‏לא ניתן ליצור רזולוציית DNS</translation>
 <translation id="1018656279737460067">בוטל</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">‏התקנה של ChromeOS Flex</translation>
 <translation id="1856388568474281774">חץ למטה</translation>
 <translation id="1858620243986915808">צירוף של צילום מסך</translation>
+<translation id="1871413952174074704">‏ה-APN לא יכול להכיל יותר מ-<ph name="CHAR_LIMIT" /> תווים</translation>
 <translation id="1871569928317311284">השבתת העיצוב הכהה</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">השבתת המצב הכהה</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">הסתרת הדוח</translation>
 <translation id="500920857929044050">הפסקת הבדיקה</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">כשהמסך לא פעיל, יוצגו בו תמונות, השעה הנוכחית, נתוני מזג האוויר ופרטי מדיה נוספים.</translation>
 <translation id="5035083460461104704">צבע העיצוב</translation>
 <translation id="5038292761217083259">כוונון הצבעים במקלדת</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">ורוד בהיר</translation>
 <translation id="982713511914535780">הפעלת בדיקה של פריקת הסוללה</translation>
 <translation id="987264212798334818">כללי</translation>
+<translation id="995062385528875723">אי אפשר להשתמש באותיות עם סימנים דיאקריטיים, באותיות לא לטיניות או בסמלים</translation>
 </translationbundle>

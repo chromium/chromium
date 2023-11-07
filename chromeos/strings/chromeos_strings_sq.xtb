@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="1003363546227723021">Kur ekrani yt është në gjendje të qetë, shfaq fotografitë, orën, motin dhe informacionet e medias</translation>
 <translation id="1014750484722996375">Tavolinat e punës</translation>
 <translation id="1018219910092211213">DNS-ja nuk mund të zgjidhet</translation>
 <translation id="1018656279737460067">Anuluar</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">Fshih raportin</translation>
 <translation id="500920857929044050">Ndalo testin</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Kur ekrani yt është në gjendje joaktive, shfaq fotografitë, orën, motin dhe informacionet e medias.</translation>
 <translation id="5035083460461104704">Ngjyra e temës</translation>
 <translation id="5038292761217083259">tastiera me shumë ngjyra</translation>
 <translation id="5039804452771397117">Lejo</translation>

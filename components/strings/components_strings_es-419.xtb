@@ -1194,6 +1194,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3427342743765426898">&amp;Rehacer Editar</translation>
 <translation id="342781501876943858">Chromium te recomienda que restablezcas tu contraseña si la volviste a usar en otros sitios.</translation>
 <translation id="3428151540071562330">Una o más URI de plantillas del servidor de la política DnsOverHttpsTemplates no son válidas, por lo que no se usarán.</translation>
+<translation id="3428789896412418755">Historial agrupado</translation>
 <translation id="3431216045099978607">Presiona |<ph name="ACCELERATOR" />| para salir de la pantalla completa y ver la descarga.</translation>
 <translation id="3432601291244612633">Cerrar página</translation>
 <translation id="3433111389595862568">Software para colaboración y conferencias</translation>
@@ -2321,7 +2322,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5691848789297492617">El mensaje para guardar la tarjeta está totalmente abierto.</translation>
 <translation id="5695542892312572833">¿Deseas usar Windows Hello para verificar y completar tu compra?</translation>
 <translation id="5699628521141772782">Productos lácteos y huevos</translation>
-<translation id="5700761515355162635">Se permiten cookies de terceros</translation>
+<translation id="5700761515355162635">Se permiten las cookies de terceros</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="570530837424789914">Administrar…</translation>
 <translation id="5707154300732650394">Reanudar tu exploración</translation>
@@ -3179,6 +3180,7 @@ Detalles adicionales:
 <translation id="7423283032694727565">Botón Administrar cookies: actívalo para administrar tus preferencias de cookies en la configuración de Chrome</translation>
 <translation id="7427366580982928791">Seguridad infantil en Internet</translation>
 <translation id="7429429656042611765">Ejecutivo</translation>
+<translation id="7432774160230062882">Verifica tu identidad para que Chromium pueda completar tu información de pago.</translation>
 <translation id="7437289804838430631">Agregar información de contacto</translation>
 <translation id="7437490109271760224">Juegos de cartas</translation>
 <translation id="7438338505272634288">Los atacantes del sitio que intentas visitar podrían engañarte para que instales software dañino que afecta la manera en la que navegas. Por ejemplo, pueden cambiar la página principal o mostrarte anuncios adicionales en los sitios que visitas. Chrome recomienda que regreses a un sitio seguro para evitar daños. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3413,6 +3415,7 @@ Detalles adicionales:
 <translation id="7831993212387676366">¿Qué es la lista de compras?</translation>
 <translation id="7840103971441592723">Comenzó la captura de pantalla</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784404208867107517">Historial agrupado</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ninguna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Luego, los sitios que visites pueden consultar a Chrome sobre tus temas para personalizar los anuncios que ves. Chrome comparte hasta 3 temas mientras protege tu identidad y tu historial de navegación.</translation>
@@ -3439,6 +3442,7 @@ Detalles adicionales:
 <translation id="79338296614623784">Ingresa un número de teléfono válido</translation>
 <translation id="7934414805353235750"><ph name="URL" /> desea reproducir contenido protegido. Google verificará la identidad de tu dispositivo.</translation>
 <translation id="7935318582918952113">Filtro de DOM</translation>
+<translation id="7936775433939783906">Verifica tu identidad para que Google Chrome pueda completar tu información de pago.</translation>
 <translation id="7937163678541954811">Se encriptará el CVC de esta tarjeta y se guardará en tu dispositivo para agilizar las confirmaciones de compras</translation>
 <translation id="7937554595067888181">Fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">El certificado del servidor aún no es válido.</translation>

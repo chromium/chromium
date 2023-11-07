@@ -213,15 +213,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1796561540704213354">Svetainės, įskaitant puslapius, kuriuose lankėtės, ir atidarytus puslapius</translation>
 <translation id="181103072419391116">Signalo stiprumas <ph name="SIGNAL_STRENGTH" />, tvarko administratorius</translation>
 <translation id="1816896987747843206">Tai leis pasiekti vaizdo kamerą visoms programoms ir svetainėms, turinčioms vaizdo kameros leidimą</translation>
-<translation id="1823280932251546115">Būsenos dėklas, laikas <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />,
-        <ph name="NOTIFICATION" />
-        <ph name="IME" />,
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Eternetas: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Prieigos prie vietovės įjungimas</translation>
 <translation id="1830308660060964064">Atsegta: <ph name="ITEM_TITLE" /></translation>

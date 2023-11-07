@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1003363546227723021">જ્યારે તમારી સ્ક્રીન નિષ્ક્રિય હોય, ત્યારે ફોટા, સમય, હવામાન અને મીડિયાની માહિતી બતાવો</translation>
 <translation id="1014750484722996375">ડેસ્ક</translation>
 <translation id="1018219910092211213">DNSનું નિરાકરણ કરી શકતા નથી</translation>
 <translation id="1018656279737460067">રદ કરેલા</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">ChromeOS Flex ઇન્સ્ટૉલ કરો</translation>
 <translation id="1856388568474281774">નીચેની ઍરો કી</translation>
 <translation id="1858620243986915808">સ્ક્રીનશૉટ જોડો</translation>
+<translation id="1871413952174074704">APNમાં <ph name="CHAR_LIMIT" />થી વધુ અક્ષર હોઈ શકે નહીં</translation>
 <translation id="1871569928317311284">ઘેરી થીમ બંધ કરો</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">ઘેરો મોડ બંધ કરો</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">રિપોર્ટ છુપાવો</translation>
 <translation id="500920857929044050">પરીક્ષણ રોકો</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">જ્યારે તમારી સ્ક્રીન નિષ્ક્રિય હોય, ત્યારે ફોટા, સમય, હવામાન અને મીડિયાની માહિતી બતાવો.</translation>
 <translation id="5035083460461104704">થીમનો રંગ</translation>
 <translation id="5038292761217083259">મલ્ટિકલર કીબોર્ડ</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">આછો ગુલાબી</translation>
 <translation id="982713511914535780">બૅટરી ડિસ્ચાર્જ થવાનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="987264212798334818">સામાન્ય</translation>
+<translation id="995062385528875723">ઉચ્ચારણવાળા અક્ષરો, લેટિન ભાષામાં ન હોય એવા મૂળાક્ષરો કે પ્રતીકોનો ઉપયોગ કરી શકાતો નથી</translation>
 </translationbundle>

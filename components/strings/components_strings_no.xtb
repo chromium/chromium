@@ -559,6 +559,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2072275792380684364">Mote og stil</translation>
 <translation id="2075497153347571252">Administratoren din har blokkert <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Angre</translation>
+<translation id="2080021694978766903">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer.</translation>
 <translation id="20817612488360358">Innstillinger for systemmellomtjener er stilt inn på å brukes, men en uttrykkelig mellomtjenerkonfigurasjon er også angitt.</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Tillat for alle besøk</translation>
@@ -638,6 +639,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2225927550500503913">Det virtuelle kortet er slått på</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Logg på<ph name="END_LINK" /> wifi-nettverket</translation>
 <translation id="2228057197024893428">Denne adressen er for øyeblikket lagret i Chrome. For å bruke den i alle Google-produkter må du lagre den i Google-kontoen din, <ph name="ACCOUNT" />.</translation>
+<translation id="2229456043301340598">Duplisert snarvei ignoreres: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">CD</translation>
 <translation id="2235344399760031203">Informasjonskapsler fra tredjeparter er blokkert</translation>
 <translation id="2239100178324503013">Send nå</translation>
@@ -1193,6 +1195,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3427342743765426898">&amp;Endre likevel</translation>
 <translation id="342781501876943858">Chromium anbefaler at du tilbakestiller passordet ditt hvis du også har brukt det på andre nettsteder.</translation>
 <translation id="3428151540071562330">Én eller flere av URI-ene for DnsOverHttpsTemplates-tjenermaler er ugyldige og blir ikke brukt.</translation>
+<translation id="3428789896412418755">Gruppert logg</translation>
 <translation id="3431216045099978607">Trykk på |<ph name="ACCELERATOR" />| for å avslutte fullskjerm og se nedlastingen.</translation>
 <translation id="3432601291244612633">Lukk siden</translation>
 <translation id="3433111389595862568">Samarbeids- og konferanseprogramvare</translation>
@@ -2331,6 +2334,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5720705177508910913">Gjeldende bruker</translation>
 <translation id="572328651809341494">Nylige faner</translation>
 <translation id="5723287205918986743">Forsvarsindustri</translation>
+<translation id="5725297205162868298">Snarveien kan ikke begynne med @-tegnet: «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="5730040223043577876">Chrome anbefaler at du tilbakestiller passordet ditt hvis du også har brukt det på andre nettsteder.</translation>
 <translation id="5732392974455271431">Foreldrene dine kan oppheve blokkeringen for deg</translation>
 <translation id="573555826359077410">Knappen «Opprett skjema» – aktiver for å opprette et nytt skjema i Google Skjemaer raskt</translation>
@@ -2848,6 +2852,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6793213097893210590">Kartong</translation>
 <translation id="679355240208270552">Ignorert fordi standardsøk ikke er aktivert av regel.</translation>
 <translation id="6794951432696553238">Bekreft kortene dine raskere ved å bruke Windows Hello fra nå av</translation>
+<translation id="6798066466127540426">Listen inneholder ingen gyldig søkeleverandør.</translation>
 <translation id="6798460514924505775">Chou 3-konvolutt</translation>
 <translation id="6799145206637008376">Fyll ut verifiseringskoden for dette virtuelle kortet</translation>
 <translation id="6805030849054648206">B6-/C4-konvolutt</translation>
@@ -3177,6 +3182,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7423283032694727565">Knappen «Administrer informasjonskapsler» – aktiver for å administrere preferansene dine for informasjonskapsler i Chrome-innstillingene</translation>
 <translation id="7427366580982928791">Barnesikkerhet på nettet</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Bekreft at det er deg, slik at Chromium kan fylle ut betalingsopplysningene dine.</translation>
 <translation id="7437289804838430631">Legg til kontaktinformasjon</translation>
 <translation id="7437490109271760224">Kortspill</translation>
 <translation id="7438338505272634288">Angripere på nettstedet du prøver å besøke, kan lure deg til å installere skadelig programvare som påvirker måten du surfer på – for eksempel ved å endre startsiden eller vise deg ekstra annonser på nettstedene du besøker. Chrome anbefaler på det sterkeste at du går tilbake til trygg grunn for å unngå skade. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3235,6 +3241,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7521825010239864438">Delen «<ph name="SECTION" />» er skjult</translation>
 <translation id="752189128961566325">Du kan bruke den i alle Google-produkter</translation>
 <translation id="7523408071729642236">Produksjon</translation>
+<translation id="7525804896095537619">Navnet kan ikke være tomt</translation>
 <translation id="7526934274050461096">Tilkoblingen til dette nettstedet er ikke privat</translation>
 <translation id="7529884293139707752">Hjemmeundervisning</translation>
 <translation id="7534987659046836932">C7-konvolutt</translation>
@@ -3411,6 +3418,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7831993212387676366">Hva er handlelisten?</translation>
 <translation id="7840103971441592723">Et skjermopptak er startet</translation>
 <translation id="784137052867620416">Shopping-statistikk</translation>
+<translation id="784404208867107517">Gruppert logg</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ingen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apper (<ph name="EXAMPLE_APP_1" /> og <ph name="EXAMPLE_APP_2" />)}other{# apper (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Senere kan nettsteder du besøker spørre Chrome om emnene du ser, for å gi deg personlig tilpassede annonser. Chrome deler opptil tre emner og beskytter nettleserloggen og identiteten din.</translation>
@@ -3437,6 +3445,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="79338296614623784">Angi et gyldig telefonnummer</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vil spille av beskyttet innhold. Identiteten til enheten din blir bekreftet av Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Bekreft at det er deg, slik at Google Chrome kan fylle ut betalingsopplysningene dine.</translation>
 <translation id="7937163678541954811">Verifiseringskoden for kortet blir kryptert og lagret på enheten din for raskere betaling</translation>
 <translation id="7937554595067888181">Utløper <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Tjenerens sertifikat er ikke gyldig ennå.</translation>
@@ -3454,6 +3463,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7950027195171824198">Administrer preferansene dine for informasjonskapsler i Chrome-innstillingene</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952250633095257243">Snarveien kan ikke være tom</translation>
 <translation id="7952327717479677595">Knappen «Administrer søkemotorer» – aktiver for å administrere standard søkemotor og nettstedsøk</translation>
 <translation id="7953236668995583915">Last inn denne siden på nytt for å ta i bruk de oppdaterte innstillingene dine på dette nettstedet</translation>
 <translation id="7953569069500808819">Kantstifting topp</translation>
@@ -3665,6 +3675,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8344776605855290140">Registrering med virtuelt kort er åpnet i full høyde</translation>
 <translation id="8347658365704983341">Fjernundervisning</translation>
 <translation id="8349305172487531364">Bokmerkerad</translation>
+<translation id="8350416046273606058">Snarveien kan ikke inneholde mellomrom: «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="8351131234907093545">Opprett et notat</translation>
 <translation id="8352849934814541340">Enhetsadministratoren har installert programmer for tilleggsfunksjoner. Programmene har tilgang til noen av dataene dine.</translation>
 <translation id="8355270400102541638">Lokal krasjkontekst:</translation>

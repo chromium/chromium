@@ -3181,13 +3181,6 @@
 <translation id="346298925039590474">यह मोबाइल नेटवर्क, इस डिवाइस को इस्तेमाल करने वाले सभी उपयोगकर्ताओं के लिए उपलब्ध रहेगा</translation>
 <translation id="3464145797867108663">वर्क प्रोफ़ाइल जोड़ें</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> वगैरह के लिए छूट पाएं</translation>
-<translation id="3466476162566821406">कोड की पुष्टि करने के लिए, अपने फ़ोन पर दिए गए निर्देशों का पालन करें. पक्का करें कि आपके फ़ोन का ब्लूटूथ और वाई-फ़ाई चालू हो.
-    <ph name="BR" />
-    <ph name="BR" />
-    अपने फ़ोन का इस्तेमाल करके, <ph name="DEVICE_TYPE" /> में अपने वाई-फ़ाई और Google खाते की जानकारी जोड़ी जा सकती है.
-    <ph name="BR" />
-    <ph name="BR" />
-    आस-पास मौजूद डिवाइसों को <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> के तौर पर दिखता है...</translation>
 <translation id="3468298837301810372">लेबल</translation>
 <translation id="3468999815377931311">Android फ़ोन</translation>
 <translation id="3469583217479686109">कोई खास हिस्सा चुनने का टूल</translation>
@@ -4821,7 +4814,6 @@
 <translation id="4769632191812288342">आपके खाते के लिए स्टैंडर्ड सुरक्षा मोड को सेट किया गया है</translation>
 <translation id="4770119228883592393">अनुमति मांगी गई है, जवाब देने के लिए ⌘ + Option + डाउन ऐरो बटन दबाएं</translation>
 <translation id="4773112038801431077">Linux को अपग्रेड करें</translation>
-<translation id="4774456473286455263">अपने Android फ़ोन से सेट अप करें</translation>
 <translation id="4775228465764358468">कोई साइट आपकी पसंदीदा भाषा या उन आइटम को सेव कर सकती है जिन्हें आपको खरीदना है. यह जानकारी, साइट और उसके सबडोमेन पर उपलब्ध है.</translation>
 <translation id="477548766361111120">एक्सटेंशन को यह साइट पढ़ने और इसमें बदलाव करने की अनुमति दें</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> कनेक्ट हो गया है</translation>
@@ -6160,13 +6152,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> जल्द ही रुक जाएगा</translation>
 <translation id="586567932979200359">आप <ph name="PRODUCT_NAME" /> को उसकी डिस्क इमेज से चला रहे हैं. इसे अपने कंप्यूटर पर इंस्टॉल करने से यह आपको बिना डिस्क इमेज के चलाने देता है और पक्का करता है कि इससे यह 'अप टू डेट' रहेगा.</translation>
 <translation id="5865733239029070421">Google को इस्तेमाल के आंकड़े और गड़बड़ी की रिपोर्ट अपने-आप भेजती है</translation>
-<translation id="5867855474018538405">क्यूआर कोड को स्कैन करने के लिए, अपने फ़ोन पर दिए गए निर्देशों का पालन करें. पक्का करें कि आपके फ़ोन का ब्लूटूथ और वाई-फ़ाई चालू हो.
-    <ph name="BR" />
-    <ph name="BR" />
-    अपने फ़ोन का इस्तेमाल करके, <ph name="DEVICE_TYPE" /> में अपने वाई-फ़ाई और Google खाते की जानकारी जोड़ी जा सकती है.
-    <ph name="BR" />
-    <ph name="BR" />
-    आस-पास मौजूद डिवाइसों को <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> के तौर पर दिखता है...</translation>
 <translation id="5868434909835797817">आपके डिवाइस का माइक्रोफ़ोन बंद है</translation>
 <translation id="5868822853313956582">डिवाइस के रंगों को फ़ॉलो करें</translation>
 <translation id="5869029295770560994">ठीक है, समझ लिया</translation>
@@ -7732,6 +7717,7 @@
 <translation id="7125932261198019860">पक्का करें कि आपका प्रिंटर उसी वाई-फ़ाई नेटवर्क से कनेक्ट हो जिससे आपका Chromebook कनेक्ट है. अगर ऐसा नहीं है, तो यूएसबी केबल का इस्तेमाल करें. <ph name="LINK_BEGIN" />इस बारे में ज़्यादा जानें कि डिवाइस साथ में कैसे काम करते हैं<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">डाउनलोड इतिहास</translation>
 <translation id="7128151990937044829">जब सूचना को रोका जाए, तो पता बार में संकेत दिखाएं</translation>
+<translation id="7130438335435247835">ऐक्सेस पॉइंट नेम (एपीएन)</translation>
 <translation id="7131040479572660648">अपना डेटा <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> और <ph name="WEBSITE_3" /> पर पढ़ें</translation>
 <translation id="713122686776214250">पृ&amp;ष्ठ जोड़ें...</translation>
 <translation id="7131431455372521159">सभी TrackPoint डिसकनेक्ट कर दिए गए हैं</translation>

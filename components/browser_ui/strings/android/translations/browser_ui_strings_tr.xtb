@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tanesi için daha izin verildi}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tanesi için daha izin verildi}}</translation>
 <translation id="2410940059315936967">Ziyaret ettiğiniz bir site, diğer sitelerdeki resim, reklam ve metin gibi içerikleri yerleştirebilir. Diğer siteler tarafından ayarlanan çerezlere üçüncü taraf çerezleri denir.</translation>
 <translation id="2434158240863470628">İndirme işlemi tamamlandı <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Bu sitenin, üçüncü taraf çerezlerini kullanmasına geçici olarak izin verdiniz. Bu durumda, internette gezinirken daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir. <ph name="BEGIN_LINK" />Geri bildirim gönderin<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Bazı sitelerdeki özellikler Gizli modda çalışmayabilir</translation>
 <translation id="2442870161001914531">Her zaman masaüstü sitesini iste</translation>
 <translation id="2469312991797799607">Bu işlem, <ph name="ORIGIN" /> ve altındaki tüm sitelere ait verilerin ve çerezlerin tamamını temizler</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Başlık</translation>
 <translation id="4008040567710660924">Belirli bir site için çerezlere izin verin.</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
-<translation id="4053720452172726777">Google Chrome'u özelleştirin ve kontrol edin</translation>
 <translation id="4149890623864272035">Çerezler de dahil tüm yerel verileri silmek ve bu web sitesine ilişkin tüm izinleri sıfırlamak istediğinizden emin misiniz?</translation>
 <translation id="4149994727733219643">Web sayfalarının basitleştirilmiş görünümü</translation>
 <translation id="4151930093518524179">Varsayılan yakınlaştırma</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Sil ve sıfırla</translation>
 <translation id="4645575059429386691">Ebeveyniniz tarafından yönetiliyor</translation>
 <translation id="4670064810192446073">Sanal gerçeklik</translation>
+<translation id="4673958474310291465">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda, daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir</translation>
 <translation id="4751476147751820511">Hareket veya ışık sensörleri</translation>
 <translation id="4779083564647765204">Yakınlaştır</translation>
 <translation id="4811450222531576619">Kaynağı ve konusu hakkında bilgi edinin</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Üçüncü taraf çerezlerini engelle</translation>
 <translation id="6205314730813004066">Reklam gizliliği</translation>
 <translation id="6207207788774442484">Verileri sil ve izinleri sıfırla</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Seçenekleri</translation>
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" uygulaması kaldırılsın mı?</translation>
 <translation id="6262191102408817757">Son sekmenize dayalı olarak</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ve <ph name="PERMISSION_2" /> engellendi</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Engelle</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 öğe seçildi}other{# öğe seçildi}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> öğe seçildi. Seçenekler, ekranın üst kısmına yakın bir yerde bulunur</translation>
+<translation id="7137403271056944713">MIDI cihaz kontrolü/yeniden programlama</translation>
 <translation id="7141896414559753902">Sitelerin pop-up göstermesini ve yönlendirme yapmasını engelle (önerilir)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Yenile</translation>

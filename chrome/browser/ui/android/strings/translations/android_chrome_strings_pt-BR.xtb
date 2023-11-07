@@ -140,6 +140,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="1750259112639922169">Grupo de guias: <ph name="TAB_COUNT" /> guias</translation>
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="1757620656501361327">Atualização do Gerenciador de senhas do Google</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Páginas: 1 página na lista}one{Páginas: # página na lista}other{Páginas: # páginas na lista}}</translation>
 <translation id="1778457539567749232">Marcar como não lida</translation>
 <translation id="1779766957982586368">Fechar janela</translation>
 <translation id="1791662854739702043">Instalado</translation>
@@ -249,6 +250,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2421705177906985956">Nenhum site para mostrar no momento</translation>
 <translation id="2426805022920575512">Escolher outra conta</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vídeos: 1 vídeo na lista}one{Vídeos: # vídeo na lista}other{Vídeos: # vídeos na lista}}</translation>
 <translation id="2433507940547922241">Aparência</translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
 <translation id="2439153523196674349">Visualização do <ph name="SITE_NAME" /></translation>
@@ -725,6 +727,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4864369630010738180">Fazendo login...</translation>
 <translation id="4866368707455379617">Não é possível instalar <ph name="MODULE" /> para o Chrome</translation>
 <translation id="4871568871368204250">Desativar a sincronização</translation>
+<translation id="4874961007154620743">Quando essa opção está desativada, você ainda tem acesso a sugestões que o Chrome oferece localmente</translation>
 <translation id="4875775213178255010">Sugestões de conteúdo</translation>
 <translation id="4877678010818027629">Entrar no modo de navegação anônima</translation>
 <translation id="4878404682131129617">Falha ao estabelecer encapsulamento via servidor proxy</translation>
@@ -1101,6 +1104,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6795633245022906657">Abrir rapidamente uma nova guia. Para editar esse atalho, acesse as Configurações.</translation>
 <translation id="6802555630140434547">A janela será fechada</translation>
 <translation id="6811034713472274749">A página já pode ser visualizada</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Imagens: 1 imagem na lista}one{Imagens: # imagem na lista}other{Imagens: # imagens na lista}}</translation>
 <translation id="6813446258015311409">Fazer login no Chrome, aberta.</translation>
 <translation id="6817747507826986771">Compartilhar esta página rapidamente. Para editar este atalho, toque e pressione.</translation>
 <translation id="6819199143469632133">Para acessar o conteúdo do Google nos seus dispositivos, faça login</translation>
@@ -1114,6 +1118,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6846298663435243399">Carregando…</translation>
 <translation id="6850409657436465440">Seu download ainda está em andamento</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> guias fechadas</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Arquivos de áudio: 1 arquivo de áudio na lista}one{Arquivos de áudio: # arquivo de áudio na lista}other{Arquivos de áudio: # arquivos de áudio na lista}}</translation>
 <translation id="685850645784703949">Discover do Google (desativado)</translation>
 <translation id="686366188661646310">Excluir senha?</translation>
 <translation id="6864459304226931083">Fazer o download da imagem</translation>
@@ -1219,6 +1224,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7379900596734708416">O tema escuro para sites está disponível</translation>
 <translation id="7388615499319468910">Sites e anunciantes podem medir a performance dos anúncios. Esta configuração está desativada.</translation>
 <translation id="7397416715506917976">Mostrar insights da página</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Mais 1 arquivo na lista}one{Mais # arquivo na lista}other{Mais # arquivos na lista}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Tela de apresentação do Chrome</translation>
 <translation id="7411224099004328643">Usuário da Conta do Google</translation>
@@ -1312,6 +1318,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="780301667611848630">Não</translation>
 <translation id="7808889146555843082">Remover a senha não excluirá a conta em <ph name="SITE" />. Mude a senha ou exclua a conta em <ph name="SITE" /> para protegê-la.</translation>
 <translation id="7810647596859435254">Abrir com…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos os arquivos: 1 arquivo na lista}one{Todos os arquivos: # arquivo na lista}other{Todos os arquivos: # arquivos na lista}}</translation>
 <translation id="7815484226266492798">Captura de tela longa</translation>
 <translation id="7822705602465980873">Quando sua Conta do Google está conectada, esses dados são vinculados a ela para proteger você nos Serviços do Google, por exemplo, aumentando a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="782705168687182233">As atividades são salvas na sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" />.</translation>
@@ -1536,6 +1543,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">O <ph name="LANG" /> está pronto</translation>
 <translation id="8937772741022875483">Remover sua atividade do Chrome do Bem-estar digital?</translation>
+<translation id="893938492099608175">Dependendo das configurações, o Chrome também pode enviar cookies, seu URL atual e sua localização</translation>
 <translation id="8942627711005830162">Abrir em outra janela</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: não foi possível fazer o download desse idioma. Tente novamente mais tarde.</translation>
 <translation id="8955719471735800169">Voltar ao início</translation>

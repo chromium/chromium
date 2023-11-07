@@ -178,7 +178,6 @@
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4008040567710660924">Atļaut sīkfailus konkrētai vietnei.</translation>
 <translation id="4046123991198612571">Nākamais ieraksts</translation>
-<translation id="4053720452172726777">Pielāgot un kontrolēt Google Chrome</translation>
 <translation id="4149890623864272035">Vai tiešām vēlaties dzēst visus lokālos datus, tostarp sīkfailus, un atiestatīt visas atļaujas šai vietnei?</translation>
 <translation id="4149994727733219643">Vienkāršots tīmekļa lapu skatījums</translation>
 <translation id="4151930093518524179">Noklusējuma tālummaiņa</translation>
@@ -297,7 +296,6 @@
 <translation id="6196640612572343990">Bloķēt trešo pušu sīkfailus</translation>
 <translation id="6205314730813004066">Reklāmu konfidencialitāte</translation>
 <translation id="6207207788774442484">Dzēst datus un atiestatīt atļaujas</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: iespējas</translation>
 <translation id="6231752747840485235">Vai atinstalēt lietotni <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">Pamatojoties uz pēdējās cilnes saturu</translation>
 <translation id="6262279340360821358">Bloķētas: <ph name="PERMISSION_1" /> un <ph name="PERMISSION_2" /></translation>

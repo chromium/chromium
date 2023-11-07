@@ -139,6 +139,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1750259112639922169">Tabbladgroep: <ph name="TAB_COUNT" /> tabbladen</translation>
 <translation id="17513872634828108">Geopende tabbladen</translation>
 <translation id="1757620656501361327">Update voor Google Wachtwoordmanager</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pagina's, 1 pagina in lijst}other{Pagina's, # pagina's in lijst}}</translation>
 <translation id="1778457539567749232">Markeren als ongelezen</translation>
 <translation id="1779766957982586368">Venster sluiten</translation>
 <translation id="1791662854739702043">Geïnstalleerd</translation>
@@ -247,6 +248,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2414886740292270097">Donker</translation>
 <translation id="2421705177906985956">Geen sites om nu te tonen</translation>
 <translation id="2426805022920575512">Een ander account kiezen</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video's, 1 video in lijst}other{Video's, # video's in lijst}}</translation>
 <translation id="2433507940547922241">Vormgeving</translation>
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
 <translation id="2439153523196674349">Voorbeeld van <ph name="SITE_NAME" /></translation>
@@ -722,6 +724,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4864369630010738180">Inloggen...</translation>
 <translation id="4866368707455379617">Kan <ph name="MODULE" /> niet installeren voor Chrome</translation>
 <translation id="4871568871368204250">Synchronisatie uitzetten</translation>
+<translation id="4874961007154620743">Als dit uitstaat, zie je nog steeds suggesties die Chrome lokaal biedt</translation>
 <translation id="4875775213178255010">Contentsuggesties</translation>
 <translation id="4877678010818027629">Incognitomodus starten</translation>
 <translation id="4878404682131129617">Kan geen tunnel tot stand brengen via de proxyserver</translation>
@@ -1098,6 +1101,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6795633245022906657">Open snel een nieuw tabblad. Je kunt deze snelkoppeling bewerken via Instellingen.</translation>
 <translation id="6802555630140434547">Het venster wordt gesloten</translation>
 <translation id="6811034713472274749">Pagina kan nu worden bekeken</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Afbeeldingen, 1 afbeelding in lijst}other{Afbeeldingen, # afbeeldingen in lijst}}</translation>
 <translation id="6813446258015311409">Inloggen bij Chrome, geopend.</translation>
 <translation id="6817747507826986771">Deel deze pagina snel. Tik en houd vast om deze snelkoppeling te bewerken.</translation>
 <translation id="6819199143469632133">Log in om toegang tot je Google-services te krijgen op verschillende apparaten</translation>
@@ -1111,6 +1115,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6846298663435243399">Laden…</translation>
 <translation id="6850409657436465440">Je download wordt nog uitgevoerd</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tabbladen gesloten</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Audiobestanden, 1 audiobestand in lijst}other{Audiobestanden, # audiobestanden in lijst}}</translation>
 <translation id="685850645784703949">Discover van Google - uit</translation>
 <translation id="686366188661646310">Wachtwoord verwijderen?</translation>
 <translation id="6864459304226931083">Afbeelding downloaden</translation>
@@ -1216,6 +1221,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7379900596734708416">Donker thema voor sites is beschikbaar</translation>
 <translation id="7388615499319468910">Sites en adverteerders krijgen inzicht in de prestaties van advertenties. Deze instelling staat uit.</translation>
 <translation id="7397416715506917976">Pagina-inzichten bekijken</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Anders, 1 bestand in lijst}other{Anders, # bestanden in lijst}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Functionaliteit bij eerste uitvoering van Chrome</translation>
 <translation id="7411224099004328643">Google-accountgebruiker</translation>
@@ -1309,6 +1315,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7808889146555843082">Als je dit wachtwoord verwijdert, wordt je account op <ph name="SITE" /> niet verwijderd. Wijzig je wachtwoord of verwijder je account in <ph name="SITE" /> om het te beschermen.</translation>
 <translation id="7810647596859435254">Openen met…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle bestanden, 1 bestand in lijst}other{Alle bestanden, # bestanden in lijst}}</translation>
 <translation id="7815484226266492798">Lang screenshot</translation>
 <translation id="7822705602465980873">Als je bent ingelogd, worden deze gegevens gekoppeld aan je Google-account om je te beschermen in Google-services, bijvoorbeeld om de beveiliging in Gmail te verbeteren na een beveiligingsincident.</translation>
 <translation id="782705168687182233">Je activiteit wordt opgeslagen in je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" />.</translation>
@@ -1533,6 +1540,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is klaar</translation>
 <translation id="8937772741022875483">Je Chrome-activiteit verwijderen uit Digitaal welzijn?</translation>
+<translation id="893938492099608175">Afhankelijk van je instellingen kan Chrome ook cookies, je huidige URL en je locatie sturen</translation>
 <translation id="8942627711005830162">Openen in een ander venster</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Deze taal kan niet worden gedownload. Probeer het later opnieuw.</translation>
 <translation id="8955719471735800169">Bovenkant pagina</translation>

@@ -1193,6 +1193,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3427342743765426898">Endu&amp;rtaka breytingu</translation>
 <translation id="342781501876943858">Chromium mælir með því að þú endurstillir aðgangsorðið þitt ef þú notaðir það einnig á öðrum síðum.</translation>
 <translation id="3428151540071562330">Eitt eða fleiri af URI sniðmátum netþjóns DnsOverHttpsTemplates eru ógild og verða ekki notuð.</translation>
+<translation id="3428789896412418755">Flokkaður ferill</translation>
 <translation id="3431216045099978607">Ýttu á |<ph name="ACCELERATOR" />| til að hætta að nota allan skjáinn og sjá niðurhal.</translation>
 <translation id="3432601291244612633">Loka síðu</translation>
 <translation id="3433111389595862568">Samstarfs- og fundarhugbúnaður</translation>
@@ -3178,6 +3179,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7423283032694727565">Hnappurinn „Stjórna fótsporum“, virkjaðu til að stjórna fótsporastillingum í stillingum Chrome</translation>
 <translation id="7427366580982928791">Netöryggi barna</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Staðfestu hver þú ert svo Chromium geti fyllt út greiðsluupplýsingarnar þínar.</translation>
 <translation id="7437289804838430631">Bæta við samskiptaupplýsingum</translation>
 <translation id="7437490109271760224">Spil með spilastokki</translation>
 <translation id="7438338505272634288">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu reynt að plata þig til að setja upp skaðlegan hugbúnað sem hefur áhrif á það hvernig þú vafrar. Til dæmis með því að breyta heimasíðunni þinni eða birta þér viðbótarauglýsingar á vefsvæðum sem þú opnar. Chrome mælir eindregið með því að fara aftur í örugga höfn til að forðast skaða. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7831993212387676366">Hvað er innkaupalistinn?</translation>
 <translation id="7840103971441592723">Skjáupptaka er hafin</translation>
 <translation id="784137052867620416">Shopping-innsýn</translation>
+<translation id="784404208867107517">Flokkaður ferill</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ekkert}=1{1 forrit (<ph name="EXAMPLE_APP_1" />)}=2{2 forrit (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# forrit (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# forrit (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Seinna getur vefsvæði sem þú opnar óskað eftir upplýsingum um umfjöllunarefnin þín frá Chrome til að hægt sé að sérsníða auglýsingarnar sem þú sérð. Chrome deilir allt að 3 umfjöllunarefnum og verndar á sama tíma vafraferilinn þinn og auðkennið.</translation>
@@ -3438,6 +3441,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="79338296614623784">Færðu inn gilt símanúmer</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vill spila varið efni. Auðkenni tækisins verður staðfest af Google.</translation>
 <translation id="7935318582918952113">DOM-sundurgreining</translation>
+<translation id="7936775433939783906">Staðfestu hver þú ert svo Google Chrome geti fyllt út greiðsluupplýsingarnar þínar.</translation>
 <translation id="7937163678541954811">CVC-númer þessa korts verður dulkóðað og vistað í tækinu til að flýta fyrir greiðslu</translation>
 <translation id="7937554595067888181">Rennur út <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Vottorð netþjónsins er ekki gilt enn.</translation>

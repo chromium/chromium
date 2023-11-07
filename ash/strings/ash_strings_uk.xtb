@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">Веб-сайти, зокрема відвідані й відкриті сторінки</translation>
 <translation id="181103072419391116">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="1816896987747843206">Буде надано доступ до камери для всіх додатків і веб-сайтів, де потрібен відповідний дозвіл</translation>
-<translation id="1823280932251546115">Панель статусу, час: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Увімкнути доступ до геоданих</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />: відкріплено</translation>
@@ -1197,6 +1188,7 @@
 <translation id="5788127256798019331">Файли Play</translation>
 <translation id="5788535737706478207">Знову відкрити останні закриті вкладку або вікно</translation>
 <translation id="5790085346892983794">Готово</translation>
+<translation id="5802516411616338943">Відкрити Швидкі налаштування</translation>
 <translation id="5804651031882187592">Вимкніть налаштування блокування SIM-карти</translation>
 <translation id="5805809050170488595">Натисніть, щоб активувати мережу <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Завдання у веб-переглядачі</translation>
@@ -1222,6 +1214,7 @@
 <translation id="5901630391730855834">Жовтий</translation>
 <translation id="5911231045062997865">Вікна Lacros наразі не підтримуються. Інші додатки буде збережено.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Нове сповіщення (усього <ph name="NOTIFICATION_COUNT" />)</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5920710855273935292">Мікрофон вимкнено.</translation>
 <translation id="5946788582095584774">Функцію "<ph name="FEATURE_NAME" />" увімкнено.</translation>

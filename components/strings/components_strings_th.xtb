@@ -1193,6 +1193,7 @@
 <translation id="3427342743765426898">&amp;ทำซ้ำการแก้ไข</translation>
 <translation id="342781501876943858">Chromium ขอแนะนำให้รีเซ็ตรหัสผ่านหากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="3428151540071562330">URI ของเซิร์ฟเวอร์เทมเพลต DnsOverHttpsTemplates อย่างน้อย 1 รายการไม่ถูกต้องและจะไม่มีการนำไปใช้</translation>
+<translation id="3428789896412418755">ประวัติที่จัดกลุ่ม</translation>
 <translation id="3431216045099978607">กด |<ph name="ACCELERATOR" />| เพื่อออกจากการแสดงเต็มหน้าจอและดูการดาวน์โหลด</translation>
 <translation id="3432601291244612633">ปิดหน้า</translation>
 <translation id="3433111389595862568">ซอฟต์แวร์เพื่อการทำงานร่วมกันและการประชุม</translation>
@@ -3177,6 +3178,7 @@
 <translation id="7423283032694727565">ปุ่มจัดการคุกกี้ เปิดใช้งานเพื่อจัดการค่ากำหนดของคุกกี้ในการตั้งค่า Chrome</translation>
 <translation id="7427366580982928791">ความปลอดภัยด้านอินเทอร์เน็ตสำหรับเด็ก</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">ยืนยันว่าเป็นคุณเพื่อให้ Chromium กรอกข้อมูลการชำระเงินของคุณได้</translation>
 <translation id="7437289804838430631">เพิ่มข้อมูลติดต่อ</translation>
 <translation id="7437490109271760224">เกมไพ่</translation>
 <translation id="7438338505272634288">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งส่งผลต่อการท่องเว็บ เช่น เปลี่ยนหน้าแรกหรือแสดงโฆษณาเพิ่มเติมในเว็บไซต์ที่เข้าชม Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัยเพื่อหลีกเลี่ยงอันตราย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3411,6 +3413,7 @@
 <translation id="7831993212387676366">รายการช็อปปิ้งคืออะไร</translation>
 <translation id="7840103971441592723">เริ่มจับภาพหน้าจอแล้ว</translation>
 <translation id="784137052867620416">ข้อมูลเชิงลึกเกี่ยวกับ Shopping</translation>
+<translation id="784404208867107517">ประวัติที่จัดกลุ่ม</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ไม่มี}=1{1 แอป (<ph name="EXAMPLE_APP_1" />)}=2{2 แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">เว็บไซต์ที่คุณเข้าชมอาจขอหัวข้อจาก Chrome ในภายหลังเพื่อปรับการแสดงโฆษณาให้เหมาะกับคุณ Chrome จะแชร์หัวข้อไม่เกิน 3 รายการพร้อมปกป้องประวัติการท่องเว็บและตัวตนของคุณ</translation>
@@ -3437,6 +3440,7 @@
 <translation id="79338296614623784">ป้อนหมายเลขโทรศัพท์ที่ถูกต้อง</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ต้องการเปิดเนื้อหาที่ได้รับความคุ้มครอง Google จะตรวจสอบข้อมูลประจำตัวของอุปกรณ์</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">ยืนยันว่าเป็นคุณเพื่อให้ Google Chrome กรอกข้อมูลการชำระเงินของคุณได้</translation>
 <translation id="7937163678541954811">ระบบจะเข้ารหัส CVC ของบัตรนี้และบันทึกลงในอุปกรณ์ของคุณเพื่อการชำระเงินที่เร็วขึ้น</translation>
 <translation id="7937554595067888181">หมดอายุ <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">ใบรับรองของเซิร์ฟเวอร์ยังไม่ถูกต้อง</translation>

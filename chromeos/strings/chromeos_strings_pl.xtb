@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1003363546227723021">Kiedy ekran jest nieaktywny, wyświetlają się zdjęcia, czas, pogoda i wiadomości</translation>
 <translation id="1014750484722996375">Biurka</translation>
 <translation id="1018219910092211213">Nie udało się rozpoznać nazw DNS</translation>
 <translation id="1018656279737460067">Anulowano</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Zainstaluj ChromeOS Flex</translation>
 <translation id="1856388568474281774">Strzałka w dół</translation>
 <translation id="1858620243986915808">Załącz zrzut ekranu</translation>
+<translation id="1871413952174074704">APN nie może mieć więcej znaków niż <ph name="CHAR_LIMIT" /></translation>
 <translation id="1871569928317311284">Wyłącz ciemny motyw</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Wyłącz tryb ciemny</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Ukryj raport</translation>
 <translation id="500920857929044050">Zatrzymaj test</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Kiedy ekran jest nieaktywny, wyświetlają się zdjęcia, godzina, pogoda i wiadomości.</translation>
 <translation id="5035083460461104704">Kolor motywu</translation>
 <translation id="5038292761217083259">klawiatura wielokolorowa</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Jasnoróżowy</translation>
 <translation id="982713511914535780">Przeprowadź test rozładowywania</translation>
 <translation id="987264212798334818">Ogólne</translation>
+<translation id="995062385528875723">Nie można używać znaków diakrytycznych, alfabetu innego niż łaciński ani symboli</translation>
 </translationbundle>

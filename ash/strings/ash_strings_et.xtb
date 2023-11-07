@@ -213,15 +213,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1796561540704213354">Veebisaidid, mis hõlmavad teie külastatud lehti ja avatud lehti</translation>
 <translation id="181103072419391116">Signaali tugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="1816896987747843206">See lubab kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
-<translation id="1823280932251546115">Olekusalv, aeg <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Lülita juurdepääs asukohale sisse</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> vabastati</translation>
@@ -1198,6 +1189,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5788127256798019331">Play failid</translation>
 <translation id="5788535737706478207">Viimasena suletud vahelehe või akna uuesti avamine</translation>
 <translation id="5790085346892983794">Õnnestus</translation>
+<translation id="5802516411616338943">Ava kiirseaded</translation>
 <translation id="5804651031882187592">Lülitage seade „SIM-i lukustamine“ välja</translation>
 <translation id="5805809050170488595">Klõpsake võrgu <ph name="NETWORK_NAME" /> aktiveerimiseks</translation>
 <translation id="5823239091726045201">Google Tasks veebis</translation>
@@ -1223,6 +1215,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5901630391730855834">Kollane</translation>
 <translation id="5911231045062997865">Lacrosi aknaid praegu ei toetata. Muud rakendused salvestatakse.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Uus märguanne, kokku <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5920710855273935292">Mikrofon on vaigistatud.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> on sees.</translation>

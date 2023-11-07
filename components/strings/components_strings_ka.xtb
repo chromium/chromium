@@ -1193,6 +1193,7 @@
 <translation id="3427342743765426898">რედაქტირების &amp;გამეორება</translation>
 <translation id="342781501876943858">Chromium გირჩევთ, გადააყენოთ თქვენი პაროლი, თუ მას სხვა საიტებზეც იყენებთ.</translation>
 <translation id="3428151540071562330">„DnsOverHttpsTemplates“-ში სერვერების შაბლონების რამდენიმე URI არასწორია და არ იქნება გამოყენებული.</translation>
+<translation id="3428789896412418755">დაჯგუფებული ისტორია</translation>
 <translation id="3431216045099978607">დააჭირეთ |<ph name="ACCELERATOR" />|-ს სრულეკრანიანი რეჟიმიდან გასასვლელად და ჩამოტვირთვის სანახავად.</translation>
 <translation id="3432601291244612633">გვერდის დახურვა</translation>
 <translation id="3433111389595862568">თანამშრომლობისა და საკონფერენციო პროგრამული უზრუნველყოფა</translation>
@@ -3178,6 +3179,7 @@
 <translation id="7423283032694727565">ქუქი-ჩანაწერების მართვის ღილაკი, ქუქი-ჩანაწერების პარამეტრების Chrome-ის პარამეტრებიდან სამართავად გაააქტიურეთ ის</translation>
 <translation id="7427366580982928791">ბავშვთა ინტერნეტუსაფრთხოება</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Chromium-მა თქვენი საგადახდო ინფორმაცია რომ შეავსოს, დაადასტურეთ ვინაობა.</translation>
 <translation id="7437289804838430631">საკონტაქტო ინფორმაციის დამატება</translation>
 <translation id="7437490109271760224">ბანქოს თამაშები</translation>
 <translation id="7438338505272634288">თავდამსხმელებმა საიტზე, რომლის მონახულებასაც ცდილობთ, შესაძლოა, მოტყუებით დაგაინსტალირებინონ საზიანო პროგრამული უზრუნველყოფა, რომელიც უარყოფითად აისახება ვების დათვალიერების პროცესზე — მაგალითად, შესაძლოა, შეიცვალოს მთავარი გვერდი ან თქვენ მიერ მონახულებულ საიტებზე გამოჩნდეს მეტი რეკლამა. Chrome დაჟინებით გირჩევთ, დაუბრუნდეთ უსაფრთხოებას, ზიანი თავიდან რომ აიცილოთ. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@
 <translation id="7831993212387676366">რა არის საყიდლების სია?</translation>
 <translation id="7840103971441592723">ეკრანის აღბეჭდვა დაიწყო</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784404208867107517">დაჯგუფებული ისტორია</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{არცერთი}=1{1 აპი (<ph name="EXAMPLE_APP_1" />)}=2{2 აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">მოგვიანებით, თქვენ მიერ მონახულებულ საიტს საშუალება ექნება, სთხოვოს Chrome-ს მისთვის თემების გაზიარება, თქვენთვის ხილული რეკლამის პერსონალიზების მიზნით. Chrome აზიარებს მაქსიმუმ 3 თემას, რა დროსაც ის იცავს როგორც თქვენს ვინაობას, ისე ვების დათვალიერების ისტორიას.</translation>
@@ -3438,6 +3441,7 @@
 <translation id="79338296614623784">შეიყვანეთ სწორი ტელეფონის ნომერი</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ითხოვს დაცული კონტენტის დაკვრას. თქვენი მოწყობილობის იდენტობა შემოწმდება Google-ის მიერ.</translation>
 <translation id="7935318582918952113">DOM დისტილერი</translation>
+<translation id="7936775433939783906">Google Chrome-მა თქვენი საგადახდო ინფორმაცია რომ შეავსოს, დაადასტურეთ ვინაობა.</translation>
 <translation id="7937163678541954811">უფრო სწრაფი ანგარიშსწორების მიზნით, ამ ბარათის CVC დაიშიფრება და შეინახება თქვენს მოწყობილობაზე</translation>
 <translation id="7937554595067888181">ძალაშია <ph name="EXPIRATION_DATE_ABBR" />-მდე</translation>
 <translation id="7938958445268990899">სერვერის სერტიფიკატი ჯერ არ არის ძალაში.</translation>

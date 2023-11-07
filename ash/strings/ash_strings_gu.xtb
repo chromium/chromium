@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">વેબસાઇટ જેમાં તમે મુલાકાત લીધેલા પેજ અને ખોલેલા પેજ શામેલ છે</translation>
 <translation id="181103072419391116">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="1816896987747843206">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
-<translation id="1823280932251546115">સ્ટેટસ ટ્રે, સમય <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ઇથરનેટ: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">લોકેશનનો ઍક્સેસ ચાલુ કરો</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />ને અનપિન કરી હતી</translation>
@@ -1197,6 +1188,7 @@
 <translation id="5788127256798019331">Play ફાઇલો</translation>
 <translation id="5788535737706478207">બંધ કરેલા છેલ્લા ટૅબ અથવા વિન્ડોને ફરીથી ખોલો</translation>
 <translation id="5790085346892983794">સફળતા</translation>
+<translation id="5802516411616338943">ઝડપી સેટિંગ ખોલો</translation>
 <translation id="5804651031882187592">"સિમ કાર્ડ લૉક કરો" સેટિંગ બંધ કરો</translation>
 <translation id="5805809050170488595">સક્રિય કરવા માટે ક્લિક કરો <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">વેબ પર Google Tasks</translation>
@@ -1222,6 +1214,7 @@
 <translation id="5901630391730855834">પીળો</translation>
 <translation id="5911231045062997865">Lacros વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી. અન્ય ઍપ સાચવવામાં આવશે.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">નવા નોટિફિકેશન, કુલ <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5920710855273935292">માઇક્રોફોન મ્યૂટ કરેલો છે.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ચાલુ છે.</translation>

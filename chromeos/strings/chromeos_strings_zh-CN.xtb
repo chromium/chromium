@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1003363546227723021">当您的屏幕处于空闲状态时，显示照片、时间、天气和媒体信息</translation>
 <translation id="1014750484722996375">桌面</translation>
 <translation id="1018219910092211213">无法解析 DNS</translation>
 <translation id="1018656279737460067">已取消</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">隐藏报告</translation>
 <translation id="500920857929044050">停止测试</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">当您的屏幕处于空闲状态时，显示照片、时间、天气和媒体信息。</translation>
 <translation id="5035083460461104704">主题颜色</translation>
 <translation id="5038292761217083259">键盘多色</translation>
 <translation id="5039804452771397117">允许</translation>

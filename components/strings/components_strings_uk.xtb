@@ -1193,6 +1193,7 @@
 <translation id="3427342743765426898">&amp;Повторити редагування</translation>
 <translation id="342781501876943858">Chromium радить скинути пароль, якщо ви застосовували його на інших сайтах.</translation>
 <translation id="3428151540071562330">Щонайменше один ідентифікатор URI шаблону сервера DnsOverHttpsTemplates недійсний і не використовуватиметься.</translation>
+<translation id="3428789896412418755">Історія, упорядкована за групами</translation>
 <translation id="3431216045099978607">Натисніть клавішу |<ph name="ACCELERATOR" />|, щоб вийти з повноекранного режиму й переглянути завантажений файл.</translation>
 <translation id="3432601291244612633">Закрити сторінку</translation>
 <translation id="3433111389595862568">Програмне забезпечення для спільної роботи й відеоконференцій</translation>
@@ -3178,6 +3179,7 @@
 <translation id="7423283032694727565">Кнопка "Керувати файлами cookie"; активуйте, щоб керувати параметрами файлів cookie в налаштуваннях Chrome</translation>
 <translation id="7427366580982928791">Безпека дітей в Інтернеті</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Підтвердьте свою особу в Chromium, щоб автоматично заповнити платіжну інформацію.</translation>
 <translation id="7437289804838430631">Додати контактну інформацію</translation>
 <translation id="7437490109271760224">Картярські ігри</translation>
 <translation id="7438338505272634288">На сайті, який ви намагаєтеся відвідати, зловмисники можуть обманом змусити вас установити шкідливе програмне забезпечення, яке впливає на ваш веб-перегляд (наприклад, змінює головну сторінку або показує додаткову рекламу на сайтах, які ви відвідуєте). Chrome радить повернутися на безпечну сторінку, щоб уникнути шкоди. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@
 <translation id="7831993212387676366">Що таке список покупок?</translation>
 <translation id="7840103971441592723">Запис екрана розпочато</translation>
 <translation id="784137052867620416">Статистика покупок</translation>
+<translation id="784404208867107517">Історія, упорядкована за групами</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Немає}=1{1 додаток (<ph name="EXAMPLE_APP_1" />)}=2{2 додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# додаток (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# додатків (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# додатка (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Коли ви пізніше відвідаєте якийсь сайт, він може запитати в Chrome про ваші теми, щоб персоналізувати для вас оголошення. Chrome надає інформацію про щонайбільше 3 теми та водночас захищає вашу історію веб-перегляду й особу.</translation>
@@ -3438,6 +3441,7 @@
 <translation id="79338296614623784">Введіть дійсний номер телефону</translation>
 <translation id="7934414805353235750">Сайт <ph name="URL" /> хоче відтворювати захищений вміст. Google перевірить ідентифікатор вашого пристрою.</translation>
 <translation id="7935318582918952113">Дистилятор DOM</translation>
+<translation id="7936775433939783906">Підтвердьте свою особу в Google Chrome, щоб автоматично заповнити платіжну інформацію.</translation>
 <translation id="7937163678541954811">Код CVC цієї картки буде зашифровано й збережено на вашому пристрої, щоб ви могли швидше оплачувати замовлення</translation>
 <translation id="7937554595067888181">Діє до <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сертифікат сервера ще не дійсний.</translation>

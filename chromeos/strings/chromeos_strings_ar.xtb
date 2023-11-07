@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1003363546227723021">عندما يكون الهاتف في وضع عدم النشاط، ستعرض الشاشة الصور والوقت والطقس ومعلومات الوسائط.</translation>
 <translation id="1014750484722996375">أسطح المكتب</translation>
 <translation id="1018219910092211213">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
 <translation id="1018656279737460067">تم الإلغاء</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">إخفاء التقرير</translation>
 <translation id="500920857929044050">إيقاف الاختبار</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">عندما تكون الشاشة غير نشطة لفترة، يمكن أن تعرض الصور والوقت وحالة الطقس ومعلومات الوسائط.</translation>
 <translation id="5035083460461104704">لون المظهر</translation>
 <translation id="5038292761217083259">لوحة مفاتيح متعددة الألوان</translation>
 <translation id="5039804452771397117">سماح</translation>

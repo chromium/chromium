@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1003363546227723021">Se billeder, klokken, vejret og medieoplysninger, når din skærm er inaktiv</translation>
 <translation id="1014750484722996375">Skriveborde</translation>
 <translation id="1018219910092211213">DNS-oversættelse kan ikke udføres</translation>
 <translation id="1018656279737460067">Annulleret</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">Skjul rapport</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Se billeder, klokken, vejret og medieoplysninger, når din skærm er inaktiv.</translation>
 <translation id="5035083460461104704">Temafarve</translation>
 <translation id="5038292761217083259">flerfarvet tastatur</translation>
 <translation id="5039804452771397117">Tillad</translation>

@@ -68,6 +68,7 @@
 <translation id="2130870084309816036">インターネットに接続できません。ファイアウォールを使用している場合は、許可リストに <ph name="PRODUCT_EXE_NAME" /> を登録してください。</translation>
 <translation id="2131230230468101642">ユーザーのプライバシーを保護するため、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。閲覧を続けていると、興味 / 関心がリストに再度表示される場合もあります。Chrome に認識してほしくない興味 / 関心は削除できます。</translation>
 <translation id="2139300032719313227">Chrome OS を再起動してください</translation>
+<translation id="2146761408396054429">このファイルは危険な可能性があります<ph name="LINE_BREAK" />パスワードを入力すると、Chrome でダウンロードを確認します。パスワードは第三者とは共有されません</translation>
 <translation id="2151406531797534936">Chrome を今すぐ再起動してください</translation>
 <translation id="2174917724755363426">インストールは完了していません。キャンセルしてもよろしいですか？</translation>
 <translation id="2190166659037789668">更新確認エラー: <ph name="UPDATE_CHECK_ERROR" />。</translation>

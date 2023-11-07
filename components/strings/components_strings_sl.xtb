@@ -1193,6 +1193,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3427342743765426898">&amp;Uveljavi urejanje</translation>
 <translation id="342781501876943858">Chromium priporoča, da ponastavite geslo, če ste ga uporabljali tudi na drugih spletnih mestih.</translation>
 <translation id="3428151540071562330">Eden ali več URI-jev strežniških predlog pravilnika DnsOverHttpsTemplates je neveljaven in ne bo uporabljen.</translation>
+<translation id="3428789896412418755">Združena zgodovina</translation>
 <translation id="3431216045099978607">Pritisnite |<ph name="ACCELERATOR" />| za izhod iz celozaslonskega načina in prikaz prenosa.</translation>
 <translation id="3432601291244612633">Zapri stran</translation>
 <translation id="3433111389595862568">Programska oprema za sodelovanje in konference</translation>
@@ -3178,6 +3179,7 @@ Dodatne podrobnosti:
 <translation id="7423283032694727565">Gumb za upravljanje piškotkov, aktivirajte, če želite upravljati nastavitve piškotkov v Chromovih nastavitvah</translation>
 <translation id="7427366580982928791">Varnost otrok v internetu</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Potrdite, da ste to res vi, da bo Chromium lahko vnesel podatke za plačilo.</translation>
 <translation id="7437289804838430631">Dodaj podatke o stiku</translation>
 <translation id="7437490109271760224">Igre s kartami</translation>
 <translation id="7438338505272634288">Napadalci na spletnem mestu, ki ga poskušate obiskati, vas lahko zavedejo, da namestite škodljivo programsko opremo, ki vpliva na vaš način brskanja – na primer tako, da spremenijo vašo domačo stran ali vam na spletnih mestih, ki jih obiščete, prikazujejo dodatne oglase. Chrome zelo priporoča, da se vrnete na varno, da se izognete škodi. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@ Dodatne podrobnosti:
 <translation id="7831993212387676366">Kaj je nakupovalni seznam?</translation>
 <translation id="7840103971441592723">Začel se je zajem zaslonske slike.</translation>
 <translation id="784137052867620416">Vpogledi v Nakupovanje</translation>
+<translation id="784404208867107517">Združena zgodovina</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Brez}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}two{# aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacij (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Pozneje lahko spletno mesto, ki ga obiščete, od Chroma zahteva teme zaradi osebnega prilagajanja oglasov, ki so vam prikazani. Chrome deli do 3 teme ter hkrati varuje zgodovino brskanja in identiteto.</translation>
@@ -3438,6 +3441,7 @@ Dodatne podrobnosti:
 <translation id="79338296614623784">Vnesite veljavno telefonsko številko</translation>
 <translation id="7934414805353235750"><ph name="URL" /> želi predvajati zaščiteno vsebino. Google bo preveril identiteto vaše naprave.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Potrdite, da ste to vi, da bo Google Chrome lahko vnesel podatke za plačilo.</translation>
 <translation id="7937163678541954811">Koda CVC te kartice bo šifrirana in shranjena v vaši napravi zaradi hitrejšega zaključka nakupa</translation>
 <translation id="7937554595067888181">Poteče <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Potrdilo strežnika še ni veljavno.</translation>

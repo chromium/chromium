@@ -140,6 +140,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1750259112639922169">Flipahópur – <ph name="TAB_COUNT" /> flipar</translation>
 <translation id="17513872634828108">Opnir flipar</translation>
 <translation id="1757620656501361327">Tilkynning frá Google-aðgangsorðastjórnun</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Síður, 1 síða á lista}one{Síður, # síða á lista}other{Síður, # síður á lista}}</translation>
 <translation id="1778457539567749232">Merkja sem ólesið</translation>
 <translation id="1779766957982586368">Loka glugga</translation>
 <translation id="1791662854739702043">Uppsett</translation>
@@ -249,6 +250,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2414886740292270097">Dökkt</translation>
 <translation id="2421705177906985956">Engin vefsvæði til að birta eins og er.</translation>
 <translation id="2426805022920575512">Velja annan reikning</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vídeó, 1 vídeó á lista}one{Vídeó, # vídeó á lista}other{Vídeó, # vídeó á lista}}</translation>
 <translation id="2433507940547922241">Útlit</translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />: forskoðun</translation>
@@ -724,6 +726,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4864369630010738180">Skráir inn...</translation>
 <translation id="4866368707455379617">Ekki tókst að setja upp <ph name="MODULE" /> fyrir Chrome</translation>
 <translation id="4871568871368204250">Slökkva á samstillingu</translation>
+<translation id="4874961007154620743">Þegar slökkt er á þessu sérðu áfram staðbundnar tillögur frá Chrome</translation>
 <translation id="4875775213178255010">Tillögur að efni</translation>
 <translation id="4877678010818027629">Kveikja á huliðsstillingu</translation>
 <translation id="4878404682131129617">Ekki tókst að koma á göngum um staðgengilsþjón</translation>
@@ -1100,6 +1103,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6795633245022906657">Opna nýjan flipa hratt. Opnaðu stillingar til að breyta þessari flýtileið.</translation>
 <translation id="6802555630140434547">Glugganum verður lokað</translation>
 <translation id="6811034713472274749">Hægt er að skoða síðuna</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Myndir, 1 mynd á lista}one{Myndir, # mynd á lista}other{Myndir, # myndir á lista}}</translation>
 <translation id="6813446258015311409">Skrá inn á Chrome, opnað.</translation>
 <translation id="6817747507826986771">Deildu þessari síðu á skjótan hátt. Haltu fingri á þessari flýtileið til að breyta henni.</translation>
 <translation id="6819199143469632133">Skráðu þig inn til að fá aðgang að Google efninu þínu í öllum tækjum</translation>
@@ -1113,6 +1117,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6846298663435243399">Hleður…</translation>
 <translation id="6850409657436465440">Enn er verið að sækja</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> flipum lokað</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Hljóðskrár, 1 hljóðskrá á lista}one{Hljóðskrár, # hljóðskrá á lista}other{Hljóðskrár, # hljóðskrár á lista}}</translation>
 <translation id="685850645784703949">Tillögur frá Google — slökkt</translation>
 <translation id="686366188661646310">Eyða aðgangsorði?</translation>
 <translation id="6864459304226931083">Sækja mynd</translation>
@@ -1218,6 +1223,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7379900596734708416">Dökkt þema fyrir vefsvæði er í boði</translation>
 <translation id="7388615499319468910">Vefsvæði og auglýsendur geta greint árangur auglýsinga. Slökkt er á þessari stillingu.</translation>
 <translation id="7397416715506917976">Skoða upplýsingar um síðu</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Önnur 1 skrá á lista}one{Önnur # skrá á lista}other{Aðrar # skrár á lista}}</translation>
 <translation id="7400418766976504921">Vefslóð</translation>
 <translation id="7403691278183511381">Fyrsta notkun Chrome</translation>
 <translation id="7411224099004328643">Notandi Google-reiknings</translation>
@@ -1311,6 +1317,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="780301667611848630">Nei, takk</translation>
 <translation id="7808889146555843082">Reikningnum þínum á <ph name="SITE" /> verður ekki eytt þó að þessu aðgangsorði verði eytt. Breyttu aðgangsorðinu eða eyddu reikningnum þínum á <ph name="SITE" /> til að halda honum öruggum fyrir öðrum.</translation>
 <translation id="7810647596859435254">Opna með…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Allar skrár, 1 skrá á lista}one{Allar skrár, # skrá á lista}other{Allar skrár, # skrár á lista}}</translation>
 <translation id="7815484226266492798">Löng skjámynd</translation>
 <translation id="7822705602465980873">Þegar þú ert innskráð(ur) eru þessi gögn tengd við Google-reikninginn þinn til að vernda þig í Google-þjónustum, t.d. með því að auka vernd í Gmail eftir öryggistilvik.</translation>
 <translation id="782705168687182233">Aðgerðir þínar eru vistaðar á <ph name="BEGIN_LINK" />Google-reikningnum<ph name="END_LINK" /> þínum.</translation>
@@ -1535,6 +1542,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> er til reiðu</translation>
 <translation id="8937772741022875483">Viltu fjarlægja það sem þú gerir í Chrome úr stafrænni vellíðan?</translation>
+<translation id="893938492099608175">Chrome kann einnig að senda fótspor, núverandi vefslóð þína og staðsetningu þína, allt eftir því hvaða stillingar eru valdar</translation>
 <translation id="8942627711005830162">Opna í öðrum glugga</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Ekki tókst að hlaða þessu tungumáli niður. Reyndu aftur síðar.</translation>
 <translation id="8955719471735800169">Efst á síðu</translation>

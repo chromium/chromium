@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಪುಟಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="181103072419391116">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="1816896987747843206">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
-<translation id="1823280932251546115">ಸ್ಟೇಟಸ್ ಟ್ರೇ, ಸಮಯ <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ಇಥರ್ನೆಟ್: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ಸ್ಥಳ ಪ್ರವೇಶವನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ಅನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>

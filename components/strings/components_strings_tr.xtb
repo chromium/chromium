@@ -1193,6 +1193,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3427342743765426898">&amp;Düzenlemeyi Yeniden Yap</translation>
 <translation id="342781501876943858">Chromium, şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates sunucu şablonu URI'larından biri veya daha fazlası geçersiz olduğundan kullanılmayacak.</translation>
+<translation id="3428789896412418755">Gruplandırılmış Geçmiş</translation>
 <translation id="3431216045099978607">Tam ekrandan çıkıp indirme işlemini görmek için |<ph name="ACCELERATOR" />| tuşuna basın.</translation>
 <translation id="3432601291244612633">Sayfayı kapat</translation>
 <translation id="3433111389595862568">Ortak Çalışma ve Konferans Yazılımları</translation>
@@ -3178,6 +3179,7 @@ Ek ayrıntılar:
 <translation id="7423283032694727565">Çerezleri yönet düğmesi, Chrome ayarlarında çerez tercihlerinizi yönetmek için etkinleştirin</translation>
 <translation id="7427366580982928791">Çocuklar için internet güvenliği</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Chromium'un ödeme bilgilerinizi doldurulması için kimliğinizi doğrulayın.</translation>
 <translation id="7437289804838430631">İletişim Bilgisi Ekle</translation>
 <translation id="7437490109271760224">Kâğıt oyunları</translation>
 <translation id="7438338505272634288">Ziyaret etmeye çalıştığınız sitedeki saldırganlar, internette gezinme şeklinizi etkileyen (örneğin, ana sayfanızı değiştirme veya ziyaret ettiğiniz sitelerde eksta reklam gösterme) zararlı yazılımlar yüklemeniz için sizi kandırabilir. Chrome, zarar görmemek için güvenli bir alana dönmenizi önemle tavsiye eder. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@ Ek ayrıntılar:
 <translation id="7831993212387676366">Alışveriş listesi nedir?</translation>
 <translation id="7840103971441592723">Ekran görüntüsü başlatıldı</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784404208867107517">Gruplandırılmış geçmiş</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Yok}=1{1 uygulama (<ph name="EXAMPLE_APP_1" />)}=2{2 uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Daha sonrasında ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan konularınızı göstermesini isteyebilir. Chrome, tarama geçmişinizi ve kimliğinizi korurken en fazla 3 konu paylaşır.</translation>
@@ -3438,6 +3441,7 @@ Ek ayrıntılar:
 <translation id="79338296614623784">Geçerli bir telefon numarası girin</translation>
 <translation id="7934414805353235750"><ph name="URL" />, korumalı içeriği oynatmak istiyor. Cihazınızın kimliği Google tarafından doğrulanacak.</translation>
 <translation id="7935318582918952113">DOM Ayrıştırıcı</translation>
+<translation id="7936775433939783906">Google Chrome'un, ödeme bilgilerinizi doldurabilmesi için kimliğinizi doğrulayın.</translation>
 <translation id="7937163678541954811">Daha hızlı ödeme için bu kartın CVC'si şifrelenip cihazınıza kaydedilir</translation>
 <translation id="7937554595067888181">Süre sonu: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Sunucunun sertifikası henüz geçerli değil.</translation>

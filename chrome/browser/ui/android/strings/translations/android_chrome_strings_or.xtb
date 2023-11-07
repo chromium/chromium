@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">ଟାବ ଗ୍ରୁପ - <ph name="TAB_COUNT" />ଟି ଟାବ</translation>
 <translation id="17513872634828108">ଟାବ୍‌ଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
 <translation id="1757620656501361327">Google Password Manager ସମ୍ବନ୍ଧିତ ଅପଡେଟ</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{ପୃଷ୍ଠାଗୁଡ଼ିକ, ତାଲିକାରେ 1 ପୃଷ୍ଠା}other{ପୃଷ୍ଠାଗୁଡ଼ିକ, ତାଲିକାରେ # ପୃଷ୍ଠା}}</translation>
 <translation id="1778457539567749232">ପଢ଼ାଯାଇନାହିଁ ଭାବେ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="1779766957982586368">ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1791662854739702043">ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇଛି</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">ଗାଢ଼</translation>
 <translation id="2421705177906985956">ବର୍ତ୍ତମାନ ଦେଖାଇବା ପାଇଁ କୌଣସି ସାଇଟ ନାହିଁ</translation>
 <translation id="2426805022920575512">ଅନ୍ୟ ଏକ ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{ଭିଡିଓଗୁଡ଼ିକ, ତାଲିକାରେ 1 ଭିଡିଓ}other{ଭିଡିଓଗୁଡ଼ିକ, ତାଲିକାରେ # ଭିଡିଓ}}</translation>
 <translation id="2433507940547922241">ଦୃଶ୍ୟମାନତା</translation>
 <translation id="2435457462613246316">ପାସୱାର୍ଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />ର ପ୍ରିଭ୍ୟୁ</translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">ସାଇନ୍ ଇନ୍ ହେଉଛି…</translation>
 <translation id="4866368707455379617">Chrome ପାଇଁ <ph name="MODULE" /> ଇନ୍‌ଷ୍ଟଲ୍ କରିବାରେ ଅକ୍ଷମ</translation>
 <translation id="4871568871368204250">ସିଙ୍କ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="4874961007154620743">ବନ୍ଦ ଥିବା ସମୟରେ, ଆପଣ ଏବେ ବି Chrome ସ୍ଥାନୀୟ ଭାବେ ପ୍ରଦାନ କରୁଥିବା ପରାମର୍ଶଗୁଡ଼ିକୁ ଦେଖିବେ</translation>
 <translation id="4875775213178255010">ବିଷୟବସ୍ତୁ ପରାମର୍ଶ</translation>
 <translation id="4877678010818027629">ଇନକଗ୍ନିଟୋ ମୋଡକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4878404682131129617">ପ୍ରକ୍ସି ସର୍ଭର୍ ମାଧ୍ୟମରେ ଗୋଟିଏ ଟନେଲ୍ ସ୍ଥାପନ କରିବା ବିଫଳ ହେଲା</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">ଶୀଘ୍ର ଏକ ନୂଆ ଟାବ୍ ଖୋଲନ୍ତୁ। ଏହି ସର୍ଟକଟକୁ ଏଡିଟ୍ କରିବା ପାଇଁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="6802555630140434547">ୱିଣ୍ଡୋଟି ବନ୍ଦ ହୋଇଯିବ</translation>
 <translation id="6811034713472274749">ଦେଖିବା ପାଇଁ ପୃଷ୍ଟାଟି ପ୍ତସ୍ତୁତ ଅଛି</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{ଇମେଜଗୁଡ଼ିକ, ତାଲିକାରେ 1 ଇମେଜ}other{ଇମେଜଗୁଡ଼ିକ, ତାଲିକାରେ # ଇମେଜ}}</translation>
 <translation id="6813446258015311409">Chromeରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ, ଖୋଲା ଅଛି।</translation>
 <translation id="6817747507826986771">ଏହି ପୃଷ୍ଠାକୁ ଶୀଘ୍ର ସେୟାର୍ କରନ୍ତୁ। ଏହି ସର୍ଟକଟକୁ ଏଡିଟ୍ କରିବା ପାଇଁ, ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ।</translation>
 <translation id="6819199143469632133">ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ Google ଷ୍ଟଫକୁ ପାଇବା ପାଇଁ, ସାଇନ ଇନ କରନ୍ତୁ</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">ଲୋଡ୍ ହେଉଛି…</translation>
 <translation id="6850409657436465440">ଆପଣଙ୍କ ଡାଉନ୍‌‌ଲୋଡ୍ ଏବେ ମଧ୍ୟ ଜାରି ଅଛି</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{ଅଡିଓ ଫାଇଲଗୁଡ଼ିକ, ତାଲିକାରେ 1 ଅଡିଓ ଫାଇଲ}other{ଅଡିଓ ଫାଇଲଗୁଡ଼ିକ, ତାଲିକାରେ # ଅଡିଓ ଫାଇଲ}}</translation>
 <translation id="685850645784703949">Googleର Discover - ବନ୍ଦ ଅଛି</translation>
 <translation id="686366188661646310">ପାସୱାର୍ଡ ଡିଲିଟ୍ କରିବେ?</translation>
 <translation id="6864459304226931083">ଛବି ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">ସାଇଟଗୁଡ଼ିକ ପାଇଁ ଗାଢ଼ା ଥିମ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="7388615499319468910">ବିଜ୍ଞାପନଗୁଡ଼ିକ କିପରି ପରଫର୍ମ କରେ ତାହା ସାଇଟଗୁଡ଼ିକ ଏବଂ ବିଜ୍ଞାପନଦାତାମାନେ ବୁଝିପାରିବେ। ଏହି ସେଟିଂ ବନ୍ଦ ଅଛି।</translation>
 <translation id="7397416715506917976">ପୃଷ୍ଠା ଇନସାଇଟ ଭ୍ୟୁ କରନ୍ତୁ</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{ତାଲିକାରେ ଅନ୍ୟ 1 ଫାଇଲ}other{ତାଲିକାରେ ଅନ୍ୟ # ଫାଇଲ}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome ପ୍ରଥମଥର ଚଲାଇବାର ଅନୁଭବ</translation>
 <translation id="7411224099004328643">Google ଆକାଉଣ୍ଟ ୟୁଜର</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">ନାଁ, ଥାଉ</translation>
 <translation id="7808889146555843082">ଏହି ପାସୱାର୍ଡ ଡିଲିଟ୍ କରିବା ଦ୍ଵାରା <ph name="SITE" />ରେ ଥିବା ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ଡିଲିଟ୍ ହେବ ନାହିଁ। ଆପଣଙ୍କ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରନ୍ତୁ କିମ୍ବା <ph name="SITE" />ରେ ଥିବା ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ ଅନ୍ୟମାନଙ୍କ ଠାରୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଏହାକୁ ଡିଲିଟ୍ କରନ୍ତୁ।</translation>
 <translation id="7810647596859435254">ଏଥିରେ ଖୋଲନ୍ତୁ…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{ସମସ୍ତ ଫାଇଲ, ତାଲିକାରେ 1 ଫାଇଲ}other{ସମସ୍ତ ଫାଇଲ, ତାଲିକାରେ # ଫାଇଲ}}</translation>
 <translation id="7815484226266492798">ଲମ୍ବା ସ୍କ୍ରିନସଟ୍</translation>
 <translation id="7822705602465980873">ଆପଣ ସାଇନ ଇନ ଥିବା ବେଳେ, ଏକ ସୁରକ୍ଷା ଘଟଣା ପରେ Gmailରେ ସୁରକ୍ଷା ବ୍ୟବସ୍ଥାକୁ ବଢ଼ାଇବା ପରି ଏହି ଡାଟା ଆପଣଙ୍କୁ ସମଗ୍ର Google ସେବାରେ ସୁରକ୍ଷା ଦେବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଲିଙ୍କ ହୋଇଥାଏ।</translation>
 <translation id="782705168687182233">ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଆପଣଙ୍କର <ph name="BEGIN_LINK" />Google ଆକାଉଣ୍ଟ<ph name="END_LINK" />ରେ ସେଭ କରାଯାଏ।</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ପ୍ରସ୍ତୁତ ଅଛି</translation>
 <translation id="8937772741022875483">ଡିଜିଟାଲ୍ ୱେଲ୍‍ବିଂରୁ ଆପଣଙ୍କର Chromeର କାର୍ଯ୍ୟକଳାପ କାଢ଼ିବେ?</translation>
+<translation id="893938492099608175">ଆପଣଙ୍କ ସେଟିଂସ ଉପରେ ନିର୍ଭର କରି, Chrome କୁକୀ, ଆପଣଙ୍କ ବର୍ତ୍ତମାନର URL ଏବଂ ଆପଣଙ୍କର ଲୋକେସନ ମଧ୍ୟ ପଠାଇପାରେ</translation>
 <translation id="8942627711005830162">ଅନ୍ୟ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ଏହି ଭାଷାକୁ ଡାଉନଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="8955719471735800169">ଉପରକୁ ଫେରି ଯାଆନ୍ତୁ</translation>

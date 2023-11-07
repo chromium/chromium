@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
+<translation id="1003363546227723021">ඔබගේ තිරය අක්‍රිය වූ විට, ඡායාරූප, වේලාව, කාලගුණය සහ මාධ්‍ය තොරතුරු පෙන්වන්න</translation>
 <translation id="1014750484722996375">මේස</translation>
 <translation id="1018219910092211213">DNS විසඳිය නොහැකිය</translation>
 <translation id="1018656279737460067">අවලංගු විය</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">වාර්තාව සඟවන්න</translation>
 <translation id="500920857929044050">පරීක්ෂණය නවත්වන්න</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">ඔබගේ තිරය අක්‍රිය වූ විට, ඡායාරූප, වේලාව, කාලගුණය සහ මාධ්‍ය තොරතුරු පෙන්වීම.</translation>
 <translation id="5035083460461104704">තේමා වර්ණය</translation>
 <translation id="5038292761217083259">යතුරු පුවරු බහු වර්ණ</translation>
 <translation id="5039804452771397117">ඉඩදෙන්න</translation>

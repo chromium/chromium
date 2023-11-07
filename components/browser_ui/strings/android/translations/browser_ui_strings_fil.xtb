@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="2410940059315936967">Puwedeng mag-embed ng content mula sa iba pang site ang site na binibisita mo, halimbawa, mga larawan, ad, at text. Ang cookies na itinatakda ng iba pang site na ito ay tinatawag na mga third-party na cookie.</translation>
 <translation id="2434158240863470628">Tapos nang mag-download <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Pansamantala mong pinayagan ang site na ito na gumamit ng third-party na cookies, na nangangahulugang mas mahina ang proteksyon sa pag-browse pero mas malamang na gumana ang mga feature ng site na gaya ng inaasahan. <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Posibleng hindi gumana sa Incognito mode ang mga feature sa ilang site</translation>
 <translation id="2442870161001914531">Palaging hilingin ang pang-desktop na site</translation>
 <translation id="2469312991797799607">Ide-delete ng pagkilos na ito ang lahat ng data at cookies para sa <ph name="ORIGIN" /> at lahat ng site sa ilalim nito</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Pamagat</translation>
 <translation id="4008040567710660924">Payagan ang cookies para sa isang partikular na site.</translation>
 <translation id="4046123991198612571">Susunod na track</translation>
-<translation id="4053720452172726777">I-customize at kontrolin ang Google Chrome</translation>
 <translation id="4149890623864272035">Sigurado ka bang gusto mong i-delete ang lahat ng lokal na data, kabilang ang cookies, at i-reset ang lahat ng pahintulot para sa website na ito?</translation>
 <translation id="4149994727733219643">Pinasimpleng view para sa mga web page</translation>
 <translation id="4151930093518524179">Default na pag-zoom</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">I-delete at i-reset</translation>
 <translation id="4645575059429386691">Pinamamahalaan ng iyong magulang</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
+<translation id="4673958474310291465">Subukang payagan nang pansamantala ang third-party na cookies, na nangangahulugang mas mahina ang proteksyon pero mas malamang na gumana ang mga feature ng site na gaya ng inaasahan</translation>
 <translation id="4751476147751820511">Mga motion o light sensor</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Alamin ang tungkol sa source at paksa nito</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
 <translation id="6205314730813004066">Privacy sa mga ad</translation>
 <translation id="6207207788774442484">I-delete ang data at i-reset ang mga pahintulot</translation>
-<translation id="6216432067784365534">Mga Opsyon sa <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">I-uninstall ang '<ph name="APP_NAME" />'?</translation>
 <translation id="6262191102408817757">Batay sa iyong huling tab</translation>
 <translation id="6262279340360821358">Naka-block ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">I-block</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ang napili}one{# ang napili}other{# ang napili}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ang napili.  Available ang mga opsyon malapit sa itaas ng screen</translation>
+<translation id="7137403271056944713">Pagkontrol / pag-reprogram: MIDI device</translation>
 <translation id="7141896414559753902">I-block ang pagpapakita ng mga site ng mga pop-up at pag-redirect (inirerekomenda)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">I-refresh</translation>

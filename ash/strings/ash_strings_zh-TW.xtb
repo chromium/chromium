@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">網站，包括你造訪過的網頁和目前開啟的頁面</translation>
 <translation id="181103072419391116">訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="1816896987747843206">這將允許具有攝影機權限的所有應用程式和網站存取攝影機</translation>
-<translation id="1823280932251546115">狀態匣，時間 <ph name="TIME" />，
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />，
-        <ph name="PRIVACY" />，
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />，
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">乙太網路：<ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">開啟位置存取權</translation>
 <translation id="1830308660060964064">已取消固定「<ph name="ITEM_TITLE" />」</translation>

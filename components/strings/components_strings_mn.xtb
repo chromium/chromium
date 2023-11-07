@@ -1194,6 +1194,7 @@
 <translation id="3427342743765426898">&amp; Засварлах үйлдлийг дахин хийх</translation>
 <translation id="342781501876943858">Хэрэв та нууц үгээ бусад сайтад дахин ашигласан бол Chromium-с үүнийг шинэчлэхийг зөвлөж байна.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates серверийн загварын нэг буюу түүнээс олон URI нь буруу байгаа бөгөөд тэднийг ашиглахгүй.</translation>
+<translation id="3428789896412418755">Бүлэглэсэн түүх</translation>
 <translation id="3431216045099978607">|<ph name="ACCELERATOR" />| дарж бүтэн дэлгэцээс гарах ба татаж авахыг харна уу.</translation>
 <translation id="3432601291244612633">Хуудсыг хаах</translation>
 <translation id="3433111389595862568">Хамтын ажиллагаа болон хурлын программ хангамж</translation>
@@ -3178,6 +3179,7 @@
 <translation id="7423283032694727565">Күүки удирдах товчлуур, Chrome-н тохиргоонд күүкиний сонголтоо удирдахын тулд идэвхжүүлнэ үү</translation>
 <translation id="7427366580982928791">Хүүхдийн интернэтийн аюулгүй байдал</translation>
 <translation id="7429429656042611765">Захиргааны</translation>
+<translation id="7432774160230062882">Өөрийгөө мөн болохыг баталгаажуулснаар Chromium таны төлбөрийн мэдээллийг бөглөх боломжтой.</translation>
 <translation id="7437289804838430631">Харилцагчийн мэдээлэл нэмэх</translation>
 <translation id="7437490109271760224">Хөзрийн тоглоом</translation>
 <translation id="7438338505272634288">Таны зочлохоор оролдож буй сайт дээрх халдагчид таны үзэх аргад нөлөөлөх аюултай программ хангамжийг суулгах үйлдэл хийлгэхээр хуурч магадгүй. Жишээ нь таны нүүр хуудсыг өөрчлөх эсвэл таны зочилдог сайтуудад нэмэлт зар харуулж болно. Chrome хор хөнөөлөөс зайлсхийхийн тулд аюулгүй байдал руу буцаж очихыг нухацтай зөвлөж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@
 <translation id="7831993212387676366">Авах зүйлийн жагсаалт гэж юу вэ?</translation>
 <translation id="7840103971441592723">Дэлгэцийн зураг авч эхэллээ</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784404208867107517">Бүлэглэсэн түүх</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Байхгүй}=1{1 апп (<ph name="EXAMPLE_APP_1" />)}=2{2 апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Дараа нь таны зочилдог сайт таны харж буй зарыг хувийн болгохын тулд Chrome-с сэдвийг асууж болно. Chrome нь таны хөтчийн түүх болон хувийн мэдээллийг хамгаалахын зэрэгцээ 3 хүртэлх сэдвийг хуваалцдаг.</translation>
@@ -3438,6 +3441,7 @@
 <translation id="79338296614623784">Зөв утасны дугаар оруулна уу</translation>
 <translation id="7934414805353235750"><ph name="URL" /> хамгаалсан агуулгыг тоглуулах хүсэлтэй байна. Таны төхөөрөмжийн таниулбарыг Google-с баталгаажуулна.</translation>
 <translation id="7935318582918952113">DOM цэвэршүүлэгч</translation>
+<translation id="7936775433939783906">Өөрийгөө мөн болохыг баталгаажуулснаар Google Chrome таны төлбөрийн мэдээллийг бөглөх боломжтой.</translation>
 <translation id="7937163678541954811">Энэ картын Карт баталгаажуулалтын кодыг шифрлэх бөгөөд илүү хурдан тооцоо хийхэд зориулж таны төхөөрөмжид хадгална</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />-д дуусна</translation>
 <translation id="7938958445268990899">Серверийн гэрчилгээ хараахан хүчин төгөлдөр биш байна.</translation>

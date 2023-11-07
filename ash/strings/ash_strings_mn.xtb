@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">Таны зочилсон хуудас болон нээлттэй хуудаснуудыг оруулсан вебсайтууд</translation>
 <translation id="181103072419391116">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="1816896987747843206">Энэ нь камерын зөвшөөрөлтэй бүх апп болон вебсайтад камерын хандалтыг зөвшөөрнө</translation>
-<translation id="1823280932251546115">Төлөвийн мэдээллийн хэсэг, цаг <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Этернет: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Байршлын хандалтыг асаах</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />-г тогтоосныг болиуллаа</translation>
@@ -1198,6 +1189,7 @@
 <translation id="5788127256798019331">Файлуудыг тоглуулах</translation>
 <translation id="5788535737706478207">Хаасан сүүлийн таб эсвэл цонхыг дахин нээх</translation>
 <translation id="5790085346892983794">Амжилттай гүйцэтгэлээ</translation>
+<translation id="5802516411616338943">Шуурхай тохиргоог нээх</translation>
 <translation id="5804651031882187592">"SIM-г түгжих" тохиргоог унтраах</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" />-г идэвхжүүлэхийн тулд товших</translation>
 <translation id="5823239091726045201">Веб дээрх Google tasks</translation>
@@ -1223,6 +1215,7 @@
 <translation id="5901630391730855834">Шар</translation>
 <translation id="5911231045062997865">Lacros цонхыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Шинэ мэдэгдэл, нийт <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5920710855273935292">Микрофоны дууг хаасан.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> асаалттай байна.</translation>

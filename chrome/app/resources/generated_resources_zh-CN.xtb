@@ -3163,13 +3163,6 @@
 <translation id="346298925039590474">该移动网络将可供此设备上的所有用户使用</translation>
 <translation id="3464145797867108663">添加工作资料</translation>
 <translation id="346546413339447252">获取<ph name="MERCHANT_NAME_1" />和<ph name="MERCHANT_NAME_2" />等商家的折扣</translation>
-<translation id="3466476162566821406">按照手机上的说明验证该码。确保手机已开启蓝牙和 WLAN。
-    <ph name="BR" />
-    <ph name="BR" />
-    您可以使用手机向 <ph name="DEVICE_TYPE" /> 添加 Wi-Fi 和 Google 账号信息。
-    <ph name="BR" />
-    <ph name="BR" />
-    向附近的设备显示为“<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />”…</translation>
 <translation id="3468298837301810372">标签</translation>
 <translation id="3468999815377931311">Android 手机</translation>
 <translation id="3469583217479686109">选择工具</translation>
@@ -4805,7 +4798,6 @@
 <translation id="4769632191812288342">您已获享标准保护</translation>
 <translation id="4770119228883592393">收到了权限请求，按 ⌘ + Option + 向下键即可回复</translation>
 <translation id="4773112038801431077">升级 Linux</translation>
-<translation id="4774456473286455263">通过 Android 手机设置</translation>
 <translation id="4775228465764358468">网站可能会保存您的首选语言或您想购买的商品。这些信息可供该网站及其子网域使用。</translation>
 <translation id="477548766361111120">允许扩展程序读取和更改此网站的数据</translation>
 <translation id="4776311127346151860">已连接<ph name="DEVICE_NAME" /></translation>
@@ -6144,13 +6136,6 @@
 <translation id="5865508026715185451">“<ph name="APP_NAME" />”即将暂停</translation>
 <translation id="586567932979200359">您正在通过磁盘映像运行 <ph name="PRODUCT_NAME" />。您只需在计算机上安装该软件，即可在没有磁盘映像的情况下运行它，并可确保使用最新版本。</translation>
 <translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送至 Google</translation>
-<translation id="5867855474018538405">按照手机上的说明扫描二维码。确保手机已开启蓝牙和 WLAN。
-    <ph name="BR" />
-    <ph name="BR" />
-    您可以使用手机向 <ph name="DEVICE_TYPE" /> 添加 Wi-Fi 和 Google 账号信息。
-    <ph name="BR" />
-    <ph name="BR" />
-    向附近的设备显示为“<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />”…</translation>
 <translation id="5868434909835797817">您设备的麦克风处于关闭状态</translation>
 <translation id="5868822853313956582">遵循设备配色方案</translation>
 <translation id="5869029295770560994">知道了</translation>
@@ -7719,6 +7704,7 @@
 <translation id="7125932261198019860">请确保您的打印机与 Chromebook 连接到同一 Wi-Fi 网络，或者使用 USB 线。<ph name="LINK_BEGIN" />详细了解兼容性<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">下载记录</translation>
 <translation id="7128151990937044829">当通知处于屏蔽状态时在地址栏中显示“已屏蔽”图标</translation>
+<translation id="7130438335435247835">接入点名称 (APN)</translation>
 <translation id="7131040479572660648">读取您在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 上的数据</translation>
 <translation id="713122686776214250">添加网页(&amp;G)...</translation>
 <translation id="7131431455372521159">所有 TrackPoint 均已断开连接</translation>

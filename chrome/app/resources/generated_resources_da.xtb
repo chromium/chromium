@@ -3187,13 +3187,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="346298925039590474">Dette mobilnetværk vil være tilgængeligt for alle brugere på denne enhed</translation>
 <translation id="3464145797867108663">Tilføj arbejdsprofil</translation>
 <translation id="346546413339447252">Få rabatter til <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> og andre</translation>
-<translation id="3466476162566821406">Følg vejledningen på din telefon for at verificere koden. Sørg for, at Bluetooth og Wi-Fi er aktiveret på din telefon.
-    <ph name="BR" />
-    <ph name="BR" />
-    Du kan bruge din telefon til at føje loginoplysningerne til dit Wi-Fi-netværk og din Google-konto til din <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Synlig som <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> for enheder i nærheden...</translation>
 <translation id="3468298837301810372">Etiket</translation>
 <translation id="3468999815377931311">Android-telefon</translation>
 <translation id="3469583217479686109">Opmærkningsværktøj</translation>
@@ -4831,7 +4824,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4769632191812288342">Du har Standardbeskyttelse</translation>
 <translation id="4770119228883592393">Der er anmodet om tilladelse. Tryk på ⌘ + Option + pil ned for at svare</translation>
 <translation id="4773112038801431077">Opgrader Linux</translation>
-<translation id="4774456473286455263">Konfigurer med din Android-telefon</translation>
 <translation id="4775228465764358468">Et website gemmer muligvis dit foretrukne sprog eller de varer, du vil købe. Disse oplysninger er tilgængelige for websitet og dets underdomæner.</translation>
 <translation id="477548766361111120">Giv udvidelsen tilladelse til at læse og ændre dette website</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> er blevet forbundet</translation>
@@ -6172,13 +6164,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sættes snart på pause</translation>
 <translation id="586567932979200359">Du kører <ph name="PRODUCT_NAME" /> fra dets diskbillede. Hvis du installerer det på din computer, kan du køre det uden diskbilledet, og det vil blive opdateret løbende.</translation>
 <translation id="5865733239029070421">Sender automatisk brugsstatistikker og nedbrudsrapporter til Google</translation>
-<translation id="5867855474018538405">Følg vejledningen på din telefon for at scanne QR-koden. Sørg for, at Bluetooth og Wi-Fi er aktiveret på din telefon.
-    <ph name="BR" />
-    <ph name="BR" />
-    Du kan bruge din telefon til at føje loginoplysningerne til dit Wi-Fi-netværk og din Google-konto til din <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Synlig som <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> for enheder i nærheden...</translation>
 <translation id="5868434909835797817">Mikrofonen er slået fra på din enhed</translation>
 <translation id="5868822853313956582">Følg enhedens farver</translation>
 <translation id="5869029295770560994">OK</translation>
@@ -7750,6 +7735,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7125932261198019860">Sørg for, at din printer er tilsluttet det samme Wi-Fi-netværk som din Chromebook, eller brug et USB-kabel. <ph name="LINK_BEGIN" />Få flere oplysninger om kompatibilitet<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Downloadhistorik</translation>
 <translation id="7128151990937044829">Vis en indikator i adresselinjen, når en notifikation blokeres</translation>
+<translation id="7130438335435247835">Adgangspunkt (APN)</translation>
 <translation id="7131040479572660648">Læs dine data på <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Tilføj side...</translation>
 <translation id="7131431455372521159">Forbindelsen til alle TrackPoints er blevet afbrudt</translation>

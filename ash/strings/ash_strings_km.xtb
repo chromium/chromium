@@ -131,6 +131,7 @@
 <translation id="146902737843070955">អ្នកគ្រប់គ្រងរបស់អ្នកបានស្នើសុំការផ្លាស់ប្ដូរនេះ</translation>
 <translation id="1469148162491666137">ការធ្វើបែបនេះ​ផ្ដល់​សិទ្ធិចូលប្រើ​ដល់ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ព្រមទាំង​គ្រប់កម្មវិធី និង​គេហទំព័រ​ដែលមាន​ការអនុញ្ញាត​ឱ្យ​ចូល​ប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន។ អ្នកអាចនឹង​ត្រូវផ្ទុក​ទំព័របណ្ដាញ​ឡើងវិញ ឬ​ចាប់ផ្ដើម​កម្មវិធីនេះ​ឡើងវិញ។</translation>
 <translation id="147310119694673958">ថ្មទូរសព្ទ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">បិទ/បើក​ហតស្ប៉ត។ ហតស្ប៉ត​ត្រូវបានបើក បានភ្ជាប់​ឧបករណ៍ 1 គ្រឿង។</translation>
 <translation id="1479909375538722835">ម៉ឺនុយភាពងាយស្រួលអណ្ដែត</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, ចុចគ្រាប់ចុច enter ដើម្បីបើក​ទិដ្ឋភាពប្រតិទិន</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -213,15 +214,6 @@
 <translation id="1796561540704213354">គេហទំព័រ រួមទាំងទំព័រដែលអ្នកបានចូលមើល និងទំព័រដែលបើក</translation>
 <translation id="181103072419391116">កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" />, គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="1816896987747843206">ការ​ធ្វើ​បែបនេះ​ផ្ដល់​សិទ្ធិ​ចូលប្រើប្រាស់​កាមេរ៉ា​ដល់​​គ្រប់​កម្មវិធី និង​គេហទំព័រ​ដែលមាន​ការ​អនុញ្ញាត​ឱ្យ​ប្រើកាមេរ៉ា</translation>
-<translation id="1823280932251546115">របារ​ស្ថានភាព ម៉ោង <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">អ៊ីសឺរណិត៖ <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">បើកសិទ្ធិចូលប្រើប្រាស់​ទីតាំង</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ត្រូវបាន​ដកការដៅ</translation>
@@ -890,6 +882,7 @@
 <translation id="4577990005084629481">បង្ហាញ​ការមើល​សាកល្បង</translation>
 <translation id="4578906031062871102">បានបើកម៉ឺនុយការ​កំណត់</translation>
 <translation id="458210817642223147">ថត GIF</translation>
+<translation id="4582666543382004902">ហតស្ប៉ត​ត្រូវ​បានបិទ​ដើម្បីប្រើ WiFi។ ដើម្បីប្រើ​ហតស្ប៉ត សូមបិទ WiFi។</translation>
 <translation id="4585337515783392668">ឈប់បញ្ជូន​​ទៅឧបករណ៍ទទួលដែល​មិនស្គាល់</translation>
 <translation id="4596144739579517758">​រចនាប័ទ្ម​ងងឹតបានបិទ</translation>
 <translation id="4611292653554630842">ចូល</translation>
@@ -1097,6 +1090,7 @@
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> នៅលើ <ph name="IN_PLACE_APP" /> សូម​ព្រលែង ដើម្បីបង្កើត​ថត។</translation>
 <translation id="5397578532367286026">ការប្រើប្រាស់ និងប្រើ (<ph name="MANAGER_EMAIL" />) នៅលើ chrome.com។</translation>
 <translation id="5400461572260843123">ការកំណត់​រហ័ស ចុច ស្វែងរក + ឆ្វេង ដើម្បីចូលប្រើ​មជ្ឈមណ្ឌល​ជូនដំណឹង។</translation>
+<translation id="540713187982329711">បិទ/បើក​ហតស្ប៉ត។ ហតស្ប៉ត​ត្រូវបានបើក មិនបានភ្ជាប់​ឧបករណ៍ទេ។</translation>
 <translation id="5413656666631274079">ទំព័រ​ការកំណត់</translation>
 <translation id="5414198321558177633">កំពុងផ្ទុក​បញ្ជីកម្រងព័ត៌មានឡើងវិញ។ ដំណើរការនេះ​អាចចំណាយ​ពេលពីរបីនាទី។</translation>
 <translation id="5426063383988017631">បានបិទម៉ឺនុយការ​កំណត់</translation>
@@ -1188,9 +1182,11 @@
 <translation id="576341972084747908">ទាញយក <ph name="FILENAME" /> គ្រោះថ្នាក់</translation>
 <translation id="576453121877257266">បានបើកពន្លឺពេលយប់។</translation>
 <translation id="5764569119212455782">ប្ដូរទៅ​ភាសា​ចុងក្រោយ​ដែល​បាន​ជ្រើសរើស</translation>
+<translation id="5767730327234918501">អ្នកគ្រប់គ្រង​របស់អ្នក​បានបិទ​ហតស្ប៉ត។</translation>
 <translation id="5769373120130404283">អេក្រង់​ឯកជនភាព</translation>
 <translation id="5773950591113557721">ការ​ធ្វើបែបនេះ​ផ្ដល់​សិទ្ធិចូលប្រើប្រាស់​ដល់ <ph name="APP_NAME" /> ព្រម​ទាំង​គ្រប់​កម្មវិធី និង​គេហទំព័រ​ដែលមាន​កា​រអនុញ្ញាត​ឱ្យ​ចូល​ប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="5774295353725270860">បើកកម្មវិធីឯកសារ</translation>
+<translation id="5775936059231769503">បិទ/បើក​ហតស្ប៉ត។ ហតស្ប៉ត​ត្រូវបានបិទ។</translation>
 <translation id="5777841717266010279">បញ្ឈប់ការចែករំលែកអេក្រង់?</translation>
 <translation id="5779721926447984944">​ឯកសារដែលបាន​ខ្ទាស់</translation>
 <translation id="5785221443435874078">លុបការ​ណែនាំ​នេះ</translation>
@@ -1508,6 +1504,7 @@
 <translation id="7068360136237591149">បើក​ឯកសារ</translation>
 <translation id="7076293881109082629">កំពុងចូល</translation>
 <translation id="7076878155205969899">បិទ​សំឡេង</translation>
+<translation id="7084678090004350185">បិទ/បើក​ហតស្ប៉ត។ ហតស្ប៉ត​ត្រូវបានបើក បានភ្ជាប់​ឧបករណ៍ <ph name="DEVICECOUNT" /> គ្រឿង។</translation>
 <translation id="7086931198345821656">ការដំឡើងកំណែនេះ​តម្រូវឱ្យ powerwash <ph name="DEVICE_TYPE" /> របស់អ្នក។ ទិន្នន័យទាំងអស់​នឹងត្រូវបានលុប។ ស្វែងយល់​បន្ថែម​អំពីកំណែ <ph name="SYSTEM_APP_NAME" /> ថ្មីបំផុត។</translation>
 <translation id="7088960765736518739">មុខងារប្រើឧបករណ៍ចុចសម្រាប់ជនពិការ</translation>
 <translation id="709015856939120012">ពង្រីក​នៅ​លើ​ទំព័រ</translation>

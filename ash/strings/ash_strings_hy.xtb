@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">Վեբ կայքերը՝ ներառյալ էջերը, որոնք այցելել եք, և բացված էջերը</translation>
 <translation id="181103072419391116">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="1816896987747843206">Սա հասանելի է դարձնում տեսախցիկը բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն</translation>
-<translation id="1823280932251546115">Կարգավիճակի տող, ժամը՝ <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet՝ <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Միացնել տեղորոշման թույլտվությունը</translation>
 <translation id="1830308660060964064">«<ph name="ITEM_TITLE" />» տարրն ապամրացվեց</translation>

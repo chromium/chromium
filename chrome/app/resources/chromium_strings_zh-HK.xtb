@@ -240,6 +240,7 @@
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發佈 # 天}}</translation>
 <translation id="5643865575100044307">在 Chromium 關閉後一律刪除裝置上的網站資料</translation>
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
+<translation id="5675598751761067447">此檔案可能不安全<ph name="LINE_BREAK" />如果你提供密碼，Chromium 可為你檢查此下載項目，並將密碼保存在裝置上</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">以此語言顯示 Chromium</translation>
 <translation id="569897634095159764">無法連線至互聯網。Proxy 伺服器需要驗證。</translation>

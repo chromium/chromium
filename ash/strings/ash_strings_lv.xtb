@@ -213,15 +213,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1796561540704213354">Tīmekļa vietnes, tostarp iepriekš apmeklētās un pašlaik atvērtās lapas</translation>
 <translation id="181103072419391116">Signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
 <translation id="1816896987747843206">Atļauj piekļuvi kamerai visām lietotnēm un vietnēm, kurām ir kameras atļauja.</translation>
-<translation id="1823280932251546115">Statusa josla, plkst. <ph name="TIME" />.
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />.
-        <ph name="NETWORK" />
-        <ph name="PRIVACY" />.
-        <ph name="MANAGED" />.
-        <ph name="NOTIFICATION" />.
-        <ph name="IME" />.
-        <ph name="LOCALE" />.</translation>
 <translation id="1823873187264960516">Ethernet adrese: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Ieslēgt piekļuvi atrašanās vietai</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> tika atsprausti</translation>

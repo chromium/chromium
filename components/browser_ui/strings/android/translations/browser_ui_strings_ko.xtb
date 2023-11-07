@@ -178,7 +178,6 @@
 <translation id="4002066346123236978">제목</translation>
 <translation id="4008040567710660924">특정 사이트의 쿠키를 허용합니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
-<translation id="4053720452172726777">Chrome 맞춤설정 및 제어</translation>
 <translation id="4149890623864272035">쿠키를 포함한 모든 로컬 데이터를 삭제하고 이 웹사이트에 대한 권한을 모두 재설정하시겠습니까?</translation>
 <translation id="4149994727733219643">웹페이지 간단히 보기</translation>
 <translation id="4151930093518524179">기본 확대/축소</translation>
@@ -297,7 +296,6 @@
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6207207788774442484">데이터 삭제 및 권한 재설정</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> 옵션</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' 앱을 제거하시겠습니까?</translation>
 <translation id="6262191102408817757">마지막 탭 기준</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 차단됨</translation>

@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">Група раздели – <ph name="TAB_COUNT" /> раздела</translation>
 <translation id="17513872634828108">Отворени раздели</translation>
 <translation id="1757620656501361327">Предупреждение за Google Мениджър на пароли</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Страници, 1 страница в списъка}other{Страници, # страници в списъка}}</translation>
 <translation id="1778457539567749232">Означаване като непрочетено</translation>
 <translation id="1779766957982586368">Затваряне на прозореца</translation>
 <translation id="1791662854739702043">Инсталиран</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">Тъмно</translation>
 <translation id="2421705177906985956">В момента няма сайтове, които да бъдат показани</translation>
 <translation id="2426805022920575512">Избиране на друг профил</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Видеоклипове, 1 видеоклип в списъка}other{Видеоклипове, # видеоклипа в списъка}}</translation>
 <translation id="2433507940547922241">Облик</translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="2439153523196674349">Предварителен преглед на <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">Извършва се влизане...</translation>
 <translation id="4866368707455379617">Модулът „<ph name="MODULE" />“ за Chrome не може да се инсталира</translation>
 <translation id="4871568871368204250">Изключване на синхронизирането</translation>
+<translation id="4874961007154620743">Когато настройката е изключена, пак ще виждате предложенията, които Chrome предоставя локално</translation>
 <translation id="4875775213178255010">Предложения за съдържание</translation>
 <translation id="4877678010818027629">Влизане в режим „инкогнито“</translation>
 <translation id="4878404682131129617">Създаването на тунел през прокси сървъра не бе успешно</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">Бързо отваряне на нов раздел. За да редактирате този пряк път, отворете настройките.</translation>
 <translation id="6802555630140434547">Прозорецът ще бъде затворен</translation>
 <translation id="6811034713472274749">Страницата е готова за преглед</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Изображения, 1 изображение в списъка}other{Изображения, # изображения в списъка}}</translation>
 <translation id="6813446258015311409">Вход в Chrome – отворено.</translation>
 <translation id="6817747507826986771">Бързо споделяне на страницата. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="6819199143469632133">За да получите достъп до нещата си в Google на всички устройства, влезте в профила си</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">Зарежда се…</translation>
 <translation id="6850409657436465440">Изтеглянето продължава</translation>
 <translation id="6850830437481525139">Затворихте <ph name="TAB_COUNT" /> раздела</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Аудиофайлове, 1 аудиофайл в списъка}other{Аудиофайлове, # аудиофайла в списъка}}</translation>
 <translation id="685850645784703949">Discover от Google – изкл.</translation>
 <translation id="686366188661646310">Искате ли да изтриете паролата?</translation>
 <translation id="6864459304226931083">Изтегляне на изображението</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">Налице е тъмна тема за сайтовете</translation>
 <translation id="7388615499319468910">Сайтовете и рекламодателите могат да разберат ефективността на рекламите. Тази настройка е изключена.</translation>
 <translation id="7397416715506917976">Статистика за страницата</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Други, 1 файл в списъка}other{Други, # файла в списъка}}</translation>
 <translation id="7400418766976504921">URL адрес</translation>
 <translation id="7403691278183511381">Представяне при първо стартиране на Chrome</translation>
 <translation id="7411224099004328643">Потребител на профила в Google</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7808889146555843082">Изтриването на тази парола няма да премахне профила ви за <ph name="SITE" />. За да го защитите от други хора, променете паролата си или изтрийте профила си за <ph name="SITE" />.</translation>
 <translation id="7810647596859435254">Отваряне със…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Всички файлове, 1 файл в списъка}other{Всички файлове, # файла в списъка}}</translation>
 <translation id="7815484226266492798">Дълга екранна снимка</translation>
 <translation id="7822705602465980873">Тези данни се свързват с профила ви в Google, когато сте влезли в него, с цел защита в услугите ни (например повишаване на нивото на защита в Gmail след инцидент, свързан със сигурността).</translation>
 <translation id="782705168687182233">Активността ви се запазва в <ph name="BEGIN_LINK" />профила ви в Google<ph name="END_LINK" />.</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Пакетът за <ph name="LANG" /> е готов</translation>
 <translation id="8937772741022875483">Искате ли активността ви в Chrome да се премахне от „Дигитално благополучие“?</translation>
+<translation id="893938492099608175">В зависимост от настройките ви Chrome може също да изпраща „бисквитки“, текущия ви URL адрес и местоположението ви</translation>
 <translation id="8942627711005830162">Отваряне в другия прозорец</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – този език не бе изтеглен. Опитайте отново по-късно.</translation>
 <translation id="8955719471735800169">Обратно в началото</translation>

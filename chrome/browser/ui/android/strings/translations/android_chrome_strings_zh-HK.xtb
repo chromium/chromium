@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">分頁群組 - <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="17513872634828108">開啟分頁</translation>
 <translation id="1757620656501361327">Google 密碼管理工具更新</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{頁面，清單中有 1 個頁面}other{頁面，清單中有 # 個頁面}}</translation>
 <translation id="1778457539567749232">標示為未讀取</translation>
 <translation id="1779766957982586368">關閉視窗</translation>
 <translation id="1791662854739702043">已安裝</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">灰暗</translation>
 <translation id="2421705177906985956">目前沒有可顯示的網站</translation>
 <translation id="2426805022920575512">選擇其他帳戶</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{影片，清單中有 1 段影片}other{影片，清單中有 # 段影片}}</translation>
 <translation id="2433507940547922241">外觀</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />預覽</translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">正在登入…</translation>
 <translation id="4866368707455379617">無法為 Chrome 安裝 <ph name="MODULE" /></translation>
 <translation id="4871568871368204250">關閉同步處理功能</translation>
+<translation id="4874961007154620743">關閉後，你仍會看到 Chrome 在本機提供的建議</translation>
 <translation id="4875775213178255010">內容建議</translation>
 <translation id="4877678010818027629">進入無痕模式</translation>
 <translation id="4878404682131129617">透過 Proxy 伺服器建立通道失敗</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯此捷徑，請前往「設定」。</translation>
 <translation id="6802555630140434547">視窗即將關閉</translation>
 <translation id="6811034713472274749">網頁已準備就緒，可供查看</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{圖片，清單中有 1 張圖片}other{圖片，清單中有 # 張圖片}}</translation>
 <translation id="6813446258015311409">登入 Chrome，開咗。</translation>
 <translation id="6817747507826986771">快速分享此頁面。如要編輯此捷徑，請按住捷徑按鈕。</translation>
 <translation id="6819199143469632133">如要在所有裝置上取得您的 Google 設定，請登入帳戶</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">載入中…</translation>
 <translation id="6850409657436465440">仍在下載</translation>
 <translation id="6850830437481525139">已關閉 <ph name="TAB_COUNT" /> 個分頁</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{音訊檔案，清單中有 1 個音訊檔案}other{音訊檔案，清單中有 # 個音訊檔案}}</translation>
 <translation id="685850645784703949">Google 探索 - 關閉</translation>
 <translation id="686366188661646310">要刪除密碼嗎？</translation>
 <translation id="6864459304226931083">下載圖片</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">現已推出網站的深色主題背景</translation>
 <translation id="7388615499319468910">網站和廣告客戶可以瞭解廣告的效益。此設定已關閉。</translation>
 <translation id="7397416715506917976">查看網頁分析資料</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{清單中有 1 個其他檔案}other{清單中有 # 個其他檔案}}</translation>
 <translation id="7400418766976504921">網址</translation>
 <translation id="7403691278183511381">Chrome 初次使用體驗</translation>
 <translation id="7411224099004328643">Google 帳戶使用者</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7808889146555843082">刪除此密碼不會刪除您在 <ph name="SITE" /> 的帳戶。請變更密碼或刪除您在 <ph name="SITE" /> 的帳戶，以免被他人盜用。</translation>
 <translation id="7810647596859435254">選擇開啟應用程式…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{所有檔案，清單中有 1 個檔案}other{所有檔案，清單中有 # 個檔案}}</translation>
 <translation id="7815484226266492798">長螢幕截圖</translation>
 <translation id="7822705602465980873">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
 <translation id="782705168687182233">你的活動已儲存至 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />。</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" />套件已下載完成</translation>
 <translation id="8937772741022875483">要從「健康數碼生活」移除您的 Chrome 活動記錄嗎？</translation>
+<translation id="893938492099608175">視乎你的設定，Chrome 亦可能會傳送 Cookie、你目前的網址和位置</translation>
 <translation id="8942627711005830162">在其他視窗中開啟</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - 無法下載此語言套件，請稍後再試。</translation>
 <translation id="8955719471735800169">返回頁首</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1003363546227723021">Hiển thị ảnh, thời gian, thông tin về thời tiết và nội dung nghe nhìn khi ở chế độ màn hình chờ</translation>
 <translation id="1014750484722996375">Không gian làm việc</translation>
 <translation id="1018219910092211213">Không thể phân giải DNS</translation>
 <translation id="1018656279737460067">Đã hủy</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">Ẩn báo cáo</translation>
 <translation id="500920857929044050">Dừng kiểm tra</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Hiện ảnh, thời gian, thông tin thời tiết và nội dung phương tiện khi màn hình ở trạng thái rảnh</translation>
 <translation id="5035083460461104704">Màu giao diện</translation>
 <translation id="5038292761217083259">bàn phím nhiều màu</translation>
 <translation id="5039804452771397117">Cho phép</translation>

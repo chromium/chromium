@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">যেসব ওয়েবসাইটের পৃষ্ঠা আপনি ঘুরে দেখেছেন ও পৃষ্ঠা খোলা রয়েছে, সেগুলি সহ</translation>
 <translation id="181103072419391116">সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="1816896987747843206">ক্যামেরা সম্পর্কিত অনুমতির মাধ্যমে এটি সব অ্যাপ ও ওয়েবসাইটের জন্য ক্যামেরা অ্যাক্সেস করার অনুমতি দেয়</translation>
-<translation id="1823280932251546115">স্ট্যাটাস ট্রে, সময় <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ইথারনেট: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">লোকেশন অ্যাক্সেস চালু করুন</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> আনপিন করা হয়েছে</translation>

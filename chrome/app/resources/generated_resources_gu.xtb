@@ -1366,6 +1366,7 @@
 <translation id="2046702855113914483">રામેન - જાપાનના એક પ્રકારના નૂડલ</translation>
 <translation id="204706822916043810">વર્ચ્યુઅલ મશીન ચેક કરી રહ્યાં છીએ</translation>
 <translation id="2048182445208425546">તમારા નેટવર્ક ટ્રાફિકની ઍક્સેસ</translation>
+<translation id="2048254245884707305">માલવેર છે કે નહીં તે ચેક કરી રહ્યાં છીએ...</translation>
 <translation id="2048554637254265991">કન્ટેનર મેનેજર શરૂ થવામાં ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="2048653237708779538">ક્રિયા ઉપલબ્ધ નથી</translation>
 <translation id="204914487372604757">શૉર્ટકટ બનાવો </translation>
@@ -2081,6 +2082,7 @@
 <translation id="2580889980133367162">એકથી વધુ ફાઇલો ડાઉનલોડ કરવા માટે હંમેશાં <ph name="HOST" />ને મંજૂરી આપો</translation>
 <translation id="258095186877893873">લાંબો</translation>
 <translation id="2581455244799175627">ત્રીજા પક્ષની કુકીને મંજૂરી આપવા વિશે વધુ</translation>
+<translation id="2581992808349413349">DNS (ડોમેન નેમ સિસ્ટમ)માં કોઈ સાઇટનું IP ઍડ્રેસ શોધવા માટે, સુરક્ષિત કનેક્શનનો ઉપયોગ કરો. આ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> પર મેનેજ કરવામાં આવતા સેવા પ્રદાતાનો ઉપયોગ કરે છે</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (પ્લૅટફૉર્મ <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberosની ટિકિટ મેળવી શકાઈ નથી. ફરી પ્રયાસ કરો અથવા તમારી સંસ્થાના ડિવાઇસ વ્યવસ્થાપકનો સંપર્ક કરો. (ભૂલનો કોડ <ph name="ERROR_CODE" />).</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" />ને ઇન્સ્ટૉલ કરી શક્યાં નહીં. કૃપા કરીને ફરી પ્રયાસ કરો અથવા તમારા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
@@ -2555,6 +2557,7 @@
 <translation id="2942581856830209953">આ પેજને કસ્ટમાઇઝ કરો</translation>
 <translation id="2942707801577151363">Word, Excel અને PowerPoint ફાઇલો ખોલો, તેમાં ફેરફાર કરો અને સાચવો. કેટલીક સુવિધાઓ માટે સબ્સ્ક્રિપ્શન જરૂરી હોઈ શકે છે.</translation>
 <translation id="2943268899142471972">કોઈ Ansible પ્લેબુક કે Crostini બૅકઅપ ફાઇલ પસંદ કરો</translation>
+<translation id="2943478529590267286">સિસ્ટમ કીબોર્ડ લેઆઉટ બદલો</translation>
 <translation id="2944060181911631861">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા Android અનુભવને વધુ સારો બનાવવામાં સહાય કરો. આ સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્રીકરણ કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારોને પણ મદદ કરશે, જેમ કે Android ડેવલપર. જો તમારી વધારાની વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. <ph name="BEGIN_LINK1" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">ફાઇલો પર જાઓ</translation>
 <translation id="2946119680249604491">કનેક્શન ઉમેરો</translation>
@@ -2844,6 +2847,7 @@
 <translation id="3192947282887913208">ઑડિયો ફાઇલો</translation>
 <translation id="3193695589337931419">સિસ્ટમ સિગ્નલ યુટિલિટી</translation>
 <translation id="3194786596445804250">ત્રીજા પક્ષની કુકીને બ્લૉક કરવા વિશેની વિગતો બતાવો</translation>
+<translation id="3196912927885212665">તમારા Android ફોન વડે સેટઅપ કરવા માટે, તમારી Chromebookનું બ્લૂટૂથ ચાલુ હોવું જરૂરી છે</translation>
 <translation id="3197453258332670132">તમારી ટેક્સ્ટની પસંદગી માટે, રાઇટ ક્લિક વડે અથવા થોડીવાર દબાવી રાખીને સંબંધિત માહિતી બતાવો</translation>
 <translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ડિવાઇસને ઑટોમૅટિક રિપોર્ટ મોકલવાની મંજૂરી આપવાથી, અમને ChromeOSમાં શું સુધારવું અને શું બહેતર બનાવવું તેને પ્રાધાન્યતા આપવામાં સહાય મળે છે. આ રિપોર્ટમાં ChromeOS ક્યારે ક્રૅશ થાય છે, કઈ સુવિધાઓનો ઉપયોગ કરવામાં આવ્યો હતો અને સામાન્ય રીતે કેટલી મેમરીનો ઉપયોગ કરવામાં આવ્યો હતો, તેના જેવી બાબતોનો સમાવેશ થઈ શકે છે. કેટલોક કુલ ડેટા Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ સહાય કરશે. જો ઍપ સિંક કરવાની સુવિધા પણ ચાલુ કરેલી હોય, તો Android અને વેબ ઍપ સહિત અન્ય ઍપના ડાયગ્નોસ્ટિક અને વપરાશના ડેટાને એકત્રિત કરવામાં આવશે.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />તમે તમારા બાળકના ChromeOS ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" />
@@ -3169,13 +3173,6 @@
 <translation id="346298925039590474">આ મોબાઇલ નેટવર્ક, આ ડિવાઇસ પરના બધા વપરાશકર્તાઓ માટે ઉપલબ્ધ રહેશે</translation>
 <translation id="3464145797867108663">ઑફિસની પ્રોફાઇલ ઉમેરો</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> અને અન્ય માટે ડિસ્કાઉન્ટ મેળવો</translation>
-<translation id="3466476162566821406">કોડની ચકાસણી કરવા માટે તમારા ફોન પરની સૂચનાઓ ફૉલો કરો. તમારા ફોનનું બ્લૂટૂથ અને વાઇ-ફાઇ ચાલુ હોય એ વાતની ખાતરી કરો.
-    <ph name="BR" />
-    <ph name="BR" />
-    તમે તમારા ફોનનો ઉપયોગ તમારી વાઇ-ફાઇ અને Google એકાઉન્ટની માહિતી તમારા <ph name="DEVICE_TYPE" />માં ઉમેરવા માટે કરી શકો છો.
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> તરીકે નજીકના ડિવાઇસને દેખાશે...</translation>
 <translation id="3468298837301810372">લેબલ</translation>
 <translation id="3468999815377931311">Android ફોન</translation>
 <translation id="3469583217479686109">પસંદગી ટૂલ</translation>
@@ -3272,6 +3269,7 @@
 <translation id="3544879808695557954">વપરાશકર્તાનું નામ (વૈકલ્પિક)</translation>
 <translation id="3547954654003013442">પ્રૉક્સી સેટિંગ</translation>
 <translation id="3548162552723420559">પર્યાવરણ સાથે મેળ કરવા માટે સ્ક્રીનના રંગમાં ઘટાડો-વધારો કરો</translation>
+<translation id="354949590254473526">DNS ક્વેરીનું કસ્ટમ URL દાખલ કરો</translation>
 <translation id="3550593477037018652">સેલ્યુલર નેટવર્ક ડિસકનેક્ટ કરો</translation>
 <translation id="3550915441744863158">Chrome ઑટોમૅટિક રીતે અપડેટ થાય છે, જેથી કરીને તમારી પાસે હંમેશાં સૌથી નવું વર્ઝન રહે છે.</translation>
 <translation id="3551320343578183772">ટૅબ બંધ કરો</translation>
@@ -3587,6 +3585,7 @@
 <translation id="3784472333786002075">કુકી એ વેબસાઇટ દ્વારા બનાવવામાં આવેલી ફાઇલો છે. કુકી બે પ્રકારની હોય છે: પહેલા પક્ષની કુકી જે તમે મુલાકાત લો છો તે સાઇટ દ્વારા બનાવવામાં આવે છે. સાઇટ ઍડ્રેસ બાર પર બતાવવામાં આવે છે. ત્રીજા પક્ષની કુકી અન્ય સાઇટ દ્વારા બનાવવામાં આવે છે. અમુક પ્રકારનું કન્ટેન્ટ આ સાઇટની માલિકીનું હોય છે, જેમ કે તમે મુલાકાત લો છો તે વેબસાઇટ પર તમે જુઓ છો તે જાહેરાતો અથવા છબીઓ.</translation>
 <translation id="3785308913036335955">ઍપ્લિકેશનો શોર્ટકટ બતાવો</translation>
 <translation id="3785727820640310185">આ સાઇટ માટે પાસવર્ડ સાચવેલા છે</translation>
+<translation id="3786224729726357296"><ph name="SITE" />નો સાઇટનો ડેટા તેમજ પરવાનગીઓ ડિલીટ કરો</translation>
 <translation id="3786834302860277193">ટેક્સ્ટની રચના માટે રેખાંકિત કરીને બતાવો</translation>
 <translation id="3787434344076711519">અનુવાદની રાહ જોઈ રહ્યાં છીએ</translation>
 <translation id="3788301286821743879">કિઓસ્ક ઍપ્લિકેશન લોંચ કરી શકાઈ નથી.</translation>
@@ -4409,6 +4408,7 @@
 <translation id="443454694385851356">લેગસી (અસુરક્ષિત)</translation>
 <translation id="4434611816075088065">અત્યારે અન્ય કોઈપણ બાબત પર તમારે ધ્યાન આપવાની જરૂર નથી</translation>
 <translation id="443475966875174318">અસંગત ઍપ્લિકેશનોને અપડેટ કરો અથવા કાઢી નાખો</translation>
+<translation id="4437947179446780764">DNSના કસ્ટમ સેવા પ્રદાતા ઉમેરો</translation>
 <translation id="4438043733494739848">પારદર્શક</translation>
 <translation id="4441124369922430666">શું જ્યારે મશીન ચાલુ થાય ત્યારે તમે આ ઍપને ઑટોમૅટિક રીતે શરૂ કરવા માગો છો?</translation>
 <translation id="4441147046941420429">આગળ વધવા માટે, તમારા ડિવાઇસમાંથી તમારી સિક્યુરિટી કી કાઢી નાખો, ત્યાર બાદ તેને ફરી દાખલ કરીને તેનો સ્પર્શ કરો</translation>
@@ -4812,7 +4812,6 @@
 <translation id="4769632191812288342">તમે માનક સંરક્ષણ મેળવી રહ્યાં છો</translation>
 <translation id="4770119228883592393">પરવાનગીની વિનંતી કરવામાં આવી, જવાબ આપવા માટે ⌘ + Option + નીચેનો ઍરો દબાવો</translation>
 <translation id="4773112038801431077">Linux અપગ્રેડ કરો</translation>
-<translation id="4774456473286455263">તમારા Android ફોન વડે સેટઅપ કરો</translation>
 <translation id="4775228465764358468">સાઇટ તમારી પસંદગીની ભાષા અથવા તમે ખરીદવા માગતા હોય તે વસ્તુઓને સાચવી શકે છે. આ માહિતી સાઇટ અને તેના સબડોમેન માટે ઉપલબ્ધ છે.</translation>
 <translation id="477548766361111120">એક્સ્ટેન્શનને આ સાઇટ વાંચવાની અને બદલવાની મંજૂરી આપો</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> કનેક્ટ કરવામાં આવ્યું છે</translation>
@@ -4997,7 +4996,9 @@
 <translation id="4907161631261076876">આ ફાઇલ સામાન્ય રીતે ડાઉનલોડ કરવામાં આવતી નથી અને તે જોખમી હોઈ શકે છે.</translation>
 <translation id="4908811072292128752">બે સાઇટ એકસાથે બ્રાઉઝ કરવા માટે એક નવી ટૅબ ખોલો</translation>
 <translation id="4909038193460299775">આ એકાઉન્ટ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવી રહ્યું હોવાથી, આ ડિવાઇસ પરથી તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ સાફ કરવામાં આવશે. જો કે, તમારો ડેટા તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે અને <ph name="BEGIN_LINK" />Google ડૅશબોર્ડ<ph name="END_LINK" /> પર મેનેજ કરવામાં આવી શકે છે.</translation>
+<translation id="4911572142453926213">DNS (ડોમેન નેમ સિસ્ટમ)માં કોઈ સાઇટનું IP ઍડ્રેસ શોધવા માટે, સુરક્ષિત કનેક્શનનો ઉપયોગ કરો</translation>
 <translation id="4912643508233590958">નિષ્ક્રિય વેકઅપ્સ</translation>
+<translation id="4913209098186576320">આ ફાઇલ જોખમી હોઈ શકે છે<ph name="LINE_BREAK" />ચેક કરવાની આ પ્રક્રિયામાં સામાન્ય કરતાં વધુ સમય લાગી રહ્યો છે...</translation>
 <translation id="4915961947098019832">છબીઓ બતાવવાની મંજૂરી છે</translation>
 <translation id="4916542008280060967">સાઇટને <ph name="FILE_NAME" />માં ફેરફાર કરવાની મંજૂરી આપીએ?</translation>
 <translation id="4917385247580444890">સશક્ત</translation>
@@ -5034,6 +5035,7 @@
 <translation id="4941963255146903244">તમારા ફોનના ફોટા, મીડિયા અને ઍપ જુઓ</translation>
 <translation id="494286511941020793">પ્રૉક્સી ગોઠવણી સહાય</translation>
 <translation id="4943368462779413526">ફૂટબૉલ</translation>
+<translation id="4943927218331934807">પાસવર્ડ જરૂરી છે</translation>
 <translation id="4944310289250773232">આ પ્રમાણીકરણ સેવા <ph name="SAML_DOMAIN" /> દ્વારા હોસ્ટ કરવામાં આવે છે</translation>
 <translation id="4945439665401275950">ફિંગરપ્રિન્ટનું સેટઅપ કરવા માટે, તમારા બાળકને પાવર બટનને ટચ કરવા જણાવો. તમારા બાળકની ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને તે હંમેશાં આ <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
 <translation id="4946459324029651239">તમે માનક સુરક્ષા મેળવી રહ્યાં છો</translation>
@@ -5473,6 +5475,7 @@
 <translation id="5307030433605830021">સૉર્સ સમર્થિત નથી</translation>
 <translation id="5307386115243749078">બ્લૂટૂથ સ્વિચ જોડો</translation>
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
+<translation id="5308989548591363504">માલવેર છે કે નહીં તે ચેક કરો</translation>
 <translation id="5309418307557605830">Google Assistant અહીં પણ કાર્ય કરે છે</translation>
 <translation id="5309641450810523897">સપોર્ટ કેસ ID</translation>
 <translation id="5311304534597152726">આ તરીકે સાઇન ઇન કરી રહ્યાં છે</translation>
@@ -5780,6 +5783,7 @@
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> ચાલુ કરો</translation>
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
 <translation id="5558129378926964177">Zoom &amp;In</translation>
+<translation id="5558594314398017686">OS ડિફૉલ્ટ (ઉપલબ્ધ હોય ત્યારે)</translation>
 <translation id="5559311991468302423">ઍડ્રેસ ડિલીટ કરો</translation>
 <translation id="5559768063688681413">કોઈ સાચવેલા પ્રિન્ટર નથી</translation>
 <translation id="55601339223879446">ડિસ્પ્લેની અંદર તમારા ડેસ્કટૉપની સીમાઓ ગોઠવો</translation>
@@ -6154,13 +6158,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" />ને ટૂંક સમયમાં થોભાવવામાં આવશે</translation>
 <translation id="586567932979200359">તમે <ph name="PRODUCT_NAME" /> ને તેની ડિસ્ક છબીથી ચલાવી રહ્યા છો. તેને તમારા કમ્પ્યુટર પર ઇન્સ્ટોલ કરવાથી તમે તેને ડિસ્ક છબી વગર ચલાવી શકો છો, અને તે અપ-ટુ-ડેટ રાખવામાં આવશે તેની ખાતરી થાય છે.</translation>
 <translation id="5865733239029070421">Googleને વપરાશના આંકડા અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે મોકલે છે</translation>
-<translation id="5867855474018538405">QR કોડ સ્કૅન કરવા માટે તમારા ફોન પરની સૂચનાઓ ફૉલો કરો. તમારા ફોનનું બ્લૂટૂથ અને વાઇ-ફાઇ ચાલુ હોય એ વાતની ખાતરી કરો.
-    <ph name="BR" />
-    <ph name="BR" />
-    તમે તમારા ફોનનો ઉપયોગ તમારી વાઇ-ફાઇ અને Google એકાઉન્ટની માહિતી તમારા <ph name="DEVICE_TYPE" />માં ઉમેરવા માટે કરી શકો છો.
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> તરીકે નજીકના ડિવાઇસને દેખાશે...</translation>
 <translation id="5868434909835797817">તમારા ડિવાઇસ પર માઇક્રોફોન બંધ છે</translation>
 <translation id="5868822853313956582">ડિવાઇસના રંગો ફૉલો કરો</translation>
 <translation id="5869029295770560994">બરાબર, સમજાઈ ગયું</translation>
@@ -7733,6 +7730,7 @@ USB ડિવાઇસ</translation>
 <translation id="7125932261198019860">જેની સાથે તમારી Chromebook કનેક્ટ થયેલી હોય, તે વાઇ-ફાઇ નેટવર્કની સાથે જ તમારું પ્રિન્ટર કનેક્ટ થયેલું છે તેની ખાતરી કરો અથવા કોઈ USB કેબલનો ઉપયોગ કરો. <ph name="LINK_BEGIN" />સુસંગતતા વિશે વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ડાઉનલોડ ઇતિહાસ</translation>
 <translation id="7128151990937044829">નોટિફિકેશન બ્લૉક કરેલું હોય ત્યારે ઍડ્રેસ બારમાં સૂચક બતાવો</translation>
+<translation id="7130438335435247835">ઍક્સેસ પૉઇન્ટનું નામ (APN)</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> અને <ph name="WEBSITE_3" /> પર તમારો ડેટા વાંચી શકે છે</translation>
 <translation id="713122686776214250">પૃ&amp;ષ્ઠ ઉમેરો...</translation>
 <translation id="7131431455372521159">તમામ ટ્રૅક પૉઇન્ટ ડિસ્કનેક્ટ કરવામાં આવ્યા છે</translation>
@@ -8858,6 +8856,7 @@ USB ડિવાઇસ</translation>
 <translation id="8005600846065423578"><ph name="HOST" />ને હંમેશા ક્લિપબોર્ડ જોવા માટે મંજૂરી આપો</translation>
 <translation id="8006630792898017994">Space કી અથવા Tab કી</translation>
 <translation id="8008356846765065031">ઇન્ટરનેટ ડિસ્કનેક્ટ કર્યું. કૃપા કરીને તમારું ઇન્ટરનેટ કનેક્શન તપાસો.</translation>
+<translation id="8008704580256716350">શંકાસ્પદ ફાઇલ બ્લૉક કરવામાં આવી</translation>
 <translation id="8009225694047762179">બધા પાસવર્ડ મેનેજ કરો</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' ખસેડ્યું.</translation>
 <translation id="8012188750847319132">caps lock</translation>
@@ -10206,6 +10205,7 @@ USB ડિવાઇસ</translation>
 <translation id="9057354806206861646">શેડ્યૂલ અપડેટ કરો</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{દિવસમાં લગભગ 1 નોટિફિકેશન}one{દિવસમાં લગભગ {NUM_NOTIFICATION} નોટિફિકેશન}other{દિવસમાં લગભગ {NUM_NOTIFICATION} નોટિફિકેશન}}</translation>
 <translation id="9058760336383947367">પ્રિન્ટર PPD જુઓ</translation>
+<translation id="9060042817356580609">DNS પ્રદાતા પસંદ કરો</translation>
 <translation id="9061694916020926968">Chromebook માટે Steam (બીટા)નો ઉપયોગ કરવા માટે, તમારે Google એકાઉન્ટમાં સાઇન ઇન થવું જરૂરી રહેશે. સાઇન ઇન કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">લાઇન <ph name="ERROR_LINE_START" /> થી <ph name="ERROR_LINE_END" />માં ભૂલ આવી છે</translation>

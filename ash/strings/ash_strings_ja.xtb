@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">アクセスしたページ、開いているページなどのウェブサイト</translation>
 <translation id="181103072419391116">信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="1816896987747843206">カメラへのアクセス権を持つすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
-<translation id="1823280932251546115">ステータス トレイ、時間 <ph name="TIME" />、
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />、
-        <ph name="PRIVACY" />、
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />、
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">イーサネット: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">位置情報へのアクセスをオンにする</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> の固定を解除しました</translation>
@@ -1197,6 +1188,7 @@
 <translation id="5788127256798019331">Play ファイル</translation>
 <translation id="5788535737706478207">最後に閉じたタブまたはウィンドウを開く</translation>
 <translation id="5790085346892983794">完了</translation>
+<translation id="5802516411616338943">クイック設定を開く</translation>
 <translation id="5804651031882187592">[SIM をロックする] 設定をオフにする</translation>
 <translation id="5805809050170488595">クリックすると <ph name="NETWORK_NAME" /> が有効になります</translation>
 <translation id="5823239091726045201">ウェブの Google ToDo リスト</translation>
@@ -1222,6 +1214,7 @@
 <translation id="5901630391730855834">黄</translation>
 <translation id="5911231045062997865">Lacros ウィンドウは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" />（<ph name="MAIL" />）</translation>
+<translation id="5916646100036936191">新しい通知、合計 <ph name="NOTIFICATION_COUNT" /> 件</translation>
 <translation id="5916664084637901428">ON</translation>
 <translation id="5920710855273935292">マイクはミュートです。</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> はオンになっています。</translation>

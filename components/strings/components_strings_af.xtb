@@ -1193,6 +1193,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3427342743765426898">Herdoen wysiging</translation>
 <translation id="342781501876943858">Chromium beveel aan dat jy jou wagwoord terugstel as jy dit ook op ander werwe gebruik het.</translation>
 <translation id="3428151540071562330">Een of meer van die DnsOverHttpsTemplates-bedienertemplaat se URI's is ongeldig en sal nie gebruik word nie.</translation>
+<translation id="3428789896412418755">Gegroepeerde geskiedenis</translation>
 <translation id="3431216045099978607">Druk |<ph name="ACCELERATOR" />| om volskerm te verlaat en aflaai te sien.</translation>
 <translation id="3432601291244612633">Maak bladsy toe</translation>
 <translation id="3433111389595862568">Samewerking- en konferensiesagteware</translation>
@@ -3178,6 +3179,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7423283032694727565">Knoppie om webkoekies te bestuur; aktiveer om jou webkoekievoorkeure in Chrome-instellings te bestuur</translation>
 <translation id="7427366580982928791">Kinderinternetveiligheid</translation>
 <translation id="7429429656042611765">Bestuurder</translation>
+<translation id="7432774160230062882">Verifieer dat dit jy is sodat Chromium jou betaalinligting kan invul.</translation>
 <translation id="7437289804838430631">Voeg kontakinligting by</translation>
 <translation id="7437490109271760224">Kaartspeletjies</translation>
 <translation id="7438338505272634288">Aanvallers op die werf wat jy probeer besoek, kan jou dalk mislei om skadelike sagteware te installeer wat die manier waarop jy blaai beïnvloed – byvoorbeeld deur jou tuisblad te verander of vir jou ekstra advertensies te wys op werwe wat jy besoek. Chrome beveel sterk aan om terug te keer na veiligheid om skade te vermy. <ph name="BEGIN_LEARN_MORE_LINK" />Kom meer te wete<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7831993212387676366">Wat is die inkopielys?</translation>
 <translation id="7840103971441592723">Skermskoot het begin</translation>
 <translation id="784137052867620416">Shopping-insigte</translation>
+<translation id="784404208867107517">Gegroepeerde geskiedenis</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 program (<ph name="EXAMPLE_APP_1" />)}=2{2 programme (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# programme (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">’n Werf wat jy besoek, kan Chrome later vir jou onderwerpe vra om die advertensies wat jy sien, te personaliseer. Chrome deel tot 3 onderwerpe terwyl dit jou blaaigeskiedenis en identiteit beskerm.</translation>
@@ -3438,6 +3441,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="79338296614623784">Voer 'n geldige foonnommer in</translation>
 <translation id="7934414805353235750"><ph name="URL" /> wil beskermde inhoud speel. Google sal jou toestel se identiteit verifieer.</translation>
 <translation id="7935318582918952113">DOM-distilleerder</translation>
+<translation id="7936775433939783906">Verifieer dat dit jy is sodat Google Chrome jou betaalinligting kan invul.</translation>
 <translation id="7937163678541954811">Hierdie kaart se CVC sal geënkripteer word en op jou toestel gestoor word om korter by betaalpunt te wees</translation>
 <translation id="7937554595067888181">Verval op <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Bedienersertifikaat is nog nie geldig nie.</translation>

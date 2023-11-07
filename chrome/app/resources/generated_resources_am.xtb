@@ -3180,13 +3180,6 @@
 <translation id="346298925039590474">ይህ የሞባይል አውታረ ወረብ በዚህ መሣሪያ ላይ ላሉት ሁሉም ተጠቃሚዎች ይገኛል</translation>
 <translation id="3464145797867108663">የስራ መገለጫን አክል</translation>
 <translation id="346546413339447252">ለ<ph name="MERCHANT_NAME_1" />፣ <ph name="MERCHANT_NAME_2" /> እና ሌሎችም የዋጋ ቅናሾችን ያግኙ</translation>
-<translation id="3466476162566821406">ኮዱን ለማረጋገጠ በስልክዎ ላይ መመሪያዎቹን ይከተሉ። የስልክዎ ብሉቱዝ እና Wi-Fi መብራታቸውን ያረጋግጡ።
-    <ph name="BR" />
-    <ph name="BR" />
-     ስልክዎን ተጠቅመው የእርስዎን Wi-Fi እና Google መለያ መረጃ ወደ እርስዎ <ph name="DEVICE_TYPE" /> ማከል ይችላሉ።
-    <ph name="BR" />
-    <ph name="BR" />
-    በአቅራቢያ ላሉ መሣሪያዎች እንደ <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> ይታያል...</translation>
 <translation id="3468298837301810372">መለያ</translation>
 <translation id="3468999815377931311">የAndroid ስልክ</translation>
 <translation id="3469583217479686109">የመምረጫ መሣሪያ</translation>
@@ -4821,7 +4814,6 @@
 <translation id="4769632191812288342">መደበኛ ጥበቃ እያገኙ ነው</translation>
 <translation id="4770119228883592393">ፍቃድ ተጠይቋል፣ መልስ ለመስጠት ⌘ + አማራጭ + የታች ቀስት ይጫኑ</translation>
 <translation id="4773112038801431077">Linuxን አልቅ</translation>
-<translation id="4774456473286455263">በAndroid ስልክዎ ያዋቅሩ</translation>
 <translation id="4775228465764358468">አንድ ጣቢያ ተመራጭ ቋንቋዎን ወይም መግዛት የሚፈልጓቸውን ንጥሎች ሊያስቀምጥ ይችላል። ይህ መረጃ ለጣቢያው እና ለንዑስ ጎራዎቹ ይገኛል።</translation>
 <translation id="477548766361111120">ቅጥያ ይህን ጣቢያ እንዲያነብ እና እንዲለውጥ ፍቀድ</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> ተገናኝቷል</translation>
@@ -6162,13 +6154,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> በቅርቡ ባለበት ይቆማል</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" />ን ከዲስክ ምስሉ እያሄዱ ነው። ኮምፒውተርዎ ላይ መጫን ያለ ዲስክ ምስሉ እንዲያሂዱት ያስችልዎታል፣ እና እንደተዘመነ መቆየቱን ያረጋግጣል።</translation>
 <translation id="5865733239029070421">የአጠቃቀም ስታስቲክስን እና የብልሽት ሪፖርቶችን በራስ-ሰር ወደ Google ይልካል</translation>
-<translation id="5867855474018538405">የQR ኮዱን ለመቃኘት በስልክዎ ላይ ያሉትን መመሪያዎች ይከተሉ። የስልክዎ ብሉቱዝ እና Wi-Fi መብራታቸውን ያረጋግጡ።
-    <ph name="BR" />
-    <ph name="BR" />
-     ስልክዎን ተጠቅመው የእርስዎን Wi-Fi እና Google መለያ መረጃ ወደ እርስዎ <ph name="DEVICE_TYPE" /> ማከል ይችላሉ።
-    <ph name="BR" />
-    <ph name="BR" />
-    በአቅራቢያ ላሉ መሣሪያዎች እንደ <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> ይታያል...</translation>
 <translation id="5868434909835797817">በመሣሪያዎ ላይ ማይክሮፎን ጠፍቷል</translation>
 <translation id="5868822853313956582">የመሣሪያ ቀለማትን ይከተሉ</translation>
 <translation id="5869029295770560994">እሺ፣ ገባኝ</translation>
@@ -7740,6 +7725,7 @@
 <translation id="7125932261198019860">የእርስዎ ማተሚያ የእርስዎ Chromebook ከተገናኘበት ተመሳሳይ የWi-Fi አውታረ መረብ ጋር እንደተገናኘ ያረጋግጡ ወይም የዩኤስቢ ገመድ ይጠቀሙ። <ph name="LINK_BEGIN" />ስለ ተኳዃኝነት የበለጠ ይወቁ<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">የአውርድ ታሪክ</translation>
 <translation id="7128151990937044829">ማሳወቂያ ሲታገድ በአድራሻ አሞሌ ውስጥ አመልካችን አሳይ</translation>
+<translation id="7130438335435247835">የመድረሻ ነጥብ ስም (ኤፒኤን)</translation>
 <translation id="7131040479572660648">የእርስዎን ውሂብ በ<ph name="WEBSITE_1" />፣ በ<ph name="WEBSITE_2" />፣ እና በ<ph name="WEBSITE_3" /> ላይ ያንብቡ</translation>
 <translation id="713122686776214250">&amp;ገጽ አክል...</translation>
 <translation id="7131431455372521159">የሁሉም TrackPoints ግንኙነት ተቋርጧል</translation>

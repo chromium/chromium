@@ -1193,6 +1193,7 @@
 <translation id="3427342743765426898">&amp;Rétablir la modification</translation>
 <translation id="342781501876943858">Chromium recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="3428151540071562330">Une ou plusieurs des URL de modèle de serveur DnsOverHttpsTemplates sont incorrectes et ne seront pas utilisées.</translation>
+<translation id="3428789896412418755">Historique regroupé</translation>
 <translation id="3431216045099978607">Appuyez sur |<ph name="ACCELERATOR" />| pour quitter le mode plein écran et voir le téléchargement.</translation>
 <translation id="3432601291244612633">Fermer la page</translation>
 <translation id="3433111389595862568">Logiciels de collaboration et de conférence</translation>
@@ -3178,6 +3179,7 @@ Détails supplémentaires :
 <translation id="7423283032694727565">Bouton Gérer les témoins, activez-le pour gérer vos préférences relatives aux témoins dans les paramètres de Chrome</translation>
 <translation id="7427366580982928791">Sécurité des enfants sur Internet</translation>
 <translation id="7429429656042611765">Dirigeant</translation>
+<translation id="7432774160230062882">Vérifiez qu'il s'agit bien de vous afin que Chromium puisse remplir vos infos de paiement.</translation>
 <translation id="7437289804838430631">Ajouter des coordonnées</translation>
 <translation id="7437490109271760224">Jeux de cartes</translation>
 <translation id="7438338505272634288">Des pirates informatiques qui se trouvent sur le site que vous essayez de visiter pourraient tenter de vous inciter à installer un logiciel malveillant qui nuit à votre expérience de navigation (par exemple en changeant votre page d'accueil ou en affichant des annonces supplémentaires sur les sites que vous visitez). Chrome recommande fortement de revenir à la page de sécurité pour éviter tout dommage. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@ Détails supplémentaires :
 <translation id="7831993212387676366">Qu'est-ce que la liste d'achats?</translation>
 <translation id="7840103971441592723">La capture d'écran a commencé</translation>
 <translation id="784137052867620416">Perspectives d'achat</translation>
+<translation id="784404208867107517">Historique regroupé</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application : <ph name="EXAMPLE_APP_1" />}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Ultérieurement, un site que vous visitez peut demander à Chrome de consulter vos sujets pour personnaliser les annonces que vous voyez. Chrome partage un maximum de trois sujets tout en protégeant votre historique de navigation et votre identité.</translation>
@@ -3438,6 +3441,7 @@ Détails supplémentaires :
 <translation id="79338296614623784">Entrez un numéro de téléphone valide</translation>
 <translation id="7934414805353235750"><ph name="URL" /> veut lire du contenu protégé. L'identité de votre appareil sera vérifiée par Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Vérifiez qu'il s'agit bien de vous afin que Google Chrome puisse remplir vos infos de paiement.</translation>
 <translation id="7937163678541954811">Le code CVC de cette carte sera chiffré et enregistré sur votre appareil pour un paiement plus rapide</translation>
 <translation id="7937554595067888181">Expire le <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Le certificat du serveur n'est pas encore valide.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1003363546227723021">Visa foton, tid, väder och medieinformation på skärmen vid inaktivitet</translation>
 <translation id="1014750484722996375">Skrivbord</translation>
 <translation id="1018219910092211213">Det gick inte att matcha DNS</translation>
 <translation id="1018656279737460067">Avbröts</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">Dölj rapporten</translation>
 <translation id="500920857929044050">Avsluta testet</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Visa foton, tid, väder och medieinformation på skärmen vid inaktivitet.</translation>
 <translation id="5035083460461104704">Temafärg</translation>
 <translation id="5038292761217083259">flerfärgat tangentbord</translation>
 <translation id="5039804452771397117">Tillåt</translation>

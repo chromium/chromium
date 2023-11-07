@@ -37,6 +37,19 @@
 <translation id="1021462144002396313"><ph name="PRIVACY_SANDBOX_NAME" />-Richtlinien</translation>
 <translation id="1022361784792428773">Erweiterungs-IDs, die der Nutzer nicht installieren darf ("*" für alle)</translation>
 <translation id="102492767056134033">Standardstatus für die Bildschirmtastatur auf der Anmeldeseite festlegen</translation>
+<translation id="1026335125982730097">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, durch die angegeben wird, welche Websites Cookies setzen dürfen.
+
+          URL-Muster können eine einzelne URL sein. Diese gibt dann an, dass die Website Cookies auf allen Websites der obersten Ebene verwenden darf.
+
+          Muster können auch zwei durch ein Komma getrennte URLs sein. Die erste gibt die Website an, die Cookies verwenden darf. Die zweite gibt die Website der obersten Ebene an, auf die der erste Wert angewendet werden soll.
+
+          Wenn du ein URL-Paar verwendest, wird für den ersten Wert das Sternchen (*) unterstützt, für den zweiten jedoch nicht. Die Verwendung des Sternchens als ersten Wert bedeutet, dass alle Websites Cookies verwenden dürfen, wenn die zweite URL die Website der obersten Ebene ist.
+
+          Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet, entweder aus der Richtlinie <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> oder aus der Richtlinie <ph name="BLOCK_THIRD_PARTY_COOKIES_POLICY_NAME" />, sofern diese konfiguriert sind, oder aus der persönlichen Konfiguration des Nutzers.
+
+          Siehe auch die Richtlinien <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> und <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. In diesen drei Richtlinien darf es keine URL-Muster geben, die miteinander im Konflikt stehen – welche Richtlinie Vorrang hat, ist nicht festgelegt.
+
+          Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="102658870205613876">Einstellungen für Pop-ups</translation>
 <translation id="1027000705181149370">Legt fest, ob Authentifizierungs-Cookies, die von einem SAML IdP während der Anmeldung gesetzt wurden, an das Nutzerprofil übertragen werden sollen.
 
@@ -142,6 +155,7 @@ Wenn diese Richtlinie aktiviert ist, ist die Remote Attestation der Identität g
           Wenn diese Richtlinie auf „false“ gesetzt ist, ist die Funktion für die Stimmen der Enhanced Network-Sprachausgabe in der Funktion „Vorlesen“ immer deaktiviert.
 
           Ist sie auf „true“ gesetzt oder nicht konfiguriert, kann die Funktion für die Stimmen der Enhanced Network-Sprachausgabe in „Vorlesen“ vom Nutzer aktiviert oder deaktiviert werden.</translation>
+<translation id="1137479817584930805">Speichern von Bildern direkt in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> zulassen</translation>
 <translation id="1138294736309071213">Diese Richtlinie ist nur im Händlermodus aktiv.
 
       Legt fest, wie lange es dauert, bis für Geräte im Händlermodus der Bildschirmschoner auf der Anmeldeseite erscheint.
@@ -195,6 +209,7 @@ Wenn diese Richtlinie aktiviert ist, ist die Remote Attestation der Identität g
 
       Wird sie auf "false" gesetzt, wird das Kästchen für "Immer zulassen" nicht angezeigt und der Nutzer jedes Mal, wenn ein externes Protokoll aufgerufen wird, zur Bestätigung aufgefordert.</translation>
 <translation id="1181598794547737681">Benutzeroberfläche für Download-Infofeld aktivieren</translation>
+<translation id="1184531093651606913">Das Laden von Erweiterungen über die Befehlszeile wird verhindert</translation>
 <translation id="1184562656144537588">Manifest V2 ist nur für erzwungene Erweiterungen aktiviert</translation>
 <translation id="11903325225202653">Wenn du die Richtlinie auf "True" setzt, bleibt der Modus mit hohem Kontrast aktiviert. Wenn du die Richtlinie auf "False" setzt, bleibt der Modus mit hohem Kontrast deaktiviert.
 
@@ -1512,9 +1527,6 @@ Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist eine Dateiüber
 Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer Dateien auch über die Mobilfunkverbindung in Drive hochladen.</translation>
 <translation id="2269319728625047531">Einwilligung zur Synchronisierung beim Anmelden anzeigen</translation>
 <translation id="2269837888511509900">Teilen von Nutzeranmeldedaten aktivieren</translation>
-<translation id="2270113153862588648">Ist diese Richtlinie aktiviert, ist Remote Attestation für das Gerät erlaubt. Ein Zertifikat wird automatisch erstellt und auf den Geräteverwaltungsserver hochgeladen.
-
-Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird kein Zertifikat erstellt und Aufrufe der <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> schlagen fehl.</translation>
 <translation id="2270747976331889601">Mit dieser Richtlinie kann eine Sicherheitsfunktion von TLS 1.3 für lokale Vertrauensanker aktiviert werden.</translation>
 <translation id="22754818344448444">Nutzern dürfen eine Vorlage für Desktoplayouts zum Laden auswählen</translation>
 <translation id="2277117728011250860">Verwendung des Barrierefreiheitsfilters zur Leistungsverbesserung nicht zulassen.</translation>
@@ -2093,6 +2105,9 @@ Ist die Richtlinie deaktiviert, können Nutzer keine Kerberos-Konten hinzufügen
 
       Wenn sie nicht konfiguriert ist, ist das Umschalten bei Leistungsspitzen zuerst deaktiviert. Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="2773288106548584039">Unterstützung älterer Browser</translation>
+<translation id="2774906947252258544">Über die Sperrliste wird festgelegt, welche Installationstypen für Erweiterungen unzulässig sind.
+
+Wenn du „command_line“ festlegst, wird das Laden von Erweiterungen über die Befehlszeile blockiert.</translation>
 <translation id="2780840673734667062">Anmeldung mit zusätzlichen Google-Konten deaktivieren</translation>
 <translation id="2784880732336446591">Browserdaten beim Beenden löschen</translation>
 <translation id="2787173078141616821">Informationen zum Status von Android senden</translation>
@@ -2292,6 +2307,7 @@ Wenn diese Richtlinie aktiviert ist, kann das Verhalten von Funktionstasten mit 
       URLs müssen dem HTTPS-Schema folgen (Beispiel: "https://example.com").
 
       Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="2971096666394658693">Das Kontextmenü enthält einen Menüpunkt zum Teilen von Bildern mit <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2976429807269247880">Einstellungen für das Verhalten des alten „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Cookies</translation>
 <translation id="2979696534869541158">Alte Implementierung erzwingen</translation>
 <translation id="2985927503455169394">Standardmodus für das Einrichten von Assistant verwenden</translation>
@@ -5005,6 +5021,7 @@ Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf n
 <translation id="5323200200131319468">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5323271643727095577">Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen anzeigen, wenn „beforeunload event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5323355956693037267">Bildschirmtastatur auf dem Anmeldebildschirm aktivieren</translation>
+<translation id="5324430722441910403">Einstellungen für die Websitesuche</translation>
 <translation id="532848608876725157">DoH-Modus mit unsicherem Fallback-Verhalten aktivieren</translation>
 <translation id="5328965694451556034">Anmeldung/Abmeldung melden</translation>
 <translation id="5329018127554115226">Der Modus für hohe Effizienz wird deaktiviert.</translation>
@@ -6207,6 +6224,7 @@ ACHTUNG: Du musst vorsichtig sein, wenn du diese Einstellung änderst, da dadurc
 <translation id="6371561334154580937">Dialogfeld für die Abmeldung beim Schließen des letzten Fensters anzeigen.</translation>
 <translation id="6372105930898423193">Ermöglicht die Aktivierung der AppCache-Funktion, selbst wenn sie standardmäßig deaktiviert ist.</translation>
 <translation id="6373299801585455337">Melden der CPU-Informationen auf Geräten aktivieren</translation>
+<translation id="6374945506685352202">Sperrliste für Installationstypen von Erweiterungen</translation>
 <translation id="6376540107659524656">SSH in der Terminal System App deaktivieren</translation>
 <translation id="6376659517206731212">Kann verbindlich sein</translation>
 <translation id="6377031865393559909">Nutzer dürfen Desktopvorlagen verwenden</translation>
@@ -6620,6 +6638,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird die KDC-Richtlinie 
 Unter <ph name="MS_WIN_NAME" /> wird die KDC-Richtlinie immer umgesetzt.</translation>
 <translation id="6658245400435704251">Legt die Anzahl von Sekunden fest, die eine Verzögerung ab dem Übertragungszeitpunkt an den Server maximal betragen darf, wenn ein Gerät ein Update herunterlädt. Die Verzögerungszeit setzt sich aus der Istzeit und der auf die Anzahl der Überprüfungen auf Updates verwendeten Zeit zusammen. Die obere Grenze für den Streufaktor bildet ein konstanter Zeitraum, sodass ein Gerät nur eine begrenzte Zeit lang auf den Download eines Updates wartet.</translation>
 <translation id="6659537776197644458">Keine Authentifizierungsabläufe für die Synchronisierung von Passwörtern auslösen</translation>
+<translation id="6659877981632400997">Das Kontextmenü enthält keinen Menüpunkt zum Teilen von Bildern mit <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Cloud-Berichterstellung über verwaltete Profile aktivieren</translation>
 <translation id="6665670272107384733">Festlegen, wie oft der Nutzer das Passwort eingeben muss, um das schnelle Entsperren zu verwenden</translation>
 <translation id="6667586534922258705">Schaltfläche zum Anzeigen des Passworts auf dem Start- oder Sperrbildschirm anzeigen</translation>
@@ -6788,6 +6807,9 @@ Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experiment
 <translation id="6819838337315703072">Wenn der Support für die <ph name="LINUX_OS_NAME" />-App und die Richtlinie aktiviert sind, werden Informationen zur Nutzung von <ph name="LINUX_OS_NAME" />-Apps an den Server zurückgesendet.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden keine Informationen zur App-Nutzung gesendet.</translation>
+<translation id="6820251681466503297">Mit dieser Richtlinie wird festgelegt, ob der Nutzer Bilder direkt über das Kontextmenü in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> speichern darf.
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, dürfen Nutzer Bilder über das Kontextmenü in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> speichern. Ist die Richtlinie deaktiviert, können Nutzer die Option im Kontextmenü nicht sehen.
+Diese Richtlinie hindert Nutzer nicht daran, andere Möglichkeiten als das Kontextmenü zum Speichern von Bildern in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> zu nutzen.</translation>
 <translation id="6821870597514407499"><ph name="WEBVIEW_TAG_NAME" /> für Chrome-Apps ermöglicht ein Verhalten, das derzeit aus <ph name="PRODUCT_NAME" /> entfernt wird.
 
 Das bisherige Verhalten ermöglicht dem <ph name="NEWWINDOW_EVENT_NAME" />-Ereignis (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) des <ph name="WEBVIEW_TAG_NAME" />-Tags, das neue Fenster an ein <ph name="WEBVIEW_TAG_NAME" />-Tag in einem separaten App-Fenster des entstehenden <ph name="WEBVIEW_TAG_NAME" />-Tags anzufügen. Mit dem neuen Verhalten ist dieses Anfügen weiterhin zulässig, der vom Aufruf an „<ph name="WINDOW_OPEN_NAME" />“ zurückgegebene Fensterverweis im entstehenden <ph name="WEBVIEW_TAG_NAME" />-Tag wird jedoch ungültig.
@@ -8245,6 +8267,11 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 <translation id="8028814157747157754">Den Standardsuchanbieter aktivieren und zulassen, dass Nutzer die Liste der Suchanbieter ändern</translation>
 <translation id="8029201909194194377">Maximal zulässige Sitzungsdauer für Verbindungen per Remotezugriff</translation>
 <translation id="8035570672225663428">Adaptives Lademodell aktivieren, um den Ladevorgang anzuhalten und die Akkulaufzeit zu verlängern</translation>
+<translation id="8036284429246268475">Wenn die Richtlinie aktiviert ist, können Nutzer von <ph name="PRODUCT_NAME" /> prüfen lassen, ob die eingegebenen Nutzernamen und Passwörter Teil eines Datenlecks sind.
+
+      Ist die Richtlinie konfiguriert, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern. Sollte sie nicht konfiguriert sein, ist die Datenleckprüfung zulässig, kann jedoch vom Nutzer deaktiviert werden.
+
+      Dieses Verhalten wird nicht ausgelöst, wenn Safe Browsing durch eine Richtlinie oder den Nutzer deaktiviert wurde. Wenn du die Aktivierung von Safe Browsing erzwingen möchtest, verwende die Richtlinie <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> oder <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> auf allen Webseiten deaktivieren</translation>
 <translation id="8044493735196713914">Startmodus von Geräten melden</translation>
 <translation id="80453040817068401"><ph name="LACROS_NAME" /> verfügbar machen</translation>

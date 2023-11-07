@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1003363546227723021">Când ecranul este inactiv, se afișează fotografii, ora, vremea și informații despre media</translation>
 <translation id="1014750484722996375">Desktopuri</translation>
 <translation id="1018219910092211213">Nu se poate rezolva solicitarea DNS</translation>
 <translation id="1018656279737460067">Anulat</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">Ascunde raportul</translation>
 <translation id="500920857929044050">Oprește testul</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Când ecranul este inactiv, se afișează fotografii, ora, vremea și informații despre media.</translation>
 <translation id="5035083460461104704">Culoarea temei</translation>
 <translation id="5038292761217083259">tastatură multicoloră</translation>
 <translation id="5039804452771397117">Permite</translation>

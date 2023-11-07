@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1003363546227723021">Када је екран неактиван, приказују се слике, време, временска прогноза и информације о медијском садржају</translation>
 <translation id="1014750484722996375">Радне површине</translation>
 <translation id="1018219910092211213">DNS не може да се разреши</translation>
 <translation id="1018656279737460067">Отказано</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Инсталирај Chrome OS Flex</translation>
 <translation id="1856388568474281774">Стрелица надоле</translation>
 <translation id="1858620243986915808">Приложите снимак екрана</translation>
+<translation id="1871413952174074704">Максимални број знакова који назив приступне тачке може да садржи је <ph name="CHAR_LIMIT" /></translation>
 <translation id="1871569928317311284">Искључите тамну тему</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Искључите тамни режим</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Сакриј извештај</translation>
 <translation id="500920857929044050">Заустави тест</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Када је екран неактиван, приказују се слике, време, временска прогноза и информације о медијском садржају.</translation>
 <translation id="5035083460461104704">Боја теме</translation>
 <translation id="5038292761217083259">вишебојна тастатура</translation>
 <translation id="5039804452771397117">Дозволи</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Светлорозе</translation>
 <translation id="982713511914535780">Покрени тест пражњења</translation>
 <translation id="987264212798334818">Опште</translation>
+<translation id="995062385528875723">Не можете да користите акцентована слова, слова која нису латинична или симболе</translation>
 </translationbundle>

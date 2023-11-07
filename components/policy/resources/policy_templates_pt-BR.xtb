@@ -1552,9 +1552,6 @@ Se for deixada sem definição ou desativada, a transferência de arquivos não 
 Se a política for definida como desativada ou não for definida, o usuário poderá transferir arquivos para o Drive mesmo em conexões celulares.</translation>
 <translation id="2269319728625047531">Ativa a exibição do consentimento de sincronização durante o login</translation>
 <translation id="2269837888511509900">Ativar o compartilhamento de credenciais do usuário</translation>
-<translation id="2270113153862588648">Se a política for ativada, o atestado remoto do dispositivo será permitido. Um certificado será gerado automaticamente e enviado ao Servidor de gerenciamento de dispositivos.
-
-Se a política for desativada ou deixada sem definição, nenhum certificado será gerado e as chamadas para <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> vão falhar.</translation>
 <translation id="2270747976331889601">Ativa um recurso de segurança TLS 1.3 para âncoras de confiança locais.</translation>
 <translation id="22754818344448444">Permitir que os usuários selecionem um modelo de layout do espaço de trabalho para carregamento</translation>
 <translation id="2277117728011250860">Não permitir o uso da filtragem de desempenho de acessibilidade.</translation>

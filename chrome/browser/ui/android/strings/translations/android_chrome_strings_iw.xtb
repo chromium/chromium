@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">קבוצת כרטיסיות - <ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="17513872634828108">כרטיסיות פתוחות</translation>
 <translation id="1757620656501361327">‏עדכון במנהל הסיסמאות של Google</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{דפים, דף אחד ברשימה}one{דפים, # דפים ברשימה}two{דפים, # דפים ברשימה}other{דפים, # דפים ברשימה}}</translation>
 <translation id="1778457539567749232">סימון ככרטיסייה שלא נקראה</translation>
 <translation id="1779766957982586368">סגירת חלון</translation>
 <translation id="1791662854739702043">מותקן</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">כהה</translation>
 <translation id="2421705177906985956">אין כרגע אתרים שאפשר להציג</translation>
 <translation id="2426805022920575512">בחירת חשבון אחר</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{סרטונים, סרטון אחד ברשימה}one{סרטונים, # סרטונים ברשימה}two{סרטונים, # סרטונים ברשימה}other{סרטונים, # סרטונים ברשימה}}</translation>
 <translation id="2433507940547922241">מראה</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
 <translation id="2439153523196674349">תצוגה מקדימה של <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">מתבצעת כניסה...</translation>
 <translation id="4866368707455379617">‏לא ניתן להתקין את <ph name="MODULE" /> ל-Chrome</translation>
 <translation id="4871568871368204250">כיבוי הסינכרון</translation>
+<translation id="4874961007154620743">‏גם אם משביתים את ההגדרה, דפדפן Chrome יכול להציג הצעות באופן מקומי</translation>
 <translation id="4875775213178255010">תוכן מוצע</translation>
 <translation id="4877678010818027629">מעבר למצב אנונימי</translation>
 <translation id="4878404682131129617">‏יצירת מנהרה בעזרת שרת proxy נכשלה</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">פתיחת כרטיסייה חדשה במהירות. ניתן לערוך את קיצור הדרך ב'הגדרות'.</translation>
 <translation id="6802555630140434547">החלון הזה ייסגר</translation>
 <translation id="6811034713472274749">הדף מוכן להצגה</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{תמונות, תמונה אחת ברשימה}one{תמונות, # תמונות ברשימה}two{תמונות, # תמונות ברשימה}other{תמונות, # תמונות ברשימה}}</translation>
 <translation id="6813446258015311409">‏כניסה ל-Chrome, פתוח.</translation>
 <translation id="6817747507826986771">שיתוף הדף הזה במהירות. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="6819199143469632133">‏כדי לגשת לדברים שלך ב-Google מכל מיני מכשירים, עליך להיכנס לחשבון</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">הטעינה מתבצעת...</translation>
 <translation id="6850409657436465440">ההורדה עדיין מתבצעת</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> כרטיסיות נסגרו</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{קובצי אודיו, קובץ אודיו אחד ברשימה}one{קובצי אודיו, # קובצי אודיו ברשימה}two{קובצי אודיו, # קובצי אודיו ברשימה}other{קובצי אודיו, # קובצי אודיו ברשימה}}</translation>
 <translation id="685850645784703949">‏Discover by Google – מושבת</translation>
 <translation id="686366188661646310">למחוק את הסיסמה?</translation>
 <translation id="6864459304226931083">הורדת תמונה</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">העיצוב הכהה זמין לאתרים</translation>
 <translation id="7388615499319468910">האתרים והמפרסמים יכולים להבין את רמת הביצועים של המודעות. ההגדרה הזו מושבתת.</translation>
 <translation id="7397416715506917976">הצגת התובנות לגבי הדף</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{סוג אחר, קובץ אחד ברשימה}one{סוג אחר, # קבצים ברשימה}two{סוג אחר, # קבצים ברשימה}other{סוג אחר, # קבצים ברשימה}}</translation>
 <translation id="7400418766976504921">כתובת אתר</translation>
 <translation id="7403691278183511381">‏חוויית ההפעלה הראשונה של Chrome</translation>
 <translation id="7411224099004328643">‏משתמש בחשבון Google</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7808889146555843082">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="SITE" />. כדי למנוע את החשיפה של הסיסמה, כדאי לשנות אותה או למחוק את החשבון שלך ב-<ph name="SITE" />.</translation>
 <translation id="7810647596859435254">פתיחה באמצעות...</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{כל הקבצים, קובץ אחד ברשימה}one{כל הקבצים, # קבצים ברשימה}two{כל הקבצים, # קבצים ברשימה}other{כל הקבצים, # קבצים ברשימה}}</translation>
 <translation id="7815484226266492798">צילום מסך ארוך</translation>
 <translation id="7822705602465980873">‏אחרי הכניסה לחשבון, הנתונים האלה מקושרים לחשבון Google כדי להגן עליך בשירותי Google. לדוגמה, במקרה של אירוע אבטחה, ההגנה ב-Gmail מוגברת.</translation>
 <translation id="782705168687182233">‏הפעילות נשמרת ב<ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" /> שלך.</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> מוכנה לשימוש</translation>
 <translation id="8937772741022875483">‏האם להסיר את הפעילות שלך ב-Chrome מ'שימוש חכם בדיגיטל'?</translation>
+<translation id="893938492099608175">‏בהתאם להגדרות שקבעת, Chrome עשוי גם לשלוח קובצי Cookie, את כתובת ה-URL הנוכחית ואת המיקום שלך</translation>
 <translation id="8942627711005830162">פתיחה בחלון האחר</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - לא ניתן היה להוריד את השפה הזו. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="8955719471735800169">חזרה למעלה</translation>

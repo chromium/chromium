@@ -1193,6 +1193,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3427342743765426898">&amp;Ponów edycję</translation>
 <translation id="342781501876943858">Chromium zaleca zresetowanie hasła, jeśli zostało użyte na innej stronie.</translation>
 <translation id="3428151540071562330">Co najmniej jeden identyfikator URI szablonu serwera DnsOverHttpsTemplates jest nieprawidłowy i nie zostanie użyty.</translation>
+<translation id="3428789896412418755">Historia zgrupowana</translation>
 <translation id="3431216045099978607">Aby zamknąć tryb pełnoekranowy i zobaczyć pobrane pliki, naciśnij |<ph name="ACCELERATOR" />|.</translation>
 <translation id="3432601291244612633">Zamknij stronę</translation>
 <translation id="3433111389595862568">Oprogramowanie do współpracy i rozmów wideo</translation>
@@ -3178,6 +3179,7 @@ Dodatkowe informacje:
 <translation id="7423283032694727565">Przycisk Zarządzaj plikami cookie; aktywuj, aby zarządzać opcjami plików cookie w ustawieniach Chrome</translation>
 <translation id="7427366580982928791">Bezpieczeństwo dzieci w internecie</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Potwierdź swoją tożsamość, aby przeglądarka Chromium mogła uzupełnić dane do płatności.</translation>
 <translation id="7437289804838430631">Dodaj dane kontaktowe</translation>
 <translation id="7437490109271760224">Gry karciane</translation>
 <translation id="7438338505272634288">Osoby przeprowadzające atak na stronę, którą chcesz odwiedzić, mogą podstępem nakłonić Cię do zainstalowania szkodliwego oprogramowania wpływającego na sposób korzystania z internetu. Na przykład może ono zmienić stronę główną lub wyświetlać na odwiedzanych stronach dodatkowe reklamy. Chrome zdecydowanie zaleca powrót do zabezpieczeń, które pozwolą uniknąć szkód. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@ Dodatkowe informacje:
 <translation id="7831993212387676366">Co to jest lista zakupów?</translation>
 <translation id="7840103971441592723">Rozpoczęto wykonywanie zrzutu ekranu</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784404208867107517">Historia zgrupowana</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Brak}=1{Jedna aplikacja (<ph name="EXAMPLE_APP_1" />)}=2{Dwie aplikacje (<ph name="EXAMPLE_APP_1" /> i <ph name="EXAMPLE_APP_2" />)}few{# aplikacje (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Witryna, którą później odwiedzisz, może zapytać Chrome o interesujące Cię tematy, żeby spersonalizować wyświetlane reklamy. Chrome udostępnia do 3 tematów, jednocześnie chroniąc Twoją historię przeglądania i tożsamość.</translation>
@@ -3438,6 +3441,7 @@ Dodatkowe informacje:
 <translation id="79338296614623784">Wpisz prawidłowy numer telefonu</translation>
 <translation id="7934414805353235750"><ph name="URL" /> chce odtworzyć treści chronione. Tożsamość Twojego urządzenia zostanie zweryfikowana przez Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Potwierdź swoją tożsamość, aby przeglądarka Google Chrome mogła uzupełnić dane do płatności.</translation>
 <translation id="7937163678541954811">Kod CVC tej karty zostanie zaszyfrowany i zapisany na Twoim urządzeniu – umożliwi to szybsze płatności</translation>
 <translation id="7937554595067888181">Ważna do <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Certyfikat serwera nie jest jeszcze ważny.</translation>

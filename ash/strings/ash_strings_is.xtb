@@ -213,15 +213,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1796561540704213354">Vefsvæði að meðtöldum síðum sem þú hefur heimsótt og opnar síður</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> sendistyrkur, stjórnað af kerfisstjóra</translation>
 <translation id="1816896987747843206">Þetta veitir öllum forritum og vefsvæðum með myndavélarheimild aðgang að myndavél</translation>
-<translation id="1823280932251546115">Stöðubakki, tími: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />,
-        <ph name="NOTIFICATION" />
-        <ph name="IME" />,
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Kveikja á aðgangi að staðsetningu</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> var losað</translation>
@@ -1197,6 +1188,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5788127256798019331">Skrár frá Play</translation>
 <translation id="5788535737706478207">Opna síðasta flipa eða glugga sem var lokað</translation>
 <translation id="5790085346892983794">Tókst</translation>
+<translation id="5802516411616338943">Opna flýtistillingar</translation>
 <translation id="5804651031882187592">Slökkva á stillingunni „læsa SIM-korti“</translation>
 <translation id="5805809050170488595">Smelltu til að kveikja á <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google-verkefni á vefnum</translation>
@@ -1222,6 +1214,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5901630391730855834">Gulur</translation>
 <translation id="5911231045062997865">Lacros gluggar eru ekki studdir eins og er. Önnur forrit verða vistuð.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Ný tilkynning, <ph name="NOTIFICATION_COUNT" /> alls</translation>
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5920710855273935292">Slökkt er á hljóðnemanum.</translation>
 <translation id="5946788582095584774">Kveikt er á <ph name="FEATURE_NAME" /></translation>

@@ -3189,13 +3189,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="346298925039590474">Ova mobilna mreža će biti dostupna svim korisnicima na ovom uređaju</translation>
 <translation id="3464145797867108663">Dodaj radni profil</translation>
 <translation id="346546413339447252">Primajte popuste za trgovine <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> i još mnoge druge</translation>
-<translation id="3466476162566821406">Slijedite uputstva na telefonu da potvrdite kôd. Provjerite jesu li Bluetooth i WiFi telefona uključeni.
-    <ph name="BR" />
-    <ph name="BR" />
-    Pomoću telefona možete dodati informacije o WiFi-ju i Google računu na uređaj <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Uređaj je vidljiv uređajima u blizini kao <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="3468298837301810372">Oznaka</translation>
 <translation id="3468999815377931311">Android telefon</translation>
 <translation id="3469583217479686109">Alat za odabir</translation>
@@ -4836,7 +4829,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4769632191812288342">Dobijate standardnu zaštitu</translation>
 <translation id="4770119228883592393">Zatraženo je odobrenje. Pritisnite ⌘ + Option + strelica nadolje da odgovorite</translation>
 <translation id="4773112038801431077">Nadogradite Linux</translation>
-<translation id="4774456473286455263">Postavljanje putem Android telefona</translation>
 <translation id="4775228465764358468">Web lokacija može sačuvati vaš željeni jezik ili artikle koje želite kupiti. Te informacije su dostupne web lokaciji i njenim poddomenama.</translation>
 <translation id="477548766361111120">Dozvolite ekstenziji da čita i mijenja ovu web lokaciju</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> je povezan</translation>
@@ -6182,13 +6174,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5865508026715185451">Aplikacija <ph name="APP_NAME" /> će se uskoro pauzirati</translation>
 <translation id="586567932979200359">Pokrećete <ph name="PRODUCT_NAME" /> sa slike diska. Ako ga instalirate na računaru, moći ćete ga pokrenuti bez slike diska i uvijek će biti ažuriran.</translation>
 <translation id="5865733239029070421">Automatski šalje Googleu statistiku korištenja i izvještaje o padovima aplikacije</translation>
-<translation id="5867855474018538405">Slijedite uputstva na telefonu da skenirate QR kôd. Provjerite jesu li Bluetooth i WiFi telefona uključeni.
-    <ph name="BR" />
-    <ph name="BR" />
-    Pomoću telefona možete dodati informacije o WiFi-ju i Google računu na uređaj <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Uređaj je vidljiv uređajima u blizini kao <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="5868434909835797817">Mikrofon je isključen na uređaju</translation>
 <translation id="5868822853313956582">Prati boje uređaja</translation>
 <translation id="5869029295770560994">Uredu, razumijem</translation>
@@ -7762,6 +7747,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7125932261198019860">Provjerite je li štampač povezan s istom WiFi mrežom s kojom je povezan i Chromebook ili koristite USB kabl. <ph name="LINK_BEGIN" />Saznajte više o kompatibilnosti<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historija preuzimanja</translation>
 <translation id="7128151990937044829">Prikazuj pokazatelj na traci za adresu kada je obavještenje blokirano</translation>
+<translation id="7130438335435247835">Naziv pristupne tačke (APN)</translation>
 <translation id="7131040479572660648">Čitanje vaših podataka na web lokacijama <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Dodaj stran&amp;icu...</translation>
 <translation id="7131431455372521159">Veza svih TrackPointa je prekinuta</translation>

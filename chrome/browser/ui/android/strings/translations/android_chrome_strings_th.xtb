@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">กลุ่มแท็บ - <ph name="TAB_COUNT" /> แท็บ</translation>
 <translation id="17513872634828108">แท็บที่เปิดอยู่</translation>
 <translation id="1757620656501361327">การอัปเดตเครื่องมือจัดการรหัสผ่านบน Google</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{หน้า มี 1 หน้าในรายการ}other{หน้า มี # หน้าในรายการ}}</translation>
 <translation id="1778457539567749232">ทำเครื่องหมายว่ายังไม่อ่าน</translation>
 <translation id="1779766957982586368">ปิดหน้าต่าง</translation>
 <translation id="1791662854739702043">ติดตั้งแล้ว</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">มืด</translation>
 <translation id="2421705177906985956">ไม่มีเว็บไซต์ที่จะแสดงในขณะนี้</translation>
 <translation id="2426805022920575512">เลือกบัญชีอื่น</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{วิดีโอ มี 1 วิดีโอในรายการ}other{วิดีโอ มี # วิดีโอในรายการ}}</translation>
 <translation id="2433507940547922241">ลักษณะที่ปรากฏ</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="2439153523196674349">ตัวอย่าง <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">กำลังลงชื่อเข้าใช้...</translation>
 <translation id="4866368707455379617">ติดตั้ง <ph name="MODULE" /> สำหรับ Chrome ไม่ได้</translation>
 <translation id="4871568871368204250">ปิดการซิงค์</translation>
+<translation id="4874961007154620743">เมื่อปิดไว้ คุณจะยังคงเห็นคำแนะนำที่ Chrome มีให้ในเครื่อง</translation>
 <translation id="4875775213178255010">การแนะนำเนื้อหา</translation>
 <translation id="4877678010818027629">เข้าสู่โหมดไม่ระบุตัวตน</translation>
 <translation id="4878404682131129617">สร้างช่องทางผ่านพร็อกซีเซิร์ฟเวอร์ไม่ได้</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">เปิดแท็บใหม่อย่างรวดเร็ว ไปที่การตั้งค่าเพื่อแก้ไขทางลัดนี้</translation>
 <translation id="6802555630140434547">ระบบจะปิดหน้าต่างดังกล่าว</translation>
 <translation id="6811034713472274749">พร้อมดูหน้าเว็บแล้ว</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{รูปภาพ มี 1 รูปภาพในรายการ}other{รูปภาพ มี # รูปในรายการ}}</translation>
 <translation id="6813446258015311409">ลงชื่อเข้าใช้ Chrome เปิดอยู่</translation>
 <translation id="6817747507826986771">แชร์หน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="6819199143469632133">ลงชื่อเข้าใช้เพื่อรับบริการและผลิตภัณฑ์ต่างๆ ของ Google ในอุปกรณ์</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">กำลังโหลด…</translation>
 <translation id="6850409657436465440">ระบบยังดาวน์โหลดอยู่</translation>
 <translation id="6850830437481525139">ปิดแล้ว <ph name="TAB_COUNT" /> แท็บ</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{ไฟล์เสียง 1 ไฟล์เสียงในรายการ}other{ไฟล์เสียง # ไฟล์เสียงในรายการ}}</translation>
 <translation id="685850645784703949">ฟีเจอร์สำรวจโดย Google - ปิดอยู่</translation>
 <translation id="686366188661646310">ลบรหัสผ่านไหม</translation>
 <translation id="6864459304226931083">ดาวน์โหลดรูปภาพ</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">ธีมมืดสำหรับเว็บไซต์พร้อมให้ใช้งาน</translation>
 <translation id="7388615499319468910">เว็บไซต์และผู้ลงโฆษณาจะรู้ได้ว่าโฆษณามีประสิทธิภาพเพียงใด การตั้งค่านี้ปิดอยู่</translation>
 <translation id="7397416715506917976">ดูข้อมูลเชิงลึกของหน้า</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{อีก 1 ไฟล์ในรายการ}other{อีก # ไฟล์ในรายการ}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">ประสบการณ์กับ First Run บน Chrome</translation>
 <translation id="7411224099004328643">ผู้ใช้บัญชี Google</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
 <translation id="7808889146555843082">การลบรหัสผ่านนี้จะไม่ลบบัญชีของคุณใน <ph name="SITE" /> เปลี่ยนรหัสผ่านหรือลบบัญชีของคุณใน <ph name="SITE" /> เพื่อให้ปลอดภัยจากบุคคลอื่น</translation>
 <translation id="7810647596859435254">เปิดด้วย…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{ไฟล์ทั้งหมด 1 ไฟล์ในรายการ}other{ไฟล์ทั้งหมด # ไฟล์ในรายการ}}</translation>
 <translation id="7815484226266492798">ภาพหน้าจอแบบยาว</translation>
 <translation id="7822705602465980873">เมื่อลงชื่อเข้าใช้ ข้อมูลนี้จะลิงก์กับบัญชี Google ของคุณเพื่อปกป้องคุณในบริการต่างๆ ของ Google เช่น เพิ่มการปกป้องใน Gmail หลังจากเกิดเหตุการณ์ด้านความปลอดภัย</translation>
 <translation id="782705168687182233">กิจกรรมจะบันทึกอยู่ใน<ph name="BEGIN_LINK" />บัญชี Google<ph name="END_LINK" /></translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">ภาษา<ph name="LANG" />พร้อมใช้งานแล้ว</translation>
 <translation id="8937772741022875483">ต้องการนำกิจกรรม Chrome ออกจากไลฟ์สไตล์ดิจิทัลไหม</translation>
+<translation id="893938492099608175">Chrome อาจส่งคุกกี้, URL ปัจจุบัน และตำแหน่งด้วย ซึ่งขึ้นอยู่กับการตั้งค่าของคุณ</translation>
 <translation id="8942627711005830162">เปิดในหน้าต่างอื่น</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ดาวน์โหลดภาษานี้ไม่ได้ ลองอีกครั้งในภายหลัง</translation>
 <translation id="8955719471735800169">กลับไปด้านบน</translation>

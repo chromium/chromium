@@ -1193,6 +1193,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3427342743765426898">&amp;Gawing Muli ang Pag-e-edit</translation>
 <translation id="342781501876943858">Inirerekomenda ng Chromium na i-reset ang iyong password kung ginamit mo ito sa iba pang site.</translation>
 <translation id="3428151540071562330">Invalid at hindi gagamitin ang isa o higit pa sa mga URI ng template ng server ng DnsOverHttpsTemplates.</translation>
+<translation id="3428789896412418755">Nakagrupong History</translation>
 <translation id="3431216045099978607">Pindutin ang |<ph name="ACCELERATOR" />| para lumabas sa full screen at makita ang download.</translation>
 <translation id="3432601291244612633">Isara ang page</translation>
 <translation id="3433111389595862568">Software para sa Pakikipag-collaborate at Pakikipagkumperensya</translation>
@@ -3178,6 +3179,7 @@ Mga karagdagang detalye:
 <translation id="7423283032694727565">Button na Pamahalaan ang cookies, i-activate para mapamahalaan ang iyong mga preference sa cookie sa mga setting ng Chrome</translation>
 <translation id="7427366580982928791">Kaligtasan ng bata sa internet</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">I-verify na ikaw ito para mapunan ng Chromium ang iyong impormasyon sa pagbabayad.</translation>
 <translation id="7437289804838430631">Magdagdag ng Impormasyon ng Contact</translation>
 <translation id="7437490109271760224">Mga larong baraha</translation>
 <translation id="7438338505272634288">Posibleng linlangin ka ng mga attacker sa site na sinusubukan mong bisitahin na mag-install ng mapaminsalang software na makakaapekto sa iyong paraan ng pag-browse — halimbawa, sa pamamagitan ng pagbago sa homepage mo o pagpapakita sa iyo ng mga karagdagang ad sa mga site na binibisita mo. Lubos na inirerekomenda ng Chrome na bumalik sa kaligtasan para maiwasan ang pinsala. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@ Mga karagdagang detalye:
 <translation id="7831993212387676366">Ano ang Listahan ng bibilhin?</translation>
 <translation id="7840103971441592723">Nagsimula na ang pag-screen capture</translation>
 <translation id="784137052867620416">Mga Insight sa Shopping</translation>
+<translation id="784404208867107517">Nakagrupong history</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Wala}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# (na) app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# (na) app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Sa ibang pagkakataon, puwedeng humingi ang site na binibisita mo sa Chrome ng iyong mga paksa para ma-personalize ang mga ad na nakikita mo. Nagshe-share ang Chrome ng hanggang 3 paksa habang pinoprotektahan ang iyong history ng pag-browse at pagkakakilanlan.</translation>
@@ -3438,6 +3441,7 @@ Mga karagdagang detalye:
 <translation id="79338296614623784">Maglagay ng wastong numero ng telepono</translation>
 <translation id="7934414805353235750">Gusto ng <ph name="URL" /> na mag-play ng pinoprotektahang content. Ive-veify ng Google ang pagkakakilanlan ng iyong device.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">I-verify na ikaw ito para mapunan ng Google Chrome ang iyong impormasyon sa pagbabayad.</translation>
 <translation id="7937163678541954811">Ie-encypt at ise-save sa iyong device ang CVC ng card na ito para sa mas mabilis na pag-checkout</translation>
 <translation id="7937554595067888181">Mag-e-expire sa <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Wala pang bisa ang certificate ng server.</translation>

@@ -3190,13 +3190,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="346298925039590474">Rangkaian mudah alih ini akan tersedia kepada semua pengguna pada peranti ini</translation>
 <translation id="3464145797867108663">Tambah profil kerja</translation>
 <translation id="346546413339447252">Dapatkan diskaun untuk <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> dan pelbagai lagi</translation>
-<translation id="3466476162566821406">Ikut arahan pada telefon anda untuk mengesahkan kod. Pastikan Bluetooth dan Wi-Fi telefon anda dihidupkan.
-    <ph name="BR" />
-    <ph name="BR" />
-    Anda boleh menggunakan telefon anda untuk menambahkan maklumat Wi-Fi dan Google Account anda pada <ph name="DEVICE_TYPE" /> anda.
-    <ph name="BR" />
-    <ph name="BR" />
-    Boleh dilihat oleh peranti berdekatan sebagai <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Telefon Android</translation>
 <translation id="3469583217479686109">Alat Pemilihan</translation>
@@ -4838,7 +4831,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4769632191812288342">Anda mendapat perlindungan standard</translation>
 <translation id="4770119228883592393">Kebenaran diminta, tekan ⌘ + Pilihan + Anak panah ke bawah untuk memberikan respons</translation>
 <translation id="4773112038801431077">Tingkatkan Linux</translation>
-<translation id="4774456473286455263">Sediakan telefon Android anda</translation>
 <translation id="4775228465764358468">Laman mungkin menyimpan bahasa pilihan anda atau item yang mahu anda beli. Maklumat ini tersedia kepada laman dan subdomain laman tersebut.</translation>
 <translation id="477548766361111120">Benarkan sambungan untuk membaca dan mengubah laman ini</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> sudah disambungkan</translation>
@@ -6186,13 +6178,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5865508026715185451"><ph name="APP_NAME" /> akan dijeda tidak lama lagi</translation>
 <translation id="586567932979200359">Anda menjalankan <ph name="PRODUCT_NAME" /> daripada imej cakeranya. Pemasangannya pada komputer anda membolehkan anda menjalankannya tanpa imej cakera, dan memastikannya adalah yang terkini.</translation>
 <translation id="5865733239029070421">Menghantar perangkaan penggunaan dan laporan ranap sistem secara automatik kepada Google</translation>
-<translation id="5867855474018538405">Ikut arahan pada telefon anda untuk mengimbas Kod QR. Pastikan Bluetooth dan Wi-Fi telefon anda dihidupkan.
-    <ph name="BR" />
-    <ph name="BR" />
-    Anda boleh menggunakan telefon anda untuk menambahkan maklumat Wi-Fi dan Google Account anda pada <ph name="DEVICE_TYPE" /> anda.
-    <ph name="BR" />
-    <ph name="BR" />
-    Boleh dilihat oleh peranti berdekatan sebagai <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="5868434909835797817">Mikrofon dimatikan pada peranti anda</translation>
 <translation id="5868822853313956582">Ikut warna peranti</translation>
 <translation id="5869029295770560994">OK, Faham</translation>
@@ -7763,6 +7748,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7125932261198019860">Pastikan pencetak anda disambungkan kepada rangkaian Wi-Fi yang sama dengan Chromebook anda atau gunakan kabel USB. <ph name="LINK_BEGIN" />Ketahui lebih lanjut tentang keserasian<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Sejarah muat turun</translation>
 <translation id="7128151990937044829">Paparkan penunjuk dalam bar alamat apabila pemberitahuan disekat</translation>
+<translation id="7130438335435247835">Nama Titik Capaian (APN)</translation>
 <translation id="7131040479572660648">Baca data anda di <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dan <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Tambah ha&amp;laman...</translation>
 <translation id="7131431455372521159">Semua TrackPoints telah diputuskan sambungan</translation>

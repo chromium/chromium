@@ -140,6 +140,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1750259112639922169">Fanegruppe – <ph name="TAB_COUNT" /> faner</translation>
 <translation id="17513872634828108">Åpne faner</translation>
 <translation id="1757620656501361327">Oppdatering om Google Passordlagring</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sider, 1 side på listen}other{Sider, # sider på listen}}</translation>
 <translation id="1778457539567749232">Merk som ulest</translation>
 <translation id="1779766957982586368">Lukk vindu</translation>
 <translation id="1791662854739702043">Installert</translation>
@@ -249,6 +250,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2414886740292270097">Mørk</translation>
 <translation id="2421705177906985956">Ingen nettsteder å vise akkurat nå</translation>
 <translation id="2426805022920575512">Velg en annen konto</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videoer, 1 video på listen}other{Videoer, # videoer på listen}}</translation>
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2435457462613246316">Vis passord</translation>
 <translation id="2439153523196674349">Forhåndsvisning av <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4864369630010738180">Logger på ...</translation>
 <translation id="4866368707455379617">Kan ikke installere <ph name="MODULE" /> for Chrome</translation>
 <translation id="4871568871368204250">Slå av synkronisering</translation>
+<translation id="4874961007154620743">Når denne innstillingen er av, ser du fremdeles lokale forslag fra Chrome</translation>
 <translation id="4875775213178255010">Innholdsforslag</translation>
 <translation id="4877678010818027629">Slå på Inkognitomodus</translation>
 <translation id="4878404682131129617">Kunne ikke opprette tunnel via proxy-tjener.</translation>
@@ -1100,6 +1103,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6795633245022906657">Åpner raskt en ny fane. For å redigere denne snarveien, gå til Innstillinger.</translation>
 <translation id="6802555630140434547">Vinduet blir lukket</translation>
 <translation id="6811034713472274749">Siden er klar til å vises</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Bilder, 1 bilde på listen}other{Bilder, # bilder på listen}}</translation>
 <translation id="6813446258015311409">Logg på Chrome, åpnet.</translation>
 <translation id="6817747507826986771">Del denne siden raskt. Trykk og hold for å redigere denne snarveien.</translation>
 <translation id="6819199143469632133">For å få Google-tingene dine på flere enheter, logg på</translation>
@@ -1113,6 +1117,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6846298663435243399">Laster inn …</translation>
 <translation id="6850409657436465440">Nedlastingen din pågår fremdeles</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> faner ble lukket</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Lydfiler, 1 lydfil på listen}other{Lydfiler, # lydfiler på listen}}</translation>
 <translation id="685850645784703949">Discover fra Google – av</translation>
 <translation id="686366188661646310">Vil du slette passordet?</translation>
 <translation id="6864459304226931083">Last ned bildet</translation>
@@ -1218,6 +1223,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7379900596734708416">Mørkt tema for nettsteder er tilgjengelig</translation>
 <translation id="7388615499319468910">Nettsteder og annonsører kan forstå hvilke resultater annonser gir. Denne innstillingen er av.</translation>
 <translation id="7397416715506917976">Se sidestatistikk</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Annet, 1 fil på listen}other{Annet, # filer på listen}}</translation>
 <translation id="7400418766976504921">Nettadresse</translation>
 <translation id="7403691278183511381">Førsteinntrykk ved bruk av Chrome</translation>
 <translation id="7411224099004328643">Google-kontobruker</translation>
@@ -1290,6 +1296,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7691043218961417207">Utforsk innhold du kan følge</translation>
 <translation id="7697383401610880082">Håndtak</translation>
 <translation id="7698359219371678927">Opprett en e-post i <ph name="APP_NAME" /></translation>
+<translation id="7702029078562412515">Søkebrikker</translation>
 <translation id="7702388902581909985">Du blir ikke logget av Google-kontoen din selv om du sletter nettlesingsdataene dine. For å gjøre det, <ph name="BEGIN_LINK1" />logg av Chrome<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">Bruk mobildata</translation>
 <translation id="7709918231054955894">Hent alle fanene dine</translation>
@@ -1311,6 +1318,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7808889146555843082">Sletting av dette passordet sletter ikke kontoen din på <ph name="SITE" />. Endre passordet eller slett kontoen på <ph name="SITE" /> for å beskytte den mot andre.</translation>
 <translation id="7810647596859435254">Åpne med…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle filer, 1 fil på listen}other{Alle filer, # filer på listen}}</translation>
 <translation id="7815484226266492798">Lang skjermdump</translation>
 <translation id="7822705602465980873">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
 <translation id="782705168687182233">Aktiviteten lagres i <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din.</translation>
@@ -1535,6 +1543,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> er klart</translation>
 <translation id="8937772741022875483">Vil du fjerne Chrome-aktiviteten din fra Digital balanse?</translation>
+<translation id="893938492099608175">Avhengig av innstillingene dine kan det også hende at Chrome sender informasjonskapsler, den nåværende nettadressen din og posisjonen din</translation>
 <translation id="8942627711005830162">Åpne i et annet vindu</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Kunne ikke laste ned dette språket. Prøv på nytt senere.</translation>
 <translation id="8955719471735800169">Tilbake til toppen</translation>

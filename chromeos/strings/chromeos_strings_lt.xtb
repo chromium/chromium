@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1003363546227723021">Kai ekranas neaktyvus, rodomos nuotraukos, laikas, orų ir medijos informacija</translation>
 <translation id="1014750484722996375">Darbalaukiai</translation>
 <translation id="1018219910092211213">Nepavyko priskirti DNS</translation>
 <translation id="1018656279737460067">Atšaukta</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">Slėpti ataskaitą</translation>
 <translation id="500920857929044050">Stabdyti bandymą</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Kai ekranas neaktyvus, rodomos nuotraukos, laikas, orų ir medijos informacija.</translation>
 <translation id="5035083460461104704">Temos spalva</translation>
 <translation id="5038292761217083259">įvairiaspalvė klaviatūra</translation>
 <translation id="5039804452771397117">Leisti</translation>

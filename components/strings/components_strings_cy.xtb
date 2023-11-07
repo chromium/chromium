@@ -1193,6 +1193,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3427342743765426898">&amp;Ailwneud Golygu</translation>
 <translation id="342781501876943858">Mae Chromium yn argymell ailosod eich cyfrinair os gwnaethoch ei ailddefnyddio ar wefannau eraill.</translation>
 <translation id="3428151540071562330">Mae un neu fwy o'r URI templed gweinydd DnsOverHttpsTemplates yn annilys ac ni chaiff ei ddefnyddio.</translation>
+<translation id="3428789896412418755">Hanes wedi'i Grwpio</translation>
 <translation id="3431216045099978607">Pwyswch |<ph name="ACCELERATOR" />| i adael y sgrîn lawn a gweld y lawrlwythiad.</translation>
 <translation id="3432601291244612633">Cau'r dudalen</translation>
 <translation id="3433111389595862568">Meddalwedd Cydweithio a Chynadledda</translation>
@@ -3178,6 +3179,7 @@ Manylion ychwanegol:
 <translation id="7423283032694727565">Botwm rheoli cwcis, gweithredwch i reoli eich dewisiadau cwcis yng ngosodiadau Chrome</translation>
 <translation id="7427366580982928791">Diogelwch plant ar y rhyngrwyd</translation>
 <translation id="7429429656042611765">Gweithredol</translation>
+<translation id="7432774160230062882">Cadarnhewch mai chi sydd yno fel y gall Chromium lenwi'ch gwybodaeth talu.</translation>
 <translation id="7437289804838430631">Ychwanegu Manylion Cyswllt</translation>
 <translation id="7437490109271760224">Gemau cardiau</translation>
 <translation id="7438338505272634288">Gallai ymosodwyr ar y wefan rydych yn ceisio ymweld â hi eich twyllo i osod meddalwedd niweidiol a allai effeithio'r ffordd rydych yn pori — er enghraifft, wrth newid eich hafan neu ddangos eich hysbysiadau ychwanegol ar wefannau rydych yn ymweld â nhw. Mae Chrome yn argymell yn gryf i fynd yn ôl i ddiogelwch er mwyn osgoi niwed. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@ Manylion ychwanegol:
 <translation id="7831993212387676366">Beth yw'r Rhestr siopa?</translation>
 <translation id="7840103971441592723">Wedi dechrau recordio'r sgrîn</translation>
 <translation id="784137052867620416">Mewnwelediadau Siopa</translation>
+<translation id="784404208867107517">Hanes wedi'i grwpio</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Dim}=1{1 ap (<ph name="EXAMPLE_APP_1" />)}=2{2 ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Yn ddiweddarach, gall gwefan rydych yn ymweld â hi ofyn i Chrome am eich pynciau i bersonoleiddio'r hysbysebion a welwch. Mae Chrome yn rhannu hyd at 3 phwnc wrth amddiffyn eich hanes pori a'ch hunaniaeth.</translation>
@@ -3438,6 +3441,7 @@ Manylion ychwanegol:
 <translation id="79338296614623784">Rhowch rif ffôn dilys</translation>
 <translation id="7934414805353235750">Mae <ph name="URL" /> eisiau chwarae cynnwys gwarchodedig. Bydd hunaniaeth eich dyfais yn cael ei dilysu gan Google.</translation>
 <translation id="7935318582918952113">Distyllydd DOM</translation>
+<translation id="7936775433939783906">Cadarnhewch mai chi sydd yno fel y gall Google Chrome lenwi'ch gwybodaeth talu.</translation>
 <translation id="7937163678541954811">Bydd CVC y cerdyn hwn yn cael ei amgryptio a'i gadw ar eich dyfais i dalu'n gyflymach</translation>
 <translation id="7937554595067888181">Yn darfod ar <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Nid yw tystysgrif y gweinydd yn ddilys eto.</translation>

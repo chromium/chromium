@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">방문한 페이지 및 열린 페이지를 포함한 웹사이트</translation>
 <translation id="181103072419391116">신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="1816896987747843206">카메라 액세스 권한이 있는 모든 앱 및 웹사이트에서 카메라에 액세스할 수 있게 됩니다.</translation>
-<translation id="1823280932251546115">상태 표시줄, 시간 <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">이더넷: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">위치 액세스 사용 설정</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> 고정 취소됨</translation>

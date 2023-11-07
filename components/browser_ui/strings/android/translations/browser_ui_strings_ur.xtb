@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}}</translation>
 <translation id="2410940059315936967">آپ کی ملاحظہ کی جانے والی سائٹ دوسری سائٹس سے مواد کو سرایت کر سکتی ہے، مثال کے طور پر تصاویر، اشتہارات اور ٹیکسٹ۔ ان دیگر سائٹس کے ذریعے سیٹ کردہ کوکیز کو فریق ثالث کوکیز کہا جاتا ہے۔</translation>
 <translation id="2434158240863470628">ڈاؤن لوڈ مکمل ہو گیا <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">آپ نے عارضی طور پر اس سائٹ کو فریق ثالث کوکیز استعمال کرنے کی اجازت دی ہے، جس کا مطلب ہے کہ براؤزنگ کا تحفظ کم ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔ <ph name="BEGIN_LINK" />تاثرات بھیجیں<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات پوشیدگی وضع میں کام نہ کریں</translation>
 <translation id="2442870161001914531">ہمیشہ ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
 <translation id="2469312991797799607">اس کارروائی سے <ph name="ORIGIN" /> کے سبھی ڈیٹا اور کوکیز اور اس کے تحت سبھی سائٹس حذف ہو جائیں گی</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4008040567710660924">مخصوص سائٹ کے لیے کوکیز کی اجازت دیں۔</translation>
 <translation id="4046123991198612571">اگلا ٹریک</translation>
-<translation id="4053720452172726777">‏Google Chrome کو حسب ضرورت بنائیں اور کنٹرول کریں</translation>
 <translation id="4149890623864272035">کیا آپ واقعی کوکیز سمیت تمام مقامی ڈیٹا حذف اور اس ویب سائٹ کیلئے تمام اجازتیں ری سیٹ کرنا چاہتے ہیں؟</translation>
 <translation id="4149994727733219643">ویب صفحات کیلئے سادہ منظر</translation>
 <translation id="4151930093518524179">ڈیفالٹ زوم</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">حذف اور ری سیٹ کریں</translation>
 <translation id="4645575059429386691">آپ کے والدین کے زیر انتظام</translation>
 <translation id="4670064810192446073">ورچوئل رئیلٹی</translation>
+<translation id="4673958474310291465">فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر آزمائیں، جس کا مطلب کم تحفظ ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے</translation>
 <translation id="4751476147751820511">موشن یا لائٹ سینسرز</translation>
 <translation id="4779083564647765204">زوم</translation>
 <translation id="4811450222531576619">اس کے ماخذ اور موضوع کے بارے میں جانیں</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="6205314730813004066">اشتہارات کی رازداری</translation>
 <translation id="6207207788774442484">ڈیٹا حذف اور اجازتیں ری سیٹ کریں</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> اختیارات</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" />' اَن انسٹال کریں؟</translation>
 <translation id="6262191102408817757">آپ کے آخری ٹیب کی بنیاد پر</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> اور <ph name="PERMISSION_2" /> کو مسدود کیا گیا</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 منتخب ہے}other{# منتخب کردہ}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> منتخب ہو گئے۔ اختیارات اسکرین کے اوپری حصہ کے قریب دستیاب ہیں</translation>
+<translation id="7137403271056944713">‏MIDI آلے کے کنٹرولز / پروگرام</translation>
 <translation id="7141896414559753902">سائٹس کو پاپ اپس اور ری ڈائریکٹس دکھانے سے مسدود کریں (تجویز کردہ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>

@@ -213,15 +213,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1796561540704213354">Sitios web, incluidas las páginas que has visitado y las páginas abiertas</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, gestionada por el administrador</translation>
 <translation id="1816896987747843206">Esto permite que accedan a la cámara todas las aplicaciones y sitios web con el permiso de cámara</translation>
-<translation id="1823280932251546115">Bandeja de estado; hora: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Activar acceso a la ubicación</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ya no está fijado</translation>

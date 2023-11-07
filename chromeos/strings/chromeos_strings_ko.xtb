@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1003363546227723021">화면이 유휴 상태일 때 사진, 시간, 날씨, 미디어 정보를 표시합니다.</translation>
 <translation id="1014750484722996375">데스크</translation>
 <translation id="1018219910092211213">DNS를 변환할 수 없습니다.</translation>
 <translation id="1018656279737460067">취소됨</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">보고서 숨기기</translation>
 <translation id="500920857929044050">테스트 중지</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">화면이 유휴 상태일 때 사진, 시간, 날씨, 미디어 정보를 표시합니다.</translation>
 <translation id="5035083460461104704">테마 색상</translation>
 <translation id="5038292761217083259">키보드 여러 색상</translation>
 <translation id="5039804452771397117">허용</translation>

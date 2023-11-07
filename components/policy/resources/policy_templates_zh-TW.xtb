@@ -1518,9 +1518,6 @@
 如果將這項政策設為停用或不設定，使用者可以使用行動網路連線將檔案傳送至雲端硬碟。</translation>
 <translation id="2269319728625047531">在登入期間允許顯示同步處理同意聲明</translation>
 <translation id="2269837888511509900">啟用共用使用者憑證功能</translation>
-<translation id="2270113153862588648">如果將這項政策設為啟用，裝置將可使用遠端認證。系統會自動產生憑證並上傳到裝置管理伺服器。
-
-如果將這項政策設為停用或不設定，則系統不會產生憑證，對 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 的呼叫也會失敗。</translation>
 <translation id="2270747976331889601">啟用本機信任錨點的傳輸層安全標準 (TLS) 1.3 安全功能。</translation>
 <translation id="22754818344448444">允許使用者選取要載入的桌面範本版面配置</translation>
 <translation id="2277117728011250860">不允許使用無障礙效能篩選功能。</translation>

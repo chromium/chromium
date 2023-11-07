@@ -131,6 +131,7 @@
 <translation id="146902737843070955">तुमच्या अ‍ॅडमिनिस्ट्रेटरने या बदलाची विनंती केली आहे</translation>
 <translation id="1469148162491666137">हे <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> आणि कॅमेरा व मायक्रोफोन वापरण्याच्या परवानग्यांसह सर्व अ‍ॅप्स व वेबसाइट अ‍ॅक्सेस करण्यास अनुमती देते. तुम्हाला वेब पेज रिफ्रेश करावे लागू शकते किंवा ॲप रीस्टार्ट करावे लागू शकते.</translation>
 <translation id="147310119694673958">फोनची बॅटरी <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, १ डिव्हाइस कनेक्ट केले आहे.</translation>
 <translation id="1479909375538722835">फ्लोटिंग अ‍ॅक्सेसिबिलिटी मेनू</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Calendar दृश्य उघडण्यासाठी एंटर की प्रेस करा</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -213,15 +214,6 @@
 <translation id="1796561540704213354">तुम्ही भेट दिलेल्या आणि उघडलेल्या पेजसह वेबसाइट</translation>
 <translation id="181103072419391116">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="1816896987747843206">हे कॅमेरा परवानगी असलेल्या सर्व अ‍ॅप्स आणि वेबसाइटना कॅमेराच्या अ‍ॅक्सेसची अनुमती देते</translation>
-<translation id="1823280932251546115">स्टेटस ट्रे, वेळ <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">इथरनेट: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">स्थान ॲक्सेस सुरू करा</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> अनपिन केला गेला</translation>
@@ -890,6 +882,7 @@
 <translation id="4577990005084629481">पूर्वावलोकने दाखवा</translation>
 <translation id="4578906031062871102">सेटिंग्ज मेनू उघडला आहे</translation>
 <translation id="458210817642223147">GIF रेकॉर्ड करा</translation>
+<translation id="4582666543382004902">वायफाय वापरण्यासाठी हॉटस्पॉट बंद केला गेला आहे. हॉटस्पॉट वापरण्यासाठी, वायफाय बंद करा.</translation>
 <translation id="4585337515783392668">एखाद्या अज्ञात मिळवणाऱ्यावर कास्ट करणे थांबवा</translation>
 <translation id="4596144739579517758">गडद थीम बंद आहे</translation>
 <translation id="4611292653554630842">लॉग इन करा</translation>
@@ -1097,6 +1090,7 @@
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> च्या वर <ph name="DRAGGED_APP_NAME" />, फोल्डर तयार करण्यासाठी रिलीझ करा.</translation>
 <translation id="5397578532367286026">या वापरकर्त्याच्या वापर आणि इतिहासाचे chrome.com वरील व्यवस्थापकाद्वारे (<ph name="MANAGER_EMAIL" />) पुनरावलोकन केले जाऊ शकते.</translation>
 <translation id="5400461572260843123">क्विक सेटिंग्ज, सूचना केंद्र अ‍ॅक्सेस करण्यासाठी शोध + डावे बटण प्रेस करा.</translation>
+<translation id="540713187982329711">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, कोणतेही डिव्हाइस कनेक्ट केलेले नाही.</translation>
 <translation id="5413656666631274079">सेटिंग्ज पेज</translation>
 <translation id="5414198321558177633">प्रोफाइल सूची रिफ्रेश करत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="5426063383988017631">सेटिंग्ज मेनू बंद केला आहे</translation>
@@ -1188,9 +1182,11 @@
 <translation id="576341972084747908">धोकादायक <ph name="FILENAME" /> डाउनलोड करा</translation>
 <translation id="576453121877257266">रात्रीचा प्रकाश सुरू आहे.</translation>
 <translation id="5764569119212455782">निवडलेल्या शेवटच्या भाषेवर स्विच करा</translation>
+<translation id="5767730327234918501">तुमच्या अ‍ॅडमिनिस्ट्रेटरने हॉटस्पॉट बंद केला आहे.</translation>
 <translation id="5769373120130404283">गोपनीयता स्क्रीन</translation>
 <translation id="5773950591113557721">हे <ph name="APP_NAME" /> आणि कॅमेरा व मायक्रोफोन परवानग्यांसह सर्व अ‍ॅप्स आणि वेबसाइट अ‍ॅक्सेस करण्यास अनुमती देते</translation>
 <translation id="5774295353725270860">फायलीचा ॲप्लिकेशन उघडा</translation>
+<translation id="5775936059231769503">हॉटस्पॉट टॉगल करा. हॉटस्पॉट बंद आहे.</translation>
 <translation id="5777841717266010279">स्क्रीन सामायिकरण थांबवायचे?</translation>
 <translation id="5779721926447984944">पिन केलेल्या फाइल</translation>
 <translation id="5785221443435874078">ही सूचना काढा</translation>
@@ -1506,6 +1502,7 @@
 <translation id="7068360136237591149">फाइल उघडा</translation>
 <translation id="7076293881109082629">साइन इन करीत आहे</translation>
 <translation id="7076878155205969899">ध्वनी म्यूट करा</translation>
+<translation id="7084678090004350185">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, <ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केली आहेत.</translation>
 <translation id="7086931198345821656">या अपडेट साठी तुमचे <ph name="DEVICE_TYPE" /> Powerwash करणे आवश्यक आहे. सर्व डेटा हटवला जाईल. <ph name="SYSTEM_APP_NAME" /> च्या नवीनतम अपडेटबाबत अधिक जाणून घ्या.</translation>
 <translation id="7088960765736518739">स्विच ॲक्सेस</translation>
 <translation id="709015856939120012">पेजवर झूम इन करा</translation>

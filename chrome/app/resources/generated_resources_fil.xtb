@@ -1382,6 +1382,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="204706822916043810">Sinusuri ang virtual machine</translation>
 <translation id="2048182445208425546">I-access ang trapiko ng iyong network</translation>
+<translation id="2048254245884707305">Tinitingnan kung may malware...</translation>
 <translation id="2048554637254265991">Nagkaroon ng error sa pagsisimula sa manager ng container. Pakisubukan ulit.</translation>
 <translation id="2048653237708779538">Hindi available ang pagkilos</translation>
 <translation id="204914487372604757">Lumikha ng shortcut sa </translation>
@@ -2099,6 +2100,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2580889980133367162">Palaging payagan ang <ph name="HOST" /> na mag-download ng maraming file</translation>
 <translation id="258095186877893873">Matagal</translation>
 <translation id="2581455244799175627">Higit pa tungkol sa pagpayag sa third-party na cookies</translation>
+<translation id="2581992808349413349">Gumamit ng secure na koneksyon para hanapin ang IP address ng isang site sa DNS (Domain Name System). Gumagamit ito ng pinapamahalaang service provider sa <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Hindi makuha ang ticket ng Kerberos. Subukan ulit, o makipag-ugnayan sa admin ng device ng iyong organisasyon. (Code ng error <ph name="ERROR_CODE" />).</translation>
 <translation id="2586561813241011046">Hindi ma-install ang <ph name="APP_NAME" />. Pakisubukan ulit, o makipag-ugnayan sa iyong administrator. Code ng error: <ph name="ERROR_CODE" />.</translation>
@@ -2573,6 +2575,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2942581856830209953">I-customize ang page na ito</translation>
 <translation id="2942707801577151363">Magbukas, mag-edit, at mag-save ng mga file sa Word, Excel, at PowerPoint. Posibleng nire-require ang subscription para sa ilang feature.</translation>
 <translation id="2943268899142471972">Pumili ng Ansible Playbook o Crostini na backup file</translation>
+<translation id="2943478529590267286">Baguhin ang layout ng keyboard ng system</translation>
 <translation id="2944060181911631861">Magpadala ng data ng paggamit at diagnostic na data. Tumulong sa pagpapaganda ng iyong karanasan sa Android sa pamamagitan ng awtomatikong pagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang iyong karagdagang setting ng Aktibidad sa Web at App, maaaring ma-save ang data na ito sa Google account mo. <ph name="BEGIN_LINK1" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Pumunta sa mga file</translation>
 <translation id="2946119680249604491">Magdagdag ng koneksyon</translation>
@@ -2862,6 +2865,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3192947282887913208">Mga Audio File</translation>
 <translation id="3193695589337931419">Mga Utility ng Mga Signal ng System</translation>
 <translation id="3194786596445804250">Ipakita ang mga detalye tungkol sa pag-block ng third-party na cookies</translation>
+<translation id="3196912927885212665">Para mag-set up gamit ang iyong Android phone, kailangang naka-on ang Bluetooth ng Chromebook mo</translation>
 <translation id="3197453258332670132">Sa pamamagitan ng pag-right click o matagal na pagpindot, magpakita ng nauugnay na impormasyon para sa iyong piniling text.</translation>
 <translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />Kapag pinayagan ang mga ChromeOS device na magpadala ng mga awtomatikong ulat, makakatulong ito sa aming mabigyan ng priyoridad kung ano ang dapat ayusin at pahusayin sa ChromeOS. Puwedeng kasama sa mga ulat na ito ang mga bagay na tulad ng kapag nagka-crash ang ChromeOS, kung aling mga feature ang ginagamit, at kung gaano kalaking memory ang karaniwang ginagamit. Makakatulong din ang ilang pinagsama-samang data sa mga Google app at partner ng Google, gaya ng mga developer ng Android. Kokolektahin ang iba pang data ng diagnostic at paggamit ng app, kabilang ang para sa mga Android at web app kung naka-on din ang pag-sync ng mga app.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puwede mong simulan o ihinto ang pagpapahintulot sa mga ulat na ito sa anumang oras sa mga setting ng ChromeOS device ng iyong anak. Kung isa kang administrator ng domain, puwede mong baguhin ang setting na ito sa admin console.<ph name="END_PARAGRAPH2" />
@@ -3187,13 +3191,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="346298925039590474">Magiging available ang mobile network na ito sa lahat ng user sa device na ito</translation>
 <translation id="3464145797867108663">Magdagdag ng profile sa trabaho</translation>
 <translation id="346546413339447252">Makakuha ng mga diskwento para sa <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> at iba pa</translation>
-<translation id="3466476162566821406">Sundin ang mga tagubilin sa iyong telepono para i-verify ang code. Tiyaking naka-on ang Bluetooth at Wi-Fi ng iyong telepono.
-    <ph name="BR" />
-    <ph name="BR" />
-    Puwede mong gamitin ang iyong telepono para idagdag ang impormasyon ng Wi-Fi at Google Account mo sa iyong <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Nakikita ng mga kalapit na device bilang <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android phone</translation>
 <translation id="3469583217479686109">Selection Tool</translation>
@@ -3290,6 +3287,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3544879808695557954">Username (opsyonal)</translation>
 <translation id="3547954654003013442">Mga setting ng proxy</translation>
 <translation id="3548162552723420559">Nagsasaayos sa kulay ng screen para tumugma sa kapaligiran</translation>
+<translation id="354949590254473526">Ilagay ang URL ng custom na query sa DNS</translation>
 <translation id="3550593477037018652">Idiskonekta ang Cellular network</translation>
 <translation id="3550915441744863158">Awtomatikong nag-a-update ang Chrome upang palagi kang mayroon ng pinakabagong bersyon</translation>
 <translation id="3551320343578183772">Isara ang Tab</translation>
@@ -3605,6 +3603,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3784472333786002075">Ang cookies ay mga file na ginawa ng mga website. May dalawang uri ng cookies: Ginagawa ng site na iyong binibisita ang cookies ng first-party. Ipinapakita ang site sa address bar. Ginagawa ng iba pang site ang third-party na cookies. Pagmamay-ari ng mga site na ito ang ilan sa content, tulad ng mga ad o larawan, na nakikita mo sa website na iyong binibisita.</translation>
 <translation id="3785308913036335955">Ipakita ang Shortcut ng Apps</translation>
 <translation id="3785727820640310185">Mga naka-save na password para sa site na ito</translation>
+<translation id="3786224729726357296">I-delete ang data ng site at mga pahintulot para sa <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Ipakita ang underline para sa text ng komposisyon</translation>
 <translation id="3787434344076711519">Naghihintay na isalin</translation>
 <translation id="3788301286821743879">Hindi mailunsad ang kiosk application.</translation>
@@ -4427,6 +4426,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="443454694385851356">Legacy (hindi secure)</translation>
 <translation id="4434611816075088065">Wala nang ibang nangangailangan ng atensyon mo sa ngayon</translation>
 <translation id="443475966875174318">I-update o alisin ang mga hindi compatible na application</translation>
+<translation id="4437947179446780764">Magdagdag ng custom na service provider ng DNS</translation>
 <translation id="4438043733494739848">Transparent</translation>
 <translation id="4441124369922430666">Nais mo bang awtomatikong simulan ang app na ito kapag nag-on ang makina?</translation>
 <translation id="4441147046941420429">Para magpatuloy, alisin ang iyong security key mula sa device mo, pagkatapos ay ilagay ulit at pindutin ito</translation>
@@ -4831,7 +4831,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4769632191812288342">Nakakakuha ka ng karaniwang proteksyon</translation>
 <translation id="4770119228883592393">Humiling ng pahintulot, pindutin ang ⌘ + Option + Pababang arrow para tumugon</translation>
 <translation id="4773112038801431077">I-upgrade ang Linux</translation>
-<translation id="4774456473286455263">Mag-set up gamit ang iyong Android phone</translation>
 <translation id="4775228465764358468">Posibleng i-save ng isang site ang iyong gustong wika o ang mga item na gusto mong bilhin. Available ang impormasyong ito sa site at sa mga subdomain nito.</translation>
 <translation id="477548766361111120">Payagan ang extension na basahin at baguhin ang site na ito</translation>
 <translation id="4776311127346151860">Nakakonekta na ang <ph name="DEVICE_NAME" /></translation>
@@ -5016,7 +5015,9 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4907161631261076876">Hindi karaniwang dina-download ang app na ito at maaaring mapanganib.</translation>
 <translation id="4908811072292128752">Magbukas ng bagong tab upang mag-browse ng dalawang site nang sabay</translation>
 <translation id="4909038193460299775">Dahil pinamamahalaan ng <ph name="DOMAIN" /> ang account na ito, iki-clear sa device na ito ang iyong mga bookmark, history, password at iba pang mga setting. Gayunpaman, mananatiling naka-store ang data mo sa iyong Google Account at mapamamahalaan ito sa <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
+<translation id="4911572142453926213">Gumamit ng secure na koneksyon para hanapin ang IP address ng isang site sa DNS (Domain Name System)</translation>
 <translation id="4912643508233590958">Mga Idle na Pag-wake Up</translation>
+<translation id="4913209098186576320">Posibleng mapanganib ang file na ito<ph name="LINE_BREAK" />Mas natatagalan kaysa sa karaniwan ang pagsusuring ito...</translation>
 <translation id="4915961947098019832">Pinapayagang magpakita ng mga larawan</translation>
 <translation id="4916542008280060967">Payagan ang site na i-edit ang <ph name="FILE_NAME" />?</translation>
 <translation id="4917385247580444890">Malakas</translation>
@@ -5053,6 +5054,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4941963255146903244">Tingnan ang mga larawan, media, at app ng iyong telepono</translation>
 <translation id="494286511941020793">Tulong sa Configuration ng Proxy</translation>
 <translation id="4943368462779413526">Football</translation>
+<translation id="4943927218331934807">Kailangan ng password</translation>
 <translation id="4944310289250773232">Hino-host ng <ph name="SAML_DOMAIN" /> ang serbisyo sa pag-authenticate na ito</translation>
 <translation id="4945439665401275950">Para mag-set up ng fingerprint, ipapindot sa iyong anak ang power button. Secure na sino-store ang data ng fingerprint ng iyong anak at hindi ito kailanman lalabas sa <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="4946459324029651239">Nakakakuha ka ng karaniwang proteksyon</translation>
@@ -5492,6 +5494,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5307030433605830021">Hindi sinusuportahan ang source</translation>
 <translation id="5307386115243749078">Magpares ng switch ng Bluetooth</translation>
 <translation id="5308380583665731573">Kumonekta</translation>
+<translation id="5308989548591363504">Tingnan kung may malware</translation>
 <translation id="5309418307557605830">Gumagana rin dito ang Google Assistant</translation>
 <translation id="5309641450810523897">Support Case ID</translation>
 <translation id="5311304534597152726">Nagsa-sign in bilang</translation>
@@ -5799,6 +5802,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="555604722231274592">I-enable ang <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">I-reload</translation>
 <translation id="5558129378926964177">Mag-zoom &amp;In</translation>
+<translation id="5558594314398017686">Default ng OS (kapag available)</translation>
 <translation id="5559311991468302423">I-delete ang address</translation>
 <translation id="5559768063688681413">Walang naka-save na printer</translation>
 <translation id="55601339223879446">Isaayos ang mga hangganan ng iyong desktop sa display</translation>
@@ -6172,13 +6176,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5865508026715185451">Malapit nang mag-pause ang <ph name="APP_NAME" /></translation>
 <translation id="586567932979200359">Pinapatakbo mo ang <ph name="PRODUCT_NAME" /> mula sa larawan nito sa disk. Ang pag-install nito ay magbibigay-daan sa iyong patakbuhin ito nang walang larawan ng disk, at makakatiyak na pananatilihin itong napapanahon.</translation>
 <translation id="5865733239029070421">Awtomatikong nagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash</translation>
-<translation id="5867855474018538405">Sundin ang mga tagubilin sa iyong telepono para i-scan ang QR code. Tiyaking naka-on ang Bluetooth at Wi-Fi ng iyong telepono.
-    <ph name="BR" />
-    <ph name="BR" />
-    Puwede mong gamitin ang iyong telepono para idagdag ang impormasyon ng Wi-Fi at Google Account mo sa iyong <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Nakikita ng mga kalapit na device bilang <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="5868434909835797817">Naka-off ang mikropono sa iyong device</translation>
 <translation id="5868822853313956582">Sundin ang mga kulay ng device</translation>
 <translation id="5869029295770560994">OK, Nakuha Ko</translation>
@@ -7750,6 +7747,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7125932261198019860">Tiyaking nakakonekta ang iyong printer sa Wi-Fi network kung saan nakakonekta ang Chromebook mo o gumamit ng USB cable. <ph name="LINK_BEGIN" />Matuto pa tungkol sa compatibility<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Kasaysayan ng pag-download</translation>
 <translation id="7128151990937044829">Magpakita ng indicator sa address bar kapag naka-block ang notification</translation>
+<translation id="7130438335435247835">Access point name (APN)</translation>
 <translation id="7131040479572660648">Basahin ang iyong data sa <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> at <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Magdagdag ng Pahina...</translation>
 <translation id="7131431455372521159">Nadiskonekta ang lahat ng TrackPoint</translation>
@@ -8881,6 +8879,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8005600846065423578">Palaging payagan ang <ph name="HOST" /> na makita ang clipboard</translation>
 <translation id="8006630792898017994">Space o Tab</translation>
 <translation id="8008356846765065031">Nadiskonekta ang Internet. Pakisuri ang iyong koneksyon sa internet.</translation>
+<translation id="8008704580256716350">Na-block ang kahina-hinalang file</translation>
 <translation id="8009225694047762179">Pamahalaan ang Mga Password</translation>
 <translation id="8011372169388649948">Inilipat ang '<ph name="BOOKMARK_TITLE" />.'</translation>
 <translation id="8012188750847319132">caps lock</translation>
@@ -10231,6 +10230,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9057354806206861646">I-update ang iskedyul</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Humigit-kumulang 1 notification sa isang araw}one{Humigit-kumulang {NUM_NOTIFICATION} notification sa isang araw}other{Humigit-kumulang {NUM_NOTIFICATION} na notification sa isang araw}}</translation>
 <translation id="9058760336383947367">Tingnan ang PPD ng printer</translation>
+<translation id="9060042817356580609">Pumili ng DNS Provider</translation>
 <translation id="9061694916020926968">Kailangang naka-sign in ka sa isang Google Account para magamit ang Steam para sa Chromebook (Beta). Mag-sign in at subukan ulit.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error mula sa linya <ph name="ERROR_LINE_START" /> hanggang <ph name="ERROR_LINE_END" /></translation>

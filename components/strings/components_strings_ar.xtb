@@ -349,6 +349,7 @@
 <translation id="1640244768702815859">جرّب <ph name="BEGIN_LINK" />الانتقال إلى الصفحة الرئيسية للموقع<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">تأخير الإخراج حتى</translation>
 <translation id="164212631332220697">الدفع باستخدام <ph name="CARD_DETAIL" />.</translation>
+<translation id="1643651787397909318">‏زر الانتقال إلى صفحة ميزة "التحقّق من الأمان" في Chrome: انقر على هذا الزر للانتقال إلى تلك الصفحة في الإعدادات.</translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1645368109819982629">بروتوكول غير معتمد</translation>
 <translation id="1650602712345345441">‏إدارة إعدادات Chrome</translation>
@@ -2052,6 +2053,8 @@
 <translation id="5137761395480718572">‏يطلب هذا التطبيق إذنًا لتثبيت بيانات اعتماد شبكات Wi-Fi. بعد الإعداد، سيتم تلقائيًا توصيل جهاز <ph name="DEVICE_TYPE" /> بشبكات Wi-Fi المُستخدَمة. لإزالة بيانات الاعتماد هذه، عليك إلغاء تثبيت التطبيق. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">البطاقة الافتراضية غير متوفّرة حاليًا. يُرجى التواصل مع المصرف.</translation>
 <translation id="5138227688689900538">عرض أقل</translation>
+<translation id="5143309888746105072">‏يحظر Chromium المواقع الإلكترونية من استخدام ملفات تعريف الارتباط التابعة لجهات خارجية لتتبُّع نشاطك أثناء التصفُّح.
+            <ph name="NEW_LINE" />إذا لم تعمل ميزات الموقع الإلكتروني، يُرجى <ph name="START_LINK" />محاولة السماح مؤقتًا بملفات تعريف الارتباط التابعة لجهات خارجية<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">يوجد رمز خطأ في استجابة السياسة</translation>
 <translation id="5146995429444047494">يتم حظر الإشعارات للنطاق <ph name="ORIGIN" /></translation>
 <translation id="514704532284964975">‏هناك طلب من <ph name="URL" /> بالاطّلاع على المعلومات وتعديلها على الأجهزة المزوَّدة بتقنية NFC التي نقرت عليها باستخدام هاتفك.</translation>
@@ -2397,6 +2400,7 @@
 <translation id="5873297634595728366">مركبات ديزل</translation>
 <translation id="5877831137320480913">جمال ولياقة بدنية</translation>
 <translation id="5879989559903563723">غير مسموح بهذا الإذن في "وضع الضيف"</translation>
+<translation id="5880050725127890683">‏الانتقال إلى صفحة ميزة "التحقّق من الأمان" في Chrome</translation>
 <translation id="5883861433316751031">‏هل تريد السماح للموقع الإلكتروني بالتحكّم في أجهزة MIDI وإعادة برمجتها؟</translation>
 <translation id="5884465125445718607">ظرف صيني رقم 6</translation>
 <translation id="5887400589839399685">تم حفظ البطاقة</translation>
@@ -2578,6 +2582,7 @@
 <translation id="6251906504834538140">{0,plural, =1{تم حظر نقل الملف}zero{تم حظر نقل <ph name="FILE_COUNT" /> ملف}two{تم حظر نقل ملفَين (<ph name="FILE_COUNT" />)}few{تم حظر نقل <ph name="FILE_COUNT" /> ملفات}many{تم حظر نقل <ph name="FILE_COUNT" /> ملفًا}other{تم حظر نقل <ph name="FILE_COUNT" /> ملف}}</translation>
 <translation id="6252613631861574218">‏<ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإدارة الملفات التي تم تنزيلها في Chrome.</translation>
 <translation id="6254436959401408446">لا تتوفر ذاكرة كافية لفتح هذه الصفحة</translation>
+<translation id="625463612687472648">إيقاف السماح بالأذونات</translation>
 <translation id="6259156558325130047">إعادة إ&amp;جراء الترتيب</translation>
 <translation id="6263376278284652872">إشعارات <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
@@ -2753,6 +2758,8 @@
 <translation id="6596325263575161958">خيارات التشفير</translation>
 <translation id="6597665340361269064">90 درجة</translation>
 <translation id="6599642189720630047">المنتجات التي يتمّ تتبّع سعرها</translation>
+<translation id="6606309334576464871">‏يحظر Chrome المواقع الإلكترونية من استخدام ملفات تعريف الارتباط التابعة لجهات خارجية لتتبُّع نشاطك أثناء التصفُّح.
+            <ph name="NEW_LINE" />إذا لم تعمل ميزات الموقع الإلكتروني، يُرجى <ph name="START_LINK" />محاولة السماح مؤقتًا بملفات تعريف الارتباط التابعة لجهات خارجية<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">أخبار الاقتصاد</translation>
 <translation id="6612010098632894193">فيديو على الإنترنت</translation>
 <translation id="6613866251791999074">‏مزيد من المعلومات عن محرك البحث في Chrome</translation>
@@ -3427,6 +3434,7 @@
 <translation id="7888575728750733395">تحديد لون الصورة</translation>
 <translation id="7894280532028510793">إذا تم التأكُد من عدم ورود أخطاء إملائية، يُرجى <ph name="BEGIN_LINK" />محاولة تشغيل بيانات تشخيص الشبكة<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">ظرف مقاس 18 × 23 سم</translation>
+<translation id="7909498058929404306">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter للانتقال إلى صفحة ميزة "التحقّق من الأمان" في الإعدادات.</translation>
 <translation id="7916162853251942238">قاعدة الطباعة الفلكسغرافية</translation>
 <translation id="7927971017714848357">أراضٍ ومساحات</translation>
 <translation id="793209273132572360">هل تريد تعديل العنوان؟</translation>
@@ -3724,6 +3732,7 @@
 <translation id="8460854335417802511">تفعيل</translation>
 <translation id="8461694314515752532">ترميز البيانات المتزامنة باستخدام عبارة مرور المزامنة الخاصة بك</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{بطاقة ائتمان واحدة}zero{# بطاقة ائتمان}two{بطاقتا ائتمان (#)}few{# بطاقات ائتمان}many{# بطاقة ائتمان}other{# بطاقة ائتمان}}</translation>
+<translation id="8467494337615822642">‏الانتقال إلى صفحة ميزة "التحقّق من الأمان" في Chrome في الإعدادات</translation>
 <translation id="8468358362970107653">‏ظرف C3</translation>
 <translation id="8473626140772740486">300 × 450 ملم</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>

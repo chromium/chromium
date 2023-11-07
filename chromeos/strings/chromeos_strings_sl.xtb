@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
+<translation id="1003363546227723021">Ko je zaslon nedejaven, prikaži fotografije, uro, vreme in podatke o predstavnosti</translation>
 <translation id="1014750484722996375">Namizja</translation>
 <translation id="1018219910092211213">Ni mogoče razrešiti DNS-ja.</translation>
 <translation id="1018656279737460067">Preklicano</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Namesti ChromeOS Flex</translation>
 <translation id="1856388568474281774">Puščica dol</translation>
 <translation id="1858620243986915808">Priloži posnetek zaslona</translation>
+<translation id="1871413952174074704">APN ne sme imeti več kot toliko znakov: <ph name="CHAR_LIMIT" /></translation>
 <translation id="1871569928317311284">Izklop temne teme</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Izklop temnega načina</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Skrij poročilo</translation>
 <translation id="500920857929044050">Ustavi preizkus</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Ko je zaslon nedejaven, prikaži fotografije, uro, vreme in podatke o predstavnosti.</translation>
 <translation id="5035083460461104704">Barva teme</translation>
 <translation id="5038292761217083259">večbarvna osvetlitev tipkovnice</translation>
 <translation id="5039804452771397117">Dovoli</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Svetlo rožnata</translation>
 <translation id="982713511914535780">Zaženi preizkus praznjenja</translation>
 <translation id="987264212798334818">Splošno</translation>
+<translation id="995062385528875723">Ni mogoče uporabiti naglašenih črk, nelatinične abecede ali simbolov</translation>
 </translationbundle>

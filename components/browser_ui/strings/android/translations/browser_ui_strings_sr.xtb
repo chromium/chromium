@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Сајт који посећујете може да угради садржај са других сајтова, на пример, слике, огласе и текст. Колачићи које постављају ови други сајтови називају се колачићи треће стране.</translation>
 <translation id="2434158240863470628">Преузимање је завршено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Привремено сте дозволили овом сајту да користи колачиће треће стране, што значи мање заштите при прегледању, али је већа вероватноћа да ће функције сајта радити према очекивањима. <ph name="BEGIN_LINK" />Пошаљите повратне информације<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Функције на неким сајтовима можда неће радити у режиму без архивирања</translation>
 <translation id="2442870161001914531">Увек се захтева сајт за рачунар</translation>
 <translation id="2469312991797799607">Ова радња ће обрисати све податке и колачиће за домен <ph name="ORIGIN" /> и све сајтове у оквиру њега</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4008040567710660924">Омогућава колачиће за одређени сајт.</translation>
 <translation id="4046123991198612571">Следећа песма</translation>
-<translation id="4053720452172726777">Прилагодите и контролишите Google Chrome</translation>
 <translation id="4149890623864272035">Желите ли стварно да избришете све локалне податке, укључујући колачиће, и ресетујете све дозволе за овај веб-сајт?</translation>
 <translation id="4149994727733219643">Поједностављен приказ веб-страница</translation>
 <translation id="4151930093518524179">Подразумевани зум</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Избриши и ресетуј</translation>
 <translation id="4645575059429386691">Овим управља твој родитељ</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
+<translation id="4673958474310291465">Пробајте привремено да дозволите колачиће треће стране, што значи слабију заштиту, али већу вероватноћу да ће функције сајта радити на очекивани начин</translation>
 <translation id="4751476147751820511">Сензори за покрет или светло</translation>
 <translation id="4779083564647765204">Зумирање</translation>
 <translation id="4811450222531576619">Сазнајте више о њеном извору и теми</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Блокирај колачиће треће стране</translation>
 <translation id="6205314730813004066">Приватност са огласима</translation>
 <translation id="6207207788774442484">Избриши податке и ресетуј дозволе</translation>
-<translation id="6216432067784365534">Опције ставке <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Желите да деинсталатирате „<ph name="APP_NAME" />“?</translation>
 <translation id="6262191102408817757">На основу последње картице</translation>
 <translation id="6262279340360821358">Дозволе <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> су блокиране</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Изабрано: 1}one{Изабрано: #}few{Изабрано: #}other{Изабрано: #}}</translation>
 <translation id="7087918508125750058">Изабрали сте <ph name="ITEM_COUNT" />. Опције су доступне при врху екрана</translation>
+<translation id="7137403271056944713">MIDI – контрола, репрограмирање</translation>
 <translation id="7141896414559753902">Блокирај приказивање искачућих прозора и преусмеравања на сајтовима (препоручено)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Освежи</translation>

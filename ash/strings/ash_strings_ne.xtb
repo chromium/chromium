@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">तपाईंले हेर्नुभएका पेज र हाल खोलिएका पेजलगायतका वेबसाइटहरू</translation>
 <translation id="181103072419391116">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="1816896987747843206">यसले क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिन्छ</translation>
-<translation id="1823280932251546115">स्ट्याटस ट्रे, समय <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">इथरनेट: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">लोकेसन प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> अनपिन गरिएको थियो</translation>
@@ -1197,6 +1188,7 @@
 <translation id="5788127256798019331">Play मा भएका फाइलहरू</translation>
 <translation id="5788535737706478207">पछिल्लो पटक बन्द गरिएको ट्याब वा विन्डो पुनः खोल्नुहोस्</translation>
 <translation id="5790085346892983794">सफलता</translation>
+<translation id="5802516411616338943">द्रुत सेटिङ खोल्नुहोस्</translation>
 <translation id="5804651031882187592">"SIM लक गर्नुहोस्" सेटिङ अफ गर्नुहोस्</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अन गर्न क्लिक गर्नुहोस्</translation>
 <translation id="5823239091726045201">वेबमा उपलब्ध Google Tasks</translation>
@@ -1222,6 +1214,7 @@
 <translation id="5901630391730855834">पहेँलो</translation>
 <translation id="5911231045062997865">Lacros विन्डो हाल प्रयोग गर्न मिल्दैन। अन्य एपहरू सेभ गरिने छन्।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">नयाँ सूचना, कुल <ph name="NOTIFICATION_COUNT" /> वटा</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5920710855273935292">माइक म्युट गरिएको छ।</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> अन छ।</translation>

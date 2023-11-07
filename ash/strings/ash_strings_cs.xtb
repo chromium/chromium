@@ -213,15 +213,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1796561540704213354">Weby, včetně navštívených a otevřených stránek</translation>
 <translation id="181103072419391116">Síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno vaším administrátorem</translation>
 <translation id="1816896987747843206">Umožňuje přístup k fotoaparátu všem aplikacím a webům s příslušným oprávněním</translation>
-<translation id="1823280932251546115">Stavový panel, čas <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />,
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Zapnout přístup k poloze</translation>
 <translation id="1830308660060964064">Položka <ph name="ITEM_TITLE" /> byla odepnuta</translation>

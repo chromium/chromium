@@ -213,15 +213,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1796561540704213354">Sites Web, y compris les pages que vous avez consultées et celles que vous avez ouvertes</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="1816896987747843206">L'accès à l'appareil photo est accordé à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
-<translation id="1823280932251546115">Barre d'état, il est <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />,
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />,
-        <ph name="NOTIFICATION" />
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet : <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Activer l'accès à la position</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> a été retiré</translation>

@@ -3171,13 +3171,6 @@
 <translation id="346298925039590474">這部裝置的使用者都將可以存取這個行動網路</translation>
 <translation id="3464145797867108663">新增工作資料夾</translation>
 <translation id="346546413339447252">取得 <ph name="MERCHANT_NAME_1" />、<ph name="MERCHANT_NAME_2" /> 等商店的折扣</translation>
-<translation id="3466476162566821406">按照手機上的操作說明輸入驗證碼。請確認手機的藍牙和 Wi-Fi 已開啟。
-    <ph name="BR" />
-    <ph name="BR" />
-    你可以使用手機將 Wi-Fi 和 Google 帳戶資訊加入 <ph name="DEVICE_TYPE" />。
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> 等鄰近裝置可看到手機</translation>
 <translation id="3468298837301810372">標籤</translation>
 <translation id="3468999815377931311">Android 手機</translation>
 <translation id="3469583217479686109">選取工具</translation>
@@ -4813,7 +4806,6 @@
 <translation id="4769632191812288342">目前採用標準防護機制</translation>
 <translation id="4770119228883592393">已要求權限，按下 ⌘ + Option + 向下鍵即可回覆</translation>
 <translation id="4773112038801431077">升級 Linux</translation>
-<translation id="4774456473286455263">使用 Android 手機進行設定</translation>
 <translation id="4775228465764358468">網站可能會儲存你偏好的語言或想購買的商品，而且該網站及其子網域都能存取這類資訊。</translation>
 <translation id="477548766361111120">允許擴充功能讀取及變更這個網站</translation>
 <translation id="4776311127346151860">「<ph name="DEVICE_NAME" />」已連線</translation>
@@ -6152,13 +6144,6 @@
 <translation id="5865508026715185451">「<ph name="APP_NAME" />」即將暫停</translation>
 <translation id="586567932979200359">你正在透過磁碟映像執行 <ph name="PRODUCT_NAME" />。你可以直接在電腦上安裝程式，往後無需透過磁碟映像即可直接執行，而且能隨時使用最新的版本。</translation>
 <translation id="5865733239029070421">自動將使用統計資料和當機報告傳送給 Google</translation>
-<translation id="5867855474018538405">按照手機上的操作說明掃描 QR code。請確認手機的藍牙和 Wi-Fi 已開啟。
-    <ph name="BR" />
-    <ph name="BR" />
-    你可以使用手機將 Wi-Fi 和 Google 帳戶資訊加入 <ph name="DEVICE_TYPE" />。
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> 等鄰近裝置可看到手機</translation>
 <translation id="5868434909835797817">你裝置的麥克風已關閉</translation>
 <translation id="5868822853313956582">依循裝置色彩配置</translation>
 <translation id="5869029295770560994">好，我知道了</translation>
@@ -7726,6 +7711,7 @@
 <translation id="7125932261198019860">確認印表機已連上 Chromebook 使用的 Wi-Fi 網路，或使用 USB 傳輸線。<ph name="LINK_BEGIN" />進一步瞭解相容性<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">下載記錄</translation>
 <translation id="7128151990937044829">封鎖通知時，在網址列上顯示圖示</translation>
+<translation id="7130438335435247835">存取點名稱 (APN)</translation>
 <translation id="7131040479572660648">讀取你在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 上產生的資料</translation>
 <translation id="713122686776214250">新增網頁(&amp;G)...</translation>
 <translation id="7131431455372521159">所有 TrackPoint 均已中斷連線</translation>

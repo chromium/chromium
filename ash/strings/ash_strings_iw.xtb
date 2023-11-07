@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">אתרים, כולל דפים שביקרת בהם ודפים פתוחים</translation>
 <translation id="181103072419391116">עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
 <translation id="1816896987747843206">הפעולה הזו מאפשרת גישה למצלמה לכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
-<translation id="1823280932251546115">מגש הסטטוס, השעה <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">אתרנט: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">הפעלת הגישה למיקום</translation>
 <translation id="1830308660060964064">ההצמדה של <ph name="ITEM_TITLE" /> בוטלה</translation>
@@ -1197,6 +1188,7 @@
 <translation id="5788127256798019331">‏קובצי Play</translation>
 <translation id="5788535737706478207">פתיחה מחדש של הכרטיסייה או החלון האחרונים שנסגרו</translation>
 <translation id="5790085346892983794">הצלחה</translation>
+<translation id="5802516411616338943">פתיחת ההגדרות המהירות</translation>
 <translation id="5804651031882187592">‏השבתת ההגדרה 'נעילת כרטיס ה-SIM'</translation>
 <translation id="5805809050170488595">יש ללחוץ כדי להפעיל את <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">‏Google Tasks באינטרנט</translation>
@@ -1222,6 +1214,7 @@
 <translation id="5901630391730855834">צהוב</translation>
 <translation id="5911231045062997865">‏בשלב זה, אין תמיכה בחלונות Lacros. אפליקציות אחרות יישמרו.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">התראה חדשה, <ph name="NOTIFICATION_COUNT" /> סה"כ</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5920710855273935292">המיקרופון מושתק.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> פעילות.</translation>

@@ -1193,6 +1193,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3427342743765426898">&amp;Refés la modificació</translation>
 <translation id="342781501876943858">Chromium et recomana que restableixis la contrasenya si l'has fet servir en altres llocs web.</translation>
 <translation id="3428151540071562330">Un o més dels URI de plantilla de servidor corresponents a DnsOverHttpsTemplates no són vàlids i no s'utilitzaran.</translation>
+<translation id="3428789896412418755">Historial agrupat</translation>
 <translation id="3431216045099978607">Prem |<ph name="ACCELERATOR" />| per sortir de la pantalla completa i veure la baixada.</translation>
 <translation id="3432601291244612633">Tanca la pàgina</translation>
 <translation id="3433111389595862568">Programari de col·laboració i conferències</translation>
@@ -2567,7 +2568,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6222527803348563979">Papereria</translation>
 <translation id="6224281071334553713">Pedres precioses i joies</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar les eines d'accessibilitat a la configuració de Chrome</translation>
-<translation id="6229196330202833460">Serveis de reproducció en continu de programes de televisió i pel·lícules</translation>
+<translation id="6229196330202833460">Serveis de reproducció en línia de programes de televisió i pel·lícules</translation>
 <translation id="6229649258872345286">Viatges en família</translation>
 <translation id="6232271601416750929">Cosmètica ètica i sostenible</translation>
 <translation id="6234122620015464377">Retalla després de cada document</translation>
@@ -3178,6 +3179,7 @@ Detalls addicionals:
 <translation id="7423283032694727565">Botó Gestiona les galetes: activa'l per gestionar les preferències de galetes a la configuració de Chrome</translation>
 <translation id="7427366580982928791">Seguretat infantil a Internet</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Verifica la teva identitat perquè Chromium pugui emplenar la informació de pagament.</translation>
 <translation id="7437289804838430631">Afegeix informació de contacte</translation>
 <translation id="7437490109271760224">Jocs de cartes</translation>
 <translation id="7438338505272634288">Els atacants del lloc web que proves de visitar poden enganyar-te perquè instal·lis programari nociu que afecti la manera com navegues. Per exemple, poden canviar-te la pàgina d'inici o mostrar-te anuncis addicionals als llocs web que visites. Chrome et recomana que tornis a un lloc web segur per evitar danys. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@ Detalls addicionals:
 <translation id="7831993212387676366">Què és la llista de la compra?</translation>
 <translation id="7840103971441592723">La captura de pantalla s'ha iniciat</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784404208867107517">Historial agrupat</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Cap}=1{1 aplicació (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacions (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplicacions (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Després, un lloc web que visitis pot demanar els teus temes a Chrome per personalitzar els anuncis que veus. Chrome comparteix fins a 3 temes i, alhora, protegeix el teu historial de navegació i la teva identitat.</translation>
@@ -3438,6 +3441,7 @@ Detalls addicionals:
 <translation id="79338296614623784">Introdueix un número de telèfon vàlid</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vol reproduir contingut protegit. Google verificarà la identitat del teu dispositiu.</translation>
 <translation id="7935318582918952113">Destil·lador DOM</translation>
+<translation id="7936775433939783906">Verifica la teva identitat perquè Google Chrome pugui emplenar la informació de pagament.</translation>
 <translation id="7937163678541954811">El CVC d'aquesta targeta s'encriptarà i es desarà al teu dispositiu per tramitar les compres més ràpidament</translation>
 <translation id="7937554595067888181">Data de caducitat: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">El certificat del servidor encara no és vàlid.</translation>

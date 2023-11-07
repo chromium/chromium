@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1003363546227723021">Wys foto's, die tyd, die weer, en media-inligting wanneer jou skerm onaktief is</translation>
 <translation id="1014750484722996375">Lessenaars</translation>
 <translation id="1018219910092211213">Kan nie DNS oplos nie</translation>
 <translation id="1018656279737460067">Gekanselleer</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Installeer Chrome OS Flex</translation>
 <translation id="1856388568474281774">Afpyl</translation>
 <translation id="1858620243986915808">Heg skermskoot aan</translation>
+<translation id="1871413952174074704">APN kan nie meer as <ph name="CHAR_LIMIT" /> karakters hê nie</translation>
 <translation id="1871569928317311284">Skakel donkertema af</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Skakel donkermodus af</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Versteek verslag</translation>
 <translation id="500920857929044050">Stop toets</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Wys foto's, die tyd, die weer, en media-inligting wanneer jou skerm onaktief is.</translation>
 <translation id="5035083460461104704">Temakleur</translation>
 <translation id="5038292761217083259">sleutelbord veelkleurig</translation>
 <translation id="5039804452771397117">Laat toe</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Ligpienk</translation>
 <translation id="982713511914535780">Laat loop ontlaaitoets</translation>
 <translation id="987264212798334818">Algemeen</translation>
+<translation id="995062385528875723">Kan nie aksentletters, simbole of nie-Latynse alfabet gebruik nie</translation>
 </translationbundle>

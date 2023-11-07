@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1003363546227723021">Kada je ekran neaktivan, prikazuju se slike, vreme, vremenska prognoza i informacije o medijskom sadržaju</translation>
 <translation id="1014750484722996375">Radne površine</translation>
 <translation id="1018219910092211213">DNS ne može da se razreši</translation>
 <translation id="1018656279737460067">Otkazano</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Instaliraj Chrome OS Flex</translation>
 <translation id="1856388568474281774">Strelica nadole</translation>
 <translation id="1858620243986915808">Priložite snimak ekrana</translation>
+<translation id="1871413952174074704">Maksimalni broj znakova koji naziv pristupne tačke može da sadrži je <ph name="CHAR_LIMIT" /></translation>
 <translation id="1871569928317311284">Isključite tamnu temu</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Isključite tamni režim</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Sakrij izveštaj</translation>
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Kada je ekran neaktivan, prikazuju se slike, vreme, vremenska prognoza i informacije o medijskom sadržaju.</translation>
 <translation id="5035083460461104704">Boja teme</translation>
 <translation id="5038292761217083259">višebojna tastatura</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Svetloroze</translation>
 <translation id="982713511914535780">Pokreni test pražnjenja</translation>
 <translation id="987264212798334818">Opšte</translation>
+<translation id="995062385528875723">Ne možete da koristite akcentovana slova, slova koja nisu latinična ili simbole</translation>
 </translationbundle>

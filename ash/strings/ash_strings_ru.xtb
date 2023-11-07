@@ -212,15 +212,6 @@
 <translation id="1796561540704213354">Сайты, включая открытые и посещенные вами страницы</translation>
 <translation id="181103072419391116">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="1816896987747843206">Доступ к камере получат все приложения и сайты с разрешением "Камера".</translation>
-<translation id="1823280932251546115">Строка состояния, время <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Открыть доступ к геоданным</translation>
 <translation id="1830308660060964064">Объект "<ph name="ITEM_TITLE" />" откреплен</translation>

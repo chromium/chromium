@@ -1193,6 +1193,7 @@
 <translation id="3427342743765426898">&amp;انجام مجدد ویرایش</translation>
 <translation id="342781501876943858">‏Chromium توصیه می‌کند اگر از گذرواژه‌تان در سایت‌های دیگری استفاده کردید آن را بازنشانی کنید.</translation>
 <translation id="3428151540071562330">‏یک یا چند سرور نشانی وب الگوی سرور DnsOverHttpsTemplates نامعتبر است و استفاده نخواهد شد.</translation>
+<translation id="3428789896412418755">سابقه گروه‌بندی‌شده</translation>
 <translation id="3431216045099978607">برای خروج از حالت تمام صفحه و دیدن بارگیری، |<ph name="ACCELERATOR" />| را فشار دهید.</translation>
 <translation id="3432601291244612633">بستن صفحه</translation>
 <translation id="3433111389595862568">نرم‌افزار کنفرانس و مشارکت</translation>
@@ -3178,6 +3179,7 @@
 <translation id="7423283032694727565">‏دکمه مدیریت کوکی‌ها؛ برای مدیریت اولویت‌های کوکی در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="7427366580982928791">امنیت کودکان در اینترنت</translation>
 <translation id="7429429656042611765">اجرایی</translation>
+<translation id="7432774160230062882">‏هویتتان را به‌تأیید برسانید تا Chromium بتواند اطلاعات پرداخت شما را تکمیل کند.</translation>
 <translation id="7437289804838430631">افرودن اطلاعات تماس</translation>
 <translation id="7437490109271760224">بازی با ورق</translation>
 <translation id="7438338505272634288">‏مهاجمان ممکن است در سایتی که می‌خواهید بازدید کنید شما را فریب دهند تا نرم‌افزار مضری را نصب کنید که بر نحوه مرورتان تأثیر می‌گذارد — برای مثال، با تغییر صفحه اصلی یا نمایش آگهی‌های اضافی در سایت‌هایی که بازدید می‌کنید. ‏Chrome اکیداً توصیه می‌کند برای جلوگیری از آسیب، به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@
 <translation id="7831993212387676366">«فهرست خرید» چیست؟</translation>
 <translation id="7840103971441592723">ضبط صفحه شروع شده است</translation>
 <translation id="784137052867620416">اطلاعات آماری خرید</translation>
+<translation id="784404208867107517">سابقه گروه‌بندی‌شده</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{هیچ‌کدام}=1{۱ برنامه (<ph name="EXAMPLE_APP_1" />)}=2{۲ برنامه (<ph name="EXAMPLE_APP_1" />،‏ <ph name="EXAMPLE_APP_2" />)}one{# برنامه (<ph name="EXAMPLE_APP_1" />،‏ <ph name="EXAMPLE_APP_2" />،‏ <ph name="AND_MORE" />)}other{# برنامه (<ph name="EXAMPLE_APP_1" />،‏ <ph name="EXAMPLE_APP_2" />،‏ <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">‏بعداً سایتی که از آن بازدید می‌کنید می‌تواند برای شخصی‌سازی آگهی‌هایی که می‌بینید، موضوعات شما را از Chrome درخواست کند. Chrome با حفظ سابقه مرور و هویت شما، تا ۳ موضوع را هم‌رسانی می‌کند.</translation>
@@ -3438,6 +3441,7 @@
 <translation id="79338296614623784">شماره تلفن معتبری وارد کنید</translation>
 <translation id="7934414805353235750">‏<ph name="URL" /> می‌خواهد محتوای محافظت‌شده را پخش کند. Google هویت دستگاهتان را به تأیید می‌رساند.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">‏هویتتان را به‌تأیید برسانید تا Google Chrome بتواند اطلاعات پرداخت شما را تکمیل کند.</translation>
 <translation id="7937163678541954811">برای تسویه‌حساب سریع‌تر، کد تأیید این کارت رمزگذاری خواهد شد و در دستگاهتان ذخیره می‌شود</translation>
 <translation id="7937554595067888181">در <ph name="EXPIRATION_DATE_ABBR" /> منقضی می‌شود</translation>
 <translation id="7938958445268990899">گواهی سرور هنوز معتبر نیست.</translation>

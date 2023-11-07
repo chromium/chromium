@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1003363546227723021">Показывает фото, время, погоду и новости, когда ваше устройство находится в режиме ожидания</translation>
 <translation id="1014750484722996375">Рабочие столы</translation>
 <translation id="1018219910092211213">Не удается выполнить DNS-преобразование.</translation>
 <translation id="1018656279737460067">Отменено</translation>
@@ -532,7 +533,6 @@
 <translation id="4999333166442584738">Скрыть отчет</translation>
 <translation id="500920857929044050">Прекратить проверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Показывает фото, время, погоду и новости, когда ваше устройство находится в режиме ожидания</translation>
 <translation id="5035083460461104704">Цвет темы</translation>
 <translation id="5038292761217083259">цвета подсветки клавиатуры</translation>
 <translation id="5039804452771397117">Разрешить</translation>

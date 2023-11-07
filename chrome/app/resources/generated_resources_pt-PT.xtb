@@ -3176,13 +3176,6 @@ Quer pará-lo?</translation>
 <translation id="346298925039590474">Esta rede móvel ficará acessível a todos os utilizadores neste dispositivo</translation>
 <translation id="3464145797867108663">Adicionar perfil de trabalho</translation>
 <translation id="346546413339447252">Obtenha descontos para <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> e muito mais</translation>
-<translation id="3466476162566821406">Siga as instruções no telemóvel para validar o código. Certifique-se de que o Bluetooth e o Wi-Fi do telemóvel estão ativados.
-    <ph name="BR" />
-    <ph name="BR" />
-    Pode usar o telemóvel para adicionar as suas informações da Conta Google e do Wi-Fi ao dispositivo <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visível para dispositivos próximos como <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Telemóvel Android</translation>
 <translation id="3469583217479686109">Ferramenta de seleção</translation>
@@ -4822,7 +4815,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4769632191812288342">Tem a Proteção padrão</translation>
 <translation id="4770119228883592393">Autorização solicitada, prima ⌘ + Opção + seta para baixo para responder.</translation>
 <translation id="4773112038801431077">Atualize o Linux</translation>
-<translation id="4774456473286455263">Configure com o seu telemóvel Android</translation>
 <translation id="4775228465764358468">Um site pode guardar o seu idioma preferido ou os artigos que quer comprar. Estas informações estão disponíveis para o site e os respetivos subdomínios.</translation>
 <translation id="477548766361111120">Permitir que a extensão leia e altere este site</translation>
 <translation id="4776311127346151860">O dispositivo <ph name="DEVICE_NAME" /> foi ligado</translation>
@@ -6169,13 +6161,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5865508026715185451">A app <ph name="APP_NAME" /> será colocada em pausa em breve</translation>
 <translation id="586567932979200359">Está a executar o <ph name="PRODUCT_NAME" /> a partir da respectiva imagem de disco. Instalá-lo no computador permite executá-lo sem a imagem de disco e assegura que o mesmo é mantido atualizado.</translation>
 <translation id="5865733239029070421">Envia automaticamente estatísticas de utilização e relatórios de falhas para a Google.</translation>
-<translation id="5867855474018538405">Siga as instruções no telemóvel para ler o código QR. Certifique-se de que o Bluetooth e o Wi-Fi do telemóvel estão ativados.
-    <ph name="BR" />
-    <ph name="BR" />
-    Pode usar o telemóvel para adicionar as suas informações da Conta Google e do Wi-Fi ao dispositivo <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visível para dispositivos próximos como <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="5868434909835797817">O microfone está desativado no dispositivo</translation>
 <translation id="5868822853313956582">Seguir as cores do dispositivo</translation>
 <translation id="5869029295770560994">OK</translation>
@@ -7745,6 +7730,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7125932261198019860">Certifique-se de que a impressora está ligada à mesma rede Wi-Fi que o Chromebook ou use um cabo USB. <ph name="LINK_BEGIN" />Saiba mais acerca da compatibilidade<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Histórico de transferências</translation>
 <translation id="7128151990937044829">Apresentar um indicador na barra de endereço quando as notificações estão bloqueadas</translation>
+<translation id="7130438335435247835">Nome do Ponto de Acesso (APN)</translation>
 <translation id="7131040479572660648">Ler os seus dados em <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Adicionar pá&amp;gina...</translation>
 <translation id="7131431455372521159">Todos os TrackPoints foram desligados</translation>

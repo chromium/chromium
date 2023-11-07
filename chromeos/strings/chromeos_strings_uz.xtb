@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1003363546227723021">Qurilma kutish rejimiga oʻtganda rasmlar, vaqt, ob-havo va media axboroti chiqsin</translation>
 <translation id="1014750484722996375">Ish stollari</translation>
 <translation id="1018219910092211213">DNS manzil olinmadi</translation>
 <translation id="1018656279737460067">Bekor qilindi</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">Hisobotni yopish</translation>
 <translation id="500920857929044050">Tekshiruvni toʻxtatish</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Qurilma kutish rejimiga oʻtganda rasmlar, vaqt, ob-havo va media axboroti chiqsin.</translation>
 <translation id="5035083460461104704">Mavzu rangi</translation>
 <translation id="5038292761217083259">multi-rangli klaviatura</translation>
 <translation id="5039804452771397117">Ruxsat berish</translation>

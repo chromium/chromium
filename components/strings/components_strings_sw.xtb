@@ -1193,6 +1193,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3427342743765426898">Rudia Kuhariri</translation>
 <translation id="342781501876943858">Chromium inapendekeza ubadilishe nenosiri lako ikiwa ulilitumia tena kwenye tovuti zingine.</translation>
 <translation id="3428151540071562330">URI moja au zaidi ya violezo vya seva ya DnsOverHttpsTemplates si sahihi na haitatumika.</translation>
+<translation id="3428789896412418755">Historia Iliyowekwa kwenye Kikundi</translation>
 <translation id="3431216045099978607">Bofya |<ph name="ACCELERATOR" />| ili uondoke kwenye hali ya skrini nzima na uone kipakuliwa.</translation>
 <translation id="3432601291244612633">Funga ukurasa</translation>
 <translation id="3433111389595862568">Programu za Ushirikiano na Mikutano ya Video</translation>
@@ -3176,6 +3177,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7423283032694727565">Kitufe cha 'Dhibiti vidakuzi', washa ili udhibiti mapendeleo yako ya vidakuzi katika mipangilio ya Chrome</translation>
 <translation id="7427366580982928791">Usalama wa intaneti kwa watoto</translation>
 <translation id="7429429656042611765">Ukubwa wa Executive</translation>
+<translation id="7432774160230062882">Thibitisha kuwa ni wewe ili Chromium iweze kujaza maelezo yako ya malipo.</translation>
 <translation id="7437289804838430631">Ongeza Maelezo ya Mawasiliano</translation>
 <translation id="7437490109271760224">Michezo ya kadi</translation>
 <translation id="7438338505272634288">Wadukuzi walio kwenye tovuti unayojaribu kutembelea wanaweza kukuhadaa ili usakinishe programu hatari inayoathiri jinsi unavyovinjari — kwa mfano, kwa kubadilisha ukurasa wako wa kwanza au kukuonyesha matangazo ya ziada kwenye tovuti unazozitembelea. Chrome inapendekeza sana urudi kwenye ukurasa salama ili uepuke madhara. <ph name="BEGIN_LEARN_MORE_LINK" />Pata maelezo zaidi<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3410,6 +3412,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7831993212387676366">Je, orodha ya Ununuzi ni nini?</translation>
 <translation id="7840103971441592723">Imeanza kurekodi skrini</translation>
 <translation id="784137052867620416">Maarifa ya Ununuzi</translation>
+<translation id="784404208867107517">Historia iliyowekwa kwenye kikundi</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Hamna}=1{Programu 1 (<ph name="EXAMPLE_APP_1" />)}=2{Programu 2 (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{Programu # (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Baadaye, tovuti unayoitembelea inaweza kuiomba Chrome ili ione mada zako na iweke mapendeleo ya matangazo unayoona. Chrome hushiriki hadi mada 3 huku ikilinda historia ya kuvinjari na utambulisho wako.</translation>
@@ -3436,6 +3439,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="79338296614623784">Andika nambari sahihi ya simu</translation>
 <translation id="7934414805353235750"><ph name="URL" /> inataka kucheza maudhui yanayolindwa. Kitambulisho cha kifaa chako kitathibitishwa na Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Thibitisha kuwa ni wewe ili Google Chrome iweze kujaza maelezo yako ya malipo.</translation>
 <translation id="7937163678541954811">CVC ya kadi hii itasimbwa kwa njia fiche na kuhifadhiwa kwenye kifaa chako ili ulipe kwa haraka</translation>
 <translation id="7937554595067888181">Muda wa matumizi utakwisha <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Cheti cha seva bado sio halali.</translation>

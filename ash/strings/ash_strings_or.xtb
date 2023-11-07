@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">ଆପଣ ଭିଜିଟ କରିଥିବା ପୃଷ୍ଠା ଏବଂ ଖୋଲା ଥିବା ପୃଷ୍ଠା ସମେତ ୱେବସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="181103072419391116">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="1816896987747843206">ଏହା କେମେରା ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
-<translation id="1823280932251546115">ସ୍ଥିତି ଟ୍ରେ, ସମୟ <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ଇଥର୍ନେଟ୍: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ଲୋକେସନ ଆକ୍ସେସକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />କୁ ଅନ୍‌ପିନ୍ କରାଯାଇଛି</translation>
@@ -1197,6 +1188,7 @@
 <translation id="5788127256798019331">Play ଫାଇଲ୍ସ</translation>
 <translation id="5788535737706478207">ବନ୍ଦ କରାଯାଇଥିବା ଗତ ଟାବ କିମ୍ବା ୱିଣ୍ଡୋକୁ ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="5790085346892983794">ସଫଳ ହୋଇଛି</translation>
+<translation id="5802516411616338943">କୁଇକ ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
 <translation id="5804651031882187592">"SIMକୁ ଲକ କରନ୍ତୁ" ସେଟିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ସକ୍ରିୟ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="5823239091726045201">ୱେବରେ Google Tasks</translation>
@@ -1222,6 +1214,7 @@
 <translation id="5901630391730855834">ହଳଦିଆ</translation>
 <translation id="5911231045062997865">ବର୍ତ୍ତମାନ Lacros ୱିଣ୍ଡୋଗୁଡ଼ିକ ସମର୍ଥିତ ନୁହେଁ। ଅନ୍ୟ ଆପ୍ସ ସେଭ ହୋଇଯିବ।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">ନୂଆ ବିଜ୍ଞପ୍ତି, ମୋଟ <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5920710855273935292">ମାଇକ୍ ମ୍ୟୁଟ୍ କରାଯାଇଛି।</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ଚାଲୁ ଅଛି।</translation>

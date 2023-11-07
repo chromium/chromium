@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">Табын бүлэг - <ph name="TAB_COUNT" /> таб</translation>
 <translation id="17513872634828108">Нээлттэй цонх</translation>
 <translation id="1757620656501361327">Google Password Manager-н шинэчлэлт</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Хуудаснууд, жагсаалтад 1 хуудас байна}other{Хуудаснууд, жагсаалтад # хуудас байна}}</translation>
 <translation id="1778457539567749232">Уншаагүй болгож тэмдэглэх</translation>
 <translation id="1779766957982586368">Цонхыг хаах</translation>
 <translation id="1791662854739702043">Суулгасан</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">Хар</translation>
 <translation id="2421705177906985956">Яг одоо харуулах ямар ч сайт байхгүй байна</translation>
 <translation id="2426805022920575512">Өөр бүртгэл сонгох</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Видеонууд, жагсаалтад 1 видео байна}other{Видеонууд, жагсаалтад # видео байна}}</translation>
 <translation id="2433507940547922241">Харагдах байдал</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />-г урьдчилан үзэх</translation>
@@ -723,6 +725,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4864369630010738180">Нэвтэрч байна…</translation>
 <translation id="4866368707455379617"><ph name="MODULE" />-г Chrome-д суулгах боломжгүй байна</translation>
 <translation id="4871568871368204250">Синкийг унтраах</translation>
+<translation id="4874961007154620743">Унтраалттай үед та Chrome-н дотоодод олгодог зөвлөмжүүдийг харсан хэвээр байх болно</translation>
 <translation id="4875775213178255010">Агуулгын зөвлөмж</translation>
 <translation id="4877678010818027629">Нууцлалтай горимд нэвтрэх</translation>
 <translation id="4878404682131129617">Прокси серверээр туннель үүсгэж чадсангүй</translation>
@@ -1099,6 +1102,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6795633245022906657">Шинэ табыг шуурхай нээгээрэй. Энэ товчлолыг засахын тулд Тохиргоо руу очно уу.</translation>
 <translation id="6802555630140434547">Цонхыг хаана</translation>
 <translation id="6811034713472274749">Хуудсыг харахад бэлэн байна</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Зургууд, жагсаалтад 1 зураг байна}other{Зургууд, жагсаалтад # зураг байна}}</translation>
 <translation id="6813446258015311409">Chrome-д нэвтэрнэ үү, нээсэн.</translation>
 <translation id="6817747507826986771">Энэ хуудсыг шуурхай хуваалцаарай. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
 <translation id="6819199143469632133">Google-н зүйлээ төхөөрөмжөөр авахын тулд нэвтэрнэ үү</translation>
@@ -1112,6 +1116,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6846298663435243399">Ачаалж байна...</translation>
 <translation id="6850409657436465440">Таны таталт үргэлжилж байна</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> табыг хаасан</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Аудио файлууд, жагсаалтад 1 аудио файл байна}other{Аудио файлууд, жагсаалтад # аудио файл байна}}</translation>
 <translation id="685850645784703949">Discover by Google - унтраалттай байна</translation>
 <translation id="686366188661646310">Нууц үгийг устгах уу?</translation>
 <translation id="6864459304226931083">Зураг татах</translation>
@@ -1217,6 +1222,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7379900596734708416">Сайтуудад зориулсан Бараан загвар боломжтой байна</translation>
 <translation id="7388615499319468910">Сайтууд болон сурталчлагчид зарын гүйцэтгэлийг ойлгох боломжтой. Энэ тохиргоо унтраалттай байна.</translation>
 <translation id="7397416715506917976">Хуудасны статистикийг харах</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Бусад, жагсаалтад 1 файл байна}other{Бусад, жагсаалтад # файл байна}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome-г анх удаа ажиллуулах туршлага</translation>
 <translation id="7411224099004328643">Google Бүртгэлийн хэрэглэгч</translation>
@@ -1310,6 +1316,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7808889146555843082">Энэ нууц үгийг устгасан ч <ph name="SITE" /> дээрх таны бүртгэл устахгүй. <ph name="SITE" /> дээрх нууц үгээ өөрчлөн, эсвэл бүртгэлээ устган бусдаас хамгаална уу.</translation>
 <translation id="7810647596859435254">Дараахаар нээх...</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Бүх файл, жагсаалтад 1 файл байна}other{Бүх файл, жагсаалтад # файл байна}}</translation>
 <translation id="7815484226266492798">Урт дэлгэцийн агшин</translation>
 <translation id="7822705602465980873">Таныг нэвтэрсэн үед аюулгүй байдалтай холбоотой тохиолдлын дараа Gmail-д хамгаалалтыг нэмэх зэргээр таныг Google-н үйлчилгээнүүдэд хамгаалахын тулд энэ өгөгдлийг Google Бүртгэлтэй тань холбодог.</translation>
 <translation id="782705168687182233">Таны үйл ажиллагааг <ph name="BEGIN_LINK" />Google Бүртгэлд<ph name="END_LINK" /> тань хадгалсан.</translation>
@@ -1534,6 +1541,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> бэлэн байна</translation>
 <translation id="8937772741022875483">Chrome-н үйл ажиллагаагаа Дижитал хэрэглээнээс устгах уу?</translation>
+<translation id="893938492099608175">Таны тохиргооноос хамаарч Chrome мөн күүки, таны одоогийн URL болон байршлыг тань илгээж магадгүй</translation>
 <translation id="8942627711005830162">Өөр цонхонд нээх</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Энэ хэлийг татаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="8955719471735800169">Дээшээ очих</translation>

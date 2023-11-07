@@ -1190,6 +1190,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3427342743765426898">&amp;Ripeti modifica</translation>
 <translation id="342781501876943858">Chromium ti consiglia di reimpostare la password, se l'hai utilizzata su altri siti.</translation>
 <translation id="3428151540071562330">Uno o più URI del modello server DnsOverHttpsTemplates non sono validi e non verranno utilizzati.</translation>
+<translation id="3428789896412418755">Cronologia raggruppata</translation>
 <translation id="3431216045099978607">Premi |<ph name="ACCELERATOR" />| per uscire dalla modalità a schermo intero e visualizzare il download.</translation>
 <translation id="3432601291244612633">Chiudi pagina</translation>
 <translation id="3433111389595862568">Software di collaborazione e per conferenze</translation>
@@ -3174,6 +3175,7 @@ Ulteriori dettagli:
 <translation id="7423283032694727565">Pulsante Gestisci i cookie, attiva per gestire le preferenze relative ai cookie nelle impostazioni di Chrome</translation>
 <translation id="7427366580982928791">Sicurezza dei bambini su Internet</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Verifica la tua identità per consentire a Chromium di inserire i tuoi dati di pagamento.</translation>
 <translation id="7437289804838430631">Aggiungi informazioni di contatto</translation>
 <translation id="7437490109271760224">Giochi di carte</translation>
 <translation id="7438338505272634288">Gli utenti malintenzionati sul sito che stai tentando di visitare potrebbero indurti con l'inganno a installare software dannoso che influisce sulla tua navigazione, ad esempio cambiando la tua home page o mostrando annunci aggiuntivi sui siti che visiti. Chrome consiglia vivamente di tornare indietro per evitare problemi. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3408,6 +3410,7 @@ Ulteriori dettagli:
 <translation id="7831993212387676366">Che cos'è la lista della spesa?</translation>
 <translation id="7840103971441592723">Rilevamento degli schermi avviato</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784404208867107517">Cronologia raggruppata</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nessuna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Dopodiché, un sito che visiti può chiedere a Chrome i tuoi argomenti per personalizzare gli annunci che ti vengono mostrati. Chrome condivide fino a 3 argomenti e protegge la cronologia di navigazione e l'identità.</translation>
@@ -3434,6 +3437,7 @@ Ulteriori dettagli:
 <translation id="79338296614623784">Inserisci un numero di telefono valido</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vuole riprodurre contenuti protetti. Google verificherà l'identità del tuo dispositivo.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Verifica la tua identità per consentire a Google Chrome di inserire i tuoi dati di pagamento.</translation>
 <translation id="7937163678541954811">Il CVC di questa carta verrà criptato e salvato sul tuo dispositivo per un pagamento più rapido</translation>
 <translation id="7937554595067888181">Scadenza: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Il certificato del server non è ancora valido.</translation>

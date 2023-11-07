@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1003363546227723021">ເມື່ອໜ້າຈໍຂອງທ່ານບໍ່ໄດ້ເປີດນຳໃຊ້, ສະແດງຮູບພາບ, ເວລາ, ສະພາບອາກາດ ແລະ ຂໍ້ມູນສື່</translation>
 <translation id="1014750484722996375">ໂຕະ</translation>
 <translation id="1018219910092211213">ບໍ່ສາມາດລະບຸ DNS ໄດ້</translation>
 <translation id="1018656279737460067">ຍົກ​ເລີກ​ແລ້ວ</translation>
@@ -535,7 +536,6 @@
 <translation id="4999333166442584738">ເຊື່ອງລາຍງານ</translation>
 <translation id="500920857929044050">ຢຸດການທົດສອບ</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">ເມື່ອໜ້າຈໍຂອງທ່ານຢູ່ລ້າໆ, ໃຫ້ສະແດງຮູບພາບ, ເວລາ, ສະພາບອາກາດ ແລະ ຂໍ້ມູນມີເດຍ.</translation>
 <translation id="5035083460461104704">ສີຂອງຮູບແບບສີສັນ</translation>
 <translation id="5038292761217083259">ແປນພິມຫຼາກສີ</translation>
 <translation id="5039804452771397117">ອະ​ນຸ​ຍາດ​</translation>

@@ -131,6 +131,7 @@
 <translation id="146902737843070955">သင့်စီမံခန့်ခွဲသူက ဤပြောင်းလဲမှုအတွက် တောင်းဆိုထားသည်</translation>
 <translation id="1469148162491666137">၎င်းက ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုချက်များပါသည့် <ph name="APP1_NAME" />၊ <ph name="APP2_NAME" />၊ အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို သုံးခွင့်ပေးသည်။ အင်တာနက်စာမျက်နှာကို ပြန်လည်စတင်ရမည် (သို့) အက်ပ်ကို ပြန်စရမည်။</translation>
 <translation id="147310119694673958">ဖုန်းဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ဖွင့်ထားပြီး စက် ၁ ခု ချိတ်ဆက်ထားသည်။</translation>
 <translation id="1479909375538722835">မျောနေသော အများသုံးနိုင်မှု မီနူး</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />၊ Calendar ပြသမှုဖွင့်ရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -213,15 +214,6 @@
 <translation id="1796561540704213354">သင်ဝင်ကြည့်ထားသော စာမျက်နှာများနှင့် ဖွင့်ထားသော စာမျက်နှာများ ပါဝင်သော ဝဘ်ဆိုက်များ</translation>
 <translation id="181103072419391116">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားပါသည်</translation>
 <translation id="1816896987747843206">၎င်းက ကင်မရာခွင့်ပြုချက်ပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်</translation>
-<translation id="1823280932251546115">အခြေအနေပြအကန့်၊ အချိန် <ph name="TIME" />၊
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">အီသာနက်− <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">တည်နေရာသုံးခွင့် ဖွင့်ရန်</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ကို ပင်ဖြုတ်လိုက်သည်</translation>
@@ -890,6 +882,7 @@
 <translation id="4577990005084629481">အစမ်းကြည့်ရှုမှုများ ပြရန်</translation>
 <translation id="4578906031062871102">ဆက်တင်များမီနူး ဖွင့်ထားသည်</translation>
 <translation id="458210817642223147">GIF မှတ်တမ်းတင်ရန်</translation>
+<translation id="4582666543382004902">WiFi သုံးရန် ဟော့စပေါ့ ပိတ်လိုက်သည်။ ဟော့စပေါ့သုံးရန် WiFi ပိတ်ပါ။</translation>
 <translation id="4585337515783392668">အမည်မသိ လက်ခံစက်သို့ ကာ့စ်လုပ်ခြင်း ရပ်တန့်ရန်</translation>
 <translation id="4596144739579517758">အမှောင်နောက်ခံ ပိတ်ထားသည်</translation>
 <translation id="4611292653554630842">အကောင့်ထဲဝင်ရန်</translation>
@@ -1097,6 +1090,7 @@
 <translation id="5395308026110844773">ဖိုင်တွဲပြုလုပ်ရန် <ph name="IN_PLACE_APP" /> ပေါ်တွင် <ph name="DRAGGED_APP_NAME" /> ကို တင်သည်။</translation>
 <translation id="5397578532367286026">ဒီ အသုံးပြုသူ၏ သုံးစွဲမှု နှင့် မှတ်တမ်းကို chrome.com ရှိ (<ph name="MANAGER_EMAIL" />)၏ မန်နေဂျာက ဆန်းစစ် ကြည့်ရှု နိုင်သည်။</translation>
 <translation id="5400461572260843123">အမြန် ဆက်တင်များ၊ အကြောင်းကြားချက်စင်တာကို ဝင်ကြည့်ရန် 'ရှာဖွေရန် + ဘယ်ဘက်' ကို နှိပ်ပါ။</translation>
+<translation id="540713187982329711">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ဖွင့်ထားပြီး မည်သည့်စက်မျှ ချိတ်ဆက်မထားပါ။</translation>
 <translation id="5413656666631274079">ဆက်တင်များ စာမျက်နှာ</translation>
 <translation id="5414198321558177633">ပရိုဖိုင်စာရင်းကို ပြန်လည် စတင်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="5426063383988017631">ဆက်တင်များမီနူး ပိတ်ထားသည်</translation>
@@ -1188,9 +1182,11 @@
 <translation id="576341972084747908">အန္တရာယ်ရှိသော <ph name="FILENAME" /> ကို ဒေါင်းလုဒ်လုပ်ခြင်း</translation>
 <translation id="576453121877257266">'ညအလင်းရောင်' ဖွင့်ထားသည်။</translation>
 <translation id="5764569119212455782">နောက်ဆုံးရွေးထားသော ဘာသာစကားသို့ ပြောင်းရန်</translation>
+<translation id="5767730327234918501">သင့်စီမံခန့်ခွဲသူက ဟော့စပေါ့ ပိတ်လိုက်သည်။</translation>
 <translation id="5769373120130404283">အချက်အလက်လုံခြုံမှု ဖန်သားပြင်</translation>
 <translation id="5773950591113557721">၎င်းက ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုချက်များပါသည့် <ph name="APP_NAME" />၊ အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို သုံးခွင့်ပေးသည်</translation>
 <translation id="5774295353725270860">ဖိုင်များ အက်ပ်ကို ဖွင့်ရန်</translation>
+<translation id="5775936059231769503">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ပိတ်လိုက်သည်။</translation>
 <translation id="5777841717266010279">မျက်နှာပြင် ဝေမျှနေခြင်း ရပ်လိုပါသလား?</translation>
 <translation id="5779721926447984944">ပင်ထိုးထားသော ဖိုင်များ</translation>
 <translation id="5785221443435874078">ဤအကြံပြုချက်ကို ဖယ်ရှားပါ</translation>
@@ -1508,6 +1504,7 @@
 <translation id="7068360136237591149">ဖိုင်များ ဖွင့်ပါ</translation>
 <translation id="7076293881109082629">အကောင့်ထံဝင်ရောက်နေသည်</translation>
 <translation id="7076878155205969899">အသံတိတ်ပါ</translation>
+<translation id="7084678090004350185">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ဖွင့်ထားပြီး စက် <ph name="DEVICECOUNT" /> ခု ချိတ်ဆက်ထားသည်။</translation>
 <translation id="7086931198345821656">ဤအပ်ဒိတ်သည် သင့် <ph name="DEVICE_TYPE" /> ကို ပါဝါဝရှ် ပြုလုပ်ရန် သတ်မှတ်ထားသည်။ ဒေတာအားလုံးကို ဖျက်ပါမည်။ နောက်ဆုံးထွက် <ph name="SYSTEM_APP_NAME" /> အပ်ဒိတ်အကြောင်း ပိုမိုလေ့လာပါ။</translation>
 <translation id="7088960765736518739">ခလုတ်ဖြင့် အသုံးပြုခြင်း</translation>
 <translation id="709015856939120012">စာမျက်နှာတွင် ဇူးမ်ဆွဲရန်</translation>

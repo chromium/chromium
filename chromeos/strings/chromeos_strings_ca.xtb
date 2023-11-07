@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1003363546227723021">Quan la pantalla està inactiva, mostra fotos, l'hora, el temps i informació multimèdia</translation>
 <translation id="1014750484722996375">Escriptoris</translation>
 <translation id="1018219910092211213">No es pot resoldre el DNS</translation>
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Instal·la ChromeOS Flex</translation>
 <translation id="1856388568474281774">Fletxa avall</translation>
 <translation id="1858620243986915808">Adjunta una captura de pantalla</translation>
+<translation id="1871413952174074704">L'APN no pot tenir més de <ph name="CHAR_LIMIT" /> caràcters</translation>
 <translation id="1871569928317311284">Desactiva el tema fosc</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Desactiva el mode fosc</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Amaga l'informe</translation>
 <translation id="500920857929044050">Atura la prova</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Quan la pantalla està inactiva, mostra fotos, l'hora, el temps i informació multimèdia.</translation>
 <translation id="5035083460461104704">Color del tema</translation>
 <translation id="5038292761217083259">teclat multicolor</translation>
 <translation id="5039804452771397117">Permet</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Rosa clar</translation>
 <translation id="982713511914535780">Executa la prova de descàrrega</translation>
 <translation id="987264212798334818">General</translation>
+<translation id="995062385528875723">No es poden utilitzar lletres accentuades, alfabets no llatins ni símbols</translation>
 </translationbundle>

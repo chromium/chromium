@@ -213,15 +213,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1796561540704213354">Bisitatu dituzun orrialdeak eta irekitako orriak dituzten webguneak</translation>
 <translation id="181103072419391116">Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="1816896987747843206">Kamera erabiltzeko baimena daukaten aplikazio eta webgune guztiek kamera atzitu ahal izango dute</translation>
-<translation id="1823280932251546115">Egoera-erretilua. Ordua <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Aktibatu kokapenerako sarbidea</translation>
 <translation id="1830308660060964064">Kendu zaio aingura <ph name="ITEM_TITLE" /> elementuari</translation>
@@ -564,6 +555,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3340978935015468852">ezarpenak</translation>
 <translation id="3341303451326249809">Atera da pantaila-argazkia</translation>
 <translation id="334252345105450327">Atera pantaila-argazki bat</translation>
+<translation id="3346728094401457853">Idatzi <ph name="EMAIL" /> kontuaren pasahitza gailurako</translation>
 <translation id="334927402682780278">Hautatu kurtsoretik lerroaren amaiera arteko testua</translation>
 <translation id="3349345708646875009">Ireki ataza-kudeatzailea</translation>
 <translation id="3364721542077212959">Arkatzaren tresnak</translation>
@@ -1197,6 +1189,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="5788127256798019331">Play fitxategiak</translation>
 <translation id="5788535737706478207">Ireki berriro itxitako azken fitxa edo leihoa</translation>
 <translation id="5790085346892983794">Behar bezala egin da</translation>
+<translation id="5802516411616338943">Ireki Ezarpen bizkorrak</translation>
 <translation id="5804651031882187592">Desaktibatu "Blokeatu SIMa" ezarpena</translation>
 <translation id="5805809050170488595">Sakatu hau <ph name="NETWORK_NAME" /> aktibatzeko</translation>
 <translation id="5823239091726045201">Sareko Google Zereginak</translation>
@@ -1222,6 +1215,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="5901630391730855834">Horia</translation>
 <translation id="5911231045062997865">Une honetan ez dira onartzen Lacros-eko leihoak. Gainerako aplikazioak gorde egingo dira.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Jakinarazpen berria, <ph name="NOTIFICATION_COUNT" /> guztira</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5920710855273935292">Mikrofonoa desaktibatuta dago.</translation>
 <translation id="5946788582095584774">Aktibatuta dago <ph name="FEATURE_NAME" />.</translation>
@@ -1584,6 +1578,7 @@ Berriki instalatu da</translation>
 <translation id="7489261257412536105">Ezarri pantaila osoko modua edo irten bertatik</translation>
 <translation id="7490360161041035804">Fitxategi garrantzitsuak aingura ditzakezu; esate baterako, Google Drive-ko fitxategiak. Ainguratzeko, pasatu erakuslea elementu baten gainetik edo ireki Fitxategiak eta egin klik eskuineko botoiarekin elementu batean.</translation>
 <translation id="7497767806359279797">Aukeratu hizkuntza eta teklatua</translation>
+<translation id="7507162824403726948">Bukatu zure identitatea egiaztatzen</translation>
 <translation id="7508690557411636492">Azken hilabetean ireki da</translation>
 <translation id="7509246181739783082">Egiaztatu zeu zarela</translation>
 <translation id="7512509370370076552">Eskuineko botoiarekin klik egiteko lasterbidea Alt + klik izatetik <ph name="LAUNCHER_KEY_NAME" /> tekla + klik izatera pasatu da</translation>

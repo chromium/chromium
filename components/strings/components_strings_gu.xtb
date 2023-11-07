@@ -1193,6 +1193,7 @@
 <translation id="3427342743765426898">&amp;ફરી ફેરફાર કરો</translation>
 <translation id="342781501876943858">જો તમે અન્ય સાઇટ પર તમારા પાસવર્ડનો ફરી ઉપયોગ કર્યો હોય, તો Chromium તેને રીસેટ કરવાનો સુઝાવ આપે છે.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates સર્વરના નમૂનાની એક કે તેથી વધુ URI અમાન્ય છે અને તેનો ઉપયોગ કરવામાં આવશે નહીં.</translation>
+<translation id="3428789896412418755">ગ્રૂપ કરેલો ઇતિહાસ</translation>
 <translation id="3431216045099978607">પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળીને ડાઉનલોડ જોવા માટે |<ph name="ACCELERATOR" />| દબાવો.</translation>
 <translation id="3432601291244612633">પેજ બંધ કરો</translation>
 <translation id="3433111389595862568">સહયોગ અને કૉન્ફરન્સ માટેના સૉફ્ટવેર</translation>
@@ -3178,6 +3179,7 @@
 <translation id="7423283032694727565">'કુકી મેનેજ કરો' બટન, Chrome સેટિંગમાં કુકીની તમારી પસંદગીઓ મેનેજ કરવા માટે સક્રિય કરો</translation>
 <translation id="7427366580982928791">ઇન્ટરનેટ પર બાળકોની સુરક્ષા સંબંધિત કન્ટેન્ટ</translation>
 <translation id="7429429656042611765">એક્ઝિક્યૂટિવ</translation>
+<translation id="7432774160230062882">આ તમે જ છો તેની ચકાસણી કરો, જેથી Chromium તમારી ચુકવણીની માહિતી ભરી શકે.</translation>
 <translation id="7437289804838430631">સંપર્ક માહિતી ઉમેરો</translation>
 <translation id="7437490109271760224">પત્તાની ગેમ</translation>
 <translation id="7438338505272634288">તમે મુલાકાત લેવાનો પ્રયાસ કરી રહ્યાં છો તે સાઇટ પરના હુમલાખોરો યુક્તિ અજમાવીને તમને હાનિકારક સૉફ્ટવેર ઇન્સ્ટૉલ કરવા છેતરી શકે છે જે તમારી બ્રાઉઝ કરવાની રીતને અસર કરી શકે છે — દાખલા તરીકે, તમારા હોમપેજમાં ફેરફાર કરીને કે તમે મુલાકાત લઈ રહ્યાં હો તે સાઇટ પર વધારાની જાહેરાતો બતાવી શકે છે. નુકસાન ટાળવા માટે, Chrome દ્વારા સલામતી પર પાછા ફરવાનો સુઝાવ ભારપૂર્વક આપવામાં આવે છે. <ph name="BEGIN_LEARN_MORE_LINK" />વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@
 <translation id="7831993212387676366">શૉપિંગનું લિસ્ટ શું છે?</translation>
 <translation id="7840103971441592723">સ્ક્રીન કૅપ્ચરની સુવિધા શરૂ કરી છે</translation>
 <translation id="784137052867620416">ખરીદીની જાણકારી</translation>
+<translation id="784404208867107517">ગ્રૂપ કરેલો ઇતિહાસ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{કોઈ નહીં}=1{1 ઍપ (<ph name="EXAMPLE_APP_1" />)}=2{2 ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ઍપ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">પછીથી, તમને જોવા મળતી જાહેરાતોને મનગમતી બનાવવા માટે તમે મુલાકાત લેશો એવી કોઈ સાઇટ, Chromeને તમારા વિષયો બદલ પૂછી શકે છે. Chrome તમારો બ્રાઉઝિંગ ઇતિહાસ અને ઓળખ છુપાવવાની સાથે વધુમાં વધુ 3 વિષય શેર કરી શકે છે.</translation>
@@ -3438,6 +3441,7 @@
 <translation id="79338296614623784">એક માન્ય ફોન નંબર દાખલ કરો</translation>
 <translation id="7934414805353235750"><ph name="URL" /> સુરક્ષિત કન્ટેન્ટ ચલાવવા માગે છે. Google દ્વારા તમારા ડિવાઇસની ઓળખ ચકાસવામાં આવશે.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">આ તમે જ છો તેની ચકાસણી કરો, જેથી Google Chrome તમારી ચુકવણીની માહિતી ભરી શકે.</translation>
 <translation id="7937163678541954811">આ કાર્ડના CVCનો એન્ક્રિપ્ટેડ હશે અને વધુ ઝડપી ચેકઆઉટ માટે તેને તમારા ડિવાઇસ પર સાચવવામાં આવશે</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />ના રોજ સમાપ્ત થાય છે</translation>
 <translation id="7938958445268990899">સર્વરનું પ્રમાણપત્ર હજી માન્ય નથી.</translation>

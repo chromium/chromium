@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
+<translation id="1003363546227723021">Uma isikrini sakho singasebenzi, bonisa izithombe, isikhathi, isimo sezulu, nolwazi lwemidiya</translation>
 <translation id="1014750484722996375">Amadeski</translation>
 <translation id="1018219910092211213">Ayikwazi ukuxazulula i-DNS</translation>
 <translation id="1018656279737460067">Kukhanseliwe</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">Fihla umbiko</translation>
 <translation id="500920857929044050">Misa ukuhlola</translation>
 <translation id="5017508259293544172">I-LEAP</translation>
-<translation id="5019310272469539976">Uma isikrini sakho singasebenzi, bonisa izithombe, isikhathi, isimo sezulu, nolwazi lwemidiya.</translation>
 <translation id="5035083460461104704">Umbala wetimu</translation>
 <translation id="5038292761217083259">imibala eminingi yekhibhodi</translation>
 <translation id="5039804452771397117">Vumela</translation>

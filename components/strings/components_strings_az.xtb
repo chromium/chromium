@@ -1191,6 +1191,7 @@
 <translation id="3427342743765426898">Yenidən düzəliş edin...</translation>
 <translation id="342781501876943858">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chromium onu sıfırlamağınızı tövsiyə edir.</translation>
 <translation id="3428151540071562330">Bir və ya bir neçə DnsOverHttpsTemplates server şablonu URI'si yanlışdır və istifadə edilməyəcək.</translation>
+<translation id="3428789896412418755">Qruplaşdırılmış tarixçə</translation>
 <translation id="3431216045099978607">Tam ekrandan çıxmaq və endirməyə baxmaq üçün |<ph name="ACCELERATOR" />| düyməsini basın.</translation>
 <translation id="3432601291244612633">Səhifəni bağlayın</translation>
 <translation id="3433111389595862568">Əməkdaşlıq və konfrans təşkili üzrə proqram təminatı</translation>
@@ -3174,6 +3175,7 @@
 <translation id="7423283032694727565">"Kukiləri idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında kuki tərcihlərini idarə edin</translation>
 <translation id="7427366580982928791">Uşaq internet təhlükəsizliyi</translation>
 <translation id="7429429656042611765">Biznes klass</translation>
+<translation id="7432774160230062882">Chromium-un ödəniş məlumatlarını doldurması üçün kimliyi doğrulayın.</translation>
 <translation id="7437289804838430631">Kontakt Məlumatı Əlavə Edin</translation>
 <translation id="7437490109271760224">Kart oyunları</translation>
 <translation id="7438338505272634288">Daxil olduğunuz saytda hücumçular əsas səhifəni dəyişməklə və ya əlavə reklamlar göstərməklə sizi axtarış təcrübənizə təsir edən zərərli proqram təminatı quraşdırmağa təşviq edə bilər. Zərərdən yayınmaq üçün Chrome geri qayıtmağınızı təkidlə tövsiyə edir. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3408,6 +3410,7 @@
 <translation id="7831993212387676366">Alış-veriş siyahısı nədir?</translation>
 <translation id="7840103971441592723">Ekranın çəkilməsi başladılıb</translation>
 <translation id="784137052867620416">Şoppinq üzrə statistik məlumat</translation>
+<translation id="784404208867107517">Qruplaşdırılmış tarixçə</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Heç bir tətbiq}=1{1 tətbiq (<ph name="EXAMPLE_APP_1" />)}=2{2 tətbiq (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# tətbiq (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Daha sonra ziyarət etdiyiniz sayt gördüyünüz reklamları fərdiləşdirmək üçün Chrome'dan mövzularınızı istəyə bilər. Baxış tarixçənizi və kimliyinizi qoruyarkən Chrome 3-ə qədər mövzu paylaşır.</translation>
@@ -3434,6 +3437,7 @@
 <translation id="79338296614623784">Düzgün telefon nömrəsi daxil edin</translation>
 <translation id="7934414805353235750"><ph name="URL" /> qorunan kontenti oxutmaq istəyir. Cihazın kimliyi Google tərəfindən doğrulanacaq.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Google Chrome-un ödəniş məlumatlarını doldurması üçün kimliyi doğrulayın.</translation>
 <translation id="7937163678541954811">Bu kartın CVC-si şifrələnəcək və sürətli ödəmə üçün cihazda yadda saxlanacaq</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> tarixində bitir</translation>
 <translation id="7938958445268990899">Server sertifikatı hələ etibarlı deyil.</translation>

@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">ເວັບໄຊຮວມມີໜ້າຕ່າງໆທີ່ທ່ານເຄີຍເຂົ້າ ແລະ ໜ້າທີ່ເປີດໄວ້</translation>
 <translation id="181103072419391116">ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="1816896987747843206">ການດຳເນີນການນີ້ອະນຸຍາດສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບໃຫ້ແກ່ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດການອະນຸຍາດກ້ອງຖ່າຍຮູບ</translation>
-<translation id="1823280932251546115">ຖາດສະຖານະ, ເວລາ <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ອີເທີເນັດ: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ເປີດສິດເຂົ້າເຖິງສະຖານທີ່</translation>
 <translation id="1830308660060964064">ຖອນປັກໝຸດ <ph name="ITEM_TITLE" /> ແລ້ວ</translation>

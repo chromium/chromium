@@ -1538,9 +1538,6 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, le transfert 
 Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisateurs peuvent transférer des fichiers vers Google Drive même s'ils sont connectés à un réseau mobile.</translation>
 <translation id="2269319728625047531">Activer l'affichage de l'autorisation de synchronisation lors de la connexion</translation>
 <translation id="2269837888511509900">Activer le partage des identifiants de l'utilisateur</translation>
-<translation id="2270113153862588648">Si vous activez cette règle, l'attestation à distance est activée pour l'appareil. Un certificat est automatiquement généré et importé sur le serveur de gestion des appareils.
-
-Si vous désactivez cette règle, ou si vous ne la configurez pas, aucun certificat n'est généré, et les appels à l'API <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> échouent.</translation>
 <translation id="2270747976331889601">Activer une fonctionnalité de sécurité TLS 1.3 pour les ancres d'approbation locales.</translation>
 <translation id="22754818344448444">Autoriser les utilisateurs à sélectionner un modèle de bureau à charger</translation>
 <translation id="2277117728011250860">Interdire l'utilisation du filtrage des performances d'accessibilité.</translation>

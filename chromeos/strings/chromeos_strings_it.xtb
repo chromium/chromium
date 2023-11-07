@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1003363546227723021">Quando il tuo schermo è inattivo, mostra foto, ora, meteo e informazioni multimediali</translation>
 <translation id="1014750484722996375">Scrivanie</translation>
 <translation id="1018219910092211213">Impossibile risolvere la richiesta DNS</translation>
 <translation id="1018656279737460067">Operazione annullata</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Installa ChromeOS Flex</translation>
 <translation id="1856388568474281774">Freccia giù</translation>
 <translation id="1858620243986915808">Allega screenshot</translation>
+<translation id="1871413952174074704">L'APN non può contenere più di <ph name="CHAR_LIMIT" /> caratteri</translation>
 <translation id="1871569928317311284">Disattiva il tema scuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Disattiva la modalità Buio</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Nascondi rapporto</translation>
 <translation id="500920857929044050">Interrompi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Quando il tuo schermo è inattivo, mostra foto, ora, meteo e informazioni multimediali.</translation>
 <translation id="5035083460461104704">Colore tema</translation>
 <translation id="5038292761217083259">Tastiera multicolore</translation>
 <translation id="5039804452771397117">Consenti</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Rosa chiaro</translation>
 <translation id="982713511914535780">Esegui test esaurimento batteria</translation>
 <translation id="987264212798334818">Generali</translation>
+<translation id="995062385528875723">Impossibile utilizzare lettere accentate, alfabeto non latino o simboli</translation>
 </translationbundle>

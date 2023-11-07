@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छ}}</translation>
 <translation id="2410940059315936967">तपाईंले खोल्ने साइटले अन्य साइटका फोटो, विज्ञापन र टेक्स्टलगायतका सामग्री इम्बेड गर्न सक्छ। यी अन्य साइटहरूले सेट गरेका कुकीहरूलाई तेस्रो पक्षीय कुकीहरू भनिन्छ।</translation>
 <translation id="2434158240863470628">डाउनलोड सम्पन्न भयो <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">तपाईंले यो साइटलाई केही समयका लागि तेस्रो पक्षीय कुकी प्रयोग गर्ने अनुमति दिनुभयो। यसले गर्दा ब्राउजिङको सुरक्षाको स्तर कम हुन्छ तर साइटका सुविधाहरूले गर्नु पर्ने जसरी काम गर्न सक्छन्। <ph name="BEGIN_LINK" />प्रतिक्रिया पठाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">इन्कोग्निटो मोडमा केही साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="2442870161001914531">सधैँ साइटको डेस्कटप भ्यू देखाइयोस्</translation>
 <translation id="2469312991797799607">तपाईंले यो कारबाही गर्नुभयो भने <ph name="ORIGIN" /> र यसअन्तर्गत रहेका सबै साइटहरूले भण्डारण गरेका सबै डेटा तथा कुकीहरू मेटिने छन्</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4008040567710660924">कुनै खास साइटमा कुकीहरूलाई अनुमति दिनुहोस्।</translation>
 <translation id="4046123991198612571">अर्को ट्र्याक</translation>
-<translation id="4053720452172726777">Google Chrome आफू अनुकूल र नियन्त्रण गर्नुहोस्</translation>
 <translation id="4149890623864272035">तपाईंले कुकीलगायतका स्थानीय रूपमा भण्डारण गरिएका सबै जानकारी मेटाउन र यस वेबसाइटलाई दिइएका सबै अनुमति रिसेट गर्न खोज्नुभएकै हो?</translation>
 <translation id="4149994727733219643">वेब पृष्ठहरूका लागि सरलीकृत दृश्य</translation>
 <translation id="4151930093518524179">डिफल्ट जुम</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">मेटाउनुहोस् र रिसेट गर्नुहोस्</translation>
 <translation id="4645575059429386691">तपाईँको अविभावक द्वारा प्रबन्ध गरिएको</translation>
 <translation id="4670064810192446073">भर्चुअल रियालिटी</translation>
+<translation id="4673958474310291465">केही बेरका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुहोस्। यसो गर्दा सुरक्षाको स्तर कम हुन्छ तर साइटका सुविधाहरूले गर्नु पर्ने जसरी काम गर्न सक्छन्</translation>
 <translation id="4751476147751820511">गति वा प्रकाशसम्बन्धी सेन्सरहरू</translation>
 <translation id="4779083564647765204">जुम</translation>
 <translation id="4811450222531576619">यो पेजको स्रोत र विषयका बारेमा जान्नुहोस्</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
 <translation id="6205314730813004066">विज्ञापनको गोपनीयता</translation>
 <translation id="6207207788774442484">जानकारी मेटाउनुहोस् र अनुमति रिसेट गर्नुहोस्</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> विकल्पहरू</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' अनइन्स्टल गर्ने हो?</translation>
 <translation id="6262191102408817757">तपाईंको अन्तिम ट्याबका आधारमा</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> र <ph name="PERMISSION_2" /> ब्लक गरियो</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{१ चयन गरियो}other{# चयन गरिए}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> चयन गरिए।  विकल्पहरू स्क्रिनको शीर्षभागको नजिकै उपलब्ध छन्</translation>
+<translation id="7137403271056944713">MIDI डिभाइस कन्ट्रोल/रिप्रोग्राम</translation>
 <translation id="7141896414559753902">साइटहरूलाई पपअपहरू देखाउन र रिडिरेक्ट गर्नबाट रोक्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> के.बि.</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>

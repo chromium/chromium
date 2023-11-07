@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}}</translation>
 <translation id="2410940059315936967">アクセスしたサイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。こうした他のサイトによって設定された Cookie は「サードパーティ Cookie」と呼ばれます。</translation>
 <translation id="2434158240863470628">ダウンロードが完了しました<ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">このサイトにサードパーティ Cookie の使用を一時的に許可しました。ブラウジングの保護の強度は低下しますが、サイトが適切に機能する可能性が高くなります。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">シークレット モードでは、一部サイトの機能が使用できなくなる可能性があります</translation>
 <translation id="2442870161001914531">常に PC 版サイトを表示する</translation>
 <translation id="2469312991797799607">この操作を行うと、<ph name="ORIGIN" /> とそのドメインの全サイトのデータと Cookie がすべて削除されます</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4008040567710660924">特定のサイトの Cookie を許可します。</translation>
 <translation id="4046123991198612571">次のトラック</translation>
-<translation id="4053720452172726777">Google Chrome の設定</translation>
 <translation id="4149890623864272035">Cookie を含むすべてのローカルデータを削除し、このウェブサイトに対するすべての権限をリセットしてもよろしいですか？</translation>
 <translation id="4149994727733219643">ウェブページの簡易表示</translation>
 <translation id="4151930093518524179">デフォルトのズーム</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">削除してリセット</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
+<translation id="4673958474310291465">サードパーティ Cookie を一時的に許可してみてください。保護の強度は低下しますが、サイトが適切に機能する可能性が高くなります</translation>
 <translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
 <translation id="4779083564647765204">ズーム</translation>
 <translation id="4811450222531576619">ソースとトピックの詳細</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6205314730813004066">広告プライバシー</translation>
 <translation id="6207207788774442484">データを削除して権限をリセット</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> のオプション</translation>
 <translation id="6231752747840485235">「<ph name="APP_NAME" />」をアンインストールしますか？</translation>
 <translation id="6262191102408817757">最後のタブに基づく</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />をブロック</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 件を選択済み}other{# 件を選択済み}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> 件選択されています。オプションは画面上部にあります</translation>
+<translation id="7137403271056944713">MIDI デバイス コントロール / 再プログラミング</translation>
 <translation id="7141896414559753902">サイトでのポップアップ表示とリダイレクトをブロックする（推奨）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">更新</translation>

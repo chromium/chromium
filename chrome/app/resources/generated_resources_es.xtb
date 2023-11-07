@@ -3172,13 +3172,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="346298925039590474">Esta red móvil estará disponible para todos los usuarios de este dispositivo</translation>
 <translation id="3464145797867108663">Añadir perfil de trabajo</translation>
 <translation id="346546413339447252">Recibir descuentos de <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> y más</translation>
-<translation id="3466476162566821406">Sigue las instrucciones de tu teléfono para verificar el código. Asegúrate de que las conexiones Bluetooth y Wi-Fi de tu teléfono estén activadas.
-    <ph name="BR" />
-    <ph name="BR" />
-    Puedes usar tu teléfono para añadir la información de tu conexión Wi-Fi y de tu cuenta de Google a tu <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Se mostrará a los dispositivos cercanos como <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />.</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
 <translation id="3469583217479686109">Herramienta de selección</translation>
@@ -4814,7 +4807,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4769632191812288342">Estás usando la protección estándar</translation>
 <translation id="4770119228883592393">Permiso solicitado, pulsa ⌘ + Opción + flecha hacia abajo para responder</translation>
 <translation id="4773112038801431077">Actualizar Linux</translation>
-<translation id="4774456473286455263">Configurar con tu teléfono Android</translation>
 <translation id="4775228465764358468">Es posible que un sitio guarde el idioma que prefieres o los artículos que quieres comprar. Esta información está disponible para el sitio y sus subdominios.</translation>
 <translation id="477548766361111120">Permitir que la extensión lea y modifique este sitio</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> se ha conectado</translation>
@@ -6155,13 +6147,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5865508026715185451"><ph name="APP_NAME" /> se pausará pronto</translation>
 <translation id="586567932979200359">Estás ejecutando <ph name="PRODUCT_NAME" /> desde la imagen de disco. Al instalar la aplicación en tu ordenador, podrás ejecutarla sin la imagen de disco y, de esta forma, te asegurarás de que siempre esté actualizada.</translation>
 <translation id="5865733239029070421">Envía automáticamente estadísticas de uso e informes sobre fallos a Google</translation>
-<translation id="5867855474018538405">Sigue las instrucciones de tu teléfono para escanear el código QR. Asegúrate de que las conexiones Bluetooth y Wi-Fi de tu teléfono estén activadas.
-    <ph name="BR" />
-    <ph name="BR" />
-    Puedes usar tu teléfono para añadir la información de tu conexión Wi-Fi y de tu cuenta de Google a tu <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Se mostrará a los dispositivos cercanos como <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />.</translation>
 <translation id="5868434909835797817">El micrófono está desactivado en tu dispositivo</translation>
 <translation id="5868822853313956582">Seguir colores del dispositivo</translation>
 <translation id="5869029295770560994">Entendido</translation>
@@ -7731,6 +7716,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7125932261198019860">Asegúrate de que la impresora esté conectada a la misma red Wi-Fi que tu Chromebook o usa un cable USB. <ph name="LINK_BEGIN" />Más información sobre la compatibilidad<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historial de descargas</translation>
 <translation id="7128151990937044829">Mostrar un indicador en la barra de direcciones cuando se bloquee una notificación</translation>
+<translation id="7130438335435247835">Nombre de punto de acceso (APN)</translation>
 <translation id="7131040479572660648">Leer tus datos en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Añadir pá&amp;gina...</translation>
 <translation id="7131431455372521159">Todos los TrackPoints se han desconectado</translation>

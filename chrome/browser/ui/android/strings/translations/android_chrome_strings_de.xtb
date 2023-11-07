@@ -139,6 +139,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1750259112639922169">Tabgruppe – <ph name="TAB_COUNT" /> Tabs</translation>
 <translation id="17513872634828108">Geöffnete Tabs</translation>
 <translation id="1757620656501361327">Hinweis zum Google Passwortmanager</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Seiten, 1 Seite in der Liste}other{Seiten, # Seiten in der Liste}}</translation>
 <translation id="1778457539567749232">Als ungelesen markieren</translation>
 <translation id="1779766957982586368">Fenster schließen</translation>
 <translation id="1791662854739702043">Installiert</translation>
@@ -247,6 +248,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2414886740292270097">Dunkel</translation>
 <translation id="2421705177906985956">Momentan sind keine Websites vorhanden</translation>
 <translation id="2426805022920575512">Anderes Konto auswählen</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videos, 1 Video in der Liste}other{Videos, # Videos in der Liste}}</translation>
 <translation id="2433507940547922241">Darstellung</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2439153523196674349">Vorschau von <ph name="SITE_NAME" /></translation>
@@ -722,6 +724,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="4864369630010738180">Anmeldung erfolgt...</translation>
 <translation id="4866368707455379617"><ph name="MODULE" /> kann nicht für Chrome installiert werden</translation>
 <translation id="4871568871368204250">Synchronisierung ausschalten</translation>
+<translation id="4874961007154620743">Wenn dies deaktiviert ist, werden weiterhin Vorschläge angezeigt, die Chrome lokal bereitstellt</translation>
 <translation id="4875775213178255010">Inhaltsvorschläge</translation>
 <translation id="4877678010818027629">Inkognitomodus aktivieren</translation>
 <translation id="4878404682131129617">Tunnelerstellung via Proxyserver ist fehlgeschlagen</translation>
@@ -1098,6 +1101,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6795633245022906657">Öffnet schnell einen neuen Tab. Wenn du diese Verknüpfung bearbeiten möchtest, rufe die Einstellungen auf.</translation>
 <translation id="6802555630140434547">Das Fenster wird geschlossen</translation>
 <translation id="6811034713472274749">Seitenansicht bereit</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Bilder, 1 Bild in der Liste}other{Bilder, # Bilder in der Liste}}</translation>
 <translation id="6813446258015311409">In Chrome anmelden, geöffnet.</translation>
 <translation id="6817747507826986771">Diese Seite schnell teilen. Zum Ändern Schaltfläche gedrückt halten.</translation>
 <translation id="6819199143469632133">Melde dich an, um auf deine Inhalte bei Google zuzugreifen</translation>
@@ -1111,6 +1115,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6846298663435243399">Wird geladen…</translation>
 <translation id="6850409657436465440">Download noch in Bearbeitung</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> Tabs geschlossen</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Audiodateien, 1 Audiodatei in der Liste}other{Audiodateien, # Audiodateien in der Liste}}</translation>
 <translation id="685850645784703949">Discover von Google – aus</translation>
 <translation id="686366188661646310">Passwort löschen?</translation>
 <translation id="6864459304226931083">Bild herunterladen</translation>
@@ -1216,6 +1221,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7379900596734708416">Dunkles Design für Websites verfügbar</translation>
 <translation id="7388615499319468910">Websites und Werbetreibende können die Leistung ihrer Werbung analysieren. Diese Einstellung ist deaktiviert.</translation>
 <translation id="7397416715506917976">Seitenstatistiken ansehen</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Sonstiges, 1 Datei in der Liste}other{Sonstiges, # Dateien in der Liste}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Eindruck beim ersten Ausführen von Chrome</translation>
 <translation id="7411224099004328643">Nutzer des Google-Kontos</translation>
@@ -1309,6 +1315,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="780301667611848630">Nein, danke</translation>
 <translation id="7808889146555843082">Durch das Entfernen dieses Passworts wird dein <ph name="SITE" />-Konto nicht gelöscht. Ändere dein Passwort oder lösche dein Konto auf <ph name="SITE" />, um das Konto gegen unbefugten Zugriff zu schützen.</translation>
 <translation id="7810647596859435254">Öffnen mit…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle Dateien, 1 Datei in der Liste}other{Alle Dateien, # Dateien in der Liste}}</translation>
 <translation id="7815484226266492798">Langer Screenshot</translation>
 <translation id="7822705602465980873">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, wie beispielsweise nach einem Sicherheitsvorfall in Gmail.</translation>
 <translation id="782705168687182233">Deine Aktivitäten werden in deinem <ph name="BEGIN_LINK" />Google-Konto<ph name="END_LINK" /> gespeichert.</translation>
@@ -1328,6 +1335,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7887174313503389866">Sieh dir eine Demo der wichtigsten Datenschutz- und Sicherheitseinstellungen an. Weitere Optionen findest du in den jeweiligen Einstellungen.</translation>
 <translation id="7896724475402191389">Inhalte für betreute Nutzer – aus</translation>
 <translation id="7903184275147100332">Dies kann einen Moment dauern</translation>
+<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">App wurde installiert</translation>
 <translation id="7919123827536834358">Diese Sprachen automatisch übersetzen</translation>
 <translation id="7926975587469166629">Kartenalias</translation>
@@ -1532,6 +1540,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ist bereit</translation>
 <translation id="8937772741022875483">Deine Chrome-Aktivitäten aus Digital Wellbeing entfernen?</translation>
+<translation id="893938492099608175">Abhängig von deinen Einstellungen kann Chrome auch Cookies, deine aktuelle URL und deinen Standort senden</translation>
 <translation id="8942627711005830162">In anderem Fenster öffnen</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Diese Sprache konnte nicht heruntergeladen werden. Versuche es später noch einmal.</translation>
 <translation id="8955719471735800169">Zurück nach oben</translation>

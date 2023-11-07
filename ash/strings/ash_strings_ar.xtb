@@ -214,15 +214,6 @@
 <translation id="1796561540704213354">المواقع الإلكترونية بما في ذلك الصفحات التي سبقَت زيارتها والصفحات المفتوحة الآن</translation>
 <translation id="181103072419391116">قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="1816896987747843206">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
-<translation id="1823280932251546115">شريط الحالة، الوقت <ph name="TIME" />،
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">الإيثرنت: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">تفعيل إذن الوصول إلى بيانات الموقع الجغرافي</translation>
 <translation id="1830308660060964064">تم إلغاء تثبيت <ph name="ITEM_TITLE" /></translation>
@@ -565,6 +556,7 @@
 <translation id="3340978935015468852">الإعدادات</translation>
 <translation id="3341303451326249809">تم أخذ لقطة الشاشة.</translation>
 <translation id="334252345105450327">التقاط لقطة شاشة</translation>
+<translation id="3346728094401457853">‏أدخِل كلمة مرور الجهاز الخاصة بالحساب ‎<ph name="EMAIL" />.</translation>
 <translation id="334927402682780278">اختيار النص من موضع المؤشر إلى نهاية السطر</translation>
 <translation id="3349345708646875009">فتح "إدارة المهام"</translation>
 <translation id="3364721542077212959">أدوات قلم الشاشة</translation>
@@ -1586,6 +1578,7 @@
 <translation id="7489261257412536105">الدخول إلى وضع "ملء الشاشة" أو الخروج منه</translation>
 <translation id="7490360161041035804">‏يمكنك تثبيت الملفات المهمة، بما فيها ملفات Google Drive. للتثبيت، مرِّر مؤشر الماوس فوق أحد الملفات أو افتح تطبيق "الملفات" وانقر بزر الماوس الأيمن على أحد الملفات.</translation>
 <translation id="7497767806359279797">اختيار اللغة ولوحة المفاتيح</translation>
+<translation id="7507162824403726948">إكمال عملية إثبات هويتك</translation>
 <translation id="7508690557411636492">تم فتحه الشهر الماضي.</translation>
 <translation id="7509246181739783082">إثبات هويتك</translation>
 <translation id="7512509370370076552">‏تم تعديل اختصار النقر بزر الماوس الأيمن من "alt + النقر" إلى "مفتاح <ph name="LAUNCHER_KEY_NAME" /> + النقر".</translation>

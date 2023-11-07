@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1003363546227723021">Když je obrazovka nečinná, bude zobrazovat fotky, čas, počasí a informace z médií</translation>
 <translation id="1014750484722996375">Plochy</translation>
 <translation id="1018219910092211213">Nelze přeložit název DNS</translation>
 <translation id="1018656279737460067">Zrušeno</translation>
@@ -534,7 +535,6 @@
 <translation id="4999333166442584738">Skrýt přehled</translation>
 <translation id="500920857929044050">Zastavit test</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Když je obrazovka nečinná, zobrazovat fotky, čas, počasí a informace z médií.</translation>
 <translation id="5035083460461104704">Barva motivu</translation>
 <translation id="5038292761217083259">vícebarevná klávesnice</translation>
 <translation id="5039804452771397117">Povolit</translation>

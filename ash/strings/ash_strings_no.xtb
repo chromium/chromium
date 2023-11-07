@@ -131,6 +131,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="146902737843070955">Administratoren din har forespurt denne endringen</translation>
 <translation id="1469148162491666137">Dette gir tilgang til <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle apper og nettsteder som har kamera- og mikrofontillatelsen. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
 <translation id="147310119694673958">Batterinivå: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1475340220124222168">Slå av/på wifi-sonen. Wifi-sonen er på. 1 enhet er tilkoblet.</translation>
 <translation id="1479909375538722835">Flytende tilgjengelighetsmeny</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" /> – trykk på Enter for å åpne Kalender-visningen</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -213,15 +214,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1796561540704213354">Nettsteder, inkludert sider du har besøkt, og åpne sider</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
 <translation id="1816896987747843206">Dette gir alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet</translation>
-<translation id="1823280932251546115">Statusfelt, kl. <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Slå på posisjonstilgang</translation>
 <translation id="1830308660060964064">Løsnet <ph name="ITEM_TITLE" /></translation>
@@ -890,6 +882,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4577990005084629481">Se forhåndsvisninger</translation>
 <translation id="4578906031062871102">Innstillinger-menyen er åpnet</translation>
 <translation id="458210817642223147">Ta opp GIF</translation>
+<translation id="4582666543382004902">Wifi-sonen er slått av, slik at enheten kan bruke wifi. Slå av wifi for å bruke wifi-sonen.</translation>
 <translation id="4585337515783392668">Stopp casting på en ukjent mottaker</translation>
 <translation id="4596144739579517758">Mørkt tema er av</translation>
 <translation id="4611292653554630842">Logg på</translation>
@@ -1097,6 +1090,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> oppå <ph name="IN_PLACE_APP" /> – slipp for å opprette en mappe.</translation>
 <translation id="5397578532367286026">Bruken og loggen for denne brukeren kan gjennomgås av administratoren (<ph name="MANAGER_EMAIL" />) på chrome.com</translation>
 <translation id="5400461572260843123">Hurtiginnstillinger – trykk på søk + venstre for å åpne varselsenteret.</translation>
+<translation id="540713187982329711">Slå av/på wifi-sonen. Wifi-sonen er på. Ingen enheter er tilkoblet.</translation>
 <translation id="5413656666631274079">Innstillingssiden</translation>
 <translation id="5414198321558177633">Oppdaterer profillisten. Dette kan ta noen minutter.</translation>
 <translation id="5426063383988017631">Innstillinger-menyen er lukket</translation>
@@ -1188,15 +1182,18 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="576341972084747908">Last ned den farlige filen <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Nattlys er på.</translation>
 <translation id="5764569119212455782">Bytt til det sist valgte språket</translation>
+<translation id="5767730327234918501">Administratoren din har slått av wifi-sonen.</translation>
 <translation id="5769373120130404283">Personvernskjerm</translation>
 <translation id="5773950591113557721">Dette gir tilgang til <ph name="APP_NAME" /> og alle apper og nettsteder som har kamera- og mikrofontillatelsen</translation>
 <translation id="5774295353725270860">Åpne Filer-appen</translation>
+<translation id="5775936059231769503">Slå av/på wifi-sonen. Wifi-sonen er av.</translation>
 <translation id="5777841717266010279">Vil du stoppe skjermdelingen?</translation>
 <translation id="5779721926447984944">Festede filer</translation>
 <translation id="5785221443435874078">Fjern dette forslaget</translation>
 <translation id="5788127256798019331">Play-filer</translation>
 <translation id="5788535737706478207">Åpne den siste fanen eller det siste vinduet du lukket, på nytt</translation>
 <translation id="5790085346892983794">Fullført</translation>
+<translation id="5802516411616338943">Åpne Hurtiginnstillinger</translation>
 <translation id="5804651031882187592">Slå av innstillingen «Lås SIM-kortet»</translation>
 <translation id="5805809050170488595">Klikk for å aktivere <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Oppgaver på nettet</translation>
@@ -1222,6 +1219,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5911231045062997865">Lacros-vinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Nytt varsel, <ph name="NOTIFICATION_COUNT" /> totalt</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5920710855273935292">Lyden for mikrofonen er kuttet.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> er på.</translation>
@@ -1506,6 +1504,7 @@ Nylig installert</translation>
 <translation id="7068360136237591149">Åpne filer</translation>
 <translation id="7076293881109082629">Pålogging</translation>
 <translation id="7076878155205969899">Kutt lyden</translation>
+<translation id="7084678090004350185">Slå av/på wifi-sonen. Wifi-sonen er på. <ph name="DEVICECOUNT" /> enheter er tilkoblet.</translation>
 <translation id="7086931198345821656">Denne oppdateringen krever en powerwash på <ph name="DEVICE_TYPE" />. Alle data blir slettet. Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen.</translation>
 <translation id="7088960765736518739">Brytertilgang</translation>
 <translation id="709015856939120012">Zoom inn på siden</translation>

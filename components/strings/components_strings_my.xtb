@@ -560,6 +560,7 @@
 <translation id="2072275792380684364">ဖက်ရှင်နှင့် စတိုင်</translation>
 <translation id="2075497153347571252">သင့်စီမံသူက <ph name="ORIGIN" /> တွင် <ph name="PERMISSION" /> ကိုပိတ်ထားသည်</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
+<translation id="2080021694978766903">ဤမူဝါဒတွင် ထည့်သွင်းမှု <ph name="MAX_ITEMS_LIMIT" /> ခုထက်မပိုရပါ။</translation>
 <translation id="20817612488360358">စနစ် ပရောက်စီ ဆက်တင်များကို အသုံးပြုရန် သတ်မှတ် ပေးထားသော်လည်း အထူး ဖေါ်ပြပေးထားသည့် ပရောက်စီ စီစဉ်ဖွဲ့စည်းမှု တစ်ခုကိုပါ ဖေါ်ပြပေးထားသည်။</translation>
 <translation id="2082238445998314030">အဖြေ <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">ဝင်ကြည့်တိုင်း ခွင့်ပြုရန်</translation>
@@ -639,6 +640,7 @@
 <translation id="2225927550500503913">ပကတိအသွင်ကတ် ဖွင့်ထားသည်</translation>
 <translation id="2226636330183131181">WiFi ကွန်ရက်သို့ <ph name="BEGIN_LINK" />လက်မှတ်ထိုးဝင်နေသည်<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">ဤလိပ်စာကို Chrome တွင် လောလောဆယ် သိမ်းထားသည်။ Google ထုတ်ကုန်များတွင် ၎င်းကိုသုံးရန် သင်၏ Google Account ဖြစ်သော <ph name="ACCOUNT" /> တွင်သိမ်းပါ။</translation>
+<translation id="2229456043301340598">လျစ်လျူရှုထားသော သီးသန့်မဟုတ်သည့် ဖြတ်လမ်းလင့်ခ်- <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">စီဒီခွေ</translation>
 <translation id="2235344399760031203">ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို ပိတ်ထားသည်</translation>
 <translation id="2239100178324503013">ယခုပို့ရန်</translation>
@@ -2333,6 +2335,7 @@
 <translation id="5720705177508910913">လက်ရှိ အသုံးပြုသူ</translation>
 <translation id="572328651809341494">မကြာမီက တဲဘ်များ</translation>
 <translation id="5723287205918986743">ကာကွယ်ရေးလုပ်ငန်း</translation>
+<translation id="5725297205162868298">ဖြတ်လမ်းလင့်ခ်သည် @ အက္ခရာဖြင့် စ၍မရပါ- “<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="5730040223043577876">အခြားဝဘ်ဆိုက်များတွင် သင့်စကားဝှက်ကို ပြန်သုံးထားပါက ၎င်းကို ပြင်ဆင်သတ်မှတ်ရန် Chrome က အကြံပြုပါသည်။</translation>
 <translation id="5732392974455271431">သင့်မိဘများသည် ၎င်းကို သင့်အတွက် ဖွင့်ပေးနိုင်ပါသည်</translation>
 <translation id="573555826359077410">Google Forms တွင် ဖောင်အသစ် အမြန်ပြုလုပ်ရန်အတွက် ‘ဖောင်ပြုလုပ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
@@ -2849,6 +2852,7 @@
 <translation id="6793213097893210590">ကတ်ထူ</translation>
 <translation id="679355240208270552">မူလရှာဖွေမှုကို မူဝါဒဖြင့် ဖွင့်မထား၍ လျစ်လျူရှုထားသည်။</translation>
 <translation id="6794951432696553238">ယခုမှစ၍ Windows Hello ကို အသုံးပြု၍ သင့်ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုလိုက်ပါ</translation>
+<translation id="6798066466127540426">ဤစာရင်းတွင် မှန်ကန်သောရှာဖွေမှု ပံ့ပိုးပေးသူ မပါဝင်ပါ။</translation>
 <translation id="6798460514924505775">Chou 3 စာအိတ်</translation>
 <translation id="6799145206637008376">ဤပကတိအသွင်ကတ်အတွက် CVC နံပါတ် ဖြည့်ပါ</translation>
 <translation id="6805030849054648206">B6/C4 စာအိတ်</translation>
@@ -3239,6 +3243,7 @@
 <translation id="7521825010239864438">ကဏ္ဍ "<ph name="SECTION" />" ခု ဝှက်ထားသည်</translation>
 <translation id="752189128961566325">Google ထုတ်ကုန်များတွင် ၎င်းကို သုံးနိုင်သည်</translation>
 <translation id="7523408071729642236">ကုန်ထုတ်လုပ်မှု</translation>
+<translation id="7525804896095537619">အမည်သည် အလွတ်ဖြစ်၍မရပါ</translation>
 <translation id="7526934274050461096">ဤဝဘ်ဆိုက်သို့ သင့်ချိတ်ဆက်ထားမှုသည် သီးသန့်မဟုတ်ပါ</translation>
 <translation id="7529884293139707752">အိမ်တွင်းစာသင်ကြားခြင်း</translation>
 <translation id="7534987659046836932">C7 စာအိတ်</translation>
@@ -3460,6 +3465,7 @@
 <translation id="7950027195171824198">Chrome ဆက်တင်များတွင် သင်၏ကွတ်ကီး သတ်မှတ်ချက်များကို စီမံရန်</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">ဥရောပ EDP</translation>
+<translation id="7952250633095257243">ဖြတ်လမ်းလင့်ခ်သည် အလွတ်ဖြစ်၍မရပါ</translation>
 <translation id="7952327717479677595">သင့်မူရင်း ရှာဖွေရေးအင်ဂျင်နှင့် ဝဘ်ဆိုက်ရှာဖွေမှုတို့ကို စီမံရန်အတွက် ‘ရှာဖွေရေး အင်ဂျင်များ စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="7953236668995583915">ဤဝဘ်ဆိုက်ပေါ်ရှိ အပ်ဒိတ်လုပ်ထားသော ဆက်တင်များကို အသုံးပြုရန် ဤစာမျက်နှာကို ပြန်လည်စတင်ပါ</translation>
 <translation id="7953569069500808819">ထိပ်အစွန်းတွင် အပ်ချည်ဖြင့်ချုပ်ရန်</translation>
@@ -3672,6 +3678,7 @@
 <translation id="8344776605855290140">ပကတိအသွင်ကတ် စာရင်းသွင်းခြင်းကို မြင်ကွင်းအပြည့် ဖွင့်လိုက်သည်</translation>
 <translation id="8347658365704983341">အဝေးသင်</translation>
 <translation id="8349305172487531364">စာညှပ် ဘား</translation>
+<translation id="8350416046273606058">ဖြတ်လမ်းလင့်ခ်တွင် နေရာလွတ်များ မပါဝင်ရပါ- “<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">မှတ်စုရေးရန်</translation>
 <translation id="8352849934814541340">ဤစက်၏ စီမံခန့်ခွဲသူက ထပ်ဆောင်းဝန်ဆောင်မှုများအတွက် အပလီကေးရှင်းများ ထည့်သွင်းထားသည်။ အပလီကေးရှင်းများက သင့်ဒေတာအချို့ကို ဝင်သုံးခွင့်ရှိပါသည်။</translation>
 <translation id="8355270400102541638">စက်တွင်း ရပ်တန့်သွားမှု အခြေအနေ-</translation>

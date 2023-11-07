@@ -213,15 +213,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1796561540704213354">Ziyarət etdiyiniz və açıq səhifələr daxil olmaqla veb-saytlar</translation>
 <translation id="181103072419391116">Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="1816896987747843206">Kamera icazəsi olan bütün tətbiq və vebsaytlar üçün kameraya giriş icazəsi verir</translation>
-<translation id="1823280932251546115">Status bölməsi, vaxt: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Məkana girişi aktiv edin</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> çıxarıldı</translation>
@@ -1197,6 +1188,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="5788127256798019331">Faylları oxudun</translation>
 <translation id="5788535737706478207">Bağlanmış son tab və ya pəncərəni yenidən açın</translation>
 <translation id="5790085346892983794">Uğur</translation>
+<translation id="5802516411616338943">Cəld ayarları açın</translation>
 <translation id="5804651031882187592">"SIM'i kilidləyin" ayarını deaktiv edin</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> şəbəkəsini aktiv etmək üçün toxunun</translation>
 <translation id="5823239091726045201">Vebdə Google tapşırıqları</translation>
@@ -1222,6 +1214,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5911231045062997865">Lacros pəncərələri hazırda dəstəklənmir. Digər tətbiqlər yadda saxlanılacaq.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Yeni bildiriş, cəmi <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5920710855273935292">Mikrofon səssiz edilib.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> aktivdir.</translation>

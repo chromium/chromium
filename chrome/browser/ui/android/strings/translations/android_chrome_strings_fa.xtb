@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">گروه برگه - <ph name="TAB_COUNT" /> برگه</translation>
 <translation id="17513872634828108">بازکردن برگه‌ها</translation>
 <translation id="1757620656501361327">‏به‌روزرسانی «مدیر گذرواژه Google»</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{صفحه‌ها، ۱ صفحه در فهرست}one{صفحه‌ها، # صفحه در فهرست}other{صفحه‌ها، # صفحه در فهرست}}</translation>
 <translation id="1778457539567749232">علامت‌گذاری به عنوان خوانده نشده</translation>
 <translation id="1779766957982586368">بستن پنجره</translation>
 <translation id="1791662854739702043">نصب‌شده</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">تاریک</translation>
 <translation id="2421705177906985956">درحال‌حاضر سایتی برای نمایش نیست</translation>
 <translation id="2426805022920575512">انتخاب یک حساب دیگر</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{ویدیوها، ۱ ویدیو در فهرست}one{ویدیوها، # ویدیو در فهرست}other{ویدیوها، # ویدیو در فهرست}}</translation>
 <translation id="2433507940547922241">شکل ظاهری</translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="2439153523196674349">پیش‌نمای <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">در حال ورود به سیستم...</translation>
 <translation id="4866368707455379617">‏<ph name="MODULE" /> برای Chrome نصب نشد</translation>
 <translation id="4871568871368204250">خاموش کردن همگام‌سازی</translation>
+<translation id="4874961007154620743">‏وقتی خاموش باشد، همچنان پیشنهادهایی را که Chrome به‌صورت محلی ارائه می‌کند خواهید دید</translation>
 <translation id="4875775213178255010">محتواهای پیشنهادی</translation>
 <translation id="4877678010818027629">ورود به «حالت ناشناس»</translation>
 <translation id="4878404682131129617">برقراری تونل ازطریق سرور پروکسی ناموفق بود</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">به‌سرعت برگه جدیدی باز کنید. برای ویرایش این میان‌بر، به «تنظیمات» بروید.</translation>
 <translation id="6802555630140434547">این پنجره بسته خواهد شد</translation>
 <translation id="6811034713472274749">صفحه آماده مشاهده است</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{تصاویر، ۱ تصویر در فهرست}one{تصاویر، # تصویر در فهرست}other{تصاویر، # تصویر در فهرست}}</translation>
 <translation id="6813446258015311409">‏ورود به سیستم Chrome، باز شد.</translation>
 <translation id="6817747507826986771">به‌سرعت این صفحه را هم‌رسانی کنید. برای ویرایش این میان‌بر، لمس کنید و نگه دارید.</translation>
 <translation id="6819199143469632133">‏برای دریافت موارد مربوط به Google در دستگاه‌ها، به سیستم وارد شوید</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">درحال بارگیری…</translation>
 <translation id="6850409657436465440">بارگیری هنوز درحال انجام است</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> برگه بسته شد</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{فایل‌های صوتی، ۱ فایل صوتی در فهرست}one{فایل‌های صوتی، # فایل صوتی در فهرست}other{فایل‌های صوتی، # فایل صوتی در فهرست}}</translation>
 <translation id="685850645784703949">‏«یافته‌ها» از Google - خاموش</translation>
 <translation id="686366188661646310">گذرواژه حذف شود؟</translation>
 <translation id="6864459304226931083">بارگیری تصویر</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">زمینه تیره برای سایت‌ها دردسترس است</translation>
 <translation id="7388615499319468910">سایت‌ها و تبلیغ‌کنندگان می‌توانند نحوه عملکرد آگهی‌ها را درک کنند. این تنظیم خاموش است.</translation>
 <translation id="7397416715506917976">مشاهده اطلاعات آماری صفحه</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{۱ فایل دیگر در فهرست}one{# فایل دیگر در فهرست}other{# فایل دیگر در فهرست}}</translation>
 <translation id="7400418766976504921">نشانی وب</translation>
 <translation id="7403691278183511381">‏اولین تجربه اجرا Chrome</translation>
 <translation id="7411224099004328643">‏کاربر «حساب Google»</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7808889146555843082">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="SITE" /> نمی‌شود. برای ایمن نگه‌داشتن گذرواژه‌تان، آن را تغییر دهید یا حساب‌تان را در <ph name="SITE" /> حذف کنید.</translation>
 <translation id="7810647596859435254">باز کردن با…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{همه فایل‌ها، ۱ فایل در فهرست}one{همه فایل‌ها، # فایل در فهرست}other{همه فایل‌ها، # فایل در فهرست}}</translation>
 <translation id="7815484226266492798">نماگرفت طولانی</translation>
 <translation id="7822705602465980873">‏وقتی به سیستم وارد شده باشید، این داده‌ها به «حساب Google» شما پیوند داده می‌شود تا از شما در سراسر سرویس‌های Google محافظت کند؛ مثلاً افزایش محافظت در Gmail پس‌از یک حادثه امنیتی.</translation>
 <translation id="782705168687182233">‏فعالیتتان در <ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> شما ذخیره می‌شود.</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> آماده است</translation>
 <translation id="8937772741022875483">‏فعالیت Chrome شما در «آسایش دیجیتالی» برداشته شود؟</translation>
+<translation id="893938492099608175">‏بسته به تنظیمات، Chrome ممکن است کوکی‌ها، نشانی وب فعلی، و مکان شما را نیز ارسال کند</translation>
 <translation id="8942627711005830162">باز کردن در پنجره دیگر</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - این زبان بارگیری نشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="8955719471735800169">برگشتن به بالا</translation>

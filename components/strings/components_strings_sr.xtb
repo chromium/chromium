@@ -1193,6 +1193,7 @@
 <translation id="3427342743765426898">&amp;Понови измену</translation>
 <translation id="342781501876943858">Chromium вам препоручује да ресетујете лозинку ако сте је користили на другим сајтовима.</translation>
 <translation id="3428151540071562330">Један или више URI-ја шаблона DnsOverHttpsTemplates сервера су неважећи и неће се користити.</translation>
+<translation id="3428789896412418755">Груписана историја</translation>
 <translation id="3431216045099978607">Притисните |<ph name="ACCELERATOR" />| да бисте изашли из режима целог екрана и видели преузимање.</translation>
 <translation id="3432601291244612633">Затвори страницу</translation>
 <translation id="3433111389595862568">Софтвер за сарадњу и конференције</translation>
@@ -3177,6 +3178,7 @@
 <translation id="7423283032694727565">Дугме Управљај колачићима, активирајте га да бисте управљали подешавањима колачића у подешавањима Chrome-а</translation>
 <translation id="7427366580982928791">Безбедност деце на интернету</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Потврдите да сте то ви да би Chromium могао да унесе информације о плаћању.</translation>
 <translation id="7437289804838430631">Додај контакт информације</translation>
 <translation id="7437490109271760224">Игре картама</translation>
 <translation id="7438338505272634288">Нападачи на сајту који покушавате да посетите могу да вас преваре да инсталирате штетан софтвер који утиче на начин на који прегледате – на пример, тако што ће променити почетну страницу или вам приказивати додатне огласе на сајтовима које посећујете. Chrome искрено препоручује да се вратите на безбедно место како не би било штете. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3411,6 +3413,7 @@
 <translation id="7831993212387676366">Шта је то листа за куповину?</translation>
 <translation id="7840103971441592723">Снимање екрана је почело</translation>
 <translation id="784137052867620416">Увид у куповину</translation>
+<translation id="784404208867107517">Груписана историја</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ниједна}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Сајт који касније посетите може да затражи од Chrome-а теме да би персонализовао огласе који вам се приказују. Chrome дели до 3 теме, а истовремено штити историју прегледања и идентитет.</translation>
@@ -3437,6 +3440,7 @@
 <translation id="79338296614623784">Унесите важећи број телефона</translation>
 <translation id="7934414805353235750"><ph name="URL" /> жели да пусти заштићени садржај. Google ће потврдити идентитет уређаја.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Потврдите да сте то ви да би Google Chrome могао да унесе информације о плаћању.</translation>
 <translation id="7937163678541954811">CVC ове картице ће бити шифрован и сачуван на уређају ради бржег плаћања</translation>
 <translation id="7937554595067888181">Истиче <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сертификат сервера још увек није важећи.</translation>

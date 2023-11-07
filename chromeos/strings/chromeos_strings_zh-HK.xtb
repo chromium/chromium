@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
+<translation id="1003363546227723021">在螢幕閒置時，顯示相片、時間、天氣和媒體資訊</translation>
 <translation id="1014750484722996375">桌面</translation>
 <translation id="1018219910092211213">無法解析 DNS</translation>
 <translation id="1018656279737460067">已取消</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">安裝 ChromeOS Flex</translation>
 <translation id="1856388568474281774">向下箭咀</translation>
 <translation id="1858620243986915808">附加螢幕截圖</translation>
+<translation id="1871413952174074704">APN 不可超過 <ph name="CHAR_LIMIT" /> 個字元</translation>
 <translation id="1871569928317311284">關閉深色主題背景</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">關閉暗光模式</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">隱藏報告</translation>
 <translation id="500920857929044050">停止測試</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">在螢幕閒置時，顯示相片、時間、天氣和媒體資訊。</translation>
 <translation id="5035083460461104704">主題顏色</translation>
 <translation id="5038292761217083259">多色鍵盤</translation>
 <translation id="5039804452771397117">允許</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">淺粉紅色</translation>
 <translation id="982713511914535780">執行放電測試</translation>
 <translation id="987264212798334818">一般</translation>
+<translation id="995062385528875723">無法使用重音字母、非拉丁字母或符號</translation>
 </translationbundle>

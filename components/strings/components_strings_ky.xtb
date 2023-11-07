@@ -1193,6 +1193,7 @@
 <translation id="3427342743765426898">Түзөтүүнү &amp;кайталоо</translation>
 <translation id="342781501876943858">Сырсөзүңүздү башка сайттарда колдонгон болсоңуз, Chromium аны өзгөртүүнү сунуштайт.</translation>
 <translation id="3428151540071562330">Бир же бир нече DnsOverHttpsTemplates серверлериндеги URI даректеринин үлгүлөрү жараксыз жана колдонулбайт.</translation>
+<translation id="3428789896412418755">Топторго бириктирилген таржымал</translation>
 <translation id="3431216045099978607">Толук экран режиминен чыгып, жүктөлүп алынган файлды көрүү үчүн |<ph name="ACCELERATOR" />| баскычын басыңыз.</translation>
 <translation id="3432601291244612633">Баракты жабуу</translation>
 <translation id="3433111389595862568">Кызматташуу жана конференциялар үчүн программа</translation>
@@ -3177,6 +3178,7 @@
 <translation id="7423283032694727565">Cookie файлдарын башкаруу баскычы. Chrome параметрлеринен cookie файлдарынын параметрлерин башкаруу үчүн иштетиңиз</translation>
 <translation id="7427366580982928791">Балдардын интернет коопсуздугу</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Chromium төлөм маалыматыңызды толтуруусу үчүн сиз экениңизди ырастаңыз.</translation>
 <translation id="7437289804838430631">Байланыш маалыматын кошуу</translation>
 <translation id="7437490109271760224">Карта оюндары</translation>
 <translation id="7438338505272634288">Сиз кирүүгө аракет кылып жаткан сайттагы чабуулчулар башкы бетти өзгөртүп же кирген сайттарыңызда кошумча жарнамаларды көрсөтүп, серептөөңүзгө кедергисин тийгизе турган зыяндуу программаны орнотушу мүмкүн. Chrome зыяндын алдын алуу үчүн артка кайтууну сунуштайт. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3411,6 +3413,7 @@
 <translation id="7831993212387676366">Сатып алчу нерселердин тизмеси деген эмне?</translation>
 <translation id="7840103971441592723">Экран сүрөткө тартылып баштады</translation>
 <translation id="784137052867620416">Соода статистикасы</translation>
+<translation id="784404208867107517">Топторго бириктирилген таржымал</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Эч бири}=1{1 колдонмо (<ph name="EXAMPLE_APP_1" />)}=2{2 колдонмо (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# колдонмо (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Кийинчерээк сиз кирген сайт жарнамаларды жекелештирип көрсөтүү үчүн, Chrome'дон темаларды сурашы мүмкүн. Chrome 3 темага чейин бөлүшөт. Ошол эле учурда, көрүлгөн вебсайттар жана өздүгүңүз тууралуу маалыматты коргойт.</translation>
@@ -3437,6 +3440,7 @@
 <translation id="79338296614623784">Жарактуу телефон номерин киргизиңиз</translation>
 <translation id="7934414805353235750"><ph name="URL" /> корголгон мазмунду ойноткону жатат. Түзмөгүңүздүн аныктыгы Google аркылуу текшерилет.</translation>
 <translation id="7935318582918952113">DOM дистиллери</translation>
+<translation id="7936775433939783906">Google Chrome төлөм маалыматыңызды толтуруусу үчүн сиз экениңизди ырастаңыз.</translation>
 <translation id="7937163678541954811">Бул картанын CVC коду шифрленип, тезирээк төлөө үчүн түзмөгүңүздө сакталат</translation>
 <translation id="7937554595067888181">Мөөнөтү <ph name="EXPIRATION_DATE_ABBR" /> бүтөт</translation>
 <translation id="7938958445268990899">Сервердин тастыктамасы али жарактуу эмес.</translation>

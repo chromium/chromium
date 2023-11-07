@@ -213,15 +213,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1796561540704213354">Sitios web que incluyen las páginas que visitaste y las páginas abiertas</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="1816896987747843206">Permite el acceso a la cámara para todas las apps y sitios web con el permiso correspondiente</translation>
-<translation id="1823280932251546115">Bandeja de estado, hora <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Activar el acceso a la ubicación</translation>
 <translation id="1830308660060964064">Se dejó de fijar <ph name="ITEM_TITLE" /></translation>
@@ -1198,6 +1189,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5788127256798019331">Archivos de Play</translation>
 <translation id="5788535737706478207">Volver a abrir la última pestaña o ventana que cerraste</translation>
 <translation id="5790085346892983794">Completado correctamente</translation>
+<translation id="5802516411616338943">Abrir la Configuración rápida</translation>
 <translation id="5804651031882187592">Cómo desactivar la configuración "Bloquear SIM"</translation>
 <translation id="5805809050170488595">Hacer clic para activar <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Tasks en la Web</translation>
@@ -1223,6 +1215,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5911231045062997865">Las ventanas de Lacros no son compatibles actualmente. Se guardarán las demás apps.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Nueva notificación, <ph name="NOTIFICATION_COUNT" /> en total</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
 <translation id="5946788582095584774">La función <ph name="FEATURE_NAME" /> está activada.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1003363546227723021">मेरो स्क्रिन निष्क्रिय अवस्थामा हुँदा फोटो, समय, मौसम र मिडियासम्बन्धी जानकारी देखाइयोस्</translation>
 <translation id="1014750484722996375">डेस्कहरू</translation>
 <translation id="1018219910092211213">DNS समाधान गर्न सकिएन</translation>
 <translation id="1018656279737460067">रद्द गरियो</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">ChromeOS Flex इन्स्टल गर्नुहोस्</translation>
 <translation id="1856388568474281774">डाउन एरो</translation>
 <translation id="1858620243986915808">स्क्रिनसट एट्याच गर्नुहोस्</translation>
+<translation id="1871413952174074704">APN मा <ph name="CHAR_LIMIT" /> भन्दा बढी वर्ण प्रयोग गर्न मिल्दैन</translation>
 <translation id="1871569928317311284">अँध्यारो थिम अफ गर्नुहोस्‌</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">अँध्यारो मोड अफ गर्नुहोस्</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">रिपोर्ट लुकाउनुहोस्</translation>
 <translation id="500920857929044050">परीक्षण रोक्नुहोस्</translation>
 <translation id="5017508259293544172">छलाङ</translation>
-<translation id="5019310272469539976">मेरो स्क्रिन निष्क्रिय अवस्थामा हुँदा फोटो, समय, मौसम र मिडियासम्बन्धी जानकारी देखाइयोस्।</translation>
 <translation id="5035083460461104704">थिमको रङ</translation>
 <translation id="5038292761217083259">किबोर्डको ब्याकलाइटको एकभन्दा बढी रङ</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">हल्का गुलाबी रङ</translation>
 <translation id="982713511914535780">ब्याट्रीको डिस्चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="987264212798334818">सामान्य</translation>
+<translation id="995062385528875723">एक्सेन्ट भएका वर्ण, गैर ल्याटिन अक्षर वा चिन्हहरू प्रयोग गर्न मिल्दैन</translation>
 </translationbundle>

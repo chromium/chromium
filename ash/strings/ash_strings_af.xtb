@@ -213,15 +213,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1796561540704213354">Webwerwe insluitend bladsye wat jy besoek het en oop bladsye</translation>
 <translation id="181103072419391116">Seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
 <translation id="1816896987747843206">Dit gee kameratoegang vir alle apps en webwerwe met die kameratoestemming</translation>
-<translation id="1823280932251546115">Statuslaai, tyd <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Skakel liggingtoegang aan</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> is ontspeld</translation>
@@ -1198,6 +1189,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5788127256798019331">Play-lêers</translation>
 <translation id="5788535737706478207">Maak die oortjie of venster wat laaste toegemaak is weer oop</translation>
 <translation id="5790085346892983794">Suksesvol</translation>
+<translation id="5802516411616338943">Maak Kitsinstellings oop</translation>
 <translation id="5804651031882187592">Skakel "Sluit SIM"-instelling af</translation>
 <translation id="5805809050170488595">Klik om <ph name="NETWORK_NAME" /> te aktiveer</translation>
 <translation id="5823239091726045201">Google-take op die web</translation>
@@ -1223,6 +1215,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5911231045062997865">Lacros-vensters word nie tans gesteun nie Ander programme sal gestoor word.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Nuwe kennisgewing, <ph name="NOTIFICATION_COUNT" /> totaal</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Mikrofoon is gedemp.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is aan.</translation>

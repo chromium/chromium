@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">Група картички - <ph name="TAB_COUNT" /> картички</translation>
 <translation id="17513872634828108">Отворени јазичиња</translation>
 <translation id="1757620656501361327">Известување за Google Password Manager</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Страници, 1 страница во список}one{Страници, # страница во список}other{Страници, # страници во список}}</translation>
 <translation id="1778457539567749232">Обележи како непрочитано</translation>
 <translation id="1779766957982586368">Затвори го прозорецот</translation>
 <translation id="1791662854739702043">Инсталирано</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2421705177906985956">Нема сајтови за прикажување во моментов</translation>
 <translation id="2426805022920575512">Изберете друга сметка</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Видеа, 1 видео во список}one{Видеа, # видео во список}other{Видеа, # видеа во список}}</translation>
 <translation id="2433507940547922241">Изглед</translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="2439153523196674349">Преглед на <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">Се најавува…</translation>
 <translation id="4866368707455379617">Не може да се инсталира <ph name="MODULE" /> за Chrome</translation>
 <translation id="4871568871368204250">Исклучување синхронизација</translation>
+<translation id="4874961007154620743">Кога се исклучени, сѐ уште ќе ги гледате предлозите што ги дава Chrome локално</translation>
 <translation id="4875775213178255010">Предлози за содржина</translation>
 <translation id="4877678010818027629">Влезете во режим „Инкогнито“</translation>
 <translation id="4878404682131129617">Воспоставувањето тунел преку прокси-сервер не успеа</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">Брзо отворете нова картичка. За да ја измените кратенкава, одете во „Поставки“.</translation>
 <translation id="6802555630140434547">Прозорецот ќе се затвори</translation>
 <translation id="6811034713472274749">Страницата е спремна за прикажување</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Слики, 1 слика во список}one{Слики, # слика во список}other{Слики, # слики во список}}</translation>
 <translation id="6813446258015311409">Најавете се на Chrome, отворено.</translation>
 <translation id="6817747507826986771">Брзо споделете ја страницава. За да ја измените сликава од екранот, допрете и задржете.</translation>
 <translation id="6819199143469632133">Најавете се за да ги пренесете вашите работи на Google на повеќе уреди</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">Се вчитува…</translation>
 <translation id="6850409657436465440">Вашето преземање е сѐ уште е во тек</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> затворени картички</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Аудиодатотеки, 1 аудиодатотека во список}one{Аудиодатотеки, # аудиодатотека во список}other{Аудиодатотеки, # аудиодатотеки во список}}</translation>
 <translation id="685850645784703949">Discover од Google - исклучена</translation>
 <translation id="686366188661646310">Да се избрише лозинката?</translation>
 <translation id="6864459304226931083">Преземи слика</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">Темната тема за сајтови е достапна</translation>
 <translation id="7388615499319468910">Сајтовите и огласувачите може да ја разберат изведбата на рекламите. Оваа поставка е исклучена.</translation>
 <translation id="7397416715506917976">Прикажи увиди за страниците</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Друго, 1 датотека во список}one{Друго, # датотека во список}other{Друго, # датотеки во список}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Искуство при првото извршување на Chrome</translation>
 <translation id="7411224099004328643">Корисник на сметка на Google</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7808889146555843082">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" />. Променете ја лозинката или избришете ја сметката на <ph name="SITE" /> за да ја заштитите од другите.</translation>
 <translation id="7810647596859435254">Отвори со…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Сите датотеки, 1 датотека во список}one{Сите датотеки, # датотека во список}other{Сите датотеки, # датотеки во список}}</translation>
 <translation id="7815484226266492798">Копче за долга слика од екранот</translation>
 <translation id="7822705602465980873">Кога сте најавени, податоциве се поврзуваат со вашата сметка на Google за да ве штитат на услугите на Google, на пример, зголемување на заштитата во Gmail по безбедносен инцидент.</translation>
 <translation id="782705168687182233">Вашата активност е зачувана во вашата <ph name="BEGIN_LINK" />сметка на Google<ph name="END_LINK" />.</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> е подготвен</translation>
 <translation id="8937772741022875483">Да се отстрани вашата активност на Chrome од „Дигитална благосостојба“?</translation>
+<translation id="893938492099608175">Зависно од вашите поставки, Chrome може и да испраќа колачиња, вашата тековна URL-адреса и вашата локација</translation>
 <translation id="8942627711005830162">Отвори во друг прозорец</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Овој јазик не можеше да се преземе. Обидете се повторно подоцна.</translation>
 <translation id="8955719471735800169">Назад на почеток</translation>

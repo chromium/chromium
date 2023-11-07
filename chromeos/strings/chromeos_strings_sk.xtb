@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1003363546227723021">Zobrazte fotky, čas, počasie a informácie o médiách, keď je obrazovka nečinná</translation>
 <translation id="1014750484722996375">Plochy</translation>
 <translation id="1018219910092211213">DNS sa nedá preložiť</translation>
 <translation id="1018656279737460067">Zrušené</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Nainštalovať Chrome OS Flex</translation>
 <translation id="1856388568474281774">Šípka nadol</translation>
 <translation id="1858620243986915808">Priložiť snímku obrazovky</translation>
+<translation id="1871413952174074704">Názov prístupového bodu (APN) nemôže mať viac ako <ph name="CHAR_LIMIT" /> znakov</translation>
 <translation id="1871569928317311284">Vypnúť tmavý motív</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Vypnúť tmavý režim</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Skryť prehľad</translation>
 <translation id="500920857929044050">Zastaviť test</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Nastavte, aby sa pri nečinnosti obrazovky zobrazovali fotky, čas, počasie a informácie o médiách.</translation>
 <translation id="5035083460461104704">Farba motívu</translation>
 <translation id="5038292761217083259">klávesnica s viacerými farbami</translation>
 <translation id="5039804452771397117">Povoliť</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Svetloružová</translation>
 <translation id="982713511914535780">Spustiť test vybíjania</translation>
 <translation id="987264212798334818">Všeobecné</translation>
+<translation id="995062385528875723">Nemôžete používať písmená s diakritikou, inú abecedu než latinku ani symboly</translation>
 </translationbundle>

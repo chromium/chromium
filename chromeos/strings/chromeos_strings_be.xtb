@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1003363546227723021">Паказ фота, часу, надвор'я і інфармацыі пра медыяфайл, калі экран не выкарыстоўваецца</translation>
 <translation id="1014750484722996375">Працоўныя сталы</translation>
 <translation id="1018219910092211213">Не ўдалося ажыццявіць DNS-пераўтварэнне</translation>
 <translation id="1018656279737460067">Скасавана</translation>
@@ -535,7 +536,6 @@
 <translation id="4999333166442584738">Схаваць справаздачу</translation>
 <translation id="500920857929044050">Спыніць праверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Паказваць фота, час, надвор'е і інфармацыю пра медыяфайлы, калі экран неактыўны.</translation>
 <translation id="5035083460461104704">Колер тэмы</translation>
 <translation id="5038292761217083259">рознакаляровая падсветка клавіятуры</translation>
 <translation id="5039804452771397117">Дазволіць</translation>

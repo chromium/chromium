@@ -213,15 +213,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1796561540704213354">Situs, termasuk halaman yang telah Anda kunjungi dan halaman yang dibuka</translation>
 <translation id="181103072419391116">Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
 <translation id="1816896987747843206">Tindakan ini akan mengizinkan akses kamera untuk semua aplikasi dan situs yang memiliki izin kamera</translation>
-<translation id="1823280932251546115">Menu status, waktu <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Aktifkan akses lokasi</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> telah dilepas pinnya</translation>
@@ -1197,6 +1188,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5788127256798019331">File Play</translation>
 <translation id="5788535737706478207">Buka kembali tab atau jendela yang terakhir ditutup</translation>
 <translation id="5790085346892983794">Berhasil</translation>
+<translation id="5802516411616338943">Buka Setelan Cepat</translation>
 <translation id="5804651031882187592">Nonaktifkan setelan "Kunci SIM"</translation>
 <translation id="5805809050170488595">Klik untuk mengaktifkan <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Tasks di web</translation>
@@ -1222,6 +1214,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5911231045062997865">Jendela Lacros saat ini tidak didukung. Aplikasi lainnya akan disimpan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Notifikasi baru, total <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="5920710855273935292">Mikrofon dibisukan.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> aktif.</translation>

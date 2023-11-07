@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="1003363546227723021">როცა ეკრანი უმოქმედოა, შეგიძლიათ გამოაჩინოთ ფოტოები, დრო, ამინდი და მედიაინფორმაცია</translation>
 <translation id="1014750484722996375">სამუშაო მაგიდები</translation>
 <translation id="1018219910092211213">DNS-ის დარეგულირება ვერ ხერხდება</translation>
 <translation id="1018656279737460067">გაუქმდა</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">ChromeOS Flex-ის ინსტალაცია</translation>
 <translation id="1856388568474281774">ისარი ქვემოთ</translation>
 <translation id="1858620243986915808">ეკრანის ანაბეჭდის დართვა</translation>
+<translation id="1871413952174074704">APN უნდა შეიცავდეს მაქსიმუმ <ph name="CHAR_LIMIT" /> სიმბოლოს</translation>
 <translation id="1871569928317311284">მუქი თემის გამორთვა</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">მუქი რეჟიმის გამორთვა</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">ანგარიშის დამალვა</translation>
 <translation id="500920857929044050">ტესტის შეწყვეტა</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">როცა ეკრანი უმოქმედოა, შეგიძლიათ გამოაჩინოთ ფოტოები, დრო, ამინდი და მედიაინფორმაცია.</translation>
 <translation id="5035083460461104704">თემის ფერი</translation>
 <translation id="5038292761217083259">მრავალფერიანი კლავიატურა</translation>
 <translation id="5039804452771397117">დაშვება</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">ღია ვარდისფერი</translation>
 <translation id="982713511914535780">განმუხტვის ტესტის გაშვება</translation>
 <translation id="987264212798334818">ზოგადი</translation>
+<translation id="995062385528875723">მახვილიანი ასოების, არალათინური ანბანისა და სიმბოლოების გამოყენება ვერ მოხერხდება</translation>
 </translationbundle>

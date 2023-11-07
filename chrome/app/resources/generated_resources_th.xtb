@@ -1369,6 +1369,7 @@
 <translation id="2046702855113914483">ราเม็ง</translation>
 <translation id="204706822916043810">กำลังตรวจสอบเครื่องเสมือน</translation>
 <translation id="2048182445208425546">เข้าถึงปริมาณการใช้งานเครือข่าย</translation>
+<translation id="2048254245884707305">กำลังตรวจหามัลแวร์...</translation>
 <translation id="2048554637254265991">เกิดข้อผิดพลาดขณะเริ่มต้นตัวจัดการคอนเทนเนอร์ โปรดลองอีกครั้ง</translation>
 <translation id="2048653237708779538">การดำเนินการไม่พร้อมให้ใช้งาน</translation>
 <translation id="204914487372604757">สร้างทางลัด</translation>
@@ -2083,6 +2084,7 @@
 <translation id="2580889980133367162">อนุญาตให้ <ph name="HOST" /> ดาวน์โหลดไฟล์หลายไฟล์เสมอ</translation>
 <translation id="258095186877893873">ยาว</translation>
 <translation id="2581455244799175627">ข้อมูลเพิ่มเติมเกี่ยวกับการอนุญาตคุกกี้ของบุคคลที่สาม</translation>
+<translation id="2581992808349413349">ใช้การเชื่อมต่อที่ปลอดภัยเพื่อค้นหาที่อยู่ IP ของเว็บไซต์ใน DNS (ระบบชื่อโดเมน) การดำเนินการนี้ใช้ผู้ให้บริการที่มีการจัดการที่ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (แพลตฟอร์ม <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">ดึงข้อมูลตั๋ว Kerberos ไม่สำเร็จ ลองอีกครั้ง หรือติดต่อผู้ดูแลระบบอุปกรณ์ขององค์กร (รหัสข้อผิดพลาด <ph name="ERROR_CODE" />)</translation>
 <translation id="2586561813241011046">ติดตั้ง <ph name="APP_NAME" /> ไม่ได้ โปรดลองอีกครั้งหรือติดต่อผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
@@ -2557,6 +2559,7 @@
 <translation id="2942581856830209953">ปรับแต่งหน้านี้</translation>
 <translation id="2942707801577151363">เปิด แก้ไข และบันทึกไฟล์ Word, Excel และ PowerPoint บางฟีเจอร์อาจต้องสมัครใช้บริการ</translation>
 <translation id="2943268899142471972">เลือกไฟล์ข้อมูลสำรองของ Ansible Playbook หรือ Crostini</translation>
+<translation id="2943478529590267286">เปลี่ยนรูปแบบแป้นพิมพ์ของระบบ</translation>
 <translation id="2944060181911631861">ส่งข้อมูลการใช้งานและการวินิจฉัย ช่วยปรับปรุงประสบการณ์การใช้งาน Android ของคุณให้ดีขึ้นด้วยการส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ ซึ่งจะช่วยให้แอปและระบบมีความเสถียร พร้อมทั้งปรับปรุงด้านอื่นๆ ข้อมูลที่รวบรวมมาบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปไว้ ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของคุณ <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">ไปที่ไฟล์</translation>
 <translation id="2946119680249604491">เพิ่มการเชื่อมต่อ</translation>
@@ -2846,6 +2849,7 @@
 <translation id="3192947282887913208">ไฟล์เสียง</translation>
 <translation id="3193695589337931419">ยูทิลิตีสัญญาณระบบ</translation>
 <translation id="3194786596445804250">แสดงรายละเอียดเกี่ยวกับการบล็อกคุกกี้ของบุคคลที่สาม</translation>
+<translation id="3196912927885212665">หากต้องการตั้งค่าด้วยโทรศัพท์ Android คุณต้องเปิดบลูทูธของ Chromebook</translation>
 <translation id="3197453258332670132">เมื่อคลิกขวาหรือกดค้าง ระบบจะแสดงข้อมูลเกี่ยวกับข้อความที่คุณเลือก</translation>
 <translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />การอนุญาตให้อุปกรณ์ ChromeOS ส่งรายงานอัตโนมัติจะช่วยให้เราจัดลำดับความสำคัญของสิ่งที่ต้องแก้ไขและปรับปรุงใน ChromeOS ได้ รายงานเหล่านี้ประกอบด้วยข้อมูลต่างๆ เช่น เวลาที่ ChromeOS ขัดข้อง ฟีเจอร์ที่ใช้ และจำนวนหน่วยความจำที่ใช้โดยปกติ ข้อมูลรวมบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android ระบบจะรวบรวมข้อมูลการวินิจฉัยและการใช้งานอื่นๆ ของแอป ซึ่งรวมถึงแอป Android และเว็บแอปหากมีการเปิดการซิงค์แอปด้วย<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />คุณเริ่มหรือหยุดการอนุญาตรายงานเหล่านี้ได้ทุกเมื่อในการตั้งค่าอุปกรณ์ ChromeOS ของบุตรหลาน หากเป็นผู้ดูแลระบบโดเมน คุณเปลี่ยนการตั้งค่านี้ได้ในคอนโซลผู้ดูแลระบบ<ph name="END_PARAGRAPH2" />
@@ -3171,13 +3175,6 @@
 <translation id="346298925039590474">เครือข่ายมือถือนี้จะพร้อมใช้งานสำหรับผู้ใช้ทุกคนในอุปกรณ์นี้</translation>
 <translation id="3464145797867108663">เพิ่มโปรไฟล์งาน</translation>
 <translation id="346546413339447252">รับส่วนลดสำหรับ <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> และอื่นๆ</translation>
-<translation id="3466476162566821406">ทำตามวิธีการในโทรศัพท์เพื่อยืนยันโค้ด ตรวจสอบว่าบลูทูธและ Wi-Fi ของโทรศัพท์เปิดอยู่
-    <ph name="BR" />
-    <ph name="BR" />
-    คุณใช้โทรศัพท์เพื่อเพิ่ม Wi-Fi และข้อมูลบัญชี Google ใน <ph name="DEVICE_TYPE" /> ได้
-    <ph name="BR" />
-    <ph name="BR" />
-    แสดงให้อุปกรณ์ที่อยู่ใกล้เคียงเห็นในชื่อ <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="3468298837301810372">ป้ายกำกับ</translation>
 <translation id="3468999815377931311">โทรศัพท์ Android</translation>
 <translation id="3469583217479686109">เครื่องมือการเลือก</translation>
@@ -3274,6 +3271,7 @@
 <translation id="3544879808695557954">ชื่อผู้ใช้ (ไม่บังคับ)</translation>
 <translation id="3547954654003013442">การตั้งค่าพร็อกซี</translation>
 <translation id="3548162552723420559">ปรับสีหน้าจอให้เข้ากับสภาพแวดล้อม</translation>
+<translation id="354949590254473526">ป้อน URL คำขอ DNS ที่กำหนดเอง</translation>
 <translation id="3550593477037018652">ยกเลิกการเชื่อมต่อเครือข่ายมือถือ</translation>
 <translation id="3550915441744863158">Chrome จะอัปเดตโดยอัตโนมัติเพื่อให้คุณได้ใช้เวอร์ชันใหม่ที่สุดอยู่เสมอ</translation>
 <translation id="3551320343578183772">ปิดแท็บ</translation>
@@ -3589,6 +3587,7 @@
 <translation id="3784472333786002075">คุกกี้คือไฟล์ที่เว็บไซต์ต่างๆ สร้างขึ้น มีคุกกี้อยู่ 2 ประเภท ได้แก่ คุกกี้ของบุคคลที่หนึ่งซึ่งเว็บไซต์ที่คุณเข้าชมเป็นผู้สร้างขึ้น เว็บไซต์จะแสดงอยู่ในแถบที่อยู่ คุกกี้ของบุคคลที่สามซึ่งเว็บไซต์อื่นๆ เป็นผู้สร้างขึ้น เว็บไซต์เหล่านี้เป็นเจ้าของเนื้อหาบางอย่าง เช่น โฆษณาหรือรูปภาพที่คุณเห็นในเว็บไซต์ที่เข้าชม</translation>
 <translation id="3785308913036335955">แสดงทางลัดแอป</translation>
 <translation id="3785727820640310185">รหัสผ่านที่บันทึกไว้สำหรับเว็บไซต์นี้</translation>
+<translation id="3786224729726357296">ลบข้อมูลเว็บไซต์และสิทธิ์ของ <ph name="SITE" /></translation>
 <translation id="3786834302860277193">แสดงเส้นใต้สําหรับข้อความประกอบ</translation>
 <translation id="3787434344076711519">กำลังรอการแปล</translation>
 <translation id="3788301286821743879">เปิดแอปพลิเคชันคีออสก์ไม่ได้</translation>
@@ -4411,6 +4410,7 @@
 <translation id="443454694385851356">แบบเดิม (ไม่ปลอดภัย)</translation>
 <translation id="4434611816075088065">ไม่มีกิจกรรมใดที่คุณต้องตรวจสอบในขณะนี้</translation>
 <translation id="443475966875174318">อัปเดตหรือนำแอปพลิเคชันที่ใช้ร่วมกันไม่ได้ออก</translation>
+<translation id="4437947179446780764">เพิ่มผู้ให้บริการ DNS ที่กำหนดเอง</translation>
 <translation id="4438043733494739848">โปร่งใส</translation>
 <translation id="4441124369922430666">คุณต้องการเริ่มแอปนี้โดยอัตโนมัติเมื่อเครื่องเปิดไหม</translation>
 <translation id="4441147046941420429">หากต้องการดำเนินการต่อ ให้ดึงคีย์ความปลอดภัยออกจากอุปกรณ์ จากนั้นเสียบกลับเข้าไปใหม่แล้วแตะที่คีย์นั้น</translation>
@@ -4814,7 +4814,6 @@
 <translation id="4769632191812288342">คุณกำลังได้รับการปกป้องแบบมาตรฐาน</translation>
 <translation id="4770119228883592393">ขอสิทธิ์ กด ⌘ + Option + ลูกศรลงเพื่อตอบกลับ</translation>
 <translation id="4773112038801431077">อัปเกรด Linux</translation>
-<translation id="4774456473286455263">ตั้งค่าด้วยโทรศัพท์ Android</translation>
 <translation id="4775228465764358468">เว็บไซต์อาจบันทึกภาษาที่คุณต้องการหรือสินค้าที่คุณต้องการซื้อ ข้อมูลนี้พร้อมใช้งานสำหรับเว็บไซต์และโดเมนย่อย</translation>
 <translation id="477548766361111120">อนุญาตให้ส่วนขยายอ่านและเปลี่ยนแปลงเว็บไซต์นี้</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> เชื่อมต่อแล้ว</translation>
@@ -4999,7 +4998,9 @@
 <translation id="4907161631261076876">ไฟล์นี้ไม่ได้มีการดาวน์โหลดเป็นที่แพร่หลายและอาจเป็นอันตราย</translation>
 <translation id="4908811072292128752">เปิดแท็บใหม่เพื่อเรียกดูไซต์ 2 ไซต์พร้อมกัน</translation>
 <translation id="4909038193460299775">เนื่องจากบัญชีนี้มีการจัดการโดย <ph name="DOMAIN" /> บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะถูกล้างออกจากอุปกรณ์เครื่องนี้ แต่ข้อมูลจะยังจัดเก็บอยู่ในบัญชี Google และสามารถจัดการได้ใน<ph name="BEGIN_LINK" />แดชบอร์ด Google<ph name="END_LINK" /></translation>
+<translation id="4911572142453926213">ใช้การเชื่อมต่อที่ปลอดภัยเพื่อค้นหาที่อยู่ IP ของเว็บไซต์ใน DNS (ระบบชื่อโดเมน)</translation>
 <translation id="4912643508233590958">ไม่ใช้งานการปลุก</translation>
+<translation id="4913209098186576320">ไฟล์นี้อาจเป็นอันตราย<ph name="LINE_BREAK" />การตรวจสอบนี้ใช้เวลานานกว่าปกติ...</translation>
 <translation id="4915961947098019832">ได้รับอนุญาตให้แสดงรูปภาพ</translation>
 <translation id="4916542008280060967">อนุญาตให้เว็บไซต์แก้ไข <ph name="FILE_NAME" /> ไหม</translation>
 <translation id="4917385247580444890">แรง</translation>
@@ -5036,6 +5037,7 @@
 <translation id="4941963255146903244">ดูรูปภาพ สื่อ และแอปในโทรศัพท์</translation>
 <translation id="494286511941020793">ความช่วยเหลือในการกำหนดค่าพร็อกซี</translation>
 <translation id="4943368462779413526">ฟุตบอล</translation>
+<translation id="4943927218331934807">ต้องมีรหัสผ่าน</translation>
 <translation id="4944310289250773232">บริการการตรวจสอบสิทธิ์นี้โฮสต์โดย <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะปุ่มเปิด/ปิด ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> นี้เสมอ</translation>
 <translation id="4946459324029651239">คุณกำลังได้รับการปกป้องแบบมาตรฐาน</translation>
@@ -5475,6 +5477,7 @@
 <translation id="5307030433605830021">ไม่รองรับแหล่งที่มา</translation>
 <translation id="5307386115243749078">จับคู่สวิตช์บลูทูธ</translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
+<translation id="5308989548591363504">ตรวจหามัลแวร์</translation>
 <translation id="5309418307557605830">Google Assistant ทำงานที่นี่ได้เช่นกัน</translation>
 <translation id="5309641450810523897">รหัสเคสขอรับความช่วยเหลือ</translation>
 <translation id="5311304534597152726">กำลังลงชื่อเข้าใช้ในชื่อ</translation>
@@ -5782,6 +5785,7 @@
 <translation id="555604722231274592">เปิดใช้<ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="5558129378926964177">ขยาย&amp;</translation>
+<translation id="5558594314398017686">ค่าเริ่มต้นของระบบปฏิบัติการ (หากมี)</translation>
 <translation id="5559311991468302423">ลบที่อยู่</translation>
 <translation id="5559768063688681413">ไม่มีเครื่องพิมพ์ที่บันทึกไว้</translation>
 <translation id="55601339223879446">ปรับขอบของเดสก์ท็อปให้อยู่ในหน้าจอแสดงผล</translation>
@@ -6153,13 +6157,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> จะหยุดชั่วคราวเร็วๆ นี้</translation>
 <translation id="586567932979200359">คุณกำลังเรียกใช้ <ph name="PRODUCT_NAME" /> จากดิสก์อิมเมจ การติดตั้งผลิตภัณฑ์นี้บนคอมพิวเตอร์จะทำให้คุณเรียกใช้ได้โดยไม่ต้องใช้ดิสก์อิมเมจและคุณมั่นใจได้ว่าผลิตภัณฑ์จะอัปเดตตลอดเวลา</translation>
 <translation id="5865733239029070421">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
-<translation id="5867855474018538405">ทำตามวิธีการในโทรศัพท์เพื่อสแกนคิวอาร์โค้ด ตรวจสอบว่าบลูทูธและ Wi-Fi ของโทรศัพท์เปิดอยู่
-    <ph name="BR" />
-    <ph name="BR" />
-    คุณใช้โทรศัพท์เพื่อเพิ่ม Wi-Fi และข้อมูลบัญชี Google ใน <ph name="DEVICE_TYPE" /> ได้
-    <ph name="BR" />
-    <ph name="BR" />
-    แสดงให้อุปกรณ์ที่อยู่ใกล้เคียงเห็นในชื่อ <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="5868434909835797817">ไมโครโฟนในอุปกรณ์ปิดอยู่</translation>
 <translation id="5868822853313956582">ใช้สีของอุปกรณ์</translation>
 <translation id="5869029295770560994">รับทราบ</translation>
@@ -7728,6 +7725,7 @@
 <translation id="7125932261198019860">ตรวจสอบว่าเครื่องพิมพ์เชื่อมต่อเครือข่าย Wi-Fi เดียวกันกับ Chromebook หรือใช้สาย USB <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติมเกี่ยวกับความสามารถในการใช้งานร่วมกัน<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ประวัติการดาวน์โหลด</translation>
 <translation id="7128151990937044829">แสดงสัญญาณบอกสถานะในแถบที่อยู่เมื่อมีการบล็อกการแจ้งเตือน</translation>
+<translation id="7130438335435247835">จุดเข้าใช้งาน (APN)</translation>
 <translation id="7131040479572660648">อ่านข้อมูลบน <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> และ <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">เพิ่มห&amp;น้า...</translation>
 <translation id="7131431455372521159">เลิกเชื่อมต่อ TrackPoint ทั้งหมดแล้ว</translation>
@@ -8858,6 +8856,7 @@
 <translation id="8005600846065423578">อนุญาตให้ <ph name="HOST" /> ดูคลิปบอร์ดได้เสมอ</translation>
 <translation id="8006630792898017994">Space หรือ Tab</translation>
 <translation id="8008356846765065031">อินเทอร์เน็ตถูกตัด โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
+<translation id="8008704580256716350">บล็อกไฟล์ที่น่าสงสัยแล้ว</translation>
 <translation id="8009225694047762179">จัดการรหัสผ่าน</translation>
 <translation id="8011372169388649948">ย้าย '<ph name="BOOKMARK_TITLE" />' แล้ว</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
@@ -10205,6 +10204,7 @@
 <translation id="9057354806206861646">อัปเดตกำหนดการ</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{การแจ้งเตือนประมาณ 1 รายการต่อวัน}other{การแจ้งเตือนประมาณ {NUM_NOTIFICATION} รายการต่อวัน}}</translation>
 <translation id="9058760336383947367">ดู PPD ของเครื่องพิมพ์</translation>
+<translation id="9060042817356580609">เลือกผู้ให้บริการ DNS</translation>
 <translation id="9061694916020926968">คุณต้องลงชื่อเข้าใช้บัญชี Google เพื่อใช้ Steam สําหรับ Chromebook (เบต้า) ลงชื่อเข้าใช้แล้วลองอีกครั้ง</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">เกิดข้อผิดพลาดในบรรทัดที่ <ph name="ERROR_LINE_START" /> ถึง <ph name="ERROR_LINE_END" /></translation>

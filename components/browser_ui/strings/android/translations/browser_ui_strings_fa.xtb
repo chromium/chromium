@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}}</translation>
 <translation id="2410940059315936967">سایتی که بازدید می‌کنید می‌تواند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کند. کوکی‌های تنظیم‌شده توسط سایت‌های دیگر کوکی‌های شخص ثالث نامیده می‌شوند.</translation>
 <translation id="2434158240863470628">بارگیری کامل شد <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">موقتاً به این سایت اجازه دادید از کوکی‌های شخص ثالث استفاده کند. این کار به‌معنی محافظت کمتر هنگام مرور است اما ویژگی‌های سایت به احتمال زیاد طبق انتظار کار خواهند کرد. <ph name="BEGIN_LINK" />ارسال بازخورد<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">ممکن است ویژگی‌های برخی‌از سایت‌ها در «حالت ناشناس» کار نکند</translation>
 <translation id="2442870161001914531">همیشه سایت ویژه رایانه درخواست شود</translation>
 <translation id="2469312991797799607">با این کار، همه داده‌ها و کوکی‌های <ph name="ORIGIN" /> و همه سایت‌های تحت آن حذف خواهد شد</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4008040567710660924">کوکی‌ها را برای سایت خاصی مجاز کنید.</translation>
 <translation id="4046123991198612571">آهنگ بعدی</translation>
-<translation id="4053720452172726777">‏‫سفارشی کردن و کنترل Google Chrome</translation>
 <translation id="4149890623864272035">مطمئنید می‌خواهید همه داده‌های محلی، ازجمله کوکی‌ها، حذف شود و تمام اجازه‌های این وب‌سایت بازنشانی شود؟</translation>
 <translation id="4149994727733219643">نمای ساده‌شده برای صفحه‌های وب</translation>
 <translation id="4151930093518524179">بزرگ‌نمایی پیش‌فرض</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">حذف و بازنشانی</translation>
 <translation id="4645575059429386691">مدیریت شده توسط والدین شما</translation>
 <translation id="4670064810192446073">واقعیت مجازی</translation>
+<translation id="4673958474310291465">کوکی‌های شخص ثالث را به‌طور موقت مجاز کنید. این کار به‌معنی محافظت کمتر است اما ویژگی‌های سایت به احتمال زیاد طبق انتظار کار خواهند کرد</translation>
 <translation id="4751476147751820511">حسگرهای نوری یا حرکتی</translation>
 <translation id="4779083564647765204">بزرگ‌نمایی</translation>
 <translation id="4811450222531576619">با منبع و موضوعش آشنا شوید</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">مسدود کردن کوکی‌های شخص ثالث</translation>
 <translation id="6205314730813004066">حریم خصوصی آگهی</translation>
 <translation id="6207207788774442484">حذف داده‌ها و بازنشانی اجازه‌ها</translation>
-<translation id="6216432067784365534">گزینه‌های <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">«<ph name="APP_NAME" />» حذف نصب شود؟</translation>
 <translation id="6262191102408817757">براساس آخرین برگه شما</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مسدود هستند</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{۱ مورد انتخاب شد}one{# مورد انتخاب شد}other{# مورد انتخاب شد}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> مورد انتخاب شد.  گزینه‌ها در نزدیکی بالای صفحه دردسترس است</translation>
+<translation id="7137403271056944713">‏برنامه‌ریزی مجدد / کنترل دستگاه MIDI</translation>
 <translation id="7141896414559753902">مسدود کردن نمایش پنجره‌های بازشو و هدایت‌ها در سایت‌ها (توصیه می‌شود)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> کیلوبایت</translation>
 <translation id="7180611975245234373">بازآوری</translation>

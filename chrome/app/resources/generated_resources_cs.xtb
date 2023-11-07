@@ -3173,13 +3173,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="346298925039590474">Tato mobilní síť bude k dispozici všem uživatelům tohoto zařízení</translation>
 <translation id="3464145797867108663">Přidat pracovní profil</translation>
 <translation id="346546413339447252">Získat slevy u obchodníků <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> a dalších</translation>
-<translation id="3466476162566821406">Ověřte kód podle pokynů na telefonu. Zkontrolujte, zda jsou zapnuté Bluetooth a Wi-Fi.
-    <ph name="BR" />
-    <ph name="BR" />
-    Wi-Fi a účet Google můžete do svého zařízení <ph name="DEVICE_TYPE" /> přidat pomocí telefonu.
-    <ph name="BR" />
-    <ph name="BR" />
-    Zařízení v okolí vás vidí jako <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="3468298837301810372">Štítek</translation>
 <translation id="3468999815377931311">Telefon Android</translation>
 <translation id="3469583217479686109">Nástroj Výběr</translation>
@@ -4815,7 +4808,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4769632191812288342">Používáte standardní ochranu</translation>
 <translation id="4770119228883592393">Odpovězte na žádost o oprávnění stisknutím kláves ⌘ + Option + šipka dolů</translation>
 <translation id="4773112038801431077">Aktualizovat Linux</translation>
-<translation id="4774456473286455263">Nastavení pomocí telefonu s Androidem</translation>
 <translation id="4775228465764358468">Web může uložit váš preferovaný jazyk nebo položky, které chcete koupit. Tyto informace jsou dostupné pro web a jeho subdomény.</translation>
 <translation id="477548766361111120">Povolit rozšíření číst a měnit tento web</translation>
 <translation id="4776311127346151860">Zařízení <ph name="DEVICE_NAME" /> bylo připojeno</translation>
@@ -6154,13 +6146,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5865508026715185451">Aplikace <ph name="APP_NAME" /> se brzy pozastaví</translation>
 <translation id="586567932979200359">Aplikaci <ph name="PRODUCT_NAME" /> spouštíte z bitové kopie disku. Pokud ji nainstalujte do svého počítače, můžete ji spouštět bez bitové kopie disku a umožníte její aktualizace.</translation>
 <translation id="5865733239029070421">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
-<translation id="5867855474018538405">Podle pokynů na telefonu naskenujte QR kód. Zkontrolujte, zda jsou zapnuté Bluetooth a Wi-Fi.
-    <ph name="BR" />
-    <ph name="BR" />
-    Wi-Fi a účet Google můžete do svého zařízení <ph name="DEVICE_TYPE" /> přidat pomocí telefonu.
-    <ph name="BR" />
-    <ph name="BR" />
-    Zařízení v okolí vás vidí jako <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="5868434909835797817">Mikrofon je na vašem zařízení vypnutý</translation>
 <translation id="5868822853313956582">Použít barvy zařízení</translation>
 <translation id="5869029295770560994">Dobře, rozumím</translation>
@@ -7733,6 +7718,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7125932261198019860">Zkontrolujte, zda je tiskárna připojena ke stejné síti Wi-Fi jako Chromebook, nebo použijte kabel USB. <ph name="LINK_BEGIN" />Další informace o kompatibilitě<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historie stahování</translation>
 <translation id="7128151990937044829">Zobrazovat na adresním řádku indikátor zablokovaných oznámení</translation>
+<translation id="7130438335435247835">Název přístupového bodu</translation>
 <translation id="7131040479572660648">Čtení vašich dat na webech <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> a <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Přidat strá&amp;nku...</translation>
 <translation id="7131431455372521159">Všechny trackpointy byly odpojeny</translation>

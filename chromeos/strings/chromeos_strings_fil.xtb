@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1003363546227723021">Kapag idle ang iyong screen, magpakita ng mga larawan, oras, lagay ng panahon, at impormasyon ng media</translation>
 <translation id="1014750484722996375">Mga Desk</translation>
 <translation id="1018219910092211213">Hindi ma-resolve ang DNS</translation>
 <translation id="1018656279737460067">Nakansela</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">I-install ang ChromeOS Flex</translation>
 <translation id="1856388568474281774">Pababang arrow</translation>
 <translation id="1858620243986915808">I-attach ang screenshot</translation>
+<translation id="1871413952174074704">Hindi puwedeng lumampas sa <ph name="CHAR_LIMIT" /> (na) character ang APN</translation>
 <translation id="1871569928317311284">I-off ang madilim na tema</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">I-off ang dark mode</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Itago ang ulat</translation>
 <translation id="500920857929044050">Ihinto ang pagsusuri</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Kapag idle ang iyong screen, magpakita ng mga larawan, oras, lagay ng panahon, at impormasyon ng media.</translation>
 <translation id="5035083460461104704">Kulay ng tema</translation>
 <translation id="5038292761217083259">multicolor na keyboard</translation>
 <translation id="5039804452771397117">Payagan</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Light pink</translation>
 <translation id="982713511914535780">Patakbuhin ang pagsusuri sa Discharge</translation>
 <translation id="987264212798334818">Pangkalahatan</translation>
+<translation id="995062385528875723">Hindi puwedeng gumamit ng mga may accent na titik, non-Latin na alpabeto, o mga simbolo</translation>
 </translationbundle>

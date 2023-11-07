@@ -1370,6 +1370,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2046702855113914483">Nouille ramen</translation>
 <translation id="204706822916043810">Vérification de la machine virtuelle en cours…</translation>
 <translation id="2048182445208425546">Accéder à votre trafic réseau</translation>
+<translation id="2048254245884707305">Recherche de logiciels malveillants en cours…</translation>
 <translation id="2048554637254265991">Une erreur s'est produite lors du démarrage du gestionnaire de conteneur. Veuillez réessayer.</translation>
 <translation id="2048653237708779538">Action non disponible</translation>
 <translation id="204914487372604757">Créer un raccourci</translation>
@@ -2085,6 +2086,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2580889980133367162">Toujours autoriser <ph name="HOST" /> à télécharger plusieurs fichiers</translation>
 <translation id="258095186877893873">Long</translation>
 <translation id="2581455244799175627">En savoir plus sur l'autorisation des témoins tiers</translation>
+<translation id="2581992808349413349">Utilisez une connexion sécurisée pour rechercher l'adresse IP d'un site dans le DNS (système de noms de domaine). Cela utilise un fournisseur de services gérés à <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plateforme <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Impossible de récupérer le ticket Kerberos. Réessayez ou communiquez avec l'administrateur des appareils de votre organisation. (Code d'erreur : <ph name="ERROR_CODE" />.)</translation>
 <translation id="2586561813241011046">Impossible d'installer <ph name="APP_NAME" />. Veuillez essayer de nouveau ou bien communiquez avec votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
@@ -2558,6 +2560,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2942581856830209953">Personnaliser cette page</translation>
 <translation id="2942707801577151363">Ouvrez, modifiez et enregistrez des fichiers Word, Excel et PowerPoint. Un abonnement peut être requis pour accéder à certaines fonctionnalités.</translation>
 <translation id="2943268899142471972">Sélectionner un guide Ansible ou un fichier de sauvegarde Crostini</translation>
+<translation id="2943478529590267286">Modifier la disposition des touches du clavier du système</translation>
 <translation id="2944060181911631861">Envoyer les données d'utilisation et de diagnostic. Aidez-nous à améliorer votre expérience Android en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. Cela nous permettra d'assurer la stabilité du système et des applications, et d'apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les concepteurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Accéder aux fichiers</translation>
 <translation id="2946119680249604491">Ajouter une connexion</translation>
@@ -2847,6 +2850,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
 <translation id="3193695589337931419">Utilitaires pour les signaux système</translation>
 <translation id="3194786596445804250">Afficher les détails sur le blocage des témoins tiers</translation>
+<translation id="3196912927885212665">Pour effectuer la configuration avec votre téléphone Android, vous devez activer le Bluetooth de votre Chromebook</translation>
 <translation id="3197453258332670132">Obtenez de l'information à propos du texte sélectionné lorsque vous faites un clic droit ou que vous maintenez le doigt dessus</translation>
 <translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />Le fait d'autoriser les appareils ChromeOS à envoyer des rapports automatiques nous permet de prioriser les éléments à corriger et à améliorer dans ChromeOS. Ces rapports peuvent comprendre des éléments comme le moment où ChromeOS plante, les fonctionnalités utilisées, la quantité de mémoire utilisée. Certaines données agrégées contribueront également à améliorer les applications Google et elles aideront nos partenaires, comme les développeurs Android. D'autres données de diagnostic et d'utilisation des applications, y compris pour les applications Android et Web, seront collectées si la synchronisation des applications est également activée.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez activer ou désactiver l'autorisation de ces rapports en tout temps dans les paramètres de l'appareil ChromeOS de votre enfant. Si vous êtes un administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administrateur.<ph name="END_PARAGRAPH2" />
@@ -3172,13 +3176,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="346298925039590474">Ce réseau cellulaire sera accessible à tous les utilisateurs sur cet appareil</translation>
 <translation id="3464145797867108663">Ajouter un profil professionnel</translation>
 <translation id="346546413339447252">Obtenez des rabais pour <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> et plus encore</translation>
-<translation id="3466476162566821406">Suivez les instructions sur votre téléphone pour vérifier le code. Assurez-vous que le Bluetooth et le Wi-Fi de votre téléphone sont activés.
-    <ph name="BR" />
-    <ph name="BR" />
-    Vous pouvez utiliser votre téléphone pour ajouter les informations de votre Wi-Fi et de votre compte Google à votre <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visible pour les appareils à proximité sous le nom <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="3468298837301810372">Étiquette</translation>
 <translation id="3468999815377931311">Téléphone Android</translation>
 <translation id="3469583217479686109">Sélection</translation>
@@ -3275,6 +3272,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3544879808695557954">Nom d'utilisateur (facultatif)</translation>
 <translation id="3547954654003013442">Paramètres de mandataire</translation>
 <translation id="3548162552723420559">Adaptez la couleur de l'écran à l'environnement</translation>
+<translation id="354949590254473526">Entrez l'URL de la requête DNS personnalisée</translation>
 <translation id="3550593477037018652">Se déconnecter du réseau cellulaire</translation>
 <translation id="3550915441744863158">Chrome se met automatiquement à jour afin que vous ayez toujours la version la plus récente</translation>
 <translation id="3551320343578183772">Fermer l'onglet</translation>
@@ -3590,6 +3588,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3784472333786002075">Les témoins sont des fichiers créés par les sites Web. Il y a deux types de témoins : les témoins directs sont ceux que créent les sites que vous visitez. Le site en question figure dans la barre d'adresse. Les témoins tiers sont ceux que créent d'autres sites. Ces sites possèdent certains types de contenu, comme des annonces et des images, que vous voyez sur les sites que vous visitez.</translation>
 <translation id="3785308913036335955">Afficher le raccourci des applications</translation>
 <translation id="3785727820640310185">Mots de passe enregistrés pour ce site</translation>
+<translation id="3786224729726357296">Supprimer les autorisations et les données relatives aux sites pour <ph name="SITE" /></translation>
 <translation id="3786834302860277193">Afficher le soulignement pour le texte de composition</translation>
 <translation id="3787434344076711519">En attente de traduction</translation>
 <translation id="3788301286821743879">Impossible de lancer l'application de kiosque.</translation>
@@ -4412,6 +4411,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="443454694385851356">Héritage (non sécurisé)</translation>
 <translation id="4434611816075088065">Rien d'autre n'a besoin de votre attention pour le moment</translation>
 <translation id="443475966875174318">Mettre à jour ou supprimer les applications incompatibles</translation>
+<translation id="4437947179446780764">Ajouter un fournisseur de services DNS personnalisé</translation>
 <translation id="4438043733494739848">Transparent</translation>
 <translation id="4441124369922430666">Voulez-vous lancer automatiquement cette application au démarrage de l'ordinateur?</translation>
 <translation id="4441147046941420429">Pour continuer, retirez votre clé de sécurité de votre appareil, puis réinsérez-la et touchez-la</translation>
@@ -4815,7 +4815,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4769632191812288342">Vous profitez de la protection standard</translation>
 <translation id="4770119228883592393">Autorisation demandée, appuyez sur ⌘+Option+flèche vers le bas pour répondre</translation>
 <translation id="4773112038801431077">Mettre à niveau Linux</translation>
-<translation id="4774456473286455263">Configurer avec votre téléphone Android</translation>
 <translation id="4775228465764358468">Un site peut enregistrer votre langue préférée ou les articles que vous souhaitez acheter. Ces informations sont accessibles sur le site et ses sous-domaines.</translation>
 <translation id="477548766361111120">Autoriser l'extension à lire et modifier ce site</translation>
 <translation id="4776311127346151860">Connexion de votre <ph name="DEVICE_NAME" /> réussie</translation>
@@ -5000,7 +4999,9 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4907161631261076876">Ce fichier n'est pas souvent téléchargé et peut être dangereux.</translation>
 <translation id="4908811072292128752">Ouvrez un nouvel onglet pour naviguer sur deux sites en même temps</translation>
 <translation id="4909038193460299775">Comme ce compte est géré par <ph name="DOMAIN" />, vos favoris, votre historique, vos mots de passe et autres paramètres seront supprimés de cet appareil. Cependant, vos données resteront stockées dans votre compte Google et peuvent être gérées sur <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
+<translation id="4911572142453926213">Utilisez une connexion sécurisée pour rechercher l'adresse IP d'un site dans le DNS (système de noms de domaine)</translation>
 <translation id="4912643508233590958">Sorties de veille</translation>
+<translation id="4913209098186576320">Ce fichier peut être dangereux<ph name="LINE_BREAK" />Cette vérification prend plus de temps que d'habitude…</translation>
 <translation id="4915961947098019832">Autorisés à afficher des images</translation>
 <translation id="4916542008280060967">Autoriser le site à modifier <ph name="FILE_NAME" />?</translation>
 <translation id="4917385247580444890">Fort</translation>
@@ -5037,6 +5038,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4941963255146903244">Affichez les photos, les fichiers multimédias et les applications de votre téléphone</translation>
 <translation id="494286511941020793">Aide pour la configuration de mandataire</translation>
 <translation id="4943368462779413526">Football</translation>
+<translation id="4943927218331934807">Mot de passe requis</translation>
 <translation id="4944310289250773232">Ce service d'authentification est hébergé par <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Pour configurer une empreinte digitale, demandez à votre enfant de toucher l'interrupteur. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais cet appareil : <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946459324029651239">Vous profitez d'une protection standard</translation>
@@ -5476,6 +5478,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5307030433605830021">Source non prise en charge</translation>
 <translation id="5307386115243749078">Associer un commutateur Bluetooth</translation>
 <translation id="5308380583665731573">Connecter</translation>
+<translation id="5308989548591363504">Rechercher la présence de logiciel malveillant</translation>
 <translation id="5309418307557605830">L'Assistant Google fonctionne aussi ici</translation>
 <translation id="5309641450810523897">Identifiant de demande d'assistance</translation>
 <translation id="5311304534597152726">Se connecter en tant que</translation>
@@ -5783,6 +5786,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="555604722231274592">Activer le <ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5558129378926964177">Zoom &amp;avant</translation>
+<translation id="5558594314398017686">Système d'exploitation par défaut (le cas échéant)</translation>
 <translation id="5559311991468302423">Supprimer l'adresse</translation>
 <translation id="5559768063688681413">Aucune imprimante enregistrée</translation>
 <translation id="55601339223879446">Ajustez les limites de votre bureau dans l'affichage</translation>
@@ -6156,13 +6160,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sera bientôt mise en pause</translation>
 <translation id="586567932979200359">Vous utilisez <ph name="PRODUCT_NAME" /> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et vous bénéficierez de mises à jour automatiques.</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
-<translation id="5867855474018538405">Suivez les instructions sur votre téléphone pour balayer le code QR. Assurez-vous que le Bluetooth et le Wi-Fi de votre téléphone sont activés.
-    <ph name="BR" />
-    <ph name="BR" />
-    Vous pouvez utiliser votre téléphone pour ajouter les informations de votre Wi-Fi et de votre compte Google à votre <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visible pour les appareils à proximité sous le nom <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="5868434909835797817">Le microphone est désactivé sur votre appareil</translation>
 <translation id="5868822853313956582">Suivre les couleurs de l'appareil</translation>
 <translation id="5869029295770560994">OK, j'ai compris</translation>
@@ -7733,6 +7730,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7125932261198019860">Assurez-vous que votre imprimante est connectée au même réseau Wi-Fi que votre Chromebook ou utilisez un câble USB. <ph name="LINK_BEGIN" />En savoir plus sur la compatibilité<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historique des téléchargements</translation>
 <translation id="7128151990937044829">Afficher un indicateur dans la barre d'adresse quand les notifications sont bloquées</translation>
+<translation id="7130438335435247835">Nom du point d'accès (NPA)</translation>
 <translation id="7131040479572660648">Lire vos données sur <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> et <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Ajouter une pa&amp;ge...</translation>
 <translation id="7131431455372521159">Toutes les touches directionnelles ont été déconnectées</translation>
@@ -8864,6 +8862,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8005600846065423578">Toujours autoriser <ph name="HOST" /> à voir le presse-papiers</translation>
 <translation id="8006630792898017994">Espace ou tabulation</translation>
 <translation id="8008356846765065031">Connexion Internet interrompue. Veuillez vérifier votre connexion.</translation>
+<translation id="8008704580256716350">Fichier suspect bloqué</translation>
 <translation id="8009225694047762179">Gérer les mots de passe</translation>
 <translation id="8011372169388649948">« <ph name="BOOKMARK_TITLE" /> » déplacé.</translation>
 <translation id="8012188750847319132">verrouillage des majuscules</translation>
@@ -10210,6 +10209,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9057354806206861646">Mettre à jour le calendrier</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Environ 1 notification par jour}one{Environ {NUM_NOTIFICATION} notification par jour}other{Environ {NUM_NOTIFICATION} notifications par jour}}</translation>
 <translation id="9058760336383947367">Afficher le PPD de l'imprimante</translation>
+<translation id="9060042817356580609">Sélectionner le fournisseur DNS</translation>
 <translation id="9061694916020926968">Vous devez être connecté à un compte Google pour utiliser Steam pour Chromebook (Bêta). Connectez-vous et réessayez.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erreur de la ligne <ph name="ERROR_LINE_START" /> à la ligne <ph name="ERROR_LINE_END" /></translation>

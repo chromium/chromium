@@ -3169,13 +3169,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="346298925039590474">Ky rrjet celular do të ofrohet për të gjithë përdoruesit e kësaj pajisjeje</translation>
 <translation id="3464145797867108663">Shto profilin e punës</translation>
 <translation id="346546413339447252">Merr zbritje për <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> dhe të tjera</translation>
-<translation id="3466476162566821406">Ndiq udhëzimet në telefon për të verifikuar kodin. Sigurohu që Bluetooth-i dhe Wi-Fi në telefon të jenë aktivizuar.
-    <ph name="BR" />
-    <ph name="BR" />
-    Mund ta përdorësh telefonin për të shtuar informacionet e Wi-Fi dhe të "Llogarisë sate të Google" në <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    E dukshme për pajisjet në afërsi si <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="3468298837301810372">Etiketa</translation>
 <translation id="3468999815377931311">Telefon me Android</translation>
 <translation id="3469583217479686109">Vegla e përzgjedhjes</translation>
@@ -4812,7 +4805,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4769632191812288342">Po merr mbrojtje standarde</translation>
 <translation id="4770119228883592393">Kërkohet leje, shtyp ⌘ + Option + Shigjetën poshtë për t'u përgjigjur</translation>
 <translation id="4773112038801431077">Përmirëso Linux</translation>
-<translation id="4774456473286455263">Konfiguro me telefonin tënd Android</translation>
 <translation id="4775228465764358468">Një sajt mund të ruajë gjuhën tënde të preferuar ose artikujt që dëshiron të blesh. Ky informacion i ofrohet sajteve dhe nëndomeneve të tij.</translation>
 <translation id="477548766361111120">Lejo që shtesa të lexojë dhe të ndryshojë këtë sajt</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> është lidhur</translation>
@@ -6153,13 +6145,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5865508026715185451"><ph name="APP_NAME" /> do të vendoset në pauzë së shpejti</translation>
 <translation id="586567932979200359">Po e ekzekuton <ph name="PRODUCT_NAME" /> nga imazhi i tij i diskut. Instalimi i tij në kompjuter lejon që ta ekzekutosh pa imazhin e diskut dhe garanton se do të mbahet i përditësuar.</translation>
 <translation id="5865733239029070421">Dërgon automatikisht te Google statistika të përdorimit dhe raportet e ndërprerjeve aksidentale</translation>
-<translation id="5867855474018538405">Ndiq udhëzimet në telefonin tënd për të skanuar kodin QR. Sigurohu që Bluetooth-i dhe Wi-Fi në telefon të jenë aktivizuar.
-    <ph name="BR" />
-    <ph name="BR" />
-    Mund ta përdorësh telefonin për të shtuar informacionet e Wi-Fi dhe të "Llogarisë sate të Google" në <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    E dukshme për pajisjet në afërsi si <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="5868434909835797817">Mikrofoni është joaktiv në pajisjen tënde</translation>
 <translation id="5868822853313956582">Ndiq ngjyrat e pajisjes</translation>
 <translation id="5869029295770560994">Në rregull, kuptova</translation>
@@ -7728,6 +7713,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7125932261198019860">Sigurohu që printeri yt të jetë i lidhur me të njëjtin rrjet Wi-Fi si pajisja jote Chromebook ose përdor një kabllo USB. <ph name="LINK_BEGIN" />Mëso më shumë për përputhshmërinë<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Shkarko historikun</translation>
 <translation id="7128151990937044829">Shfaq një tregues në shiritin e adresës kur të bllokohen njoftimet</translation>
+<translation id="7130438335435247835">Emri i pikës së qasjes (APN)</translation>
 <translation id="7131040479572660648">Lexo të dhënat e tua në <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dhe <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Shto &amp;faqe...</translation>
 <translation id="7131431455372521159">Të gjitha pajisjet TrackPoint janë shkëputur</translation>

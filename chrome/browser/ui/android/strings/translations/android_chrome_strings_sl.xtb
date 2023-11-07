@@ -140,6 +140,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1750259112639922169">Skupina zavihkov – zavihki (<ph name="TAB_COUNT" />)</translation>
 <translation id="17513872634828108">Odprti zavihki</translation>
 <translation id="1757620656501361327">Obvestilo Googlovega upravitelja gesel</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Strani, 1 stran na seznamu}one{Strani, # stran na seznamu}two{Strani, # strani na seznamu}few{Strani, # strani na seznamu}other{Strani, # strani na seznamu}}</translation>
 <translation id="1778457539567749232">Označitev kot neprebrano</translation>
 <translation id="1779766957982586368">Zapre okno</translation>
 <translation id="1791662854739702043">Nameščeno</translation>
@@ -249,6 +250,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2414886740292270097">Temno</translation>
 <translation id="2421705177906985956">Trenutno ni spletnih mest, ki bi jih lahko prikazali</translation>
 <translation id="2426805022920575512">Izberi drug račun</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videoposnetki, 1 videoposnetek na seznamu}one{Videoposnetki, # videoposnetek na seznamu}two{Videoposnetki, # videoposnetka na seznamu}few{Videoposnetki, # videoposnetki na seznamu}other{Videoposnetki, # videoposnetkov na seznamu}}</translation>
 <translation id="2433507940547922241">Videz</translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
 <translation id="2439153523196674349">Predogled spletnega mesta <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4864369630010738180">Prijavljanje ...</translation>
 <translation id="4866368707455379617">Modula <ph name="MODULE" /> za Chrome ni mogoče namestiti</translation>
 <translation id="4871568871368204250">Izklop sinhronizacije</translation>
+<translation id="4874961007154620743">Če je to izklopljeno, bodo še vedno prikazani predlogi, ki jih Chrome zagotavlja lokalno</translation>
 <translation id="4875775213178255010">Predlogi za vsebino</translation>
 <translation id="4877678010818027629">Vklop anonimnega načina</translation>
 <translation id="4878404682131129617">Vzpostavljanje tunela prek strežnika proxy ni uspelo</translation>
@@ -1100,6 +1103,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6795633245022906657">Hitro odprite nov zavihek. To bližnjico lahko uredite v nastavitvah.</translation>
 <translation id="6802555630140434547">Okno bo zaprto.</translation>
 <translation id="6811034713472274749">Stran je pripravljena za ogled</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Slike, 1 slika na seznamu}one{Slike, # slika na seznamu}two{Slike, # sliki na seznamu}few{Slike, # slike na seznamu}other{Slike, # slik na seznamu}}</translation>
 <translation id="6813446258015311409">Prijava v Chrome, odprto.</translation>
 <translation id="6817747507826986771">Hitro delite to stran. Če želite urediti to bližnjico, pridržite.</translation>
 <translation id="6819199143469632133">Če želite imeti Googlove stvari v svojih napravah, se prijavite.</translation>
@@ -1113,6 +1117,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6846298663435243399">Nalaganje poteka …</translation>
 <translation id="6850409657436465440">Prenos še poteka</translation>
 <translation id="6850830437481525139">Zaprtih je bilo toliko zavihkov: <ph name="TAB_COUNT" /></translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Zvočne datoteke, 1 zvočna datoteka na seznamu}one{Zvočne datoteke, # zvočna datoteka na seznamu}two{Zvočne datoteke, # zvočni datoteki na seznamu}few{Zvočne datoteke, # zvočne datoteke na seznamu}other{Zvočne datoteke, # zvočnih datotek na seznamu}}</translation>
 <translation id="685850645784703949">Googlovo Odkrivanje – izklopljeno</translation>
 <translation id="686366188661646310">Želite izbrisati geslo?</translation>
 <translation id="6864459304226931083">Prenos slike</translation>
@@ -1218,6 +1223,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7379900596734708416">Temna tema za spletna mesta je na voljo</translation>
 <translation id="7388615499319468910">Spletna mesta in oglaševalci lahko razumejo, kako delujejo oglasi. Ta nastavitev je izklopljena.</translation>
 <translation id="7397416715506917976">Podrobni podatki o strani</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Druga 1 datoteka na seznamu}one{Druga # datoteka na seznamu}two{Drugi # datoteki na seznamu}few{Druge # datoteke na seznamu}other{Drugih # datotek na seznamu}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Izkušnje ob prvem izvajanju Chroma</translation>
 <translation id="7411224099004328643">Uporabnik računa Google</translation>
@@ -1311,6 +1317,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7808889146555843082">Če izbrišete to geslo, ne izbrišete računa na <ph name="SITE" />. Če želite račun zaščititi pred drugimi, spremenite geslo ali izbrišite račun na <ph name="SITE" />.</translation>
 <translation id="7810647596859435254">Odpiranje z aplikacijo …</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Vse datoteke, 1 datoteka na seznamu}one{Vse datoteke, # datoteka na seznamu}two{Vse datoteke, # datoteki na seznamu}few{Vse datoteke, # datoteke na seznamu}other{Vse datoteke, # datotek na seznamu}}</translation>
 <translation id="7815484226266492798">Dolg posnetek zaslona</translation>
 <translation id="7822705602465980873">Ko ste prijavljeni, so ti podatki povezani z vašim računom Google, da vas zaščitijo v Googlovih storitvah, na primer za povečanje zaščite v Gmailu po varnostnem dogodku.</translation>
 <translation id="782705168687182233">Dejavnost se shranjuje v <ph name="BEGIN_LINK" />računu Google<ph name="END_LINK" />.</translation>
@@ -1535,6 +1542,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Jezik <ph name="LANG" /> je pripravljen.</translation>
 <translation id="8937772741022875483">Ali želite svojo dejavnost v Chromu odstraniti iz Digitalne dobrobiti?</translation>
+<translation id="893938492099608175">Chrome lahko glede na nastavitve pošlje tudi piškotke, trenutni URL in vašo lokacijo</translation>
 <translation id="8942627711005830162">Odpri v drugem oknu</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – tega jezika ni bilo mogoče prenesti. Poskusite pozneje.</translation>
 <translation id="8955719471735800169">Nazaj na vrh</translation>

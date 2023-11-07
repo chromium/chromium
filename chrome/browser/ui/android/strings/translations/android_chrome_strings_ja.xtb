@@ -141,6 +141,7 @@
 <translation id="1750259112639922169">タブグループ - <ph name="TAB_COUNT" /> 個のタブ</translation>
 <translation id="17513872634828108">開いているタブ</translation>
 <translation id="1757620656501361327">Google パスワード マネージャーのお知らせ</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{ページ、リストの 1 件のページ}other{ページ、リストの # 件のページ}}</translation>
 <translation id="1778457539567749232">未読にする</translation>
 <translation id="1779766957982586368">ウィンドウを閉じる</translation>
 <translation id="1791662854739702043">インストール先</translation>
@@ -250,6 +251,7 @@
 <translation id="2414886740292270097">暗</translation>
 <translation id="2421705177906985956">現在表示できるサイトはありません</translation>
 <translation id="2426805022920575512">別のアカウントを選択</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{動画、リストの 1 件の動画}other{動画、リストの # 件の動画}}</translation>
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> のプレビュー</translation>
@@ -725,6 +727,7 @@
 <translation id="4864369630010738180">ログインしています...</translation>
 <translation id="4866368707455379617">Chrome 用の <ph name="MODULE" /> をインストールできません</translation>
 <translation id="4871568871368204250">同期の無効化</translation>
+<translation id="4874961007154620743">オフにした場合も、ローカルで提供される検索候補は引き続き表示されます</translation>
 <translation id="4875775213178255010">おすすめのコンテンツ</translation>
 <translation id="4877678010818027629">シークレット モードを開始</translation>
 <translation id="4878404682131129617">プロキシ サーバー経由のトンネルを確立できませんでした</translation>
@@ -1101,6 +1104,7 @@
 <translation id="6795633245022906657">新しいタブをすばやく開きます。このショートカットは [設定] で編集できます。</translation>
 <translation id="6802555630140434547">ウィンドウが閉じられます</translation>
 <translation id="6811034713472274749">ページを表示できます</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{画像、リストの 1 件の画像}other{画像、リストの # 件の画像}}</translation>
 <translation id="6813446258015311409">Chrome にログイン、の画面が開きました。</translation>
 <translation id="6817747507826986771">このページをすばやく共有します。このショートカットを編集するには、長押ししてください。</translation>
 <translation id="6819199143469632133">お使いの複数のデバイスで Google の設定やデータを同期するには、ログインします</translation>
@@ -1114,6 +1118,7 @@
 <translation id="6846298663435243399">読み込んでいます…</translation>
 <translation id="6850409657436465440">ダウンロードが進行中です</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> 個のタブを閉じました</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{音声ファイル、リストの 1 件の音声ファイル}other{音声ファイル、リストの # 件の音声ファイル}}</translation>
 <translation id="685850645784703949">Discover by Google - オフ</translation>
 <translation id="686366188661646310">パスワードを削除しますか？</translation>
 <translation id="6864459304226931083">画像をダウンロード</translation>
@@ -1219,6 +1224,7 @@
 <translation id="7379900596734708416">このサイトでダークモードを使用できます</translation>
 <translation id="7388615499319468910">ウェブサイトと広告主は表示された広告の効果を確認できます。この設定は無効になっています。</translation>
 <translation id="7397416715506917976">ページの関連情報を表示</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{リストのその他の 1 件のファイル}other{リストのその他の # 件のファイル}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome 初回起動時の操作</translation>
 <translation id="7411224099004328643">Google アカウント ユーザー</translation>
@@ -1312,6 +1318,7 @@
 <translation id="780301667611848630">同意しない</translation>
 <translation id="7808889146555843082">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません。セキュリティを確保するため、パスワードを変更するか、<ph name="SITE" /> のアカウントを削除してください。</translation>
 <translation id="7810647596859435254">アプリで開く…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{すべてのファイル、リストの 1 件のファイル}other{すべてのファイル、リストの # 件のファイル}}</translation>
 <translation id="7815484226266492798">ロング スクリーンショット</translation>
 <translation id="7822705602465980873">ログイン中は、このデータを Google アカウントにリンクして、すべての Google サービスで保護します（セキュリティ インシデント後に Gmail で保護を強化するなど）。</translation>
 <translation id="782705168687182233">アクティビティは <ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />に保存されます。</translation>
@@ -1537,6 +1544,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> を使用できるようになりました</translation>
 <translation id="8937772741022875483">Chrome のアクティビティを Digital Wellbeing から削除しますか？</translation>
+<translation id="893938492099608175">設定によっては、Chrome から Cookie、現在の URL、位置情報が送信されることもあります</translation>
 <translation id="8942627711005830162">別のウィンドウで開く</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - この言語をダウンロードできませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="8955719471735800169">トップへ戻る</translation>

@@ -1366,6 +1366,7 @@
 <translation id="2046702855113914483">ラーメン</translation>
 <translation id="204706822916043810">仮想マシンを確認しています</translation>
 <translation id="2048182445208425546">ユーザーのネットワーク トラフィックへのアクセス</translation>
+<translation id="2048254245884707305">マルウェアがないか確認しています...</translation>
 <translation id="2048554637254265991">コンテナ マネージャーの起動中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="2048653237708779538">操作できません</translation>
 <translation id="204914487372604757">ショートカットを作成</translation>
@@ -2077,6 +2078,7 @@
 <translation id="2580889980133367162">複数のファイルをダウンロードすることを <ph name="HOST" /> に常に許可する</translation>
 <translation id="258095186877893873">長い</translation>
 <translation id="2581455244799175627">サードパーティ Cookie の許可に関する詳細</translation>
+<translation id="2581992808349413349">安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。これには、<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> のマネージド サービス プロバイダを使用します</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />（プラットフォーム <ph name="PLATFORM_VERSION" />）<ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos チケットを取得できませんでした。もう一度お試しいただくか、組織のデバイス管理者にお問い合わせください。（エラーコード <ph name="ERROR_CODE" />）。</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> をインストールできませんでした。もう一度お試しいただくか、管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
@@ -2551,6 +2553,7 @@
 <translation id="2942581856830209953">このページをカスタマイズ</translation>
 <translation id="2942707801577151363">Word、Excel、PowerPoint のファイルを開いて、編集、保存できます。機能によってはサブスクリプションが必要な場合があります。</translation>
 <translation id="2943268899142471972">Ansible Playbook または Crostini のバックアップ ファイルを選択してください</translation>
+<translation id="2943478529590267286">システム キーボードのレイアウトを変更する</translation>
 <translation id="2944060181911631861">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">ファイルアプリに移動</translation>
 <translation id="2946119680249604491">接続を追加</translation>
@@ -2840,6 +2843,7 @@
 <translation id="3192947282887913208">音声ファイル</translation>
 <translation id="3193695589337931419">システム シグナル ユーティリティ</translation>
 <translation id="3194786596445804250">サードパーティの Cookie のブロックについて詳細を表示する</translation>
+<translation id="3196912927885212665">Android スマートフォンでセットアップするには、Chromebook の Bluetooth をオンにする必要があります</translation>
 <translation id="3197453258332670132">右クリックするか長押しすると、選択したテキストに関連する情報が表示されます</translation>
 <translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。障害レポートでは、ChromeOS がクラッシュした時間や使用された機能、通常のメモリ使用量などが送信されます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。アプリの同期もオンになっている場合、Android アプリやウェブアプリなどのアプリの診断データと使用状況データが収集されます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、お子様の ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
@@ -3165,13 +3169,6 @@
 <translation id="346298925039590474">このデバイスのすべてのユーザーがこのモバイル ネットワークを使用できます</translation>
 <translation id="3464145797867108663">仕事用プロファイルを追加</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />、<ph name="MERCHANT_NAME_2" /> などの割引情報を取得しますか？</translation>
-<translation id="3466476162566821406">スマートフォンの指示に沿ってコードの確認を行います。スマートフォンの Bluetooth と Wi-Fi がオンになっていることをご確認ください。
-    <ph name="BR" />
-    <ph name="BR" />
-    スマートフォンを使って Wi-Fi や Google アカウントの情報を <ph name="DEVICE_TYPE" /> に追加できます。
-    <ph name="BR" />
-    <ph name="BR" />
-    付近のデバイスに「<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />」として表示されています...</translation>
 <translation id="3468298837301810372">ラベル</translation>
 <translation id="3468999815377931311">Android スマートフォン</translation>
 <translation id="3469583217479686109">選択ツール</translation>
@@ -3268,6 +3265,7 @@
 <translation id="3544879808695557954">ユーザー名（任意）</translation>
 <translation id="3547954654003013442">プロキシ設定</translation>
 <translation id="3548162552723420559">環境に合わせて画面の色を調整します</translation>
+<translation id="354949590254473526">カスタム DNS クエリ URL を入力</translation>
 <translation id="3550593477037018652">モバイル ネットワークとの接続を切断する</translation>
 <translation id="3550915441744863158">Chrome は自動更新されるため、常に最新版をご利用になれます</translation>
 <translation id="3551320343578183772">タブを閉じる</translation>
@@ -3582,6 +3580,7 @@
 <translation id="3784472333786002075">Cookie はウェブサイトによって作成されるファイルです。Cookie には 2 種類あります。1 つ目の「ファーストパーティの Cookie」は、現在アクセスしているサイト、つまりアドレスバーに表示されているサイトによって作成されます。2 つ目の「サードパーティの Cookie」は、他のサイト、つまりアクセス中のウェブサイトに表示されているコンテンツの一部（広告、画像など）を所有しているサイトによって作成されます。</translation>
 <translation id="3785308913036335955">アプリのショートカットを表示</translation>
 <translation id="3785727820640310185">このサイト用に保存されているパスワード</translation>
+<translation id="3786224729726357296"><ph name="SITE" /> のサイトデータと権限を削除</translation>
 <translation id="3786834302860277193">コンポジション テキストに下線を表示</translation>
 <translation id="3787434344076711519">翻訳中</translation>
 <translation id="3788301286821743879">キオスク アプリケーションを起動できませんでした。</translation>
@@ -4403,6 +4402,7 @@
 <translation id="443454694385851356">以前の暗号化タイプ（安全ではありません）</translation>
 <translation id="4434611816075088065">他に確認の必要な項目はありません</translation>
 <translation id="443475966875174318">互換性のないアプリケーションの更新または削除</translation>
+<translation id="4437947179446780764">カスタム DNS サービス プロバイダを追加</translation>
 <translation id="4438043733494739848">透明</translation>
 <translation id="4441124369922430666">マシンの起動時にこのアプリを自動的に起動しますか？</translation>
 <translation id="4441147046941420429">続行するには、デバイスからセキュリティ キーを取り外し、もう一度差し込んでからタッチしてください</translation>
@@ -4806,7 +4806,6 @@
 <translation id="4769632191812288342">標準保護機能が適用されています</translation>
 <translation id="4770119228883592393">権限がリクエストされました。対応するには、⌘+option+下矢印キーを押してください</translation>
 <translation id="4773112038801431077">Linux のアップグレード</translation>
-<translation id="4774456473286455263">Android スマートフォンを使って設定する</translation>
 <translation id="4775228465764358468">使用する言語や購入しようとしている商品がサイトに保存される場合があります。この情報は、該当のサイトとそのサブドメインで使用されます。</translation>
 <translation id="477548766361111120">拡張機能にこのサイトの読み取りと変更を許可する</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> を接続しました</translation>
@@ -4991,7 +4990,9 @@
 <translation id="4907161631261076876">このファイルは一般的にダウンロードされているファイルではなく、危害を及ぼす可能性があります。</translation>
 <translation id="4908811072292128752">新しいタブを開いて 2 つのサイトを同時に閲覧できます</translation>
 <translation id="4909038193460299775">このアカウントは <ph name="DOMAIN" /> で管理されているため、ブックマーク、履歴、パスワードなどの設定はこのデバイスから消去されます。ただし、データは Google アカウントに保存され、<ph name="BEGIN_LINK" />Google ダッシュボード<ph name="END_LINK" />で管理できます。</translation>
+<translation id="4911572142453926213">安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します</translation>
 <translation id="4912643508233590958">アイドル状態からの復帰</translation>
+<translation id="4913209098186576320">このファイルは危険な可能性があります<ph name="LINE_BREAK" />確認に通常より時間がかかっています...</translation>
 <translation id="4915961947098019832">画像の表示を許可するサイト</translation>
 <translation id="4916542008280060967">サイトに <ph name="FILE_NAME" /> の編集を許可しますか？</translation>
 <translation id="4917385247580444890">強い</translation>
@@ -5028,6 +5029,7 @@
 <translation id="4941963255146903244">スマートフォンの写真、メディア、アプリを表示します</translation>
 <translation id="494286511941020793">プロキシ設定ヘルプ</translation>
 <translation id="4943368462779413526">フットボール</translation>
+<translation id="4943927218331934807">パスワードを入力してください</translation>
 <translation id="4944310289250773232">この認証サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
 <translation id="4945439665401275950">指紋を設定するには、お子様に電源ボタンをタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="4946459324029651239">標準保護機能が適用されます</translation>
@@ -5466,6 +5468,7 @@
 <translation id="5307030433605830021">サポートされていないソースです</translation>
 <translation id="5307386115243749078">Bluetooth スイッチのペア設定</translation>
 <translation id="5308380583665731573">接続</translation>
+<translation id="5308989548591363504">マルウェアがないか確認する</translation>
 <translation id="5309418307557605830">Google アシスタントはこのデバイスで使用できます</translation>
 <translation id="5309641450810523897">サポートケース ID</translation>
 <translation id="5311304534597152726">次のユーザーとしてログイン:</translation>
@@ -5772,6 +5775,7 @@
 <translation id="555604722231274592"><ph name="FEATURE_NAME" /> を有効にする</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5558129378926964177">拡大(&amp;I)</translation>
+<translation id="5558594314398017686">OS のデフォルト（使用可能な場合）</translation>
 <translation id="5559311991468302423">住所を削除</translation>
 <translation id="5559768063688681413">保存済みのプリンタはありません</translation>
 <translation id="55601339223879446">ディスプレイ内のデスクトップの境界線を調整します</translation>
@@ -6145,13 +6149,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> はまもなく一時的に利用できなくなります</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> はディスク イメージから実行されています。パソコンにインストールすると、ディスク イメージなしで実行できるようになり、常に最新の状態に維持できます。</translation>
 <translation id="5865733239029070421">使用統計情報や障害レポートを Google に自動送信します</translation>
-<translation id="5867855474018538405">スマートフォンの指示に沿って QR コードをスキャンします。スマートフォンの Bluetooth と Wi-Fi がオンになっていることをご確認ください。
-    <ph name="BR" />
-    <ph name="BR" />
-    スマートフォンを使って Wi-Fi や Google アカウントの情報を <ph name="DEVICE_TYPE" /> に追加できます。
-    <ph name="BR" />
-    <ph name="BR" />
-    付近のデバイスに「<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />」として表示されています...</translation>
 <translation id="5868434909835797817">デバイスのマイクはオフになっています</translation>
 <translation id="5868822853313956582">デバイスの色に従う</translation>
 <translation id="5869029295770560994">OK</translation>
@@ -7719,6 +7716,7 @@
 <translation id="7125932261198019860">プリンタが Chromebook と同じ Wi-Fi ネットワークに接続されていることを確認するか、USB ケーブルを使用します。<ph name="LINK_BEGIN" />互換性について<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ダウンロード履歴</translation>
 <translation id="7128151990937044829">通知がブロックされたときにアドレスバーにインジケーターを表示する</translation>
+<translation id="7130438335435247835">アクセス ポイント名（APN）</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> でのユーザーデータの読み取り</translation>
 <translation id="713122686776214250">ページを追加(&amp;G)...</translation>
 <translation id="7131431455372521159">すべての TrackPoint の接続を解除しました</translation>
@@ -8848,6 +8846,7 @@
 <translation id="8005600846065423578"><ph name="HOST" /> によるクリップボードへのアクセスを常に許可する</translation>
 <translation id="8006630792898017994">スペースキーまたは Tab キー</translation>
 <translation id="8008356846765065031">インターネットが切断されました。インターネット接続を確認してください。</translation>
+<translation id="8008704580256716350">不審なファイルをブロックしました</translation>
 <translation id="8009225694047762179">パスワードを管理</translation>
 <translation id="8011372169388649948">「<ph name="BOOKMARK_TITLE" />」を移動しました。</translation>
 <translation id="8012188750847319132">CapsLock</translation>
@@ -10195,6 +10194,7 @@
 <translation id="9057354806206861646">更新スケジュール</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{1 日あたり約 1 件の通知}other{1 日あたり約 {NUM_NOTIFICATION} 件の通知}}</translation>
 <translation id="9058760336383947367">プリンタの PPD を表示</translation>
+<translation id="9060042817356580609">DNS プロバイダを選択</translation>
 <translation id="9061694916020926968">Steam for Chromebook（ベータ版）を使用するには、Google アカウントにログインする必要があります。ログインしてから、もう一度お試しください。</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />～<ph name="ERROR_LINE_END" /> 行目にエラーがあります</translation>

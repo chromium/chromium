@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">Веб-сайттар, соның ішінде сіз кірген беттер мен ашылған беттер</translation>
 <translation id="181103072419391116">Сигнал күші – <ph name="SIGNAL_STRENGTH" />, Әкімші басқарады</translation>
 <translation id="1816896987747843206">Бұл — камера рұқсаты бар барлық қолданба мен веб-сайт үшін камераны пайдалануға мүмкіндік береді.</translation>
-<translation id="1823280932251546115">Күй жолағы, уақыты: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Геодеректі пайдалану рұқсатын қосыңыз</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> босатылды.</translation>

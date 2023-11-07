@@ -140,6 +140,7 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="1750259112639922169">Grupo ng tab - <ph name="TAB_COUNT" /> (na) tab</translation>
 <translation id="17513872634828108">Mga bukas na tab</translation>
 <translation id="1757620656501361327">Update sa Google Password Manager</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Mga Page, may 1 page sa listahan}one{Mga Page, may # page sa listahan}other{Mga Page, may # na page sa listahan}}</translation>
 <translation id="1778457539567749232">Markahan bilang hindi pa nababasa</translation>
 <translation id="1779766957982586368">Isara ang window</translation>
 <translation id="1791662854739702043">Na-install</translation>
@@ -249,6 +250,7 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="2414886740292270097">Madilim</translation>
 <translation id="2421705177906985956">Walang site na maipapakita sa ngayon</translation>
 <translation id="2426805022920575512">Pumili ng ibang account</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Mga Video, may 1 video sa listahan}one{Mga Video, may # video sa listahan}other{Mga Video, may # na video sa listahan}}</translation>
 <translation id="2433507940547922241">Hitsura</translation>
 <translation id="2435457462613246316">Ipakita ang password</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> Preview</translation>
@@ -724,6 +726,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="4864369630010738180">Nagsa-sign in...</translation>
 <translation id="4866368707455379617">Hindi ma-install ang <ph name="MODULE" /> para sa Chrome</translation>
 <translation id="4871568871368204250">I-off ang pag-sync</translation>
+<translation id="4874961007154620743">Kapag naka-off ito, makikita mo pa rin ang mga suhestyong lokal na ibinibigay ng Chrome</translation>
 <translation id="4875775213178255010">Mga Iminumungkahing Content</translation>
 <translation id="4877678010818027629">Pumasok sa Incognito mode</translation>
 <translation id="4878404682131129617">Hindi nakagawa ng tunnel sa pamamagitan ng proxy server</translation>
@@ -1100,6 +1103,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6795633245022906657">Mabilis na magbukas ng bagong tab. Para i-edit ang shortcut na ito, pumunta sa Mga Setting.</translation>
 <translation id="6802555630140434547">Isasara ang window</translation>
 <translation id="6811034713472274749">Maaari nang tingnan ang page</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Mga Larawan, may 1 larawan sa listahan}one{Mga Larawan, may # larawan sa listahan}other{Mga Larawan, may # na larawan sa listahan}}</translation>
 <translation id="6813446258015311409">Nakabukas ang pag-sign in sa Chrome.</translation>
 <translation id="6817747507826986771">Mabilis na ibahagi ang page na ito. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
 <translation id="6819199143469632133">Mag-sign in para ma-sync sa lahat ng device ang iyong content ng Google</translation>
@@ -1113,6 +1117,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6846298663435243399">Naglo-load…</translation>
 <translation id="6850409657436465440">Isinasagawa pa rin ang iyong pag-download</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> (na) tab ang isinara</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Mga audio file, may 1 audio file sa listahan}one{Mga audio file, may # audio file sa listahan}other{Mga audio file, may # na audio file sa listahan}}</translation>
 <translation id="685850645784703949">Discover ng Google - naka-off</translation>
 <translation id="686366188661646310">I-delete ang password?</translation>
 <translation id="6864459304226931083">I-download ang larawan</translation>
@@ -1218,6 +1223,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7379900596734708416">Available ang Madilim na tema para sa mga site</translation>
 <translation id="7388615499319468910">Mauunawaan ng mga site at advertiser ang performance ng mga ad. Naka-off ang setting na ito.</translation>
 <translation id="7397416715506917976">Tingnan ang Insight ng Page</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Iba pa, may 1 file sa listahan}one{Iba pa, may # file sa listahan}other{Iba pa, may # na file sa listahan}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Unang Karanasan sa Pagtakbo ng Chrome</translation>
 <translation id="7411224099004328643">User ng Google Account</translation>
@@ -1311,6 +1317,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7808889146555843082">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="SITE" />. Palitan ang iyong password o i-delete ang account mo sa <ph name="SITE" /> para mapanatili itong ligtas mula sa iba.</translation>
 <translation id="7810647596859435254">Buksan gamit ang…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Lahat ng file, may 1 file sa listahan}one{Lahat ng file, may # file sa listahan}other{Lahat ng file, may # na file sa listahan}}</translation>
 <translation id="7815484226266492798">Mahabang Screenshot</translation>
 <translation id="7822705602465980873">Kapag naka-sign in ka, naka-link ang data na ito sa iyong Google Account para protektahan ka sa lahat ng serbisyo ng Google, halimbawa, pagpapaigting ng proteksyon sa Gmail pagkatapos ng isang insidente sa seguridad.</translation>
 <translation id="782705168687182233">Na-save ang aktibidad mo sa iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" />.</translation>
@@ -1535,6 +1542,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Handa na ang <ph name="LANG" /></translation>
 <translation id="8937772741022875483">Alisin sa Digital Wellness ang aktibidad mo sa Chrome?</translation>
+<translation id="893938492099608175">Depende sa iyong mga setting, posible ring magpadala ang Chrome ng cookies, kasalukuyang URL mo, at iyong lokasyon</translation>
 <translation id="8942627711005830162">Buksan sa ibang window</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Hindi ma-download ang wikang ito. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="8955719471735800169">Bumalik sa tuktok</translation>

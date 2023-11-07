@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1003363546227723021">जब आपकी स्क्रीन लॉक हो, तो फ़ोटो, समय, मौसम, और मीडिया की जानकारी दिखाएं</translation>
 <translation id="1014750484722996375">डेस्क</translation>
 <translation id="1018219910092211213">डीएनएस की समस्या को ठीक नहीं किया जा सकता</translation>
 <translation id="1018656279737460067">रद्द</translation>
@@ -532,7 +533,6 @@
 <translation id="4999333166442584738">रिपोर्ट छिपाएं</translation>
 <translation id="500920857929044050">टेस्ट बंद करें</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">अगर स्क्रीन इस्तेमाल में न हो, तो फ़ोटो, समय, मौसम, और मीडिया की जानकारी दिखाएं.</translation>
 <translation id="5035083460461104704">थीम का रंग</translation>
 <translation id="5038292761217083259">कीबोर्ड की रोशनी के लिए एक से ज़्यादा रंग</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>

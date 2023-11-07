@@ -140,6 +140,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1750259112639922169">Oortjiegroep – <ph name="TAB_COUNT" /> oortjies</translation>
 <translation id="17513872634828108">Oop oortjies</translation>
 <translation id="1757620656501361327">Google Wagwoordbestuurder-opdatering</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Bladsye, 1 bladsy in lys}other{Bladsye, # bladsye in lys}}</translation>
 <translation id="1778457539567749232">Merk as ongelees</translation>
 <translation id="1779766957982586368">Maak venster toe</translation>
 <translation id="1791662854739702043">Geïnstalleer</translation>
@@ -249,6 +250,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2414886740292270097">Donker</translation>
 <translation id="2421705177906985956">Geen werwe om op die oomblik te wys nie</translation>
 <translation id="2426805022920575512">Kies 'n ander rekening</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Video’s, 1 video in lys}other{Video’s, # video’s in lys}}</translation>
 <translation id="2433507940547922241">Voorkoms</translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />-voorskou</translation>
@@ -724,6 +726,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4864369630010738180">Meld tans aan …</translation>
 <translation id="4866368707455379617">Kan nie <ph name="MODULE" /> vir Chrome installeer nie</translation>
 <translation id="4871568871368204250">Skakel sinkronisering af</translation>
+<translation id="4874961007154620743">Wanneer dit af is, sal jy steeds voorstelle sien wat Chrome plaaslik verskaf</translation>
 <translation id="4875775213178255010">Inhoudvoorstelle</translation>
 <translation id="4877678010818027629">Gebruik Incognitomodus</translation>
 <translation id="4878404682131129617">Kon nie 'n tonnel deur instaanbediener vestig nie</translation>
@@ -1100,6 +1103,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6795633245022906657">Maak vinnig 'n nuwe oortjie oop. Gaan na Instellings om hierdie kortpad te wysig.</translation>
 <translation id="6802555630140434547">Die venster sal toegemaak word</translation>
 <translation id="6811034713472274749">Bladsy is gereed om bekyk te word</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Prente, 1 prent in lys}other{Prente, # prente in lys}}</translation>
 <translation id="6813446258015311409">Meld by Chrome aan; oopgemaak.</translation>
 <translation id="6817747507826986771">Deel hierdie bladsy vinnig. Raak en hou om hierdie kortpad te wysig.</translation>
 <translation id="6819199143469632133">Meld aan om jou Google-goed op alle toestelle te kry</translation>
@@ -1113,6 +1117,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6846298663435243399">Laai tans …</translation>
 <translation id="6850409657436465440">Jou aflaai is nog aan die gang</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> oortjies is toegemaak</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Oudiolêers, 1 oudiolêer in lys}other{Oudiolêers, # oudiolêers in lys}}</translation>
 <translation id="685850645784703949">Ontdek deur Google – af</translation>
 <translation id="686366188661646310">Vee wagwoord uit?</translation>
 <translation id="6864459304226931083">Laai prent af</translation>
@@ -1218,6 +1223,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7379900596734708416">Donkertema vir werwe is beskikbaar</translation>
 <translation id="7388615499319468910">Werwe en adverteerders kan verstaan hoe advertensies vaar. Hierdie instelling is af.</translation>
 <translation id="7397416715506917976">Bekyk bladinsigte</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Ander, 1 lêer in lys}other{Ander, # lêers in lys}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome se eerste laatloopervaring</translation>
 <translation id="7411224099004328643">Google-rekeninggebruiker</translation>
@@ -1311,6 +1317,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7808889146555843082">As hierdie wagwoord uitgevee word, sal dit nie jou rekening op <ph name="SITE" /> uitvee nie. Verander jou wagwoord of vee jou rekening op <ph name="SITE" /> uit om dit veilig te hou van ander.</translation>
 <translation id="7810647596859435254">Maak oop met …</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Alle lêers, 1 lêer in lys}other{Alle lêers, # lêers in lys}}</translation>
 <translation id="7815484226266492798">Lang skermkiekie</translation>
 <translation id="7822705602465980873">Wanneer jy aangemeld is, word hierdie data aan jou Google-rekening gekoppel om jou oral in Google-dienste te beskerm, byvoorbeeld deur beskerming in Gmail te verhoog ná ’n sekuriteitvoorval.</translation>
 <translation id="782705168687182233">Jou aktiwiteit word in jou <ph name="BEGIN_LINK" />Google-rekening<ph name="END_LINK" /> gestoor</translation>
@@ -1535,6 +1542,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is gereed</translation>
 <translation id="8937772741022875483">Verwyder jou Chrome-aktiwiteit van Digitale Welstand?</translation>
+<translation id="893938492099608175">Chrome kan ook webkoekies, jou huidige URL en jou ligging stuur, afhangende van jou instellings</translation>
 <translation id="8942627711005830162">Maak in 'n ander venster oop</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – hierdie taal kon nie afgelaai word nie. Probeer later weer.</translation>
 <translation id="8955719471735800169">Terug na bo</translation>

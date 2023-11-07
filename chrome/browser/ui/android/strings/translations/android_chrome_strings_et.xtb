@@ -140,6 +140,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1750259112639922169">Vahelehegrupp – <ph name="TAB_COUNT" /> vahelehte</translation>
 <translation id="17513872634828108">Avatud vahelehed</translation>
 <translation id="1757620656501361327">Google'i paroolihalduri teade</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Lehed, loendis on 1 leht}other{Lehed, loendis on # lehte}}</translation>
 <translation id="1778457539567749232">Märgi mitteloetuks</translation>
 <translation id="1779766957982586368">Sulgeb akna</translation>
 <translation id="1791662854739702043">Installitud</translation>
@@ -249,6 +250,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2414886740292270097">Tume</translation>
 <translation id="2421705177906985956">Praegu ei ole kuvamiseks ühtegi saiti</translation>
 <translation id="2426805022920575512">Vali muu konto</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videod, loendis on 1 video}other{Videod, loendis on # videot}}</translation>
 <translation id="2433507940547922241">Välimus</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
 <translation id="2439153523196674349">Saidi <ph name="SITE_NAME" /> eelvaade</translation>
@@ -724,6 +726,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="4864369630010738180">Sisselogimine ...</translation>
 <translation id="4866368707455379617">Moodulit <ph name="MODULE" /> ei saa Chrome'i jaoks installida</translation>
 <translation id="4871568871368204250">Sünkroonimise väljalülitamine</translation>
+<translation id="4874961007154620743">Kui see on välja lülitatud, näete endiselt soovitusi, mida Chrome kohalikult pakub</translation>
 <translation id="4875775213178255010">Sisu soovitused</translation>
 <translation id="4877678010818027629">Sisenemine inkognito režiimi</translation>
 <translation id="4878404682131129617">Puhverserveri kaudu tunneli loomine ebaõnnestus</translation>
@@ -1100,6 +1103,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6795633245022906657">Uue vahelehe kiire avamine. Selle otsetee muutmiseks avage menüü Seaded.</translation>
 <translation id="6802555630140434547">Aken suletakse</translation>
 <translation id="6811034713472274749">Leht on vaatamiseks valmis</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Pildid, loendis on 1 pilt}other{Pildid, loendis on # pilti}}</translation>
 <translation id="6813446258015311409">Chrome'i sisselogimine, avatud.</translation>
 <translation id="6817747507826986771">Jagage kiirelt seda lehte. Selle otsetee muutmiseks puudutage pikalt.</translation>
 <translation id="6819199143469632133">Selleks et oma Google'i sisule eri seadmetes juurde pääseda, logige sisse</translation>
@@ -1113,6 +1117,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6846298663435243399">Laadimine…</translation>
 <translation id="6850409657436465440">Allalaadimine on endiselt pooleli</translation>
 <translation id="6850830437481525139">Suleti <ph name="TAB_COUNT" /> vahelehte</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Helifailid, loendis on 1 helifail}other{Helifailid, loendis on # helifaili}}</translation>
 <translation id="685850645784703949">Discover Google'ilt – väljas</translation>
 <translation id="686366188661646310">Kas kustutada parool?</translation>
 <translation id="6864459304226931083">Laadi kujutis alla</translation>
@@ -1218,6 +1223,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7379900596734708416">Saitide tume teema on saadaval</translation>
 <translation id="7388615499319468910">Saidid ja reklaamijad saavad hankida teavet reklaamide toimivuse kohta. See seade on välja lülitatud.</translation>
 <translation id="7397416715506917976">Kuva lehe statistika</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Muu, loendis on 1 fail}other{Muu, loendis on # faili}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome'i esmakordse käitamise kasutuskogemus</translation>
 <translation id="7411224099004328643">Google'i konto kasutaja</translation>
@@ -1311,6 +1317,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="780301667611848630">Ei, aitäh</translation>
 <translation id="7808889146555843082">Selle parooli eemaldamisel ei kustutata teie kontot saidil <ph name="SITE" />. Muutke oma parooli või kustutage saidil <ph name="SITE" /> olev konto, et parooli kaitsta.</translation>
 <translation id="7810647596859435254">Ava rakendusega …</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Kõik failid, loendis on 1 fail}other{Kõik failid, loendis on # faili}}</translation>
 <translation id="7815484226266492798">Pikk ekraanipilt</translation>
 <translation id="7822705602465980873">Kui olete sisse logitud, lingitakse need andmed teie Google'i kontoga, et teid Google'i teenustest kaitsta. Näiteks suurendades pärast turvaintsidenti Gmailis kaitset.</translation>
 <translation id="782705168687182233">Teie tegevus on salvestatud teie <ph name="BEGIN_LINK" />Google'i kontole<ph name="END_LINK" />.</translation>
@@ -1535,6 +1542,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> on valmis</translation>
 <translation id="8937772741022875483">Kas eemaldada teie Chrome'i tegevused teenusest Digitaalne heaolu?</translation>
+<translation id="893938492099608175">Teie seadetest olenevalt võib Chrome saata ka küpsisefaile, teie praeguse URL-i ja teie asukoha</translation>
 <translation id="8942627711005830162">Ava teises aknas</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – seda keelt ei saanud alla laadida. Proovige hiljem uuesti.</translation>
 <translation id="8955719471735800169">Tagasi üles</translation>

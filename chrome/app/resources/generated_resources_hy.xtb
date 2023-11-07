@@ -3171,13 +3171,6 @@
 <translation id="346298925039590474">Այս բջջային ցանցը հասանելի կլինի այս սարքի բոլոր օգտատերերին</translation>
 <translation id="3464145797867108663">Ավելացնել աշխատանքային պրոֆիլ</translation>
 <translation id="346546413339447252">Ստացեք զեղչեր <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> և այլ խանութներում</translation>
-<translation id="3466476162566821406">Կոդը հաստատելու համար հետևեք ձեր հեռախոսի էկրանին ցուցադրվող ցուցումներին։ Համոզվեք, որ ձեր հեռախոսի Bluetooth-ն ու Wi-Fi-ը միացված են։
-    <ph name="BR" />
-    <ph name="BR" />
-    Դուք կարող եք հեռախոսի միջոցով ավելացնել ձեր Wi-Fi ցանցը և Google հաշվի տեղեկությունները <ph name="DEVICE_TYPE" /> սարքում։
-    <ph name="BR" />
-    <ph name="BR" />
-    Մոտակա սարքերին տեսանելի է որպես <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="3468298837301810372">Պիտակ</translation>
 <translation id="3468999815377931311">Android հեռախոս</translation>
 <translation id="3469583217479686109">«Ընտրություն» գործիք</translation>
@@ -4814,7 +4807,6 @@
 <translation id="4769632191812288342">Դուք ստանում եք ստանդարտ պաշտպանություն</translation>
 <translation id="4770119228883592393">Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք ⌘ + Option + վար սլաք։</translation>
 <translation id="4773112038801431077">Լինուքսի նորացում</translation>
-<translation id="4774456473286455263">Կարգավորում Android հեռախոսի միջոցով</translation>
 <translation id="4775228465764358468">Կայքը կարող է պահել տեղեկութուններ ձեր նախընտրած լեզվի կամ ապրանքների մասին, որոնք ուզում եք գնել։ Այդ տեղեկությունները հասանելի են կայքին և դրա ենթատիրույթներին։</translation>
 <translation id="477548766361111120">Թույլատրել ընդլայնմանը դիտել և փոփոխել այս կայքը</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> սարքը միացվել է</translation>
@@ -6156,13 +6148,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> հավելվածի աշխատանքը շուտով կդադարեցվի</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" />-ը գործարկվում է իր սկավառակի պատկերից: Եթե տեղադրեք այն համակարգչում, կարող եք գործարկել առանց սկավառակի պատկերի` միևնույն ժամանակ այն արդի պահելով:</translation>
 <translation id="5865733239029070421">Ավտոմատ Google-ին է ուղարկում օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները</translation>
-<translation id="5867855474018538405">QR կոդը սկանավորելու համար հետևեք ձեր հեռախոսի էկրանին ցուցադրվող ցուցումներին։ Համոզվեք, որ ձեր հեռախոսի Bluetooth-ն ու Wi-Fi-ը միացված են։
-    <ph name="BR" />
-    <ph name="BR" />
-    Դուք կարող եք հեռախոսի միջոցով ավելացնել ձեր Wi-Fi ցանցը և Google հաշվի տեղեկությունները <ph name="DEVICE_TYPE" /> սարքում։
-    <ph name="BR" />
-    <ph name="BR" />
-    Մոտակա սարքերին տեսանելի է որպես <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="5868434909835797817">Սարքի խոսափողն անջատված է</translation>
 <translation id="5868822853313956582">Հետևեք սարքի գույներին</translation>
 <translation id="5869029295770560994">Լավ, հասկացա</translation>
@@ -7732,6 +7717,7 @@
 <translation id="7125932261198019860">Համոզվեք, որ ձեր տպիչը միացած է նույն Wi-Fi ցանցին, ինչ ձեր Chromebook-ը, կամ օգտագործեք USB մալուխ։ <ph name="LINK_BEGIN" />Իմանալ ավելին համատեղելիության մասին<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Ներբեռնումների պատմությունը</translation>
 <translation id="7128151990937044829">Ցույց տալ արգելափակման ցուցիչը հասցեագոտում, երբ ծանուցումներն արգելափակված են</translation>
+<translation id="7130438335435247835">Մուտքի կետի անվանում (APN)</translation>
 <translation id="7131040479572660648">Կարդալ ձեր տվյալները <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> և <ph name="WEBSITE_3" /> կայքերում</translation>
 <translation id="713122686776214250">Հավելել է&amp;ջ...</translation>
 <translation id="7131431455372521159">Բոլոր TrackPoint-ներն անջատվել են</translation>

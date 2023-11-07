@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}}</translation>
 <translation id="2410940059315936967">તમે મુલાકાત લેતા હો એવી કોઈ સાઇટ અન્ય સાઇટમાંનું કન્ટેન્ટ શામેલ કરી શકે છે, ઉદાહરણ તરીકે છબીઓ, જાહેરાતો અને ટેક્સ્ટ. આવી અન્ય સાઇટ દ્વારા સેટ કરવામાં આવતી કુકીને ત્રીજા પક્ષની કુકી તરીકે ઓળખવામાં આવે છે.</translation>
 <translation id="2434158240863470628">ડાઉનલોડ પૂર્ણ <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">તમે આ સાઇટને હંગામી રીતે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાની મંજૂરી આપી છે, જેનો અર્થ એ થાય છે કે સાઇટને બ્રાઉઝિંગ સંબંધિત સુરક્ષા ઓછી મળે છે, પરંતુ સાઇટની સુવિધાઓ અપેક્ષા મુજબ કામ કરે એવી સંભાવના વધુ છે. <ph name="BEGIN_LINK" />પ્રતિસાદ મોકલો<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">છૂપા મોડમાં અમુક સાઇટ પર અમુક સુવિધાઓ કદાચ કામ કરી શકશે નહીં</translation>
 <translation id="2442870161001914531">હંમેશાં ડેસ્કટૉપ સાઇટની વિનંતી કરો</translation>
 <translation id="2469312991797799607">આ ક્રિયાના પરિણામે <ph name="ORIGIN" /> માટેની અને તેની હેઠળ આવતી બધી સાઇટ માટેનો બધો ડેટા અને કુકી ડિલીટ થઈ જશે</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">શીર્ષક</translation>
 <translation id="4008040567710660924">કોઈ ચોક્કસ સાઇટ માટે કુકીને મંજૂરી આપો.</translation>
 <translation id="4046123991198612571">આગલો ટ્રૅક</translation>
-<translation id="4053720452172726777">Google Chrome ને કસ્ટમાઇઝ કરો અને તેનું નિયંત્રણ કરો</translation>
 <translation id="4149890623864272035">શું તમે ખરેખર કુકી સહિતનો તમામ સ્થાનિક ડેટા ડિલીટ કરવા તેમજ આ વેબસાઇટ માટેની તમામ પરવાનગીઓ રીસેટ કરવા માગો છો?</translation>
 <translation id="4149994727733219643">વેબપેજ માટે સરળ દૃશ્ય</translation>
 <translation id="4151930093518524179">'નાનું-મોટું કરો'નું ડિફૉલ્ટ લેવલ</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">ડિલીટ કરીને રીસેટ કરો</translation>
 <translation id="4645575059429386691">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="4670064810192446073">વર્ચ્યુઅલ રિયાલિટી</translation>
+<translation id="4673958474310291465">ત્રીજા પક્ષની કુકીને હંગામી રીતે મંજૂરી આપવાનો પ્રયાસ કરવાનો અર્થ છે ઓછું સંરક્ષણ પરંતુ સાઇટની સુવિધાઓ અપેક્ષા મુજબ કામ કરે એવી સંભાવના વધુ છે</translation>
 <translation id="4751476147751820511">મોશન અથવા લાઇટ સેન્સર</translation>
 <translation id="4779083564647765204">ઝૂમ કરો</translation>
 <translation id="4811450222531576619">તેના સૉર્સ અને વિષય વિશે જાણો</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="6205314730813004066">જાહેરાત સંબંધી પ્રાઇવસી</translation>
 <translation id="6207207788774442484">ડેટા ડિલીટ કરો અને પરવાનગીઓ રીસેટ કરો</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />ના વિકલ્પો</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' અનઇન્સ્ટૉલ કરીએ?</translation>
 <translation id="6262191102408817757">તમારા છેલ્લા ટૅબના આધારે</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> અને <ph name="PERMISSION_2" />ને બ્લૉક કર્યા</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">અવરોધિત કરો</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 પસંદ કરી}one{# પસંદ કરી}other{# પસંદ કરી}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />ની પસંદગી કરી. સ્ક્રીનના ટોચની નજીક વિકલ્પો ઉપલબ્ધ છે</translation>
+<translation id="7137403271056944713">MIDI ડિવાઇસ નિયંત્રણ/રીપ્રોગ્રામ</translation>
 <translation id="7141896414559753902">સાઇટને પૉપ-અપ અને રીડાયરેક્ટ બતાવવા દેવાથી બ્લૉક કરો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>

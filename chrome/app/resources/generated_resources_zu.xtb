@@ -3187,13 +3187,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="346298925039590474">Le nethiwekhi yeselula izotholakala kubo bonke abasebenzisi kule divayisi</translation>
 <translation id="3464145797867108663">Engeza iphrofayela yomsebenzi</translation>
 <translation id="346546413339447252">Thola izaphulelo ze-<ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> nokuningi</translation>
-<translation id="3466476162566821406">Landela imiyalelo esefonini yakho ukuze uqinisekise ikhodi. Qiniseka ukuthi i-Bluetooth yefoni yakho ne-Wi-Fi kuvuliwe.
-    <ph name="BR" />
-    <ph name="BR" />
-    Ungasebenzisa ifoni yakho ukwengeza i-Wi-Fi yakho nolwazi lwe-Google Account ku-<ph name="DEVICE_TYPE" /> yakho.
-    <ph name="BR" />
-    <ph name="BR" />
-    Kubonakala kumadivayisi aseduze njenge-<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="3468298837301810372">Ilebula</translation>
 <translation id="3468999815377931311">Ifoni ye-Android</translation>
 <translation id="3469583217479686109">Ithuluzi Lokukhetha</translation>
@@ -4830,7 +4823,6 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4769632191812288342">Uthola ukuvikelwa okujwayelekile</translation>
 <translation id="4770119228883592393">Imvume iceliwe, cindezela u-⌘ + Option + Umcibisholo waphansi ukuze uphendule</translation>
 <translation id="4773112038801431077">Thuthukisa i-Linux</translation>
-<translation id="4774456473286455263">Setha ngefoni yakho ye-Android</translation>
 <translation id="4775228465764358468">Isayithi ingase ilondoloze ulimi oluthandayo noma izinto ofuna ukuzithenga. Lolu lwazi luyatholakala kusayithi nasezizindeni zayo ezingaphansi kwayo.</translation>
 <translation id="477548766361111120">Vumela isandiso ukuthi sifunde futhi siguqule leli sayithi</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> ixhunyiwe</translation>
@@ -6174,13 +6166,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5865508026715185451">I-<ph name="APP_NAME" /> izophumula maduze</translation>
 <translation id="586567932979200359">Usebenzisa i-<ph name="PRODUCT_NAME" /> kusukela kusithombe sayo sediski. Ukuyifaka kukhompyutha yakho kukuvumela ukuthi uyisebenzise ngaphandle kwesithombe sediski, kuphinde kuqiniseke ukuthi izogcinwa isesikhathini samanje.</translation>
 <translation id="5865733239029070421">Ithumela ngokuzenzakalela izibalo zokusetshenziswa nemibiko yokuphahlazeka ku-Google</translation>
-<translation id="5867855474018538405">Landela imiyalelo esefonini yakho ukuze uskene ikhodi ye-QR. Qiniseka ukuthi i-Bluetooth yefoni yakho ne-Wi-Fi kuvuliwe.
-    <ph name="BR" />
-    <ph name="BR" />
-    Ungasebenzisa ifoni yakho ukwengeza i-Wi-Fi yakho nolwazi lwe-Google Account ku-<ph name="DEVICE_TYPE" /> yakho.
-    <ph name="BR" />
-    <ph name="BR" />
-    Kubonakala kumadivayisi aseduze njenge-<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="5868434909835797817">Imakrofoni ivaliwe kudivayisi yakho</translation>
 <translation id="5868822853313956582">Landela imibala yeseluleko</translation>
 <translation id="5869029295770560994">OK, ngiyezwa</translation>
@@ -7751,6 +7736,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7125932261198019860">Qinisekisa ukuthi iphrinta yakho ixhunywe kunethiwekhi ye-Wi-Fi efanayo njenge-Chromebook yakho noma sebenzisa ikhebuli ye-USB. <ph name="LINK_BEGIN" />Funda kabanzi mayelana nokuhambelana<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Landa umlando</translation>
 <translation id="7128151990937044829">Ibonisa isibonisi kubha lekheli uma isaziso sivinjiwe</translation>
+<translation id="7130438335435247835">Igama lephoyinti lokufinyelela (APN)</translation>
 <translation id="7131040479572660648">Funda idatha yakho ku-<ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, naku-<ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Engeza &amp;Ikhasi...</translation>
 <translation id="7131431455372521159">Onke ama-TrackPoints anqanyuliwe</translation>

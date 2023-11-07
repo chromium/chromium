@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">ویب سائٹس بشمول وہ صفحات جن کا آپ نے ملاحظہ کیا ہے اور وہ صفحات جنہیں آپ نے کھولا ہے</translation>
 <translation id="181103072419391116">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="1816896987747843206">اس سے کیمرے کی اجازت کے ساتھ تمام ایپس اور ویب سائٹس کے لیے کیمرے تک رسائی کی اجازت ملتی ہے</translation>
-<translation id="1823280932251546115">صورتحال کی ٹرے، وقت <ph name="TIME" />،
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />،
-        <ph name="NETWORK" />،
-        <ph name="PRIVACY" />،
-        <ph name="MANAGED" />،
-        <ph name="NOTIFICATION" />
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ایتھرنیٹ: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">مقام تک رسائی آن کریں</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> سے پن کو ختم کر دیا گیا</translation>
@@ -1197,6 +1188,7 @@
 <translation id="5788127256798019331">‏Play فائلز</translation>
 <translation id="5788535737706478207">آخری بند کردہ ٹیب یا ونڈو پھر سے کھولیں</translation>
 <translation id="5790085346892983794">کامیاب</translation>
+<translation id="5802516411616338943">فوری ترتیبات کھولیں</translation>
 <translation id="5804651031882187592">‏"SIM کو مقفل کریں" کی ترتیب آف کریں</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> کو فعال کرنے کیلئے کلک کریں</translation>
 <translation id="5823239091726045201">‏ویب پر Google ٹاسکس</translation>
@@ -1222,6 +1214,7 @@
 <translation id="5901630391730855834">پیلا</translation>
 <translation id="5911231045062997865">‏Lacros windows فی الحال تعاون یافتہ نہیں ہیں۔ دیگر ایپس کو محفوظ کیا جائے گا۔</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">نئی اطلاع، کل <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="5920710855273935292">مائیک خاموش کیا ہوا ہے۔</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> آن ہے۔</translation>

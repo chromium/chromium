@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Un sito visitato può incorporare contenuti di altri siti, ad esempio immagini, annunci e testo. I cookie impostati da questi altri siti vengono chiamati cookie di terze parti.</translation>
 <translation id="2434158240863470628">Download completato: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Hai consentito temporaneamente a questo sito di utilizzare i cookie di terze parti, il che comporta una minore protezione della navigazione, ma è più probabile che le funzionalità del sito funzionino come previsto. <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Le funzionalità su alcuni siti potrebbero non essere disponibili in modalità di navigazione in incognito</translation>
 <translation id="2442870161001914531">Richiedi sempre sito desktop</translation>
 <translation id="2469312991797799607">Questa azione eliminerà tutti i dati e i cookie di <ph name="ORIGIN" /> e di tutti i siti secondari</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Titolo</translation>
 <translation id="4008040567710660924">Consenti i cookie per un sito specifico.</translation>
 <translation id="4046123991198612571">Traccia successiva</translation>
-<translation id="4053720452172726777">Personalizza e controlla Google Chrome</translation>
 <translation id="4149890623864272035">Vuoi eliminare tutti i dati locali, compresi i cookie, e reimpostare tutte le autorizzazioni per questo sito web?</translation>
 <translation id="4149994727733219643">Visualizzazione semplificata delle pagine web</translation>
 <translation id="4151930093518524179">Zoom predefinito</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Elimina e reimposta</translation>
 <translation id="4645575059429386691">Gestito da un genitore</translation>
 <translation id="4670064810192446073">Realtà virtuale</translation>
+<translation id="4673958474310291465">Prova a consentire temporaneamente i cookie di terze parti, il che significa meno protezione, ma è più probabile che le funzionalità del sito funzionino come previsto</translation>
 <translation id="4751476147751820511">Sensori di movimento o della luce</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Scopri la fonte e l'argomento</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
 <translation id="6205314730813004066">Privacy per gli annunci</translation>
 <translation id="6207207788774442484">Elimina dati e reimposta autorizzazioni</translation>
-<translation id="6216432067784365534">Opzioni <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Vuoi disinstallare "<ph name="APP_NAME" />"?</translation>
 <translation id="6262191102408817757">In base all'ultima scheda</translation>
 <translation id="6262279340360821358">Autorizzazioni <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> bloccate</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Blocca</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elemento selezionato}other{# elementi selezionati}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elementi selezionati. Opzioni disponibili nella parte superiore dello schermo</translation>
+<translation id="7137403271056944713">Contr./riprogr. dispositivi MIDI</translation>
 <translation id="7141896414559753902">Impedisci ai siti di mostrare popup e reindirizzamenti (opzione consigliata)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Aggiorna</translation>

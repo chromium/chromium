@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Witryna, którą odwiedzasz, może wykorzystywać treści z innych witryn, np. obrazy, reklamy i tekst. Pliki cookie tworzone przez inne witryny są nazywane plikami cookie innych firm.</translation>
 <translation id="2434158240863470628">Ukończono pobieranie <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Tymczasowo zezwalasz tej witrynie na używanie plików cookie innych firm. Oznacza to słabszą ochronę przeglądania, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami. <ph name="BEGIN_LINK" />Prześlij opinię<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">W niektórych witrynach funkcje mogą nie działać w trybie incognito</translation>
 <translation id="2442870161001914531">Zawsze żądaj strony na komputery</translation>
 <translation id="2469312991797799607">Spowoduje to usunięcie wszystkich danych i plików cookie powiązanych z grupą <ph name="ORIGIN" /> i znajdującymi się w niej stronami</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Tytuł</translation>
 <translation id="4008040567710660924">Zezwalaj na pliki cookie z określonej strony internetowej.</translation>
 <translation id="4046123991198612571">Następny utwór</translation>
-<translation id="4053720452172726777">Dostosowywanie i kontrolowanie Google Chrome</translation>
 <translation id="4149890623864272035">Czy na pewno chcesz usunąć wszystkie dane lokalne, w tym pliki cookie, i zresetować wszystkie uprawnienia tej witryny?</translation>
 <translation id="4149994727733219643">Uproszczony widok stron internetowych</translation>
 <translation id="4151930093518524179">Domyślne powiększenie</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Usuń i zresetuj</translation>
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
+<translation id="4673958474310291465">Spróbuj tymczasowo zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami</translation>
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
 <translation id="4779083564647765204">Powiększ</translation>
 <translation id="4811450222531576619">Poznaj jej źródło i temat</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6205314730813004066">Prywatność w reklamach</translation>
 <translation id="6207207788774442484">Usuwanie danych i resetowanie uprawnień</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – opcje</translation>
 <translation id="6231752747840485235">Odinstalować aplikację „<ph name="APP_NAME" />”?</translation>
 <translation id="6262191102408817757">Na podstawie ostatniej karty</translation>
 <translation id="6262279340360821358">Zablokowane: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
 <translation id="7087918508125750058">Wybrano <ph name="ITEM_COUNT" />. Opcje dostępne na górze ekranu</translation>
+<translation id="7137403271056944713">Urządzenia MIDI: sterowanie/przeprogramowywanie</translation>
 <translation id="7141896414559753902">Blokuj wyskakujące okienka i przekierowania na stronach (zalecane)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Odśwież</translation>

@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">ટૅબનું ગ્રૂપ - <ph name="TAB_COUNT" /> ટૅબ</translation>
 <translation id="17513872634828108">ટેબ્સ ખોલો</translation>
 <translation id="1757620656501361327">Google Password Manager સંબંધિત અપડેટ</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{પેજ, સૂચિમાં 1 પેજ છે}one{પેજ, સૂચિમાં # પેજ છે}other{પેજ, સૂચિમાં # પેજ છે}}</translation>
 <translation id="1778457539567749232">વાંચ્યા વગરનું તરીકે માર્ક કરો</translation>
 <translation id="1779766957982586368">વિન્ડો બંધ કરો</translation>
 <translation id="1791662854739702043">ઇન્સ્ટોલ કરેલું</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">ઘાટું</translation>
 <translation id="2421705177906985956">હમણાં બતાવવા માટે કોઈ સાઇટ નથી</translation>
 <translation id="2426805022920575512">બીજું એકાઉન્ટ પસંદ કરો</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{વીડિયો, સૂચિમાં 1 વીડિયો છે}one{વીડિયો, સૂચિમાં # વીડિયો છે}other{વીડિયો, સૂચિમાં # વીડિયો છે}}</translation>
 <translation id="2433507940547922241">દેખાવ</translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />નો પ્રીવ્યૂ કરો</translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">સાઇન ઇન થઈ રહ્યું છે...</translation>
 <translation id="4866368707455379617">Chrome માટે <ph name="MODULE" /> ઇન્સ્ટૉલ કરવામાં અસમર્થ</translation>
 <translation id="4871568871368204250">સિંક બંધ કરો</translation>
+<translation id="4874961007154620743">બંધ હોય ત્યારે પણ તમને એ સૂચનો દેખાય છે જે Chrome સ્થાનિક રીતે પ્રદાન કરે છે</translation>
 <translation id="4875775213178255010">કન્ટેન્ટ માટે સૂચનો</translation>
 <translation id="4877678010818027629">છૂપો મોડમાં દાખલ થાઓ</translation>
 <translation id="4878404682131129617">પ્રૉક્સી સર્વર મારફતે એક ટનલને સ્થાપિત કરવું નિષ્ફળ થયું</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">ઝડપથી નવું ટૅબ ખોલો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, સેટિંગ પર જાઓ.</translation>
 <translation id="6802555630140434547">વિન્ડો બંધ કરવામાં આવશે</translation>
 <translation id="6811034713472274749">પેજ જોવા માટે તૈયાર છે</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{છબીઓ, સૂચિમાં 1 છબી છે}one{છબીઓ, સૂચિમાં # છબી છે}other{છબીઓ, સૂચિમાં # છબી છે}}</translation>
 <translation id="6813446258015311409">Chromeમાં સાઇન ઇન કરવાની શીટ ખોલવામાં આવી.</translation>
 <translation id="6817747507826986771">આ પેજ ઝડપથી શેર કરો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="6819199143469632133">બધા ડિવાઇસ પર તમારી Google સામગ્રી મેળવવા માટે, સાઇન ઇન કરો</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">લોડ કરી રહ્યાં છે…</translation>
 <translation id="6850409657436465440">તમારું ડાઉનલોડ હજી પણ પ્રક્રિયામાં છે</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ટેબ્સ બંધ કર્યા</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{ઑડિયો ફાઇલો, સૂચિમાં 1 ઑડિયો ફાઇલ છે}one{ઑડિયો ફાઇલો, સૂચિમાં # ઑડિયો ફાઇલ છે}other{ઑડિયો ફાઇલો, સૂચિમાં # ઑડિયો ફાઇલ છે}}</translation>
 <translation id="685850645784703949">Googleનું Discover - બંધ</translation>
 <translation id="686366188661646310">પાસવર્ડ ડિલીટ કરીએ?</translation>
 <translation id="6864459304226931083">છબી ડાઉનલોડ કરો</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">સાઇટ માટેની ઘેરી થીમ ઉપલબ્ધ છે</translation>
 <translation id="7388615499319468910">જાહેરાતોના પર્ફોર્મન્સ સંબંધી બાબતો સાઇટ અને જાહેરાતકર્તાઓ સમજી શકે છે. આ સેટિંગ બંધ છે.</translation>
 <translation id="7397416715506917976">પેજની જાણકારી જુઓ</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{સૂચિમાં અન્ય 1 ફાઇલ છે}one{સૂચિમાં અન્ય # ફાઇલ છે}other{સૂચિમાં અન્ય # ફાઇલ છે}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome પ્રથમ વાર ઉપયોગ કર્યાનો અનુભવ</translation>
 <translation id="7411224099004328643">Google એકાઉન્ટ વપરાશકર્તા</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">નહીં, આભાર</translation>
 <translation id="7808889146555843082">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="SITE" /> પરનું તમારું એકાઉન્ટ ડિલીટ થશે નહીં. <ph name="SITE" /> પરનું તમારું એકાઉન્ટ ડિલીટ કરો અથવા તમારો પાસવર્ડ બદલો કે જેથી તેને અન્ય લોકોથી સુરક્ષિત રાખી શકાય.</translation>
 <translation id="7810647596859435254">આની સાથે ખોલો…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{બધી ફાઇલો, સૂચિમાં 1 ફાઇલ છે}one{બધી ફાઇલો, સૂચિમાં # ફાઇલ છે}other{બધી ફાઇલો, સૂચિમાં # ફાઇલ છે}}</translation>
 <translation id="7815484226266492798">લાંબો સ્ક્રીનશૉટ</translation>
 <translation id="7822705602465980873">તમે સાઇન ઇન હો ત્યારે, આ ડેટા તમારા Google એકાઉન્ટ સાથે લિંક કરવામાં આવે છે, જેથી સમગ્ર Googleની સેવાઓમાં તમારી સુરક્ષા કરી શકાય, ઉદાહરણ તરીકે સુરક્ષા સંબંધી કોઈ બનાવ બાદ Gmailમાં સુરક્ષા વધારવી.</translation>
 <translation id="782705168687182233">તમારી પ્રવૃત્તિ તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />માં સાચવવામાં આવે છે.</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ભાષા તૈયાર છે</translation>
 <translation id="8937772741022875483">તમારી Chromeની પ્રવૃત્તિને ડિજિટલ લાઇફસ્ટાઇલમાંથી કાઢી નાખીએ?</translation>
+<translation id="893938492099608175">તમારા સેટિંગને આધારે, Chrome તમને કુકી, તમારા વર્તમાન URL અને તમારા લોકેશન પણ મોકલી શકે છે</translation>
 <translation id="8942627711005830162">અન્ય વિંડોમાં ખોલો</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - આ ભાષા ડાઉનલોડ કરી શકાઈ નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="8955719471735800169">સૌથી ઉપર પાછા જાઓ</translation>

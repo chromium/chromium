@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1003363546227723021">Кога екранот е неактивен, прикажувај фотографии, време, временска прогноза и вести</translation>
 <translation id="1014750484722996375">Работни површини</translation>
 <translation id="1018219910092211213">Не може да се одреди со DNS</translation>
 <translation id="1018656279737460067">Откажано</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Инсталирај ChromeOS Flex</translation>
 <translation id="1856388568474281774">Стрелка надолу</translation>
 <translation id="1858620243986915808">Приложете слика од екранот</translation>
+<translation id="1871413952174074704">APN не може да содржи повеќе од <ph name="CHAR_LIMIT" /> знаци</translation>
 <translation id="1871569928317311284">Исклучи темна тема</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Исклучи темен режим</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Скриј го извештајот</translation>
 <translation id="500920857929044050">Запри го тестот</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Кога екранот е неактивен, прикажувај фотографии, време, временска прогноза и вести.</translation>
 <translation id="5035083460461104704">Боја на темата</translation>
 <translation id="5038292761217083259">тастатура во повеќе бои</translation>
 <translation id="5039804452771397117">Дозволи</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Светлорозов</translation>
 <translation id="982713511914535780">Изврши тест за празнење</translation>
 <translation id="987264212798334818">Општо</translation>
+<translation id="995062385528875723">Не може да се користат акцентирани букви, нелатинични букви или симболи</translation>
 </translationbundle>

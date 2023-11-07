@@ -227,6 +227,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1413809658975081374">Datenschutzfehler</translation>
 <translation id="1414134146594747368">Vorschule</translation>
 <translation id="141826476809826269">Ende des extrahierten Textes</translation>
+<translation id="1418611192881166179">Während Chrome diese Funktion aktualisiert, können Websites vorübergehend Drittanbieter-Cookies verwenden, sofern du diese nicht in den Einstellungen blockierst.</translation>
 <translation id="1419305130220238697">Schaltfläche „Downloads in Chrome verwalten“ – aktivieren, um in Chrome heruntergeladene Dateien zu verwalten</translation>
 <translation id="1422930527989633628">Darf nachfragen, wenn sie nach Bluetooth-Geräten in der Nähe suchen möchte</translation>
 <translation id="1426410128494586442">Ja</translation>
@@ -310,6 +311,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1574714699824202614">Zahlungsmethode wird bestätigt</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Läuft nicht ab</translation>
 <translation id="1583429793053364125">Fehler beim Anzeigen dieser Webseite.</translation>
 <translation id="1584492003828271317">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, der von Websites vorgeschlagenen Werbung, deinen Cookie-Einstellungen und davon ab, ob die besuchte Website Werbung personalisiert.</translation>
 <translation id="1586541204584340881">Welche Erweiterungen du installiert hast</translation>
@@ -973,6 +975,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2985306909656435243">Wenn du diese Option auswählst, speichert Chromium eine Kopie deiner Karte auf diesem Gerät, damit Formulare schneller ausgefüllt werden können.</translation>
 <translation id="2985398929374701810">Gültige Adresse eingeben</translation>
 <translation id="2987034854559945715">Keine passenden Funktionen</translation>
+<translation id="2988216301273604645">Chrome schränkt die Menge von Informationen ein, die Websites verwenden können, um deine Aktivitäten während des Surfens zu erfassen. Du kannst deine Einstellungen ändern, um dein bevorzugtes Schutzniveau festzulegen.</translation>
 <translation id="2989742184762224133">Zwei Heftklammern oben</translation>
 <translation id="2991174974383378012">Datenfreigabe an Websites</translation>
 <translation id="299122504639061328">Standardmäßige Suchmaschine und Websitesuche verwalten</translation>
@@ -1187,6 +1190,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3427342743765426898">&amp;Bearbeiten wiederholen</translation>
 <translation id="342781501876943858">Chromium empfiehlt, dein Passwort zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
 <translation id="3428151540071562330">Einer oder mehrere der "DnsOverHttpsTemplates"-Servervorlagen-URIs sind ungültig und werden nicht verwendet.</translation>
+<translation id="3428789896412418755">Gruppierter Verlauf</translation>
 <translation id="3431216045099978607">Drücke auf die |<ph name="ACCELERATOR" />|-Taste, um den Vollbildmodus zu beenden und den Download zu sehen.</translation>
 <translation id="3432601291244612633">Seite schließen</translation>
 <translation id="3433111389595862568">Software für Zusammenarbeit und Konferenzen</translation>
@@ -1382,6 +1386,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3793574014653384240">Anzahl und Ursachen der kürzlich aufgetretenen Abstürze</translation>
 <translation id="3795344968043407227">Indie-Rock und Alternative</translation>
 <translation id="3799805948399000906">Gewünschte Schriftart</translation>
+<translation id="3801265110651850478">Bei Browserzugriffen eine „Do Not Track“-Anforderung mitsenden</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3806932344025766608">Auf dieser Website besteht die Gefahr, dass Angreifer dich zur Installation von Software oder zur Preisgabe von Daten wie deinem Passwort, deiner Telefonnummer oder deiner Kreditkartennummer verleiten möchten. Chrome rät dringend dazu, auf die Schaltfläche „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Telekommunikationsunternehmen</translation>
@@ -1652,6 +1657,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4331708818696583467">Nicht sicher</translation>
 <translation id="4333295216031073611">Einkaufsliste</translation>
 <translation id="4333561522337981382">Fenster auf allen Bildschirmen verwalten</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Läuft morgen ab}other{Läuft in # Tagen ab}}</translation>
 <translation id="4340575312453649552">Diese Werbeanzeige erfordert auf deinem Gerät zu viele Ressourcen. Darum hat Chrome sie entfernt.</translation>
 <translation id="4340810192899866471">Aus JSON importieren</translation>
 <translation id="4340982228985273705">Dieser Computer wird nicht als von einem Unternehmen verwaltet erkannt, sodass nur Erweiterungen, die im Chrome Web Store gehostet sind, automatisch durch die Richtlinie installiert werden können. Die Update-URL des Chrome Web Store lautet "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -2211,6 +2217,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5512812358367123529">Büromöbel</translation>
 <translation id="5513528801833998679">Geräteanmeldung verwenden</translation>
 <translation id="5515388687005870733">55 × 85 mm</translation>
+<translation id="5518352028556756716">Die meisten Websites können keine Drittanbieter-Cookies verwenden, um deine Aktivitäten während des Surfens zu erfassen. Außerdem können Websites keine Drittanbieter-Cookies im Inkognitomodus verwenden.</translation>
 <translation id="5518670652865028077">Kunst und Unterhaltung</translation>
 <translation id="5519516356611866228">Mit meinen Änderungen</translation>
 <translation id="5519696598216267194">Papier (vorgestanzt)</translation>
@@ -3116,6 +3123,7 @@ Weitere Details:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Zahlungs-Handler</translation>
 <translation id="7367985555340314048">Themen zu deinen Interessen basieren auf deinem aktuellen Browserverlauf und werden von Websites verwendet, um dir personalisierte Werbung zu zeigen</translation>
+<translation id="7368169244533796604">Website löschen</translation>
 <translation id="7372526636730851647">Foto (glänzend)</translation>
 <translation id="7372973238305370288">Suchergebnis</translation>
 <translation id="7374461526650987610">Protokoll-Handler</translation>
@@ -3159,6 +3167,7 @@ Weitere Details:
 <translation id="7423283032694727565">Schaltfläche „Cookies verwalten“ – aktivieren, um in den Chrome-Einstellungen deine Cookie-Einstellungen zu verwalten</translation>
 <translation id="7427366580982928791">Kindersicheres Internet</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Bestätige deine Identität, damit Chromium deine Zahlungsinformationen eingeben kann.</translation>
 <translation id="7437289804838430631">Kontaktdaten hinzufügen</translation>
 <translation id="7437490109271760224">Kartenspiele</translation>
 <translation id="7438338505272634288">Auf dieser Website besteht die Gefahr, dass Angreifer dich zur Installation von Schadsoftware verleiten möchten, die sich auf deine Internetnutzung auswirkt. Solche Software könnte zum Beispiel deine Startseite ändern oder auf Websites zusätzliche Werbung einblenden. Chrome rät dringend dazu, auf die Schaltfläche „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3389,6 +3398,7 @@ Weitere Details:
 <translation id="7831993212387676366">Was ist die Einkaufsliste?</translation>
 <translation id="7840103971441592723">Bildschirmaufnahme wurde gestartet</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784404208867107517">Gruppierter Verlauf</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Keine}=1{1 App (<ph name="EXAMPLE_APP_1" />)}=2{2 Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Wenn du dann eine Website besuchst, kann diese deine Themen von Chrome anfordern, um die dir gezeigte Werbung zu personalisieren. Chrome teilt bis zu drei Themen und trägt gleichzeitig zum Schutz deines Browserverlauf und deiner Identität bei.</translation>
@@ -3415,6 +3425,7 @@ Weitere Details:
 <translation id="79338296614623784">Gib eine gültige Telefonnummer ein</translation>
 <translation id="7934414805353235750"><ph name="URL" /> möchte geschützte Inhalte abspielen. Die Identität deines Geräts wird von Google geprüft.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Bestätige deine Identität, damit Google Chrome deine Zahlungsinformationen eingeben kann.</translation>
 <translation id="7937163678541954811">Der CVC dieser Karte wird verschlüsselt und für einen schnelleren Bezahlvorgang auf deinem Gerät gespeichert</translation>
 <translation id="7937554595067888181">Läuft am <ph name="EXPIRATION_DATE_ABBR" /> ab</translation>
 <translation id="7938958445268990899">Serverzertifikat ist noch nicht gültig.</translation>
@@ -3432,6 +3443,7 @@ Weitere Details:
 <translation id="7951415247503192394">(32-Bit)</translation>
 <translation id="7952192831285741665">EDP (Europa)</translation>
 <translation id="7952327717479677595">Schaltfläche „Suchmaschinen verwalten“ – aktivieren, um deine standardmäßige Suchmaschine und Websitesuche zu verwalten</translation>
+<translation id="7953236668995583915">Aktualisiere diese Seite, um die neuen Einstellungen auf dieser Website zu übernehmen</translation>
 <translation id="7953569069500808819">Mehrere Heftklammern oben</translation>
 <translation id="7955105108888461311">Persönlich fragen</translation>
 <translation id="7956713633345437162">Mobile Lesezeichen</translation>
@@ -3545,6 +3557,7 @@ Weitere Details:
 <translation id="8183800802493617952">Spiele und Aktivitäten für Familien</translation>
 <translation id="8184538546369750125">Globalen Standard verwenden (Zulassen)</translation>
 <translation id="8186706823560132848">Software</translation>
+<translation id="8189557652711717875">Die von dir ausgewählte Suchmaschine wird für Funktionen wie die Suche über die Adressleiste oder die Suche in Bildern auf Webseiten verwendet.</translation>
 <translation id="8190193880870196235">Wird über eine Erweiterung verwaltet</translation>
 <translation id="8194412401381329820">Du kannst diese Seite auf diesem nicht verwalteten Gerät nicht in einem verwalteten Konto verwenden. Alle verwalteten Konten werden gesperrt, wenn du diese Seite nutzt. Ausgenommen sind Konten, die von derselben Entität wie dieses Gerät verwaltet werden (verknüpfte Konten).</translation>
 <translation id="8194797478851900357">&amp;Verschieben rückgängig machen</translation>
@@ -3564,6 +3577,7 @@ Weitere Details:
 <translation id="8217240300496046857">Websites können keine Cookies verwenden, die deine Browserdaten über mehrere Websites hinweg erfassen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="8217748145574471584">Personalwesen</translation>
 <translation id="8218327578424803826">Zugewiesener Standort: </translation>
+<translation id="8220833680085771143">Der Schutz vor Tracking ist vorübergehend nicht verfügbar</translation>
 <translation id="8228419419708659934">Zwei-Seiten-Ansicht</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> möchte auf ein Gerät in deinem Netzwerk zugreifen:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> mm × <ph name="HEIGHT" /> mm</translation>

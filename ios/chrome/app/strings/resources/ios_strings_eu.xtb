@@ -524,6 +524,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="371230970611282515">Gertaera arriskutsuak iragartzen ditu eta haien berri ematen dizu gertatu aurretik.</translation>
 <translation id="371398631992790800">Ezkutatu "Laster-markak"</translation>
 <translation id="37207012422556617">Pil-pilean dauden bilaketak</translation>
+<translation id="3725081662140949903">Besteei zure pasahitza erabiltzea galarazteko, ireki <ph name="APP" /> aplikazioa pasahitza aldatzeko</translation>
 <translation id="3740397331642243698">Idatzitako URLak Google Chrome-ren ezkutuko moduan irekitzen ditu.</translation>
 <translation id="374357899112510277">Ezkutatu "Deskargak"</translation>
 <translation id="3745190878148784130">Ezkutatu "Aplikatu zooma testuari"</translation>
@@ -641,6 +642,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4389019817280890563">Sakatu hau hizkuntza aldatzeko.</translation>
 <translation id="4405320213589929829">Erabili web-orrietako helbideak kokapen horiei buruzko informazioa eta jarraibideak lortzeko.</translation>
 <translation id="4420409367264901497">Editatu laster-marka</translation>
+<translation id="4431224949908513835">Hautatu ordainketa-metodo bat.</translation>
 <translation id="4442550905108052454">Ireki <ph name="BEGIN_BOLD" />Ezarpenak<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Gehitu hizkuntza bat</translation>
 <translation id="4461286950227634995">Eskaini pasahitzak gordetzeko aukera</translation>
@@ -1198,6 +1200,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7221173315674413369">Arakatu eginbide berriak eta aholkuak Berritasunak atalean</translation>
 <translation id="7223102419539744003">Itxi fitxa</translation>
 <translation id="722454870747268814">Ezkutuko moduko fitxa berria</translation>
+<translation id="7233006041370588369">Hautatu pasahitz bat.</translation>
 <translation id="7265758999917665941">Inoiz ez webgune honetan</translation>
 <translation id="7272437679830969316">Ezin da egiaztatu identitatea. Ez da kopiatu pasahitza.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Pakete berri baten jarraipena egiten ari da}other{Pakete berri batzuen jarraipena egiten ari da}}</translation>

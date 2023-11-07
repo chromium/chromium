@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">Вебсайттар, анын ичинде сиз баш баккан жана ачык барактар</translation>
 <translation id="181103072419391116">Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="1816896987747843206">Камерага уруксаты бар колдонмолордун жана вебсайттардын баарына камераны пайдалануу мүмкүнчүлүгү берилет</translation>
-<translation id="1823280932251546115">Абал сабы, убакыт <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Жайгашкан жерди аныктоону күйгүзүү</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> бошотулду</translation>
@@ -1197,6 +1188,7 @@
 <translation id="5788127256798019331">Google Play файлдары</translation>
 <translation id="5788535737706478207">Жабылган акыркы өтмөктү же терезени ачуу</translation>
 <translation id="5790085346892983794">Ийгилик</translation>
+<translation id="5802516411616338943">Ыкчам параметрлерди ачуу</translation>
 <translation id="5804651031882187592">"SIM картаны кулпулоо" параметрин өчүрүү</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> тармагын жандыруу үчүн басыңыз</translation>
 <translation id="5823239091726045201">Интернетте Google Tasks</translation>
@@ -1222,6 +1214,7 @@
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5911231045062997865">Lacros терезелер учурда колдоого алынбайт. Башка колдонмолор сакталат.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Жаңы билдирме, бардыгы <ph name="NOTIFICATION_COUNT" /> билдирме</translation>
 <translation id="5916664084637901428">Күйүк</translation>
 <translation id="5920710855273935292">Микрофондун үнү өчүрүлдү.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> күйүк.</translation>

@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}}</translation>
 <translation id="2410940059315936967">Сиз кирген сайт башка сайттардан алынган материалдарды, мисалы, сүрөттөрдү, жарнамаларды жана текстти жалгаштыра алат. Мындай сайттар орноткон cookie файлдары үчүнчү тараптын cookie файлдары деп аталат.</translation>
 <translation id="2434158240863470628">Жүктөлүп алынды: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Бул сайтка үчүнчү тараптын cookie файлдарын колдонууга убактылуу уруксат бердиңиз. Муну менен серептөө учурунда коргоо төмөндөйт, бирок сайттын функциялары ойдогудай иштей берет. <ph name="BEGIN_LINK" />Пикир билдирүү<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Айрым сайттардагы функциялар Жашыруун режимде иштебеши мүмкүн</translation>
 <translation id="2442870161001914531">Иш такта сайты ар дайым суралсын</translation>
 <translation id="2469312991797799607"><ph name="ORIGIN" /> жана ага байланышкан сайттар сактаган бардык маалымат жана cookie файлдары өчүрүлөт</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Аталышы</translation>
 <translation id="4008040567710660924">Белгилүү бир сайттын cookie файлдарына уруксат берүү.</translation>
 <translation id="4046123991198612571">Кийинки трек</translation>
-<translation id="4053720452172726777">Google Chrome'ду өзгөчөлөштүрүү жана көзөмөлдөө</translation>
 <translation id="4149890623864272035">Чын эле түзмөктөгү бардык маалымат, анын ичинде cookie файлдары өчүрүлүп, бул вебсайтта бардык уруксаттар баштапкы абалга келтирилсинби?</translation>
 <translation id="4149994727733219643">Веб барактар үчүн жөнөкөйлөштүрүлгөн көрүнүш</translation>
 <translation id="4151930093518524179">Демейки чоңойтуп/кичирейтүү</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Өчүрүп, баштапкы абалга келтирүү</translation>
 <translation id="4645575059429386691">Ата-энеңиз башкарат</translation>
 <translation id="4670064810192446073">Виртуалдык дүйнө</translation>
+<translation id="4673958474310291465">Үчүнчү тараптын cookie файлдарына убактылуу уруксат берип көрүңүз. Мында Интернетте коопсуздугуңуз азаят, бирок сайттын функциялары ойдогудай иштеши мүмкүн</translation>
 <translation id="4751476147751820511">Кыймыл же жарык сенсорлору</translation>
 <translation id="4779083564647765204">Ченөлчөм</translation>
 <translation id="4811450222531576619">Булагы жана темасы тууралуу кеңири маалымат</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Үчүнчү жактын кукилери бөгөттөлсүн</translation>
 <translation id="6205314730813004066">Жарнаманын купуялыгы</translation>
 <translation id="6207207788774442484">Маалыматты өчүрүү жана уруксаттарды баштапкы абалга келтирүү</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Параметрлер</translation>
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" колдонмосун чыгарып саласызбы?</translation>
 <translation id="6262191102408817757">Акыркы өтмөктүн негизинде көрсөтүлдү</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> жана <ph name="PERMISSION_2" /> бөгөттөлдү</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Бөгөттөө</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 тандалды}other{# тандалды}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> тандалды.  Параметрлер экрандын жогору жагында берилген</translation>
+<translation id="7137403271056944713">MIDI түзмөгүн көзөмөлдөө / кайра программалоо</translation>
 <translation id="7141896414559753902">Сайттарда калкыма терезелерди көрсөтүү менен багыттоолор бөгөттөлсүн (сунушталат)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> Кб</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>

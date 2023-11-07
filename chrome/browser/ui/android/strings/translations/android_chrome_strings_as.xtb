@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">টেবৰ গোট - <ph name="TAB_COUNT" /> টা টেব</translation>
 <translation id="17513872634828108">খুলি ৰখা টেবসমূহ</translation>
 <translation id="1757620656501361327">Google Password Managerৰ আপডে’ট</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{পৃষ্ঠা, সূচীত ১ খন পৃষ্ঠা আছে}one{পৃষ্ঠা, সূচীত # খন পৃষ্ঠা আছে}other{পৃষ্ঠা, সূচীত # খন পৃষ্ঠা আছে}}</translation>
 <translation id="1778457539567749232">নপঢ়া হিচাপে চিহ্নিত কৰক</translation>
 <translation id="1779766957982586368">ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="1791662854739702043">ইনষ্টল কৰা হ’ল</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">গাঢ়</translation>
 <translation id="2421705177906985956">এই মুহূৰ্তত দেখুৱাবলৈ কোনো ছাইট নাই</translation>
 <translation id="2426805022920575512">অইন এটা একাউণ্ট বাছনি কৰক</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{ভিডিঅ’, সূচীত ১ টা ভিডিঅ’ আছে}one{ভিডিঅ’, সূচীত # টা ভিডিঅ’ আছে}other{ভিডিঅ’, সূচীত # টা ভিডিঅ’ আছে}}</translation>
 <translation id="2433507940547922241">ৰূপ</translation>
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />ৰ পূৰ্বদৰ্শন</translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">ছাইন ইন কৰি থকা হৈছে…</translation>
 <translation id="4866368707455379617">Chromeৰ কাৰণে <ph name="MODULE" /> ইনষ্টল কৰিব পৰা নগ’ল</translation>
 <translation id="4871568871368204250">ছিংক অফ কৰক</translation>
+<translation id="4874961007154620743">অফ হৈ থাকিলে, আপুনি তথাপি Chromeএ স্থানীয়ভাৱে প্ৰদান কৰা পৰামৰ্শসমূহ দেখিব</translation>
 <translation id="4875775213178255010">সমলৰ পৰামৰ্শ</translation>
 <translation id="4877678010818027629">ইনক’গনিট’ ম’ডলৈ যাওক</translation>
 <translation id="4878404682131129617">প্ৰক্সী ছাৰ্ভাৰৰ জৰিয়তে এটা টানেল স্থাপন কৰাটো সম্ভৱ নহ‘ল</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">ক্ষিপ্ৰভাৱে এটা নতুন টেব খোলক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
 <translation id="6802555630140434547">ৱিণ্ড’খন বন্ধ কৰা হ’ব</translation>
 <translation id="6811034713472274749">পৃষ্ঠাটো চাবলৈ সাজু</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{প্ৰতিচ্ছবি, সূচীত ১ খন প্ৰতিচ্ছবি আছে}one{প্ৰতিচ্ছবি, সূচীত # খন প্ৰতিচ্ছবি আছে}other{প্ৰতিচ্ছবি, সূচীত # খন প্ৰতিচ্ছবি আছে}}</translation>
 <translation id="6813446258015311409">Chromeত ছাইন ইন কৰা হ’ল, খোলা আছে।</translation>
 <translation id="6817747507826986771">এই পৃষ্ঠাখন ক্ষিপ্ৰভাৱে শ্বেয়াৰ কৰক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ, স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
 <translation id="6819199143469632133">সমগ্ৰ ডিভাইচত আপোনাৰ Googleৰ বস্তুবোৰ পাবলৈ ছাইন ইন কৰক</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">ল’ড কৰি থকা হৈছে…</translation>
 <translation id="6850409657436465440">আপোনাৰ ডাউনল’ড প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />টা টেব বন্ধ কৰা হ’ল</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{অডিঅ’ ফাইল, সূচীত ১ টা অডিঅ’ ফাইল আছে}one{অডিঅ’ ফাইল, সূচীত # টা অডিঅ’ ফাইল আছে}other{অডিঅ’ ফাইল, সূচীত # টা অডিঅ’ ফাইল আছে}}</translation>
 <translation id="685850645784703949">Googleৰ Discover - অফ আছে</translation>
 <translation id="686366188661646310">পাছৱৰ্ড মচিবনে?</translation>
 <translation id="6864459304226931083">প্ৰতিচ্ছবি ডাউনল'ড কৰক</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">ছাইটৰ বাবে গাঢ় ৰঙৰ থীম উপলব্ধ</translation>
 <translation id="7388615499319468910">বিজ্ঞাপনে কেনেকৈ কাম কৰে সেয়া ছাইট বিজ্ঞাপনদাতাসকলে বুজি পাব পাৰে। এই ছেটিংটো অফ হৈ আছে।</translation>
 <translation id="7397416715506917976">পৃষ্ঠাৰ অন্তৰ্দৃষ্টি চাওক</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{অন্য, সূচীত ১ টা ফাইল আছে}one{অন্য, সূচীত # টা ফাইল আছে}other{অন্য, সূচীত # টা ফাইল আছে}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome প্ৰথমবাৰ চলোৱাৰ অভিজ্ঞতা</translation>
 <translation id="7411224099004328643">Google একাউণ্টৰ ব্যৱহাৰকাৰী</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7808889146555843082">এই পাছৱর্ডটো মচাৰ ফলত <ph name="SITE" />ত থকা আপোনাৰ একাউণ্টটো মচি পেলোৱা নহ’ব। অন্য লোকসকলৰ পৰা আপোনাৰ একাউণ্টটো সুৰক্ষিত কৰিবলৈ আপোনাৰ পাছৱর্ড সলনি কৰক অথবা <ph name="SITE" />ত আপোনাৰ একাউণ্টটো মচক।</translation>
 <translation id="7810647596859435254">ইয়াৰ জৰিয়তে খোলক…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{আটাইবোৰ ফাইল, সূচীত ১ টা ফাইল আছে}one{আটাইবোৰ ফাইল, সূচীত # টা ফাইল আছে}other{আটাইবোৰ ফাইল, সূচীত # টা ফাইল আছে}}</translation>
 <translation id="7815484226266492798">দীঘল স্ক্ৰীনশ্বট</translation>
 <translation id="7822705602465980873">আপুনি ছাইন ইন হৈ থকা অৱস্থাত, আপোনাক সমগ্ৰ Google সেৱাসমূহত সুৰক্ষিত কৰিবলৈ এই ডেটাখিনি আপোনাৰ Google একাউণ্টৰ সৈতে লিংক কৰা হয়, উদাহৰণস্বৰূপে, কোনো সুৰক্ষা সম্পৰ্কীয় ঘটনাৰ পাছত Gmailত সুৰক্ষা বৃদ্ধি কৰা।</translation>
 <translation id="782705168687182233">আপোনাৰ কাৰ্যকলাপ আপোনাৰ <ph name="BEGIN_LINK" />Google একাউণ্ট<ph name="END_LINK" />ত ছেভ কৰা হয়।</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> সাজু আছে</translation>
 <translation id="8937772741022875483">আপুনি Chromeত কৰা কাৰ্যকলাপ ডিজিটেল ৱেলবিইঙ-ৰ পৰা আঁতৰাবনে?</translation>
+<translation id="893938492099608175">আপোনাৰ ছেটিঙৰ ওপৰত নিৰ্ভৰ কৰি, Chromeএ লগতে কুকি আৰু আপোনাৰ বৰ্তমানৰ URL আৰু আপোনাৰ অৱস্থান পঠিয়াব পাৰে</translation>
 <translation id="8942627711005830162">অন্য উইণ্ড’ত খোলক</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - এই ভাষাটো ডাউনল'ড কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="8955719471735800169">ওপৰলৈ যাওক</translation>

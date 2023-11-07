@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">網站，包括你瀏覽過的網頁和目前開啟的頁面</translation>
 <translation id="181103072419391116">訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="1816896987747843206">此操作會允許具備相機權限的所有應用程式和網站存取相機</translation>
-<translation id="1823280932251546115">狀態列，時間 <ph name="TIME" />，
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />，
-        <ph name="PRIVACY" />，
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">以太網：<ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">開啟位置資料存取權</translation>
 <translation id="1830308660060964064">已經將<ph name="ITEM_TITLE" />取消置頂</translation>
@@ -1196,6 +1187,7 @@
 <translation id="5788127256798019331">Play 檔案</translation>
 <translation id="5788535737706478207">重新開啟最後關閉的分頁或視窗</translation>
 <translation id="5790085346892983794">成功</translation>
+<translation id="5802516411616338943">開啟「快速設定」</translation>
 <translation id="5804651031882187592">關閉「鎖定 SIM 卡」設定</translation>
 <translation id="5805809050170488595">按一下即可啟用 <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Tasks 網頁版</translation>
@@ -1221,6 +1213,7 @@
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5911231045062997865">目前不支援 Lacros 視窗。系統將儲存其他應用程式。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">新通知，總共 <ph name="NOTIFICATION_COUNT" /> 個</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">咪高風校咗靜音。</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>

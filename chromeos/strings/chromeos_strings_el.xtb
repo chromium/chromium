@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
+<translation id="1003363546227723021">Όταν η οθόνη είναι αδρανής, θα προβάλλονται φωτογραφίες, η ώρα καθώς και πληροφορίες καιρού και μέσων.</translation>
 <translation id="1014750484722996375">Γραφεία</translation>
 <translation id="1018219910092211213">Δεν είναι δυνατή η επίλυση του DNS.</translation>
 <translation id="1018656279737460067">Ακυρώθηκε</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Εγκατάσταση ChromeOS</translation>
 <translation id="1856388568474281774">Κάτω βέλος</translation>
 <translation id="1858620243986915808">Επισύναψη στιγμιότυπου οθόνης</translation>
+<translation id="1871413952174074704">Το APN δεν μπορεί να περιέχει περισσότερους από <ph name="CHAR_LIMIT" /> χαρακτήρες</translation>
 <translation id="1871569928317311284">Απενεργοποίηση σκούρου θέματος</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Απενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Απόκρυψη αναφοράς</translation>
 <translation id="500920857929044050">Διακοπή δοκιμής</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Όταν η οθόνη είναι αδρανής, να εμφανίζονται φωτογραφίες, η ώρα καθώς και πληροφορίες καιρού και μέσων.</translation>
 <translation id="5035083460461104704">Χρώμα θέματος</translation>
 <translation id="5038292761217083259">πολύχρωμο πληκτρολόγιο</translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Ανοιχτό ροζ</translation>
 <translation id="982713511914535780">Εκτέλεση δοκιμής αποφόρτισης</translation>
 <translation id="987264212798334818">Γενικά</translation>
+<translation id="995062385528875723">Δεν είναι δυνατή η χρήση τονισμένων γραμμάτων, μη λατινικού αλφαβήτου ή συμβόλων</translation>
 </translationbundle>

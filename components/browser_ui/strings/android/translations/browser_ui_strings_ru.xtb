@@ -177,11 +177,10 @@
 <translation id="4002066346123236978">Название</translation>
 <translation id="4008040567710660924">Разрешить определенному сайту сохранять файлы cookie</translation>
 <translation id="4046123991198612571">Следующий трек</translation>
-<translation id="4053720452172726777">Настройка и управление Google Chrome</translation>
 <translation id="4149890623864272035">Вы действительно хотите удалить все локальные данные этого сайта, включая файлы cookie, и сбросить все его разрешения?</translation>
 <translation id="4149994727733219643">Упрощенный просмотр веб-страниц</translation>
 <translation id="4151930093518524179">Масштаб по умолчанию</translation>
-<translation id="4165986682804962316">Настройки сайтов</translation>
+<translation id="4165986682804962316">Настройки сайта</translation>
 <translation id="4169549551965910670">Выполнено подключение к USB-устройству</translation>
 <translation id="4194328954146351878">Запрашивать для сайтов разрешение на доступ к информации и ее изменение через NFC (рекомендуется)</translation>
 <translation id="4200726100658658164">Открыть настройки геолокации</translation>
@@ -296,7 +295,6 @@
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
 <translation id="6205314730813004066">Конфиденциальность в рекламе</translation>
 <translation id="6207207788774442484">Удалить данные и сбросить разрешения</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: параметры</translation>
 <translation id="6231752747840485235">Удалить приложение "<ph name="APP_NAME" />"?</translation>
 <translation id="6262191102408817757">На основе данных последней использованной вкладки</translation>
 <translation id="6262279340360821358">Заблокировано: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>

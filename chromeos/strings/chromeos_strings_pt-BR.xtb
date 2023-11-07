@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1003363546227723021">Quando a tela está inativa, ela exibe fotos, o horário, a previsão do tempo e informações de mídia</translation>
 <translation id="1014750484722996375">Espaços de trabalho</translation>
 <translation id="1018219910092211213">Não foi possível resolver o DNS</translation>
 <translation id="1018656279737460067">Cancelado</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">Instalar o ChromeOS Flex</translation>
 <translation id="1856388568474281774">Seta para baixo</translation>
 <translation id="1858620243986915808">Anexar captura de tela</translation>
+<translation id="1871413952174074704">O APN não pode ter mais de <ph name="CHAR_LIMIT" /> caracteres</translation>
 <translation id="1871569928317311284">Desativar o tema escuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Desativar o modo escuro</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Ocultar relatório</translation>
 <translation id="500920857929044050">Interromper teste</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Quando a tela está inativa, ela mostra fotos, o horário, a previsão do tempo e informações de mídia.</translation>
 <translation id="5035083460461104704">Cor do tema</translation>
 <translation id="5038292761217083259">teclado multicolorido</translation>
 <translation id="5039804452771397117">Permitir</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Rosa-claro</translation>
 <translation id="982713511914535780">Executar teste de descarga da bateria</translation>
 <translation id="987264212798334818">Geral</translation>
+<translation id="995062385528875723">Não é possível usar letras acentuadas, alfabeto não latino ou símbolos</translation>
 </translationbundle>

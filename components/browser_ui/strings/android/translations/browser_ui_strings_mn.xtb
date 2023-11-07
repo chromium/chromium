@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г зөвшөөрсөн}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г зөвшөөрсөн}}</translation>
 <translation id="2410940059315936967">Таны зочилсон сайт бусад сайтаас зураг, зар болон текст зэрэг контентыг оруулах боломжтой. Эдгээр бусад сайтын тохируулсан күүкиг гуравдагч талын күүки гэж нэрлэдэг.</translation>
 <translation id="2434158240863470628">Татаж дууссан <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Та энэ сайтад гуравдагч талын күүкинүүдийг ашиглахыг түр зуур зөвшөөрсөн. Энэ нь үзэх хамгаалалт багасах хэдий ч сайтын онцлогууд тооцоолсны дагуу ажиллах магадлал өндөр байна гэсэн үг юм. <ph name="BEGIN_LINK" />Санал хүсэлт илгээх<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Зарим сайт дээрх онцлогууд Нууцлалын горимд ажиллахгүй байж магадгүй</translation>
 <translation id="2442870161001914531">Үргэлж дэлгэцийн сайтын хүсэлт тавих</translation>
 <translation id="2469312991797799607">Энэ үйлдэл <ph name="ORIGIN" />-н болон үүний доорх бүх сайтын бүх өгөгдөл, күүкиг устгана</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Гарчиг</translation>
 <translation id="4008040567710660924">Күүкиг тодорхой сайтад зөвшөөрнө үү.</translation>
 <translation id="4046123991198612571">Дараагийн бичлэг</translation>
-<translation id="4053720452172726777">Google Chrome-ыг өөртөө тохируулан хянах</translation>
 <translation id="4149890623864272035">Та күүкиг оруулаад бүх дотоод өгөгдлийг устгаж, энэ вебсайтын бүх зөвшөөрлийг шинэчлэхдээ итгэлтэй байна уу?</translation>
 <translation id="4149994727733219643">Веб хуудасны хялбаршуулсан харагдац</translation>
 <translation id="4151930093518524179">Өгөгдмөл томруулалт</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Устгаж, шинэчлэх</translation>
 <translation id="4645575059429386691">Эцэг, эх нь хариуцаж байна</translation>
 <translation id="4670064810192446073">Виртуал бодит байдал</translation>
+<translation id="4673958474310291465">Гуравдагч талын күүкинүүдийг түр зуур зөвшөөрч үзнэ үү. Энэ нь хамгаалалт багасах хэдий ч сайтын онцлогууд тооцоолсны дагуу ажиллах магадлал өндөр байна гэсэн үг юм.</translation>
 <translation id="4751476147751820511">Хөдөлгөөн эсвэл гэрэл мэдрэгч</translation>
 <translation id="4779083564647765204">Томруулж харах</translation>
 <translation id="4811450222531576619">Үүний эх сурвалж болон сэдвийн талаар мэдэж авах</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Гуравдагч талын күүкиг блоклох</translation>
 <translation id="6205314730813004066">Зарын нууцлал</translation>
 <translation id="6207207788774442484">Өгөгдлийг устгаж, зөвшөөрлүүдийг шинэчлэх</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Сонголт</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" />-г устгах уу?</translation>
 <translation id="6262191102408817757">Таны сүүлийн табд тулгуурласан</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> болон <ph name="PERMISSION_2" />-г блоклосон</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Блоклох</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 сонгосон}other{# сонгосон}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />-г сонгосон. Сонголт дэлгэцийн дээд хэсэгт боломжтой</translation>
+<translation id="7137403271056944713">MIDI-н төхөөрөмжийн хяналт / дахин программчлах</translation>
 <translation id="7141896414559753902">Сайтыг попап болон дахин чиглүүлэлтийг харуулахаас блоклох (санал болгосон)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> килобайт</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>

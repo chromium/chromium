@@ -72,6 +72,7 @@
 <translation id="2130870084309816036">無法連線至互聯網。如果你使用防火牆，請將 <ph name="PRODUCT_EXE_NAME" /> 加入許可名單。</translation>
 <translation id="2131230230468101642">為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。您亦可移除不希望 Chrome 列在興趣喜好清單中的項目。</translation>
 <translation id="2139300032719313227">重新啟動 Chrome OS</translation>
+<translation id="2146761408396054429">此檔案可能不安全<ph name="LINE_BREAK" />如果你提供密碼，Chrome 可為你檢查此下載項目，並將密碼保存在裝置上</translation>
 <translation id="2151406531797534936">請立即重新啟動 Chrome</translation>
 <translation id="2174917724755363426">安裝尚未完成。確定要取消嗎？</translation>
 <translation id="2190166659037789668">更新檢查錯誤：<ph name="UPDATE_CHECK_ERROR" />。</translation>

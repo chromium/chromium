@@ -213,15 +213,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1796561540704213354">Strony internetowe, w tym strony odwiedzone i otwarte</translation>
 <translation id="181103072419391116">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="1816896987747843206">Spowoduje to przyznanie dostępu do aparatu wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
-<translation id="1823280932251546115">Pasek stanu, godzina <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Włącz dostęp do lokalizacji</translation>
 <translation id="1830308660060964064">Element <ph name="ITEM_TITLE" /> został odpięty</translation>
@@ -1197,6 +1188,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5788127256798019331">Pliki Play</translation>
 <translation id="5788535737706478207">Przywróć ostatnią zamkniętą kartę lub ostatnie zamknięte okno</translation>
 <translation id="5790085346892983794">Udało się</translation>
+<translation id="5802516411616338943">Otwórz Szybkie ustawienia</translation>
 <translation id="5804651031882187592">Wyłączanie ustawienia „Zablokuj kartę SIM”</translation>
 <translation id="5805809050170488595">Kliknij, aby włączyć sieć <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Lista zadań Google w przeglądarce</translation>
@@ -1222,6 +1214,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5901630391730855834">Żółty</translation>
 <translation id="5911231045062997865">Okna Lacros nie są obecnie obsługiwane. Inne aplikacje zostaną zapisane.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Nowe powiadomienie, łącznie <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5920710855273935292">Mikrofon jest wyciszony.</translation>
 <translation id="5946788582095584774">Funkcja <ph name="FEATURE_NAME" /> jest włączona.</translation>

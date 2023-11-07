@@ -1193,6 +1193,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3427342743765426898">&amp;Muuda uuesti</translation>
 <translation id="342781501876943858">Chromium soovitab teil parooli lähtestada, kui kasutasite seda ka muudel saitidel.</translation>
 <translation id="3428151540071562330">Vähemalt üks reegli DnsOverHttpsTemplates serveri malli URI on kehtetu ja seda ei kasutata.</translation>
+<translation id="3428789896412418755">Rühmitatud ajalugu</translation>
 <translation id="3431216045099978607">Täisekraanilt väljumiseks ja allalaaditud faili(de) nägemiseks vajutage klahvi |<ph name="ACCELERATOR" />|.</translation>
 <translation id="3432601291244612633">Sule leht</translation>
 <translation id="3433111389595862568">Koostöö- ja konverentsitarkvara</translation>
@@ -3178,6 +3179,7 @@ Lisateave:
 <translation id="7423283032694727565">Nupp Küpsiste haldamine, aktiveerige nupp, et hallata Chrome'i seadetes oma küpsisefailide eelistusi</translation>
 <translation id="7427366580982928791">Laste internetiohutus</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Kinnitage oma isik, et Chromium saaks teie makseteabe sisestada.</translation>
 <translation id="7437289804838430631">Lisa kontaktteave</translation>
 <translation id="7437490109271760224">Kaardimängud</translation>
 <translation id="7438338505272634288">Saidil, mida proovite külastada, võivad ründajad meelitada teid installima kahjulikku tarkvara, mis mõjutab teie sirvimisviisi – näiteks muutes teie avalehte või näidates teile külastatavatel saitidel lisareklaame. Kahju vältimiseks soovitab Chrome tungivalt turvalisse keskkonda naasta. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3414,7 @@ Lisateave:
 <translation id="7831993212387676366">Mis on ostunimekiri?</translation>
 <translation id="7840103971441592723">Ekraanikuva jäädvustamist alustati</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784404208867107517">Rühmitatud ajalugu</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Puudub}=1{1 rakendus (<ph name="EXAMPLE_APP_1" />)}=2{2 rakendust (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# rakendust (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Hiljem saab teie külastatav sait küsida Chrome'ilt teie teemasid, et isikupärastada teile kuvatavaid reklaame. Chrome jagab kuni 3 teemat, kaitstes teie sirvimisajaloo ja identiteedi privaatsust.</translation>
@@ -3438,6 +3441,7 @@ Lisateave:
 <translation id="79338296614623784">Sisestage kehtiv telefoninumber</translation>
 <translation id="7934414805353235750"><ph name="URL" /> soovib esitada kaitstud sisu. Google kontrollib teie seadme identiteeti.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Kinnitage oma isik, et Google Chrome saaks teie makseteabe sisestada.</translation>
 <translation id="7937163678541954811">Selle kaardi CVC krüpteeritakse ja salvestatakse teie seadmesse, et saaksite kiiremini maksta</translation>
 <translation id="7937554595067888181">Aegub <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Serveri sertifikaat ei kehti veel.</translation>

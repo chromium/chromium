@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
+<translation id="1003363546227723021">Kada je ekran neaktivan, prikazuj fotografije, sat, vrijeme i informacije o mediju</translation>
 <translation id="1014750484722996375">Radne površine</translation>
 <translation id="1018219910092211213">Nije moguće razriješiti DNS</translation>
 <translation id="1018656279737460067">Otkazano</translation>
@@ -535,7 +536,6 @@
 <translation id="4999333166442584738">Sakrij izvještaj</translation>
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Kada je ekran neaktivan, prikazuju se fotografije, sat, vrijeme i medijske informacije.</translation>
 <translation id="5035083460461104704">Boja teme</translation>
 <translation id="5038292761217083259">tastatura u više boja</translation>
 <translation id="5039804452771397117">Dozvoli</translation>

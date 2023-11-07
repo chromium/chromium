@@ -3175,13 +3175,6 @@
 <translation id="346298925039590474">ستكون شبكة الجوّال هذه متاحة لجميع المستخدمين على هذا الجهاز.</translation>
 <translation id="3464145797867108663">إضافة ملف شخصي للعمل</translation>
 <translation id="346546413339447252">هل تريد الحصول على خصومات عند الشراء من <ph name="MERCHANT_NAME_1" /> و<ph name="MERCHANT_NAME_2" /> وغيرهما المزيد؟</translation>
-<translation id="3466476162566821406">‏اتّبِع التعليمات التي تظهر على هاتفك لإثبات صحة الرمز. تأكَّد من تفعيل البلوتوث وWi-Fi على هاتفك.
-    <ph name="BR" />
-    <ph name="BR" />
-    يمكنك استخدام هاتفك لإضافة معلومات شبكة Wi-Fi وحسابك على Google في <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    جهازك مرئي للأجهزة القريبة باسم <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="3468298837301810372">الاسم</translation>
 <translation id="3468999815377931311">‏هاتف Android</translation>
 <translation id="3469583217479686109">أداة التحديد</translation>
@@ -4816,7 +4809,6 @@
 <translation id="4769632191812288342">يتم توفير الحماية العادية حاليًا.</translation>
 <translation id="4770119228883592393">‏تم طلب الإذن، اضغط على ⌘ + Option + السهم المتجه للأسفل للاستجابة للطلب</translation>
 <translation id="4773112038801431077">‏ترقية نظام التشغيل Linux</translation>
-<translation id="4774456473286455263">‏إعداد الجهاز باستخدام هاتف Android</translation>
 <translation id="4775228465764358468">من الممكن أن يحفظ الموقع الإلكتروني لغتك المفضّلة أو السلع التي تريد شراءها. وتتوفّر هذه المعلومات للموقع الإلكتروني ونطاقاته الفرعية.</translation>
 <translation id="477548766361111120">السماح للإضافة بقراءة محتوى هذا الموقع الإلكتروني وتغييره</translation>
 <translation id="4776311127346151860">تم الاتصال بـ "<ph name="DEVICE_NAME" />".</translation>
@@ -6157,13 +6149,6 @@
 <translation id="5865508026715185451">سيتم إيقاف تطبيق <ph name="APP_NAME" /> مؤقتًا بعد قليل.</translation>
 <translation id="586567932979200359">أنت تشغّل <ph name="PRODUCT_NAME" /> من صورته على القرص. ويسمح لك تثبيته على الكمبيوتر بتشغيله بدون الحاجة إلى صورة القرص، كما يضمن ذلك الحفاظ على تحديثه بشكل مستمر.</translation>
 <translation id="5865733239029070421">‏يُرسِل إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا.</translation>
-<translation id="5867855474018538405">‏اتّبِع التعليمات التي تظهر على هاتفك لمسح رمز الاستجابة السريعة ضوئيًا. تأكَّد من تفعيل البلوتوث وWi-Fi على هاتفك.
-    <ph name="BR" />
-    <ph name="BR" />
-    يمكنك استخدام هاتفك لإضافة معلومات شبكة Wi-Fi وحسابك على Google في <ph name="DEVICE_TYPE" />.
-    <ph name="BR" />
-    <ph name="BR" />
-    جهازك مرئي للأجهزة القريبة باسم <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="5868434909835797817">الميكروفون غير مفعَّل على جهازك.</translation>
 <translation id="5868822853313956582">استخدام ألوان الجهاز</translation>
 <translation id="5869029295770560994">حسنًا</translation>
@@ -7741,6 +7726,7 @@
 <translation id="7125932261198019860">‏تأكَّد من اتصال الطابعة وجهاز Chromebook بشبكة Wi-Fi نفسها أو استخدِم كابل USB. <ph name="LINK_BEGIN" />مزيد من المعلومات حول التوافق<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">سجل التنزيل</translation>
 <translation id="7128151990937044829">عرض مؤشر في شريط العناوين عند حظر الإشعارات</translation>
+<translation id="7130438335435247835">‏اسم نقطة الوصول (APN)</translation>
 <translation id="7131040479572660648">قراءة بياناتك على <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" /> و<ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">إضافة &amp;صفحة...</translation>
 <translation id="7131431455372521159">انقطع اتصال كل عِصيّ التأشير.</translation>
@@ -9020,6 +9006,7 @@
 <translation id="81238879832906896">زهرة صفراء وبيضاء</translation>
 <translation id="8123975449645947908">التمرير للخلف</translation>
 <translation id="8124313775439841391">‏ONC مُدار</translation>
+<translation id="8125651784723647184">يدير المشرف ميزة مشاركة كلمات المرور.</translation>
 <translation id="8129265306888404830">‏لاستخدام عنوان البريد الإلكتروني التابع لمؤسستك (<ph name="EMAIL_DOMAIN" />)، عليك استخدام ميزة تسجيل المؤسسة. إذا كان هذا الجهاز للاستخدام الشخصي، سجِّل الدخول باستخدام حسابك الشخصي على Google.</translation>
 <translation id="813082847718468539">عرض معلومات الموقع</translation>
 <translation id="8131740175452115882">التأكيد</translation>

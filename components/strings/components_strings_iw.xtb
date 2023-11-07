@@ -1193,6 +1193,7 @@
 <translation id="3427342743765426898">&amp;ביצוע מחדש של עריכה</translation>
 <translation id="342781501876943858">‏אם הזנת את הסיסמה שלך באתרים אחרים, ההמלצה של Chromium היא לאפס אותה.</translation>
 <translation id="3428151540071562330">‏אחד או יותר ממזהי ה-URI של תבנית השרת DnsOverHttpsTemplates אינם חוקיים ולא ייעשה בהם שימוש.</translation>
+<translation id="3428789896412418755">הצגת ההיסטוריה באופן מקובץ</translation>
 <translation id="3431216045099978607">צריך להקיש על |<ph name="ACCELERATOR" />| כדי לצאת מהמסך המלא ולראות את ההורדה.</translation>
 <translation id="3432601291244612633">סגירת הדף</translation>
 <translation id="3433111389595862568">תוכנות לעבודה משותפת ולשיחות ועידה</translation>
@@ -3183,6 +3184,7 @@ Del</translation>
 <translation id="7423283032694727565">‏הלחצן לניהול קובצי cookie, מפעילים אותו כדי לנהל את ההעדפות לגבי קובצי cookie בהגדרות Chrome</translation>
 <translation id="7427366580982928791">בטיחות ילדים באינטרנט</translation>
 <translation id="7429429656042611765">‏7.25x10.5 אינץ' (Executive)</translation>
+<translation id="7432774160230062882">‏כדי ש-Chromium יוכל למלא את פרטי התשלום, עליך לאמת את הזהות שלך.</translation>
 <translation id="7437289804838430631">הוספת פרטים ליצירת קשר</translation>
 <translation id="7437490109271760224">משחקי קלפים</translation>
 <translation id="7438338505272634288">‏תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות מזיקות שמשפיעות על אופן הגלישה שלך. לדוגמה, על ידי שינוי דף הבית או הצגת מודעות נוספות באתרים שמבקרים בהם. מערכת Chrome ממליצה מאוד לחזור לדף הבטוח כדי להימנע מפגיעה. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3417,6 +3419,7 @@ Del</translation>
 <translation id="7831993212387676366">מהי רשימת הקניות?</translation>
 <translation id="7840103971441592723">צילום המסך התחיל</translation>
 <translation id="784137052867620416">תובנות בנושא קניות</translation>
+<translation id="784404208867107517">הצגת ההיסטוריה באופן מקובץ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ללא}=1{אפליקציה אחת (<ph name="EXAMPLE_APP_1" />)}=2{2 אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">‏לאחר מכן, אתר שבחרת לבקר בו יכול לשלוח ל-Chrome בקשה לקבלת הנושאים שמעניינים אותך כדי להתאים אישית את המודעות שמוצגות לך. Chrome משתף עד 3 נושאים ומגן על היסטוריית הגלישה ועל הזהות שלך בתהליך.</translation>
@@ -3443,6 +3446,7 @@ Del</translation>
 <translation id="79338296614623784">עליך להזין מספר טלפון חוקי</translation>
 <translation id="7934414805353235750">‏<ph name="URL" /> רוצה להפעיל תוכן מוגן. זהות המכשיר שלך תאומת על-ידי Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">‏כדי ש-Google Chrome יוכל למלא את פרטי התשלום, עליך לאמת את הזהות שלך.</translation>
 <translation id="7937163678541954811">‏כדי שתהליך התשלום יהיה מהיר יותר, קוד האימות (CVC) של הכרטיס הזה יוצפן ויישמר במכשיר שלך</translation>
 <translation id="7937554595067888181">בתוקף עד <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">אישור השרת עדיין לא בתוקף.</translation>

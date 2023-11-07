@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1003363546227723021">Ekranınız aktif değilken fotoğrafları, saati, hava durumunu ve medya bilgilerini gösterir</translation>
 <translation id="1014750484722996375">Masalar</translation>
 <translation id="1018219910092211213">DNS çözümlenemiyor</translation>
 <translation id="1018656279737460067">İptal Edildi</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">ChromeOS Flex'i yükle</translation>
 <translation id="1856388568474281774">Aşağı ok</translation>
 <translation id="1858620243986915808">Ekran görüntüsü ekle</translation>
+<translation id="1871413952174074704">APN <ph name="CHAR_LIMIT" /> karakterden uzun olamaz</translation>
 <translation id="1871569928317311284">Koyu temayı kapat</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Koyu modu kapat</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">Raporu gizle</translation>
 <translation id="500920857929044050">Testi durdur</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Ekranınız aktif değilken fotoğrafları, saati, hava durumunu ve medya bilgilerini gösterir.</translation>
 <translation id="5035083460461104704">Tema rengi</translation>
 <translation id="5038292761217083259">çok renkli klavye</translation>
 <translation id="5039804452771397117">İzin ver</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Açık pembe</translation>
 <translation id="982713511914535780">Deşarj testini çalıştır</translation>
 <translation id="987264212798334818">Genel</translation>
+<translation id="995062385528875723">Aksanlı harfler, Latin alfabesinde olmayan karakterler veya semboller kullanılamaz</translation>
 </translationbundle>

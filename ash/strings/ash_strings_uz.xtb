@@ -213,15 +213,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1796561540704213354">Saytlar, jumladan siz tashrif buyurgan va ochilgan sahifalar</translation>
 <translation id="181103072419391116">Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="1816896987747843206">Bunda kameraga ruxsat beriladi. Barcha ilovalar va saytlar kameradan foydalana oladi</translation>
-<translation id="1823280932251546115">Holat qatori, vaqt <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Joylashuv axborotiga ruxsatni yoqish</translation>
 <translation id="1830308660060964064">Yechib olindi: <ph name="ITEM_TITLE" /></translation>

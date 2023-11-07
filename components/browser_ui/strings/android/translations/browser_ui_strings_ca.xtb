@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{S'han permès <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}other{S'han permès <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}}</translation>
 <translation id="2410940059315936967">Els llocs web que visites poden inserir contingut d'altres llocs web, com ara imatges, anuncis i text. Les galetes establertes per aquests altres llocs web s'anomenen "galetes de tercers".</translation>
 <translation id="2434158240863470628">S'ha completat la baixada <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Has permès temporalment que aquest lloc web utilitzi galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista. <ph name="BEGIN_LINK" />Envia suggeriments<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">És possible que les funcions d'alguns llocs web no funcionin en mode d'incògnit</translation>
 <translation id="2442870161001914531">Sol·licita sempre el lloc web per a ordinadors</translation>
 <translation id="2469312991797799607">Aquesta acció suprimirà totes les dades i galetes de <ph name="ORIGIN" /> i de tots els llocs web que conté</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Títol</translation>
 <translation id="4008040567710660924">Permet les galetes d'un lloc web concret.</translation>
 <translation id="4046123991198612571">Pista següent</translation>
-<translation id="4053720452172726777">Personalitza i controla Google Chrome</translation>
 <translation id="4149890623864272035">Confirmes que vols suprimir totes les dades locals, incloses les galetes, i restablir tots els permisos d'aquest lloc web?</translation>
 <translation id="4149994727733219643">Visualització simplificada de pàgines web</translation>
 <translation id="4151930093518524179">Zoom predeterminat</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Suprimeix les dades i restableix els permisos</translation>
 <translation id="4645575059429386691">Gestionat pels pares</translation>
 <translation id="4670064810192446073">Realitat virtual</translation>
+<translation id="4673958474310291465">Prova de permetre temporalment les galetes de tercers. Això implica menys protecció, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
 <translation id="4751476147751820511">Sensors de moviment o de llum</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Més informació sobre la font i el tema</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6205314730813004066">Privadesa d'anuncis</translation>
 <translation id="6207207788774442484">Suprimeix les dades i restableix els permisos</translation>
-<translation id="6216432067784365534">Opcions per a <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Vols desinstal·lar <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">Segons la teva darrera pestanya</translation>
 <translation id="6262279340360821358">S'han bloquejat <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Bloqueja</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionat}other{# seleccionats}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elements seleccionats. Hi ha opcions disponibles a prop de la part superior de la pantalla.</translation>
+<translation id="7137403271056944713">Control i reprogramació disp. MIDI</translation>
 <translation id="7141896414559753902">Bloqueja les finestres emergents i les redireccions als llocs web (opció recomanada)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Actualitza</translation>

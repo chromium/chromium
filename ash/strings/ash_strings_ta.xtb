@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">நீங்கள் பார்வையிட்ட பக்கங்கள் மற்றும் திறந்துள்ள பக்கங்களை உள்ளடக்கிய இணையதளங்கள்</translation>
 <translation id="181103072419391116">சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="1816896987747843206">கேமராவைப் பயன்படுத்த அனுமதி கேட்கும் ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் கேமராவிற்கான அணுகலை இது வழங்கும்</translation>
-<translation id="1823280932251546115">நிலைத் தட்டு, நேரம் <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ஈதர்நெட்: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">இருப்பிட அணுகலை இயக்கு</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ஷெல்ஃபிலிருந்து அகற்றப்பட்டது</translation>

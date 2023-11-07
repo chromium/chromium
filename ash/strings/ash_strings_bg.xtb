@@ -213,15 +213,6 @@
 <translation id="1796561540704213354">Уебсайтове, включително посетените от вас и отворените страници</translation>
 <translation id="181103072419391116">Сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="1816896987747843206">Това разрешава достъп до камерата за всички приложения и уебсайтове, които имат съответното разрешение</translation>
-<translation id="1823280932251546115">Лента на състоянието, часът е <ph name="TIME" />,
-        <ph name="BATTERY" />,
-        <ph name="CHANNEL" />,
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />,
-        <ph name="LOCALE" />.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Включване на достъпа до местоположението</translation>
 <translation id="1830308660060964064">Освободихте <ph name="ITEM_TITLE" /></translation>
@@ -1197,6 +1188,7 @@
 <translation id="5788127256798019331">Файлове от Google Play</translation>
 <translation id="5788535737706478207">Повторно отваряне на последния затворен раздел или прозорец</translation>
 <translation id="5790085346892983794">Успех</translation>
+<translation id="5802516411616338943">Отваряне на бързите настройки</translation>
 <translation id="5804651031882187592">Изключете настройката за заключване на SIM картата</translation>
 <translation id="5805809050170488595">Кликнете за активиране на <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Tasks в мрежата</translation>
@@ -1222,6 +1214,7 @@
 <translation id="5901630391730855834">жълто</translation>
 <translation id="5911231045062997865">Понастоящем не се поддържат прозорци на Lacros. Другите приложения ще бъдат запазени.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Ново известие, общо <ph name="NOTIFICATION_COUNT" /> известия</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5920710855273935292">Микрофонът е заглушен.</translation>
 <translation id="5946788582095584774">„<ph name="FEATURE_NAME" />“ е включено.</translation>

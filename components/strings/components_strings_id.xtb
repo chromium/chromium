@@ -1194,6 +1194,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3427342743765426898">&amp;Ulangi Pengeditan</translation>
 <translation id="342781501876943858">Chromium menyarankan untuk menyetel ulang sandi jika Anda juga menggunakannya di situs lain.</translation>
 <translation id="3428151540071562330">Satu atau beberapa URI template server DnsOverHttpsTemplates tidak valid dan tidak akan digunakan.</translation>
+<translation id="3428789896412418755">Histori yang Dikelompokkan</translation>
 <translation id="3431216045099978607">Tekan |<ph name="ACCELERATOR" />| untuk keluar dari layar penuh dan melihat download.</translation>
 <translation id="3432601291244612633">Tutup halaman</translation>
 <translation id="3433111389595862568">Software Kolaborasi &amp; Konferensi</translation>
@@ -3176,6 +3177,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7423283032694727565">Tombol Kelola cookie, aktifkan untuk mengelola preferensi cookie Anda di setelan Chrome</translation>
 <translation id="7427366580982928791">Perlindungan internet anak</translation>
 <translation id="7429429656042611765">Eksekutif</translation>
+<translation id="7432774160230062882">Verifikasi diri Anda agar Chromium dapat mengisi info pembayaran.</translation>
 <translation id="7437289804838430631">Tambahkan Info Kontak</translation>
 <translation id="7437490109271760224">Game kartu</translation>
 <translation id="7438338505272634288">Penyerang di situs yang Anda coba kunjungi dapat mengelabui Anda agar menginstal software berbahaya yang memengaruhi cara Anda menjelajah — misalnya, dengan mengubah halaman beranda atau menampilkan iklan tambahan di situs yang Anda kunjungi. Chrome sangat merekomendasikan untuk kembali agar aman dari bahaya. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3410,6 +3412,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7831993212387676366">Apa itu Daftar belanja?</translation>
 <translation id="7840103971441592723">Screenshot telah dimulai</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784404208867107517">Histori yang dikelompokkan</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Tidak ada}=1{1 aplikasi (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikasi (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplikasi (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Kemudian, situs yang Anda buka dapat meminta topik dari Chrome guna mempersonalisasi iklan yang Anda lihat. Chrome membagikan maksimal 3 topik sekaligus melindungi histori penjelajahan dan identitas Anda.</translation>
@@ -3436,6 +3439,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="79338296614623784">Masukkan nomor telepon yang valid</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ingin memutar konten yang dilindungi. Identitas perangkat Anda akan diverifikasi oleh Google.</translation>
 <translation id="7935318582918952113">Penyaring DOM</translation>
+<translation id="7936775433939783906">Verifikasi diri Anda agar Google Chrome dapat mengisi info pembayaran.</translation>
 <translation id="7937163678541954811">CVC kartu ini akan dienkripsi dan disimpan ke perangkat Anda untuk checkout yang lebih cepat</translation>
 <translation id="7937554595067888181">Masa berlaku habis pada <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Sertifikat server belum valid.</translation>

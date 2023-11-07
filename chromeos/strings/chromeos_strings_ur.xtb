@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1003363546227723021">اسکرین معطل ہونے پر، تصاویر، وقت، موسم اور میڈیا کی معلومات دکھائیں</translation>
 <translation id="1014750484722996375">ڈیسکس</translation>
 <translation id="1018219910092211213">‏DNS کو حل نہیں کیا جا سکتا</translation>
 <translation id="1018656279737460067">منسوخ کردہ</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">‏ChromeOS Flex انسٹال کریں</translation>
 <translation id="1856388568474281774">نیچے تیر کا نشان</translation>
 <translation id="1858620243986915808">اسکرین شاٹ منسلک کریں</translation>
+<translation id="1871413952174074704">‏APN میں <ph name="CHAR_LIMIT" /> سے زیادہ حروف نہیں ہو سکتے</translation>
 <translation id="1871569928317311284">گہری تھیم آف کریں</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">تاریک وضع آف کریں</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">رپورٹ چھپائیں</translation>
 <translation id="500920857929044050">ٹیسٹ روکیں</translation>
 <translation id="5017508259293544172">لیپ</translation>
-<translation id="5019310272469539976">آپ کی اسکرین کے معطل ہونے پر، تصاویر، وقت، موسم اور میڈیا کی معلومات دکھائیں۔</translation>
 <translation id="5035083460461104704">تھیم کا رنگ</translation>
 <translation id="5038292761217083259">متعدد رنگوں والا کی بورڈ</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">ہلکا گلابی</translation>
 <translation id="982713511914535780">ڈسچارج ٹیسٹ چلائیں</translation>
 <translation id="987264212798334818">عمومی</translation>
+<translation id="995062385528875723">تلفظ والے حروف، غیر لاطینی حروف تہجی یا علامتیں استعمال نہیں کر سکتے</translation>
 </translationbundle>

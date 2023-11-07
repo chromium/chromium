@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">Ομάδα καρτελών – <ph name="TAB_COUNT" /> καρτέλες</translation>
 <translation id="17513872634828108">Ανοικτές καρτέλες</translation>
 <translation id="1757620656501361327">Ενημέρωση Διαχειριστή κωδικών πρόσβασης Google</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Σελίδες, 1 σελίδα στη λίστα}other{Σελίδες, # σελίδες στη λίστα}}</translation>
 <translation id="1778457539567749232">Σήμανση στοιχείου ως μη αναγνωσμένου</translation>
 <translation id="1779766957982586368">Κλείσιμο παραθύρου</translation>
 <translation id="1791662854739702043">Εγκατεστημένο</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">Σκούρο</translation>
 <translation id="2421705177906985956">Δεν υπάρχουν ιστότοποι για εμφάνιση αυτήν τη στιγμή</translation>
 <translation id="2426805022920575512">Επιλογή άλλου λογαριασμού</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Βίντεο, 1 βίντεο στη λίστα}other{Βίντεο, # βίντεο στη λίστα}}</translation>
 <translation id="2433507940547922241">Εμφάνιση</translation>
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
 <translation id="2439153523196674349">Προεπισκόπηση <ph name="SITE_NAME" /></translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">Σύνδεση…</translation>
 <translation id="4866368707455379617">Δεν είναι δυνατή η εγκατάσταση του <ph name="MODULE" /> για το Chrome</translation>
 <translation id="4871568871368204250">Απενεργοποίηση συγχρονισμού</translation>
+<translation id="4874961007154620743">Όταν είναι απενεργοποιημένη, θα εξακολουθείτε να βλέπετε προτάσεις που παρέχει το Chrome τοπικά</translation>
 <translation id="4875775213178255010">Προτάσεις περιεχομένου</translation>
 <translation id="4877678010818027629">Είσοδος σε κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="4878404682131129617">Η δημιουργία διοχέτευσης μέσω διακομιστή μεσολάβησης απέτυχε</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">Ανοίξτε γρήγορα μια νέα καρτέλα. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="6802555630140434547">Το παράθυρο θα κλείσει</translation>
 <translation id="6811034713472274749">Σελίδα έτοιμη για προβολή</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Εικόνες, 1 εικόνα στη λίστα}other{Εικόνες, # εικόνες στη λίστα}}</translation>
 <translation id="6813446258015311409">Σύνδεση στο Chrome, έγινε άνοιγμα.</translation>
 <translation id="6817747507826986771">Κοινοποιήστε γρήγορα αυτήν τη σελίδα. Για να επεξεργαστείτε αυτήν τη συντόμευση, αγγίξτε παρατεταμένα.</translation>
 <translation id="6819199143469632133">Για να μεταφέρετε το περιεχόμενό σας Google μεταξύ συσκευών, συνδεθείτε</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">Φόρτωση…</translation>
 <translation id="6850409657436465440">Η λήψη σας βρίσκεται ακόμα σε εξέλιξη</translation>
 <translation id="6850830437481525139">Έκλεισαν <ph name="TAB_COUNT" /> καρτέλες</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Αρχεία ήχου, 1 αρχείο ήχου στη λίστα}other{Αρχεία ήχου, # αρχεία ήχου στη λίστα}}</translation>
 <translation id="685850645784703949">Discover από την Google - ανενεργό</translation>
 <translation id="686366188661646310">Διαγραφή κωδικού πρόσβασης;</translation>
 <translation id="6864459304226931083">Λήψη εικόνας</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">Διατίθεται σκούρο θέμα για ιστοτόπους</translation>
 <translation id="7388615499319468910">Οι ιστότοποι και οι διαφημιζόμενοι μπορούν να κατανοούν την απόδοση των διαφημίσεων. Αυτή η ρύθμιση είναι απενεργοποιημένη.</translation>
 <translation id="7397416715506917976">Προβολή insight σελίδας</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Άλλο, 1 αρχείο στη λίστα}other{Άλλο, # αρχεία στη λίστα}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Εμπειρία πρώτης εκτέλεσης Chrome</translation>
 <translation id="7411224099004328643">Χρήστης Λογαριασμού Google</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7808889146555843082">Η κατάργηση αυτού του κωδικού πρόσβασης δεν θα διαγράψει τον λογαριασμό σας στον ιστότοπο <ph name="SITE" />. Αλλάξτε τον κωδικό πρόσβασης ή διαγράψτε τον λογαριασμό σας στον ιστότοπο <ph name="SITE" /> για να τον διατηρήσετε ασφαλή.</translation>
 <translation id="7810647596859435254">Άνοιγμα με…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Όλα τα αρχεία, 1 αρχείο στη λίστα}other{Όλα τα αρχεία, # αρχεία στη λίστα}}</translation>
 <translation id="7815484226266492798">Στιγμιότυπο οθόνης μεγάλης έκτασης</translation>
 <translation id="7822705602465980873">Όταν είστε συνδεδεμένοι, αυτά τα δεδομένα συνδέονται με τον Λογαριασμό σας Google για την προστασία σας σε όλες τις υπηρεσίες Google. Για παράδειγμα, μετά από ένα περιστατικό ασφαλείας, αυξάνεται η προστασία στο Gmail.</translation>
 <translation id="782705168687182233">Η δραστηριότητά σας αποθηκεύεται στον <ph name="BEGIN_LINK" />Λογαριασμό σας Google<ph name="END_LINK" />.</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Η γλώσσα <ph name="LANG" /> είναι έτοιμη</translation>
 <translation id="8937772741022875483">Να καταργηθεί η δραστηριότητα του Chrome από το Digital Wellbeing;</translation>
+<translation id="893938492099608175">Ανάλογα με τις ρυθμίσεις σας, το Chrome μπορεί επίσης να στέλνει cookie, το τρέχον URL και την τοποθεσία σας</translation>
 <translation id="8942627711005830162">Άνοιγμα σε άλλο παράθυρο</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Δεν ήταν δυνατή η λήψη αυτής της γλώσσας. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="8955719471735800169">Επιστροφή στην κορυφή</translation>

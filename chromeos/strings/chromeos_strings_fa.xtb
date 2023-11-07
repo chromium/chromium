@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1003363546227723021">وقتی صفحه‌نمایش بدون فعالیت است، عکس، ساعت، وضعیت آب‌وهوا، و اطلاعات رسانه نمایش داده می‌شود</translation>
 <translation id="1014750484722996375">میزکارها</translation>
 <translation id="1018219910092211213">نمی‌توان ساناد را حل‌وفصل کرد</translation>
 <translation id="1018656279737460067">لغو شده</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">‏نصب ChromeOS Flex</translation>
 <translation id="1856388568474281774">جهت‌نمای پایین</translation>
 <translation id="1858620243986915808">پیوست کردن نماگرفت</translation>
+<translation id="1871413952174074704">‏APN نمی‌تواند بیشتر از <ph name="CHAR_LIMIT" /> نویسه داشته باشد</translation>
 <translation id="1871569928317311284">خاموش کردن زمینه تیره</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">خاموش کردن حالت تاریک</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">پنهان کردن گزارش</translation>
 <translation id="500920857929044050">توقف آزمایش</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">وقتی صفحه‌نمایش بدون فعالیت است، عکس، ساعت، وضعیت آب‌وهوا، و اطلاعات رسانه نمایش داده می‌شود.</translation>
 <translation id="5035083460461104704">رنگ زمینه</translation>
 <translation id="5038292761217083259">صفحه‌کلید چندرنگ</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">صورتی روشن</translation>
 <translation id="982713511914535780">اجرای آزمایش تخلیه شارژ</translation>
 <translation id="987264212798334818">موارد کلی</translation>
+<translation id="995062385528875723">نمی‌توان از حروف تکیه‌دار، الفبای غیرلاتین، یا نمادها استفاده کرد</translation>
 </translationbundle>

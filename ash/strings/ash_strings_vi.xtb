@@ -213,15 +213,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1796561540704213354">Trang web, bao gồm các trang bạn đã truy cập và các trang đang mở</translation>
 <translation id="181103072419391116">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="1816896987747843206">Điều này cho phép sử dụng máy ảnh đối với tất cả ứng dụng và trang web có quyền sử dụng máy ảnh</translation>
-<translation id="1823280932251546115">Khay trạng thái, thời gian <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Bật quyền truy cập thông tin vị trí</translation>
 <translation id="1830308660060964064">Đã bỏ ghim <ph name="ITEM_TITLE" /></translation>

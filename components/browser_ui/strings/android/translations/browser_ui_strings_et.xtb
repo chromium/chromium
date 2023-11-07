@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on lubatud}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on lubatud}}</translation>
 <translation id="2410940059315936967">Sait, mida külastate, saab manustada sisu muudelt saitidelt (nt pilte, reklaame ja teksti). Muude saitide määratud küpsisefaile nimetatakse kolmanda osapoole küpsisefailideks.</translation>
 <translation id="2434158240863470628">Allalaadimine jõudis lõpule: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Lubasite sellel saidil ajutiselt kasutada kolmanda osapoole küpsisefaile, mis tähendab väiksemat sirvimiskaitset, kuid saidi funktsioonid töötavad tõenäolisemalt ootuspäraselt. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Mõne saidi funktsioonid ei pruugi inkognito režiimis toimida</translation>
 <translation id="2442870161001914531">Alati taotletakse arvutisaiti</translation>
 <translation id="2469312991797799607">See toiming kustutab kõik saidigrupi <ph name="ORIGIN" /> ning selle all olevate kõigi saitide andmed ja küpsised</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Pealkiri</translation>
 <translation id="4008040567710660924">Lubage konkreetse saidi küpsisefailid.</translation>
 <translation id="4046123991198612571">Järgmine lugu</translation>
-<translation id="4053720452172726777">Google Chrome'i kohandamine ja juhtimine</translation>
 <translation id="4149890623864272035">Kas olete kindel, et soovite kustutada kõik kohalikud andmed, sh küpsised, ja lähtestada kõik selle veebisaidi õigused?</translation>
 <translation id="4149994727733219643">Veebilehtede lihtsustatud vaade</translation>
 <translation id="4151930093518524179">Vaikesuum</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Kustuta ja lähtesta</translation>
 <translation id="4645575059429386691">Vanema hallatud</translation>
 <translation id="4670064810192446073">Virtuaalreaalsus</translation>
+<translation id="4673958474310291465">Proovige kolmanda osapoole küpsisefailid ajutiselt lubada, mis vähendab kaitset, kuid saidi funktsiooni töötavad tõenäolisemalt ootuspäraselt</translation>
 <translation id="4751476147751820511">Liikumis- või valgusandurid</translation>
 <translation id="4779083564647765204">Suumi</translation>
 <translation id="4811450222531576619">Teave selle allika ja teema kohta</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
 <translation id="6205314730813004066">Reklaamide privaatsus</translation>
 <translation id="6207207788774442484">Kustuta andmed ja õigused</translation>
-<translation id="6216432067784365534">Üksuse <ph name="NAME_OF_LIST_ITEM" /> valikud</translation>
 <translation id="6231752747840485235">Kas desinstallida rakendus <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">Teie viimase vahelehe põhjal</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> on keelatud</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Blokeeri</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 on valitud}other{# on valitud}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> on valitud.  Valikud on saadaval ekraanikuva ülaosas</translation>
+<translation id="7137403271056944713">MIDI-seadme juhtimine/ümberprogrammeerimine</translation>
 <translation id="7141896414559753902">Blokeeri saitidel hüpikakende ja ümbersuunamiste kuvamine (soovitatav)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Värskenda</translation>

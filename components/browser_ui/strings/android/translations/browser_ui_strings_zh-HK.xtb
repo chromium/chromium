@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="2410940059315936967">您瀏覽的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。其他網站設定的 Cookie 就稱為第三方 Cookie。</translation>
 <translation id="2434158240863470628">下載完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">你已暫時允許此網站使用第三方 Cookie。換言之，瀏覽保護程度會降低，但網站功能正常運作的機率會提高。<ph name="BEGIN_LINK" />傳送意見<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">部分網站的功能可能無法在無痕模式中正常運作</translation>
 <translation id="2442870161001914531">一律要求桌面版網站</translation>
 <translation id="2469312991797799607">此操作會刪除 <ph name="ORIGIN" /> 及底下所有網站的所有資料和 Cookie</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">標題</translation>
 <translation id="4008040567710660924">允許特定網站存取 Cookie。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
-<translation id="4053720452172726777">自訂及控制 Google Chrome</translation>
 <translation id="4149890623864272035">確定要刪除 Cookie 等所有本機資料，並重設此網站的所有權限嗎？</translation>
 <translation id="4149994727733219643">使用簡化檢視模式查看網頁</translation>
 <translation id="4151930093518524179">預設縮放</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">刪除並重設</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
+<translation id="4673958474310291465">請嘗試暫時允許使用第三方 Cookie，這代表保護程度較低，但網站功能較容易如期運作</translation>
 <translation id="4751476147751820511">動態或光線感應器</translation>
 <translation id="4779083564647765204">縮放</translation>
 <translation id="4811450222531576619">瞭解頁面的來源和主題</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6205314730813004066">廣告私隱權</translation>
 <translation id="6207207788774442484">刪除資料並重設權限</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />選項</translation>
 <translation id="6231752747840485235">要解除安裝「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="6262191102408817757">根據您最近的分頁</translation>
 <translation id="6262279340360821358">已封鎖「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
 <translation id="7087918508125750058">揀咗 <ph name="ITEM_COUNT" /> 個。選項喺螢幕頂部</translation>
+<translation id="7137403271056944713">MIDI 裝置控制/重新編程</translation>
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗和重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">重新整理</translation>

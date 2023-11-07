@@ -238,6 +238,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Доступне оновлення Chromium}=1{Доступне оновлення Chromium}one{Оновлення Chromium доступне вже # день}few{Оновлення Chromium доступне вже # дні}many{Оновлення Chromium доступне вже # днів}other{Оновлення Chromium доступне вже # дня}}</translation>
 <translation id="5643865575100044307">Завжди видаляти дані сайтів із пристрою, коли ви закриваєте Chromium</translation>
 <translation id="5653831366781983928">Перезапустіть Chromium</translation>
+<translation id="5675598751761067447">Цей файл може бути небезпечним.<ph name="LINE_BREAK" />Chromium перевірить його, якщо ви введете пароль. Інформація про пароль залишиться на вашому пристрої.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Вибрати цю мову для Chromium</translation>
 <translation id="569897634095159764">Не вдалося підключитися до Інтернету. Потрібна автентифікація на проксі-сервері.</translation>

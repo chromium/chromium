@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Permitidos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}other{Permitidos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}}</translation>
 <translation id="2410940059315936967">Un sitio que estés visitando puede incorporar contenido de otros sitios, como imágenes, anuncios y texto. Las cookies que establecen estos otros sitios se denominan cookies de terceros.</translation>
 <translation id="2434158240863470628">Se completó la descarga <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Permitiste temporalmente que este sitio use cookies de terceros, lo que significa menos protección de navegación, pero es más probable que las funciones del sitio puedan usarse como se espera. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Es posible que las funciones de algunos sitios no funcionen en el modo Incógnito</translation>
 <translation id="2442870161001914531">Solicitar siempre el sitio para computadoras</translation>
 <translation id="2469312991797799607">Esta acción borrará todos los datos y cookies de <ph name="ORIGIN" /> y de todos sus sitios secundarios</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">Título</translation>
 <translation id="4008040567710660924">Permite las cookies para un sitio específico.</translation>
 <translation id="4046123991198612571">Siguiente pista</translation>
-<translation id="4053720452172726777">Personalizar y controlar Google Chrome</translation>
 <translation id="4149890623864272035">¿Confirmas que quieres borrar todos los datos locales, incluidas las cookies, y restablecer todos los permisos de este sitio web?</translation>
 <translation id="4149994727733219643">Vista simplificada para páginas web</translation>
 <translation id="4151930093518524179">Zoom predeterminado</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">Borrar y restablecer</translation>
 <translation id="4645575059429386691">Administrado por tus padres</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>
+<translation id="4673958474310291465">Intenta permitir temporalmente cookies de terceros, lo que implica menos protección, pero aumenta las probabilidades de que las funciones del sitio puedan usarse como se espera</translation>
 <translation id="4751476147751820511">Sensores de luz o movimiento</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Obtén más información sobre el tema y la fuente de la página</translation>
@@ -264,7 +265,7 @@
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="5690795753582697420">La cámara está desactivada en la configuración de Android</translation>
-<translation id="5700761515355162635">Se permiten cookies de terceros</translation>
+<translation id="5700761515355162635">Se permiten las cookies de terceros</translation>
 <translation id="5706552988683188916">Esta acción borra las cookies y otros datos de sitios para <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">En el modo Incógnito, se bloquean las cookies de terceros</translation>
 <translation id="5740126560802162366">Los sitios pueden guardar datos en tu dispositivo</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6205314730813004066">Privacidad en los anuncios</translation>
 <translation id="6207207788774442484">Borrar datos y restablecer permisos</translation>
-<translation id="6216432067784365534">Opciones de <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">¿Quieres desinstalar "<ph name="APP_NAME" />"?</translation>
 <translation id="6262191102408817757">Según tu última pestaña</translation>
 <translation id="6262279340360821358">Bloqueados: <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /></translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionado}other{# seleccionados}}</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Opciones disponibles cerca de la parte superior de la pantalla</translation>
+<translation id="7137403271056944713">Control y reprogramación de MIDI</translation>
 <translation id="7141896414559753902">Bloquea las ventanas emergentes y los redireccionamientos en los sitios (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Actualizar</translation>

@@ -213,15 +213,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1796561540704213354">Ziyaret ettiğiniz ve açık sayfaların da dahil olduğu web siteleri</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="1816896987747843206">Bu işlem, kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
-<translation id="1823280932251546115">Durum tepsisi, saat <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Konum erişimini aç</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> sabitlemesi kaldırıldı</translation>
@@ -1197,6 +1188,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5788127256798019331">Play dosyaları</translation>
 <translation id="5788535737706478207">Kapatılan son sekmeyi veya pencereyi yeniden aç</translation>
 <translation id="5790085346892983794">Başarılı</translation>
+<translation id="5802516411616338943">Hızlı Ayarlar'ı açma</translation>
 <translation id="5804651031882187592">"SIM kilidi" ayarını devre dışı bırakın</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ağını etkinleştirmek için tıklayın</translation>
 <translation id="5823239091726045201">Web'deki Google görevleri</translation>
@@ -1222,6 +1214,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5911231045062997865">Lacros pencereleri şu an için desteklenmemektedir. Diğer uygulamalar kaydedilecektir.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Yeni bildirim, toplam <ph name="NOTIFICATION_COUNT" /> bildirim</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5920710855273935292">Mikrofonun sesi kapalı.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> özelliği açık.</translation>

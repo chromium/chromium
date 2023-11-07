@@ -131,6 +131,7 @@
 <translation id="146902737843070955">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸ ਤਬਦੀਲੀ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ</translation>
 <translation id="1469148162491666137">ਇਸ ਨਾਲ <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤਾਂ ਹਨ। ਤੁਹਾਨੂੰ ਵੈੱਬ ਪੰਨੇ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਜਾਂ ਐਪ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ।</translation>
 <translation id="147310119694673958">ਫ਼ੋਨ ਬੈਟਰੀ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, 1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="1479909375538722835">ਫ਼ਲੋਟਿੰਗ ਪਹੁੰਚਯੋਗਤਾ ਮੀਨੂ</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Calendar ਦ੍ਰਿਸ਼ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ Enter ਕੁੰਜੀ ਦਬਾਓ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -213,15 +214,6 @@
 <translation id="1796561540704213354">ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਸ਼੍ਰੇਣੀ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨੇ ਅਤੇ ਖੋਲ੍ਹੇ ਗਏ ਪੰਨੇ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="181103072419391116">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="1816896987747843206">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
-<translation id="1823280932251546115">ਸਥਿਤੀ ਟ੍ਰੇ, ਸਮਾਂ <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ਈਥਰਨੈੱਟ: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ਟਿਕਾਣਾ ਪਹੁੰਚ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ਨੂੰ ਅਨਪਿੰਨ ਕੀਤਾ ਗਿਆ ਸੀ</translation>
@@ -890,6 +882,7 @@
 <translation id="4577990005084629481">ਪੂਰਵ-ਝਲਕਾਂ ਦਿਖਾਓ</translation>
 <translation id="4578906031062871102">ਸੈਟਿੰਗ ਮੀਨੂ ਨੂੰ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
 <translation id="458210817642223147">GIF ਰਿਕਾਰਡ ਕਰੋ</translation>
+<translation id="4582666543382004902">ਵਾਈ-ਫਾਈ ਵਰਤਣ ਲਈ ਹੌਟਸਪੌਟ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ। ਹੌਟਸਪੌਟ ਵਰਤਣ ਲਈ, ਵਾਈ-ਫਾਈ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="4585337515783392668">ਕਿਸੇ ਅਗਿਆਤ ਪ੍ਰਾਪਤਕਰਤਾ 'ਤੇ ਕਾਸਟ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="4596144739579517758">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਹੈ।</translation>
 <translation id="4611292653554630842">ਲੌਗ ਇਨ ਕਰੋ</translation>
@@ -1098,6 +1091,7 @@
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ਦੇ ਉੱਪਰ <ph name="DRAGGED_APP_NAME" />, ਫੋਲਡਰ ਬਣਾਉਣ ਲਈ ਛੱਡੋ।</translation>
 <translation id="5397578532367286026">ਇਸ ਵਰਤੋਂਕਾਰ ਦੀ ਵਰਤੋਂ ਅਤੇ ਇਤਿਹਾਸ ਦੀ ਸਮੀਖਿਆ ਪ੍ਰਬੰਧਕ (<ph name="MANAGER_EMAIL" />) ਵੱਲੋਂ chrome.com 'ਤੇ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="5400461572260843123">ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ, ਸੂਚਨਾ ਕੇਂਦਰ 'ਤੇ ਜਾਣ ਲਈ search + left ਦਬਾਓ।</translation>
+<translation id="540713187982329711">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ।</translation>
 <translation id="5413656666631274079">'ਸੈਟਿੰਗਾਂ' ਪੰਨਾ</translation>
 <translation id="5414198321558177633">ਪ੍ਰੋਫਾਈਲ ਸੂਚੀ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="5426063383988017631">ਸੈਟਿੰਗ ਮੀਨੂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
@@ -1189,9 +1183,11 @@
 <translation id="576341972084747908">ਖਤਰਨਾਕ <ph name="FILENAME" /> ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="576453121877257266">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਚਾਲੂ ਹੈ।</translation>
 <translation id="5764569119212455782">ਆਖਰੀ ਚੁਣੀ ਗਈ ਭਾਸ਼ਾ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
+<translation id="5767730327234918501">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹੌਟਸਪੌਟ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="5769373120130404283">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ</translation>
 <translation id="5773950591113557721">ਇਸ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤਾਂ ਹਨ</translation>
 <translation id="5774295353725270860">Files ਐਪ ਖੋਲ੍ਹੋ</translation>
+<translation id="5775936059231769503">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਬੰਦ ਹੈ।</translation>
 <translation id="5777841717266010279">ਕੀ ਸਕ੍ਰੀਨ ਸ਼ੇਅਰਿੰਗ ਰੋਕਣੀ ਹੈ?</translation>
 <translation id="5779721926447984944">ਪਿੰਨ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="5785221443435874078">ਇਹ ਸੁਝਾਅ ਹਟਾਓ</translation>
@@ -1507,6 +1503,7 @@
 <translation id="7068360136237591149">ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7076293881109082629">ਸਾਈਨ ਇਨ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7076878155205969899">ਧੁਨੀ ਮਿਊਟ ਕਰੋ</translation>
+<translation id="7084678090004350185">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, <ph name="DEVICECOUNT" /> ਡੀਵਾਈਸ ਕਨੈਕਟ ਹਨ।</translation>
 <translation id="7086931198345821656">ਇਸ ਅੱਪਡੇਟ ਲਈ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਾਵਰਵਾਸ਼ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਨਵੀਨਤਮ <ph name="SYSTEM_APP_NAME" /> ਅੱਪਡੇਟ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="7088960765736518739">ਸਵਿੱਚ ਪਹੁੰਚ</translation>
 <translation id="709015856939120012">ਪੰਨੇ 'ਤੇ ਜ਼ੂਮ ਵਧਾਓ</translation>

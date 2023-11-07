@@ -1193,6 +1193,7 @@
 <translation id="3427342743765426898">編集のやり直し（&amp;R）</translation>
 <translation id="342781501876943858">パスワードを他のサイトで再使用した場合、Chromium ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates サーバー テンプレートの一部の URI が無効なため、使用されません。</translation>
+<translation id="3428789896412418755">グループに分類した履歴</translation>
 <translation id="3431216045099978607">|<ph name="ACCELERATOR" />| を押すと、全画面表示を終了してダウンロードを表示します。</translation>
 <translation id="3432601291244612633">ページを閉じる</translation>
 <translation id="3433111389595862568">コラボレーション、会議用ソフトウェア</translation>
@@ -3178,6 +3179,7 @@
 <translation id="7423283032694727565">[Cookie を管理] ボタンです。実行すると、Chrome の設定で Cookie の設定を管理できます</translation>
 <translation id="7427366580982928791">子どものインターネット セーフティ</translation>
 <translation id="7429429656042611765">エグゼクティブ</translation>
+<translation id="7432774160230062882">Chromium　でお支払い情報を入力できるよう、本人確認を行ってください。</translation>
 <translation id="7437289804838430631">連絡先情報を追加</translation>
 <translation id="7437490109271760224">カードゲーム</translation>
 <translation id="7438338505272634288">アクセスしようとしているサイトでは、攻撃者がユーザーを騙してブラウジングに影響を与える（ホームページを変更する、アクセス先のサイトで余計な広告を表示するなど）有害なソフトウェアをインストールさせる可能性があります。危害を避けるため安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3413,6 +3415,7 @@
 <translation id="7831993212387676366">ショッピング リストとは</translation>
 <translation id="7840103971441592723">スクリーン キャプチャを開始しました</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784404208867107517">グループに分類した履歴</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{なし}=1{1 個のアプリ（<ph name="EXAMPLE_APP_1" />）}=2{2 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">その後にユーザーが訪れたウェブサイトは、表示する広告をパーソナライズするためのトピックを Chrome に要求できます。Chrome では、共有するトピックを 3 つまでにすることで、閲覧履歴と個人情報を保護します。</translation>
@@ -3439,6 +3442,7 @@
 <translation id="79338296614623784">有効な電話番号を入力してください</translation>
 <translation id="7934414805353235750"><ph name="URL" /> から、保護されたコンテンツの再生許可を求められています。デバイスの識別情報が Google により確認されます。</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Google Chrome でお支払い情報を入力できるよう、本人確認を行ってください。</translation>
 <translation id="7937163678541954811">すばやく決済できるように、このカードの CVC は暗号化されて、お使いのデバイスに保存されます</translation>
 <translation id="7937554595067888181">有効期限は <ph name="EXPIRATION_DATE_ABBR" /> です</translation>
 <translation id="7938958445268990899">サーバーの証明書が有効になっていません。</translation>

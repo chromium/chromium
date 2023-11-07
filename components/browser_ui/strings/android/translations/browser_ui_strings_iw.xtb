@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}one{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">‏לאתרים שמבקרים בהם יש אפשרות להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. קובצי cookie שהוגדרו על ידי האתרים האלה נקראים 'קובצי cookie של צד שלישי'.</translation>
 <translation id="2434158240863470628">ההורדה הושלמה <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">‏אישרת לאתר הזה להשתמש בקובצי Cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו בלי בעיות. <ph name="BEGIN_LINK" />שליחת משוב<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">יכול להיות שתכונות באתרים מסוימים לא יפעלו במצב פרטי</translation>
 <translation id="2442870161001914531">תמיד תוצג בקשה לגרסת האתר למחשב</translation>
 <translation id="2469312991797799607">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie של <ph name="ORIGIN" /> ושל כל אתרי המשנה שלו</translation>
@@ -178,7 +179,6 @@
 <translation id="4002066346123236978">כותרת</translation>
 <translation id="4008040567710660924">‏אישור קובצי Cookie של אתר מסוים.</translation>
 <translation id="4046123991198612571">הרצועה הבאה</translation>
-<translation id="4053720452172726777">‏הגדרת Google Chrome בהתאם לרצונך</translation>
 <translation id="4149890623864272035">‏בחרת למחוק את כל הנתונים המקומיים, כולל קובצי cookie, ולאפס את כל ההרשאות של האתר הזה. להמשיך?</translation>
 <translation id="4149994727733219643">תצוגה פשוטה של דפי אינטרנט</translation>
 <translation id="4151930093518524179">ברירת מחדל של מרחק התצוגה</translation>
@@ -208,6 +208,7 @@
 <translation id="4644713492825682049">מחיקה ואיפוס</translation>
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
 <translation id="4670064810192446073">מציאות מדומה</translation>
+<translation id="4673958474310291465">‏אפשר להפעיל קובצי Cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו בלי בעיות</translation>
 <translation id="4751476147751820511">חיישני תנועה או אור</translation>
 <translation id="4779083564647765204">מרחק מתצוגה</translation>
 <translation id="4811450222531576619">מידע על המקור והנושא שלו</translation>
@@ -297,7 +298,6 @@
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="6205314730813004066">פרטיות בפרסום</translation>
 <translation id="6207207788774442484">מחיקת הנתונים ואיפוס ההרשאות</translation>
-<translation id="6216432067784365534">אפשרויות של <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">להסיר את '<ph name="APP_NAME" />'?</translation>
 <translation id="6262191102408817757">על סמך הכרטיסייה האחרונה שלך</translation>
 <translation id="6262279340360821358">ההרשאות <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /> חסומות</translation>
@@ -345,6 +345,7 @@
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{נבחר אחד}one{נבחרו #}two{נבחרו #}other{נבחרו #}}</translation>
 <translation id="7087918508125750058">נבחרו <ph name="ITEM_COUNT" />. האפשרויות מוצגות בחלק העליון של המסך</translation>
+<translation id="7137403271056944713">‏שליטה במכשירי MIDI ותכנות מחדש</translation>
 <translation id="7141896414559753902">חסימה של חלונות קופצים והפניות אוטומטיות באתרים (מומלץ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">רענון</translation>

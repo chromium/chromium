@@ -1555,9 +1555,6 @@ Si no estableces esta política o la inhabilitas, no se permitirá la transferen
 Si inhabilitas la política o no la estableces, los usuarios podrán transferir archivos a Drive por conexión móvil.</translation>
 <translation id="2269319728625047531">Habilitar que se muestre el consentimiento de sincronización durante el acceso</translation>
 <translation id="2269837888511509900">Habilitar el uso compartido de credenciales de usuario</translation>
-<translation id="2270113153862588648">Si habilitas la política, se permitirá la certificación remota para el dispositivo. Se generará un certificado y se subirá al servidor de administración de dispositivos de forma automática.
-
-Si la inhabilitas o no la estableces, no se generará ningún certificado y las llamadas a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> fallarán.</translation>
 <translation id="2270747976331889601">Habilita una función de seguridad TLS 1.3 para los anclajes de confianza locales</translation>
 <translation id="22754818344448444">Permitir que los usuarios seleccionen un diseño de plantilla de escritorio para cargar</translation>
 <translation id="2277117728011250860">No permitir el uso del filtro de rendimiento de accesibilidad</translation>

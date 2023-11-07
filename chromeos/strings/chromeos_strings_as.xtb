@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1003363546227723021">আপোনাৰ স্ক্ৰীনখন নিষ্ক্ৰিয় হৈ থাকিলে ফট’, সময়, বতৰ আৰু মিডিয়াৰ তথ্য দেখুৱাওক</translation>
 <translation id="1014750484722996375">ডেস্ক</translation>
 <translation id="1018219910092211213">DNS সমাধান কৰিব নোৱাৰি</translation>
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
@@ -134,6 +135,7 @@
 <translation id="1852934301711881861">ChromeOS Flex ইনষ্টল কৰক</translation>
 <translation id="1856388568474281774">ডাউন এৰ’</translation>
 <translation id="1858620243986915808">স্ক্ৰীনশ্বট সংলগ্ন কৰক</translation>
+<translation id="1871413952174074704">APNত <ph name="CHAR_LIMIT" /> টাতকৈ অধিক বৰ্ণ থাকিব নোৱাৰে</translation>
 <translation id="1871569928317311284">গাঢ় ৰঙৰ থীম অফ কৰক</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">গাঢ় ম’ড অফ কৰক</translation>
@@ -534,7 +536,6 @@
 <translation id="4999333166442584738">ৰিপ’ৰ্ট লুকুৱাওক</translation>
 <translation id="500920857929044050">পৰীক্ষা কৰা বন্ধ কৰক</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">আপোনাৰ স্ক্ৰীনখন নিষ্ক্ৰিয় হৈ থাকিলে ফট’, সময়, বতৰ আৰু মিডিয়াৰ তথ্য দেখুৱাওক।</translation>
 <translation id="5035083460461104704">থীমৰ ৰং</translation>
 <translation id="5038292761217083259">কীব’ৰ্ডৰ একাধিক ৰং</translation>
 <translation id="5039804452771397117">অনুমতি দিয়ক</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">পাতল গুলপীয়া</translation>
 <translation id="982713511914535780">ডিচচাৰ্জ পৰীক্ষা চলাওক</translation>
 <translation id="987264212798334818">সাধাৰণ</translation>
+<translation id="995062385528875723">উচ্চাৰণৰ আখৰ, লেটিন ভাষাৰ বাহিৰে অন্য বৰ্ণমালা অথবা চিহ্ন ব্যৱহাৰ কৰিব নোৱাৰি</translation>
 </translationbundle>

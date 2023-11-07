@@ -213,15 +213,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1796561540704213354">Veb-sajtovi, uključujući stranice koje ste posetili i otvorili</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="1816896987747843206">Ovo omogućava pristup kameri za sve aplikacije i veb-sajtove sa dozvolom za kameru</translation>
-<translation id="1823280932251546115">Statusna traka, vreme <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Uključi pristup lokaciji</translation>
 <translation id="1830308660060964064">Stavka <ph name="ITEM_TITLE" /> je otkačena</translation>
@@ -1198,6 +1189,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5788127256798019331">Play datoteke</translation>
 <translation id="5788535737706478207">Ponovo otvori karticu ili prozor koji je poslednji zatvoren</translation>
 <translation id="5790085346892983794">Uspešno</translation>
+<translation id="5802516411616338943">Otvori Brza podešavanja</translation>
 <translation id="5804651031882187592">Isključite podešavanje Zaključaj SIM</translation>
 <translation id="5805809050170488595">Kliknite da biste aktivirali <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google zadaci na vebu</translation>
@@ -1223,6 +1215,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5911231045062997865">Lacros prozori trenutno nisu podržani. Druge aplikacije će biti sačuvane.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Novo obaveštenje, ukupno <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5920710855273935292">Mikrofon je isključen.</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je uključena.</translation>
