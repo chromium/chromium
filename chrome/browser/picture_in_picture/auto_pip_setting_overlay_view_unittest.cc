@@ -17,7 +17,17 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_utils.h"
+
+namespace {
+
+class MockWidgetObserver : public views::WidgetObserver {
+ public:
+  MOCK_METHOD(void, OnWidgetClosing, (views::Widget*), ());
+};
+
+}  // namespace
 
 class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
  public:
@@ -77,6 +87,14 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
   using UiResult = AutoPipSettingView::UiResult;
 
   base::MockOnceCallback<void(UiResult)>& cb() { return cb_; }
+
+  void RemoveAndDeleteSettingOverlay() {
+    setting_overlay_ = nullptr;
+
+    // Setting the contents view will remove and delete the existing contents
+    // view, which is the setting overlay.
+    widget_->SetContentsView(std::make_unique<views::View>());
+  }
 
  private:
   base::MockOnceCallback<void(UiResult)> cb_;
@@ -188,4 +206,22 @@ TEST_F(AutoPipSettingOverlayViewTest,
       AutoPipSettingOverlayView::PipWindowType::kVideoPip);
   EXPECT_TRUE(
       setting_overlay()->get_view_for_testing()->GetWidget()->IsVisible());
+}
+
+TEST_F(AutoPipSettingOverlayViewTest, TestDeletingOverlayClosesBubble) {
+  setting_overlay()->ShowBubble(
+      anchor_view_widget()->GetNativeView(),
+      AutoPipSettingOverlayView::PipWindowType::kVideoPip);
+
+  MockWidgetObserver widget_observer;
+  views::Widget* widget =
+      setting_overlay()->get_view_for_testing()->GetWidget();
+  widget->AddObserver(&widget_observer);
+
+  // Removing and deleting the setting overlay should close the bubble widget.
+  EXPECT_CALL(widget_observer, OnWidgetClosing(widget))
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&]() { widget->RemoveObserver(&widget_observer); }));
+  RemoveAndDeleteSettingOverlay();
+  testing::Mock::VerifyAndClearExpectations(&widget_observer);
 }
