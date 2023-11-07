@@ -1366,8 +1366,6 @@ component("ash") {
     "system/bluetooth/bluetooth_device_list_item_view.h",
     "system/bluetooth/bluetooth_device_status_ui_handler.cc",
     "system/bluetooth/bluetooth_device_status_ui_handler.h",
-    "system/bluetooth/bluetooth_disabled_detailed_view.cc",
-    "system/bluetooth/bluetooth_disabled_detailed_view.h",
     "system/bluetooth/bluetooth_feature_pod_controller.cc",
     "system/bluetooth/bluetooth_feature_pod_controller.h",
     "system/bluetooth/bluetooth_notification_controller.cc",

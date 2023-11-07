@@ -156,11 +156,6 @@ class ASH_EXPORT TrayPopupUtils {
       views::View* host,
       TrayPopupInkDropStyle ink_drop_style);
 
-  // Create a horizontal separator line to be drawn between rows in a detailed
-  // view above the sub-header rows. Caller assumes ownership of the returned
-  // view.
-  static views::Separator* CreateListSubHeaderSeparator();
-
   // Creates and returns a horizontal separator line to be drawn between rows
   // in a detailed view. If |left_inset| is true, then the separator is inset on
   // the left by the width normally occupied by an icon. Caller assumes
