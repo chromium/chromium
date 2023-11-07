@@ -124,7 +124,13 @@ TEST_F(ActionViewControllerTest, TestActionViewDestroyed) {
 }
 
 // Test that action triggered callbacks get called.
-TEST_F(ActionViewControllerTest, TriggerAction) {
+// TODO(crbug.com/1500125): Re-enable this test
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_TriggerAction DISABLED_TriggerAction
+#else
+#define MAYBE_TriggerAction TriggerAction
+#endif
+TEST_F(ActionViewControllerTest, MAYBE_TriggerAction) {
   std::unique_ptr<actions::ActionItem> action_item = CreateEnabledActionItem();
   auto action_view = std::make_unique<MdTextButton>();
   auto action_view_controller =
