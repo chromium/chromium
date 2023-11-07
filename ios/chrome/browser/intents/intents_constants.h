@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_APP_APPLICATION_DELEGATE_INTENTS_CONSTANTS_H_
-#define IOS_CHROME_APP_APPLICATION_DELEGATE_INTENTS_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_INTENTS_INTENTS_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_INTENTS_INTENTS_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -65,4 +65,4 @@ extern NSString* const kSiriOpenLensFromIntents;
 // NSUserActivity for Clear Browsing Data intent.
 extern NSString* const kSiriClearBrowsingData;
 
-#endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_INTENTS_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_INTENTS_INTENTS_CONSTANTS_H_

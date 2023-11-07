@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/application_delegate/user_activity_handler.h"
+#import "ios/chrome/browser/intents/user_activity_handler.h"
 
 #import <memory>
 
@@ -21,7 +21,7 @@
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
-#import "ios/chrome/app/application_delegate/intents_constants.h"
+#import "ios/chrome/browser/intents/intents_constants.h"
 #import "ios/chrome/app/application_delegate/mock_tab_opener.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"

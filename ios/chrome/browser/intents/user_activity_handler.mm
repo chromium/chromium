@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/application_delegate/user_activity_handler.h"
+#import "ios/chrome/browser/intents/user_activity_handler.h"
 
 #import <CoreSpotlight/CoreSpotlight.h>
 #import <Intents/Intents.h>
@@ -18,7 +18,7 @@
 #import "components/handoff/handoff_utility.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/app_startup_parameters.h"
-#import "ios/chrome/app/application_delegate/intents_constants.h"
+#import "ios/chrome/browser/intents/intents_constants.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_mode.h"
