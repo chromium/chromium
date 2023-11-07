@@ -25110,7 +25110,7 @@ Called by update_extension_histograms.py.-->
   <int value="696" label="DELETED_WEBVIEW_CONTEXTMENUSUPDATE"/>
   <int value="697" label="DELETED_WEBVIEW_CONTEXTMENUSREMOVE"/>
   <int value="698" label="DELETED_WEBVIEW_CONTEXTMENUSREMOVEALL"/>
-  <int value="699" label="AUTOMATIONINTERNAL_ENABLETAB"/>
+  <int value="699" label="DELETED_AUTOMATIONINTERNAL_ENABLETAB"/>
   <int value="700" label="APP_CURRENTWINDOWINTERNAL_SETSIZECONSTRAINTS"/>
   <int value="701" label="BLUETOOTH_GETDEVICE"/>
   <int value="702" label="GCM_UNREGISTER"/>
