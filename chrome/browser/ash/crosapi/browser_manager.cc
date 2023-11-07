@@ -105,6 +105,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -502,6 +503,13 @@ void RecordDataVerForPrimaryUser() {
                                        version_info::GetVersion());
 }
 
+void RecordLacrosEnabledForPrimaryUser(bool enabled) {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  user_manager::KnownUser(g_browser_process->local_state())
+      .SetLacrosEnabled(user->GetAccountId(), enabled);
+}
+
 bool ShouldPrelaunchLacrosAtLoginScreen() {
   if (!base::FeatureList::IsEnabled(kLacrosLaunchAtLoginScreen)) {
     LOG(WARNING)
@@ -527,7 +535,7 @@ bool ShouldPrelaunchLacrosAtLoginScreen() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kLoginUser)) {
     LOG(WARNING)
-        << "Lacros will not be prelaunched: login-user switch was passed";
+        << "Lacros will not be prelaunched: `login-user` switch was passed";
     return false;
   }
 
@@ -874,6 +882,8 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   // operation mode is 'locked in'.
   const bool is_lacros_enabled = browser_util::IsLacrosEnabled();
   crosapi::lacros_startup_state::SetLacrosStartupState(is_lacros_enabled);
+  // Keep track of whether Lacros is enabled for this user in Local State.
+  RecordLacrosEnabledForPrimaryUser(is_lacros_enabled);
 
   if (is_lacros_enabled) {
     if (browser_util::IsLacrosAllowedToLaunch()) {
@@ -1697,17 +1707,20 @@ void BrowserManager::ResumeLaunch() {
   // Ensure this isn't run multiple times.
   ash::SessionManagerClient::Get()->RemoveObserver(this);
 
-  // If Lacros is not enabled for the user, terminate it now.
+  // We need to keep track of which users on the device have Lacros enabled.
   const bool is_lacros_enabled = browser_util::IsLacrosEnabled();
+  RecordLacrosEnabledForPrimaryUser(is_lacros_enabled);
+
+  // If Lacros is not enabled for the user, terminate it now.
   if (!is_lacros_enabled) {
     LOG(WARNING) << "Lacros is not enabled for the current user. "
                     "Terminating pre-launched instance";
-    // We need to tell the server that Lacros does not run in this session.
-    RecordLacrosLaunchMode();
-    unload_requested_ = true;
     if (lacros_process_.IsValid()) {
       lacros_process_.Terminate(/*exit_code=*/0, /*wait=*/false);
     }
+    // We need to tell the server that Lacros does not run in this session.
+    RecordLacrosLaunchMode();
+    unload_requested_ = true;
     return;
   }
 
