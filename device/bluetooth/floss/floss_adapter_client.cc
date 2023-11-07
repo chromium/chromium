@@ -743,7 +743,7 @@ void FlossAdapterClient::OnRegisterConnectionCallback(
 
 void FlossAdapterClient::OnUnregisterCallbacks(DBusResult<bool> ret) {
   if (!ret.has_value() || *ret == false) {
-    LOG(WARNING) << __func__ << "Failed to unregister callback";
+    LOG(WARNING) << __func__ << ": Failed to unregister callback";
   }
 }
 

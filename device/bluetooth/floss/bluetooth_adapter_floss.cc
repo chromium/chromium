@@ -748,7 +748,7 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
   DCHECK(FlossDBusManager::Get());
   DCHECK(IsPresent());
 
-  BLUETOOTH_LOG(EVENT) << __func__ << device_found;
+  BLUETOOTH_LOG(EVENT) << __func__ << ": " << device_found;
 
   UpdateDeviceProperties(true, device_found);
 }
@@ -839,7 +839,7 @@ void BluetoothAdapterFloss::AdapterClearedDevice(
       observer.DeviceRemoved(this, device_ptr);
   }
 
-  BLUETOOTH_LOG(EVENT) << __func__ << device_cleared;
+  BLUETOOTH_LOG(EVENT) << __func__ << ": " << device_cleared;
 }
 
 void BluetoothAdapterFloss::AdapterDevicePropertyChanged(
@@ -848,7 +848,7 @@ void BluetoothAdapterFloss::AdapterDevicePropertyChanged(
   DCHECK(FlossDBusManager::Get());
   DCHECK(IsPresent());
 
-  BLUETOOTH_LOG(EVENT) << __func__ << device;
+  BLUETOOTH_LOG(EVENT) << __func__ << ": " << device;
 
   BluetoothDeviceFloss* device_ptr =
       static_cast<BluetoothDeviceFloss*>(GetDevice(device.address));

@@ -184,7 +184,7 @@ void FlossBatteryManagerClient::BatteryCallbackRegistered(
 void FlossBatteryManagerClient::BatteryCallbackUnregistered(
     DBusResult<bool> result) {
   if (!result.has_value() || *result == false) {
-    LOG(WARNING) << __func__ << "Failed to unregister callback";
+    LOG(WARNING) << __func__ << ": Failed to unregister callback";
   }
 }
 
