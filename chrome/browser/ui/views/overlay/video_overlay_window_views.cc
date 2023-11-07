@@ -430,7 +430,7 @@ void VideoOverlayWindowViews::OnNativeBlur() {
 }
 
 gfx::Size VideoOverlayWindowViews::GetMinimumSize() const {
-  if (overlay_view_) {
+  if (IsOverlayViewShown()) {
     // Make sure that our minimum is sufficiently large to enclose the bubble,
     // plus some margin to make it look nicer.
     gfx::Size overlay_size =
@@ -640,6 +640,19 @@ void VideoOverlayWindowViews::OnDisplayMetricsChanged(
                           .id()) {
     UpdateMaxSize(GetWorkAreaForWindow());
   }
+}
+
+void VideoOverlayWindowViews::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view) {
+  // If the visibility is changing due to a parent view/widget, then we don't
+  // care about it.
+  if (starting_view != overlay_view_) {
+    return;
+  }
+
+  // The visibility of `overlay_view_` affects our minimum size.
+  OnSizeConstraintsChanged();
 }
 
 gfx::Rect VideoOverlayWindowViews::GetWorkAreaForWindow() const {
@@ -1238,6 +1251,7 @@ void VideoOverlayWindowViews::ShowInactive() {
   // Re-add it if needed.
   if (overlay_view) {
     overlay_view_ = GetContentsView()->AddChildView(std::move(overlay_view));
+    overlay_view_->AddObserver(this);
     // Also update the bounds, since that's already happened for everything
     // else, potentially, during widget resize.
     overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));
@@ -1604,6 +1618,8 @@ void VideoOverlayWindowViews::RemoveOverlayViewIfExists() {
     // Remove and delete the outgoing view.  Note the trailing `T` on the method
     // name -- this removes `overlay_view_` and returns a unique_ptr to it which
     // we then discard.  Without the `T`, it returns nothing and frees nothing.
+    overlay_view_->RemoveObserver(this);
     GetContentsView()->RemoveChildViewT(overlay_view_.ExtractAsDangling());
+    OnSizeConstraintsChanged();
   }
 }

@@ -16,6 +16,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
 namespace viz {
@@ -36,7 +37,8 @@ class ToggleCameraButton;
 // implemented in views, which will support all desktop platforms.
 class VideoOverlayWindowViews : public content::VideoOverlayWindow,
                                 public views::Widget,
-                                public display::DisplayObserver {
+                                public display::DisplayObserver,
+                                public views::ViewObserver {
  public:
   using GetOverlayViewCb =
       base::RepeatingCallback<std::unique_ptr<AutoPipSettingOverlayView>()>;
@@ -75,7 +77,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void SetNextSlideButtonVisibility(bool is_visible) override;
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
 
-  // views::Widget
+  // views::Widget:
   bool IsActive() const override;
   bool IsVisible() const override;
   void OnNativeFocus() override;
@@ -92,9 +94,13 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // display::DisplayObserver
+  // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
+
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override;
 
   bool ControlsHitTestContainsPoint(const gfx::Point& point);
 #if BUILDFLAG(IS_CHROMEOS_ASH)

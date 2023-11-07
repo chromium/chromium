@@ -646,4 +646,8 @@ TEST_F(VideoOverlayWindowViewsTest, OverlayWindowFitsInMinimumSize) {
   auto bubble_min_size = overlay_view->GetBubbleSize();
   EXPECT_GT(window_min_size.width(), bubble_min_size.width());
   EXPECT_GT(window_min_size.height(), bubble_min_size.height());
+
+  // When the overlay view is hidden, the minimum size should return to normal.
+  overlay_view->SetVisible(false);
+  EXPECT_EQ(overlay_window().GetMinimumSize(), kMinWindowSize);
 }
