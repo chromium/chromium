@@ -153,9 +153,11 @@ SocketsManifestPermission::~SocketsManifestPermission() = default;
 std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
     const base::Value& value,
     std::u16string* error) {
-  std::unique_ptr<Sockets> sockets = Sockets::FromValueDeprecated(value, error);
-  if (!sockets)
+  auto sockets = Sockets::FromValue(value);
+  if (!sockets.has_value()) {
+    *error = std::move(sockets).error();
     return nullptr;
+  }
 
   std::unique_ptr<SocketsManifestPermission> result(
       new SocketsManifestPermission());
