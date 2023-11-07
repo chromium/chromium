@@ -12,14 +12,14 @@
 
 namespace content {
 
-SyntheticMouseDriver::SyntheticMouseDriver() : last_modifiers_(0) {
+SyntheticMouseDriverBase::SyntheticMouseDriverBase() : last_modifiers_(0) {
   mouse_event_.pointer_type = blink::WebPointerProperties::PointerType::kMouse;
 }
 
-SyntheticMouseDriver::~SyntheticMouseDriver() {}
+SyntheticMouseDriverBase::~SyntheticMouseDriverBase() = default;
 
-void SyntheticMouseDriver::DispatchEvent(SyntheticGestureTarget* target,
-                                         const base::TimeTicks& timestamp) {
+void SyntheticMouseDriverBase::DispatchEvent(SyntheticGestureTarget* target,
+                                             const base::TimeTicks& timestamp) {
   mouse_event_.SetTimeStamp(timestamp);
   if (mouse_event_.GetType() != blink::WebInputEvent::Type::kUndefined) {
     base::WeakPtr<SyntheticPointerDriver> weak_this = AsWeakPtr();
@@ -33,19 +33,20 @@ void SyntheticMouseDriver::DispatchEvent(SyntheticGestureTarget* target,
   }
 }
 
-void SyntheticMouseDriver::Press(float x,
-                                 float y,
-                                 int index,
-                                 SyntheticPointerActionParams::Button button,
-                                 int key_modifiers,
-                                 float width,
-                                 float height,
-                                 float rotation_angle,
-                                 float force,
-                                 float tangential_pressure,
-                                 int tilt_x,
-                                 int tilt_y,
-                                 const base::TimeTicks& timestamp) {
+void SyntheticMouseDriverBase::Press(
+    float x,
+    float y,
+    int index,
+    SyntheticPointerActionParams::Button button,
+    int key_modifiers,
+    float width,
+    float height,
+    float rotation_angle,
+    float force,
+    float tangential_pressure,
+    int tilt_x,
+    int tilt_y,
+    const base::TimeTicks& timestamp) {
   DCHECK_EQ(index, 0);
   blink::WebMouseEvent::Button pressed_button =
       SyntheticPointerActionParams::GetWebMouseEventButton(button);
@@ -70,18 +71,19 @@ void SyntheticMouseDriver::Press(float x,
   last_y_ = y;
 }
 
-void SyntheticMouseDriver::Move(float x,
-                                float y,
-                                int index,
-                                int key_modifiers,
-                                float width,
-                                float height,
-                                float rotation_angle,
-                                float force,
-                                float tangential_pressure,
-                                int tilt_x,
-                                int tilt_y,
-                                SyntheticPointerActionParams::Button button) {
+void SyntheticMouseDriverBase::Move(
+    float x,
+    float y,
+    int index,
+    int key_modifiers,
+    float width,
+    float height,
+    float rotation_angle,
+    float force,
+    float tangential_pressure,
+    int tilt_x,
+    int tilt_y,
+    SyntheticPointerActionParams::Button button) {
   DCHECK_EQ(index, 0);
   int button_modifiers =
       SyntheticPointerActionParams::GetWebMouseEventModifier(button);
@@ -112,9 +114,10 @@ void SyntheticMouseDriver::Move(float x,
   mouse_event_.tilt_y = tilt_y;
 }
 
-void SyntheticMouseDriver::Release(int index,
-                                   SyntheticPointerActionParams::Button button,
-                                   int key_modifiers) {
+void SyntheticMouseDriverBase::Release(
+    int index,
+    SyntheticPointerActionParams::Button button,
+    int key_modifiers) {
   DCHECK_EQ(index, 0);
   if (from_devtools_debugger_)
     key_modifiers |= blink::WebInputEvent::kFromDebugger;
@@ -134,17 +137,18 @@ void SyntheticMouseDriver::Release(int index,
       (~SyntheticPointerActionParams::GetWebMouseEventModifier(button));
 }
 
-void SyntheticMouseDriver::Cancel(int index,
-                                  SyntheticPointerActionParams::Button button,
-                                  int key_modifiers) {
+void SyntheticMouseDriverBase::Cancel(
+    int index,
+    SyntheticPointerActionParams::Button button,
+    int key_modifiers) {
   NOTIMPLEMENTED();
 }
 
-void SyntheticMouseDriver::Leave(int index) {
+void SyntheticMouseDriverBase::Leave(int index) {
   NOTIMPLEMENTED();
 }
 
-bool SyntheticMouseDriver::UserInputCheck(
+bool SyntheticMouseDriverBase::UserInputCheck(
     const SyntheticPointerActionParams& params) const {
   if (params.pointer_action_type() ==
       SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED) {
@@ -170,7 +174,7 @@ bool SyntheticMouseDriver::UserInputCheck(
   return true;
 }
 
-int SyntheticMouseDriver::ComputeClickCount(
+int SyntheticMouseDriverBase::ComputeClickCount(
     const base::TimeTicks& timestamp,
     blink::WebMouseEvent::Button pressed_button,
     float x,
@@ -202,6 +206,14 @@ int SyntheticMouseDriver::ComputeClickCount(
     click_count_ = 1;
 #endif
   return click_count_;
+}
+
+SyntheticMouseDriver::SyntheticMouseDriver() = default;
+
+SyntheticMouseDriver::~SyntheticMouseDriver() = default;
+
+base::WeakPtr<SyntheticPointerDriver> SyntheticMouseDriver::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace content

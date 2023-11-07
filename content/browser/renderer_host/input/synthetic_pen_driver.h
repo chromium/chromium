@@ -9,7 +9,7 @@
 
 namespace content {
 
-class SyntheticPenDriver : public SyntheticMouseDriver {
+class SyntheticPenDriver final : public SyntheticMouseDriverBase {
  public:
   SyntheticPenDriver();
 
@@ -19,6 +19,11 @@ class SyntheticPenDriver : public SyntheticMouseDriver {
   ~SyntheticPenDriver() override;
 
   void Leave(int index = 0) override;
+
+  base::WeakPtr<SyntheticPointerDriver> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<SyntheticPenDriver> weak_ptr_factory_{this};
 };
 
 }  // namespace content

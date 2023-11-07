@@ -137,6 +137,10 @@ bool SyntheticTouchDriver::UserInputCheck(
   return true;
 }
 
+base::WeakPtr<SyntheticPointerDriver> SyntheticTouchDriver::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void SyntheticTouchDriver::ResetPointerIdIndexMap() {
   unsigned free_index = 0;
   for (unsigned int i = 0; i < blink::WebTouchEvent::kTouchesLengthCap; ++i) {

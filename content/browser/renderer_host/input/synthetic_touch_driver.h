@@ -5,13 +5,15 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCH_DRIVER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCH_DRIVER_H_
 
-#include <array>
+#include <map>
+
+#include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 
 namespace content {
 
-class SyntheticTouchDriver : public SyntheticPointerDriver {
+class SyntheticTouchDriver final : public SyntheticPointerDriver {
  public:
   SyntheticTouchDriver();
   explicit SyntheticTouchDriver(blink::SyntheticWebTouchEvent touch_event);
@@ -65,6 +67,8 @@ class SyntheticTouchDriver : public SyntheticPointerDriver {
   bool UserInputCheck(
       const SyntheticPointerActionParams& params) const override;
 
+  base::WeakPtr<SyntheticPointerDriver> AsWeakPtr() override;
+
  private:
   using PointerIdIndexMap = std::map<int, int>;
 
@@ -73,6 +77,7 @@ class SyntheticTouchDriver : public SyntheticPointerDriver {
 
   blink::SyntheticWebTouchEvent touch_event_;
   PointerIdIndexMap pointer_id_map_;
+  base::WeakPtrFactory<SyntheticTouchDriver> weak_ptr_factory_{this};
 };
 
 }  // namespace content

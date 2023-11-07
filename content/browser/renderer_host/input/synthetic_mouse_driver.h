@@ -5,18 +5,19 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_MOUSE_DRIVER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_MOUSE_DRIVER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
 
 namespace content {
 
-class SyntheticMouseDriver : public SyntheticPointerDriver {
+class SyntheticMouseDriverBase : public SyntheticPointerDriver {
  public:
-  SyntheticMouseDriver();
+  SyntheticMouseDriverBase();
 
-  SyntheticMouseDriver(const SyntheticMouseDriver&) = delete;
-  SyntheticMouseDriver& operator=(const SyntheticMouseDriver&) = delete;
+  SyntheticMouseDriverBase(const SyntheticMouseDriverBase&) = delete;
+  SyntheticMouseDriverBase& operator=(const SyntheticMouseDriverBase&) = delete;
 
-  ~SyntheticMouseDriver() override;
+  ~SyntheticMouseDriverBase() override;
 
   void DispatchEvent(SyntheticGestureTarget* target,
                      const base::TimeTicks& timestamp) override;
@@ -75,6 +76,21 @@ class SyntheticMouseDriver : public SyntheticPointerDriver {
   base::TimeTicks last_mouse_click_time_ = base::TimeTicks::Now();
   float last_x_ = 0;
   float last_y_ = 0;
+};
+
+class SyntheticMouseDriver final : public SyntheticMouseDriverBase {
+ public:
+  SyntheticMouseDriver();
+
+  SyntheticMouseDriver(const SyntheticMouseDriver&) = delete;
+  SyntheticMouseDriver& operator=(const SyntheticMouseDriver&) = delete;
+
+  ~SyntheticMouseDriver() override;
+
+  base::WeakPtr<SyntheticPointerDriver> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<SyntheticMouseDriver> weak_ptr_factory_{this};
 };
 
 }  // namespace content

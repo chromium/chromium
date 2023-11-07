@@ -8,11 +8,11 @@
 
 namespace content {
 
-SyntheticPenDriver::SyntheticPenDriver() : SyntheticMouseDriver() {
+SyntheticPenDriver::SyntheticPenDriver() {
   mouse_event_.pointer_type = blink::WebPointerProperties::PointerType::kPen;
 }
 
-SyntheticPenDriver::~SyntheticPenDriver() {}
+SyntheticPenDriver::~SyntheticPenDriver() = default;
 
 void SyntheticPenDriver::Leave(int index) {
   DCHECK_EQ(index, 0);
@@ -23,6 +23,10 @@ void SyntheticPenDriver::Leave(int index) {
       blink::WebInputEvent::Type::kMouseLeave,
       mouse_event_.PositionInWidget().x(), mouse_event_.PositionInWidget().y(),
       modifiers, mouse_event_.pointer_type);
+}
+
+base::WeakPtr<SyntheticPointerDriver> SyntheticPenDriver::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace content

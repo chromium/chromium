@@ -16,8 +16,7 @@ namespace content {
 
 class SyntheticGestureTarget;
 
-class CONTENT_EXPORT SyntheticPointerDriver
-    : public base::SupportsWeakPtr<SyntheticPointerDriver> {
+class CONTENT_EXPORT SyntheticPointerDriver {
  public:
   SyntheticPointerDriver();
 
@@ -77,6 +76,8 @@ class CONTENT_EXPORT SyntheticPointerDriver
   // a valid sequence of pointer actions.
   virtual bool UserInputCheck(
       const SyntheticPointerActionParams& params) const = 0;
+
+  virtual base::WeakPtr<SyntheticPointerDriver> AsWeakPtr() = 0;
 
  protected:
   bool from_devtools_debugger_ = false;
