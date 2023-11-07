@@ -6127,8 +6127,8 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 }
 
 // Tests that an MV3 extension can use the `webRequestAuthProvider` permission
-// to intercept and handle `onAuthRequired` events.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, TestOnAuthRequired) {
+// to intercept and handle `onAuthRequired` events coming from a tab.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, TestOnAuthRequiredTab) {
   CancelLoginDialog login_dialog_helper;
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -6180,6 +6180,144 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, TestOnAuthRequired) {
   ASSERT_TRUE(result_catcher.GetNextResult());
   EXPECT_EQ(auth_url, frame_host->GetLastCommittedURL());
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+}
+
+class OnAuthRequiredApiTest : public ExtensionApiTest {
+ public:
+  static constexpr char kTestDomain[] = "a.test";
+  OnAuthRequiredApiTest() {
+    // Https is required to use service workers.
+    // This limits the set of domains with valid certificates. For the purposes
+    // of this test we will use kTestDomain.
+    UseHttpsTestServer();
+  }
+  ~OnAuthRequiredApiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(StartEmbeddedTestServer());
+  }
+
+  // Returns a URL which requires username/password
+  GURL MakeAuthUrl() {
+    static constexpr char kRealm[] = "mv3authprovider";
+    std::string auth_url_path =
+        base::StringPrintf("/auth-basic/%s/subpath?realm=%s", kRealm, kRealm);
+    return embedded_test_server()->GetURL(kTestDomain, auth_url_path);
+  }
+
+  // Loads an extension that implements onAuthRequired. `additional_js` will be
+  // concatenated to the background.js.
+  void LoadExtensionWithAdditionalJs(const std::string& additional_js) {
+    static constexpr char kManifest[] =
+        R"({
+             "name": "MV3 WebRequest",
+             "version": "0.1",
+             "manifest_version": 3,
+             "permissions": ["webRequest", "webRequestAuthProvider"],
+             "host_permissions": [ "http://127.0.0.1/*", "https://a.test/*" ],
+             "background": {"service_worker": "background.js"}
+           })";
+    static constexpr char kBackgroundJs[] =
+        R"(
+            let didInterceptAuth = false;
+            chrome.webRequest.onAuthRequired.addListener(
+               (details, callback) => {
+                 didInterceptAuth = true;
+                 chrome.test.assertEq('mv3authprovider', details.realm);
+                 chrome.test.assertEq(401, details.statusCode);
+                 const authCredentials = {username: 'foo', password: 'secret'};
+                 callback({authCredentials});
+               },
+               {urls: ['<all_urls>']},
+               ['asyncBlocking']);
+          )";
+    std::string background_js(kBackgroundJs);
+    background_js += additional_js;
+
+    test_extension_dir_.WriteManifest(kManifest);
+    test_extension_dir_.WriteFile(FILE_PATH_LITERAL("background.js"),
+                                  background_js);
+
+    const Extension* extension =
+        LoadExtension(test_extension_dir_.UnpackedPath());
+    ASSERT_TRUE(extension);
+  }
+
+ private:
+  TestExtensionDir test_extension_dir_;
+  base::ScopedTempDir service_worker_dir_;
+};
+
+// Tests that an MV3 extension can use the `webRequestAuthProvider` permission
+// to intercept and handle `onAuthRequired` events coming from an extension
+// service worker. This test does the following:
+//   (1) This loads an extension with a service-worker background.js.
+//   (2) The extension adds a listener to chrome.webRequest.onAuthRequired.
+//   (3) The extension attempts to fetch a resource that requires http auth.
+//   (4) This triggers the listener in (3), which supplies credentials
+//   (5) Checks that the fetch succeeded.
+IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
+                       TestOnAuthRequiredExtensionServiceWorker) {
+  // If the login dialog is shown, it is immediately rejected causing the test
+  // to fail rather than hang indefinitely.
+  CancelLoginDialog login_dialog_helper;
+
+  // After the extension loads, trigger an async request to fetch an http auth
+  // resource.
+  std::string additional_js =
+      R"(
+          (async function() {
+            try {
+              const response = await fetch($1);
+              if (response.ok) {
+                 chrome.test.assertTrue(didInterceptAuth);
+              } else {
+                 chrome.test.fail();
+              }
+            } catch (e) {
+              chrome.test.fail();
+            }
+          })();
+        )";
+  additional_js = content::JsReplace(additional_js, MakeAuthUrl());
+
+  // Loading the extension triggers the remaining steps of the test.
+  ResultCatcher result_catcher;
+  LoadExtensionWithAdditionalJs(additional_js);
+
+  // TODO(https://crbug.com/1371177): When the bug is fixed, this should become
+  // an ASSERT_TRUE.
+  ASSERT_FALSE(result_catcher.GetNextResult());
+}
+
+// This test is similar to TestOnAuthRequiredExtensionServiceWorker but the
+// service worker is hosted by a website instead of the extension istelf.
+IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
+                       TestOnAuthRequiredWebsiteServiceWorker) {
+  CancelLoginDialog login_dialog_helper;
+
+  // Load the extension.
+  LoadExtensionWithAdditionalJs("");
+
+  // Navigate to the test page.
+  GURL requestor_url = embedded_test_server()->GetURL(
+      kTestDomain, "/ssl/service_worker_fetch/page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), requestor_url));
+
+  // Perform a fetch from a worker and validate that it succeeds.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::string fetch_response =
+      content::EvalJs(web_contents,
+                      content::JsReplace("doFetchInWorker($1);", MakeAuthUrl()))
+          .ExtractString();
+  // TODO(https://crbug.com/1371177): When the bug is fixed, this should become
+  // an EXPECT_THAT with a different value.
+  EXPECT_THAT(fetch_response, testing::HasSubstr("Denied"));
 }
 
 // Tests the behavior of an extension that registers an event listener
