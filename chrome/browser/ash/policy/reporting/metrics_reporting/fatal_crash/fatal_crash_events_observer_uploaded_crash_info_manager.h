@@ -16,6 +16,7 @@
 #include "components/reporting/util/status.h"
 
 namespace reporting {
+
 class FatalCrashEventsObserver::UploadedCrashInfoManager {
  public:
   static std::unique_ptr<UploadedCrashInfoManager> Create(

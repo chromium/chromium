@@ -67,11 +67,8 @@ class FatalCrashEventsObserver::TestEnvironment {
       scoped_refptr<base::SequencedTaskRunner>
           reported_local_id_io_task_runner = nullptr) const;
 
-  // Sets whether to continue postprocessing after event observed callback is
-  // called.
-  static void SetInterruptedAfterEventObserved(
-      FatalCrashEventsObserver& observer,
-      bool interrupted_after_event_observed);
+  // Get the mutable test settings of the observer.
+  static SettingsForTest& GetTestSettings(FatalCrashEventsObserver& observer);
 
   // Gets the size of the queue that saves local IDs. In tests, an access to a
   // private member is not normally recommended since it is generally not

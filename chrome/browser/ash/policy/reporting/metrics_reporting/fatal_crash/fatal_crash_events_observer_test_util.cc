@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 
 namespace reporting {
@@ -55,11 +56,11 @@ FatalCrashEventsObserver::TestEnvironment::GetUploadedCrashInfoSaveFilePath()
 }
 
 // static
-void FatalCrashEventsObserver::TestEnvironment::
-    SetInterruptedAfterEventObserved(FatalCrashEventsObserver& observer,
-                                     bool interrupted_after_event_observed) {
-  observer.SetInterruptedAfterEventObservedForTest(
-      interrupted_after_event_observed);
+FatalCrashEventsObserver::SettingsForTest&
+FatalCrashEventsObserver::TestEnvironment::GetTestSettings(
+    FatalCrashEventsObserver& observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(observer.sequence_checker_);
+  return *observer.settings_for_test_;
 }
 
 // static

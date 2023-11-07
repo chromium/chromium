@@ -28,6 +28,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_test_util.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
@@ -58,13 +59,13 @@ class ScopedInterruptedAfterEventObserved {
   explicit ScopedInterruptedAfterEventObserved(
       FatalCrashEventsObserver& observer)
       : observer_(&observer) {
-    FatalCrashEventsObserver::TestEnvironment::SetInterruptedAfterEventObserved(
-        *observer_, /*interrupted_after_event_observed=*/true);
+    FatalCrashEventsObserver::TestEnvironment::GetTestSettings(*observer_)
+        .interrupted_after_event_observed = true;
   }
 
   virtual ~ScopedInterruptedAfterEventObserved() {
-    FatalCrashEventsObserver::TestEnvironment::SetInterruptedAfterEventObserved(
-        *observer_, /*interrupted_after_event_observed=*/false);
+    FatalCrashEventsObserver::TestEnvironment::GetTestSettings(*observer_)
+        .interrupted_after_event_observed = false;
   }
 
   ScopedInterruptedAfterEventObserved(
@@ -433,6 +434,9 @@ TEST_P(FatalCrashEventsObserverTest, SlowFileLoadingFieldsPassedThrough) {
   // Create and set up the observer object.
   auto observer = fatal_crash_test_environment_.CreateFatalCrashEventsObserver(
       /*reported_local_id_io_task_runner=*/io_task_runner);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(
+      FatalCrashEventsObserver::TestEnvironment::GetTestSettings(*observer)
+          .sequence_checker);
   observer->SetReportingEnabled(true);
   // Not using `TestFuture`, because it can only accept one value at a time and
   // generates an error if another values comes in before the first value is
@@ -450,11 +454,12 @@ TEST_P(FatalCrashEventsObserverTest, SlowFileLoadingFieldsPassedThrough) {
       },
       &results, base::SequencedTaskRunner::GetCurrentDefault()));
   base::test::TestFuture<CrashEventInfoPtr> queued_crash_event_result;
-  observer->SetEventCollectedBeforeSaveFilesLoadedCallback(
-      queued_crash_event_result.GetRepeatingCallback());
+  FatalCrashEventsObserver::TestEnvironment::GetTestSettings(*observer)
+      .event_collected_before_save_files_loaded_callback =
+      queued_crash_event_result.GetRepeatingCallback();
 
-  // Emit the first 3 events before the save file is loaded. The event is
-  // queued and saved in RAM.
+  // Emit the first 3 events before the save file is loaded. The event is queued
+  // and saved in RAM.
   for (size_t i = 0; i < 3u; ++i) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&FatalCrashEventsObserver::OnEvent,
@@ -490,12 +495,13 @@ TEST_P(FatalCrashEventsObserverTest, SlowFileLoadingFieldsPassedThrough) {
 
   // All crash events should be available in order, and the event collected call
   // back should never be called from this point on.
-  observer->SetEventCollectedBeforeSaveFilesLoadedCallback(
+  FatalCrashEventsObserver::TestEnvironment::GetTestSettings(*observer)
+      .event_collected_before_save_files_loaded_callback =
       base::BindRepeating([](CrashEventInfoPtr crash_event_info) {
         // Sanity check to ensure that no more crash event is queued.
         EXPECT_FALSE(true) << "Found unexpected queued crash event: "
                            << crash_event_info->local_id;
-      }));
+      });
   base::RunLoop().RunUntilIdle();
   ASSERT_THAT(results, SizeIs(4u));
   for (size_t i = 0; i < results.size(); ++i) {
@@ -661,9 +667,15 @@ class FatalCrashEventsObserverReportedLocalIdsTestBase
       std::string_view local_id,
       base::Time capture_time,
       FatalCrashEventsObserver& fatal_crash_observer) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        FatalCrashEventsObserver::TestEnvironment::GetTestSettings(
+            fatal_crash_observer)
+            .sequence_checker);
+
     base::test::TestFuture<FatalCrashEventsObserver::LocalIdEntry> result;
-    fatal_crash_observer.SetSkippedUnuploadedCrashCallback(
-        result.GetRepeatingCallback());
+    FatalCrashEventsObserver::TestEnvironment::GetTestSettings(
+        fatal_crash_observer)
+        .skipped_unuploaded_crash_callback = result.GetRepeatingCallback();
 
     auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/false);
     crash_event_info->local_id = local_id;
@@ -1259,12 +1271,18 @@ class FatalCrashEventsObserverUploadedCrashTestBase
       base::Time creation_time,
       uint64_t offset,
       FatalCrashEventsObserver& fatal_crash_observer) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        FatalCrashEventsObserver::TestEnvironment::GetTestSettings(
+            fatal_crash_observer)
+            .sequence_checker);
+
     base::test::TestFuture<std::string /* crash_report_id */,
                            base::Time /* creation_time */,
                            uint64_t /* offset */>
         result;
-    fatal_crash_observer.SetSkippedUploadedCrashCallback(
-        result.GetRepeatingCallback());
+    FatalCrashEventsObserver::TestEnvironment::GetTestSettings(
+        fatal_crash_observer)
+        .skipped_uploaded_crash_callback = result.GetRepeatingCallback();
 
     auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/true);
     crash_event_info->upload_info->crash_report_id = crash_report_id;

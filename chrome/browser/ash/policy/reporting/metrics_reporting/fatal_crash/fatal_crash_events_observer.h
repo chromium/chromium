@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -30,6 +29,10 @@ class FatalCrashEventsObserver
           ash::cros_healthd::mojom::EventObserver>,
       public ash::cros_healthd::mojom::EventObserver {
  public:
+  // Callbacks and other variables created solely for test purposes. Fit the
+  // Chromium code style to not name it "TestSettings" because this struct is
+  // also compiled in production code.
+  struct SettingsForTest;
   // A RAII class that setups the environment for testing this class.
   class TestEnvironment;
 
@@ -39,16 +42,6 @@ class FatalCrashEventsObserver
     std::string local_id;
     int64_t capture_timestamp_us;
   };
-
-  using SkippedUnuploadedCrashCallback =
-      base::RepeatingCallback<void(LocalIdEntry)>;
-  using SkippedUploadedCrashCallback =
-      base::RepeatingCallback<void(std::string /* crash_report_id */,
-                                   base::Time /* creation_time */,
-                                   uint64_t /* offset */)>;
-  using EventCollectedBeforeSaveFilesLoadedCallback =
-      base::RepeatingCallback<void(
-          ::ash::cros_healthd::mojom::CrashEventInfoPtr)>;
 
   // UMA name for recording the reason that an unuploaded crash should not be
   // reported.
@@ -66,18 +59,6 @@ class FatalCrashEventsObserver
 
   // Convert a `base::Time` to a timestamp in microseconds.
   static int64_t ConvertTimeToMicroseconds(base::Time t);
-
-  // Sets the callback that is called when an unuploaded crash is skipped.
-  void SetSkippedUnuploadedCrashCallback(
-      SkippedUnuploadedCrashCallback callback);
-
-  // Sets the callback that is called when an uploaded crash is skipped.
-  void SetSkippedUploadedCrashCallback(SkippedUploadedCrashCallback callback);
-
-  // Sets the callback that is called when a crash is queued due to delayed save
-  // file loading.
-  void SetEventCollectedBeforeSaveFilesLoadedCallback(
-      EventCollectedBeforeSaveFilesLoadedCallback callback);
 
  private:
   // Give `TestEnvironment` the access to the private constructor that
@@ -126,12 +107,6 @@ class FatalCrashEventsObserver
   // Processes events that was received before the save files have been loaded.
   void ProcessEventsBeforeSaveFilesLoaded();
 
-  // Sets whether to continue postprocessing after event observed callback is
-  // called. Pass in true to simulate that event observed callback is
-  // interrupted right after it's finished.
-  void SetInterruptedAfterEventObservedForTest(
-      bool interrupted_after_event_observed);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Manages saved local IDs for reported unuploaded crashes.
@@ -149,27 +124,9 @@ class FatalCrashEventsObserver
       event_queue_before_save_files_loaded_
           GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Called when an unuploaded crash is skipped and not reported. Currently only
-  // used in tests but production code may also use it in the future.
-  SkippedUnuploadedCrashCallback skipped_unuploaded_callback_
-      GUARDED_BY_CONTEXT(sequence_checker_){base::DoNothing()};
-
-  // Called when an uploaded crash is skipped and not reported. Currently only
-  // used in tests but production code may also use it in the future.
-  SkippedUploadedCrashCallback skipped_uploaded_callback_
-      GUARDED_BY_CONTEXT(sequence_checker_){base::DoNothing()};
-
-  // Called when a crash event is queued due to a delayed save file loading.
-  // Currently only used in tests but production code may also use it in the
-  // future.
-  EventCollectedBeforeSaveFilesLoadedCallback
-      event_collected_before_save_files_loaded_callback_
-          GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // If true, stop the processing after the event observed callback is called.
-  // Only used for testing.
-  bool interrupted_after_event_observed_for_test_
-      GUARDED_BY_CONTEXT(sequence_checker_){false};
+  // Callbacks and variables used for test only.
+  std::unique_ptr<SettingsForTest> settings_for_test_ GUARDED_BY_CONTEXT(
+      sequence_checker_){std::make_unique<SettingsForTest>()};
 
   base::WeakPtrFactory<FatalCrashEventsObserver> weak_factory_{this};
 };

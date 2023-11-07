@@ -24,6 +24,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -130,26 +131,9 @@ int64_t FatalCrashEventsObserver::ConvertTimeToMicroseconds(base::Time t) {
          base::Time::kMicrosecondsPerMillisecond;
 }
 
-void FatalCrashEventsObserver::SetSkippedUnuploadedCrashCallback(
-    base::RepeatingCallback<void(LocalIdEntry)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  skipped_unuploaded_callback_ = std::move(callback);
-}
-
-void FatalCrashEventsObserver::SetSkippedUploadedCrashCallback(
-    SkippedUploadedCrashCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  skipped_uploaded_callback_ = std::move(callback);
-}
-
-void FatalCrashEventsObserver::SetEventCollectedBeforeSaveFilesLoadedCallback(
-    EventCollectedBeforeSaveFilesLoadedCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  event_collected_before_save_files_loaded_callback_ = std::move(callback);
-}
-
 void FatalCrashEventsObserver::OnEvent(EventInfoPtr info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(settings_for_test_->sequence_checker);
 
   if (!info->is_crash_event_info()) {
     return;
@@ -158,8 +142,8 @@ void FatalCrashEventsObserver::OnEvent(EventInfoPtr info) {
   // Events in `event_queue_before_save_files_loaded_` must be processed first.
   // If the events there have not been cleared, enqueue this event there.
   if (!AreSaveFilesLoaded() || !event_queue_before_save_files_loaded_.empty()) {
-    if (event_collected_before_save_files_loaded_callback_) {
-      event_collected_before_save_files_loaded_callback_.Run(
+    if (settings_for_test_->event_collected_before_save_files_loaded_callback) {
+      settings_for_test_->event_collected_before_save_files_loaded_callback.Run(
           info->get_crash_event_info().Clone());
     }
     event_queue_before_save_files_loaded_.push(std::move(info));
@@ -169,8 +153,11 @@ void FatalCrashEventsObserver::OnEvent(EventInfoPtr info) {
   ProcessEvent(std::move(info));
 }
 
+// TODO(b/266018440): Split this method to two methods for cleaner code:
+// ProcessUploadedCrashEvent and ProcessUnuploadedCrashEvent.
 void FatalCrashEventsObserver::ProcessEvent(EventInfoPtr info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(settings_for_test_->sequence_checker);
   CHECK(info->is_crash_event_info());
 
   const auto& crash_event_info = info->get_crash_event_info();
@@ -188,7 +175,7 @@ void FatalCrashEventsObserver::ProcessEvent(EventInfoPtr info) {
                                   should_report_result);
     if (should_report_result !=
         ReportedLocalIdManager::ShouldReportResult::kYes) {
-      skipped_unuploaded_callback_.Run(
+      settings_for_test_->skipped_unuploaded_crash_callback.Run(
           {.local_id = std::move(crash_event_info->local_id),
            .capture_timestamp_us = capture_timestamp_us});
       return;
@@ -199,9 +186,9 @@ void FatalCrashEventsObserver::ProcessEvent(EventInfoPtr info) {
             crash_event_info->upload_info)) {
       // The crash is from an earlier part of uploads.log. Skip.
       const auto& upload_info = crash_event_info->upload_info;
-      skipped_uploaded_callback_.Run(upload_info->crash_report_id,
-                                     upload_info->creation_time,
-                                     upload_info->offset);
+      settings_for_test_->skipped_uploaded_crash_callback.Run(
+          upload_info->crash_report_id, upload_info->creation_time,
+          upload_info->offset);
       return;
     }
   }
@@ -209,7 +196,7 @@ void FatalCrashEventsObserver::ProcessEvent(EventInfoPtr info) {
   MetricData metric_data = FillFatalCrashTelemetry(crash_event_info);
   OnEventObserved(std::move(metric_data));
 
-  if (interrupted_after_event_observed_for_test_) {
+  if (settings_for_test_->interrupted_after_event_observed) {
     return;
   }
 
@@ -325,11 +312,5 @@ MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
   }
 
   return metric_data;
-}
-
-void FatalCrashEventsObserver::SetInterruptedAfterEventObservedForTest(
-    bool interrupted_after_event_observed) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  interrupted_after_event_observed_for_test_ = interrupted_after_event_observed;
 }
 }  // namespace reporting
