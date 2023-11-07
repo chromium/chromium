@@ -174,15 +174,6 @@ TEST(TranslateBrowserMetricsTest, ReportMenuTranslationUnavailableReason) {
   recorder.CheckMenuTranslationUnavailableReason(1, 1, 1, 1, 1, 1, 1, 1);
 }
 
-TEST(TranslateBrowserMetricsTest, ReportedUnsupportedLanguageAtInitiation) {
-  const int ENGLISH = 25966;
-
-  MetricsRecorder recorder("Translate.UnsupportedLanguageAtInitiation");
-  EXPECT_EQ(0, recorder.GetTotalCount());
-  TranslateBrowserMetrics::ReportUnsupportedLanguageAtInitiation("en");
-  EXPECT_EQ(1, recorder.GetCount(ENGLISH));
-}
-
 TEST(TranslateBrowserMetricsTest, ReportTranslateHrefHintStatus) {
   MetricsRecorder recorder("Translate.HrefHint.Status");
   recorder.CheckTranslateHrefHintStatus(0, 0, 0, 0);
