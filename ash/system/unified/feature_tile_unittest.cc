@@ -20,13 +20,18 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
+
+constexpr int kDefaultButtonRadius = 16;
 
 namespace {
 
@@ -312,6 +317,30 @@ TEST_F(FeatureTileTest, PrimaryTile_WithSubLabel) {
             gfx::ALIGN_LEFT);
   EXPECT_EQ(primary_tile_with_sub_label.label()->GetMultiLine(), false);
   EXPECT_EQ((int)primary_tile_with_sub_label.label()->GetMaxLines(), 0);
+}
+
+TEST_F(FeatureTileTest, PrimaryTile_UpdatedCornerRadius) {
+  int updated_radius = 10;
+  auto mock_controller =
+      std::make_unique<MockFeaturePodController>(/*togglable=*/false);
+  auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
+
+  // Verify the initial tile state utilizes the default radius.
+  views::RoundRectHighlightPathGenerator* path_generator =
+      static_cast<views::RoundRectHighlightPathGenerator*>(
+          tile->GetProperty(views::kHighlightPathGeneratorKey));
+  gfx::RectF bounds = gfx::RectF(tile->GetLocalBounds());
+  EXPECT_EQ(path_generator->GetRoundRect(bounds),
+            gfx::RRectF(bounds, kDefaultButtonRadius));
+
+  tile->SetButtonCornerRadius(updated_radius);
+
+  // Verify the tile utilizes the updated radius.
+  path_generator = static_cast<views::RoundRectHighlightPathGenerator*>(
+      tile->GetProperty(views::kHighlightPathGeneratorKey));
+  bounds = gfx::RectF(tile->GetLocalBounds());
+  EXPECT_EQ(path_generator->GetRoundRect(bounds),
+            gfx::RRectF(bounds, updated_radius));
 }
 
 TEST_F(FeatureTileTest, CompactTile_AddedAndRemoveSubLabel) {

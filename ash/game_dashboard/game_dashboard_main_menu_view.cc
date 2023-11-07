@@ -58,6 +58,8 @@ constexpr int kCenterPadding = 8;
 constexpr int kMainMenuFixedWidth = 416;
 // Background radius.
 constexpr float kBackgroundRadius = 12;
+// Corner radius for the detail row container.
+constexpr int kDetailRowCornerRadius = 16;
 
 // Creates an individual Game Dashboard Tile.
 std::unique_ptr<FeatureTile> CreateFeatureTile(
@@ -77,6 +79,11 @@ std::unique_ptr<FeatureTile> CreateFeatureTile(
   if (sub_label.has_value()) {
     tile->SetSubLabel(sub_label.value());
     tile->SetSubLabelVisibility(true);
+  }
+  if (type == FeatureTile::TileType::kPrimary) {
+    // Remove any corner radius because it's set on the container for any
+    // primary `FeatureTile` objects.
+    tile->SetButtonCornerRadius(0);
   }
   return tile;
 }
@@ -105,6 +112,8 @@ std::unique_ptr<FeaturePodIconButton> CreateIconButton(
 // | |icon|  |title|       |tail_view||
 // |         |sub-title|              |
 // +----------------------------------+
+// TODO(b/308762948): Update name and params now that only Game Controls uses
+// this logic.
 class GameDashboardMainMenuView::FeatureDetailsRow : public views::Button {
  public:
   FeatureDetailsRow(base::RepeatingCallback<void()> callback,
@@ -467,7 +476,14 @@ void GameDashboardMainMenuView::AddFeatureDetailsRows() {
           views::BoxLayout::Orientation::kVertical,
           /*inside_border_insets=*/gfx::Insets(),
           /*between_child_spacing=*/2));
-  // TODO(b/303351913): Update corners of detail rows to match UI specs.
+
+  // Set the container's corner radius.
+  feature_details_container->SetPaintToLayer();
+  auto* container_layer = feature_details_container->layer();
+  container_layer->SetFillsBoundsOpaquely(false);
+  container_layer->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kDetailRowCornerRadius));
+
   MaybeAddGameControlsDetailsRow(feature_details_container);
   MaybeAddScreenSizeSettingsRow(feature_details_container);
 }
@@ -511,7 +527,7 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
           base::BindRepeating(
               &GameDashboardMainMenuView::OnGameControlsDetailsPressed,
               base::Unretained(this)),
-          RoundedContainer::Behavior::kTopRounded,
+          RoundedContainer::Behavior::kNotRounded,
           /*default_drill_in_arrow=*/false,
           /*icon=*/kGdGameControlsIcon, /*title=*/
           l10n_util::GetStringUTF16(

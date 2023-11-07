@@ -40,7 +40,7 @@ namespace {
 
 // Tile constants
 constexpr int kIconSize = 20;
-constexpr int kButtonRadius = 16;
+constexpr int kDefaultCornerRadius = 16;
 constexpr float kFocusRingPadding = 3.0f;
 
 // Primary tile constants
@@ -82,7 +82,10 @@ std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
 FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
                          bool is_togglable,
                          TileType type)
-    : Button(callback), is_togglable_(is_togglable), type_(type) {
+    : Button(callback),
+      corner_radius_(kDefaultCornerRadius),
+      is_togglable_(is_togglable),
+      type_(type) {
   // Set up ink drop on click. The corner radius must match the button
   // background corner radius, see UpdateColors().
   // TODO(jamescook): Consider adding support for highlight-path-based
@@ -90,7 +93,7 @@ FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
   // something like CreateThemedHighlightPathBackground() to
   // ui/views/background.h.
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kButtonRadius);
+                                                corner_radius_);
   auto* ink_drop = views::InkDrop::Get(this);
   ink_drop->SetMode(InkDropHost::InkDropMode::ON);
   ink_drop->GetInkDrop()->SetShowHighlightOnHover(false);
@@ -256,7 +259,7 @@ void FeatureTile::UpdateColors() {
   }
 
   SetBackground(views::CreateThemedRoundedRectBackground(background_color,
-                                                         kButtonRadius));
+                                                         corner_radius_));
   auto* ink_drop = views::InkDrop::Get(this);
   ink_drop->SetBaseColorId(toggled_
                                ? cros_tokens::kCrosSysRipplePrimary
@@ -320,6 +323,13 @@ void FeatureTile::SetBackgroundToggledColorId(
   if (toggled_) {
     UpdateColors();
   }
+}
+
+void FeatureTile::SetButtonCornerRadius(const int radius) {
+  corner_radius_ = radius;
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                corner_radius_);
+  UpdateColors();
 }
 
 void FeatureTile::SetForegroundColorId(ui::ColorId foreground_color_id) {

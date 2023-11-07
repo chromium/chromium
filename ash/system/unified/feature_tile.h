@@ -107,6 +107,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
   void SetBackgroundColorId(ui::ColorId background_color_id);
   void SetBackgroundToggledColorId(ui::ColorId background_toggled_color_id);
 
+  // Sets the radius determining the tile's curved edges.
+  void SetButtonCornerRadius(const int radius);
+
   // Sets the button's foreground color or toggled color with color ID when the
   // button wants to have a different foreground color from the default one.
   void SetForegroundColorId(ui::ColorId foreground_color_id);
@@ -140,6 +143,7 @@ class ASH_EXPORT FeatureTile : public views::Button {
   views::Label* label() { return label_; }
   views::Label* sub_label() { return sub_label_; }
   views::ImageView* drill_in_arrow() { return drill_in_arrow_; }
+  int corner_radius() const { return corner_radius_; }
 
  private:
   friend class BluetoothFeaturePodControllerTest;
@@ -181,6 +185,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
   raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> sub_label_ = nullptr;
   raw_ptr<views::ImageView, ExperimentalAsh> drill_in_arrow_ = nullptr;
+
+  // The radius of the tile's curved edges.
+  int corner_radius_;
 
   // Whether the icon is separately clickable.
   bool is_icon_clickable_ = false;
