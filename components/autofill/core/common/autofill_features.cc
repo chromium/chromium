@@ -435,31 +435,6 @@ const base::FeatureParam<std::string> kAutofillModelDictionaryFilePath{
 const base::FeatureParam<bool> kAutofillModelPredictionsAreActive{
     &kAutofillModelPredictions, "model_active", false};
 
-// Allows passing a set of overrides for Autofill server predictions.
-// Example command line to override server predictions manually:
-// chrome --enable-features=AutofillOverridePredictions:spec/1_2_4-7_8_9
-// This creates two manual overrides that supersede server predictions as
-// follows:
-// * The server prediction for the field with signature 2 in the form with
-//   signature 1 is overridden to be 4 (NAME_MIDDLE).
-// * The server prediction for the field with signature 8 in the form with
-//   signature 7 is overridden to be 9 (EMAIL_ADDRESS).
-//
-// See components/autofill/core/browser/server_prediction_overrides.h for more
-// examples and details on how to specify overrides.
-BASE_FEATURE(kAutofillOverridePredictions,
-             "AutofillOverridePredictions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The override specification in string form.
-const base::FeatureParam<std::string> kAutofillOverridePredictionsSpecification{
-    &kAutofillOverridePredictions, "spec", "[]"};
-
-// The override specification using alternative_form_signature in string form.
-const base::FeatureParam<std::string>
-    kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification{
-        &kAutofillOverridePredictions, "alternative_signature_spec", "[]"};
-
 // If enabled, Autofill will first look at field labels and then at field
 // attributes when classifying address fields in Mexico.
 BASE_FEATURE(kAutofillPreferLabelsInSomeCountries,
@@ -817,6 +792,31 @@ BASE_FEATURE(kAutofillDisableSilentProfileUpdates,
 BASE_FEATURE(kAutofillLogToTerminal,
              "AutofillLogToTerminal",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Allows passing a set of overrides for Autofill server predictions.
+// Example command line to override server predictions manually:
+// chrome --enable-features=AutofillOverridePredictions:spec/1_2_4-7_8_9
+// This creates two manual overrides that supersede server predictions as
+// follows:
+// * The server prediction for the field with signature 2 in the form with
+//   signature 1 is overridden to be 4 (NAME_MIDDLE).
+// * The server prediction for the field with signature 8 in the form with
+//   signature 7 is overridden to be 9 (EMAIL_ADDRESS).
+//
+// See components/autofill/core/browser/server_prediction_overrides.h for more
+// examples and details on how to specify overrides.
+BASE_FEATURE(kAutofillOverridePredictions,
+             "AutofillOverridePredictions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The override specification in string form.
+const base::FeatureParam<std::string> kAutofillOverridePredictionsSpecification{
+    &kAutofillOverridePredictions, "spec", "[]"};
+
+// The override specification using alternative_form_signature in string form.
+const base::FeatureParam<std::string>
+    kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification{
+        &kAutofillOverridePredictions, "alternative_signature_spec", "[]"};
 
 // Enables or Disables (mostly for hermetic testing) autofill server
 // communication. The URL of the autofill server can further be controlled via

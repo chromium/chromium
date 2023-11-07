@@ -713,14 +713,15 @@ FormStructure::GetSuggestionsMapFromResponse(
     }
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(features::kAutofillOverridePredictions)) {
+  if (base::FeatureList::IsEnabled(
+          features::test::kAutofillOverridePredictions)) {
     InsertParsedOverrides(
         ParseServerPredictionOverrides(
-            features::kAutofillOverridePredictionsSpecification.Get()),
+            features::test::kAutofillOverridePredictionsSpecification.Get()),
         fields_suggestions);
     InsertParsedOverrides(
         ParseServerPredictionOverrides(
-            features::
+            features::test::
                 kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification
                     .Get()),
         fields_suggestions);
@@ -754,11 +755,10 @@ std::optional<FieldSuggestion> FormStructure::GetFieldSuggestion(
     return current_field;
   };
   // Precedence rule for prediction sources is the following:
-  // Server/Manual overrides first then crowdsourcing of any type.
-  // Moreover, Autofill deprioritizes any crowdsourcing that only returned
-  // NO_SERVER_DATA (This is not done for overrides because overriding a field
-  // as not classifiable could be desirable).
-  // TODO(crbug.com/1495758): Prioritize manual overrides over server overrides.
+  // Manual overrides first, then server overrides, then crowdsourcing of any
+  // type. Moreover, Autofill deprioritizes any crowdsourcing that only returned
+  // NO_SERVER_DATA. This is not done for overrides because overriding a field
+  // as not classifiable could be desirable.
   auto get_suggestion_priority = [](std::optional<FieldSuggestion> suggestion) {
     if (!suggestion || suggestion->predictions().empty()) {
       return 0;
@@ -777,8 +777,9 @@ std::optional<FieldSuggestion> FormStructure::GetFieldSuggestion(
                    ? 1
                    : 0;
       case FieldPrediction::SOURCE_OVERRIDE:
-      case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
         return 2;
+      case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
+        return 3;
     }
   };
 
