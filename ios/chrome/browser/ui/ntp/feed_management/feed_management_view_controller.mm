@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_view_controller.h"
 
-#import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"

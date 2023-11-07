@@ -87,6 +87,7 @@ source_set("eg2_tests") {
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp/home:features",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin:constants",

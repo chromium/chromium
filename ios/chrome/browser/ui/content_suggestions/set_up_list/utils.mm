@@ -6,8 +6,8 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/first_run/first_run.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 
 namespace set_up_list_utils {

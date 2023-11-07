@@ -3,5 +3,4 @@ include_rules = [
   "+ios/chrome/browser/synced_sessions/model",
   "+ios/chrome/browser/favicon",
   "+ios/chrome/browser/metrics",
-  "+ios/chrome/browser/ntp/home/features.h",
 ]

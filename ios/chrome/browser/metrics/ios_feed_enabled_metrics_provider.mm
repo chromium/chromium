@@ -7,8 +7,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/feed/core/shared_prefs/pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 IOSFeedEnabledMetricsProvider::IOSFeedEnabledMetricsProvider(
     PrefService* pref_service)

@@ -26,6 +26,7 @@ source_set("set_up_list") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/ntp/home:features",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -78,6 +79,7 @@ source_set("utils") {
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/ntp:set_up_list_prefs",
     "//ios/chrome/browser/ntp/home:features",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/first_run:utils",
   ]
 }

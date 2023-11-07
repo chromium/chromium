@@ -42,7 +42,6 @@ source_set("toolbar") {
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/ntp",
-    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/policy:policy_util",

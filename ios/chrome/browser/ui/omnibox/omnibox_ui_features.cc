@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 
 #include "base/metrics/field_trial_params.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ui/base/device_form_factor.h"
 
 BASE_FEATURE(kEnableSuggestionsScrollingOnIPad,

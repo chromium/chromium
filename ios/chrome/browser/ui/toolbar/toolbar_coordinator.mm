@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
