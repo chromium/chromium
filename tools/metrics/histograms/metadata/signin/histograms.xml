@@ -524,6 +524,20 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.BoundSessionCredentials.ThrottledRequestsSuccessiveTimeout"
+    units="timeouts" expires_after="2024-01-14">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records how many successive batches of throttled network requests has timed
+    out without the cookie being fresh in between. Recorded when cookies become
+    fresh or on session termination/shutdown if any requests has hit the
+    timeout.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Signin.CookieJar.ChromeAccountRelation"
     enum="AccountRelation" expires_after="never">
 <!-- expires-never: this histogram gives important user information about user
