@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal_processor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "extensions/common/api/declarative_net_request.h"
@@ -29,11 +30,15 @@ constexpr const char* kBlockRuleActionType = "block";
 
 extensions::api::declarative_net_request::Rule GetAPIRule(
     const TestRule& rule) {
-  extensions::api::declarative_net_request::Rule result;
-  std::u16string error;
-  EXPECT_TRUE(extensions::api::declarative_net_request::Rule::Populate(
-      rule.ToValue(), result, error));
-  return result;
+  auto result =
+      extensions::api::declarative_net_request::Rule::FromValue(rule.ToValue());
+  if (!result.has_value()) {
+    ADD_FAILURE() << "Failed to parse rule value.  error= "
+                  << base::UTF16ToUTF8(result.error())
+                  << ", contents=" << rule.ToValue();
+    return extensions::api::declarative_net_request::Rule();
+  }
+  return std::move(result).value();
 }
 
 TestRule CreateTestRule(int id, const std::string& action_type) {
