@@ -281,18 +281,27 @@ class InstrumentedPackageBuilder(object):
         Builds the package with ./configure + make, installs it to a temporary
         location, then moves the relevant files to their permanent location.
         """
-        if os.path.exists(os.path.join(self._source_dir, "configure")):
+        configure = os.path.join(self._source_dir, "configure")
+        configure_exists = os.path.exists(configure)
+        if configure_exists:
             configure_cmd = [
-                "./configure",
+                configure,
                 "--libdir=/%s/" % self._libdir,
             ] + self._extra_configure_flags
             self.shell_call(configure_cmd,
                             env=self._build_env,
                             cwd=self._source_dir)
 
-        # Some makefiles use BUILDROOT or INSTALL_ROOT instead of DESTDIR.
-        args = ["DESTDIR", "BUILDROOT", "INSTALL_ROOT"]
-        make_args = ["%s=%s" % (name, self.temp_dir()) for name in args]
+        args = {
+            # Some makefiles use BUILDROOT or INSTALL_ROOT instead of DESTDIR.
+            "DESTDIR": self.temp_dir(),
+            "BUILDROOT": self.temp_dir(),
+            "INSTALL_ROOT": self.temp_dir(),
+        }
+        if not configure_exists:
+            # Specify LIBDIR in case ./configure isn't used for this package.
+            args['LIBDIR'] = '/%s/' % self._libdir
+        make_args = ["%s=%s" % item for item in args.items()]
         self.make(make_args + self._make_targets)
 
         self.make_install(make_args)
