@@ -165,21 +165,6 @@ blink::BitmapImageMetrics::JpegColorSpace ExtractUMAJpegColorSpace(
   }
 }
 
-constexpr base::HistogramBase::Sample kImageAreaHistogramMin = 1;
-constexpr base::HistogramBase::Sample kImageAreaHistogramMax = 8192 * 8192;
-constexpr int32_t kImageAreaHistogramBucketCount = 100;
-
-void CountJpegArea(const gfx::Size& size) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      blink::CustomCountHistogram, image_area_histogram,
-      ("Blink.ImageDecoders.Jpeg.Area", kImageAreaHistogramMin,
-       kImageAreaHistogramMax, kImageAreaHistogramBucketCount));
-  // A base::HistogramBase::Sample may not fit |size.Area()|. Hence the use of
-  // saturated_cast.
-  image_area_histogram.Count(
-      base::saturated_cast<base::HistogramBase::Sample>(size.Area64()));
-}
-
 void CountJpegColorSpace(
     blink::BitmapImageMetrics::JpegColorSpace color_space) {
   UMA_HISTOGRAM_ENUMERATION("Blink.ImageDecoders.Jpeg.ColorSpace", color_space);
@@ -739,7 +724,6 @@ class JPEGImageReader final {
 
       case kJpegDone:
         // Finish decompression.
-        CountJpegArea(decoder_->Size());
         CountJpegColorSpace(ExtractUMAJpegColorSpace(info_));
         if (info_.jpeg_color_space != JCS_GRAYSCALE &&
             decoder_->IsAllDataReceived()) {

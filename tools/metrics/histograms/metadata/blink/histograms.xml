@@ -2438,21 +2438,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ImageDecoders.Jpeg.Area" units="pixels"
-    expires_after="2022-05-01">
-  <owner>andrescj@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/platform/image-decoders/OWNERS</owner>
-  <summary>
-    Number of pixels in a decoded JPEG image. Recorded after decoding is done by
-    Blink's JPEG decoder (as opposed to, possibly, a hardware decode
-    accelerator). Tracking the image area may include degenerate cases, e.g., an
-    image with area = 10000 and dimensions = 1x10000. However, it is reasonable
-    to assume these cases are relatively rare and the area of the image can
-    serve as a proxy of how useful a decode accelerator can be (the larger the
-    area, the better).
-  </summary>
-</histogram>
-
 <histogram name="Blink.ImageDecoders.Jpeg.ColorSpace" enum="JpegColorSpace"
     expires_after="2022-11-13">
   <owner>andrescj@chromium.org</owner>
