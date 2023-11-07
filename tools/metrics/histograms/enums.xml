@@ -49045,6 +49045,8 @@ from previous Chrome versions.
       label="FramebustingNeedsSameOriginOrUserGesture:enabled"/>
   <int value="406549604" label="NtpSafeBrowsingModule:enabled"/>
   <int value="407698827" label="HindiInscriptLayout:enabled"/>
+  <int value="408128088"
+      label="AutofillEnableSaveCardLoadingAndConfirmation:enabled"/>
   <int value="408190863" label="OmniboxDisableInstantExtendedLimit:disabled"/>
   <int value="408469366"
       label="NtpHistoryClustersModuleSuggestionChipHeader:disabled"/>
@@ -51856,6 +51858,8 @@ from previous Chrome versions.
   <int value="1781225884" label="FedCmAuthz:disabled"/>
   <int value="1781422070" label="PasspointARCSupport:enabled"/>
   <int value="1782210532" label="PerNavigationMojoInterface:disabled"/>
+  <int value="1782416979"
+      label="AutofillEnableSaveCardLoadingAndConfirmation:disabled"/>
   <int value="1782808560"
       label="OmniboxUseExistingAutocompleteClient:disabled"/>
   <int value="1783293530" label="disallow-autofill-sync-credential"/>

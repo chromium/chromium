@@ -146,6 +146,13 @@ BASE_FEATURE(kAutofillEnableRemadeDownstreamMetrics,
              "AutofillEnableRemadeDownstreamMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, the save card screen will present a loading spinner when
+// uploading the card to the server and present a confirmation screen with the
+// result when completed.
+BASE_FEATURE(kAutofillEnableSaveCardLoadingAndConfirmation,
+             "AutofillEnableSaveCardLoadingAndConfirmation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Autofill will attempt to offer upload save for IBANs
 // (International Bank Account Numbers) and autofill server-based IBANs.
 BASE_FEATURE(kAutofillEnableServerIban,

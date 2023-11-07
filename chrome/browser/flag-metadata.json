@@ -640,6 +640,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "autofill-enable-save-card-loading-and-confirmation",
+    "owners": [
+      "darwinyang@chromium.org",
+      "chrome-payments-team@google.com"
+    ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "autofill-enable-server-iban",
     "owners": [ "qihuizhao@google.com", "jsaul@google.com" ],
     "expiry_milestone": 128
