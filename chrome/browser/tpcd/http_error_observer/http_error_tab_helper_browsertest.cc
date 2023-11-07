@@ -31,6 +31,7 @@
 constexpr char kHostA[] = "a.test";
 constexpr char kHostB[] = "b.test";
 
+namespace {
 // Handles Favicon requests so they don't produce a 404 and augment http error
 // metrics during a test
 std::unique_ptr<net::test_server::HttpResponse> HandleFaviconRequest(
@@ -42,6 +43,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleFaviconRequest(
   // console error. Any 200 response will do.
   return std::make_unique<net::test_server::BasicHttpResponse>();
 }
+}  // namespace
 
 class HTTPErrProcBrowserTest : public InProcessBrowserTest {
  public:

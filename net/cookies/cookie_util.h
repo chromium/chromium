@@ -57,7 +57,8 @@ enum class StorageAccessResult {
 enum class BreakageIndicatorType {
   USER_RELOAD = 0,
   HTTP_ERROR = 1,
-  kMaxValue = HTTP_ERROR,
+  UNCAUGHT_JS_ERROR = 2,
+  kMaxValue = UNCAUGHT_JS_ERROR,
 };
 // Helper to fire telemetry indicating if a given request for storage was
 // allowed or not by the provided |result|.
