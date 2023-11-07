@@ -1383,7 +1383,7 @@ struct BrowserInitParams {
   // When this flag is set to true, Lacros float window support including the
   // multitask menu will be enabled.
   [MinVersion=51]
-  bool enable_window_layout_menu@51;
+  bool REMOVED_51@51;
 
   // True if this is a device with cloud gaming features enabled.
   [MinVersion=52]
@@ -1413,7 +1413,7 @@ struct BrowserInitParams {
   // will be enabled.
   // Added in M110.
   [MinVersion=55]
-  bool enable_partial_split_deprecated@55;
+  bool REMOVED_55@55;
 
   // Tells lacros-chrome if videoconference UI features are enabled. Used to
   // guard the creation of `VideoConferenceManagerClient`. This client

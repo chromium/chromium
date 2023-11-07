@@ -258,10 +258,6 @@ BrowserParamsProxy::LacrosSelection() const {
   return BrowserInitParams::Get()->lacros_selection;
 }
 
-bool BrowserParamsProxy::IsWindowLayoutMenuEnabled() const {
-  return BrowserInitParams::Get()->enable_window_layout_menu;
-}
-
 bool BrowserParamsProxy::IsCloudGamingDevice() const {
   return BrowserInitParams::Get()->is_cloud_gaming_device;
 }

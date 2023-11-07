@@ -114,8 +114,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   crosapi::mojom::BrowserInitParams::LacrosSelection LacrosSelection() const;
 
-  bool IsWindowLayoutMenuEnabled() const;
-
   bool IsCloudGamingDevice() const;
 
   crosapi::mojom::BrowserInitParams::GpuSandboxStartMode GpuSandboxStartMode()

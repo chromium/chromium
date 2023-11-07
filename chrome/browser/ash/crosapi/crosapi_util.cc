@@ -630,11 +630,6 @@ void InjectBrowserInitParams(
   params->is_floss_availability_check_needed =
       floss::features::IsFlossAvailabilityCheckNeeded();
 
-  // TODO(b/299957114): Remove this parameter.
-  params->enable_window_layout_menu = true;
-  // TODO(b/267528378): Remove this after M114.
-  params->enable_partial_split_deprecated = true;
-
   params->is_cloud_gaming_device =
       chromeos::features::IsCloudGamingDeviceEnabled();
 
