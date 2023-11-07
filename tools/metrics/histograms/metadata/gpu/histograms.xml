@@ -38,6 +38,9 @@ chromium-metrics-reviews@google.com.
   <variant name="D3D12.CreateComputePipelineState"/>
   <variant name="D3D12.CreateGraphicsPipelineState"/>
   <variant name="Metal.CompileShaderToMSL"/>
+  <variant name="Metal.newComputePipelineStateWithDescriptor"/>
+  <variant name="Metal.newLibraryWithSource"/>
+  <variant name="Metal.newRenderPipelineStateWithDescriptor"/>
   <variant name="OpenGL.CompileShaderToGLSL"/>
   <variant name="Vulkan.CompileShaderToSPIRV"/>
   <variant name="Vulkan.CreateComputePipelines"/>
