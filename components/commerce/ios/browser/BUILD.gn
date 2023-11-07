@@ -18,6 +18,7 @@ static_library("browser") {
     "//base",
     "//components/commerce/core:shopping_service",
     "//components/resources:components_resources_grit",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/web",
     "//ios/web/public",
     "//ios/web/public/js_messaging",

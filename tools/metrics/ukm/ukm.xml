@@ -23575,6 +23575,23 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.PDPStateWithLocalInfo">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records if and how a page has been determined to be a product details page.
+    It is recorded per eligible navigation (e.g. limited to main frame
+    navigation, http/https check, etc), and is recorded after the page has
+    finished loading.
+  </summary>
+  <metric name="PDPState" enum="ShoppingPDPDetectionMethod">
+    <summary>
+      The state of if and how the page has been determined to be a product
+      details page.
+    </summary>
+  </metric>
+</event>
+
 <event name="Shopping.WillSendRequest">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>

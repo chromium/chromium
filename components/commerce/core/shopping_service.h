@@ -34,6 +34,7 @@
 #include "components/sync/service/sync_service_observer.h"
 #include "components/unified_consent/consent_throttle.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 class PrefService;
@@ -537,7 +538,9 @@ class ShoppingService : public KeyedService,
 
   // Handle the result of running the local extraction fallback for product
   // info.
-  void OnProductInfoLocalExtractionResult(const GURL url, base::Value result);
+  void OnProductInfoLocalExtractionResult(const GURL url,
+                                          ukm::SourceId source_id,
+                                          base::Value result);
 
   // Tries to determine whether a page is a PDP only from information in meta
   // tags extracted from the page. If enough information is present to call the

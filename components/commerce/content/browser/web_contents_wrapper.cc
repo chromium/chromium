@@ -50,6 +50,13 @@ void WebContentsWrapper::RunJavascript(
       script, std::move(callback), js_world_id_);
 }
 
+ukm::SourceId WebContentsWrapper::GetPageUkmSourceId() {
+  if (!web_contents_ || !web_contents_->GetPrimaryMainFrame()) {
+    return ukm::kInvalidSourceId;
+  }
+  return web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId();
+}
+
 void WebContentsWrapper::ClearWebContentsPointer() {
   web_contents_ = nullptr;
 }

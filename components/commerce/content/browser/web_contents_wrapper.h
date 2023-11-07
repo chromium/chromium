@@ -45,6 +45,8 @@ class WebContentsWrapper : public WebWrapper {
       const std::u16string& script,
       base::OnceCallback<void(const base::Value)> callback) override;
 
+  ukm::SourceId GetPageUkmSourceId() override;
+
   void ClearWebContentsPointer();
 
   content::RenderFrameHost* GetPrimaryMainFrame();

@@ -392,6 +392,11 @@ void MockWebWrapper::RunJavascript(
       FROM_HERE, base::BindOnce(std::move(callback), mock_js_result_->Clone()));
 }
 
+ukm::SourceId MockWebWrapper::GetPageUkmSourceId() {
+  // Return a UKM source ID that is valid.
+  return 0x1234;
+}
+
 base::Value* MockWebWrapper::GetMockExtractionResult() {
   return mock_js_result_;
 }

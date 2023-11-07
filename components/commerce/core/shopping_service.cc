@@ -342,7 +342,7 @@ void ShoppingService::RunLocalExtractionForProductInfoForShoppingPage(
   // If there is both an entry in the cache and the local extraction fallback
   // needs to run, run it.
   if (it != product_info_cache_.end() &&
-      it->second->needs_local_extraction_run && web_extractor_) {
+      it->second->needs_local_extraction_run && web_extractor_ && web.get()) {
     // Since we're about to run the JS, flip the flag in the cache.
     it->second->needs_local_extraction_run = false;
 
@@ -352,12 +352,15 @@ void ShoppingService::RunLocalExtractionForProductInfoForShoppingPage(
         web.get(),
         base::BindOnce(&ShoppingService::OnProductInfoLocalExtractionResult,
                        weak_ptr_factory_.GetWeakPtr(),
-                       GURL(web->GetLastCommittedURL())));
+                       GURL(web->GetLastCommittedURL()),
+                       web.get()->GetPageUkmSourceId()));
   }
 }
 
-void ShoppingService::OnProductInfoLocalExtractionResult(const GURL url,
-                                                         base::Value result) {
+void ShoppingService::OnProductInfoLocalExtractionResult(
+    const GURL url,
+    ukm::SourceId source_id,
+    base::Value result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // We should only ever get a dict result from the script execution.
@@ -395,7 +398,7 @@ void ShoppingService::OnProductInfoLocalExtractionResult(const GURL url,
 
   if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection)) {
     metrics::RecordPDPStateWithLocalMeta(pdp_detected_by_server,
-                                         pdp_detected_by_client);
+                                         pdp_detected_by_client, source_id);
   }
 }
 

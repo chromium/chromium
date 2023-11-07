@@ -40,6 +40,8 @@ class WebStateWrapper : public WebWrapper {
       const std::u16string& script,
       base::OnceCallback<void(const base::Value)> callback) override;
 
+  ukm::SourceId GetPageUkmSourceId() override;
+
   base::WeakPtr<WebWrapper> GetWeakPtr();
 
   void ClearWebStatePointer();

@@ -16,6 +16,8 @@
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::OptimizationGuideDecision;
@@ -23,6 +25,7 @@ using optimization_guide::OptimizationGuideDecisionCallback;
 using optimization_guide::OptimizationMetadata;
 using optimization_guide::proto::Any;
 using optimization_guide::proto::OptimizationType;
+using UkmEntry = ukm::builders::Shopping_PDPStateWithLocalInfo;
 
 namespace {
 const char kProductUrl[] = "http://example.com/";
@@ -49,9 +52,18 @@ class ShoppingServiceMetricsTest : public ShoppingServiceTestBase {
   void SetUp() override {
     ShoppingServiceTestBase::SetUp();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  void CheckUkmEvent(metrics::ShoppingPDPDetectionMethod method) {
+    const auto& entries = ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+    EXPECT_EQ(1u, entries.size());
+    ukm_recorder_->ExpectEntryMetric(entries[0], UkmEntry::kPDPStateName,
+                                     static_cast<int64_t>(method));
   }
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 
   OptimizationMetadata og_response_with_image_;
   OptimizationMetadata og_response_no_image_;
@@ -242,6 +254,8 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_NoLocal) {
       metrics::kPDPStateWithLocalMetaName,
       metrics::ShoppingPDPDetectionMethod::kPDPServerOnly, 1);
   histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 1);
+
+  CheckUkmEvent(metrics::ShoppingPDPDetectionMethod::kPDPServerOnly);
 }
 
 TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_BothServerAndLocal) {
@@ -265,6 +279,8 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_BothServerAndLocal) {
       metrics::kPDPStateWithLocalMetaName,
       metrics::ShoppingPDPDetectionMethod::kPDPServerAndLocalMeta, 1);
   histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 1);
+
+  CheckUkmEvent(metrics::ShoppingPDPDetectionMethod::kPDPServerAndLocalMeta);
 }
 
 TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_NoServer) {
@@ -288,6 +304,8 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_NoServer) {
       metrics::kPDPStateWithLocalMetaName,
       metrics::ShoppingPDPDetectionMethod::kPDPLocalMetaOnly, 1);
   histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 1);
+
+  CheckUkmEvent(metrics::ShoppingPDPDetectionMethod::kPDPLocalMetaOnly);
 }
 
 TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_IllegalScheme) {

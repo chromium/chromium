@@ -10,6 +10,8 @@
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace commerce::metrics {
 
@@ -80,7 +82,8 @@ void RecordPDPMetrics(optimization_guide::OptimizationGuideDecision decision,
 }
 
 void RecordPDPStateWithLocalMeta(bool detected_by_server,
-                                 bool detected_by_client) {
+                                 bool detected_by_client,
+                                 ukm::SourceId source_id) {
   ShoppingPDPDetectionMethod detection_method =
       ShoppingPDPDetectionMethod::kNotPDP;
   if (detected_by_server && detected_by_client) {
@@ -92,6 +95,10 @@ void RecordPDPStateWithLocalMeta(bool detected_by_server,
   }
 
   base::UmaHistogramEnumeration(kPDPStateWithLocalMetaName, detection_method);
+
+  ukm::builders::Shopping_PDPStateWithLocalInfo(source_id)
+      .SetPDPState(static_cast<int64_t>(detection_method))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void RecordShoppingListIneligibilityReasons(

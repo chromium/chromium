@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
+#include "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
@@ -61,6 +62,11 @@ void WebStateWrapper::RunJavascript(
                                                          : base::Value());
                       },
                       std::move(callback)));
+}
+
+ukm::SourceId WebStateWrapper::GetPageUkmSourceId() {
+  return web_state_ ? ukm::GetSourceIdForWebStateDocument(web_state_)
+                    : ukm::kInvalidSourceId;
 }
 
 void WebStateWrapper::ClearWebStatePointer() {

@@ -170,6 +170,8 @@ class MockWebWrapper : public WebWrapper {
       const std::u16string& script,
       base::OnceCallback<void(const base::Value)> callback) override;
 
+  ukm::SourceId GetPageUkmSourceId() override;
+
   base::Value* GetMockExtractionResult();
 
  private:
