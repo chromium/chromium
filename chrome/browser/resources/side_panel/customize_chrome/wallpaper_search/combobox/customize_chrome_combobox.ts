@@ -10,7 +10,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './customize_chrome_combobox.html.js';
 
 /* Selector for keyboard focusable items in the dropdown. */
-const HIGHLIGHTABLE_ITEMS_SELECTOR = '[role=group], [role=option]';
+const HIGHLIGHTABLE_ITEMS_SELECTOR = '[role=group] > label, [role=option]';
 
 /* Selector for selectable options in the dropdown. */
 const SELECTABLE_ITEMS_SELECTOR = '[role=option]';
@@ -105,6 +105,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
 
     if (element) {
       element.toggleAttribute('highlighted', true);
+      element.scrollIntoView({block: 'nearest'});
     }
 
     this.highlightedElement_ = element;
@@ -272,6 +273,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
     }
 
     if (!item.matches(SELECTABLE_ITEMS_SELECTOR)) {
+      item.click();
       return false;
     }
 

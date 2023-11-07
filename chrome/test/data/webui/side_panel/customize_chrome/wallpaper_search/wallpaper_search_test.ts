@@ -81,9 +81,9 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       assertEquals(
-          2,
+          1,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorComboboxA .dropdown-item')
+              .querySelectorAll('#descriptorComboboxA .category-item')
               .length);
       assertEquals(
           1,
@@ -100,6 +100,44 @@ suite('WallpaperSearchTest', () => {
           wallpaperSearchElement.shadowRoot!
               .querySelectorAll('#descriptorMenuD cr-button')
               .length);
+    });
+
+    test('expands and collapses categories', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      // No dropdown items by default since all categories are collapsed.
+      assertEquals(
+          0,
+          wallpaperSearchElement.shadowRoot!
+              .querySelectorAll('#descriptorComboboxA .dropdown-item')
+              .length);
+
+      const categoryLabel =
+          wallpaperSearchElement.shadowRoot!.querySelector<HTMLElement>(
+              '#descriptorComboboxA .category-item')!;
+      const categoryLabelIcon = categoryLabel.querySelector('iron-icon')!;
+      assertEquals('cr:expand-more', categoryLabelIcon.icon);
+
+      // Clicking on a category expands the dropdown items below it.
+      categoryLabel.click();
+      await flushTasks();
+      assertEquals(
+          2,
+          wallpaperSearchElement.shadowRoot!
+              .querySelectorAll('#descriptorComboboxA .dropdown-item')
+              .length);
+      assertEquals('cr:expand-less', categoryLabelIcon.icon);
+
+      // Clicking on the category again hides the dropdown items below it.
+      categoryLabel.click();
+      await flushTasks();
+      assertEquals(
+          0,
+          wallpaperSearchElement.shadowRoot!
+              .querySelectorAll('#descriptorComboboxA .dropdown-item')
+              .length);
+      assertEquals('cr:expand-more', categoryLabelIcon.icon);
     });
 
     test('check marks one item in descriptorMenuD at a time', async () => {
@@ -153,6 +191,10 @@ suite('WallpaperSearchTest', () => {
       });
       await flushTasks();
 
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxA .category-item')!.click();
+      await flushTasks();
       $$<HTMLElement>(
           wallpaperSearchElement,
           '#descriptorComboboxA .dropdown-item')!.click();
@@ -226,6 +268,10 @@ suite('WallpaperSearchTest', () => {
       });
       await flushTasks();
 
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxA .category-item')!.click();
+      await flushTasks();
       $$<HTMLElement>(
           wallpaperSearchElement,
           '#descriptorComboboxA .dropdown-item')!.click();

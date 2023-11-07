@@ -15,8 +15,11 @@ suite('ComboboxTest', () => {
   function addGroup(): HTMLElement {
     const group = document.createElement('div');
     group.setAttribute('role', 'group');
+    const label = document.createElement('label');
+    label.innerText = 'Group';
+    group.appendChild(label);
     combobox.appendChild(group);
-    return group;
+    return label;
   }
 
   function addOption(parent: HTMLElement = combobox): OptionElement {
@@ -134,7 +137,9 @@ suite('ComboboxTest', () => {
     // Pressing Enter or clicking on an unselectable item should not select it.
     combobox.$.input.click();
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Home'}));
+    const groupAClickEvent = eventToPromise('click', groupA);
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await groupAClickEvent;
     assertFalse(groupA.hasAttribute('selected'));
     groupA.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
     assertFalse(groupA.hasAttribute('selected'));

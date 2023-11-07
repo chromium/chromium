@@ -53,7 +53,14 @@
   }
 
   .category-item {
+    display: flex;
     font-weight: 700;
+  }
+
+  .category-item iron-icon {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    margin-inline-start: auto;
   }
 
   .category-item,
@@ -66,10 +73,12 @@
     padding: 0 20px;
   }
 
+  .category-item:hover,
   .dropdown-item:hover {
     background-color: var(--color-combobox-ink-drop-hovered);
   }
 
+  :host-context(.focus-outline-visible) .category-item[highlighted],
   :host-context(.focus-outline-visible) .dropdown-item[highlighted] {
     background: var(--color-button-background-pressed);
   }
@@ -244,12 +253,20 @@
         value="{{selectedDescriptorA_}}">
       <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
         <div class="category" role="group">
-          <span class="category-item">[[item.category]]</span>
-          <template is="dom-repeat" items="[[item.labels]]">
-            <div class="dropdown-item" role="option" value="[[item]]">
-              <iron-icon icon="cr:check"></iron-icon>
-              <span>[[item]]</span>
-            </div>
+          <label class="category-item" on-click="onComboboxCategoryClick_">
+            [[item.category]]
+            <iron-icon icon="[[
+                getCategoryIcon_(item.category, expandedCategories_.*)]]">
+            </iron-icon>
+          </label>
+          <template is="dom-if" restamp if="[[
+              isCategoryExpanded_(item.category, expandedCategories_.*)]]">
+            <template is="dom-repeat" items="[[item.labels]]">
+              <div class="dropdown-item" role="option" value="[[item]]">
+                <iron-icon icon="cr:check"></iron-icon>
+                <span>[[item]]</span>
+              </div>
+            </template>
           </template>
         </div>
       </template>

@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
@@ -89,6 +90,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         computed: 'computeErrorState_(status_)',
       },
       emptyContainers_: Object,
+      expandedCategories_: Object,
       loading_: {
         type: Boolean,
         value: false,
@@ -116,6 +118,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private emptyContainers_: number[];
   private errorCallback_: (() => void)|undefined;
   private errorState_: ErrorState|null = null;
+  private expandedCategories_: {[category: string]: boolean} = {};
   private loading_: boolean;
   private results_: WallpaperSearchResult[];
   private selectedDefaultColor_: string|undefined;
@@ -255,6 +258,11 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     }
   }
 
+  private getCategoryIcon_(category: string): string {
+    return this.expandedCategories_[category] ? 'cr:expand-less' :
+                                                'cr:expand-more';
+  }
+
   private isBackgroundSelected_(id: Token): boolean {
     return !!(
         this.theme_ && this.theme_.backgroundImage &&
@@ -263,12 +271,22 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.theme_.backgroundImage.localBackgroundId.high === id.high);
   }
 
+  private isCategoryExpanded_(category: string): boolean {
+    return this.expandedCategories_[category];
+  }
+
   private isDefaultColorSelected_(color: string): boolean {
     return color === this.selectedDefaultColor_;
   }
 
   private async onBackClick_() {
     this.dispatchEvent(new Event('back-click'));
+  }
+
+  private onComboboxCategoryClick_(e: DomRepeatEvent<DescriptorA>) {
+    const category = e.model.item.category;
+    this.set(
+        `expandedCategories_.${category}`, !this.expandedCategories_[category]);
   }
 
   private onCustomColorClick_() {
