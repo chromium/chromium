@@ -19578,32 +19578,6 @@
             ]
         }
     ],
-    "V8MidtierRegallocFallback": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "V8MidtierRegallocFallback"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "enable_features": [
-                        "V8MidtierRegallocFallback"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8MinorMS": [
         {
             "platforms": [
