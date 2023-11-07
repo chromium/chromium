@@ -360,8 +360,9 @@ TEST_P(ShoppingServiceTest,
       {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
       {});
 
-  std::string json("{\"image\": \"" + std::string(kImageUrl) + "\"}");
-  base::Value js_result(json);
+  auto result = base::Value::Dict();
+  result.Set("image", std::string(kImageUrl));
+  base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);
 
   // Assume the page hasn't finished loading.
@@ -433,8 +434,9 @@ TEST_P(ShoppingServiceTest,
   test_features_.InitWithFeatures(
       {kCommerceAllowLocalImages, kCommerceAllowServerImages}, {});
 
-  std::string json("{\"image\": \"" + std::string(kImageUrl) + "\"}");
-  base::Value js_result(json);
+  auto result = base::Value::Dict();
+  result.Set("image", std::string(kImageUrl));
+  base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);
 
   // Assume the page has already loaded for the navigation. This is usually the

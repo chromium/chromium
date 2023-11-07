@@ -3,6 +3,8 @@ include_rules = [
   "+components/optimization_guide",
   "+components/prefs",
   "+content/public",
+  "+mojo/public/cpp/bindings",
+  "+services/service_manager/public/cpp",
   "+ui/base",
   "+ui/webui",
 ]

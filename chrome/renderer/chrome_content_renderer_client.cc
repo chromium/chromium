@@ -71,6 +71,7 @@
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/commerce/content/renderer/commerce_web_extractor.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/content_capture/renderer/content_capture_sender.h"
@@ -764,6 +765,10 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   MultilineDetector::InstallIfNecessary(render_frame);
 #endif
+
+  if (render_frame->IsMainFrame()) {
+    new commerce::CommerceWebExtractor(render_frame, registry);
+  }
 }
 
 void ChromeContentRendererClient::WebViewCreated(

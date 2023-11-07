@@ -9,6 +9,7 @@ include_rules = [
   "+components/autofill/core/common",
   "+components/cdm/renderer",
   "+components/client_hints/common",
+  "+components/commerce/content/renderer",
   "+components/content_capture/common",
   "+components/content_capture/renderer",
   "+components/content_settings/core/common",

@@ -149,6 +149,7 @@ static_library("renderer") {
     "//components/autofill/core/common:features",
     "//components/base32",
     "//components/cdm/renderer",
+    "//components/commerce/content/renderer",
     "//components/commerce/core:commerce_heuristics_data",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:heuristics_provider",

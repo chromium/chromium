@@ -73,18 +73,6 @@ class SyncService;
 
 namespace commerce {
 
-// Open graph keys.
-extern const char kOgImage[];
-extern const char kOgPriceAmount[];
-extern const char kOgPriceCurrency[];
-extern const char kOgProductLink[];
-extern const char kOgTitle[];
-extern const char kOgType[];
-
-// Specific open graph values we're interested in.
-extern const char kOgTypeOgProduct[];
-extern const char kOgTypeProductItem[];
-
 // The conversion multiplier to go from standard currency units to
 // micro-currency units.
 extern const long kToMicroCurrency;
@@ -542,12 +530,6 @@ class ShoppingService : public KeyedService,
   // Handle the result of running the local extraction fallback for product
   // info.
   void OnProductInfoLocalExtractionResult(const GURL url, base::Value result);
-
-  // Handle the result of JSON parsing obtained from running local extraction on
-  // the product info page.
-  void OnProductInfoJsonSanitizationCompleted(
-      const GURL url,
-      data_decoder::DataDecoder::ValueOrError result);
 
   // Tries to determine whether a page is a PDP only from information in meta
   // tags extracted from the page. If enough information is present to call the

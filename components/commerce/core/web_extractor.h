@@ -23,7 +23,7 @@ class WebExtractor {
   // results via `callback`.
   virtual void ExtractMetaInfo(
       WebWrapper* web_wrapper,
-      base::OnceCallback<void(const base::Value)> callback) = 0;
+      base::OnceCallback<void(base::Value)> callback) = 0;
 
  private:
   base::WeakPtrFactory<WebExtractor> weak_ptr_factory_{this};

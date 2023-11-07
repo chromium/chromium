@@ -54,4 +54,11 @@ void WebContentsWrapper::ClearWebContentsPointer() {
   web_contents_ = nullptr;
 }
 
+content::RenderFrameHost* WebContentsWrapper::GetPrimaryMainFrame() {
+  if (!web_contents_) {
+    return nullptr;
+  }
+  return web_contents_->GetPrimaryMainFrame();
+}
+
 }  // namespace commerce

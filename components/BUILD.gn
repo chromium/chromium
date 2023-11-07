@@ -503,6 +503,7 @@ test("components_unittests") {
       ":components_tests_pak_bundle_data",
       "//components/autofill/ios/browser:unit_tests",
       "//components/autofill/ios/form_util:unit_tests",
+      "//components/commerce/ios/browser:unit_tests",
       "//components/crash/core/app:unit_tests",
       "//components/feed/core/v2/public/ios:feed_ios_unit_tests",
       "//components/image_fetcher/ios:unit_tests",
@@ -525,6 +526,7 @@ test("components_unittests") {
     deps += [
       "//components/background_sync:unit_tests",
       "//components/blocked_content:unit_tests",
+      "//components/commerce/content/browser:unit_tests",
       "//components/content_settings/browser:unit_tests",
       "//components/content_settings/browser/ui:unit_tests",
       "//components/feed/core/v2:core_unit_tests",

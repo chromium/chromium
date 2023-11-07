@@ -18,6 +18,10 @@ namespace base {
 class Value;
 }  // namespace base
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace commerce {
 
 // A WebWrapper backed by content::WebContents.
@@ -42,6 +46,8 @@ class WebContentsWrapper : public WebWrapper {
       base::OnceCallback<void(const base::Value)> callback) override;
 
   void ClearWebContentsPointer();
+
+  content::RenderFrameHost* GetPrimaryMainFrame();
 
  private:
   raw_ptr<content::WebContents> web_contents_;
