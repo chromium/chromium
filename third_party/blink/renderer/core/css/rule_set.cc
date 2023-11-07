@@ -188,6 +188,21 @@ void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope,
   // as many as 255 descendant selectors.
   bloom_hash_size_ =
       std::min<uint32_t>(bloom_hash_backing.size() - bloom_hash_pos_, 255);
+
+  // If we've already got the exact same set of hashes in the vector,
+  // we can simply reuse those, saving a bit of memory and cache space.
+  // We only check the trivial case of a tail match; we could go with
+  // something like a full suffix tree solution, but this is simple and
+  // captures most of the benefits. (It is fairly common, especially with
+  // nesting, to have the same sets of parents in consecutive rules.)
+  if (bloom_hash_size_ > 0 && bloom_hash_pos_ >= bloom_hash_size_ &&
+      std::equal(
+          bloom_hash_backing.begin() + bloom_hash_pos_ - bloom_hash_size_,
+          bloom_hash_backing.begin() + bloom_hash_pos_,
+          bloom_hash_backing.begin() + bloom_hash_pos_)) {
+    bloom_hash_backing.resize(bloom_hash_pos_);
+    bloom_hash_pos_ -= bloom_hash_size_;
+  }
 }
 
 void RuleData::MovedToDifferentRuleSet(const Vector<unsigned>& old_backing,
