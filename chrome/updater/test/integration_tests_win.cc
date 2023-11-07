@@ -1199,6 +1199,7 @@ HRESULT DoUpdate(UpdaterScope scope,
 
   LONG state_value = 0;
   LONG error_code = 0;
+  std::wstring extra_data;
   while (!done && (timer.Elapsed() < kExpirationTimeout)) {
     Microsoft::WRL::ComPtr<IDispatch> app_dispatch;
     EXPECT_HRESULT_SUCCEEDED(bundle->get_appWeb(0, &app_dispatch));
@@ -1219,9 +1220,9 @@ HRESULT DoUpdate(UpdaterScope scope,
                                : __uuidof(ICurrentStateUser),
         IID_PPV_ARGS_Helper(&state)));
     EXPECT_HRESULT_SUCCEEDED(state->get_stateValue(&state_value));
+    EXPECT_HRESULT_SUCCEEDED(state->get_errorCode(&error_code));
 
     std::wstring state_description;
-    std::wstring extra_data;
     done = state_value == expected_final_state;
     switch (state_value) {
       case STATE_INIT:
@@ -1317,7 +1318,6 @@ HRESULT DoUpdate(UpdaterScope scope,
 
       case STATE_ERROR: {
         state_description = L"Error!";
-        EXPECT_HRESULT_SUCCEEDED(state->get_errorCode(&error_code));
         base::win::ScopedBstr completion_message;
         EXPECT_HRESULT_SUCCEEDED(
             state->get_completionMessage(completion_message.Receive()));
@@ -1341,9 +1341,9 @@ HRESULT DoUpdate(UpdaterScope scope,
 
   EXPECT_TRUE(done)
       << "The test timed out, consider increasing kExpirationTimeout which is: "
-      << kExpirationTimeout;
-  EXPECT_EQ(expected_final_state, state_value);
-  EXPECT_EQ(expected_error_code, error_code);
+      << kExpirationTimeout << ": " << extra_data;
+  EXPECT_EQ(expected_final_state, state_value) << extra_data;
+  EXPECT_EQ(expected_error_code, error_code) << extra_data;
   return S_OK;
 }
 

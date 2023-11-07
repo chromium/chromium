@@ -2597,6 +2597,45 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
   }
 }
 
+TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
+  if (GetParam().interactive_install) {
+    GTEST_SKIP();
+  }
+
+  const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
+  const bool should_install_successfully =
+      !GetParam().error_code ||
+      GetParam().error_code == ERROR_SUCCESS_REBOOT_REQUIRED;
+
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallApp(kMsiAppId, base::Version({0, 0, 0, 0})));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
+      test_server_.get(), kMsiAppId, UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), kMsiUpdatedVersion));
+
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
+      {
+          AppUpdateExpectation(
+              GetParam().command_line_args, kMsiAppId,
+              base::Version({0, 0, 0, 0}), kMsiUpdatedVersion,
+              /*is_install=*/false, should_install_successfully, false, "", "",
+              crx_relative_path,
+              /*always_serve_crx=*/GetParam().custom_app_response.empty(),
+              UpdateService::ErrorCategory::kInstall, GetParam().error_code,
+              /*EVENT_UPDATE_COMPLETE=*/3, GetParam().custom_app_response),
+      });
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
+      kMsiAppId, AppBundleWebCreateMode::kCreateInstalledApp,
+      should_install_successfully ? STATE_INSTALL_COMPLETE : STATE_ERROR,
+      GetParam().error_code));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
