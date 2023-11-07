@@ -9809,7 +9809,6 @@ test("unit_tests") {
       "../browser/ui/views/frame/browser_view_unittest.cc",
       "../browser/ui/views/frame/tab_strip_region_view_unittest.cc",
       "../browser/ui/views/frame/web_contents_close_handler_unittest.cc",
-      "../browser/ui/views/global_media_controls/media_item_ui_cast_footer_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_item_ui_device_selector_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_item_ui_footer_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_item_ui_legacy_cast_footer_view_unittest.cc",
@@ -9956,7 +9955,10 @@ test("unit_tests") {
   if (use_nss_certs) {
     sources += [ "../browser/certificate_manager_model_unittest.cc" ]
     if (is_chromeos) {
-      sources += [ "../browser/net/nss_temp_certs_cache_chromeos_unittest.cc" ]
+      sources += [
+        "../browser/net/nss_temp_certs_cache_chromeos_unittest.cc",
+        "../browser/ui/views/global_media_controls/media_item_ui_cast_footer_view_unittest.cc",
+      ]
     }
   }
   if (!is_android && use_nss_certs) {
