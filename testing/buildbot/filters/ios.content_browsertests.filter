@@ -280,6 +280,9 @@
 # TODO(crbug.com/1495761): Text area handle has shrunk.
 -FormControlsBrowserTest.Textarea
 
+# TODO(crbug.com/1500334): Flakily fails on the platform.
+-ThirdPartyCookiesContentSecurityPolicyBrowserTest.CSPMediaThirdPartyCookieBlocking
+
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/DumpAccessibilityTreeTest.AccessibilitySelectListOpen/blink1
