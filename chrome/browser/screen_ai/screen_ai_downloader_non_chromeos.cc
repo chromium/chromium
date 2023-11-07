@@ -4,6 +4,7 @@
 
 #include "chrome/browser/screen_ai/screen_ai_downloader_non_chromeos.h"
 
+#include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/screen_ai_component_installer.h"
@@ -18,6 +19,12 @@ namespace screen_ai {
 // static
 std::unique_ptr<ScreenAIInstallState> ScreenAIInstallState::Create() {
   return std::make_unique<ScreenAIDownloaderNonChromeOS>();
+}
+
+// static
+ScreenAIInstallState* ScreenAIInstallState::CreateForTesting() {
+  static base::NoDestructor<ScreenAIDownloaderNonChromeOS> install_state;
+  return install_state.get();
 }
 
 ScreenAIDownloaderNonChromeOS::ScreenAIDownloaderNonChromeOS() {

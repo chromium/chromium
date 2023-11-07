@@ -6,15 +6,16 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -50,7 +51,13 @@ ScreenAIInstallState* g_instance = nullptr;
 
 // static
 ScreenAIInstallState* ScreenAIInstallState::GetInstance() {
-  return g_instance;
+  if (g_instance) {
+    return g_instance;
+  }
+  // `!g_instance` only happens in unit tests in which a browser instance is
+  // not created. Assert that this code path is only taken in tests.
+  CHECK_IS_TEST();
+  return ScreenAIInstallState::CreateForTesting();
 }
 
 // static

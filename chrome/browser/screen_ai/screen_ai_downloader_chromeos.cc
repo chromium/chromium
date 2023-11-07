@@ -4,6 +4,7 @@
 
 #include "chrome/browser/screen_ai/screen_ai_downloader_chromeos.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -44,6 +45,12 @@ namespace screen_ai {
 // static
 std::unique_ptr<ScreenAIInstallState> ScreenAIInstallState::Create() {
   return std::make_unique<ScreenAIDownloaderChromeOS>();
+}
+
+// static
+ScreenAIInstallState* ScreenAIInstallState::CreateForTesting() {
+  static base::NoDestructor<ScreenAIDownloaderChromeOS> install_state;
+  return install_state.get();
 }
 
 ScreenAIDownloaderChromeOS::ScreenAIDownloaderChromeOS() {

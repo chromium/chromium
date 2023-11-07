@@ -48,9 +48,10 @@ class ScreenAIInstallState {
 
   static ScreenAIInstallState* GetInstance();
 
-  // This function is implemented in `ScreenAIDownloaderChromeOS` and
+  // These functions are implemented in `ScreenAIDownloaderChromeOS` and
   // `ScreenAIDownloaderNonChromeOS`.
   static std::unique_ptr<ScreenAIInstallState> Create();
+  static ScreenAIInstallState* CreateForTesting();
 
   // Verifies that the library version is compatible with current Chromium
   // version. Will be used to avoid accepting the library if a newer version is
