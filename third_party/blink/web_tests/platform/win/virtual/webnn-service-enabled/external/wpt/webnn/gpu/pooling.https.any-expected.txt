@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+[PASS] averagePool2d float32 4D tensor all positive default options / async
+[PASS] averagePool2d float32 4D tensor all negative default options / async
+[PASS] averagePool2d float32 4D tensor options.windowDimensions / async
+[PASS] averagePool2d float32 4D tensor options.padding / async
+[PASS] averagePool2d float32 4D tensor options.strides / async
+[FAIL] averagePool2d float32 4D tensor options.dilations / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Dilations are not supported for average pooling operator."
+[PASS] averagePool2d float32 4D tensor options.autoPad=explicit / async
+[PASS] averagePool2d float32 4D tensor options.autoPad=same-upper / async
+[PASS] averagePool2d float32 4D tensor options.autoPad=same-lower / async
+[PASS] averagePool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / async
+[PASS] averagePool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / async
+[PASS] averagePool2d float32 4D tensor options.layout=nchw / async
+[PASS] averagePool2d float32 4D tensor options.layout=nhwc / async
+[PASS] averagePool2d float32 4D tensor options.roundingType=floor / async
+[PASS] averagePool2d float32 4D tensor options.roundingType=ceil / async
+[PASS] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / async
+[PASS] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / async
+[PASS] averagePool2d float32 4D tensor options.dilations with options.strides / async
+[PASS] maxPool2d float32 4D tensor default options / async
+[PASS] maxPool2d float32 4D tensor options.windowDimensions / async
+[PASS] maxPool2d float32 4D tensor options.padding / async
+[PASS] maxPool2d float32 4D tensor options.strides / async
+[PASS] maxPool2d float32 4D tensor options.dilations / async
+[PASS] maxPool2d float32 4D tensor options.autoPad=explicit / async
+[PASS] maxPool2d float32 4D tensor options.autoPad=same-upper / async
+[PASS] maxPool2d float32 4D tensor options.autoPad=same-lower / async
+[PASS] maxPool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / async
+[PASS] maxPool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / async
+[PASS] maxPool2d float32 4D tensor options.layout=nchw / async
+[PASS] maxPool2d float32 4D tensor options.layout=nhwc / async
+[PASS] maxPool2d float32 4D tensor options.roundingType=floor / async
+[PASS] maxPool2d float32 4D tensor options.roundingType=ceil / async
+[PASS] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / async
+[PASS] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / async
+[PASS] maxPool2d float32 4D tensor options.dilations with options.strides / async
+Harness: the test ran to completion.
+

@@ -2653,5 +2653,16 @@
     ],
     "args": ["--enable-features=GenericSensorExtraClasses"],
     "expires": "never"
+  },
+  {
+    "prefix": "webnn-service-enabled",
+    "platforms": ["Win"],
+    "bases": [
+      "external/wpt/webnn/gpu"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--use-gpu-in-tests", "--enable-features=MachineLearningNeuralNetworkService"],
+    "expires": "Jun 1, 2024",
+    "owners": ["rafael.cintron@microsoft.com", "ningxin.hu@intel.com", "kbr@chromium.org"]
   }
 ]
