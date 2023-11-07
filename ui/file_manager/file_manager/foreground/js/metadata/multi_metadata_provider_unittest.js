@@ -91,10 +91,18 @@ export function testMultiMetadataProviderBasic(callback) {
             return Promise.resolve([]);
           }
           assertEquals(2, requests.length);
-          assertEquals('filesystem://A', requests[0].entry.toURL());
-          assertEquals('filesystem://B', requests[1].entry.toURL());
-          assertArrayEquals(['contentThumbnailUrl'], requests[0].names);
-          assertArrayEquals(['contentThumbnailUrl'], requests[1].names);
+          assertEquals(
+              'filesystem://A',
+              /** @type {!MetadataRequest} */ (requests[0]).entry.toURL());
+          assertEquals(
+              'filesystem://B',
+              /** @type {!MetadataRequest} */ (requests[1]).entry.toURL());
+          assertArrayEquals(
+              ['contentThumbnailUrl'],
+              /** @type {!MetadataRequest} */ (requests[0]).names);
+          assertArrayEquals(
+              ['contentThumbnailUrl'],
+              /** @type {!MetadataRequest} */ (requests[1]).names);
           return Promise.resolve([
             {contentThumbnailUrl: 'THUMBNAIL_URL_A'},
             {contentThumbnailUrl: 'THUMBNAIL_URL_B'},
@@ -172,7 +180,9 @@ export function testMultiMetadataProviderExternalAndContentProperty(callback) {
             'filesystem://C': {imageWidth: 300},
           };
           assertEquals(1, requests.length);
-          assertTrue(requests[0].entry.toURL() in results);
+          assertTrue(
+              /** @type {!MetadataRequest} */ (requests[0]).entry.toURL() in
+              results);
           // @ts-ignore: error TS7053: Element implicitly has an 'any' type
           // because expression of type 'any' can't be used to index type '{
           // 'filesystem://A': { imageWidth: number; }; 'filesystem://C': {

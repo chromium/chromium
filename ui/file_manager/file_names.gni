@@ -116,7 +116,6 @@ static_js_files = [
   "file_manager/foreground/js/toolbar_controller.js",
 
   # Metadata:
-  "file_manager/foreground/js/metadata/content_metadata_provider.js",
   "file_manager/foreground/js/metadata/dlp_metadata_provider.js",
   "file_manager/foreground/js/metadata/exif_parser.js",
   "file_manager/foreground/js/metadata/external_metadata_provider.js",
@@ -324,6 +323,7 @@ ts_files = [
 
   # Metadata:
   "file_manager/foreground/js/metadata/byte_reader.ts",
+  "file_manager/foreground/js/metadata/content_metadata_provider.ts",
   "file_manager/foreground/js/metadata/exif_constants.ts",
   "file_manager/foreground/js/metadata/file_system_metadata_provider.ts",
   "file_manager/foreground/js/metadata/metadata_item.ts",
@@ -457,6 +457,7 @@ ts_test_files = [
   "file_manager/foreground/js/ui/splitter_unittest.ts",
 
   # Metadata:
+  "file_manager/foreground/js/metadata/content_metadata_provider_unittest.ts",
   "file_manager/foreground/js/metadata/file_system_metadata_provider_unittest.ts",
 ]
 
@@ -533,7 +534,6 @@ unittest_files = [
   "file_manager/foreground/js/metadata/exif_parser_unittest.js",
   "file_manager/foreground/js/metadata/thumbnail_model_unittest.js",
   "file_manager/foreground/js/metadata/metadata_model_unittest.js",
-  "file_manager/foreground/js/metadata/content_metadata_provider_unittest.js",
   "file_manager/foreground/js/metadata/external_metadata_provider_unittest.js",
   "file_manager/foreground/js/metadata/metadata_cache_set_unittest.js",
   "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.js",

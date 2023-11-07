@@ -97,6 +97,8 @@ export class MetadataParser {
     };
     fileReader.readAsArrayBuffer(file.slice(begin, end));
   }
+
+  // TODO(cleanup): Add parse() abstract method which fills in a ParserMetadata.
 }
 
 /**

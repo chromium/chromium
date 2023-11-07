@@ -144,6 +144,8 @@ export class MetadataItem {
    */
   ifd?: object;
 
+  ifdError?: Error;
+
   exifLittleEndian?: boolean;
 
   canCopy?: boolean;
@@ -206,4 +208,15 @@ export class MetadataItem {
    * "completed" sync status.
    */
   syncCompletedTime?: number;
+}
+
+export class ParserMetadata {
+  imageTransform?: ImageTransformation;
+  thumbnailTransform?: ImageTransformation;
+  thumbnailURL?: string;
+  littleEndian?: boolean;
+  ifd?: object;
+  height?: number;
+  width?: number;
+  mimeType?: string;
 }

@@ -69,6 +69,8 @@ class MetadataDispatcher {
   init_() {
     // Inform our owner that we're done initializing.
     // If we need to pass more data back, we can add it to the param array.
+    // TODO(cleanup): parserRegexp_ looks unused in content_metadata_provider
+    // and in this file, too.
     this.postMessage('initialized', [this.parserRegexp_]);
     this.vlog('initialized with URL filter ' + this.parserRegexp_);
   }
@@ -103,6 +105,9 @@ class MetadataDispatcher {
   // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
   // read.
   error(var_args) {
+    // TODO(cleanup): Strictly type these arguments to the [url, step, cause]
+    // format that ContentMetadataProvider expects.
+
     // @ts-ignore: error TS2345: Argument of type 'IArguments' is not assignable
     // to parameter of type 'unknown[]'.
     const ary = Array.apply(null, arguments);
