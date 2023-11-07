@@ -104,8 +104,8 @@ HostMappingRules::RewriteResult HostMappingRules::RewriteUrl(GURL& url) const {
   return RewriteResult::kRewritten;
 }
 
-bool HostMappingRules::AddRuleFromString(base::StringPiece rule_string) {
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+bool HostMappingRules::AddRuleFromString(std::string_view rule_string) {
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       base::TrimWhitespaceASCII(rule_string, base::TRIM_ALL), " ",
       base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
@@ -135,13 +135,13 @@ bool HostMappingRules::AddRuleFromString(base::StringPiece rule_string) {
   return false;
 }
 
-void HostMappingRules::SetRulesFromString(base::StringPiece rules_string) {
+void HostMappingRules::SetRulesFromString(std::string_view rules_string) {
   exclusion_rules_.clear();
   map_rules_.clear();
 
-  std::vector<base::StringPiece> rules = base::SplitStringPiece(
+  std::vector<std::string_view> rules = base::SplitStringPiece(
       rules_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (base::StringPiece rule : rules) {
+  for (std::string_view rule : rules) {
     bool ok = AddRuleFromString(rule);
     LOG_IF(ERROR, !ok) << "Failed parsing rule: " << rule;
   }

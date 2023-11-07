@@ -5,6 +5,8 @@
 #include "net/base/isolation_info.h"
 
 #include <iostream>
+#include <optional>
+
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,7 +18,6 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -87,7 +88,7 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 void DuplicateAndCompare(const IsolationInfo& isolation_info) {
-  absl::optional<IsolationInfo> duplicate_isolation_info =
+  std::optional<IsolationInfo> duplicate_isolation_info =
       IsolationInfo::CreateIfConsistent(
           isolation_info.request_type(), isolation_info.top_frame_origin(),
           isolation_info.frame_origin(), isolation_info.site_for_cookies(),
@@ -291,7 +292,7 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrameWithNonce) {
   EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
@@ -309,7 +310,7 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrameWithNonce) {
       redirected_isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_TRUE(redirected_isolation_info.network_isolation_key().IsTransient());
   EXPECT_EQ(
-      absl::nullopt,
+      std::nullopt,
       redirected_isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(redirected_isolation_info.site_for_cookies().IsFirstParty(
       kOrigin3.GetURL()));
@@ -326,7 +327,7 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrameWithNonce) {
   EXPECT_EQ(kOrigin2, isolation_info.frame_origin());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
@@ -344,7 +345,7 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrameWithNonce) {
       redirected_isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_TRUE(redirected_isolation_info.network_isolation_key().IsTransient());
   EXPECT_EQ(
-      absl::nullopt,
+      std::nullopt,
       redirected_isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(redirected_isolation_info.site_for_cookies().IsFirstParty(
       kOrigin1.GetURL()));
@@ -542,26 +543,26 @@ TEST_P(IsolationInfoTest, CreateIfConsistentFails) {
 
   // Correctly have empty/non-empty origins:
   EXPECT_TRUE(IsolationInfo::CreateIfConsistent(
-      IsolationInfo::RequestType::kOther, absl::nullopt, absl::nullopt,
+      IsolationInfo::RequestType::kOther, std::nullopt, std::nullopt,
       SiteForCookies()));
 
   // Incorrectly have empty/non-empty origins:
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
-      IsolationInfo::RequestType::kOther, absl::nullopt, kOrigin1,
+      IsolationInfo::RequestType::kOther, std::nullopt, kOrigin1,
       SiteForCookies()));
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
-      IsolationInfo::RequestType::kSubFrame, absl::nullopt, kOrigin2,
+      IsolationInfo::RequestType::kSubFrame, std::nullopt, kOrigin2,
       SiteForCookies()));
 
   // Empty frame origins are incorrect.
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
-      IsolationInfo::RequestType::kOther, kOrigin1, absl::nullopt,
+      IsolationInfo::RequestType::kOther, kOrigin1, std::nullopt,
       SiteForCookies()));
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
-      IsolationInfo::RequestType::kSubFrame, kOrigin1, absl::nullopt,
+      IsolationInfo::RequestType::kSubFrame, kOrigin1, std::nullopt,
       SiteForCookies()));
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
-      IsolationInfo::RequestType::kMainFrame, kOrigin1, absl::nullopt,
+      IsolationInfo::RequestType::kMainFrame, kOrigin1, std::nullopt,
       SiteForCookies::FromOrigin(kOrigin1)));
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
       IsolationInfo::RequestType::kOther, kOrigin1, kOrigin2,
@@ -569,12 +570,12 @@ TEST_P(IsolationInfoTest, CreateIfConsistentFails) {
 
   // No origins with non-null SiteForCookies.
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
-      IsolationInfo::RequestType::kOther, absl::nullopt, absl::nullopt,
+      IsolationInfo::RequestType::kOther, std::nullopt, std::nullopt,
       SiteForCookies::FromOrigin(kOrigin1)));
 
   // No origins with non-null nonce.
   EXPECT_FALSE(IsolationInfo::CreateIfConsistent(
-      IsolationInfo::RequestType::kOther, absl::nullopt, absl::nullopt,
+      IsolationInfo::RequestType::kOther, std::nullopt, std::nullopt,
       SiteForCookies(), kNonce1));
 }
 

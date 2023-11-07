@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "net/base/network_anonymization_key.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -11,7 +13,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -30,7 +31,7 @@ bool g_partition_by_default_locked = false;
 NetworkAnonymizationKey::NetworkAnonymizationKey(
     const SchemefulSite& top_frame_site,
     bool is_cross_site,
-    absl::optional<base::UnguessableToken> nonce)
+    std::optional<base::UnguessableToken> nonce)
     : top_frame_site_(top_frame_site),
       is_cross_site_(is_cross_site),
       nonce_(nonce) {
@@ -40,7 +41,7 @@ NetworkAnonymizationKey::NetworkAnonymizationKey(
 NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromFrameSite(
     const SchemefulSite& top_frame_site,
     const SchemefulSite& frame_site,
-    absl::optional<base::UnguessableToken> nonce) {
+    std::optional<base::UnguessableToken> nonce) {
   bool is_cross_site = top_frame_site != frame_site;
   return NetworkAnonymizationKey(top_frame_site, is_cross_site, nonce);
 }
@@ -63,9 +64,9 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
 }
 
 NetworkAnonymizationKey::NetworkAnonymizationKey()
-    : top_frame_site_(absl::nullopt),
+    : top_frame_site_(std::nullopt),
       is_cross_site_(false),
-      nonce_(absl::nullopt) {}
+      nonce_(std::nullopt) {}
 
 NetworkAnonymizationKey::NetworkAnonymizationKey(
     const NetworkAnonymizationKey& network_anonymization_key) = default;
@@ -128,7 +129,7 @@ bool NetworkAnonymizationKey::ToValue(base::Value* out_value) const {
   if (IsTransient())
     return false;
 
-  absl::optional<std::string> top_frame_value =
+  std::optional<std::string> top_frame_value =
       SerializeSiteWithNonce(*top_frame_site_);
   if (!top_frame_value)
     return false;
@@ -160,7 +161,7 @@ bool NetworkAnonymizationKey::FromValue(
   }
 
   // Check top_level_site is valid for any key scheme
-  absl::optional<SchemefulSite> top_frame_site =
+  std::optional<SchemefulSite> top_frame_site =
       SchemefulSite::DeserializeWithNonce(
           base::PassKey<NetworkAnonymizationKey>(), list[0].GetString());
   if (!top_frame_site) {
@@ -175,11 +176,11 @@ bool NetworkAnonymizationKey::FromValue(
 }
 
 std::string NetworkAnonymizationKey::GetSiteDebugString(
-    const absl::optional<SchemefulSite>& site) const {
+    const std::optional<SchemefulSite>& site) const {
   return site ? site->GetDebugString() : "null";
 }
 
-absl::optional<std::string> NetworkAnonymizationKey::SerializeSiteWithNonce(
+std::optional<std::string> NetworkAnonymizationKey::SerializeSiteWithNonce(
     const SchemefulSite& site) {
   return *(const_cast<SchemefulSite&>(site).SerializeWithNonce(
       base::PassKey<NetworkAnonymizationKey>()));

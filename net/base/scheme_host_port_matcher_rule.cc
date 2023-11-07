@@ -30,8 +30,8 @@ std::string AddBracketsIfIPv6(const IPAddress& ip_address) {
 // static
 std::unique_ptr<SchemeHostPortMatcherRule>
 SchemeHostPortMatcherRule::FromUntrimmedRawString(
-    base::StringPiece raw_untrimmed) {
-  base::StringPiece raw =
+    std::string_view raw_untrimmed) {
+  std::string_view raw =
       base::TrimWhitespaceASCII(raw_untrimmed, base::TRIM_ALL);
 
   // Extract any scheme-restriction.

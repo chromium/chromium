@@ -7,7 +7,8 @@
 
 #include <stddef.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "net/base/net_export.h"
 
 namespace net {
@@ -47,7 +48,7 @@ NET_EXPORT int LookupStringInFixedSet(const unsigned char* graph,
 int LookupSuffixInReversedSet(const unsigned char* graph,
                               size_t length,
                               bool include_private,
-                              base::StringPiece host,
+                              std::string_view host,
                               size_t* suffix_length);
 
 // FixedSetIncrementalLookup provides efficient membership and prefix queries

@@ -6,8 +6,8 @@
 #define NET_BASE_PROXY_STRING_UTIL_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -49,9 +49,9 @@ namespace net {
 //   "QUIC foopy:123"   {scheme=QUIC, host="foopy", port=123}
 //   "BLAH xxx:xx"      INVALID
 NET_EXPORT ProxyChain
-PacResultElementToProxyChain(base::StringPiece pac_result_element);
+PacResultElementToProxyChain(std::string_view pac_result_element);
 NET_EXPORT ProxyServer
-PacResultElementToProxyServer(base::StringPiece pac_result_element);
+PacResultElementToProxyServer(std::string_view pac_result_element);
 NET_EXPORT std::string ProxyChainToPacResultElement(
     const ProxyChain& proxy_chain);
 NET_EXPORT std::string ProxyServerToPacResultElement(
@@ -89,18 +89,17 @@ NET_EXPORT std::string ProxyServerToPacResultElement(
 //   "quic://foopy:17"  {scheme=QUIC, host="foopy", port=17}
 //   "direct://"        {scheme=DIRECT}
 //   "foopy:X"          INVALID -- bad port.
-NET_EXPORT ProxyChain ProxyUriToProxyChain(base::StringPiece uri,
+NET_EXPORT ProxyChain ProxyUriToProxyChain(std::string_view uri,
                                            ProxyServer::Scheme default_scheme);
 NET_EXPORT ProxyServer
-ProxyUriToProxyServer(base::StringPiece uri,
-                      ProxyServer::Scheme default_scheme);
+ProxyUriToProxyServer(std::string_view uri, ProxyServer::Scheme default_scheme);
 NET_EXPORT std::string ProxyServerToProxyUri(const ProxyServer& proxy_server);
 
 // Parses the proxy scheme from the non-standard URI scheme string
 // representation used in `ProxyUriToProxyServer()` and
 // `ProxyServerToProxyUri()`. If no type could be matched, returns
 // SCHEME_INVALID.
-NET_EXPORT ProxyServer::Scheme GetSchemeFromUriScheme(base::StringPiece scheme);
+NET_EXPORT ProxyServer::Scheme GetSchemeFromUriScheme(std::string_view scheme);
 
 }  // namespace net
 

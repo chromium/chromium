@@ -10,10 +10,10 @@
 #include <string.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 
@@ -70,7 +70,7 @@ class NET_EXPORT HashValue {
 
   // Deserializes a HashValue from a string. Returns false if the input is not
   // valid.
-  bool FromString(base::StringPiece input);
+  bool FromString(std::string_view input);
 
   // Serializes the HashValue to a string.
   std::string ToString() const;

@@ -13,7 +13,7 @@
 
 namespace net {
 
-base::StringPiece TransportTypeToString(TransportType type) {
+std::string_view TransportTypeToString(TransportType type) {
   switch (type) {
     case TransportType::kDirect:
       return "TransportType::kDirect";

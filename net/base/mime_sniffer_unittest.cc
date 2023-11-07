@@ -24,7 +24,7 @@ std::string MakeConstantString(const char (&str)[N]) {
   return std::string(str, N - 1);
 }
 
-static std::string SniffMimeType(base::StringPiece content,
+static std::string SniffMimeType(std::string_view content,
                                  const std::string& url,
                                  const std::string& mime_type_hint) {
   std::string mime_type;
@@ -74,13 +74,13 @@ TEST(MimeSnifferTest, BoundaryConditionsTest) {
 
   GURL url;
 
-  SniffMimeType(base::StringPiece(), url, type_hint,
+  SniffMimeType(std::string_view(), url, type_hint,
                 ForceSniffFileUrlsForHtml::kDisabled, &mime_type);
   EXPECT_EQ("text/plain", mime_type);
-  SniffMimeType(base::StringPiece(buf, 1), url, type_hint,
+  SniffMimeType(std::string_view(buf, 1), url, type_hint,
                 ForceSniffFileUrlsForHtml::kDisabled, &mime_type);
   EXPECT_EQ("text/plain", mime_type);
-  SniffMimeType(base::StringPiece(buf, 2), url, type_hint,
+  SniffMimeType(std::string_view(buf, 2), url, type_hint,
                 ForceSniffFileUrlsForHtml::kDisabled, &mime_type);
   EXPECT_EQ("application/octet-stream", mime_type);
 }
@@ -448,26 +448,26 @@ TEST(MimeSnifferTest, AudioVideoTest) {
   std::string mime_type;
   const char kOggTestData[] = "OggS\x00";
   EXPECT_TRUE(SniffMimeTypeFromLocalData(
-      base::StringPiece(kOggTestData, sizeof(kOggTestData) - 1), &mime_type));
+      std::string_view(kOggTestData, sizeof(kOggTestData) - 1), &mime_type));
   EXPECT_EQ("audio/ogg", mime_type);
   mime_type.clear();
   // Check ogg header requires the terminal '\0' to be sniffed.
   EXPECT_FALSE(SniffMimeTypeFromLocalData(
-      base::StringPiece(kOggTestData, sizeof(kOggTestData) - 2), &mime_type));
+      std::string_view(kOggTestData, sizeof(kOggTestData) - 2), &mime_type));
   EXPECT_EQ("", mime_type);
   mime_type.clear();
 
   const char kFlacTestData[] =
       "fLaC\x00\x00\x00\x22\x12\x00\x12\x00\x00\x00\x00\x00";
   EXPECT_TRUE(SniffMimeTypeFromLocalData(
-      base::StringPiece(kFlacTestData, sizeof(kFlacTestData) - 1), &mime_type));
+      std::string_view(kFlacTestData, sizeof(kFlacTestData) - 1), &mime_type));
   EXPECT_EQ("audio/x-flac", mime_type);
   mime_type.clear();
 
   const char kWMATestData[] =
       "\x30\x26\xb2\x75\x8e\x66\xcf\x11\xa6\xd9\x00\xaa\x00\x62\xce\x6c";
   EXPECT_TRUE(SniffMimeTypeFromLocalData(
-      base::StringPiece(kWMATestData, sizeof(kWMATestData) - 1), &mime_type));
+      std::string_view(kWMATestData, sizeof(kWMATestData) - 1), &mime_type));
   EXPECT_EQ("video/x-ms-asf", mime_type);
   mime_type.clear();
 
@@ -476,21 +476,21 @@ TEST(MimeSnifferTest, AudioVideoTest) {
   const char kMP4TestData[] =
       "\x00\x00\x00\x20\x66\x74\x79\x70\x4d\x34\x41\x20\x00\x00\x00\x00";
   EXPECT_TRUE(SniffMimeTypeFromLocalData(
-      base::StringPiece(kMP4TestData, sizeof(kMP4TestData) - 1), &mime_type));
+      std::string_view(kMP4TestData, sizeof(kMP4TestData) - 1), &mime_type));
   EXPECT_EQ("video/mp4", mime_type);
   mime_type.clear();
 
   const char kAACTestData[] =
       "\xff\xf1\x50\x80\x02\x20\xb0\x23\x0a\x83\x20\x7d\x61\x90\x3e\xb1";
   EXPECT_TRUE(SniffMimeTypeFromLocalData(
-      base::StringPiece(kAACTestData, sizeof(kAACTestData) - 1), &mime_type));
+      std::string_view(kAACTestData, sizeof(kAACTestData) - 1), &mime_type));
   EXPECT_EQ("audio/mpeg", mime_type);
   mime_type.clear();
 
   const char kAMRTestData[] =
       "\x23\x21\x41\x4d\x52\x0a\x3c\x53\x0a\x7c\xe8\xb8\x41\xa5\x80\xca";
   EXPECT_TRUE(SniffMimeTypeFromLocalData(
-      base::StringPiece(kAMRTestData, sizeof(kAMRTestData) - 1), &mime_type));
+      std::string_view(kAMRTestData, sizeof(kAMRTestData) - 1), &mime_type));
   EXPECT_EQ("audio/amr", mime_type);
   mime_type.clear();
 }
@@ -499,21 +499,21 @@ TEST(MimeSnifferTest, ImageTest) {
   std::string mime_type;
   const char kWebPSimpleFormat[] = "RIFF\xee\x81\x00\x00WEBPVP8 ";
   EXPECT_TRUE(SniffMimeTypeFromLocalData(
-      base::StringPiece(kWebPSimpleFormat, sizeof(kWebPSimpleFormat) - 1),
+      std::string_view(kWebPSimpleFormat, sizeof(kWebPSimpleFormat) - 1),
       &mime_type));
   EXPECT_EQ("image/webp", mime_type);
   mime_type.clear();
 
   const char kWebPLosslessFormat[] = "RIFF\xee\x81\x00\x00WEBPVP8L";
   EXPECT_TRUE(SniffMimeTypeFromLocalData(
-      base::StringPiece(kWebPLosslessFormat, sizeof(kWebPLosslessFormat) - 1),
+      std::string_view(kWebPLosslessFormat, sizeof(kWebPLosslessFormat) - 1),
       &mime_type));
   EXPECT_EQ("image/webp", mime_type);
   mime_type.clear();
 
   const char kWebPExtendedFormat[] = "RIFF\xee\x81\x00\x00WEBPVP8X";
   EXPECT_TRUE(SniffMimeTypeFromLocalData(
-      base::StringPiece(kWebPExtendedFormat, sizeof(kWebPExtendedFormat) - 1),
+      std::string_view(kWebPExtendedFormat, sizeof(kWebPExtendedFormat) - 1),
       &mime_type));
   EXPECT_EQ("image/webp", mime_type);
   mime_type.clear();

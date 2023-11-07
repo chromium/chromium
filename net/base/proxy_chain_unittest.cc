@@ -4,12 +4,12 @@
 
 #include "net/base/proxy_chain.h"
 
+#include <optional>
 #include <sstream>
 
 #include "base/strings/string_number_conversions.h"
 #include "net/base/proxy_string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -83,7 +83,7 @@ TEST(ProxyChainTest, FromSchemeHostAndPort) {
   const struct {
     const ProxyServer::Scheme input_scheme;
     const char* const input_host;
-    const absl::optional<uint16_t> input_port;
+    const std::optional<uint16_t> input_port;
     const char* const input_port_str;
     const char* const expected_host;
     const uint16_t expected_port;
@@ -124,11 +124,11 @@ TEST(ProxyChainTest, FromSchemeHostAndPort) {
       {ProxyServer::SCHEME_SOCKS5, "foopy", 111, "111", "foopy", 111},
 
       // Default ports
-      {ProxyServer::SCHEME_HTTP, "foopy", absl::nullopt, "", "foopy", 80},
-      {ProxyServer::SCHEME_HTTPS, "foopy", absl::nullopt, "", "foopy", 443},
-      {ProxyServer::SCHEME_QUIC, "foopy", absl::nullopt, "", "foopy", 443},
-      {ProxyServer::SCHEME_SOCKS4, "foopy", absl::nullopt, "", "foopy", 1080},
-      {ProxyServer::SCHEME_SOCKS5, "foopy", absl::nullopt, "", "foopy", 1080},
+      {ProxyServer::SCHEME_HTTP, "foopy", std::nullopt, "", "foopy", 80},
+      {ProxyServer::SCHEME_HTTPS, "foopy", std::nullopt, "", "foopy", 443},
+      {ProxyServer::SCHEME_QUIC, "foopy", std::nullopt, "", "foopy", 443},
+      {ProxyServer::SCHEME_SOCKS4, "foopy", std::nullopt, "", "foopy", 1080},
+      {ProxyServer::SCHEME_SOCKS5, "foopy", std::nullopt, "", "foopy", 1080},
   };
 
   for (size_t i = 0; i < std::size(tests); ++i) {

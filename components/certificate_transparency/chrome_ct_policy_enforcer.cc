@@ -159,15 +159,15 @@ void ChromeCTPolicyEnforcer::UpdateCTLogList(
   log_operator_history_ = std::move(log_operator_history);
 
   if (valid_google_log_for_testing_.has_value()) {
-    valid_google_log_for_testing_ = absl::nullopt;
+    valid_google_log_for_testing_ = std::nullopt;
   }
   if (disqualified_log_for_testing_.has_value()) {
-    disqualified_log_for_testing_ = absl::nullopt;
+    disqualified_log_for_testing_ = std::nullopt;
   }
 }
 
 bool ChromeCTPolicyEnforcer::IsLogDisqualified(
-    base::StringPiece log_id,
+    std::string_view log_id,
     base::Time* disqualification_date) const {
   CHECK_EQ(log_id.size(), crypto::kSHA256Length);
 
@@ -179,7 +179,7 @@ bool ChromeCTPolicyEnforcer::IsLogDisqualified(
 
   auto p = std::lower_bound(
       std::begin(disqualified_logs_), std::end(disqualified_logs_), log_id,
-      [](const auto& a, base::StringPiece b) { return a.first < b; });
+      [](const auto& a, std::string_view b) { return a.first < b; });
   if (p == std::end(disqualified_logs_) || p->first != log_id) {
     return false;
   }
@@ -191,7 +191,7 @@ bool ChromeCTPolicyEnforcer::IsLogDisqualified(
 }
 
 bool ChromeCTPolicyEnforcer::IsLogOperatedByGoogle(
-    base::StringPiece log_id) const {
+    std::string_view log_id) const {
   if (valid_google_log_for_testing_.has_value() &&
       log_id == valid_google_log_for_testing_.value()) {
     return true;
@@ -260,7 +260,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   bool has_embedded_google_sct = false;
   bool has_embedded_nongoogle_sct = false;
   bool has_diverse_log_operators = false;
-  std::vector<base::StringPiece> embedded_log_ids;
+  std::vector<std::string_view> embedded_log_ids;
   std::string first_seen_operator;
   for (const auto& sct : verified_scts) {
     base::Time disqualification_date;

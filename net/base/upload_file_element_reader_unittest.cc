@@ -47,7 +47,7 @@ class UploadFileElementReaderTest : public testing::TestWithParam<bool>,
     ASSERT_TRUE(
         base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path_));
     ASSERT_TRUE(base::WriteFile(
-        temp_file_path_, base::StringPiece(bytes_.data(), bytes_.size())));
+        temp_file_path_, std::string_view(bytes_.data(), bytes_.size())));
 
     reader_ =
         CreateReader(0, std::numeric_limits<uint64_t>::max(), base::Time());

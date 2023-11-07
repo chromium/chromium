@@ -6,10 +6,10 @@
 #define NET_BASE_FEATURES_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/crypto_buildflags.h"
@@ -176,7 +176,7 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionNelAndReportingByNetworkIsolationKey);
 // Creates a <double key + is_cross_site> NetworkIsolationKey which is used
 // to partition the HTTP cache. This key will have the following properties:
 // `top_frame_site_` -> the schemeful site of the top level page.
-// `frame_site_` -> absl::nullopt.
+// `frame_site_` -> std::nullopt.
 // `is_cross_site_` -> a boolean indicating whether the frame site is
 // schemefully cross-site from the top-level site.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableCrossSiteFlagNetworkIsolationKey);

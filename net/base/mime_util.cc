@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/base/mime_util.h"
+
 #include <algorithm>
 #include <iterator>
 #include <map>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 
 #include "base/base64.h"
@@ -14,12 +17,10 @@
 #include "base/lazy_instance.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "net/base/mime_util.h"
 #include "net/base/platform_mime_util.h"
 #include "net/http/http_util.h"
 
@@ -46,7 +47,7 @@ class MimeUtil : public PlatformMimeUtil {
   bool MatchesMimeType(const std::string& mime_type_pattern,
                        const std::string& mime_type) const;
 
-  bool ParseMimeTypeWithoutParameter(base::StringPiece type_string,
+  bool ParseMimeTypeWithoutParameter(std::string_view type_string,
                                      std::string* top_level_type,
                                      std::string* subtype) const;
 
@@ -247,7 +248,7 @@ static const char* FindMimeType(const MimeInfo (&mappings)[num_mappings],
       // including uninitialized memory if ext is longer than extensions.
       if (end_pos == ext.size() &&
           base::EqualsCaseInsensitiveASCII(
-              base::StringPiece(extensions, ext.size()), ext)) {
+              std::string_view(extensions, ext.size()), ext)) {
         return mapping.mime_type;
       }
       extensions += end_pos;
@@ -260,7 +261,7 @@ static const char* FindMimeType(const MimeInfo (&mappings)[num_mappings],
 }
 
 static base::FilePath::StringType StringToFilePathStringType(
-    base::StringPiece string_piece) {
+    std::string_view string_piece) {
 #if BUILDFLAG(IS_WIN)
   return base::UTF8ToWide(string_piece);
 #else
@@ -284,7 +285,7 @@ static bool FindPreferredExtension(const MimeInfo (&mappings)[num_mappings],
       const char* extension_end = strchr(extensions, ',');
       size_t len =
           extension_end ? extension_end - extensions : strlen(extensions);
-      *result = StringToFilePathStringType(base::StringPiece(extensions, len));
+      *result = StringToFilePathStringType(std::string_view(extensions, len));
       return true;
     }
   }
@@ -451,9 +452,9 @@ bool MimeUtil::MatchesMimeType(const std::string& mime_type_pattern,
   if (base_type.length() < base_pattern.length() - 1)
     return false;
 
-  base::StringPiece base_pattern_piece(base_pattern);
-  base::StringPiece left(base_pattern_piece.substr(0, star));
-  base::StringPiece right(base_pattern_piece.substr(star + 1));
+  std::string_view base_pattern_piece(base_pattern);
+  std::string_view left(base_pattern_piece.substr(0, star));
+  std::string_view right(base_pattern_piece.substr(star + 1));
 
   if (!base::StartsWith(base_type, left, base::CompareCase::INSENSITIVE_ASCII))
     return false;
@@ -576,10 +577,10 @@ bool ParseMimeType(const std::string& type_str,
   return true;
 }
 
-bool MimeUtil::ParseMimeTypeWithoutParameter(base::StringPiece type_string,
+bool MimeUtil::ParseMimeTypeWithoutParameter(std::string_view type_string,
                                              std::string* top_level_type,
                                              std::string* subtype) const {
-  std::vector<base::StringPiece> components = base::SplitStringPiece(
+  std::vector<std::string_view> components = base::SplitStringPiece(
       type_string, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (components.size() != 2)
     return false;
@@ -645,7 +646,7 @@ bool MatchesMimeType(const std::string& mime_type_pattern,
   return g_mime_util.Get().MatchesMimeType(mime_type_pattern, mime_type);
 }
 
-bool ParseMimeTypeWithoutParameter(base::StringPiece type_string,
+bool ParseMimeTypeWithoutParameter(std::string_view type_string,
                                    std::string* top_level_type,
                                    std::string* subtype) {
   return g_mime_util.Get().ParseMimeTypeWithoutParameter(
@@ -752,12 +753,12 @@ void GetExtensionsFromHardCodedMappings(
     bool prefix_match,
     std::unordered_set<base::FilePath::StringType>* extensions) {
   for (const auto& mapping : mappings) {
-    base::StringPiece cur_mime_type(mapping.mime_type);
+    std::string_view cur_mime_type(mapping.mime_type);
 
     if (base::StartsWith(cur_mime_type, mime_type,
                          base::CompareCase::INSENSITIVE_ASCII) &&
         (prefix_match || (cur_mime_type.length() == mime_type.length()))) {
-      for (base::StringPiece this_extension : base::SplitStringPiece(
+      for (std::string_view this_extension : base::SplitStringPiece(
                mapping.extensions, ",", base::TRIM_WHITESPACE,
                base::SPLIT_WANT_ALL)) {
         extensions->insert(StringToFilePathStringType(this_extension));
@@ -803,7 +804,7 @@ void UnorderedSetToVector(std::unordered_set<T>* source,
 // following characters are legal for boundaries:  '()+_,-./:=?
 // However the following characters, though legal, cause some sites
 // to fail: (),./:=+
-constexpr base::StringPiece kMimeBoundaryCharacters(
+constexpr std::string_view kMimeBoundaryCharacters(
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
 // Size of mime multipart boundary.
@@ -934,7 +935,7 @@ void AddMultipartFinalDelimiterForUpload(const std::string& mime_boundary,
 
 // TODO(toyoshim): We may prefer to implement a strict RFC2616 media-type
 // (https://tools.ietf.org/html/rfc2616#section-3.7) parser.
-absl::optional<std::string> ExtractMimeTypeFromMediaType(
+std::optional<std::string> ExtractMimeTypeFromMediaType(
     const std::string& type_string,
     bool accept_comma_separated) {
   std::string::size_type end = type_string.find(';');
@@ -947,7 +948,7 @@ absl::optional<std::string> ExtractMimeTypeFromMediaType(
                                     &subtype)) {
     return top_level_type + "/" + subtype;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace net

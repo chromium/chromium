@@ -4,10 +4,11 @@
 
 #include "net/base/net_string_util.h"
 
+#include <string_view>
+
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/i18n_constants.h"
 #include "base/i18n/icu_string_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 
@@ -15,7 +16,7 @@ namespace net {
 
 const char* const kCharsetLatin1 = base::kCodepageLatin1;
 
-bool ConvertToUtf8(base::StringPiece text,
+bool ConvertToUtf8(std::string_view text,
                    const char* charset,
                    std::string* output) {
   output->clear();
@@ -43,27 +44,27 @@ bool ConvertToUtf8(base::StringPiece text,
   return true;
 }
 
-bool ConvertToUtf8AndNormalize(base::StringPiece text,
+bool ConvertToUtf8AndNormalize(std::string_view text,
                                const char* charset,
                                std::string* output) {
   return base::ConvertToUtf8AndNormalize(text, charset, output);
 }
 
-bool ConvertToUTF16(base::StringPiece text,
+bool ConvertToUTF16(std::string_view text,
                     const char* charset,
                     std::u16string* output) {
   return base::CodepageToUTF16(text, charset,
                                base::OnStringConversionError::FAIL, output);
 }
 
-bool ConvertToUTF16WithSubstitutions(base::StringPiece text,
+bool ConvertToUTF16WithSubstitutions(std::string_view text,
                                      const char* charset,
                                      std::u16string* output) {
   return base::CodepageToUTF16(
       text, charset, base::OnStringConversionError::SUBSTITUTE, output);
 }
 
-bool ToUpper(base::StringPiece16 str, std::u16string* output) {
+bool ToUpper(std::u16string_view str, std::u16string* output) {
   *output = base::i18n::ToUpper(str);
   return true;
 }

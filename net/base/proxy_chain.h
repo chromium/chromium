@@ -7,16 +7,16 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
 #include "net/base/proxy_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -57,14 +57,14 @@ class NET_EXPORT ProxyChain {
   // `ProxyChain()` or `Direct()` respectively to create an invalid or direct
   // ProxyChain.
   static ProxyChain FromSchemeHostAndPort(ProxyServer::Scheme scheme,
-                                          base::StringPiece host,
-                                          base::StringPiece port_str) {
+                                          std::string_view host,
+                                          std::string_view port_str) {
     return ProxyChain(
         ProxyServer::FromSchemeHostAndPort(scheme, host, port_str));
   }
   static ProxyChain FromSchemeHostAndPort(ProxyServer::Scheme scheme,
-                                          base::StringPiece host,
-                                          absl::optional<uint16_t> port) {
+                                          std::string_view host,
+                                          std::optional<uint16_t> port) {
     return ProxyChain(ProxyServer::FromSchemeHostAndPort(scheme, host, port));
   }
   // Create a "direct" proxy chain, which includes no proxy servers.
@@ -79,7 +79,7 @@ class NET_EXPORT ProxyChain {
   const std::vector<ProxyServer>& proxy_servers() const;
 
   // Get the ProxyServers in this chain, or `nullopt` if the chain is not valid.
-  const absl::optional<std::vector<ProxyServer>>& proxy_servers_if_valid()
+  const std::optional<std::vector<ProxyServer>>& proxy_servers_if_valid()
       const {
     return proxy_server_list_;
   }
@@ -132,7 +132,7 @@ class NET_EXPORT ProxyChain {
   std::string ToDebugString() const;
 
  private:
-  absl::optional<std::vector<ProxyServer>> proxy_server_list_;
+  std::optional<std::vector<ProxyServer>> proxy_server_list_;
 
   // Returns true if this chain is valid.
   bool IsValidInternal() const;

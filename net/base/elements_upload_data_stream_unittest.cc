@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -16,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"

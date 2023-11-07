@@ -7,8 +7,8 @@
 
 #include <iosfwd>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 
@@ -28,7 +28,7 @@ enum class TransportType {
 
 // Returns a string representation of the given transport type.
 // The returned StringPiece is static, has no lifetime restrictions.
-NET_EXPORT base::StringPiece TransportTypeToString(TransportType type);
+NET_EXPORT std::string_view TransportTypeToString(TransportType type);
 
 // Describes a network transport.
 struct NET_EXPORT TransportInfo {

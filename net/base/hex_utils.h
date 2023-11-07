@@ -6,8 +6,8 @@
 #define NET_BASE_HEX_UTILS_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -18,7 +18,7 @@ namespace net {
 // invalid input in debug builds, therefore it must only be used on sanitized
 // input (like a constant literal).  If validity of input needs to be checked or
 // partial decoding is desired, use base::HexStringToString() instead.
-NET_EXPORT_PRIVATE std::string HexDecode(base::StringPiece hex);
+NET_EXPORT_PRIVATE std::string HexDecode(std::string_view hex);
 
 // Return a std::string containing hex and ASCII representations of the binary
 // buffer |input|, with offsets at the beginning of each line, in the style of
@@ -27,7 +27,7 @@ NET_EXPORT_PRIVATE std::string HexDecode(base::StringPiece hex);
 // "0x0000:  0090 69bd 5400 000d 610f 0189 0800 4500  ..i.T...a.....E.\n"
 // "0x0010:  001c fb98 4000 4001 7e18 d8ef 2301 455d  ....@.@.~...#.E]\n"
 // "0x0020:  7fe2 0800 6bcb 0bc6 806e                 ....k....n\n"
-NET_EXPORT_PRIVATE std::string HexDump(base::StringPiece input);
+NET_EXPORT_PRIVATE std::string HexDump(std::string_view input);
 
 }  // namespace net
 

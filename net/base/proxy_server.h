@@ -7,14 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <tuple>
 
-#include "base/strings/string_piece.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -54,11 +54,11 @@ class NET_EXPORT ProxyServer {
   // `ProxyServer()` or `Direct()` respectively to create an invalid or direct
   // ProxyServer.
   static ProxyServer FromSchemeHostAndPort(Scheme scheme,
-                                           base::StringPiece host,
-                                           base::StringPiece port_str);
+                                           std::string_view host,
+                                           std::string_view port_str);
   static ProxyServer FromSchemeHostAndPort(Scheme scheme,
-                                           base::StringPiece host,
-                                           absl::optional<uint16_t> port);
+                                           std::string_view host,
+                                           std::optional<uint16_t> port);
 
   // In URL format (with brackets around IPv6 literals). Must not call for
   // ProxyServers without a host (invalid or direct).

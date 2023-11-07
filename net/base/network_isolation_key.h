@@ -5,13 +5,13 @@
 #ifndef NET_BASE_NETWORK_ISOLATION_KEY_H_
 #define NET_BASE_NETWORK_ISOLATION_KEY_H_
 
+#include <optional>
 #include <string>
 
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class Origin;
@@ -37,13 +37,13 @@ class NET_EXPORT NetworkIsolationKey {
   NetworkIsolationKey(
       const SchemefulSite& top_frame_site,
       const SchemefulSite& frame_site,
-      const absl::optional<base::UnguessableToken>& nonce = absl::nullopt);
+      const std::optional<base::UnguessableToken>& nonce = std::nullopt);
 
   // Alternative constructor that takes ownership of arguments, to save copies.
   NetworkIsolationKey(
       SchemefulSite&& top_frame_site,
       SchemefulSite&& frame_site,
-      absl::optional<base::UnguessableToken>&& nonce = absl::nullopt);
+      std::optional<base::UnguessableToken>&& nonce = std::nullopt);
 
   // Legacy constructor.
   // TODO(https://crbug.com/1145294):  Remove this in favor of above
@@ -122,7 +122,7 @@ class NET_EXPORT NetworkIsolationKey {
   // cache. This is the string representation of each piece of the key separated
   // by spaces. Returns nullopt if the network isolation key is transient, in
   // which case, nothing should typically be saved to disk using the key.
-  absl::optional<std::string> ToCacheKeyString() const;
+  std::optional<std::string> ToCacheKeyString() const;
 
   // Returns string for debugging. Difference from ToString() is that transient
   // entries may be distinguishable from each other.
@@ -139,7 +139,7 @@ class NET_EXPORT NetworkIsolationKey {
   // Getters for the top frame and frame sites. These accessors are primarily
   // intended for IPC calls, and to be able to create an IsolationInfo from a
   // NetworkIsolationKey.
-  const absl::optional<SchemefulSite>& GetTopFrameSite() const {
+  const std::optional<SchemefulSite>& GetTopFrameSite() const {
     return top_frame_site_;
   }
 
@@ -148,7 +148,7 @@ class NET_EXPORT NetworkIsolationKey {
     // partition the HTTP cache. This key will have the following properties:
     // `top_frame_site` -> the schemeful site of the top level page.
     // `frame_site ` -> the schemeful site of the frame.
-    // `is_cross_site` -> absl::nullopt.
+    // `is_cross_site` -> std::nullopt.
     kFrameSiteEnabled,
     // This scheme indicates that "2.5-key" NetworkIsolationKeys are used to
     // partition the HTTP cache. This key will have the following properties:
@@ -170,20 +170,20 @@ class NET_EXPORT NetworkIsolationKey {
   static Mode GetMode();
 
   // Do not use outside of testing. Returns the `frame_site_`.
-  const absl::optional<SchemefulSite> GetFrameSiteForTesting() const {
+  const std::optional<SchemefulSite> GetFrameSiteForTesting() const {
     if (GetMode() == Mode::kFrameSiteEnabled ||
         GetMode() == Mode::kFrameSiteWithSharedOpaqueEnabled) {
       return frame_site_;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Do not use outside of testing. Returns `is_cross_site_`.
-  const absl::optional<bool> GetIsCrossSiteForTesting() const {
+  const std::optional<bool> GetIsCrossSiteForTesting() const {
     if (GetMode() == Mode::kCrossSiteFlagEnabled) {
       return is_cross_site_;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // When serializing a NIK for sending via mojo we want to access the frame
@@ -192,7 +192,7 @@ class NET_EXPORT NetworkIsolationKey {
   using SerializationPassKey = base::PassKey<struct mojo::StructTraits<
       network::mojom::NonEmptyNetworkIsolationKeyDataView,
       NetworkIsolationKey>>;
-  const absl::optional<SchemefulSite>& GetFrameSiteForSerialization(
+  const std::optional<SchemefulSite>& GetFrameSiteForSerialization(
       SerializationPassKey) const {
     CHECK(!IsEmpty());
     return frame_site_;
@@ -201,7 +201,7 @@ class NET_EXPORT NetworkIsolationKey {
   // CookiePartitionKey for nonced partitions. We also use a passkey for this
   // case.
   using CookiePartitionKeyPassKey = base::PassKey<CookiePartitionKey>;
-  const absl::optional<SchemefulSite>& GetFrameSiteForCookiePartitionKey(
+  const std::optional<SchemefulSite>& GetFrameSiteForCookiePartitionKey(
       CookiePartitionKeyPassKey) const {
     CHECK(!IsEmpty());
     return frame_site_;
@@ -209,14 +209,14 @@ class NET_EXPORT NetworkIsolationKey {
   // Same as above but for constructing a `NetworkAnonymizationKey()` from this
   // NIK.
   using NetworkAnonymizationKeyPassKey = base::PassKey<NetworkAnonymizationKey>;
-  const absl::optional<SchemefulSite>& GetFrameSiteForNetworkAnonymizationKey(
+  const std::optional<SchemefulSite>& GetFrameSiteForNetworkAnonymizationKey(
       NetworkAnonymizationKeyPassKey) const {
     CHECK(!IsEmpty());
     return frame_site_;
   }
 
   // Getter for the nonce.
-  const absl::optional<base::UnguessableToken>& GetNonce() const {
+  const std::optional<base::UnguessableToken>& GetNonce() const {
     return nonce_;
   }
 
@@ -228,10 +228,10 @@ class NET_EXPORT NetworkIsolationKey {
   bool IsOpaque() const;
 
   // The origin/etld+1 of the top frame of the page making the request.
-  absl::optional<SchemefulSite> top_frame_site_;
+  std::optional<SchemefulSite> top_frame_site_;
 
   // The origin/etld+1 of the frame that initiates the request.
-  absl::optional<SchemefulSite> frame_site_;
+  std::optional<SchemefulSite> frame_site_;
 
   // A boolean indicating whether the frame origin is cross-site from the
   // top-level origin. This will be used for experiments to determine the
@@ -239,14 +239,14 @@ class NET_EXPORT NetworkIsolationKey {
   // top-level origin and frame origin ("triple-keying") vs. the top-level
   // origin and an is-cross-site bit ("2.5-keying") like the
   // `NetworkAnonymizationKey` uses for network state partitioning. This will be
-  // absl::nullopt when `GetMode()` returns `Mode::kFrameSiteEnabled` or
+  // std::nullopt when `GetMode()` returns `Mode::kFrameSiteEnabled` or
   // `Mode::kFrameSiteWithSharedOpaqueEnabled`, or for an empty
   // `NetworkIsolationKey`.
-  absl::optional<bool> is_cross_site_;
+  std::optional<bool> is_cross_site_;
 
   // Having a nonce is a way to force a transient opaque `NetworkIsolationKey`
   // for non-opaque origins.
-  absl::optional<base::UnguessableToken> nonce_;
+  std::optional<base::UnguessableToken> nonce_;
 };
 
 }  // namespace net

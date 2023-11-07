@@ -14,7 +14,7 @@
 namespace net {
 
 ProxyChain::ProxyChain() {
-  proxy_server_list_ = absl::nullopt;
+  proxy_server_list_ = std::nullopt;
 }
 
 ProxyChain::ProxyChain(const ProxyChain& other) = default;
@@ -39,7 +39,7 @@ ProxyChain::ProxyChain(ProxyServer::Scheme scheme,
 ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list)
     : proxy_server_list_(std::move(proxy_server_list)) {
   if (!IsValidInternal()) {
-    proxy_server_list_ = absl::nullopt;
+    proxy_server_list_ = std::nullopt;
   }
 }
 

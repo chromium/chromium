@@ -419,7 +419,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(ExtractMIMETypeTestInvalid, MustFail) {
   // Parsing is expected to fail.
-  EXPECT_EQ(absl::nullopt, net::ExtractMimeTypeFromMediaType(GetParam(), true));
+  EXPECT_EQ(std::nullopt, net::ExtractMimeTypeFromMediaType(GetParam(), true));
 }
 
 class ExtractMIMETypeTestValid : public testing::TestWithParam<std::string> {};

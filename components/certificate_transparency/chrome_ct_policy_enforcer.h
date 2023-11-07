@@ -6,7 +6,9 @@
 #define COMPONENTS_CERTIFICATE_TRANSPARENCY_CHROME_CT_POLICY_ENFORCER_H_
 
 #include <map>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +18,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/cert/ct_policy_enforcer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace certificate_transparency {
 
@@ -119,12 +120,12 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   // |*disqualification_date| to the date of disqualification. Any SCTs that
   // are embedded in certificates issued after |*disqualification_date| should
   // not be trusted, nor contribute to any uniqueness or freshness
-  bool IsLogDisqualified(base::StringPiece log_id,
+  bool IsLogDisqualified(std::string_view log_id,
                          base::Time* disqualification_date) const;
 
   // Returns true if the log identified by |log_id| (the SHA-256 hash of the
   // log's DER-encoded SPKI) is operated by Google.
-  bool IsLogOperatedByGoogle(base::StringPiece log_id) const;
+  bool IsLogOperatedByGoogle(std::string_view log_id) const;
 
   // Returns true if the supplied log data are fresh enough.
   bool IsLogDataTimely() const;
@@ -155,12 +156,12 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
 
   // If set, this log ID will be considered a valid, Google operated log.
   // Calling UpdateCTLogList clears this value if set.
-  absl::optional<std::string> valid_google_log_for_testing_;
+  std::optional<std::string> valid_google_log_for_testing_;
 
   // If set, this log ID will be considered a disqualified log, effective at the
   // specified time.
   // Calling UpdateCTLogList clears this value if set.
-  absl::optional<std::pair<std::string, base::Time>>
+  std::optional<std::pair<std::string, base::Time>>
       disqualified_log_for_testing_;
 };
 

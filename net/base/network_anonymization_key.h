@@ -6,6 +6,7 @@
 #define NET_BASE_NETWORK_ANONYMIZATION_KEY_H_
 
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -13,7 +14,6 @@
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -91,14 +91,14 @@ class NET_EXPORT NetworkAnonymizationKey {
   // same-site (see comment on the class, above) and has no nonce.
   static NetworkAnonymizationKey CreateSameSite(
       const SchemefulSite& top_frame_site) {
-    return NetworkAnonymizationKey(top_frame_site, false, absl::nullopt);
+    return NetworkAnonymizationKey(top_frame_site, false, std::nullopt);
   }
 
   // Create a `NetworkAnonymizationKey` from a `top_frame_site`, assuming it is
   // cross-site (see comment on the class, above) and has no nonce.
   static NetworkAnonymizationKey CreateCrossSite(
       const SchemefulSite& top_frame_site) {
-    return NetworkAnonymizationKey(top_frame_site, true, absl::nullopt);
+    return NetworkAnonymizationKey(top_frame_site, true, std::nullopt);
   }
 
   // Create a `NetworkAnonymizationKey` from a `top_frame_site` and
@@ -107,7 +107,7 @@ class NET_EXPORT NetworkAnonymizationKey {
   static NetworkAnonymizationKey CreateFromFrameSite(
       const SchemefulSite& top_frame_site,
       const SchemefulSite& frame_site,
-      absl::optional<base::UnguessableToken> nonce = absl::nullopt);
+      std::optional<base::UnguessableToken> nonce = std::nullopt);
 
   // Creates a `NetworkAnonymizationKey` from a `NetworkIsolationKey`. This is
   // possible because a `NetworkIsolationKey` must always be more granular
@@ -120,7 +120,7 @@ class NET_EXPORT NetworkAnonymizationKey {
   static NetworkAnonymizationKey CreateFromParts(
       const SchemefulSite& top_frame_site,
       bool is_cross_site,
-      absl::optional<base::UnguessableToken> nonce = absl::nullopt) {
+      std::optional<base::UnguessableToken> nonce = std::nullopt) {
     return NetworkAnonymizationKey(top_frame_site, is_cross_site, nonce);
   }
 
@@ -145,7 +145,7 @@ class NET_EXPORT NetworkAnonymizationKey {
   bool IsTransient() const;
 
   // Getters for the top frame, frame site, nonce and is cross site flag.
-  const absl::optional<SchemefulSite>& GetTopFrameSite() const {
+  const std::optional<SchemefulSite>& GetTopFrameSite() const {
     return top_frame_site_;
   }
 
@@ -153,7 +153,7 @@ class NET_EXPORT NetworkAnonymizationKey {
 
   bool IsSameSite() const { return !IsCrossSite(); }
 
-  const absl::optional<base::UnguessableToken>& GetNonce() const {
+  const std::optional<base::UnguessableToken>& GetNonce() const {
     return nonce_;
   }
 
@@ -191,24 +191,24 @@ class NET_EXPORT NetworkAnonymizationKey {
   NetworkAnonymizationKey(
       const SchemefulSite& top_frame_site,
       bool is_cross_site,
-      absl::optional<base::UnguessableToken> nonce = absl::nullopt);
+      std::optional<base::UnguessableToken> nonce = std::nullopt);
 
   std::string GetSiteDebugString(
-      const absl::optional<SchemefulSite>& site) const;
+      const std::optional<SchemefulSite>& site) const;
 
-  static absl::optional<std::string> SerializeSiteWithNonce(
+  static std::optional<std::string> SerializeSiteWithNonce(
       const SchemefulSite& site);
 
   // The origin/etld+1 of the top frame of the page making the request. This
   // will always be populated unless all other fields are also nullopt.
-  absl::optional<SchemefulSite> top_frame_site_;
+  std::optional<SchemefulSite> top_frame_site_;
 
   // True if the frame site is cross site when compared to the top frame site.
   // This is always false for a non-fully-populated NAK.
   bool is_cross_site_;
 
   // for non-opaque origins.
-  absl::optional<base::UnguessableToken> nonce_;
+  std::optional<base::UnguessableToken> nonce_;
 };
 
 }  // namespace net

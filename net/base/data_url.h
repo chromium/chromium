@@ -6,9 +6,9 @@
 #define NET_BASE_DATA_URL_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 
@@ -74,7 +74,7 @@ class NET_EXPORT DataURL {
   // strings, and |*headers| must be nullptr. Returns net::OK on success.
   [[nodiscard]] static Error BuildResponse(
       const GURL& url,
-      base::StringPiece method,
+      std::string_view method,
       std::string* mime_type,
       std::string* charset,
       std::string* data,
