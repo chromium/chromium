@@ -968,6 +968,43 @@ class CryptohomeRecoverySetupScreenTester extends ScreenElementApi {
   }
 }
 
+class LocalPasswordSetupScreenTester extends ScreenElementApi {
+  constructor() {
+    super('local-password-setup');
+    this.passwordInput = new PolymerElementApi(this, '#passwordInput');
+    this.firstInput = new TextFieldApi(this.passwordInput, '#firstInput');
+    this.confirmInput = new TextFieldApi(this.passwordInput, '#confirmInput');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+    this.doneDialog = new PolymerElementApi(this, '#doneDialog');
+    this.doneButton = new PolymerElementApi(this, '#doneButton');
+  }
+
+  /** @return {boolean} */
+  isReadyForTesting() {
+    return this.isVisible() && this.firstInput.isVisible() &&
+        this.confirmInput.isVisible();
+  }
+
+  enterPassword(password) {
+    this.firstInput.typeInto(password);
+    afterNextRender(assert(this.element()), () => {
+      this.confirmInput.typeInto(password);
+      afterNextRender(assert(this.element()), () => {
+        this.nextButton.click();
+      });
+    });
+  }
+
+  /** @return {boolean} */
+  isDone() {
+    return this.doneDialog.isVisible();
+  }
+
+  clickDone() {
+    this.doneButton.click();
+  }
+}
+
 class GaiaInfoScreenTester extends ScreenElementApi {
   constructor() {
     super('gaia-info');
@@ -1080,6 +1117,7 @@ export class OobeApiProvider {
       ConsolidatedConsentScreen: new ConsolidatedConsentScreenTester(),
       SmartPrivacyProtectionScreen: new SmartPrivacyProtectionScreenTester(),
       CryptohomeRecoverySetupScreen: new CryptohomeRecoverySetupScreenTester(),
+      LocalPasswordSetupScreen: new LocalPasswordSetupScreenTester(),
       GaiaInfoScreen: new GaiaInfoScreenTester(),
       ConsumerUpdateScreen: new ConsumerUpdateScreenTester(),
       ChoobeScreen: new ChoobeScreenTester(),

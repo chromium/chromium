@@ -2759,6 +2759,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowConsumerUpdateScreen();
   } else if (screen_id == PasswordSelectionScreenView::kScreenId) {
     ShowPasswordSelectionScreen();
+  } else if (screen_id == LocalPasswordSetupView::kScreenId) {
+    ShowLocalPasswordSetupScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||

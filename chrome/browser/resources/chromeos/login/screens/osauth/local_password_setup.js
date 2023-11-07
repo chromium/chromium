@@ -140,7 +140,8 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
     this.userActed(['back', this.$.passwordInput.value]);
   }
 
-  onSubmit_() {
+  async onSubmit_() {
+    await /** @type {!Object} */ (this.$.passwordInput).validate();
     this.setUIStep(LocalPasswordSetupState.PROGRESS);
     this.userActed(['inputPassword', this.$.passwordInput.value]);
   }
