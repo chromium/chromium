@@ -40,11 +40,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has conflict"/>
 </enum>
 
-<enum name="ChildUserTypeMismatchError">
-  <int value="0" label="Recieved a non-child ID token for a child user"/>
-  <int value="1" label="Recieved a child ID token for a non-child user"/>
-</enum>
-
 <enum name="FamilyLinkFilteringSubdomainConflictType">
   <int value="0" label="Only trivial subdomain conflict">
     Recorded when, for an input host, the matching conflicting entries from the

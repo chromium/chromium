@@ -6,31 +6,11 @@
 
 #include <memory>
 
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
-namespace {
-// Errors resulting from a mismatch between child account status detected
-// during sign-in and status read from the ID token.
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "ChildUserTypeMismatchError" in src/tools/metrics/histograms/enums.xml.
-enum class ChildUserTypeMismatchError {
-  kChildUserNonChildToken = 0,
-  kNonChildUserChildToken = 1,
-  kMaxValue = kNonChildUserChildToken,
-};
-
-// Records `error_type` of child user mismatch error.
-void RecordChildUserTypeMismatchError(ChildUserTypeMismatchError error_type) {
-  base::UmaHistogramEnumeration(
-      "ChromeOS.FamilyUser.ChildUserTypeMismatchError", error_type);
-}
-}  // namespace
 
 OAuth2TokenInitializer::OAuth2TokenInitializer() {}
 
@@ -59,19 +39,6 @@ void OAuth2TokenInitializer::OnOAuth2TokensAvailable(
   user_context_.SetIsUnderAdvancedProtection(
       result.is_under_advanced_protection);
 
-  const bool support_usm =
-      base::FeatureList::IsEnabled(features::kCrOSEnableUSMUserService);
-  if (result.is_child_account &&
-      user_context_.GetUserType() != user_manager::USER_TYPE_CHILD) {
-    RecordChildUserTypeMismatchError(
-        ChildUserTypeMismatchError::kNonChildUserChildToken);
-    LOG(FATAL) << "Incorrect child user type " << user_context_.GetUserType();
-  } else if (user_context_.GetUserType() == user_manager::USER_TYPE_CHILD &&
-             !result.is_child_account && !support_usm) {
-    RecordChildUserTypeMismatchError(
-        ChildUserTypeMismatchError::kChildUserNonChildToken);
-    LOG(FATAL) << "Incorrect non-child token for the child user.";
-  }
   std::move(callback_).Run(true, user_context_);
 }
 
