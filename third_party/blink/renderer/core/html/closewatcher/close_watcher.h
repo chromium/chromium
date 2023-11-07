@@ -27,9 +27,9 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
                               CloseWatcherOptions*,
                               ExceptionState&);
 
-  static CloseWatcher* Create(LocalDOMWindow*);
+  static CloseWatcher* Create(LocalDOMWindow&);
 
-  explicit CloseWatcher(LocalDOMWindow*);
+  explicit CloseWatcher(LocalDOMWindow&);
 
   void Trace(Visitor*) const override;
 
@@ -80,7 +80,7 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
   };
 
  private:
-  static CloseWatcher* CreateInternal(LocalDOMWindow*,
+  static CloseWatcher* CreateInternal(LocalDOMWindow&,
                                       WatcherStack&,
                                       CloseWatcherOptions*);
 

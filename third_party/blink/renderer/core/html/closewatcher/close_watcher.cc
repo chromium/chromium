@@ -92,12 +92,12 @@ bool CloseWatcher::WatcherStack::HasConsumedFreeWatcher() const {
 }
 
 // static
-CloseWatcher* CloseWatcher::Create(LocalDOMWindow* window) {
-  if (!window->GetFrame()) {
+CloseWatcher* CloseWatcher::Create(LocalDOMWindow& window) {
+  if (!window.GetFrame()) {
     return nullptr;
   }
 
-  WatcherStack& stack = *window->closewatcher_stack();
+  WatcherStack& stack = *window.closewatcher_stack();
   return CreateInternal(window, stack, nullptr);
 }
 
@@ -106,7 +106,7 @@ CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
                                    CloseWatcherOptions* options,
                                    ExceptionState& exception_state) {
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-  if (!window->GetFrame()) {
+  if (!window || !window->GetFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "CloseWatchers cannot be created in detached Windows.");
@@ -114,19 +114,19 @@ CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
   }
 
   WatcherStack& stack = *window->closewatcher_stack();
-  return CreateInternal(window, stack, options);
+  return CreateInternal(*window, stack, options);
 }
 
 // static
-CloseWatcher* CloseWatcher::CreateInternal(LocalDOMWindow* window,
+CloseWatcher* CloseWatcher::CreateInternal(LocalDOMWindow& window,
                                            WatcherStack& stack,
                                            CloseWatcherOptions* options) {
-  CHECK(window->document()->IsActive());
+  CHECK(window.document()->IsActive());
 
   CloseWatcher* watcher = MakeGarbageCollected<CloseWatcher>(window);
 
-  if (window->GetFrame()->IsHistoryUserActivationActive()) {
-    window->GetFrame()->ConsumeHistoryUserActivation();
+  if (window.GetFrame()->IsHistoryUserActivationActive()) {
+    window.GetFrame()->ConsumeHistoryUserActivation();
     watcher->created_with_user_activation_ = true;
     watcher->grouped_with_previous_ = false;
   } else if (!stack.HasConsumedFreeWatcher()) {
@@ -151,8 +151,8 @@ CloseWatcher* CloseWatcher::CreateInternal(LocalDOMWindow* window,
   return watcher;
 }
 
-CloseWatcher::CloseWatcher(LocalDOMWindow* window)
-    : ExecutionContextClient(window) {}
+CloseWatcher::CloseWatcher(LocalDOMWindow& window)
+    : ExecutionContextClient(&window) {}
 
 void CloseWatcher::requestClose() {
   if (IsClosed() || dispatching_cancel_ || !DomWindow()) {
