@@ -134,14 +134,7 @@ class TableBorders : public GarbageCollected<TableBorders> {
         border_style = EBorderStyle::kNone;
         break;
     }
-    // The spec (https://drafts.csswg.org/css-backgrounds-3/#border-style)
-    // states that outset is treated as grove in the collapsing border model,
-    // and inset is treated as ridge in the collapsing border model.
-    if (border_style == EBorderStyle::kOutset)
-      return EBorderStyle::kGroove;
-    if (border_style == EBorderStyle::kInset)
-      return EBorderStyle::kRidge;
-    return border_style;
+    return ComputedStyle::CollapsedBorderStyle(border_style);
   }
 
   static Color BorderColor(const ComputedStyle* style, EdgeSide edge_side);

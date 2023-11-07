@@ -1315,8 +1315,10 @@ void NGBoxFragmentPainter::PaintColumnRules(
   DCHECK(box_fragment_.IsCSSBox());
   DCHECK(style.HasColumnRule());
 
-  // TODO(crbug.com/792437): Certain rule styles should be converted.
-  EBorderStyle rule_style = style.ColumnRuleStyle();
+  // https://www.w3.org/TR/css-multicol-1/#propdef-column-rule-style
+  // interpret column-rule-style as in the collapsing border model
+  EBorderStyle rule_style =
+      ComputedStyle::CollapsedBorderStyle(style.ColumnRuleStyle());
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(paint_info.context,
                                                   GetDisplayItemClient(),

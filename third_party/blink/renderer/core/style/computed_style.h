@@ -549,6 +549,19 @@ class ComputedStyle final : public ComputedStyleBase {
     return width;
   }
 
+  static EBorderStyle CollapsedBorderStyle(EBorderStyle rule_style) {
+    // https://drafts.csswg.org/css-backgrounds-3/#border-style
+    // states that in the collapsing border model, outset is treated as groove
+    // and inset is treated as ridge
+    if (rule_style == EBorderStyle::kOutset) {
+      return EBorderStyle::kGroove;
+    }
+    if (rule_style == EBorderStyle::kInset) {
+      return EBorderStyle::kRidge;
+    }
+    return rule_style;
+  }
+
   // Border width properties.
   LayoutUnit BorderTopWidth() const {
     return BorderWidth(BorderTopStyle(), BorderTopWidthInternal());
