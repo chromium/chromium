@@ -27,7 +27,7 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
   FakeSafeBrowsing() = default;
 
   void CreateCheckerAndCheck(
-      int32_t render_frame_id,
+      const std::optional<blink::LocalFrameToken>& frame_token,
       mojo::PendingReceiver<mojom::SafeBrowsingUrlChecker> receiver,
       const GURL& url,
       const std::string& method,
@@ -74,7 +74,7 @@ class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
     mojo_receiver_.Bind(safe_browsing_remote_.BindNewPipeAndPassReceiver());
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();
     throttle_ = std::make_unique<RendererURLLoaderThrottle>(
-        safe_browsing_remote_.get(), MSG_ROUTING_NONE);
+        safe_browsing_remote_.get(), std::nullopt);
     throttle_->set_delegate(throttle_delegate_.get());
   }
 

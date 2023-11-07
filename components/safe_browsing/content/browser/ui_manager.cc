@@ -126,9 +126,13 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   // whether SB was triggered for a frame navigation or a document's subresource
   // load respectively. We consider both cases here. Also, we need to cancel
   // corresponding prerenders for both case.
-  const content::GlobalRenderFrameHostId rfh_id(resource.render_process_id,
-                                                resource.render_frame_id);
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
+  content::RenderFrameHost* rfh = nullptr;
+  if (resource.render_frame_token) {
+    rfh = content::RenderFrameHost::FromFrameToken(
+        content::GlobalRenderFrameHostToken(
+            resource.render_process_id,
+            blink::LocalFrameToken(resource.render_frame_token.value())));
+  }
 
   // Handle subresource load in prerendered pages.
   if (rfh && rfh->GetLifecycleState() ==
@@ -200,9 +204,13 @@ void SafeBrowsingUIManager::CheckLookupMechanismExperimentEligibility(
   content::WebContents* web_contents =
       security_interstitials::GetWebContentsForResource(resource);
   auto determine_if_is_prerender = [resource, web_contents]() {
-    const content::GlobalRenderFrameHostId rfh_id(resource.render_process_id,
-                                                  resource.render_frame_id);
-    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
+    content::RenderFrameHost* rfh = nullptr;
+    if (resource.render_frame_token) {
+      rfh = content::RenderFrameHost::FromFrameToken(
+          content::GlobalRenderFrameHostToken(
+              resource.render_process_id,
+              blink::LocalFrameToken(resource.render_frame_token.value())));
+    }
     return web_contents->IsPrerenderedFrame(resource.frame_tree_node_id) ||
            (rfh && rfh->GetLifecycleState() ==
                        content::RenderFrameHost::LifecycleState::kPrerendering);

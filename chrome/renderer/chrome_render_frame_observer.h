@@ -64,7 +64,8 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 #if BUILDFLAG(IS_ANDROID)
   // This is called on the main thread for subresources or worker threads for
   // dedicated workers.
-  static std::string GetCCTClientHeader(int render_frame_id);
+  static std::string GetCCTClientHeader(
+      const blink::LocalFrameToken& frame_token);
 #endif
 
  private:
@@ -85,6 +86,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   void DidClearWindowObject() override;
   void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
   void OnDestruct() override;
+  void WillDetach() override;
   void DraggableRegionsChanged() override;
 
   // chrome::mojom::ChromeRenderFrame:

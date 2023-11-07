@@ -149,7 +149,7 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     const GURL& original_url,
     int frame_tree_node_id,
     int render_process_id,
-    int render_frame_id,
+    base::optional_ref<const base::UnguessableToken> render_frame_token,
     bool originated_from_service_worker) {
   // Check for whether the URL matches the Safe Browsing allowlist domains
   // (a.k. a prefs::kSafeBrowsingAllowlistDomains).

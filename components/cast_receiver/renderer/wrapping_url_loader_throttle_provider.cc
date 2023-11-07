@@ -40,16 +40,20 @@ WrappingURLLoaderThrottleProvider::Clone() {
 
 blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 WrappingURLLoaderThrottleProvider::CreateThrottles(
-    int render_frame_id,
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     const blink::WebURLRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   if (wrapped_provider_) {
-    throttles = wrapped_provider_->CreateThrottles(render_frame_id, request);
+    throttles = wrapped_provider_->CreateThrottles(local_frame_token, request);
   }
 
-  auto* provider = client_->GetUrlRewriteRulesProvider(render_frame_id);
+  if (!local_frame_token.has_value()) {
+    return throttles;
+  }
+  auto* provider =
+      client_->GetUrlRewriteRulesProvider(local_frame_token.value());
   if (provider) {
     auto rules = provider->GetCachedRules();
     if (rules) {

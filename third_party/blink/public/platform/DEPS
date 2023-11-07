@@ -22,6 +22,7 @@ include_rules = [
     "+base/threading/platform_thread.h",
     "+base/threading/thread.h",
     "+base/threading/thread_checker.h",
+    "+base/types/optional_ref.h",
     "+base/time",
     "+build/build_config.h",
     "+cc",

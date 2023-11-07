@@ -35,7 +35,7 @@ class NoStatePrefetchHelper
   // Configures and returns a new PrerenderURLLoaderThrottle instance if the
   // indicated frame has an associated NoStatePrefetchHelper.
   static std::unique_ptr<blink::URLLoaderThrottle> MaybeCreateThrottle(
-      int render_frame_id);
+      const blink::LocalFrameToken& frame_token);
 
   // Returns true if |render_frame| is currently prefetching.
   static bool IsPrefetching(const content::RenderFrame* render_frame);

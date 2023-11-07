@@ -177,7 +177,7 @@ WebServiceWorkerFetchContextImpl::CreateThrottles(
     // worker scripts.
     script_url_to_skip_throttling_ = KURL();
   } else if (throttle_provider_) {
-    return throttle_provider_->CreateThrottles(MSG_ROUTING_NONE, request);
+    return throttle_provider_->CreateThrottles(std::nullopt, request);
   }
   return {};
 }
@@ -205,7 +205,7 @@ WebServiceWorkerFetchContextImpl::CreateWebSocketHandshakeThrottle(
   if (!websocket_handshake_throttle_provider_)
     return nullptr;
   return websocket_handshake_throttle_provider_->CreateThrottle(
-      MSG_ROUTING_NONE, std::move(task_runner));
+      std::nullopt, std::move(task_runner));
 }
 
 void WebServiceWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(

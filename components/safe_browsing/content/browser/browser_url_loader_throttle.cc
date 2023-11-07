@@ -140,9 +140,8 @@ void BrowserURLLoaderThrottle::CheckerOnSB::Start(
       !url_checker_delegate ||
       url_checker_delegate->ShouldSkipRequestCheck(
           url, frame_tree_node_id_,
-          content::ChildProcessHost::kInvalidUniqueID /* render_process_id */,
-          MSG_ROUTING_NONE /* render_frame_id */,
-          originated_from_service_worker);
+          /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
+          /*render_frame_token=*/std::nullopt, originated_from_service_worker);
   if (skip_checks_) {
     if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
       throttle_->SkipChecks();
@@ -168,7 +167,7 @@ void BrowserURLLoaderThrottle::CheckerOnSB::Start(
     url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
         headers, load_flags, request_destination, has_user_gesture,
         url_checker_delegate, web_contents_getter_, nullptr,
-        content::ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE,
+        content::ChildProcessHost::kInvalidUniqueID, std::nullopt,
         frame_tree_node_id_, url_real_time_lookup_enabled_,
         can_urt_check_subresource_url_, can_check_db_,
         can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,

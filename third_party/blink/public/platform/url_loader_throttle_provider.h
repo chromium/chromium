@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/types/optional_ref.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -33,17 +35,17 @@ class BLINK_PLATFORM_EXPORT URLLoaderThrottleProvider {
   virtual std::unique_ptr<URLLoaderThrottleProvider> Clone() = 0;
 
   // For frame requests this is called on the main thread. Dedicated, shared and
-  // service workers call it on the worker thread. |render_frame_id| will be set
-  // to the corresponding frame for frame and dedicated worker requests,
-  // otherwise it will be MSG_ROUTING_NONE.
+  // service workers call it on the worker thread. `local_frame_token` will be
+  // set to the corresponding frame for frame and dedicated worker requests,
+  // otherwise it will be not be set.
   //
-  // TODO(crbug.com/1379780): The 'render_frame_id' argument is required because
-  // a frame's URLLoaderThrottleProvider is designed to be created only once per
-  // process and shared between multiple frames. But when we have
+  // TODO(crbug.com/1379780): The 'local_frame_token' argument is required
+  // because a frame's URLLoaderThrottleProvider is designed to be created only
+  // once per process and shared between multiple frames. But when we have
   // URLLoaderThrottleProvider for each frames in the background threads, we
-  // don't need the 'render_frame_id' argument.
+  // don't need the 'local_frame_token' argument.
   virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
-      int render_frame_id,
+      base::optional_ref<const LocalFrameToken> local_frame_token,
       const WebURLRequest& request) = 0;
 
   // Set the network status online state as specified in |is_online|.

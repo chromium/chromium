@@ -58,7 +58,7 @@ WebSocketHandshakeThrottleProviderImpl::Clone(
 
 std::unique_ptr<blink::WebSocketHandshakeThrottle>
 WebSocketHandshakeThrottleProviderImpl::CreateThrottle(
-    int render_frame_id,
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (pending_safe_browsing_) {
@@ -72,11 +72,11 @@ WebSocketHandshakeThrottleProviderImpl::CreateThrottle(
         std::move(pending_extension_web_request_reporter_));
   }
   auto throttle = std::make_unique<safe_browsing::WebSocketSBHandshakeThrottle>(
-      safe_browsing_.get(), render_frame_id,
+      safe_browsing_.get(), local_frame_token,
       extension_web_request_reporter_.get());
 #else
   auto throttle = std::make_unique<safe_browsing::WebSocketSBHandshakeThrottle>(
-      safe_browsing_.get(), render_frame_id);
+      safe_browsing_.get(), local_frame_token);
 #endif
   return throttle;
 }

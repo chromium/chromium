@@ -161,8 +161,9 @@ class AwContentsMessageFilter
   bool OnMessageReceived(const IPC::Message& message) override;
 
   // mojom::RenderMessageFilter overrides:
-  void SubFrameCreated(int parent_render_frame_id,
-                       int child_render_frame_id) override;
+  void SubFrameCreated(
+      const blink::LocalFrameToken& parent_frame_token,
+      const blink::LocalFrameToken& child_frame_token) override;
 
  private:
   ~AwContentsMessageFilter() override;
@@ -180,11 +181,12 @@ bool AwContentsMessageFilter::OnMessageReceived(const IPC::Message& message) {
   return false;
 }
 
-void AwContentsMessageFilter::SubFrameCreated(int parent_render_frame_id,
-                                              int child_render_frame_id) {
+void AwContentsMessageFilter::SubFrameCreated(
+    const blink::LocalFrameToken& parent_frame_token,
+    const blink::LocalFrameToken& child_frame_token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  AwContentsIoThreadClient::SubFrameCreated(process_id_, parent_render_frame_id,
-                                            child_render_frame_id);
+  AwContentsIoThreadClient::SubFrameCreated(process_id_, parent_frame_token,
+                                            child_frame_token);
 }
 
 }  // anonymous namespace

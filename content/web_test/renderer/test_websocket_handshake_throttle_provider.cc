@@ -89,7 +89,7 @@ TestWebSocketHandshakeThrottleProvider::Clone(
 
 std::unique_ptr<blink::WebSocketHandshakeThrottle>
 TestWebSocketHandshakeThrottleProvider::CreateThrottle(
-    int render_frame_id,
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   return std::make_unique<TestWebSocketHandshakeThrottle>(
       std::move(task_runner));

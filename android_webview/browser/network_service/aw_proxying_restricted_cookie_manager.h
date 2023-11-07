@@ -5,9 +5,11 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_PROXYING_RESTRICTED_COOKIE_MANAGER_H_
 #define ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_PROXYING_RESTRICTED_COOKIE_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 
@@ -94,22 +96,21 @@ class AwProxyingRestrictedCookieManager
       mojo::PendingRemote<network::mojom::RestrictedCookieManager>
           underlying_restricted_cookie_manager,
       bool is_service_worker,
-      int process_id,
-      int frame_id);
+      const std::optional<const content::GlobalRenderFrameHostToken>&
+          global_frame_token);
 
   static void CreateAndBindOnIoThread(
       mojo::PendingRemote<network::mojom::RestrictedCookieManager>
           underlying_rcm,
       bool is_service_worker,
-      int process_id,
-      int frame_id,
+      const std::optional<const content::GlobalRenderFrameHostToken>&
+          global_frame_token,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver);
 
   mojo::Remote<network::mojom::RestrictedCookieManager>
       underlying_restricted_cookie_manager_;
   bool is_service_worker_;
-  int process_id_;
-  int frame_id_;
+  std::optional<const content::GlobalRenderFrameHostToken> global_frame_token_;
 
   base::WeakPtrFactory<AwProxyingRestrictedCookieManager> weak_factory_{this};
 };

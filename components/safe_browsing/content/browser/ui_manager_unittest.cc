@@ -264,20 +264,25 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
 
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const char* url,
+      bool is_subresource) {
+    auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
+    return MakeUnsafeResource(url, is_subresource,
+                              primary_main_frame->GetGlobalId(),
+                              primary_main_frame->GetFrameToken());
+  }
+
+  // TODO(crbug.com/1410253): Delete parameter once the experiment is
+  // complete.
+  security_interstitials::UnsafeResource MakeUnsafeResource(
+      const char* url,
       bool is_subresource,
-      // TODO(crbug.com/1410253): Delete parameter once the experiment is
-      // complete.
-      absl::optional<content::GlobalRenderFrameHostId>
-          override_primary_main_frame_id = absl::nullopt) {
-    const content::GlobalRenderFrameHostId primary_main_frame_id =
-        override_primary_main_frame_id.has_value()
-            ? override_primary_main_frame_id.value()
-            : web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+      content::GlobalRenderFrameHostId frame_id,
+      const blink::LocalFrameToken& frame_token) {
     security_interstitials::UnsafeResource resource;
     resource.url = GURL(url);
     resource.is_subresource = is_subresource;
-    resource.render_process_id = primary_main_frame_id.child_id;
-    resource.render_frame_id = primary_main_frame_id.frame_routing_id;
+    resource.render_process_id = frame_id.child_id;
+    resource.render_frame_token = frame_token.value();
     resource.threat_type = SB_THREAT_TYPE_URL_MALWARE;
     return resource;
   }
@@ -668,10 +673,13 @@ TEST_F(SafeBrowsingUIManagerTest, CheckLookupMechanismExperimentEligibility) {
     // Ineligible: No web contents.
     const content::GlobalRenderFrameHostId primary_main_frame_id =
         web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+    auto primary_main_frame_token =
+        web_contents()->GetPrimaryMainFrame()->GetFrameToken();
     DeleteContents();
-    security_interstitials::UnsafeResource resource = MakeUnsafeResource(
-        kBadURL, /*is_subresource=*/false,
-        /*override_primary_main_frame_id=*/primary_main_frame_id);
+    security_interstitials::UnsafeResource resource =
+        MakeUnsafeResource(kBadURL, /*is_subresource=*/false,
+                           /*frame_id=*/primary_main_frame_id,
+                           /*frame_token=*/primary_main_frame_token);
     run_test(/*expect_is_eligible=*/false, /*resource=*/resource);
   }
 }
@@ -686,7 +694,7 @@ TEST_F(SafeBrowsingUIManagerTest, InvalidRenderFrameHostId) {
   // handle.
   content::GlobalRenderFrameHostId invalid_rfh_id;
   resource.render_process_id = invalid_rfh_id.child_id;
-  resource.render_frame_id = invalid_rfh_id.frame_routing_id;
+  resource.render_frame_token = base::UnguessableToken::Create();
   ASSERT_FALSE(security_interstitials::GetWebContentsForResource(resource));
 
   EXPECT_FALSE(IsAllowlisted(resource));

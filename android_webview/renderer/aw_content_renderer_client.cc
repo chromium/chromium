@@ -43,6 +43,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "url/gurl.h"
@@ -159,8 +160,9 @@ void AwContentRendererClient::RenderFrameCreated(
   if (main_frame && main_frame != render_frame) {
     // Avoid any race conditions from having the browser's UI thread tell the IO
     // thread that a subframe was created.
-    GetRenderMessageFilter()->SubFrameCreated(main_frame->GetRoutingID(),
-                                              render_frame->GetRoutingID());
+    GetRenderMessageFilter()->SubFrameCreated(
+        main_frame->GetWebFrame()->GetLocalFrameToken(),
+        render_frame->GetWebFrame()->GetLocalFrameToken());
   }
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

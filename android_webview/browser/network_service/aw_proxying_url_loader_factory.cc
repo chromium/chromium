@@ -967,7 +967,7 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
       AwCookieAccessPolicy::GetInstance()->GetShouldAcceptCookies();
   bool third_party_cookie_policy =
       AwCookieAccessPolicy::GetInstance()->GetShouldAcceptThirdPartyCookies(
-          /*render_process_id=*/0, MSG_ROUTING_NONE, frame_tree_node_id_);
+          std::nullopt, frame_tree_node_id_);
   if (!global_cookie_policy) {
     options |= network::mojom::kURLLoadOptionBlockAllCookies;
   } else if (!third_party_cookie_policy && !request.url.SchemeIsFile()) {

@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/optional_ref.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
@@ -28,14 +30,14 @@ class BLINK_PLATFORM_EXPORT WebSocketHandshakeThrottleProvider {
   virtual std::unique_ptr<WebSocketHandshakeThrottleProvider> Clone(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
 
-  // For requests from frames and dedicated workers, |render_frame_id| should be
-  // set to the corresponding frame. For requests from shared or service
-  // workers, |render_frame_id| should be set to MSG_ROUTING_NONE.
+  // For requests from frames and dedicated workers, `local_frame_token` should
+  // be set to the corresponding frame. For requests from shared or service
+  // workers, `local_frame_token` will not be set.
   //
   // |task_runner| is used for internal IPC handling of the throttle, and must
   // be bound to the same sequence to the current one.
   virtual std::unique_ptr<blink::WebSocketHandshakeThrottle> CreateThrottle(
-      int render_frame_id,
+      base::optional_ref<const LocalFrameToken> local_frame_token,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
 };
 

@@ -601,8 +601,9 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
   if (!trigger_manager_)
     return;
 
+  auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
   const content::GlobalRenderFrameHostId primary_main_frame_id =
-      web_contents->GetPrimaryMainFrame()->GetGlobalId();
+      primary_main_frame->GetGlobalId();
   security_interstitials::UnsafeResource resource;
   if (password_type.account_type() ==
       ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
@@ -617,7 +618,7 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
   }
   resource.url = web_contents->GetLastCommittedURL();
   resource.render_process_id = primary_main_frame_id.child_id;
-  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
+  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
   resource.token = token;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile_->GetDefaultStoragePartition()

@@ -131,7 +131,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
     base::WeakPtr<web::WebState> weak_web_state,
     UnsafeResource::RenderProcessId render_process_id,
-    UnsafeResource::RenderFrameId render_frame_id,
+    const UnsafeResource::RenderFrameToken& render_frame_token,
     UnsafeResource::FrameTreeNodeId frame_tree_node_id,
     bool url_real_time_lookup_enabled,
     bool can_urt_check_subresource_url,
@@ -153,7 +153,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       has_user_gesture_(has_user_gesture),
       web_contents_getter_(web_contents_getter),
       render_process_id_(render_process_id),
-      render_frame_id_(render_frame_id),
+      render_frame_token_(render_frame_token),
       frame_tree_node_id_(frame_tree_node_id),
       weak_web_state_(weak_web_state),
       url_checker_delegate_(std::move(url_checker_delegate)),
@@ -238,7 +238,7 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
       weak_factory_.GetWeakPtr(), performed_check);
   resource.callback_sequence = base::SequencedTaskRunner::GetCurrentDefault();
   resource.render_process_id = render_process_id_;
-  resource.render_frame_id = render_frame_id_;
+  resource.render_frame_token = render_frame_token_;
   resource.frame_tree_node_id = frame_tree_node_id_;
   resource.weak_web_state = weak_web_state_;
   resource.threat_source = threat_source;

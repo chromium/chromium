@@ -5,6 +5,7 @@ include_rules = [
   "+extensions/buildflags/buildflags.h",
   "+extensions/common",
   "+third_party/blink/public/common/loader/url_loader_throttle.h",
+  "+third_party/blink/public/common/tokens/tokens.h",
   "+third_party/blink/public/platform",
   "+third_party/blink/public/web",
   "+ipc",

@@ -62,11 +62,12 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
 
   SafeBrowsingDatabaseManager* GetDatabaseManager() override { return nullptr; }
 
-  bool ShouldSkipRequestCheck(const GURL& original_url,
-                              int frame_tree_node_id,
-                              int render_process_id,
-                              int render_frame_id,
-                              bool originated_from_service_worker) override {
+  bool ShouldSkipRequestCheck(
+      const GURL& original_url,
+      int frame_tree_node_id,
+      int render_process_id,
+      base::optional_ref<const base::UnguessableToken> render_frame_token,
+      bool originated_from_service_worker) override {
     return should_skip_request_check_;
   }
   void EnableSkipRequestCheck() { should_skip_request_check_ = true; }
@@ -175,7 +176,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
       UnsafeResource::RenderProcessId render_process_id,
-      UnsafeResource::RenderFrameId render_frame_id,
+      const UnsafeResource::RenderFrameToken& render_frame_token,
       UnsafeResource::FrameTreeNodeId frame_tree_node_id,
       bool url_real_time_lookup_enabled,
       bool can_urt_check_subresource_url,
@@ -199,7 +200,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
                                    web_contents_getter,
                                    /*weak_web_state=*/nullptr,
                                    render_process_id,
-                                   render_frame_id,
+                                   render_frame_token,
                                    frame_tree_node_id,
                                    url_real_time_lookup_enabled,
                                    can_urt_check_subresource_url,
@@ -310,7 +311,7 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
             network::mojom::RequestDestination::kDocument,
             /*has_user_gesture=*/false, url_checker_delegate_,
             mock_web_contents_getter.Get(), UnsafeResource::kNoRenderProcessId,
-            UnsafeResource::kNoRenderFrameId,
+            /*render_frame_token=*/std::nullopt,
             UnsafeResource::kNoFrameTreeNodeId, url_real_time_lookup_enabled,
             /*can_urt_check_subresource_url=*/false, /*can_check_db=*/true,
             /*can_check_high_confidence_allowlist=*/true,

@@ -117,7 +117,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
           web_contents_getter,
       base::WeakPtr<web::WebState> weak_web_state,
       security_interstitials::UnsafeResource::RenderProcessId render_process_id,
-      security_interstitials::UnsafeResource::RenderFrameId render_frame_id,
+      const security_interstitials::UnsafeResource::RenderFrameToken&
+          render_frame_token,
       security_interstitials::UnsafeResource::FrameTreeNodeId
           frame_tree_node_id,
       bool url_real_time_lookup_enabled,
@@ -291,7 +292,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   const network::mojom::RequestDestination request_destination_;
   const bool has_user_gesture_;
   // TODO(crbug.com/1069047): |weak_web_state_| is only used on iOS, and
-  // |web_contents_getter_|, |render_process_id_|, |render_frame_id_|, and
+  // |web_contents_getter_|, |render_process_id_|, |render_frame_token_|, and
   // |frame_tree_node_id_| are used on all other platforms.  This class should
   // be refactored to use only the common functionality can be shared across
   // platforms.
@@ -299,8 +300,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   const security_interstitials::UnsafeResource::RenderProcessId
       render_process_id_ =
           security_interstitials::UnsafeResource::kNoRenderProcessId;
-  const security_interstitials::UnsafeResource::RenderFrameId render_frame_id_ =
-      security_interstitials::UnsafeResource::kNoRenderFrameId;
+  const security_interstitials::UnsafeResource::RenderFrameToken
+      render_frame_token_;
   const security_interstitials::UnsafeResource::FrameTreeNodeId
       frame_tree_node_id_ =
           security_interstitials::UnsafeResource::kNoFrameTreeNodeId;

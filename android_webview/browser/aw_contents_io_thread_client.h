@@ -75,11 +75,11 @@ class AwContentsIoThreadClient {
   CacheMode GetCacheMode() const;
 
   // This will attempt to fetch the AwContentsIoThreadClient for the given
-  // RenderFrameHost id.
+  // blink::LocalFrameToken.
   // This method can be called from any thread.
   // A null std::unique_ptr is a valid return value.
-  static std::unique_ptr<AwContentsIoThreadClient> FromID(
-      content::GlobalRenderFrameHostId render_frame_host_id);
+  static std::unique_ptr<AwContentsIoThreadClient> FromToken(
+      const content::GlobalRenderFrameHostToken& global_frame_token);
 
   // This map is useful when browser side navigations are enabled as
   // render_frame_ids will not be valid anymore for some of the navigations.
@@ -87,9 +87,9 @@ class AwContentsIoThreadClient {
       int frame_tree_node_id);
 
   // Called on the IO thread when a subframe is created.
-  static void SubFrameCreated(int render_process_id,
-                              int parent_render_frame_id,
-                              int child_render_frame_id);
+  static void SubFrameCreated(int child_id,
+                              const blink::LocalFrameToken& parent_frame_token,
+                              const blink::LocalFrameToken& child_frame_token);
 
   // This method is called on the IO thread only.
   using ShouldInterceptRequestResponseCallback =

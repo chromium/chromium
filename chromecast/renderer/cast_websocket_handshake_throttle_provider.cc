@@ -39,13 +39,16 @@ CastWebSocketHandshakeThrottleProvider::Clone(
 
 std::unique_ptr<blink::WebSocketHandshakeThrottle>
 CastWebSocketHandshakeThrottleProvider::CreateThrottle(
-    int render_frame_id,
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!local_frame_token.has_value()) {
+    return nullptr;
+  }
 
   auto* activity_url_filter =
-      cast_activity_url_filter_manager_->GetActivityUrlFilterForRenderFrameID(
-          render_frame_id);
+      cast_activity_url_filter_manager_
+          ->GetActivityUrlFilterForRenderFrameToken(local_frame_token.value());
   if (!activity_url_filter)
     return nullptr;
 

@@ -123,7 +123,7 @@ base::Lock& GetFrameHeaderMapLock() {
   return *s;
 }
 
-using FrameHeaderMap = std::map<int, std::string>;
+using FrameHeaderMap = std::map<blink::LocalFrameToken, std::string>;
 
 FrameHeaderMap& GetFrameHeaderMap() {
   GetFrameHeaderMapLock().AssertAcquired();
@@ -207,18 +207,14 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
       new translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE);
 }
 
-ChromeRenderFrameObserver::~ChromeRenderFrameObserver() {
-#if BUILDFLAG(IS_ANDROID)
-  base::AutoLock auto_lock(GetFrameHeaderMapLock());
-  GetFrameHeaderMap().erase(routing_id());
-#endif
-}
+ChromeRenderFrameObserver::~ChromeRenderFrameObserver() = default;
 
 #if BUILDFLAG(IS_ANDROID)
-std::string ChromeRenderFrameObserver::GetCCTClientHeader(int render_frame_id) {
+std::string ChromeRenderFrameObserver::GetCCTClientHeader(
+    const blink::LocalFrameToken& frame_token) {
   base::AutoLock auto_lock(GetFrameHeaderMapLock());
   auto frame_map = GetFrameHeaderMap();
-  auto iter = frame_map.find(render_frame_id);
+  auto iter = frame_map.find(frame_token);
   return iter == frame_map.end() ? std::string() : iter->second;
 }
 #endif
@@ -345,6 +341,14 @@ void ChromeRenderFrameObserver::DidMeaningfulLayout(
 
 void ChromeRenderFrameObserver::OnDestruct() {
   delete this;
+}
+
+void ChromeRenderFrameObserver::WillDetach() {
+#if BUILDFLAG(IS_ANDROID)
+  base::AutoLock auto_lock(GetFrameHeaderMapLock());
+  GetFrameHeaderMap().erase(
+      render_frame()->GetWebFrame()->GetLocalFrameToken());
+#endif
 }
 
 void ChromeRenderFrameObserver::DraggableRegionsChanged() {
@@ -536,8 +540,12 @@ void ChromeRenderFrameObserver::RequestReloadImageForContextNode() {
 
 #if BUILDFLAG(IS_ANDROID)
 void ChromeRenderFrameObserver::SetCCTClientHeader(const std::string& header) {
+  auto* web_frame = render_frame()->GetWebFrame();
+  if (!web_frame) {
+    return;
+  }
   base::AutoLock auto_lock(GetFrameHeaderMapLock());
-  GetFrameHeaderMap()[routing_id()] = header;
+  GetFrameHeaderMap()[web_frame->GetLocalFrameToken()] = header;
 }
 #endif
 

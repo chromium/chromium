@@ -9,7 +9,6 @@
 namespace security_interstitials {
 
 constexpr UnsafeResource::RenderProcessId UnsafeResource::kNoRenderProcessId;
-constexpr UnsafeResource::RenderFrameId UnsafeResource::kNoRenderFrameId;
 constexpr UnsafeResource::FrameTreeNodeId UnsafeResource::kNoFrameTreeNodeId;
 
 UnsafeResource::UnsafeResource()

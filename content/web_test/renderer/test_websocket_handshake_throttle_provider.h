@@ -27,7 +27,7 @@ class TestWebSocketHandshakeThrottleProvider
   std::unique_ptr<blink::WebSocketHandshakeThrottleProvider> Clone(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   std::unique_ptr<blink::WebSocketHandshakeThrottle> CreateThrottle(
-      int render_frame_id,
+      base::optional_ref<const blink::LocalFrameToken> local_frame_token,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
 };
 

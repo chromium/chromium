@@ -143,7 +143,7 @@ URLLoaderThrottleProviderImpl::Clone() {
 
 blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 URLLoaderThrottleProviderImpl::CreateThrottles(
-    int render_frame_id,
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     const blink::WebURLRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -172,19 +172,19 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
     }
 
     auto throttle = std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
-        safe_browsing_.get(), render_frame_id,
+        safe_browsing_.get(), local_frame_token,
         extension_web_request_reporter_.get());
 #else
     auto throttle = std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
-        safe_browsing_.get(), render_frame_id);
+        safe_browsing_.get(), local_frame_token);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     throttles.emplace_back(std::move(throttle));
   }
 
   if (type_ == blink::URLLoaderThrottleProviderType::kFrame &&
-      !is_frame_resource) {
-    auto throttle =
-        prerender::NoStatePrefetchHelper::MaybeCreateThrottle(render_frame_id);
+      !is_frame_resource && local_frame_token.has_value()) {
+    auto throttle = prerender::NoStatePrefetchHelper::MaybeCreateThrottle(
+        local_frame_token.value());
     if (throttle)
       throttles.emplace_back(std::move(throttle));
   }
@@ -205,7 +205,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
       throttles.emplace_back(std::move(throttle));
   }
   std::unique_ptr<blink::URLLoaderThrottle> localization_throttle =
-      extensions::ExtensionLocalizationThrottle::MaybeCreate(render_frame_id,
+      extensions::ExtensionLocalizationThrottle::MaybeCreate(local_frame_token,
                                                              request.Url());
   if (localization_throttle) {
     throttles.emplace_back(std::move(localization_throttle));
@@ -214,9 +214,9 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 
 #if BUILDFLAG(IS_ANDROID)
   std::string client_data_header;
-  if (!is_frame_resource && render_frame_id != MSG_ROUTING_NONE) {
-    client_data_header =
-        ChromeRenderFrameObserver::GetCCTClientHeader(render_frame_id);
+  if (!is_frame_resource && local_frame_token.has_value()) {
+    client_data_header = ChromeRenderFrameObserver::GetCCTClientHeader(
+        local_frame_token.value());
   }
 #endif
 
@@ -240,13 +240,13 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
   // Workers can call us on a background thread. We don't care about such
   // requests because we purposefully only look at resources from frames
   // that the user can interact with.
-  content::RenderFrame* frame =
-      content::RenderThread::IsMainThread()
-          ? content::RenderFrame::FromRoutingID(render_frame_id)
-          : nullptr;
+  blink::WebLocalFrame* frame = nullptr;
+  if (content::RenderThread::IsMainThread() && local_frame_token.has_value()) {
+    frame = blink::WebLocalFrame::FromFrameToken(local_frame_token.value());
+  }
   if (frame) {
     auto throttle = content::MaybeCreateIdentityUrlLoaderThrottle(
-        base::BindRepeating(blink::SetIdpSigninStatus, frame->GetWebFrame()));
+        base::BindRepeating(blink::SetIdpSigninStatus, frame));
     if (throttle)
       throttles.push_back(std::move(throttle));
   }

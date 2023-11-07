@@ -28,7 +28,7 @@ class WebServiceWorkerFetchContextImplTest : public testing::Test {
     }
 
     WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
-        int render_frame_id,
+        base::optional_ref<const blink::LocalFrameToken> local_frame_token,
         const WebURLRequest& request) override {
       WebVector<std::unique_ptr<URLLoaderThrottle>> throttles;
       throttles.emplace_back(std::make_unique<FakeURLLoaderThrottle>());

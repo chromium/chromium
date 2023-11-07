@@ -1218,8 +1218,9 @@ bool ShouldNotifySubresourceResponseStarted(blink::RendererPreferences pref) {
 class WebURLLoaderThrottleProviderForFrameImpl
     : public blink::WebURLLoaderThrottleProviderForFrame {
  public:
-  explicit WebURLLoaderThrottleProviderForFrameImpl(int routing_id)
-      : routing_id_(routing_id) {}
+  explicit WebURLLoaderThrottleProviderForFrameImpl(
+      const blink::LocalFrameToken& frame_token)
+      : frame_token_(frame_token) {}
   ~WebURLLoaderThrottleProviderForFrameImpl() override = default;
 
   WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
@@ -1231,11 +1232,11 @@ class WebURLLoaderThrottleProviderForFrameImpl
       return {};
     }
     return render_thread->url_loader_throttle_provider()->CreateThrottles(
-        routing_id_, request);
+        frame_token_, request);
   }
 
  private:
-  const int routing_id_;
+  const blink::LocalFrameToken frame_token_;
 };
 
 blink::WebFrameWidget* PreviousWidgetForLazyCompositorInitialization(
@@ -3475,8 +3476,8 @@ RenderFrameImpl::CreateWorkerFetchContext() {
               web_cors_exempt_header_list,
               std::move(pending_resource_load_info_notifier));
 
-  web_dedicated_or_shared_worker_fetch_context->set_ancestor_frame_id(
-      routing_id_);
+  web_dedicated_or_shared_worker_fetch_context->SetAncestorFrameToken(
+      frame_->GetLocalFrameToken());
   web_dedicated_or_shared_worker_fetch_context->set_site_for_cookies(
       frame_->GetDocument().SiteForCookies());
   web_dedicated_or_shared_worker_fetch_context->set_top_frame_origin(
@@ -3515,8 +3516,8 @@ RenderFrameImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
                   std::move(watcher_receiver),
                   std::move(pending_resource_load_info_notifier));
 
-  web_dedicated_or_shared_worker_fetch_context->set_ancestor_frame_id(
-      routing_id_);
+  web_dedicated_or_shared_worker_fetch_context->SetAncestorFrameToken(
+      frame_->GetLocalFrameToken());
   web_dedicated_or_shared_worker_fetch_context->set_site_for_cookies(
       frame_->GetDocument().SiteForCookies());
   web_dedicated_or_shared_worker_fetch_context->set_top_frame_origin(
@@ -6206,7 +6207,7 @@ RenderFrameImpl::GetURLLoaderFactory() {
 std::unique_ptr<blink::WebURLLoaderThrottleProviderForFrame>
 RenderFrameImpl::CreateWebURLLoaderThrottleProviderForFrame() {
   return std::make_unique<WebURLLoaderThrottleProviderForFrameImpl>(
-      routing_id_);
+      frame_->GetLocalFrameToken());
 }
 
 scoped_refptr<blink::WebBackgroundResourceFetchAssets>
@@ -6363,14 +6364,6 @@ blink::WebComputedAXTree* RenderFrameImpl::GetOrCreateWebComputedAXTree() {
 
 std::unique_ptr<blink::WebSocketHandshakeThrottle>
 RenderFrameImpl::CreateWebSocketHandshakeThrottle() {
-  WebLocalFrame* web_local_frame = GetWebFrame();
-  if (!web_local_frame)
-    return nullptr;
-  auto* render_frame = content::RenderFrame::FromWebFrame(web_local_frame);
-  if (!render_frame)
-    return nullptr;
-  int render_frame_id = render_frame->GetRoutingID();
-
   // Lazily create the provider.
   if (!websocket_handshake_throttle_provider_) {
     websocket_handshake_throttle_provider_ =
@@ -6382,8 +6375,8 @@ RenderFrameImpl::CreateWebSocketHandshakeThrottle() {
   }
 
   return websocket_handshake_throttle_provider_->CreateThrottle(
-      render_frame_id,
-      render_frame->GetTaskRunner(blink::TaskType::kInternalDefault));
+      frame_->GetLocalFrameToken(),
+      GetTaskRunner(blink::TaskType::kInternalDefault));
 }
 
 bool RenderFrameImpl::GetCaretBoundsFromFocusedPlugin(gfx::Rect& rect) {

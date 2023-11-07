@@ -7,6 +7,9 @@
 
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
+#include "base/types/optional_ref.h"
+#include "content/public/browser/global_routing_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
 
@@ -31,19 +34,21 @@ class AwCookieAccessPolicy {
   void SetShouldAcceptCookies(bool allow);
 
   // Can we read/write third party cookies?
-  // |render_process_id| and |render_frame_id| must be valid.
+  // `frame_tree_node_id` or `global_frame_token` must be valid.
   // Navigation requests are not associated with a renderer process. In this
-  // case, |frame_tree_node_id| must be valid instead. Can only be called from
+  // case, `frame_tree_node_id` must be valid instead. Can only be called from
   // the IO thread.
-  bool GetShouldAcceptThirdPartyCookies(int render_process_id,
-                                        int render_frame_id,
-                                        int frame_tree_node_id);
+  bool GetShouldAcceptThirdPartyCookies(
+      base::optional_ref<const content::GlobalRenderFrameHostToken>
+          global_frame_token,
+      int frame_tree_node_id);
 
   // Whether or not to allow cookies for requests with these parameters.
-  bool AllowCookies(const GURL& url,
-                    const net::SiteForCookies& site_for_cookies,
-                    int render_process_id,
-                    int render_frame_id);
+  bool AllowCookies(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      base::optional_ref<const content::GlobalRenderFrameHostToken>
+          global_frame_token);
 
  private:
   friend class base::NoDestructor<AwCookieAccessPolicy>;

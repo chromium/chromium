@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -58,11 +59,18 @@ void AwProxyingRestrictedCookieManager::CreateAndBind(
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  std::optional<content::GlobalRenderFrameHostToken> frame_token;
+  if (!is_service_worker) {
+    if (auto* rfh = content::RenderFrameHost::FromID(process_id, frame_id)) {
+      frame_token = rfh->GetGlobalFrameToken();
+    }
+  }
+
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           &AwProxyingRestrictedCookieManager::CreateAndBindOnIoThread,
-          std::move(underlying_rcm), is_service_worker, process_id, frame_id,
+          std::move(underlying_rcm), is_service_worker, frame_token,
           std::move(receiver)));
 }
 
@@ -190,13 +198,12 @@ AwProxyingRestrictedCookieManager::AwProxyingRestrictedCookieManager(
     mojo::PendingRemote<network::mojom::RestrictedCookieManager>
         underlying_restricted_cookie_manager,
     bool is_service_worker,
-    int process_id,
-    int frame_id)
+    const std::optional<const content::GlobalRenderFrameHostToken>&
+        global_frame_token)
     : underlying_restricted_cookie_manager_(
           std::move(underlying_restricted_cookie_manager)),
       is_service_worker_(is_service_worker),
-      process_id_(process_id),
-      frame_id_(frame_id) {
+      global_frame_token_(global_frame_token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
@@ -204,12 +211,12 @@ AwProxyingRestrictedCookieManager::AwProxyingRestrictedCookieManager(
 void AwProxyingRestrictedCookieManager::CreateAndBindOnIoThread(
     mojo::PendingRemote<network::mojom::RestrictedCookieManager> underlying_rcm,
     bool is_service_worker,
-    int process_id,
-    int frame_id,
+    const std::optional<const content::GlobalRenderFrameHostToken>&
+        global_frame_token,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   auto wrapper = base::WrapUnique(new AwProxyingRestrictedCookieManager(
-      std::move(underlying_rcm), is_service_worker, process_id, frame_id));
+      std::move(underlying_rcm), is_service_worker, global_frame_token));
   mojo::MakeSelfOwnedReceiver(std::move(wrapper), std::move(receiver));
 }
 
@@ -222,7 +229,7 @@ bool AwProxyingRestrictedCookieManager::AllowCookies(
     return AwCookieAccessPolicy::GetInstance()->GetShouldAcceptCookies();
   } else {
     return AwCookieAccessPolicy::GetInstance()->AllowCookies(
-        url, site_for_cookies, process_id_, frame_id_);
+        url, site_for_cookies, global_frame_token_);
   }
 }
 
