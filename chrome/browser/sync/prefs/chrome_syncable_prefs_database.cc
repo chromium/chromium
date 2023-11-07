@@ -296,6 +296,9 @@ enum {
   kTouchpadDefaultSettings = 100239,
   kFocusModeDoNotDisturb = 100240,
   kFocusModeSessionDuration = 100241,
+  kReadAloudVoiceSettings = 100242,
+  kReadAloudSpeed = 100243,
+  kReadAloudHighlightingEnabled = 100244,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -333,6 +336,18 @@ const auto& SyncablePreferences() {
         {prefs::kPromptForDownloadAndroid,
          {syncable_prefs_ids::kPromptForDownloadAndroid, syncer::PREFERENCES,
           sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kReadAloudVoiceSettings,
+         {syncable_prefs_ids::kReadAloudVoiceSettings, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kMergeableDict}},
+        {prefs::kReadAloudSpeed,
+         {syncable_prefs_ids::kReadAloudSpeed, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kReadAloudHighlightingEnabled,
+         {syncable_prefs_ids::kReadAloudHighlightingEnabled,
+          syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone}},
 #else
     {prefs::kAccessibilityReadAnythingFontName,

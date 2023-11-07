@@ -3940,6 +3940,21 @@ inline constexpr char kIPv6ReachabilityOverrideEnabled[] =
 inline constexpr char kNativeHostsExecutablesLaunchDirectly[] =
     "native_hosts_executables_launch_directly";
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+// Dictionary mapping language to Read Aloud voice. Keys are language names like
+// "en" and values are voice ID strings.
+inline constexpr char kReadAloudVoiceSettings[] = "readaloud.voices";
+
+// Double indicating Read Aloud playback speed. Default is 1.0, double speed
+// is 2.0, etc.
+inline constexpr char kReadAloudSpeed[] = "readaloud.speed";
+
+// Boolean that specifies whether Read Aloud highlights words on the page during
+// playback and scrolls the page to match the playback position.
+inline constexpr char kReadAloudHighlightingEnabled[] =
+    "readaloud.highlighting_enabled";
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

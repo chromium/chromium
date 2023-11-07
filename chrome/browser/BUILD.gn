@@ -3508,6 +3508,7 @@ static_library("browser") {
       "//chrome/browser/privacy_sandbox/android:jni_headers",
       "//chrome/browser/quick_delete:jni_headers",
       "//chrome/browser/readaloud/android:jni_headers",
+      "//chrome/browser/readaloud/android:prefs",
       "//chrome/browser/reading_list/android",
       "//chrome/browser/recent_tabs:jni_headers",
       "//chrome/browser/safe_browsing/android:safe_browsing_enums",

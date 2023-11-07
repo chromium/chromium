@@ -262,6 +262,7 @@
 #include "chrome/browser/lens/android/lens_prefs.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
+#include "chrome/browser/readaloud/android/prefs.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
 #include "components/content_creation/notes/core/note_prefs.h"
@@ -1787,6 +1788,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   permissions::GeolocationPermissionContextAndroid::RegisterProfilePrefs(
       registry);
   query_tiles::RegisterPrefs(registry);
+  readaloud::RegisterProfilePrefs(registry);
   RecentTabsPagePrefs::RegisterProfilePrefs(registry);
   usage_stats::UsageStatsBridge::RegisterProfilePrefs(registry);
   variations::VariationsService::RegisterProfilePrefs(registry);

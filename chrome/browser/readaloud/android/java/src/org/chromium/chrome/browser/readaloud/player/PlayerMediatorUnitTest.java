@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.readaloud.player;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -27,9 +29,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
+import org.chromium.chrome.browser.readaloud.ReadAloudPrefsJni;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
@@ -52,6 +56,8 @@ public class PlayerMediatorUnitTest {
     private static final long POSITION_NS = 1_000_000_000L; // one second
     private static final long DURATION_NS = 10_000_000_000L; // ten seconds
 
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Mock ReadAloudPrefs.Natives mPrefsNative;
     @Mock private PlayerCoordinator mPlayerCoordinator;
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mPlaybackMetadata;
@@ -174,6 +180,7 @@ public class PlayerMediatorUnitTest {
         resetPlayback();
         doReturn(TITLE).when(mPlaybackMetadata).title();
         doReturn(PUBLISHER).when(mPlaybackMetadata).publisher();
+        mJniMocker.mock(ReadAloudPrefsJni.TEST_HOOKS, mPrefsNative);
         mMockPrefServiceHelper = new MockPrefServiceHelper();
         mPlaybackData = new TestPlaybackData();
         mDelegate = new TestPlayerDelegate();
@@ -331,10 +338,7 @@ public class PlayerMediatorUnitTest {
     @Test
     public void testOnVoiceSelected() {
         mMediator.onVoiceSelected(new PlaybackVoice("language", "voice", "description"));
-
-        Map<String, String> voices = ReadAloudPrefs.getVoices(mDelegate.getPrefService());
-        assertEquals(1, voices.size());
-        assertEquals("voice", voices.get("language"));
+        verify(mPrefsNative).setVoice(any(), eq("language"), eq("voice"));
     }
 
     @Test
