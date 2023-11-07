@@ -35,8 +35,10 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/proto/states.pb.h"
+#include "components/autofill/core/browser/select_control_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/strings/grit/components_strings.h"
@@ -49,101 +51,6 @@ using base::StringToInt;
 namespace autofill {
 
 namespace {
-
-// Returns true if the value was successfully set, meaning `value` was found in
-// the list of select options in `field`. Optionally, the caller may pass
-// `best_match_index` which will be set to the index of the best match.
-// A nullopt value means that no value for filling was found.
-std::optional<std::u16string> GetSelectControlValue(
-    const std::u16string& value,
-    base::span<const SelectOption> field_options,
-    std::string* failure_to_fill,
-    size_t* best_match_index = nullptr) {
-  l10n::CaseInsensitiveCompare compare;
-
-  std::u16string best_match;
-  for (size_t i = 0; i < field_options.size(); ++i) {
-    const SelectOption& option = field_options[i];
-    if (value == option.value || value == option.content) {
-      // An exact match, use it.
-      best_match = option.value;
-      if (best_match_index) {
-        *best_match_index = i;
-      }
-      break;
-    }
-
-    if (compare.StringsEqual(value, option.value) ||
-        compare.StringsEqual(value, option.content)) {
-      // A match, but not in the same case. Save it in case an exact match is
-      // not found.
-      best_match = option.value;
-      if (best_match_index) {
-        *best_match_index = i;
-      }
-    }
-  }
-
-  if (best_match.empty()) {
-    if (failure_to_fill) {
-      *failure_to_fill +=
-          "Did not find value to fill in select control element. ";
-    }
-    return std::nullopt;
-  }
-  return best_match;
-}
-
-// Like GetSelectControlValue, but searches within the field values and options
-// for `value`. For example, "NC - North Carolina" would match "north carolina".
-// A nullopt value means that no value for filling was found.
-std::optional<std::u16string> GetSelectControlValueSubstringMatch(
-    const std::u16string& value,
-    bool ignore_whitespace,
-    base::span<const SelectOption> field_options,
-    std::string* failure_to_fill) {
-  if (int best_match = FieldFiller::FindShortestSubstringMatchInSelect(
-          value, ignore_whitespace, field_options);
-      best_match >= 0) {
-    return field_options[best_match].value;
-  }
-
-  if (failure_to_fill) {
-    *failure_to_fill +=
-        "Did not find substring match for filling select control element. ";
-  }
-  return std::nullopt;
-}
-
-// Like GetSelectControlValue, but searches within the field values and options
-// for `value`. First it tokenizes the options, then tries to match against
-// tokens. For example, "NC - North Carolina" would match "nc" but not "ca".
-// A nullopt value means that no value for filling was found.
-std::optional<std::u16string> GetSelectControlValueTokenMatch(
-    const std::u16string& value,
-    base::span<const SelectOption> field_options,
-    std::string* failure_to_fill) {
-  const auto tokenize = [](const std::u16string& str) {
-    return base::SplitString(str, base::kWhitespaceASCIIAs16,
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  };
-  l10n::CaseInsensitiveCompare compare;
-  const auto equals_value = [&](const std::u16string& rhs) {
-    return compare.StringsEqual(value, rhs);
-  };
-  for (const SelectOption& option : field_options) {
-    if (base::ranges::any_of(tokenize(option.value), equals_value) ||
-        base::ranges::any_of(tokenize(option.content), equals_value)) {
-      return option.value;
-    }
-  }
-
-  if (failure_to_fill) {
-    *failure_to_fill +=
-        "Did not find token match for filling select control element. ";
-  }
-  return std::nullopt;
-}
 
 // Helper method to normalize the `admin_area` for the given `country_code`.
 // The value in `admin_area` will be overwritten.
@@ -829,12 +736,6 @@ std::u16string GetExpirationDateForVirtualCardPreviewInput(
   }
 }
 
-std::u16string RemoveWhitespace(const std::u16string& value) {
-  std::u16string stripped_value;
-  base::RemoveChars(value, base::kWhitespaceUTF16, &stripped_value);
-  return stripped_value;
-}
-
 // Finds the best suitable option in the `field` that corresponds to the
 // `country_code`.
 // If the exact match is not found, extracts the digits (ignoring leading '00'
@@ -1143,34 +1044,6 @@ std::u16string FieldFiller::GetPhoneNumberValueForInput(
   }
 
   return number;
-}
-
-// static
-int FieldFiller::FindShortestSubstringMatchInSelect(
-    const std::u16string& value,
-    bool ignore_whitespace,
-    base::span<const SelectOption> field_options) {
-  int best_match = -1;
-
-  std::u16string value_stripped =
-      ignore_whitespace ? RemoveWhitespace(value) : value;
-  base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents searcher(
-      value_stripped);
-  for (size_t i = 0; i < field_options.size(); ++i) {
-    const SelectOption& option = field_options[i];
-    std::u16string option_value =
-        ignore_whitespace ? RemoveWhitespace(option.value) : option.value;
-    std::u16string option_content =
-        ignore_whitespace ? RemoveWhitespace(option.content) : option.content;
-    if (searcher.Search(option_value, nullptr, nullptr) ||
-        searcher.Search(option_content, nullptr, nullptr)) {
-      if (best_match == -1 ||
-          field_options[best_match].value.size() > option.value.size()) {
-        best_match = i;
-      }
-    }
-  }
-  return best_match;
 }
 
 }  // namespace autofill

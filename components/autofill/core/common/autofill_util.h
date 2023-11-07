@@ -59,6 +59,9 @@ void SetCheckStatus(FormFieldData* form_field_data,
 std::vector<std::string> LowercaseAndTokenizeAttributeString(
     base::StringPiece attribute);
 
+// Returns `value` stripped from its whitespaces.
+std::u16string RemoveWhitespace(const std::u16string& value);
+
 // Returns true if and only if the field value has no character except the
 // formatting characters. This means that the field value is a formatting string
 // entered by the website and not a real value entered by the user.

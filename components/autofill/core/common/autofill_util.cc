@@ -124,6 +124,12 @@ std::vector<std::string> LowercaseAndTokenizeAttributeString(
                            base::SPLIT_WANT_NONEMPTY);
 }
 
+std::u16string RemoveWhitespace(const std::u16string& value) {
+  std::u16string stripped_value;
+  base::RemoveChars(value, base::kWhitespaceUTF16, &stripped_value);
+  return stripped_value;
+}
+
 bool SanitizedFieldIsEmpty(const std::u16string& value) {
   // Some sites enter values such as ____-____-____-____ or (___)-___-____ in
   // their fields. Check if the field value is empty after the removal of the

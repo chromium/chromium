@@ -1050,51 +1050,6 @@ INSTANTIATE_TEST_SUITE_P(
                 u"0322", true, "mm/yy", CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}),
         testing::Bool()));
 
-TEST_F(AutofillFieldFillerTest, FillSelectControlByValue) {
-  std::vector<const char*> kOptions = {
-      "Eenie",
-      "Meenie",
-      "Miney",
-      "Mo",
-  };
-
-  AutofillField field = CreateTestSelectAutofillField(kOptions, NAME_FIRST);
-
-  // Set semantically empty contents for each option, so that only the values
-  // can be used for matching.
-  for (size_t i = 0; i < field.options.size(); ++i)
-    field.options[i].content = base::NumberToString16(i);
-
-  address()->SetRawInfo(NAME_FIRST, u"Meenie");
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"Meenie", field.value);
-}
-
-TEST_F(AutofillFieldFillerTest, FillSelectControlByContents) {
-  std::vector<const char*> kOptions = {
-      "Eenie",
-      "Meenie",
-      "Miney",
-      "Mo",
-  };
-  AutofillField field = CreateTestSelectAutofillField(kOptions, NAME_FIRST);
-
-  // Set semantically empty values for each option, so that only the contents
-  // can be used for matching.
-  for (size_t i = 0; i < field.options.size(); ++i)
-    field.options[i].value = base::NumberToString16(i);
-
-  address()->SetRawInfo(NAME_FIRST, u"Miney");
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, address(), /*forced_fill_values=*/{}, &field,
-                       /*cvc=*/std::u16string(),
-                       mojom::ActionPersistence::kFill);
-  EXPECT_EQ(u"2", field.value);  // Corresponds to "Miney".
-}
-
 struct FillSelectTestCase {
   std::vector<const char*> select_values;
   const char16_t* input_value;
@@ -1789,46 +1744,6 @@ TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithUnequalSizeSplits) {
 
   // Verify for expected results.
   EXPECT_EQ(obfuscated_card_number, cc_number_full.value);
-}
-
-TEST_F(AutofillFieldFillerTest, FindShortestSubstringMatchInSelect) {
-  AutofillField field{CreateTestSelectField({"États-Unis", "Canada"})};
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-
-  // Case 1: Exact match
-  int ret = FieldFiller::FindShortestSubstringMatchInSelect(u"Canada", false,
-                                                            field.options);
-  EXPECT_EQ(1, ret);
-
-  // Case 2: Case-insensitive
-  ret = FieldFiller::FindShortestSubstringMatchInSelect(u"CANADA", false,
-                                                        field.options);
-  EXPECT_EQ(1, ret);
-
-  // Case 3: Proper substring
-  ret = FieldFiller::FindShortestSubstringMatchInSelect(u"États", false,
-                                                        field.options);
-  EXPECT_EQ(0, ret);
-
-  // Case 4: Accent-insensitive
-  ret = FieldFiller::FindShortestSubstringMatchInSelect(u"Etats-Unis", false,
-                                                        field.options);
-  EXPECT_EQ(0, ret);
-
-  // Case 5: Whitespace-insensitive
-  ret = FieldFiller::FindShortestSubstringMatchInSelect(u"Ca na da", true,
-                                                        field.options);
-  EXPECT_EQ(1, ret);
-
-  // Case 6: No match (whitespace-sensitive)
-  ret = FieldFiller::FindShortestSubstringMatchInSelect(u"Ca Na Da", false,
-                                                        field.options);
-  EXPECT_EQ(-1, ret);
-
-  // Case 7: No match (not present)
-  ret = FieldFiller::FindShortestSubstringMatchInSelect(u"Canadia", true,
-                                                        field.options);
-  EXPECT_EQ(-1, ret);
 }
 
 // Tests that text state fields are filled correctly depending on their
