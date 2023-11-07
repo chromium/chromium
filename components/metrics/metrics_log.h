@@ -16,7 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_reporting_default_state.h"

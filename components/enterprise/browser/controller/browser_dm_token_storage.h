@@ -14,7 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/policy/core/common/cloud/dm_token.h"

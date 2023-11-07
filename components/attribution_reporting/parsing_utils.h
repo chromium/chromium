@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"

@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

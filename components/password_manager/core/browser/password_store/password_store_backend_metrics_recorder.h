@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"

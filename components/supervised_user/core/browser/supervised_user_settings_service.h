@@ -12,7 +12,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_store.h"

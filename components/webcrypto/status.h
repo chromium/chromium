@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 
 namespace webcrypto {

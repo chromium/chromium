@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 class GURL;

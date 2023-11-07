@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_UTIL_H_
 #define COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_IPC_UTIL_H_
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
 namespace named_mojo_ipc_server {

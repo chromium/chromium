@@ -20,7 +20,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "components/winhttp/proxy_configuration.h"
 #include "components/winhttp/scoped_hinternet.h"
 #include "url/gurl.h"

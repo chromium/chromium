@@ -10,7 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"

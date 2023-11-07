@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_EVENT_RESPONSE_UTIL_H_
 #define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_EVENT_RESPONSE_UTIL_H_
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
 
 namespace payments {

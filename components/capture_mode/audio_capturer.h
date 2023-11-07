@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/capture_mode/capture_mode_export.h"
 #include "media/base/audio_bus.h"

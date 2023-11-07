@@ -12,7 +12,7 @@
 #include "base/containers/fixed_flat_set.h"
 
 #include "base/feature_list.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/country_data.h"

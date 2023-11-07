@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"

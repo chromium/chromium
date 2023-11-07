@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"

@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"

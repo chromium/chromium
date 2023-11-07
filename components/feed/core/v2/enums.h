@@ -6,7 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_ENUMS_H_
 
 #include <iosfwd>
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace feed {
 

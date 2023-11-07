@@ -10,7 +10,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"

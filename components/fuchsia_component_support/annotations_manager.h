@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace fuchsia_component_support {
 
