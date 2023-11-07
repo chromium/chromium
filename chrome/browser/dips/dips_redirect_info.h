@@ -69,6 +69,8 @@ struct DIPSRedirectInfo {
       access_type;  // may be updated by late cookie notifications
   const ukm::SourceId source_id;
   const base::Time time;
+  // TODO(amaliev): Add the `site` string computed by GetSiteForDIPS to avoid
+  // recomputing.
 
   // These properties aren't known at the time of creation, and are filled in
   // later:

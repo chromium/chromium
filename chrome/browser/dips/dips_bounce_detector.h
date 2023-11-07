@@ -70,6 +70,10 @@ using DIPSNavigationStart = absl::variant<GURL, DIPSRedirectInfoPtr>;
 // redirects are trimmed from the front of the list.
 constexpr size_t kDIPSRedirectChainMax = 1000;
 
+// When checking the history of the current tab for sites following the
+// first-party site, this is the maximum number of navigation entries to check.
+inline constexpr int kAllSitesFollowingFirstPartyLookbackLength = 10;
+
 // A redirect-chain-in-progress. It grows by calls to Append() and restarts by
 // calls to EndChain().
 class DIPSRedirectContext {
@@ -129,6 +133,18 @@ class DIPSRedirectContext {
   // Return whether `site` had an interaction in the current redirect context.
   bool SiteHadUserActivation(const std::string& site) const;
 
+  // Return all sites that had an interaction in the current redirect context.
+  std::set<std::string> AllSitesWithUserActivation() const;
+
+  // Returns a map of (site, (url, has_current_interaction)) for all URLs in the
+  // current redirect chain that satisfy the redirect heuristic. This performs
+  // all checks except for the presence of a past interaction, which should be
+  // checked by the caller using the DIPS db. If `allowed_sites` is present,
+  // only sites in `allowed_sites` should be included.
+  std::map<std::string, std::pair<GURL, bool>> GetRedirectHeuristicURLs(
+      const GURL& first_party_url,
+      absl::optional<std::set<std::string>> allowed_sites) const;
+
  private:
   void AppendClientRedirect(DIPSRedirectInfoPtr client_redirect);
   void AppendServerRedirects(std::vector<DIPSRedirectInfoPtr> server_redirects);
@@ -169,6 +185,8 @@ class DIPSBounceDetectorDelegate {
                            const GURL& url,
                            const base::Time& time) = 0;
   virtual void IncrementPageSpecificBounceCount(const GURL& final_url) = 0;
+  virtual std::set<std::string> AllSitesFollowingFirstParty(
+      const GURL& first_party_url) = 0;
 };
 
 // ServerBounceDetectionState gets attached to NavigationHandle (which is a
@@ -319,6 +337,11 @@ class DIPSWebContentsObserver
         .WithArgs(clock);
   }
 
+  std::set<std::string> AllSitesFollowingFirstPartyForTesting(
+      const GURL& first_party_url) {
+    return AllSitesFollowingFirstParty(first_party_url);
+  }
+
  private:
   DIPSWebContentsObserver(content::WebContents* web_contents,
                           DIPSService* dips_service);
@@ -341,6 +364,15 @@ class DIPSWebContentsObserver
       bool is_current_interaction,
       absl::optional<base::Time> last_user_interaction_time);
 
+  // Create all eligible RedirectHeuristic grants for the current redirect
+  // chain. This may create a storage access grant for any site in the redirect
+  // chain on the last committed site, if it meets the criteria.
+  void CreateAllRedirectHeuristicGrants(const GURL& first_party_url);
+  void CreateRedirectHeuristicGrant(const GURL& url,
+                                    const GURL& first_party_url,
+                                    base::TimeDelta grant_duration,
+                                    bool has_interaction);
+
   // DIPSBounceDetectorDelegate overrides:
   const GURL& GetLastCommittedURL() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
@@ -352,6 +384,8 @@ class DIPSWebContentsObserver
                    const GURL& url,
                    const base::Time& time) override;
   void IncrementPageSpecificBounceCount(const GURL& final_url) override;
+  std::set<std::string> AllSitesFollowingFirstParty(
+      const GURL& first_party_url) override;
 
   // Start WebContentsObserver overrides:
   void DidStartNavigation(
@@ -417,6 +451,7 @@ class DIPSWebContentsObserver
   // with the BrowserContext/Profile which will outlive the WebContents that
   // DIPSWebContentsObserver is observing.
   raw_ptr<DIPSService> dips_service_;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   DIPSBounceDetector detector_;
   DIPSIssueReportingCallback issue_reporting_callback_;
 
