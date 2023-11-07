@@ -18,7 +18,7 @@ ScriptsRunInfo::ScriptsRunInfo(content::RenderFrame* render_frame,
     : num_css(0u),
       num_js(0u),
       num_blocking_js(0u),
-      routing_id_(render_frame->GetRoutingID()),
+      frame_token_(render_frame->GetWebFrame()->GetLocalFrameToken()),
       run_location_(location),
       frame_url_(ScriptContext::GetDocumentLoaderURLForFrame(
           render_frame->GetWebFrame())) {}
@@ -29,8 +29,10 @@ ScriptsRunInfo::~ScriptsRunInfo() {
 void ScriptsRunInfo::LogRun(bool send_script_activity) {
   // Notify the browser if any extensions are now executing scripts.
   if (!executing_scripts.empty() && send_script_activity) {
-    content::RenderFrame* frame =
-        content::RenderFrame::FromRoutingID(routing_id_);
+    content::RenderFrame* frame = nullptr;
+    if (auto* web_frame = blink::WebLocalFrame::FromFrameToken(frame_token_)) {
+      frame = content::RenderFrame::FromWebFrame(web_frame);
+    }
     if (!frame) {
       // We can't convert a map of sets into a flat_map of vectors with mojo
       // bindings so we need to do it manually. The set property is useful for
