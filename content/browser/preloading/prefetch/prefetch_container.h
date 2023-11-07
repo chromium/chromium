@@ -176,6 +176,47 @@ class CONTENT_EXPORT PrefetchContainer {
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
   PrefetchStatus GetPrefetchStatus() const;
 
+  // The state enum of the current prefetch, to replace `PrefetchStatus`.
+  // https://crbug.com/1494771
+  // Design doc for PrefetchContainer state transitions:
+  // https://docs.google.com/document/d/1dK4mAVoRrgTVTGdewthI_hA8AHirgXW8k6BmpK9gnBE/edit?usp=sharing
+  enum class LoadState {
+    // --- Phase 1. [Initial state]
+    kNotStarted,
+
+    // --- Phase 2. The eligibility check for the initial request has completed
+    // and `PreloadingAttempt::SetEligibility()` has been called.
+
+    // Found eligible.
+    kEligible,
+
+    // [Final state] Found ineligible. `redirect_chain_[0].eligibility_`
+    // contains the reason for being ineligible.
+    kFailedIneligible,
+
+    // --- Phase 3. PrefetchService::StartSinglePrefetch() has been called and
+    // the holdback check has completed.
+
+    // [Final state] Not heldback.
+    //
+    // On this state, refer to `PrefetchResponseReader`s for detailed
+    // prefetching state and servability.
+    //
+    // Also, refer to `attempt_` for triggering outcome and failure reasons for
+    // metrics.
+    // `PreloadingAttempt::SetFailureReason()` can be only called on this state.
+    // Note that these states of `attempt_` don't directly affect
+    // `PrefetchResponseReader`'s servability.
+    // (e.g. `PrefetchResponseReader::GetServableState()` can be still
+    // `kServable` even if `attempt_` has a failure).
+    kStarted,
+
+    // [Final state] Heldback due to `PreloadingAttempt::ShouldHoldback()`.
+    kFailedHeldback,
+  };
+  void SetLoadState(LoadState prefetch_status);
+  LoadState GetLoadState() const;
+
   // Controls ownership of the |ProxyLookupClientImpl| used during the
   // eligibility check.
   void TakeProxyLookupClient(
@@ -516,7 +557,11 @@ class CONTENT_EXPORT PrefetchContainer {
   base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager_;
 
   // The current status, if any, of the prefetch.
+  // TODO(crbug.com/1494771): Use `load_state_` instead for non-metrics purpose.
   absl::optional<PrefetchStatus> prefetch_status_;
+
+  // The current status of the prefetch.
+  LoadState load_state_ = LoadState::kNotStarted;
 
   // Looks up the proxy settings in the default network context all URLs in
   // |redirect_chain_|.

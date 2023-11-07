@@ -553,6 +553,29 @@ PrefetchDocumentManager* PrefetchContainer::GetPrefetchDocumentManager() const {
   return prefetch_document_manager_.get();
 }
 
+void PrefetchContainer::SetLoadState(LoadState new_load_state) {
+  switch (new_load_state) {
+    case LoadState::kNotStarted:
+      NOTREACHED();
+      break;
+
+    case LoadState::kEligible:
+    case LoadState::kFailedIneligible:
+      CHECK_EQ(load_state_, LoadState::kNotStarted);
+      break;
+
+    case LoadState::kStarted:
+    case LoadState::kFailedHeldback:
+      CHECK_EQ(load_state_, LoadState::kEligible);
+      break;
+  }
+  load_state_ = new_load_state;
+}
+
+PrefetchContainer::LoadState PrefetchContainer::GetLoadState() const {
+  return load_state_;
+}
+
 void PrefetchContainer::OnEligibilityCheckComplete(
     PreloadingEligibility eligibility) {
   SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();
@@ -562,7 +585,10 @@ void PrefetchContainer::OnEligibilityCheckComplete(
   if (redirect_chain_.size() == 1) {
     // This case is for just the URL that was originally requested to be
     // prefetched.
-    if (!is_eligible) {
+    if (is_eligible) {
+      SetLoadState(LoadState::kEligible);
+    } else {
+      SetLoadState(LoadState::kFailedIneligible);
       SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
           PrefetchStatusFromIneligibleReason(eligibility));
     }

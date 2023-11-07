@@ -213,6 +213,8 @@ bool CheckAndSetPrefetchHoldbackStatus(
   }
 
   if (prefetch_container->preloading_attempt()->ShouldHoldback()) {
+    prefetch_container->SetLoadState(
+        PrefetchContainer::LoadState::kFailedHeldback);
     prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchHeldback);
     return true;
   }
@@ -1005,7 +1007,9 @@ void PrefetchService::StartSinglePrefetch(
     base::WeakPtr<PrefetchContainer> prefetch_container,
     base::WeakPtr<PrefetchContainer> prefetch_to_evict) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(prefetch_container);
+  CHECK(prefetch_container);
+  CHECK_EQ(prefetch_container->GetLoadState(),
+           PrefetchContainer::LoadState::kEligible);
 
   // Do not prefetch for a Holdback control group. Called after the checks in
   // `PopNextPrefetchContainer` because we want to compare against the
@@ -1017,6 +1021,8 @@ void PrefetchService::StartSinglePrefetch(
   }
 
   TakeOwnershipOfPrefetch(prefetch_container);
+
+  prefetch_container->SetLoadState(PrefetchContainer::LoadState::kStarted);
 
   // Start timer to release the prefetch container after
   // |PrefetchContainerLifetimeInPrefetchService|.
