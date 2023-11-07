@@ -1491,6 +1491,14 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Account Corruption Detected"/>
 </enum>
 
+<enum name="AccountReauthenticationEvent">
+  <int value="0" label="STARTED"/>
+  <int value="1" label="SUCCESS"/>
+  <int value="2" label="SUCCESS_RECENT_AUTHENTICATION"/>
+  <int value="3" label="REJECTED"/>
+  <int value="4" label="ERROR"/>
+</enum>
+
 <enum name="AccountReconcilorInconsistencyReason">
   <int value="0" label="Consistent"/>
   <int value="1" label="Sync cookie missing"/>

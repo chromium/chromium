@@ -334,6 +334,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.AndroidAccountReauth.Event"
+    enum="AccountReauthenticationEvent" expires_after="2024-10-28">
+  <owner>twellington@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <owner>geoffhuang@google.com</owner>
+  <summary>
+    Records an event when the user starts account reauthentication and the
+    result of such reauthentication.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AndroidDeviceAccountsNumberWhenEnteringFRE"
     units="count" expires_after="2024-03-22">
   <owner>bsazonov@chromium.org</owner>
