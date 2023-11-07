@@ -171,7 +171,6 @@ _BROWSER_SPECIFIC_FILTER['chrome-headless-shell'] = [
     'ChromeDriverTest.testCanSwitchToPrintPreviewDialog',
     'ChromeDriverSecureContextTest.*',
     'RemoteBrowserTest.testConnectToRemoteBrowser',
-    'LaunchDesktopTest.testExistingDevToolsPortFile',
     # FedCM is not supported by chrome-headless-shell.
     'FedCmSpecificTest.*',
     'ChromeDriverTest.testSlowIFrame',
@@ -6332,7 +6331,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
       dev_tools_port_file = os.path.join(user_data_dir, 'DevToolsActivePort')
       with open(dev_tools_port_file, 'w') as fd:
         fd.write('34\n/devtools/browser/2dab5fb1-5571-40d8-a6ad-98823bc5ff84')
-      driver = self.CreateDriver(
+      self.CreateDriver(
           chrome_switches=['user-data-dir=' + user_data_dir,
                            '--remote-debugging-port=0'])
       with open(dev_tools_port_file, 'r') as fd:
