@@ -7,7 +7,9 @@
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/sessions/legacy_session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_impl.h"
+#import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/tabs/model/features.h"
@@ -40,7 +42,13 @@ SessionRestorationServiceFactory::~SessionRestorationServiceFactory() = default;
 std::unique_ptr<KeyedService>
 SessionRestorationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  DCHECK(web::features::UseSessionSerializationOptimizations());
+  // If the optimised session restoration format is not enabled, create a
+  // LegacySessionRestorationService instance which wraps the legacy API.
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    return std::make_unique<LegacySessionRestorationService>(
+        IsPinnedTabsEnabled(), [SessionServiceIOS sharedService]);
+  }
+
   return std::make_unique<SessionRestorationServiceImpl>(
       base::Seconds(5), IsPinnedTabsEnabled(),
       ChromeBrowserState::FromBrowserState(context)->GetStatePath(),

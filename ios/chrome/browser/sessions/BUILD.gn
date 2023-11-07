@@ -225,7 +225,9 @@ source_set("session_restoration_service_factory") {
     "session_restoration_service_factory.mm",
   ]
   deps = [
+    ":legacy_session_restoration_service",
     ":session_restoration_service_impl",
+    ":session_service",
     "//base",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser",
