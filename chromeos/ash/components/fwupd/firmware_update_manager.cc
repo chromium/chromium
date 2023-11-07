@@ -389,9 +389,6 @@ void FirmwareUpdateManager::RequestUpdates(const std::string& device_id) {
   }
 }
 
-// TODO(jimmyxgong): Currently only looks for the local cache for the update
-// file. This needs to update to fetch the update file from a server and
-// download it to the local cache.
 void FirmwareUpdateManager::StartInstall(const std::string& device_id,
                                          const base::FilePath& filepath,
                                          base::OnceCallback<void()> callback) {
