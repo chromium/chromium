@@ -8,7 +8,7 @@
 namespace autofill::autofill_metrics {
 
 // Represents the filling method chosen by the user.
-enum AutofillFillingMethodMetric {
+enum class AutofillFillingMethodMetric {
   // User chose to fill the whole form. Either from the main suggestion or from
   // the extended menu `PopupItemId::kFillEverything`.
   kFullForm = 0,

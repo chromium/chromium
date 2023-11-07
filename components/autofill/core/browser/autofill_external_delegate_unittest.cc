@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -1070,6 +1071,72 @@ TEST_F(AutofillExternalDelegateUnitTest,
       /*position=*/0, kDefaultTriggerSource);
 }
 
+// Test parameter data for asserting filling method metrics depending on the
+// suggestion (`PopupItemId`) accepted.
+struct FillingMethodMetricsTestParams {
+  const PopupItemId popup_item_id;
+  const autofill_metrics::AutofillFillingMethodMetric target_metric;
+  const std::string test_name;
+};
+
+class FillingMethodMetricsUnitTest
+    : public AutofillExternalDelegateUnitTest,
+      public ::testing::WithParamInterface<FillingMethodMetricsTestParams> {};
+
+const FillingMethodMetricsTestParams kFillingMethodMetricsTestCases[] = {
+    {.popup_item_id = PopupItemId::kAddressEntry,
+     .target_metric = autofill_metrics::AutofillFillingMethodMetric::kFullForm,
+     .test_name = "addressEntry"},
+    {.popup_item_id = PopupItemId::kFillEverythingFromAddressProfile,
+     .target_metric = autofill_metrics::AutofillFillingMethodMetric::kFullForm,
+     .test_name = "fillEveythingFromAddressProfile"},
+    {.popup_item_id = PopupItemId::kFieldByFieldFilling,
+     .target_metric =
+         autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling,
+     .test_name = "fieldByFieldFilling"},
+    {.popup_item_id = PopupItemId::kFillFullAddress,
+     .target_metric =
+         autofill_metrics::AutofillFillingMethodMetric::kGroupFillingAddress,
+     .test_name = "fillFullAddress"},
+    {.popup_item_id = PopupItemId::kFillFullPhoneNumber,
+     .target_metric = autofill_metrics::AutofillFillingMethodMetric::
+         kGroupFillingPhoneNumber,
+     .test_name = "fillFullPhoneNumber"},
+    {.popup_item_id = PopupItemId::kFillFullEmail,
+     .target_metric =
+         autofill_metrics::AutofillFillingMethodMetric::kGroupFillingEmail,
+     .test_name = "fillFullEmail"},
+};
+
+// Tests that for a certain `PopupItemId` accepted, the expected
+// `AutofillFillingMethodMetric` is recorded.
+TEST_P(FillingMethodMetricsUnitTest, recordedsFillingMethodForPopupType) {
+  IssueOnQuery();
+  const FillingMethodMetricsTestParams& params = GetParam();
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
+  const Suggestion suggestion = test::CreateAutofillSuggestion(
+      params.popup_item_id, u"baz foo", Suggestion::BackendId(profile.guid()));
+  // Wait until form is parsed. We only perform field by field filling if the
+  // AutofillField exists.
+  browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
+  task_environment_.RunUntilIdle();
+  base::HistogramTester histogram_tester;
+  external_delegate_->DidAcceptSuggestion(suggestion,
+                                          /*position=*/0,
+                                          kDefaultTriggerSource);
+
+  histogram_tester.ExpectUniqueSample("Autofill.FillingMethodUsed.",
+                                      params.target_metric, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillExternalDelegateUnitTest,
+    FillingMethodMetricsUnitTest,
+    ::testing::ValuesIn(kFillingMethodMetricsTestCases),
+    [](const ::testing::TestParamInfo<FillingMethodMetricsUnitTest::ParamType>&
+           info) { return info.param.test_name; });
+
 // Test parameter data for asserting that group filling suggestions
 // forward the expected fields to the manager.
 struct GroupFillingTestParams {
@@ -1283,7 +1350,7 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
 
   IssueOnQuery();
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
-  // Wait until for is parsed.
+  // Wait until form is parsed.
   task_environment_.RunUntilIdle();
   ON_CALL(personal_data(), IsAutofillProfileEnabled)
       .WillByDefault(Return(true));
@@ -1686,7 +1753,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   IssueOnQuery();
-  // Wait until for is parsed. We only perform field by field filling if the
+  // Wait until form is parsed. We only perform field by field filling if the
   // AutofillField exists.
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
   task_environment_.RunUntilIdle();
@@ -1710,7 +1777,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   IssueOnQuery();
-  // Wait until for is parsed. We only perform field by field filling if the
+  // Wait until form is parsed. We only perform field by field filling if the
   // AutofillField exists.
   browser_autofill_manager_->OnFormsSeen({queried_form_}, {});
   task_environment_.RunUntilIdle();

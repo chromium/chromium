@@ -458,6 +458,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kFieldByFieldFilling:
       if (const AutofillField* autofill_trigger_field =
               GetQueriedAutofillField()) {
+        LogFillingMethodUsed(autofill_metrics::AutofillFillingMethodMetric::
+                                 kFieldByFieldFilling);
         // We target only the triggering field type in the
         // PopupItemId::kFieldByFieldFilling case.
         last_field_types_to_fill_for_address_form_section_
@@ -482,6 +484,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                                 query_form_, query_field_);
       break;
     case PopupItemId::kFillFullAddress:
+      LogFillingMethodUsed(
+          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingAddress);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
@@ -490,6 +494,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
            .field_types_to_fill = GetAddressFieldsForGroupFilling()});
       break;
     case PopupItemId::kFillFullName:
+      LogFillingMethodUsed(
+          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingName);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
@@ -499,6 +505,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                GetServerFieldTypesOfGroup(FieldTypeGroup::kName)});
       break;
     case PopupItemId::kFillFullPhoneNumber:
+      LogFillingMethodUsed(autofill_metrics::AutofillFillingMethodMetric::
+                               kGroupFillingPhoneNumber);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
@@ -508,6 +516,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone)});
       break;
     case PopupItemId::kFillFullEmail:
+      LogFillingMethodUsed(
+          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingEmail);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
@@ -609,6 +619,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
               PopupItemId::kFillEverythingFromAddressProfile) {
         autofill_metrics::LogAutofillSuggestionAcceptedIndex(
             position, popup_type_, manager_->client().IsOffTheRecord());
+        if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
+            suggestion.popup_item_id ==
+                PopupItemId::kFillEverythingFromAddressProfile) {
+          LogFillingMethodUsed(
+              autofill_metrics::AutofillFillingMethodMetric::kFullForm);
+        }
       }
       if (suggestion.popup_item_id == PopupItemId::kAddressEntry &&
           manager_->WasSuggestionPreviouslyHidden(
