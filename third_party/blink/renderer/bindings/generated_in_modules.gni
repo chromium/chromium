@@ -864,6 +864,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_source.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_protected_audience_private_aggregation_config.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_protected_audience_private_aggregation_config.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_aggregation_debug_mode_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_aggregation_debug_mode_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_aggregation_histogram_contribution.cc",

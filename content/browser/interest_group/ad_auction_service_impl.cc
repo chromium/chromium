@@ -23,6 +23,8 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/aggregation_service/features.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
@@ -156,6 +158,23 @@ void AdAuctionServiceImpl::JoinInterestGroup(
   base::Time max_expiry = base::Time::Now() + kMaxExpiry;
   if (updated_group.expiry > max_expiry) {
     updated_group.expiry = max_expiry;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiMultipleCloudProviders) ||
+      !base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+    // Override with the default if a non-default coordinator is specified when
+    // the feature is disabled.
+    updated_group.aggregation_coordinator_origin = absl::nullopt;
+  }
+
+  if (updated_group.aggregation_coordinator_origin &&
+      !aggregation_service::IsAggregationCoordinatorOriginAllowed(
+          updated_group.aggregation_coordinator_origin.value())) {
+    ReportBadMessageAndDeleteThis(
+        "Unexpected request: aggregationCoordinatorOrigin is not supported.");
+    return;
   }
 
   // `base::Unretained` is safe here since the `BrowserContext` owns the
