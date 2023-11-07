@@ -1425,13 +1425,11 @@ bool IsTopChromeRendererPresent(Profile* profile) {
         profile->IsSameOrParent(
             Profile::FromBrowserContext(rph->GetBrowserContext()))) {
       bool is_top_chrome_renderer_present = false;
-      rph->ForEachRenderFrameHost(base::BindRepeating(
-          [](bool* is_top_chrome_renderer_present,
-             content::RenderFrameHost* rfh) {
-            *is_top_chrome_renderer_present |=
+      rph->ForEachRenderFrameHost(
+          [&is_top_chrome_renderer_present](content::RenderFrameHost* rfh) {
+            is_top_chrome_renderer_present |=
                 IsTopChromeWebUIURL(rfh->GetSiteInstance()->GetSiteURL());
-          },
-          &is_top_chrome_renderer_present));
+          });
 
       // Return true if a rph hosting a top chrome WebUI has been found.
       if (is_top_chrome_renderer_present)

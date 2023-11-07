@@ -6403,14 +6403,13 @@ void RenderFrameHostImpl::AllowBindings(int bindings_flags) {
     // checks above and in places like RenderProcessHostImpl::IsSuitableHost().
     // --single-process only has one renderer, so it is exempt from this check.
     size_t non_empty_frame_count = 0;
-    GetProcess()->ForEachRenderFrameHost(base::BindRepeating(
-        [](size_t& non_empty_frame_count, RenderFrameHost* rfh) {
+    GetProcess()->ForEachRenderFrameHost(
+        [&non_empty_frame_count](RenderFrameHost* rfh) {
           if (!static_cast<RenderFrameHostImpl*>(rfh)
                    ->is_initial_empty_document()) {
             ++non_empty_frame_count;
           }
-        },
-        std::ref(non_empty_frame_count)));
+        });
     if (non_empty_frame_count > 0 &&
         !base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kSingleProcess)) {

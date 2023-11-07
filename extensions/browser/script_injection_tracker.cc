@@ -848,18 +848,17 @@ void ScriptInjectionTracker::WillUpdateScriptsInRenderer(
   }
 
   bool any_frame_matches_scripts = false;
-  process.ForEachRenderFrameHost(base::BindRepeating(
-      [](scoped_refptr<const Extension> extension,
-         bool* any_frame_matches_scripts, content::RenderFrameHost* frame) {
+  process.ForEachRenderFrameHost(
+      [&any_frame_matches_scripts,
+       &extension](content::RenderFrameHost* frame) {
         auto url = frame->GetLastCommittedURL();
         if (DoWebViewScripstMatch(*extension, *frame) ||
             DoStaticContentScriptsMatch(*extension, *frame, url) ||
             DoDynamicContentScriptsMatch(*extension, *frame, url) ||
             DoUserScriptsMatch(*extension, *frame, url)) {
-          *any_frame_matches_scripts = true;
+          any_frame_matches_scripts = true;
         }
-      },
-      extension, &any_frame_matches_scripts));
+      });
   if (any_frame_matches_scripts) {
     auto& process_data = RenderProcessHostUserData::GetOrCreate(process);
     process_data.AddScript(ScriptType::kContentScript, extension->id());

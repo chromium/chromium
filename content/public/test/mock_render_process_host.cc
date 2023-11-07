@@ -445,7 +445,7 @@ void MockRenderProcessHost::UnregisterRenderFrameHost(
 }
 
 void MockRenderProcessHost::ForEachRenderFrameHost(
-    base::RepeatingCallback<void(RenderFrameHost*)> on_render_frame_host) {
+    base::FunctionRef<void(RenderFrameHost*)> on_render_frame_host) {
   // TODO(crbug.com/652474): Clean up MockRenderProcessHost usage and merge this
   // implementation with RenderProcessHostImpl::ForEachRenderFrameHost().
   for (auto rfh_id : render_frame_host_id_set_) {
@@ -463,7 +463,7 @@ void MockRenderProcessHost::ForEachRenderFrameHost(
         RenderFrameHostImpl::LifecycleStateImpl::kSpeculative) {
       continue;
     }
-    on_render_frame_host.Run(rfh);
+    on_render_frame_host(rfh);
   }
 }
 

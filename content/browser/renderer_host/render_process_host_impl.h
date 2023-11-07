@@ -289,8 +289,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const GlobalRenderFrameHostId& render_frame_host_id) override;
   void UnregisterRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) override;
-  void ForEachRenderFrameHost(base::RepeatingCallback<void(RenderFrameHost*)>
-                                  on_render_frame_host) override;
+  void ForEachRenderFrameHost(
+      base::FunctionRef<void(RenderFrameHost*)> on_render_frame_host) override;
   void IncrementWorkerRefCount() override;
   void DecrementWorkerRefCount() override;
   void IncrementPendingReuseRefCount() override;

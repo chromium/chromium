@@ -484,9 +484,9 @@ bool MayReuseAndIsSuitableWithMainFrameThreshold(
 
   size_t main_frame_count = 0;
   bool devtools_attached = false;
-  host->ForEachRenderFrameHost(base::BindRepeating(
-      [](size_t& main_frame_count, bool& devtools_attached,
-         RenderFrameHost* render_frame_host) {
+  host->ForEachRenderFrameHost(
+      [&main_frame_count,
+       &devtools_attached](RenderFrameHost* render_frame_host) {
         if (static_cast<RenderFrameHostImpl*>(render_frame_host)
                 ->IsOutermostMainFrame()) {
           ++main_frame_count;
@@ -496,8 +496,7 @@ bool MayReuseAndIsSuitableWithMainFrameThreshold(
                 render_frame_host->GetDevToolsFrameToken().ToString())) {
           devtools_attached = true;
         }
-      },
-      std::ref(main_frame_count), std::ref(devtools_attached)));
+      });
 
   // If a threshold is specified, don't reuse `host` if it already hosts more
   // main frames (including BFCached and prerendered) than the threshold.
@@ -1097,15 +1096,13 @@ bool IsUnusedAndTiedToBrowsingInstance(
   // existing top-chrome WebUI processes, but should not attempt to reuse an
   // unused process from an unrelated blank tab.
   bool stays_in_existing_browsing_instance = false;
-  host->ForEachRenderFrameHost(base::BindRepeating(
-      [](bool* stays_in_existing_browsing_instance,
-         const IsolationContext& isolation_context, RenderFrameHost* rfh) {
-        if (isolation_context.browsing_instance_id() ==
-            rfh->GetSiteInstance()->GetBrowsingInstanceId()) {
-          *stays_in_existing_browsing_instance = true;
-        }
-      },
-      &stays_in_existing_browsing_instance, isolation_context));
+  host->ForEachRenderFrameHost([&stays_in_existing_browsing_instance,
+                                &isolation_context](RenderFrameHost* rfh) {
+    if (isolation_context.browsing_instance_id() ==
+        rfh->GetSiteInstance()->GetBrowsingInstanceId()) {
+      stays_in_existing_browsing_instance = true;
+    }
+  });
   return stays_in_existing_browsing_instance;
 }
 
@@ -2746,7 +2743,7 @@ int RenderProcessHostImpl::GetRenderFrameHostCount() const {
 }
 
 void RenderProcessHostImpl::ForEachRenderFrameHost(
-    base::RepeatingCallback<void(RenderFrameHost*)> on_render_frame_host) {
+    base::FunctionRef<void(RenderFrameHost*)> on_render_frame_host) {
   // TODO(crbug.com/652474): This is also implemented in MockRenderProcessHost.
   // When changing something here, don't forget to consider whether that change
   // is also needed in MockRenderProcessHost::ForEachRenderFrameHost().
@@ -2764,7 +2761,7 @@ void RenderProcessHostImpl::ForEachRenderFrameHost(
         RenderFrameHostImpl::LifecycleStateImpl::kSpeculative) {
       continue;
     }
-    on_render_frame_host.Run(rfh);
+    on_render_frame_host(rfh);
   }
 }
 

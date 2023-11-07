@@ -179,8 +179,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   size_t GetShutdownDelayRefCount() const override;
   int GetRenderFrameHostCount() const override;
   void DisableRefCounts() override;
-  void ForEachRenderFrameHost(base::RepeatingCallback<void(RenderFrameHost*)>
-                                  on_render_frame_host) override;
+  void ForEachRenderFrameHost(
+      base::FunctionRef<void(RenderFrameHost*)> on_render_frame_host) override;
   void RegisterRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) override;
   void UnregisterRenderFrameHost(
