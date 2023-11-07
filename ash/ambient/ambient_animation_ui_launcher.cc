@@ -57,8 +57,6 @@ void AmbientAnimationUiLauncher::OnImagesFailed() {
 void AmbientAnimationUiLauncher::Initialize(InitializationCallback on_done) {
   CHECK(on_done);
   initialization_callback_ = std::move(on_done);
-  CHECK(!is_active_);
-  is_active_ = true;
   weather_refresher_ = Shell::Get()
                            ->ambient_controller()
                            ->ambient_weather_controller()
@@ -73,7 +71,6 @@ void AmbientAnimationUiLauncher::Initialize(InitializationCallback on_done) {
 }
 
 std::unique_ptr<views::View> AmbientAnimationUiLauncher::CreateView() {
-  CHECK(is_active_);
   return std::make_unique<AmbientAnimationView>(
       view_delegate_, &progress_tracker_,
       AmbientAnimationStaticResources::Create(current_ui_settings_,
@@ -86,7 +83,6 @@ void AmbientAnimationUiLauncher::Finalize() {
   ambient_backend_model_observer_.Reset();
   weather_refresher_.reset();
   animation_metrics_recorder_.reset();
-  is_active_ = false;
 }
 
 AmbientBackendModel* AmbientAnimationUiLauncher::GetAmbientBackendModel() {
@@ -96,10 +92,6 @@ AmbientBackendModel* AmbientAnimationUiLauncher::GetAmbientBackendModel() {
 AmbientPhotoController*
 AmbientAnimationUiLauncher::GetAmbientPhotoController() {
   return &photo_controller_;
-}
-
-bool AmbientAnimationUiLauncher::IsActive() {
-  return is_active_;
 }
 
 }  // namespace ash

@@ -202,6 +202,18 @@ class ASH_EXPORT AmbientController
   // by `OnLoginLockScreenStateChanged` method as a parameter to pass
   // the correct information to the method.
   enum LockScreenState { kLogin, kLocked, kUnlocked };
+
+  // Tracks the progression of states with `AmbientUiLauncher`.
+  enum class AmbientUiLauncherState {
+    // Waiting for `Initialize()` to finish.
+    kInitializing,
+    // `Initialize()` has completed successfully.
+    kRendering,
+    // After `Finalize()` (not in the middle of launching or rendering an
+    // ambient session).
+    kInactive,
+  };
+
   friend class AmbientAshTestBase;
   friend class AmbientControllerTest;
   FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest,
@@ -362,6 +374,8 @@ class ASH_EXPORT AmbientController
   // Flag used to monitor if receiving events, such as mouse/key/touch, from
   // `ash::Shell`.
   bool is_receiving_pretarget_events_ = false;
+
+  AmbientUiLauncherState ui_launcher_state_ = AmbientUiLauncherState::kInactive;
 
   std::unique_ptr<AmbientSessionMetricsRecorder> session_metrics_recorder_;
 

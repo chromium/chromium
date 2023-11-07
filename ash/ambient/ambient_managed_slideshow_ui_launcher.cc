@@ -94,10 +94,6 @@ AmbientManagedSlideshowUiLauncher::GetAmbientPhotoController() {
   return nullptr;
 }
 
-bool AmbientManagedSlideshowUiLauncher::IsActive() {
-  return photo_controller_.IsScreenUpdateActive();
-}
-
 bool AmbientManagedSlideshowUiLauncher::ComputeReadyState() {
   return LockScreen::HasInstance() &&
          !photo_controller_.HasScreenUpdateErrors();

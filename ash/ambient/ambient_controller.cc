@@ -1167,7 +1167,7 @@ AmbientWeatherModel* AmbientController::GetAmbientWeatherModel() {
 
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
-  if (!ShouldShowAmbientUi()) {
+  if (ui_launcher_state_ != AmbientUiLauncherState::kRendering) {
     return nullptr;
   }
 
@@ -1224,6 +1224,7 @@ void AmbientController::OnUiLauncherInitialized(bool success) {
     SetUiVisibilityClosed();
     return;
   }
+  ui_launcher_state_ = AmbientUiLauncherState::kRendering;
   CreateAndShowWidgets();
 }
 
@@ -1243,6 +1244,7 @@ void AmbientController::StopScreensaver() {
   CloseAllWidgets(close_widgets_immediately_);
   session_metrics_recorder_.reset();
   ui_launcher_init_callback_.Cancel();
+  ui_launcher_state_ = AmbientUiLauncherState::kInactive;
   ambient_ui_launcher_->Finalize();
 }
 
@@ -1266,6 +1268,7 @@ void AmbientController::MaybeStartScreenSaver() {
   ui_launcher_init_callback_.Reset(
       base::BindOnce(&AmbientController::OnUiLauncherInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
+  ui_launcher_state_ = AmbientUiLauncherState::kInitializing;
   ambient_ui_launcher_->Initialize(ui_launcher_init_callback_.callback());
 }
 
@@ -1333,11 +1336,12 @@ void AmbientController::CreateUiLauncher() {
 }
 
 void AmbientController::DestroyUiLauncher() {
+  ui_launcher_state_ = AmbientUiLauncherState::kInactive;
   ambient_ui_launcher_.reset();
 }
 
 bool AmbientController::IsUiLauncherActive() const {
-  return ambient_ui_launcher_ && ambient_ui_launcher_->IsActive();
+  return ui_launcher_state_ != AmbientUiLauncherState::kInactive;
 }
 
 void AmbientController::OnReadyStateChanged(bool is_ready) {

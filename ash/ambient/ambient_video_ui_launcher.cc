@@ -45,8 +45,6 @@ AmbientVideoUiLauncher::~AmbientVideoUiLauncher() = default;
 
 void AmbientVideoUiLauncher::Initialize(InitializationCallback on_done) {
   CHECK(on_done);
-  CHECK(!is_active_);
-  is_active_ = true;
   AmbientUiSettings ui_settings =
       AmbientUiSettings::ReadFromPrefService(*pref_service_);
   CHECK(ui_settings.video())
@@ -63,7 +61,6 @@ void AmbientVideoUiLauncher::Initialize(InitializationCallback on_done) {
 }
 
 std::unique_ptr<views::View> AmbientVideoUiLauncher::CreateView() {
-  CHECK(is_active_);
   CHECK(!video_html_path_.empty());
   return std::make_unique<AmbientVideoView>(GetVideoFile(current_video_),
                                             video_html_path_, current_video_,
@@ -73,7 +70,6 @@ std::unique_ptr<views::View> AmbientVideoUiLauncher::CreateView() {
 void AmbientVideoUiLauncher::Finalize() {
   weak_factory_.InvalidateWeakPtrs();
   weather_refresher_.reset();
-  is_active_ = false;
 }
 
 AmbientBackendModel* AmbientVideoUiLauncher::GetAmbientBackendModel() {
@@ -82,10 +78,6 @@ AmbientBackendModel* AmbientVideoUiLauncher::GetAmbientBackendModel() {
 
 AmbientPhotoController* AmbientVideoUiLauncher::GetAmbientPhotoController() {
   return nullptr;
-}
-
-bool AmbientVideoUiLauncher::IsActive() {
-  return is_active_;
 }
 
 void AmbientVideoUiLauncher::SetVideoHtmlPath(InitializationCallback on_done,
