@@ -1239,12 +1239,6 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
                        UpdatePrintSettingsFails) {
-  if (UseService()) {
-    // TODO(crbug.com/1474785):  Enable once crashes due to incomplete
-    // PrintBackendServiceManager client cleanup are resolved.
-    GTEST_SKIP();
-  }
-
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForFailInUpdatePrinterSettings();
@@ -1278,12 +1272,6 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
                        UpdatePrintSettingsFailsErrorDialog) {
-  if (UseService()) {
-    // TODO(crbug.com/1474785):  Enable once crashes due to incomplete
-    // PrintBackendServiceManager client cleanup are resolved.
-    GTEST_SKIP();
-  }
-
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForFailInUpdatePrinterSettings();

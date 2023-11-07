@@ -251,6 +251,16 @@ void PrinterQueryOop::OnDidUpdatePrintSettings(
     // unregister it.  Just drop any local reference to it.
     query_with_ui_client_id_.reset();
 
+    // With the failure to update the setting, the registered client must be
+    // released.  The context ID is also no longer relevant to use.
+    if (print_document_client_id_.has_value()) {
+      PrintBackendServiceManager::GetInstance().UnregisterClient(
+          print_document_client_id_.value());
+      print_document_client_id_.reset();
+      CHECK(context_id_.has_value());
+      context_id_.reset();
+    }
+
     // TODO(crbug.com/809738)  Fill in support for handling of access-denied
     // result code.
   } else {
