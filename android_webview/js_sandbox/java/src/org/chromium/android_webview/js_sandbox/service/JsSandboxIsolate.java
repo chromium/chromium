@@ -79,7 +79,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
                 throw new IllegalStateException("evaluateJavascript() called after close()");
             }
 
-            Utils.checkAssetFileDescriptor(afd, /*allowUnknownLength=*/true);
+            Utils.checkAssetFileDescriptor(afd, /* allowUnknownLength= */ true);
             if (afd.getLength() > Integer.MAX_VALUE) {
                 throw new IllegalArgumentException("Evaluation code larger than "
                         + Integer.MAX_VALUE + " bytes not supported");
@@ -109,7 +109,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
                         "provideNamedData(String, AssetFileDescriptor) called after close()");
             }
 
-            Utils.checkAssetFileDescriptor(afd, /*allowUnknownLength=*/false);
+            Utils.checkAssetFileDescriptor(afd, /* allowUnknownLength= */ false);
             if (afd.getLength() > Integer.MAX_VALUE) {
                 throw new IllegalArgumentException(
                         "Named data larger than " + Integer.MAX_VALUE + " bytes not supported");

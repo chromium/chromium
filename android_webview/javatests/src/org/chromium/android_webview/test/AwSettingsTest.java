@@ -2109,9 +2109,9 @@ public class AwSettingsTest {
         // ends with platform string and user-agent string.
         Assert.assertTrue(
                 actualTitleContent.endsWith(
-                        /*sec-ch-ua-platform=*/ "\"Android\" "
+                        /* sec-ch-ua-platform= */ "\"Android\" "
                                 +
-                                /*user-agent=*/ customUserAgentString));
+                                /* user-agent= */ customUserAgentString));
         // Sec-ch-ua value has brand AndroidWebview.
         Assert.assertTrue(actualTitleContent.indexOf("\"Android WebView\";v=\"") != -1);
     }

@@ -523,7 +523,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     public String executeJavaScriptAndWaitForResult(final AwContents awContents,
             TestAwContentsClient viewClient, final String code) throws Exception {
         return executeJavaScriptAndWaitForResult(
-                awContents, viewClient, code, /*shouldCheckSettings=*/true);
+                awContents, viewClient, code, /* shouldCheckSettings= */ true);
     }
 
     /**
@@ -793,10 +793,13 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         }
 
         public AwSettings createAwSettings(Context context, boolean supportsLegacyQuirks) {
-            return new AwSettings(context, false /* isAccessFromFileURLsGrantedByDefault */,
-                    supportsLegacyQuirks, false /* allowEmptyDocumentPersistence */,
-                    true /* allowGeolocationOnInsecureOrigins */,
-                    false /* doNotUpdateSelectionOnMutatingSelectionRange */);
+            return new AwSettings(
+                    context,
+                    /* isAccessFromFileURLsGrantedByDefault= */ false,
+                    supportsLegacyQuirks,
+                    /* allowEmptyDocumentPersistence= */ false,
+                    /* allowGeolocationOnInsecureOrigins= */ true,
+                    /* doNotUpdateSelectionOnMutatingSelectionRange= */ false);
         }
 
         public AwContents createAwContents(AwBrowserContext browserContext, ViewGroup containerView,

@@ -34,10 +34,15 @@ public abstract class AwContentsBackgroundThreadClient {
             String[] requestHeaderValues) {
         try {
             return new AwWebResourceInterceptResponse(
-                    shouldInterceptRequest(new AwContentsClient.AwWebResourceRequest(url,
-                            isMainFrame, hasUserGesture, method, requestHeaderNames,
-                            requestHeaderValues)),
-                    /*raisedException=*/false);
+                    shouldInterceptRequest(
+                            new AwContentsClient.AwWebResourceRequest(
+                                    url,
+                                    isMainFrame,
+                                    hasUserGesture,
+                                    method,
+                                    requestHeaderNames,
+                                    requestHeaderValues)),
+                    /* raisedException= */ false);
         } catch (Throwable e) {
             Log.e(TAG,
                     "Client raised exception in shouldInterceptRequest. Re-throwing on UI thread.");
@@ -47,7 +52,7 @@ public abstract class AwContentsBackgroundThreadClient {
                 throw e;
             });
 
-            return new AwWebResourceInterceptResponse(null, /*raisedException=*/true);
+            return new AwWebResourceInterceptResponse(null, /* raisedException= */ true);
         }
     }
 }

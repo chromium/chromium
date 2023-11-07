@@ -22,21 +22,21 @@ public class Flag {
      * overload will not have a user-visible flag description.
      */
     public static Flag baseFeature(@NonNull String name) {
-        return new Flag(name, /*description=*/"", /*enabledStateValue=*/null, true);
+        return new Flag(name, /* description= */ "", /* enabledStateValue= */ null, true);
     }
 
     /**
      * Creates a Flag which represents a {@code base::Feature}.
      */
     public static Flag baseFeature(@NonNull String name, @NonNull String description) {
-        return new Flag(name, description, /*enabledStateValue=*/null, true);
+        return new Flag(name, description, /* enabledStateValue= */ null, true);
     }
 
     /**
      * Creates a Flag which represents a commandline switch.
      */
     public static Flag commandLine(@NonNull String name, @NonNull String description) {
-        return new Flag(name, description, /*enabledStateValue=*/null, false);
+        return new Flag(name, description, /* enabledStateValue= */ null, false);
     }
 
     /**

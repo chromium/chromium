@@ -36,17 +36,19 @@ public class CrashReceiverService extends Service {
     @GuardedBy("mCopyingLock")
     private boolean mIsCopying;
 
-    private final ICrashReceiverService.Stub mBinder = new ICrashReceiverService.Stub() {
-        @Override
-        public void transmitCrashes(ParcelFileDescriptor[] fileDescriptors, List crashInfo) {
-            int uid = Binder.getCallingUid();
-            if (crashInfo != null) {
-                assert crashInfo.size() == fileDescriptors.length;
-            }
-            performMinidumpCopyingSerially(
-                    uid, fileDescriptors, crashInfo, true /* scheduleUploads */);
-        }
-    };
+    private final ICrashReceiverService.Stub mBinder =
+            new ICrashReceiverService.Stub() {
+                @Override
+                public void transmitCrashes(
+                        ParcelFileDescriptor[] fileDescriptors, List crashInfo) {
+                    int uid = Binder.getCallingUid();
+                    if (crashInfo != null) {
+                        assert crashInfo.size() == fileDescriptors.length;
+                    }
+                    performMinidumpCopyingSerially(
+                            uid, fileDescriptors, crashInfo, /* scheduleUploads= */ true);
+                }
+            };
 
     /**
      * Copies minidumps in a synchronized way, waiting for any already started copying operations to

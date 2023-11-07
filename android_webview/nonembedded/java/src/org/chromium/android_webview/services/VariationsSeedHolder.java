@@ -134,7 +134,7 @@ public class VariationsSeedHolder {
 
     @VisibleForTesting
     protected VariationsSeedHolder() {
-        mSeedThread = new HandlerThread(/*name=*/"seed_holder");
+        mSeedThread = new HandlerThread(/* name= */ "seed_holder");
         mSeedThread.start();
         mSeedHandler = new Handler(mSeedThread.getLooper());
     }

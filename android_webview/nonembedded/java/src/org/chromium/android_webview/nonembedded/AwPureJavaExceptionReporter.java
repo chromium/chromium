@@ -19,7 +19,7 @@ import java.io.File;
     private static boolean sCrashDirMade;
 
     public AwPureJavaExceptionReporter() {
-        super(/*attachLogcat=*/false);
+        super(/* attachLogcat= */ false);
     }
 
     @Override

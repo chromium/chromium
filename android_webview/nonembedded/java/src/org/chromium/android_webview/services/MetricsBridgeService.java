@@ -229,7 +229,7 @@ public final class MetricsBridgeService extends Service {
 
     private FileOutputStream getMetricsLogOutputStream() throws IOException {
         if (mFileOutputStream == null) {
-            mFileOutputStream = new FileOutputStream(getMetricsLogFile(), /* append */ true);
+            mFileOutputStream = new FileOutputStream(getMetricsLogFile(), /* append= */ true);
         }
         return mFileOutputStream;
     }

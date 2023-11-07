@@ -171,8 +171,9 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                         mWebViewClient, mWebView, request, threatType, callback);
 
             } else {
-                callback.onResult(new AwSafeBrowsingResponse(SafeBrowsingAction.SHOW_INTERSTITIAL,
-                        /* reporting */ true));
+                callback.onResult(
+                        new AwSafeBrowsingResponse(
+                                SafeBrowsingAction.SHOW_INTERSTITIAL, /* reporting= */ true));
             }
         }
     }

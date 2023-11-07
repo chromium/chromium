@@ -101,11 +101,13 @@ public class PolicyUrlFilteringTest extends AwParameterizedTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> CombinedPolicyProvider.get().registerProvider(testProvider));
 
-        navigateAndCheckOutcome(mFooTestUrl, 0 /* error count before */, 0 /* error count after*/);
+        navigateAndCheckOutcome(
+                mFooTestUrl, /* startingErrorCount= */ 0, /* expectedErrorCount= */ 0);
 
         setFilteringPolicy(testProvider, new String[] {"localhost"}, new String[] {});
 
-        navigateAndCheckOutcome(mFooTestUrl, 0 /* error count before */, 1 /* error count after */);
+        navigateAndCheckOutcome(
+                mFooTestUrl, /* startingErrorCount= */ 0, /* expectedErrorCount= */ 1);
         Assert.assertEquals(
                 WebviewErrorCode.ERROR_CONNECT,
                 mContentsClient.getOnReceivedErrorHelper().getError().errorCode);
@@ -125,10 +127,12 @@ public class PolicyUrlFilteringTest extends AwParameterizedTest {
     })
     @OnlyRunIn(SINGLE_PROCESS) // http://crbug.com/660517
     public void testAllowlistedUrl() throws Throwable {
-        navigateAndCheckOutcome(mFooTestUrl, 0 /* error count before */, 0 /* error count after */);
+        navigateAndCheckOutcome(
+                mFooTestUrl, /* startingErrorCount= */ 0, /* expectedErrorCount= */ 0);
 
         // Make sure it goes through the blocklist
-        navigateAndCheckOutcome(mBarTestUrl, 0 /* error count before */, 1 /* error count after */);
+        navigateAndCheckOutcome(
+                mBarTestUrl, /* startingErrorCount= */ 0, /* expectedErrorCount= */ 1);
         Assert.assertEquals(
                 WebviewErrorCode.ERROR_CONNECT,
                 mContentsClient.getOnReceivedErrorHelper().getError().errorCode);
@@ -142,7 +146,8 @@ public class PolicyUrlFilteringTest extends AwParameterizedTest {
         @Policies.Item(key = sBlocklistPolicyName, string = "shouldBeAJsonArrayNotAString")
     })
     public void testBadPolicyValue() throws Exception {
-        navigateAndCheckOutcome(mFooTestUrl, 0 /* error count before */, 0 /* error count after */);
+        navigateAndCheckOutcome(
+                mFooTestUrl, /* startingErrorCount= */ 0, /* expectedErrorCount= */ 0);
         // At the moment this test is written, a failure is a crash, a success is no crash.
     }
 

@@ -173,14 +173,14 @@ public class TrackExitReasonsOfInterest {
      */
     @VisibleForTesting
     public static boolean writeLastExitInfo(final ExitReasonData newData) {
-        return writeLastExitInfo(newData, /*callbackResult=*/null);
+        return writeLastExitInfo(newData, /* callbackResult= */ null);
     }
 
     @VisibleForTesting
     public static boolean writeLastExitInfo(
             final ExitReasonData newData, final Callback<Boolean> callbackResult) {
         try (FileOutputStream writer =
-                        new FileOutputStream(getLastExitInfoFile(), /*append=*/false)) {
+                new FileOutputStream(getLastExitInfoFile(), /* append= */ false)) {
             JSONObject jsonObj = new JSONObject();
             jsonObj.put(LAST_EXIT_INFO_PID, newData.mExitInfoPid);
             jsonObj.put(TIMESTAMP_AT_LAST_RECORDING_IN_MILLIS,
@@ -213,7 +213,7 @@ public class TrackExitReasonsOfInterest {
      * Commits the latest app state for exit reason tracking to disk.
      */
     public static void writeLastWebViewState() {
-        writeLastWebViewState(/*callbackResult=*/null);
+        writeLastWebViewState(/* callbackResult= */ null);
     }
 
     /**

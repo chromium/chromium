@@ -114,9 +114,12 @@ public class VariationsSeedLoader {
     private static void recordAppSeedFreshness(long freshnessMinutes) {
         // Bucket parameters should match Variations.SeedFreshness.
         // See variations::RecordSeedFreshness.
-        RecordHistogram.recordCustomCountHistogram(APP_SEED_FRESHNESS_HISTOGRAM_NAME,
-                (int) freshnessMinutes, /*min=*/1, /*max=*/(int) TimeUnit.DAYS.toMinutes(30),
-                /*numBuckets=*/50);
+        RecordHistogram.recordCustomCountHistogram(
+                APP_SEED_FRESHNESS_HISTOGRAM_NAME,
+                (int) freshnessMinutes,
+                /* min= */ 1,
+                /* max= */ (int) TimeUnit.DAYS.toMinutes(30),
+                /* numBuckets= */ 50);
     }
 
     private static void recordMinuteHistogram(String name, long value, long maxValue) {

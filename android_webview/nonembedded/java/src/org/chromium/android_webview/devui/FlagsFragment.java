@@ -257,15 +257,18 @@ public class FlagsFragment extends DevUiBaseFragment {
 
     private static int booleanToBaseFeatureState(Boolean b) {
         if (b == null) {
-            return /* STATE_DEFAULT */ 0;
+            return
+            /* STATE_DEFAULT= */ 0;
         } else if (b) {
-            return /* STATE_ENABLED */ 1;
+            return
+            /* STATE_ENABLED= */ 1;
         }
-        return /* STATE_DISABLED */ 2;
+        return
+        /* STATE_DISABLED= */ 2;
     }
 
     private static int booleanToCommandLineState(Boolean b) {
-        return Boolean.TRUE.equals(b) ? /* STATE_ENABLED */ 1 : /* STATE_DEFAULT */ 0;
+        return Boolean.TRUE.equals(b) ? /* STATE_ENABLED= */ 1 : /* STATE_DEFAULT= */ 0;
     }
 
     private class FlagStateSpinnerSelectedListener implements AdapterView.OnItemSelectedListener {
@@ -546,7 +549,7 @@ public class FlagsFragment extends DevUiBaseFragment {
      */
     private void formatListEntry(View toggleableFlag, int state) {
         TextView flagName = toggleableFlag.findViewById(R.id.flag_name);
-        if (state == /* STATE_DEFAULT */ 0) {
+        if (state == /* STATE_DEFAULT= */ 0) {
             // Unset the compound drawable.
             flagName.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
         } else { // STATE_ENABLED or STATE_DISABLED

@@ -112,10 +112,16 @@ public class AwTestContainerView extends FrameLayout {
         }
 
         public void readbackQuadrantColors(Callback<int[]> callback) {
-            sRenderThreadHandler.post(() -> {
-                callback.onResult(mContextManager.draw(
-                        mWidth, mHeight, mLastScrollX, mLastScrollY, /*readbackQuadrants=*/true));
-            });
+            sRenderThreadHandler.post(
+                    () -> {
+                        callback.onResult(
+                                mContextManager.draw(
+                                        mWidth,
+                                        mHeight,
+                                        mLastScrollX,
+                                        mLastScrollY,
+                                        /* readbackQuadrants= */ true));
+                    });
         }
 
         public boolean isReadyToRender() {
@@ -198,7 +204,7 @@ public class AwTestContainerView extends FrameLayout {
                 int scrollX, int scrollY) {
             mContextManager.sync(functor, false);
             syncEvent.signal();
-            mContextManager.draw(width, height, scrollX, scrollY, /*readbackQuadrants=*/false);
+            mContextManager.draw(width, height, scrollX, scrollY, /* readbackQuadrants= */ false);
         }
     }
 

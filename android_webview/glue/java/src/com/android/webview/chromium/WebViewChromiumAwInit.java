@@ -110,7 +110,7 @@ public class WebViewChromiumAwInit {
         mFactory = factory;
         // Do not make calls into 'factory' in this ctor - this ctor is called from the
         // WebViewChromiumFactoryProvider ctor, so 'factory' is not properly initialized yet.
-        TraceEvent.maybeEnableEarlyTracing(/*readCommandLine=*/false);
+        TraceEvent.maybeEnableEarlyTracing(/* readCommandLine= */ false);
     }
 
     public AwTracingController getAwTracingController() {
@@ -208,7 +208,7 @@ public class WebViewChromiumAwInit {
             }
 
             AwBrowserProcess.start();
-            AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(true /* updateMetricsConsent */);
+            AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
 
             // This has to be done after variations are initialized, so components could be
             // registered or not depending on the variations flags.

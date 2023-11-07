@@ -187,7 +187,7 @@ public class MainActivity extends FragmentActivity {
                         }
                     }
                 },
-                /* recursive */ false);
+                /* recursive= */ false);
 
         // The boolean value doesn't matter, we only care about the total count.
         RecordHistogram.recordBooleanHistogram("Android.WebView.DevUi.AppLaunch", true);
@@ -355,8 +355,9 @@ public class MainActivity extends FragmentActivity {
             return true;
         } else if (item.getItemId() == R.id.options_menu_about_devui) {
             logMenuSelection(MenuChoice.ABOUT_DEVTOOLS);
-            Uri uri = Uri.parse(
-                    "https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/developer-ui.md");
+            Uri uri =
+                    Uri.parse(
+                            "https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/developer-ui.md");
             SafeIntentUtils.startActivityOrShowError(this, new Intent(Intent.ACTION_VIEW, uri),
                     SafeIntentUtils.NO_BROWSER_FOUND_ERROR);
             return true;

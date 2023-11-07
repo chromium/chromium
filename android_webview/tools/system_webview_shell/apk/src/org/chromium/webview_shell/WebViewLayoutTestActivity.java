@@ -62,45 +62,50 @@ public class WebViewLayoutTestActivity extends Activity {
             }
         });
 
-        mWebView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onGeolocationPermissionsShowPrompt(String origin,
-                    GeolocationPermissions.Callback callback) {
-                mConsoleLog.append("onGeolocationPermissionsShowPrompt" + "\n");
-                if (mGrantPermission) {
-                    mConsoleLog.append("geolocation request granted" + "\n");
-                    callback.invoke(origin, true /* allow */, false);
-                } else {
-                    mConsoleLog.append("geolocation request denied" + "\n");
-                    callback.invoke(origin, false /* allow */, false);
-                }
-            }
+        mWebView.setWebChromeClient(
+                new WebChromeClient() {
+                    @Override
+                    public void onGeolocationPermissionsShowPrompt(
+                            String origin, GeolocationPermissions.Callback callback) {
+                        mConsoleLog.append("onGeolocationPermissionsShowPrompt" + "\n");
+                        if (mGrantPermission) {
+                            mConsoleLog.append("geolocation request granted" + "\n");
+                            callback.invoke(origin, /* allow= */ true, false);
+                        } else {
+                            mConsoleLog.append("geolocation request denied" + "\n");
+                            callback.invoke(origin, /* allow= */ false, false);
+                        }
+                    }
 
-            @Override
-            @SuppressLint("NewApi") // PermissionRequest#deny requires API level 21.
-            public void onPermissionRequest(PermissionRequest request) {
-                mConsoleLog.append("onPermissionRequest: "
-                        + TextUtils.join(",", request.getResources()) + "\n");
-                if (mGrantPermission) {
-                    mConsoleLog.append("request granted: "
-                            + TextUtils.join(",", request.getResources()) + "\n");
-                    request.grant(request.getResources());
-                } else {
-                    mConsoleLog.append("request denied" + "\n");
-                    request.deny();
-                }
-            }
+                    @Override
+                    @SuppressLint("NewApi") // PermissionRequest#deny requires API level 21.
+                    public void onPermissionRequest(PermissionRequest request) {
+                        mConsoleLog.append(
+                                "onPermissionRequest: "
+                                        + TextUtils.join(",", request.getResources())
+                                        + "\n");
+                        if (mGrantPermission) {
+                            mConsoleLog.append(
+                                    "request granted: "
+                                            + TextUtils.join(",", request.getResources())
+                                            + "\n");
+                            request.grant(request.getResources());
+                        } else {
+                            mConsoleLog.append("request denied" + "\n");
+                            request.deny();
+                        }
+                    }
 
-            @Override
-            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                // TODO(timvolodine): put log and warnings in separate string builders.
-                mConsoleLog.append(consoleMessage.message() + "\n");
-                if (consoleMessage.message().equals(TEST_FINISHED_SENTINEL)) {
-                    finishTest();
-                }
-                return true;
-            }
-        });
+                    @Override
+                    public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                        // TODO(timvolodine): put log and warnings in separate string builders.
+                        mConsoleLog.append(consoleMessage.message() + "\n");
+                        if (consoleMessage.message().equals(TEST_FINISHED_SENTINEL)) {
+                            finishTest();
+                        }
+                        return true;
+                    }
+                });
 
         // The WebView permissions layout tests depend on results from the console and permissions
         // logs which is highly order specific.

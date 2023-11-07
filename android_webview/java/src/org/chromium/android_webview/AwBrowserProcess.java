@@ -153,9 +153,14 @@ public final class AwBrowserProcess {
         final boolean isExternalService = true;
         final boolean bindToCaller = true;
         final boolean ignoreVisibilityForImportance = true;
-        ChildProcessCreationParams.set(getWebViewPackageName(), null /* privilegedServicesName */,
-                getWebViewPackageName(), null /* sandboxedServicesName */, isExternalService,
-                LibraryProcessType.PROCESS_WEBVIEW_CHILD, bindToCaller,
+        ChildProcessCreationParams.set(
+                getWebViewPackageName(),
+                /* privilegedServicesName= */ null,
+                getWebViewPackageName(),
+                /* sandboxedServicesName= */ null,
+                isExternalService,
+                LibraryProcessType.PROCESS_WEBVIEW_CHILD,
+                bindToCaller,
                 ignoreVisibilityForImportance);
     }
 
@@ -172,36 +177,42 @@ public final class AwBrowserProcess {
             // We must post to the UI thread to cover the case that the user
             // has invoked Chromium startup by using the (thread-safe)
             // CookieManager rather than creating a WebView.
-            ThreadUtils.runOnUiThreadBlocking(() -> {
-                boolean multiProcess =
-                        CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
-                if (multiProcess) {
-                    ChildProcessLauncherHelper.warmUp(appContext, true);
-                }
-                // The policies are used by browser startup, so we need to register the policy
-                // providers before starting the browser process. This only registers java objects
-                // and doesn't need the native library.
-                CombinedPolicyProvider.get().registerProvider(new AwPolicyProvider(appContext));
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        boolean multiProcess =
+                                CommandLine.getInstance()
+                                        .hasSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
+                        if (multiProcess) {
+                            ChildProcessLauncherHelper.warmUp(appContext, true);
+                        }
+                        // The policies are used by browser startup, so we need to register the
+                        // policy providers before starting the browser process. This only registers
+                        // java objects and doesn't need the native library.
+                        CombinedPolicyProvider.get()
+                                .registerProvider(new AwPolicyProvider(appContext));
 
-                // Check android settings but only when safebrowsing is enabled.
-                try (ScopedSysTraceEvent e2 =
+                        // Check android settings but only when safebrowsing is enabled.
+                        try (ScopedSysTraceEvent e2 =
                                 ScopedSysTraceEvent.scoped("AwBrowserProcess.maybeEnable")) {
-                    AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest();
-                }
+                            AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest();
+                        }
 
-                try (ScopedSysTraceEvent e2 = ScopedSysTraceEvent.scoped(
-                             "AwBrowserProcess.startBrowserProcessesSync")) {
-                    BrowserStartupController.getInstance().startBrowserProcessesSync(
-                            LibraryProcessType.PROCESS_WEBVIEW, !multiProcess,
-                            /*startGpuProcess=*/false);
-                }
+                        try (ScopedSysTraceEvent e2 =
+                                ScopedSysTraceEvent.scoped(
+                                        "AwBrowserProcess.startBrowserProcessesSync")) {
+                            BrowserStartupController.getInstance()
+                                    .startBrowserProcessesSync(
+                                            LibraryProcessType.PROCESS_WEBVIEW,
+                                            !multiProcess,
+                                            /* startGpuProcess= */ false);
+                        }
 
-                PowerMonitor.create();
-                PlatformServiceBridge.getInstance().setSafeBrowsingHandler();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    AwContentsLifecycleNotifier.initialize();
-                }
-            });
+                        PowerMonitor.create();
+                        PlatformServiceBridge.getInstance().setSafeBrowsingHandler();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            AwContentsLifecycleNotifier.initialize();
+                        }
+                    });
         }
 
         PostTask.postTask(
@@ -258,7 +269,7 @@ public final class AwBrowserProcess {
      */
     @CalledByNative
     private static void triggerMinidumpUploading() {
-        handleMinidumpsAndSetMetricsConsent(false /* updateMetricsConsent */);
+        handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ false);
     }
 
     /**
@@ -273,7 +284,7 @@ public final class AwBrowserProcess {
             final boolean enableMinidumpUploadingForTesting = CommandLine.getInstance().hasSwitch(
                     BaseSwitches.ENABLE_CRASH_REPORTER_FOR_TESTING);
             if (enableMinidumpUploadingForTesting) {
-                handleMinidumps(true /* enabled */);
+                handleMinidumps(/* enabled */ true);
             }
 
             PlatformServiceBridge.getInstance().queryMetricsSetting(enabled -> {

@@ -91,8 +91,15 @@ public final class DeveloperModeUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startDeveloperUiService(webViewPackageName);
         }
-        try (Cursor cursor = appContext.getContentResolver().query(uri, /* projection */ null,
-                     /* selection */ null, /* selectionArgs */ null, /* sortOrder */ null)) {
+        try (Cursor cursor =
+                appContext
+                        .getContentResolver()
+                        .query(
+                                uri,
+                                /* projection= */ null,
+                                /* selection= */ null,
+                                /* selectionArgs= */ null,
+                                /* sortOrder= */ null)) {
             assert cursor != null : "ContentProvider doesn't support querying '" + uri + "'";
             int flagNameColumnIndex = cursor.getColumnIndexOrThrow(FLAG_OVERRIDE_NAME_COLUMN);
             int flagStateColumnIndex = cursor.getColumnIndexOrThrow(FLAG_OVERRIDE_STATE_COLUMN);

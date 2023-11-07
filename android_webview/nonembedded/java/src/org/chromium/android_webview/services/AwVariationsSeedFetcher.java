@@ -231,7 +231,7 @@ public class AwVariationsSeedFetcher extends JobService {
         }
 
         VariationsUtils.debugLog("Scheduling seed download job");
-        scheduleJob(scheduler, requireFastMode, /*requestPeriodicFastMode=*/false);
+        scheduleJob(scheduler, requireFastMode, /* requestPeriodicFastMode= */ false);
     }
 
     private static boolean hasFetchTaskRunRecently() {
@@ -257,7 +257,7 @@ public class AwVariationsSeedFetcher extends JobService {
             JobScheduler scheduler, boolean requireFastMode, boolean requestPeriodicFastMode) {
         Context context = ContextUtils.getApplicationContext();
         ComponentName thisComponent = new ComponentName(context, AwVariationsSeedFetcher.class);
-        PersistableBundle extras = new PersistableBundle(/*capacity=*/2);
+        PersistableBundle extras = new PersistableBundle(/* capacity= */ 2);
         extras.putInt(JOB_REQUEST_COUNT_KEY, 0);
         extras.putBoolean(JOB_REQUEST_FAST_MODE, requireFastMode);
         extras.putBoolean(PERIODIC_FAST_MODE, requestPeriodicFastMode);
@@ -320,10 +320,15 @@ public class AwVariationsSeedFetcher extends JobService {
                 if (output.getCancelled()) {
                     return null;
                 } else if (fastMode && !periodicFastModeJob) {
-                    scheduleJob(getScheduler(), /*requireFastMode=*/true,
-                            /*requestPeriodicFastMode=*/true);
-                    output = new FetchSeedOutput(/*shouldFinish=*/output.getShouldFinish(),
-                            /*needsReschedule=*/false, /*cancelled=*/output.getCancelled());
+                    scheduleJob(
+                            getScheduler(),
+                            /* requireFastMode= */ true,
+                            /* requestPeriodicFastMode= */ true);
+                    output =
+                            new FetchSeedOutput(
+                                    /* shouldFinish= */ output.getShouldFinish(),
+                                    /* needsReschedule= */ false,
+                                    /* cancelled= */ output.getCancelled());
                     mParams.getExtras().putBoolean(PERIODIC_FAST_MODE, true);
                 }
             } finally {
@@ -379,7 +384,9 @@ public class AwVariationsSeedFetcher extends JobService {
 
             if (isCancelled()) {
                 return new FetchSeedOutput(
-                        /*shouldFinish=*/false, /*needsReschedule=*/false, /*cancelled=*/true);
+                        /* shouldFinish= */ false,
+                        /* needsReschedule= */ false,
+                        /* cancelled= */ true);
             }
 
             // VariationsSeedFetcher returns HttpURLConnection.HTTP_NOT_MODIFIED if seed did
@@ -400,13 +407,15 @@ public class AwVariationsSeedFetcher extends JobService {
                     VariationsSeedHolder.getInstance().updateSeedFilesSynchronously(
                             fetchInfo.seedInfo);
                 } else {
-                    VariationsSeedHolder.getInstance().updateSeed(fetchInfo.seedInfo,
-                            /*onFinished=*/
-                            () -> onFinished(mParams, /*needsReschedule=*/false));
+                    VariationsSeedHolder.getInstance()
+                            .updateSeed(
+                                    fetchInfo.seedInfo,
+                                    /* onFinished= */ () ->
+                                            onFinished(mParams, /* needsReschedule= */ false));
                     shouldFinish = false; // jobFinished will be deferred until updateSeed is done.
                 }
             }
-            return new FetchSeedOutput(shouldFinish, needsReschedule, /*cancelled=*/false);
+            return new FetchSeedOutput(shouldFinish, needsReschedule, /* cancelled= */ false);
         }
 
         private class FetchSeedOutput {
