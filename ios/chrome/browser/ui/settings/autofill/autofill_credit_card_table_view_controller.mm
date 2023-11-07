@@ -6,9 +6,11 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
@@ -44,17 +46,20 @@
 
 namespace {
 
-typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierSwitches = kSectionIdentifierEnumZero,
+enum SectionIdentifier : NSInteger {
+  SectionIdentifierAutofillCardSwitch = kSectionIdentifierEnumZero,
+  SectionIdentifierMandatoryReauth,
   SectionIdentifierCards,
 };
 
-typedef NS_ENUM(NSInteger, ItemType) {
+enum ItemType : NSInteger {
   ItemTypeAutofillCardSwitch = kItemTypeEnumZero,
   ItemTypeAutofillCardManaged,
   ItemTypeAutofillCardSwitchSubtitle,
   ItemTypeCard,
   ItemTypeHeader,
+  ItemTypeMandatoryReauthSwitch,
+  ItemTypeMandatoryReauthSwitchSubtitle,
 };
 
 }  // namespace
@@ -150,18 +155,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewModel* model = self.tableViewModel;
 
-  [model addSectionWithIdentifier:SectionIdentifierSwitches];
+  [model addSectionWithIdentifier:SectionIdentifierAutofillCardSwitch];
   if (_browser->GetBrowserState()->GetPrefs()->IsManagedPreference(
           autofill::prefs::kAutofillCreditCardEnabled)) {
     [model addItem:[self cardManagedItem]
-        toSectionWithIdentifier:SectionIdentifierSwitches];
+        toSectionWithIdentifier:SectionIdentifierAutofillCardSwitch];
   } else {
     [model addItem:[self cardSwitchItem]
-        toSectionWithIdentifier:SectionIdentifierSwitches];
+        toSectionWithIdentifier:SectionIdentifierAutofillCardSwitch];
   }
 
   [model setFooter:[self cardSwitchFooter]
-      forSectionWithIdentifier:SectionIdentifierSwitches];
+      forSectionWithIdentifier:SectionIdentifierAutofillCardSwitch];
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnablePaymentsMandatoryReauth)) {
+    [model addSectionWithIdentifier:SectionIdentifierMandatoryReauth];
+    [model addItem:[self mandatoryReauthSwitchItem]
+        toSectionWithIdentifier:SectionIdentifierMandatoryReauth];
+    [model setFooter:[self mandatoryReauthSwitchFooter]
+        forSectionWithIdentifier:SectionIdentifierMandatoryReauth];
+  }
 
   [self populateCardSection];
 }
@@ -217,6 +231,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeAutofillCardSwitchSubtitle];
   footer.text =
       l10n_util::GetNSString(IDS_AUTOFILL_ENABLE_CREDIT_CARDS_TOGGLE_SUBLABEL);
+  return footer;
+}
+
+- (TableViewItem*)mandatoryReauthSwitchItem {
+  TableViewSwitchItem* switchItem =
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeMandatoryReauthSwitch];
+  switchItem.text = l10n_util::GetNSString(
+      IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_LABEL);
+  switchItem.on = autofill::prefs::IsPaymentMethodsMandatoryReauthEnabled(
+      _browser->GetBrowserState()->GetPrefs());
+  switchItem.accessibilityIdentifier = kAutofillMandatoryReauthSwitchViewId;
+  return switchItem;
+}
+
+- (TableViewHeaderFooterItem*)mandatoryReauthSwitchFooter {
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypeMandatoryReauthSwitchSubtitle];
+  footer.text = l10n_util::GetNSString(
+      IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_SUBLABEL);
   return footer;
 }
 
@@ -351,6 +384,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeAutofillCardSwitchSubtitle:
     case ItemTypeCard:
     case ItemTypeHeader:
+    case ItemTypeMandatoryReauthSwitchSubtitle:
+    case ItemTypeMandatoryReauthSwitch:
+      // TODO(b/297268822): Wire up callback functions to handle mandatory
+      // reauth switch toggle events
       break;
     case ItemTypeAutofillCardSwitch: {
       TableViewSwitchCell* switchCell =
@@ -385,11 +422,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Switch Helpers
 
 // Sets switchItem's state to `on`. It is important that there is only one item
-// of `switchItemType` in SectionIdentifierSwitches.
+// of `switchItemType` in SectionIdentifierAutofillCardSwitch.
 - (void)setSwitchItemOn:(BOOL)on itemType:(ItemType)switchItemType {
-  NSIndexPath* switchPath =
-      [self.tableViewModel indexPathForItemType:switchItemType
-                              sectionIdentifier:SectionIdentifierSwitches];
+  NSIndexPath* switchPath = [self.tableViewModel
+      indexPathForItemType:switchItemType
+         sectionIdentifier:SectionIdentifierAutofillCardSwitch];
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
@@ -398,17 +435,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Sets switchItem's enabled status to `enabled` and reconfigures the
 // corresponding cell. It is important that there is no more than one item of
-// `switchItemType` in SectionIdentifierSwitches.
+// `switchItemType` in SectionIdentifierAutofillCardSwitch.
 - (void)setSwitchItemEnabled:(BOOL)enabled itemType:(ItemType)switchItemType {
   TableViewModel* model = self.tableViewModel;
 
   if (![model hasItemForItemType:switchItemType
-               sectionIdentifier:SectionIdentifierSwitches]) {
+               sectionIdentifier:SectionIdentifierAutofillCardSwitch]) {
     return;
   }
   NSIndexPath* switchPath =
       [model indexPathForItemType:switchItemType
-                sectionIdentifier:SectionIdentifierSwitches];
+                sectionIdentifier:SectionIdentifierAutofillCardSwitch];
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [model itemAtIndexPath:switchPath]);

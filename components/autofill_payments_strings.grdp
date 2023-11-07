@@ -548,6 +548,12 @@
     </message>
   </if>
   <if expr="is_ios">
+    <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_LABEL" desc="Label for a toggle that allows users to turn on mandatory authentication when managing credit cards. Title-Cased.">
+      Always Verify When Using Autofill
+    </message>
+    <message name="IDS_PAYMENTS_AUTOFILL_ENABLE_MANDATORY_REAUTH_TOGGLE_SUBLABEL" desc="Sublabel for a toggle that allows users to turn on mandatory authentication when managing credit cards. This sublabel explains when the toggle is turned off Autofill will still request authentication occasionally.">
+      When turned off, you may be asked occasionally to verify for security purposes
+    </message>
     <if expr="_google_chrome">
       <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel, asking the user to authenticate using biometric or device unlock before filling.">
         Verify it's you so Google Chrome can fill in your payment info.
