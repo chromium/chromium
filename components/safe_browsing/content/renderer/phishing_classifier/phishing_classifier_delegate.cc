@@ -66,11 +66,6 @@ PhishingClassifierDelegate::PhishingClassifierDelegate(
 
   classifier_.reset(classifier);
 
-  model_version_ =
-      classifier_->is_ready()
-          ? ScorerStorage::GetInstance()->GetScorer()->model_version()
-          : 0;
-
   render_frame->GetAssociatedInterfaceRegistry()
       ->AddInterface<mojom::PhishingDetector>(base::BindRepeating(
           &PhishingClassifierDelegate::PhishingDetectorReceiver,
@@ -298,21 +293,8 @@ void PhishingClassifierDelegate::OnScorerChanged() {
     return;
   }
 
-  // When a scorer is updated, we want to make sure that the model version is
-  // updated. When the user restarts their browser, their scorer could be
-  // changed twice due to the image embedding model polled from
-  // OptimizationGuide server shortly afterwards, and this can interfere with
-  // the first classification happening.
-  if (model_version_ == scorer->model_version()) {
-    return;
-  }
-
-  model_version_ = scorer->model_version();
-
-  // If the model version has changed, we should cancel any pending
-  // classification if there is one. We check |is_classifying_| here because
-  // |CancelPendingClassification| clears the page text, and we do not want that
-  // if we are awaiting retry.
+  // We check |is_classifying_| here because |CancelPendingClassification|
+  // clears the page text, and we do not want that if we are awaiting retry.
   if (is_classifying_) {
     CancelPendingClassification(NEW_PHISHING_SCORER);
   } else if (awaiting_retry_) {
