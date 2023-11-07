@@ -24,7 +24,7 @@ This is a testharness.js-based test.
   assert_equals: Default value. expected "" but got "rgb(0, 0, 0)"
 [PASS] Testing 'flood-opacity'.
 [FAIL] Testing 'font-family'.
-  assert_equals: Default value. expected "Times New Roman" but got "\"times new roman\""
+  assert_equals: Default value. expected "Times New Roman" but got "\\"times new roman\\""
 [PASS] Testing 'font-size'.
 [PASS] Testing 'font-size-adjust'.
 [PASS] Testing 'font-stretch'.

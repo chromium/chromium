@@ -78,7 +78,7 @@ Found 1000 tests; 977 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span style=\"font-family:sans-serif\">foo</span></p><p> <span style=\"font-family:sans-serif\"><span>bar</span></span> </p><p><span style=\"font-family:sans-serif\">baz</span></p>" but got "<p><span style=\"font-family:sans-serif\">foo</span></p><p> <span style=\"font-family:sans-serif\"><span>bar</span> </span></p><p><span style=\"font-family:sans-serif\">baz</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span style=\\"font-family:sans-serif\\">foo</span></p><p> <span style=\\"font-family:sans-serif\\"><span>bar</span></span> </p><p><span style=\\"font-family:sans-serif\\">baz</span></p>" but got "<p><span style=\\"font-family:sans-serif\\">foo</span></p><p> <span style=\\"font-family:sans-serif\\"><span>bar</span> </span></p><p><span style=\\"font-family:sans-serif\\">baz</span></p>"
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandValue("stylewithcss") before
@@ -95,7 +95,7 @@ Found 1000 tests; 977 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font face=\"sans-serif\">foo</font></p><p> <font face=\"sans-serif\"><span>bar</span></font> </p><p><font face=\"sans-serif\">baz</font></p>" but got "<p><font face=\"sans-serif\">foo</font></p><p> <font face=\"sans-serif\"><span>bar</span> </font></p><p><font face=\"sans-serif\">baz</font></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font face=\\"sans-serif\\">foo</font></p><p> <font face=\\"sans-serif\\"><span>bar</span></font> </p><p><font face=\\"sans-serif\\">baz</font></p>" but got "<p><font face=\\"sans-serif\\">foo</font></p><p> <font face=\\"sans-serif\\"><span>bar</span> </font></p><p><font face=\\"sans-serif\\">baz</font></p>"
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandValue("stylewithcss") before
@@ -504,7 +504,7 @@ Found 1000 tests; 977 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<code>[bar]</code>baz": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<code>[bar]</code>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<code>[bar]</code>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<code><span style=\"font-family:sans-serif\">bar</span></code>baz" but got "foo<code style=\"font-family:sans-serif\">bar</code>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<code><span style=\\"font-family:sans-serif\\">bar</span></code>baz" but got "foo<code style=\\"font-family:sans-serif\\">bar</code>baz"
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<code>[bar]</code>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<code>[bar]</code>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<code>[bar]</code>baz" queryCommandValue("stylewithcss") before
@@ -537,7 +537,7 @@ Found 1000 tests; 977 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<kbd>[bar]</kbd>baz": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<kbd>[bar]</kbd>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<kbd>[bar]</kbd>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<kbd><span style=\"font-family:sans-serif\">bar</span></kbd>baz" but got "foo<kbd style=\"font-family:sans-serif\">bar</kbd>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<kbd><span style=\\"font-family:sans-serif\\">bar</span></kbd>baz" but got "foo<kbd style=\\"font-family:sans-serif\\">bar</kbd>baz"
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<kbd>[bar]</kbd>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<kbd>[bar]</kbd>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<kbd>[bar]</kbd>baz" queryCommandValue("stylewithcss") before
@@ -634,7 +634,7 @@ Found 1000 tests; 977 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<samp>[bar]</samp>baz": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<samp>[bar]</samp>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<samp>[bar]</samp>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<samp><span style=\"font-family:sans-serif\">bar</span></samp>baz" but got "foo<samp style=\"font-family:sans-serif\">bar</samp>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<samp><span style=\\"font-family:sans-serif\\">bar</span></samp>baz" but got "foo<samp style=\\"font-family:sans-serif\\">bar</samp>baz"
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<samp>[bar]</samp>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<samp>[bar]</samp>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<samp>[bar]</samp>baz" queryCommandValue("stylewithcss") before
@@ -667,7 +667,7 @@ Found 1000 tests; 977 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>[bar]</tt>baz": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>[bar]</tt>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>[bar]</tt>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<tt><span style=\"font-family:sans-serif\">bar</span></tt>baz" but got "foo<tt style=\"font-family:sans-serif\">bar</tt>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<tt><span style=\\"font-family:sans-serif\\">bar</span></tt>baz" but got "foo<tt style=\\"font-family:sans-serif\\">bar</tt>baz"
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>[bar]</tt>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>[bar]</tt>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>[bar]</tt>baz" queryCommandValue("stylewithcss") before
@@ -892,7 +892,7 @@ Found 1000 tests; 977 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"font-family:sans-serif\">foo<code><span style=\"font-family:sans-serif\">bar</span></code>baz</span>" but got "<span style=\"font-family:sans-serif\">foo<code>bar</code>baz</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"font-family:sans-serif\\">foo<code><span style=\\"font-family:sans-serif\\">bar</span></code>baz</span>" but got "<span style=\\"font-family:sans-serif\\">foo<code>bar</code>baz</span>"
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]" queryCommandValue("stylewithcss") before
@@ -910,7 +910,7 @@ Found 1000 tests; 977 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font face=\"sans-serif\">foo<code><font face=\"sans-serif\">bar</font></code>baz</font>" but got "<font face=\"sans-serif\">foo<code>bar</code>baz</font>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font face=\\"sans-serif\\">foo<code><font face=\\"sans-serif\\">bar</font></code>baz</font>" but got "<font face=\\"sans-serif\\">foo<code>bar</code>baz</font>"
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<code>bar</code>baz]" queryCommandValue("stylewithcss") before
@@ -928,7 +928,7 @@ Found 1000 tests; 977 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"font-family:sans-serif\">foo<kbd><span style=\"font-family:sans-serif\">bar</span></kbd>baz</span>" but got "<span style=\"font-family:sans-serif\">foo<kbd>bar</kbd>baz</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"font-family:sans-serif\\">foo<kbd><span style=\\"font-family:sans-serif\\">bar</span></kbd>baz</span>" but got "<span style=\\"font-family:sans-serif\\">foo<kbd>bar</kbd>baz</span>"
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]" queryCommandValue("stylewithcss") before
@@ -946,7 +946,7 @@ Found 1000 tests; 977 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font face=\"sans-serif\">foo<kbd><font face=\"sans-serif\">bar</font></kbd>baz</font>" but got "<font face=\"sans-serif\">foo<kbd>bar</kbd>baz</font>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font face=\\"sans-serif\\">foo<kbd><font face=\\"sans-serif\\">bar</font></kbd>baz</font>" but got "<font face=\\"sans-serif\\">foo<kbd>bar</kbd>baz</font>"
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<kbd>bar</kbd>baz]" queryCommandValue("stylewithcss") before

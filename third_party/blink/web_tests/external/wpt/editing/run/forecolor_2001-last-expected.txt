@@ -222,7 +222,7 @@ Found 323 tests; 315 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
 [PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"color:rgb(165, 42, 42)\">fo</span><span style=\"color:rgb(0, 0, 255)\">obar</span>" but got "<span style=\"color:rgb(165, 42, 42)\">fo</span><span style=\"color:rgb(0, 0, 255)\">ob</span><span style=\"color:rgb(0, 0, 255)\">ar</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"color:rgb(165, 42, 42)\\">fo</span><span style=\\"color:rgb(0, 0, 255)\\">obar</span>" but got "<span style=\\"color:rgb(165, 42, 42)\\">fo</span><span style=\\"color:rgb(0, 0, 255)\\">ob</span><span style=\\"color:rgb(0, 0, 255)\\">ar</span>"
 [PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("stylewithcss") before
@@ -261,10 +261,10 @@ Found 323 tests; 315 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[abc]</font>": execCommand("foreColor", false, "#ff0000") return value
 [PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[abc]</font>" checks for modifications to non-editable content
 [PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[abc]</font>" compare innerHTML
-[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
-[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>": execCommand("foreColor", false, "#ff0000") return value
-[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>" checks for modifications to non-editable content
-[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\\"7\\" face=monospace>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\\"7\\" face=monospace>[abc]</font>": execCommand("foreColor", false, "#ff0000") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\\"7\\" face=monospace>[abc]</font>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\\"7\\" face=monospace>[abc]</font>" compare innerHTML
 [PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[a]bc</font>": execCommand("styleWithCSS", false, "false") return value
 [PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[a]bc</font>": execCommand("foreColor", false, "#ff0000") return value
 [PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[a]bc</font>" checks for modifications to non-editable content
@@ -299,14 +299,14 @@ Found 323 tests; 315 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
 [PASS] [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
 [FAIL] [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "a<span style=\"color:rgba(0, 0, 255, 0.5)\">b</span>c" but got "a<font color=\"rgba(0, 0, 255, 0.5)\">b</font>c"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "a<span style=\\"color:rgba(0, 0, 255, 0.5)\\">b</span>c" but got "a<font color=\\"rgba(0, 0, 255, 0.5)\\">b</font>c"
 [PASS] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
 [PASS] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "transparent") return value
 [PASS] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
 [PASS] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
 [PASS] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
 [FAIL] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "a<span style=\"color:rgba(0, 0, 0, 0)\">b</span>c" but got "a<font color=\"rgba(0, 0, 0, 0)\">b</font>c"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "a<span style=\\"color:rgba(0, 0, 0, 0)\\">b</span>c" but got "a<font color=\\"rgba(0, 0, 0, 0)\\">b</font>c"
 [PASS] [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
 [PASS] [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "#0000FF") return value
 [PASS] [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value

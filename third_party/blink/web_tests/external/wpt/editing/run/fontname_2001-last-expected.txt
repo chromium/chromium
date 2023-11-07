@@ -209,10 +209,10 @@ Found 221 tests; 213 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font color=#ff0000>[abc]</font>": execCommand("fontName", false, "monospace") return value
 [PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font color=#ff0000>[abc]</font>" checks for modifications to non-editable content
 [PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font color=#ff0000>[abc]</font>" compare innerHTML
-[PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font size=\"7\" color=#ff0000>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
-[PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font size=\"7\" color=#ff0000>[abc]</font>": execCommand("fontName", false, "monospace") return value
-[PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font size=\"7\" color=#ff0000>[abc]</font>" checks for modifications to non-editable content
-[PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font size=\"7\" color=#ff0000>[abc]</font>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font size=\\"7\\" color=#ff0000>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font size=\\"7\\" color=#ff0000>[abc]</font>": execCommand("fontName", false, "monospace") return value
+[PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font size=\\"7\\" color=#ff0000>[abc]</font>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font size=\\"7\\" color=#ff0000>[abc]</font>" compare innerHTML
 [PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font size=7>[a]bc</font>": execCommand("styleWithCSS", false, "false") return value
 [PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font size=7>[a]bc</font>": execCommand("fontName", false, "monospace") return value
 [PASS] [["styleWithCSS","false"],["fontName","monospace"]] "<font size=7>[a]bc</font>" checks for modifications to non-editable content

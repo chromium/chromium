@@ -41,7 +41,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub><font size=\"3\">a</font></sub>ar" but got "fooaar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub><font size=\\"3\\">a</font></sub>ar" but got "fooaar"
 [PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -67,7 +67,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["indent",""]] "foo[]bar": execCommand("indent", false, "") return value
 [PASS] [["subscript",""],["indent",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["indent",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar</blockquote>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">foobar</blockquote>"
 [PASS] [["subscript",""],["indent",""]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["indent",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["indent",""]] "foo[]bar" queryCommandValue("subscript") before
@@ -88,7 +88,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<sub>a</sub>bar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">fooabar</blockquote>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<sub>a</sub>bar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">fooabar</blockquote>"
 [PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -226,7 +226,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\"/img/lion.svg\"><sub>a</sub>bar" but got "foo<img src=\"/img/lion.svg\">abar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\\"/img/lion.svg\\"><sub>a</sub>bar" but got "foo<img src=\\"/img/lion.svg\\">abar"
 [PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -252,7 +252,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
 [PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["insertlinebreak",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\"vertical-align:sub\"><br></span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\\"vertical-align:sub\\"><br></span>bar"
 [PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandValue("subscript") before
@@ -272,7 +272,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><sub>a</sub>bar" but got "foo<span style=\"vertical-align:sub\"><br>a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><sub>a</sub>bar" but got "foo<span style=\\"vertical-align:sub\\"><br>a</span>bar"
 [PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -367,7 +367,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><sub>a</sub>bar</p>" but got "foo<div><span style=\"vertical-align:sub\">a</span>bar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><sub>a</sub>bar</p>" but got "foo<div><span style=\\"vertical-align:sub\\">a</span>bar</div>"
 [PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -464,7 +464,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<sub>a</sub>bar</div>" but got "<div style=\"text-align:center\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<sub>a</sub>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -514,7 +514,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:justify\">foo<sub>a</sub>bar</div>" but got "<div style=\"text-align:justify\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<sub>a</sub>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -614,7 +614,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:right\">foo<sub>a</sub>bar</div>" but got "<div style=\"text-align:right\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<sub>a</sub>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -661,7 +661,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "foo<span style=\"vertical-align:sub\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "foo<span style=\\"vertical-align:sub\\">a</span>bar"
 [PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -686,7 +686,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>bar" but got "foo<span style=\"vertical-align:super\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>bar" but got "foo<span style=\\"vertical-align:super\\">a</span>bar"
 [PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
@@ -725,7 +725,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<sup><font size=\"3\">a</font></sup>bar" but got "foabar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<sup><font size=\\"3\\">a</font></sup>bar" but got "foabar"
 [PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
@@ -817,7 +817,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup><font size=\"3\">a</font></sup>ar" but got "fooaar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup><font size=\\"3\\">a</font></sup>ar" but got "fooaar"
 [PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
@@ -843,7 +843,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["indent",""]] "foo[]bar": execCommand("indent", false, "") return value
 [PASS] [["superscript",""],["indent",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["indent",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar</blockquote>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">foobar</blockquote>"
 [PASS] [["superscript",""],["indent",""]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["indent",""]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["indent",""]] "foo[]bar" queryCommandValue("superscript") before
@@ -864,7 +864,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<sup>a</sup>bar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">fooabar</blockquote>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<sup>a</sup>bar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">fooabar</blockquote>"
 [PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
@@ -1002,7 +1002,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\"/img/lion.svg\"><sup>a</sup>bar" but got "foo<img src=\"/img/lion.svg\">abar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\\"/img/lion.svg\\"><sup>a</sup>bar" but got "foo<img src=\\"/img/lion.svg\\">abar"
 [PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
@@ -1028,7 +1028,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
 [PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["insertlinebreak",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\"vertical-align:super\"><br></span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\\"vertical-align:super\\"><br></span>bar"
 [PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandValue("superscript") before
@@ -1048,7 +1048,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><sup>a</sup>bar" but got "foo<span style=\"vertical-align:super\"><br>a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><sup>a</sup>bar" but got "foo<span style=\\"vertical-align:super\\"><br>a</span>bar"
 [PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
@@ -1143,7 +1143,7 @@ Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><sup>a</sup>bar</p>" but got "foo<div><span style=\"vertical-align:super\">a</span>bar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><sup>a</sup>bar</p>" but got "foo<div><span style=\\"vertical-align:super\\">a</span>bar</div>"
 [PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before

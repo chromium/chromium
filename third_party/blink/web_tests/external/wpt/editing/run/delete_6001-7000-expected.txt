@@ -243,7 +243,7 @@ Found 1000 tests; 969 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<span style=display:none>fo[o</span><span style=display:none>b]ar</span>": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "<span style=display:none>fo[o</span><span style=display:none>b]ar</span>" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "<span style=display:none>fo[o</span><span style=display:none>b]ar</span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"display:none\">fo</span><span style=\"display:none\">ar</span>" but got ""
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"display:none\\">fo</span><span style=\\"display:none\\">ar</span>" but got ""
 [PASS] [["delete",""]] "<span style=display:none>fo[o</span><span style=display:none>b]ar</span>" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "<span style=display:none>fo[o</span><span style=display:none>b]ar</span>" queryCommandState("delete") before
 [PASS] [["delete",""]] "<span style=display:none>fo[o</span><span style=display:none>b]ar</span>" queryCommandValue("delete") before
@@ -254,7 +254,7 @@ Found 1000 tests; 969 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>": execCommand("delete", false, "") return value
 [PASS] [["stylewithcss","true"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<quasit style=\"display:block\">foar</quasit>" but got "<quasit style=\"display:block\">fo<span style=\"text-align:inherit\">ar</span></quasit>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<quasit style=\\"display:block\\">foar</quasit>" but got "<quasit style=\\"display:block\\">fo<span style=\\"text-align:inherit\\">ar</span></quasit>"
 [PASS] [["stylewithcss","true"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>" queryCommandValue("stylewithcss") before
@@ -271,7 +271,7 @@ Found 1000 tests; 969 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>": execCommand("delete", false, "") return value
 [PASS] [["stylewithcss","false"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<quasit style=\"display:block\">foar</quasit>" but got "<quasit style=\"display:block\">fo<span style=\"text-align:inherit\">ar</span></quasit>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<quasit style=\\"display:block\\">foar</quasit>" but got "<quasit style=\\"display:block\\">fo<span style=\\"text-align:inherit\\">ar</span></quasit>"
 [PASS] [["stylewithcss","false"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["delete",""]] "<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>" queryCommandValue("stylewithcss") before
@@ -365,7 +365,7 @@ Found 1000 tests; 969 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol><li>bar</ol>": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol><li>bar</ol>" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol><li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol id=\"a\"><li>foo</li><li>bar</li></ol>" but got "<ol id=\"a\"><li>foo</li></ol><ol><li>bar</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol id=\\"a\\"><li>foo</li><li>bar</li></ol>" but got "<ol id=\\"a\\"><li>foo</li></ol><ol><li>bar</li></ol>"
 [PASS] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol><li>bar</ol>" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol><li>bar</ol>" queryCommandState("delete") before
 [PASS] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol><li>bar</ol>" queryCommandValue("delete") before
@@ -375,7 +375,7 @@ Found 1000 tests; 969 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<ol><li>foo</ol>{}<br><ol id=b><li>bar</ol>": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "<ol><li>foo</ol>{}<br><ol id=b><li>bar</ol>" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "<ol><li>foo</ol>{}<br><ol id=b><li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol>" but got "<ol><li>foo</li></ol><ol id=\"b\"><li>bar</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol>" but got "<ol><li>foo</li></ol><ol id=\\"b\\"><li>bar</li></ol>"
 [PASS] [["delete",""]] "<ol><li>foo</ol>{}<br><ol id=b><li>bar</ol>" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "<ol><li>foo</ol>{}<br><ol id=b><li>bar</ol>" queryCommandState("delete") before
 [PASS] [["delete",""]] "<ol><li>foo</ol>{}<br><ol id=b><li>bar</ol>" queryCommandValue("delete") before
@@ -385,7 +385,7 @@ Found 1000 tests; 969 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol id=b><li>bar</ol>": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol id=b><li>bar</ol>" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol id=b><li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol id=\"a\"><li>foo</li><li>bar</li></ol>" but got "<ol id=\"a\"><li>foo</li></ol><ol id=\"b\"><li>bar</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol id=\\"a\\"><li>foo</li><li>bar</li></ol>" but got "<ol id=\\"a\\"><li>foo</li></ol><ol id=\\"b\\"><li>bar</li></ol>"
 [PASS] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol id=b><li>bar</ol>" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol id=b><li>bar</ol>" queryCommandState("delete") before
 [PASS] [["delete",""]] "<ol id=a><li>foo</ol>{}<br><ol id=b><li>bar</ol>" queryCommandValue("delete") before
@@ -395,7 +395,7 @@ Found 1000 tests; 969 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<ol class=a><li>foo</ol>{}<br><ol class=b><li>bar</ol>": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "<ol class=a><li>foo</ol>{}<br><ol class=b><li>bar</ol>" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "<ol class=a><li>foo</ol>{}<br><ol class=b><li>bar</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol class=\"a\"><li>foo</li><li>bar</li></ol>" but got "<ol class=\"a\"><li>foo</li></ol><ol class=\"b\"><li>bar</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol class=\\"a\\"><li>foo</li><li>bar</li></ol>" but got "<ol class=\\"a\\"><li>foo</li></ol><ol class=\\"b\\"><li>bar</li></ol>"
 [PASS] [["delete",""]] "<ol class=a><li>foo</ol>{}<br><ol class=b><li>bar</ol>" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "<ol class=a><li>foo</ol>{}<br><ol class=b><li>bar</ol>" queryCommandState("delete") before
 [PASS] [["delete",""]] "<ol class=a><li>foo</ol>{}<br><ol class=b><li>bar</ol>" queryCommandValue("delete") before
@@ -928,7 +928,7 @@ Found 1000 tests; 969 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "foo<img contenteditable=\"false\" src=\"/img/lion.svg\">bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "foo<img contenteditable=\\"false\\" src=\\"/img/lion.svg\\">bar"
 [PASS] [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandState("delete") before
 [PASS] [["delete",""]] "foo<img contenteditable=false src=/img/lion.svg>[]bar" queryCommandValue("delete") before

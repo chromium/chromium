@@ -393,7 +393,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<pre>[]foo</pre>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<pre>[]foo</pre>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<pre>[]foo</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre><br>foo</pre>" but got "<pre>\nfoo</pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre><br>foo</pre>" but got "<pre>\\nfoo</pre>"
 [PASS] [["insertlinebreak",""]] "<pre>[]foo</pre>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>[]foo</pre>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>[]foo</pre>" queryCommandValue("insertlinebreak") before
@@ -403,7 +403,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<pre>foo[]</pre>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<pre>foo[]</pre>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<pre>foo[]</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br></pre>" but got "<pre>foo\n\n</pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br></pre>" but got "<pre>foo\\n\\n</pre>"
 [PASS] [["insertlinebreak",""]] "<pre>foo[]</pre>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo[]</pre>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo[]</pre>" queryCommandValue("insertlinebreak") before
@@ -413,7 +413,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<pre>foo[]<br></pre>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<pre>foo[]<br></pre>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<pre>foo[]<br></pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br></pre>" but got "<pre>foo\n<br></pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br></pre>" but got "<pre>foo\\n<br></pre>"
 [PASS] [["insertlinebreak",""]] "<pre>foo[]<br></pre>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo[]<br></pre>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo[]<br></pre>" queryCommandValue("insertlinebreak") before
@@ -423,7 +423,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<pre>foo[]bar</pre>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<pre>foo[]bar</pre>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<pre>foo[]bar</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br>bar</pre>" but got "<pre>foo\nbar</pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br>bar</pre>" but got "<pre>foo\\nbar</pre>"
 [PASS] [["insertlinebreak",""]] "<pre>foo[]bar</pre>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo[]bar</pre>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo[]bar</pre>" queryCommandValue("insertlinebreak") before
@@ -433,7 +433,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<pre>foo[]<br><br></pre>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<pre>foo[]<br><br></pre>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<pre>foo[]<br><br></pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br><br></pre>" but got "<pre>foo\n<br><br></pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br><br></pre>" but got "<pre>foo\\n<br><br></pre>"
 [PASS] [["insertlinebreak",""]] "<pre>foo[]<br><br></pre>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo[]<br><br></pre>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo[]<br><br></pre>" queryCommandValue("insertlinebreak") before
@@ -443,7 +443,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<pre>foo<br>{}<br></pre>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<pre>foo<br>{}<br></pre>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<pre>foo<br>{}<br></pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br><br></pre>" but got "<pre>foo<br>\n<br></pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br><br></pre>" but got "<pre>foo<br>\\n<br></pre>"
 [PASS] [["insertlinebreak",""]] "<pre>foo<br>{}<br></pre>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo<br>{}<br></pre>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo<br>{}<br></pre>" queryCommandValue("insertlinebreak") before
@@ -453,7 +453,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<pre>foo&#10;[]</pre>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<pre>foo&#10;[]</pre>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<pre>foo&#10;[]</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\n<br><br></pre>" but got "<pre>foo\n\n</pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\\n<br><br></pre>" but got "<pre>foo\\n\\n</pre>"
 [PASS] [["insertlinebreak",""]] "<pre>foo&#10;[]</pre>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo&#10;[]</pre>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo&#10;[]</pre>" queryCommandValue("insertlinebreak") before
@@ -463,7 +463,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<pre>foo[]&#10;</pre>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<pre>foo[]&#10;</pre>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<pre>foo[]&#10;</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br>\n</pre>" but got "<pre>foo\n\n</pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br>\\n</pre>" but got "<pre>foo\\n\\n</pre>"
 [PASS] [["insertlinebreak",""]] "<pre>foo[]&#10;</pre>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo[]&#10;</pre>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo[]&#10;</pre>" queryCommandValue("insertlinebreak") before
@@ -473,7 +473,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<pre>foo&#10;[]&#10;</pre>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<pre>foo&#10;[]&#10;</pre>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<pre>foo&#10;[]&#10;</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\n<br>\n</pre>" but got "<pre>foo\n\n\n</pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\\n<br>\\n</pre>" but got "<pre>foo\\n\\n\\n</pre>"
 [PASS] [["insertlinebreak",""]] "<pre>foo&#10;[]&#10;</pre>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo&#10;[]&#10;</pre>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<pre>foo&#10;[]&#10;</pre>" queryCommandValue("insertlinebreak") before
@@ -483,7 +483,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<xmp>foo[]bar</xmp>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<xmp>foo[]bar</xmp>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<xmp>foo[]bar</xmp>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<xmp>foobar</xmp>" but got "<xmp>foo\nbar</xmp>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<xmp>foobar</xmp>" but got "<xmp>foo\\nbar</xmp>"
 [PASS] [["insertlinebreak",""]] "<xmp>foo[]bar</xmp>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<xmp>foo[]bar</xmp>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<xmp>foo[]bar</xmp>" queryCommandValue("insertlinebreak") before
@@ -503,7 +503,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<listing>foo[]bar</listing>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<listing>foo[]bar</listing>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<listing>foo[]bar</listing>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<listing>foo<br>bar</listing>" but got "<listing>foo\nbar</listing>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<listing>foo<br>bar</listing>" but got "<listing>foo\\nbar</listing>"
 [PASS] [["insertlinebreak",""]] "<listing>foo[]bar</listing>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<listing>foo[]bar</listing>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<listing>foo[]bar</listing>" queryCommandValue("insertlinebreak") before
@@ -962,7 +962,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<a href=foo>foo[]</a>bar": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<a href=foo>foo[]</a>bar" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<a href=foo>foo[]</a>bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"foo\">foo<br></a>bar" but got "<a href=\"foo\">foo</a><br>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"foo\\">foo<br></a>bar" but got "<a href=\\"foo\\">foo</a><br>bar"
 [PASS] [["insertlinebreak",""]] "<a href=foo>foo[]</a>bar" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<a href=foo>foo[]</a>bar" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<a href=foo>foo[]</a>bar" queryCommandValue("insertlinebreak") before
@@ -972,7 +972,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "foo<a href=foo>[]bar</a>": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "foo<a href=foo>[]bar</a>" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "foo<a href=foo>[]bar</a>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"foo\"><br>bar</a>" but got "foo<br><a href=\"foo\">bar</a>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"foo\\"><br>bar</a>" but got "foo<br><a href=\\"foo\\">bar</a>"
 [PASS] [["insertlinebreak",""]] "foo<a href=foo>[]bar</a>" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "foo<a href=foo>[]bar</a>" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "foo<a href=foo>[]bar</a>" queryCommandValue("insertlinebreak") before
@@ -1092,7 +1092,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\"color:rgb(171, 205, 239)\"><br><br></span></p>" but got "<p>foo<br><font color=\"#abcdef\"><br></font></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\\"color:rgb(171, 205, 239)\\"><br><br></span></p>" but got "<p>foo<br><font color=\\"#abcdef\\"><br></font></p>"
 [PASS] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" queryCommandValue("insertlinebreak") before
@@ -1102,7 +1102,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}": execCommand("insertlinebreak", false, "") return value
 [PASS] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}" checks for modifications to non-editable content
 [FAIL] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\"color:rgb(171, 205, 239)\"><br><br></span></p>" but got "<p>foo<br><font color=\"#abcdef\"><br></font></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\\"color:rgb(171, 205, 239)\\"><br><br></span></p>" but got "<p>foo<br><font color=\\"#abcdef\\"><br></font></p>"
 [PASS] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}" queryCommandIndeterm("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}" queryCommandState("insertlinebreak") before
 [PASS] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}" queryCommandValue("insertlinebreak") before
@@ -1129,7 +1129,7 @@ Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz": execCommand("insertlinebreak", false, "") return value
 [PASS] [["stylewithcss","false"],["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\"color:rgb(171, 205, 239)\"><br></span>quz</p>" but got "<p>foo<font color=\"#abcdef\"><br></font>quz</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\\"color:rgb(171, 205, 239)\\"><br></span>quz</p>" but got "<p>foo<font color=\\"#abcdef\\"><br></font>quz</p>"
 [PASS] [["stylewithcss","false"],["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz" queryCommandValue("stylewithcss") before

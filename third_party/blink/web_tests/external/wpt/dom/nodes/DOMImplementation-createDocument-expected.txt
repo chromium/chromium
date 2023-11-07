@@ -27,9 +27,9 @@ Found 402 tests; 393 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] createDocument test: null,"}foo",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: null,"f}oo",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: null,"foo}",null,"INVALID_CHARACTER_ERR"
-[PASS] createDocument test: null,"\ufffffoo",null,"INVALID_CHARACTER_ERR"
-[PASS] createDocument test: null,"f\uffffoo",null,"INVALID_CHARACTER_ERR"
-[PASS] createDocument test: null,"foo\uffff",null,"INVALID_CHARACTER_ERR"
+[PASS] createDocument test: null,"\\ufffffoo",null,"INVALID_CHARACTER_ERR"
+[PASS] createDocument test: null,"f\\uffffoo",null,"INVALID_CHARACTER_ERR"
+[PASS] createDocument test: null,"foo\\uffff",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: null,"<foo",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: null,"foo>",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: null,"<foo>",null,"INVALID_CHARACTER_ERR"
@@ -210,7 +210,7 @@ Found 402 tests; 393 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] createDocument test: "http://example.com/","namespaceURI:=",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: "http://example.com/","namespaceURI:[",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: "http://example.com/","namespaceURI:]",null,"INVALID_CHARACTER_ERR"
-[PASS] createDocument test: "http://example.com/","namespaceURI:\\",null,"INVALID_CHARACTER_ERR"
+[PASS] createDocument test: "http://example.com/","namespaceURI:\\\\",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: "http://example.com/","namespaceURI:/",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: "http://example.com/","namespaceURI:;",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: "http://example.com/","namespaceURI:`",null,"INVALID_CHARACTER_ERR"
@@ -218,7 +218,7 @@ Found 402 tests; 393 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] createDocument test: "http://example.com/","namespaceURI:>",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: "http://example.com/","namespaceURI:,",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: "http://example.com/","namespaceURI:a ",null,"INVALID_CHARACTER_ERR"
-[PASS] createDocument test: "http://example.com/","namespaceURI:\"",null,"INVALID_CHARACTER_ERR"
+[PASS] createDocument test: "http://example.com/","namespaceURI:\\"",null,"INVALID_CHARACTER_ERR"
 [PASS] createDocument test: "/","foo",null,null
 [PASS] createDocument test: metadata for "/","foo",null
 [PASS] createDocument test: characterSet aliases for "/","foo",null

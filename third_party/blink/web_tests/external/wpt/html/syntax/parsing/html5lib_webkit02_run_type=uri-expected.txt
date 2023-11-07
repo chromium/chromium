@@ -13,7 +13,7 @@ This is a testharness.js-based test.
 [PASS] html5lib_webkit02.html 73aed96d7cd3116e4a3e701104616c07d1ec5e0c
 [PASS] html5lib_webkit02.html 139a546c72bfcedf638d031f33da43f24995f688
 [FAIL] html5lib_webkit02.html 6e33515b4dc011dd390d433a6358bf68b786b1fd
-  assert_equals: expected "#document\n| <html>\n|   <head>\n|   <body>\n|     <b>\n|       <em>\n|         <foo>\n|           <foo>\n|             <foo>\n|     <aside>\n|       <b>" but got "#document\n| <html>\n|   <head>\n|   <body>\n|     <b>\n|       <em>\n|         <foo>\n|           <foo>\n|             <foo>\n|     <aside>\n|       <em>\n|         <b>"
+  assert_equals: expected "#document\\n| <html>\\n|   <head>\\n|   <body>\\n|     <b>\\n|       <em>\\n|         <foo>\\n|           <foo>\\n|             <foo>\\n|     <aside>\\n|       <b>" but got "#document\\n| <html>\\n|   <head>\\n|   <body>\\n|     <b>\\n|       <em>\\n|         <foo>\\n|           <foo>\\n|             <foo>\\n|     <aside>\\n|       <em>\\n|         <b>"
 [PASS] html5lib_webkit02.html b6d2377b0dd710ca812c97b2b65cb5d2e93b0e5b
 [PASS] html5lib_webkit02.html 21a5b2b413c4db8ed588334b9a50dea9872bbcfa
 [PASS] html5lib_webkit02.html 90d3f6f2dff994f63293ca46f7cd50a75cde96a6

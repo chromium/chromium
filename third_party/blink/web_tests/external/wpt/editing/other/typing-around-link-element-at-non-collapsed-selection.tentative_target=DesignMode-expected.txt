@@ -2,7 +2,7 @@ This is a testharness.js-based test.
 [PASS] Testing inserting content at non-collapsed selection around link element
 [PASS] Inserting "XY" after deleting first character of a link (Direct typing) in <p><a href="about:blank">[z]abc</a></p>
 [FAIL] Inserting "XY" after deleting last character in a non-collapsed range of a link (Direct typing) in <p><a href="about:blank">abc[d]</a></p>
-  assert_in_array: value "<p><a href=\"about:blank\">abcX</a>Y</p>" not in array ["<p><a href=\"about:blank\">abcXY</a></p>", "<p><a href=\"about:blank\">abcXY</a><br></p>"]
+  assert_in_array: value "<p><a href=\\"about:blank\\">abcX</a>Y</p>" not in array ["<p><a href=\\"about:blank\\">abcXY</a></p>", "<p><a href=\\"about:blank\\">abcXY</a><br></p>"]
 [PASS] Inserting "XY" after deleting text after middle of a link (Direct typing) in <p><a href="about:blank">ab[cd</a>de]f</p>
 [PASS] Inserting "XY" after deleting text before middle of a link (Direct typing) in <p>a[bc<a href="about:blank">de]f</a></p>
 [PASS] Inserting "XY" after deleting text between 2 same links (Direct typing) in <p><a href="about:blank">a[bc</a><a href="about:blank">de]f</a></p>

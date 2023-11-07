@@ -7,7 +7,7 @@ This is a testharness.js-based test.
 [PASS] html5lib_tests25.html c705ceb6fb37865e6965641ea80137baf44176b6
 [PASS] html5lib_tests25.html 277da0c4c937f3852d8a7cacf4e4b426a30b3dda
 [FAIL] html5lib_tests25.html de4aa726e09215ba9c50b97d257e6c6b880107f1
-  assert_equals: expected "#document\n| <!DOCTYPE html>\n| <html>\n|   <head>\n|   <body>\n|     <command>\n|       \"A\"" but got "#document\n| <!DOCTYPE html>\n| <html>\n|   <head>\n|   <body>\n|     <command>\n|     \"A\""
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <command>\\n|       \\"A\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <command>\\n|     \\"A\\""
 [PASS] html5lib_tests25.html 578e08f11628dc9841f3eb21c016e1e28cec0304
 [PASS] html5lib_tests25.html a6e5387b48c4d0399a802215f7fa206bd0d3b492
 [PASS] html5lib_tests25.html d56d47bc9d9c7472fb1706bdecda1bbd165dcf91

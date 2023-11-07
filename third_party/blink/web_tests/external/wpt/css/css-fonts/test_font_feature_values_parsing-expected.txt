@@ -214,9 +214,9 @@ Found 301 tests; 294 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] basic parse tests - @font-feature-values 'bongo' { @styleset { blah: 1; } }
 [PASS] serialization check - @font-feature-values 'bongo' { @styleset { blah: 1; } }
 [PASS] serialization round-trip - @font-feature-values 'bongo' { @styleset { blah: 1; } }
-[PASS] basic parse tests - @font-feature-values \62 ongo { @styleset { blah: 1; } }
-[PASS] serialization check - @font-feature-values \62 ongo { @styleset { blah: 1; } }
-[PASS] serialization round-trip - @font-feature-values \62 ongo { @styleset { blah: 1; } }
+[PASS] basic parse tests - @font-feature-values \\62 ongo { @styleset { blah: 1; } }
+[PASS] serialization check - @font-feature-values \\62 ongo { @styleset { blah: 1; } }
+[PASS] serialization round-trip - @font-feature-values \\62 ongo { @styleset { blah: 1; } }
 [PASS] basic parse tests - @font-feature-values bongo, super bongo, bongo the supreme { @styleset { blah: 1; } }
 [PASS] serialization check - @font-feature-values bongo, super bongo, bongo the supreme { @styleset { blah: 1; } }
 [PASS] serialization round-trip - @font-feature-values bongo, super bongo, bongo the supreme { @styleset { blah: 1; } }
@@ -248,45 +248,45 @@ Found 301 tests; 294 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] serialization check - @font-feature-values bongo { @styleset { blah: 1; de-blah: 1; blah: 2; } }
   assert_equals: canonical cssText serialization doesn't match expected "@styleset { blah: 1; de-blah: 1; blah: 2; }" but got "@styleset { blah: 2; de-blah: 1; }"
 [PASS] serialization round-trip - @font-feature-values bongo { @styleset { blah: 1; de-blah: 1; blah: 2; } }
-[PASS] basic parse tests - @font-feature-values bongo { @styleset { \tra-la: 1; } }
-[PASS] serialization check - @font-feature-values bongo { @styleset { \tra-la: 1; } }
-[PASS] serialization round-trip - @font-feature-values bongo { @styleset { \tra-la: 1; } }
-[PASS] basic parse tests - @font-feature-values bongo { @styleset { b\lah: 1; } }
-[PASS] serialization check - @font-feature-values bongo { @styleset { b\lah: 1; } }
-[PASS] serialization round-trip - @font-feature-values bongo { @styleset { b\lah: 1; } }
-[PASS] basic parse tests - @font-feature-values bongo { @styleset { \62 lah: 1; } }
-[PASS] serialization check - @font-feature-values bongo { @styleset { \62 lah: 1; } }
-[PASS] serialization round-trip - @font-feature-values bongo { @styleset { \62 lah: 1; } }
-[PASS] basic parse tests - @font-feature-values bongo { @styleset { \:blah: 1; } }
-[PASS] serialization check - @font-feature-values bongo { @styleset { \:blah: 1; } }
-[PASS] serialization round-trip - @font-feature-values bongo { @styleset { \:blah: 1; } }
-[PASS] basic parse tests - @font-feature-values bongo { @styleset { \;blah: 1; } }
-[PASS] serialization check - @font-feature-values bongo { @styleset { \;blah: 1; } }
-[PASS] serialization round-trip - @font-feature-values bongo { @styleset { \;blah: 1; } }
-[PASS] basic parse tests - @font-feature-values bongo { @styleset { complex\20 blah: 1; } }
-[PASS] serialization check - @font-feature-values bongo { @styleset { complex\20 blah: 1; } }
-[PASS] serialization round-trip - @font-feature-values bongo { @styleset { complex\20 blah: 1; } }
-[PASS] basic parse tests - @font-feature-values bongo { @styleset { complex\ blah: 1; } }
-[PASS] serialization check - @font-feature-values bongo { @styleset { complex\ blah: 1; } }
-[PASS] serialization round-trip - @font-feature-values bongo { @styleset { complex\ blah: 1; } }
+[PASS] basic parse tests - @font-feature-values bongo { @styleset { \\tra-la: 1; } }
+[PASS] serialization check - @font-feature-values bongo { @styleset { \\tra-la: 1; } }
+[PASS] serialization round-trip - @font-feature-values bongo { @styleset { \\tra-la: 1; } }
+[PASS] basic parse tests - @font-feature-values bongo { @styleset { b\\lah: 1; } }
+[PASS] serialization check - @font-feature-values bongo { @styleset { b\\lah: 1; } }
+[PASS] serialization round-trip - @font-feature-values bongo { @styleset { b\\lah: 1; } }
+[PASS] basic parse tests - @font-feature-values bongo { @styleset { \\62 lah: 1; } }
+[PASS] serialization check - @font-feature-values bongo { @styleset { \\62 lah: 1; } }
+[PASS] serialization round-trip - @font-feature-values bongo { @styleset { \\62 lah: 1; } }
+[PASS] basic parse tests - @font-feature-values bongo { @styleset { \\:blah: 1; } }
+[PASS] serialization check - @font-feature-values bongo { @styleset { \\:blah: 1; } }
+[PASS] serialization round-trip - @font-feature-values bongo { @styleset { \\:blah: 1; } }
+[PASS] basic parse tests - @font-feature-values bongo { @styleset { \\;blah: 1; } }
+[PASS] serialization check - @font-feature-values bongo { @styleset { \\;blah: 1; } }
+[PASS] serialization round-trip - @font-feature-values bongo { @styleset { \\;blah: 1; } }
+[PASS] basic parse tests - @font-feature-values bongo { @styleset { complex\\20 blah: 1; } }
+[PASS] serialization check - @font-feature-values bongo { @styleset { complex\\20 blah: 1; } }
+[PASS] serialization round-trip - @font-feature-values bongo { @styleset { complex\\20 blah: 1; } }
+[PASS] basic parse tests - @font-feature-values bongo { @styleset { complex\\ blah: 1; } }
+[PASS] serialization check - @font-feature-values bongo { @styleset { complex\\ blah: 1; } }
+[PASS] serialization round-trip - @font-feature-values bongo { @styleset { complex\\ blah: 1; } }
 [PASS] basic parse tests - @font-feature-values bongo { @styleset { Håkon: 1; } }
 [PASS] serialization check - @font-feature-values bongo { @styleset { Håkon: 1; } }
 [PASS] serialization round-trip - @font-feature-values bongo { @styleset { Håkon: 1; } }
 [PASS] basic parse tests - @font-feature-values bongo { @styleset { Åквариум: 1; } }
 [PASS] serialization check - @font-feature-values bongo { @styleset { Åквариум: 1; } }
 [PASS] serialization round-trip - @font-feature-values bongo { @styleset { Åквариум: 1; } }
-[PASS] basic parse tests - @font-feature-values bongo { @styleset { \1f449\1f4a9\1f448: 1; } }
-[PASS] serialization check - @font-feature-values bongo { @styleset { \1f449\1f4a9\1f448: 1; } }
-[PASS] serialization round-trip - @font-feature-values bongo { @styleset { \1f449\1f4a9\1f448: 1; } }
+[PASS] basic parse tests - @font-feature-values bongo { @styleset { \\1f449\\1f4a9\\1f448: 1; } }
+[PASS] serialization check - @font-feature-values bongo { @styleset { \\1f449\\1f4a9\\1f448: 1; } }
+[PASS] serialization round-trip - @font-feature-values bongo { @styleset { \\1f449\\1f4a9\\1f448: 1; } }
 [PASS] basic parse tests - @font-feature-values bongo { @styleset { 魅力: 1; } }
 [PASS] serialization check - @font-feature-values bongo { @styleset { 魅力: 1; } }
 [PASS] serialization round-trip - @font-feature-values bongo { @styleset { 魅力: 1; } }
 [PASS] basic parse tests - @font-feature-values bongo { @styleset { 毎日カレーを食べたい！: 1; } }
 [PASS] serialization check - @font-feature-values bongo { @styleset { 毎日カレーを食べたい！: 1; } }
 [PASS] serialization round-trip - @font-feature-values bongo { @styleset { 毎日カレーを食べたい！: 1; } }
-[PASS] basic parse tests - @font-feature-values bongo { @styleset { TECHNICIÄNS\ ÖF\ SPÅCE\ SHIP\ EÅRTH\ THIS\ IS\ YÖÜR\ CÄPTÅIN\ SPEÄKING\ YÖÜR\ ØÅPTÅIN\ IS\ DEA̋D: 1; } }
-[PASS] serialization check - @font-feature-values bongo { @styleset { TECHNICIÄNS\ ÖF\ SPÅCE\ SHIP\ EÅRTH\ THIS\ IS\ YÖÜR\ CÄPTÅIN\ SPEÄKING\ YÖÜR\ ØÅPTÅIN\ IS\ DEA̋D: 1; } }
-[PASS] serialization round-trip - @font-feature-values bongo { @styleset { TECHNICIÄNS\ ÖF\ SPÅCE\ SHIP\ EÅRTH\ THIS\ IS\ YÖÜR\ CÄPTÅIN\ SPEÄKING\ YÖÜR\ ØÅPTÅIN\ IS\ DEA̋D: 1; } }
+[PASS] basic parse tests - @font-feature-values bongo { @styleset { TECHNICIÄNS\\ ÖF\\ SPÅCE\\ SHIP\\ EÅRTH\\ THIS\\ IS\\ YÖÜR\\ CÄPTÅIN\\ SPEÄKING\\ YÖÜR\\ ØÅPTÅIN\\ IS\\ DEA̋D: 1; } }
+[PASS] serialization check - @font-feature-values bongo { @styleset { TECHNICIÄNS\\ ÖF\\ SPÅCE\\ SHIP\\ EÅRTH\\ THIS\\ IS\\ YÖÜR\\ CÄPTÅIN\\ SPEÄKING\\ YÖÜR\\ ØÅPTÅIN\\ IS\\ DEA̋D: 1; } }
+[PASS] serialization round-trip - @font-feature-values bongo { @styleset { TECHNICIÄNS\\ ÖF\\ SPÅCE\\ SHIP\\ EÅRTH\\ THIS\\ IS\\ YÖÜR\\ CÄPTÅIN\\ SPEÄKING\\ YÖÜR\\ ØÅPTÅIN\\ IS\\ DEA̋D: 1; } }
 [PASS] basic parse tests - @font-feature-values bongo { @styleset { 123blah: 1; } }
 [PASS] no value definitions in serialization - @font-feature-values bongo { @styleset { 123blah: 1; } }
 [PASS] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { 123blah: 1; } }
@@ -305,8 +305,8 @@ Found 301 tests; 294 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] basic parse tests - @font-feature-values bongo { @styleset { complex blah: 1; } }
 [PASS] no value definitions in serialization - @font-feature-values bongo { @styleset { complex blah: 1; } }
 [PASS] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { complex blah: 1; } }
-[PASS] basic parse tests - @font-feature-values bongo { @styleset { complex\  blah: 1; } }
-[PASS] no value definitions in serialization - @font-feature-values bongo { @styleset { complex\  blah: 1; } }
-[PASS] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { complex\  blah: 1; } }
+[PASS] basic parse tests - @font-feature-values bongo { @styleset { complex\\  blah: 1; } }
+[PASS] no value definitions in serialization - @font-feature-values bongo { @styleset { complex\\  blah: 1; } }
+[PASS] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { complex\\  blah: 1; } }
 Harness: the test ran to completion.
 

@@ -30,22 +30,22 @@ Found 672 tests; 515 PASS, 157 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Parsing: <> against <http://example.org/foo/bar>
 [PASS] Parsing: <  	> against <http://example.org/foo/bar>
 [PASS] Parsing: <:foo.com/> against <http://example.org/foo/bar>
-[PASS] Parsing: <:foo.com\> against <http://example.org/foo/bar>
+[PASS] Parsing: <:foo.com\\> against <http://example.org/foo/bar>
 [PASS] Parsing: <:> against <http://example.org/foo/bar>
 [PASS] Parsing: <:a> against <http://example.org/foo/bar>
 [PASS] Parsing: <:/> against <http://example.org/foo/bar>
-[PASS] Parsing: <:\> against <http://example.org/foo/bar>
+[PASS] Parsing: <:\\> against <http://example.org/foo/bar>
 [PASS] Parsing: <:#> against <http://example.org/foo/bar>
 [PASS] Parsing: <#> against <http://example.org/foo/bar>
 [PASS] Parsing: <#/> against <http://example.org/foo/bar>
-[PASS] Parsing: <#\> against <http://example.org/foo/bar>
+[PASS] Parsing: <#\\> against <http://example.org/foo/bar>
 [PASS] Parsing: <#;?> against <http://example.org/foo/bar>
 [PASS] Parsing: <?> against <http://example.org/foo/bar>
 [PASS] Parsing: </> against <http://example.org/foo/bar>
 [PASS] Parsing: <:23> against <http://example.org/foo/bar>
 [PASS] Parsing: </:23> against <http://example.org/foo/bar>
-[PASS] Parsing: <\x> against <http://example.org/foo/bar>
-[PASS] Parsing: <\\x\hello> against <http://example.org/foo/bar>
+[PASS] Parsing: <\\x> against <http://example.org/foo/bar>
+[PASS] Parsing: <\\\\x\\hello> against <http://example.org/foo/bar>
 [PASS] Parsing: <::> against <http://example.org/foo/bar>
 [PASS] Parsing: <::23> against <http://example.org/foo/bar>
 [FAIL] Parsing: <foo://> against <http://example.org/foo/bar>
@@ -55,9 +55,9 @@ Found 672 tests; 515 PASS, 157 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Parsing: <http://&a:foo(b]c@d:2/> against <http://example.org/foo/bar>
 [PASS] Parsing: <http://::@c@d:2> against <http://example.org/foo/bar>
 [PASS] Parsing: <http://foo.com:b@d/> against <http://example.org/foo/bar>
-[PASS] Parsing: <http://foo.com/\@> against <http://example.org/foo/bar>
-[PASS] Parsing: <http:\\foo.com\> against <http://example.org/foo/bar>
-[PASS] Parsing: <http:\\a\b:c\d@foo.com\> against <http://example.org/foo/bar>
+[PASS] Parsing: <http://foo.com/\\@> against <http://example.org/foo/bar>
+[PASS] Parsing: <http:\\\\foo.com\\> against <http://example.org/foo/bar>
+[PASS] Parsing: <http:\\\\a\\b:c\\d@foo.com\\> against <http://example.org/foo/bar>
 [PASS] Parsing: <foo:/> against <http://example.org/foo/bar>
 [PASS] Parsing: <foo:/bar.com/> against <http://example.org/foo/bar>
 [FAIL] Parsing: <foo://///////> against <http://example.org/foo/bar>
@@ -140,7 +140,7 @@ Found 672 tests; 515 PASS, 157 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Parsing: <http://example.com/(%28:%3A%29)> against <about:blank>
 [PASS] Parsing: <http://example.com/%3A%3a%3C%3c> against <about:blank>
 [PASS] Parsing: <http://example.com/foo	bar> against <about:blank>
-[PASS] Parsing: <http://example.com\\foo\\bar> against <about:blank>
+[PASS] Parsing: <http://example.com\\\\foo\\\\bar> against <about:blank>
 [PASS] Parsing: <http://example.com/%7Ffp3%3Eju%3Dduvgw%3Dd> against <about:blank>
 [PASS] Parsing: <http://example.com/@asdf%40> against <about:blank>
 [PASS] Parsing: <http://example.com/你好你好> against <about:blank>
@@ -157,7 +157,7 @@ Found 672 tests; 515 PASS, 157 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Parsing: <http://www/foo/%2E/html> against <about:blank>
 [PASS] Parsing: <http://user:pass@/> against <about:blank>
 [PASS] Parsing: <http://%25DOMAIN:foobar@foodomain.com/> against <about:blank>
-[PASS] Parsing: <http:\\www.google.com\foo> against <about:blank>
+[PASS] Parsing: <http:\\\\www.google.com\\foo> against <about:blank>
 [PASS] Parsing: <http://foo:80/> against <about:blank>
 [PASS] Parsing: <http://foo:81/> against <about:blank>
 [FAIL] Parsing: <httpa://foo:80/> against <about:blank>
@@ -371,13 +371,13 @@ Found 672 tests; 515 PASS, 157 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <x> against <sc://ñ>
   assert_equals: href expected "sc://%C3%B1/x" but got "x"
-[PASS] Parsing: <sc:\../> against <about:blank>
+[PASS] Parsing: <sc:\\../> against <about:blank>
 [PASS] Parsing: <sc::a@example.net> against <about:blank>
 [PASS] Parsing: <wow:%NBD> against <about:blank>
 [PASS] Parsing: <wow:%1G> against <about:blank>
 [PASS] Parsing: <wow:￿> against <about:blank>
 [FAIL] Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank>
-  assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF" but got "http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ\ufffe\uffff?U+d800𐟾U+dfff﷐﷏﷯ﷰ\ufffe\uffff"
+  assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF" but got "http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff?U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff"
 [FAIL] Parsing: <sc://a\0b/> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <sc://a b/> against <about:blank>
@@ -388,7 +388,7 @@ Found 672 tests; 515 PASS, 157 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <sc://a[b/> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
-[FAIL] Parsing: <sc://a\b/> against <about:blank>
+[FAIL] Parsing: <sc://a\\b/> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <sc://a]b/> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
@@ -492,9 +492,9 @@ Found 672 tests; 515 PASS, 157 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Parsing: <http://ho%7Cst/> against <about:blank>
 [PASS] Parsing: <http://ho%7Fst/> against <about:blank>
 [FAIL] Parsing: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank>
-  assert_equals: href expected "http://!\"$&'()*+,-.;=_`{}~/" but got "http://!\"$&'()%2A+,-.;=_`{}~/"
+  assert_equals: href expected "http://!\\"$&'()*+,-.;=_`{}~/" but got "http://!\\"$&'()%2A+,-.;=_`{}~/"
 [FAIL] Parsing: <sc://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
-  assert_equals: host expected "%01%02%03%04%05%06%07%08%0B%0C%0E%0F%10%11%12%13%14%15%16%17%18%19%1A%1B%1C%1D%1E%1F%7F!\"$%&'()*+,-.;=_`{}~" but got ""
+  assert_equals: host expected "%01%02%03%04%05%06%07%08%0B%0C%0E%0F%10%11%12%13%14%15%16%17%18%19%1A%1B%1C%1D%1E%1F%7F!\\"$%&'()*+,-.;=_`{}~" but got ""
 [PASS] Parsing: <ftp://example.com%80/> against <about:blank>
 [PASS] Parsing: <ftp://example.com%A0/> against <about:blank>
 [PASS] Parsing: <https://example.com%80/> against <about:blank>
@@ -540,8 +540,8 @@ Found 672 tests; 515 PASS, 157 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <asdf://%43%7C/> against <about:blank>
   assert_equals: host expected "%43%7C" but got ""
-[PASS] Parsing: <\\\.\Y:> against <about:blank>
-[PASS] Parsing: <\\\.\y:> against <about:blank>
+[PASS] Parsing: <\\\\\\.\\Y:> against <about:blank>
+[PASS] Parsing: <\\\\\\.\\y:> against <about:blank>
 [PASS] Parsing: <http://[1:0::]> against <http://example.net/>
 [PASS] Parsing: <http://[0:1:2:3:4:5:6:7:8]> against <http://example.net/>
 [PASS] Parsing: <https://[0::0::0]> against <about:blank>
@@ -682,28 +682,28 @@ Found 672 tests; 515 PASS, 157 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Parsing: <non-special:cannot-be-a-base-url-\0~> against <about:blank>
 [PASS] Parsing: <https://www.example.com/path{path.html?query'=query#fragment<fragment> against <about:blank>
 [PASS] Parsing: <https://user:pass[@foo/bar> against <http://example.org>
-[FAIL] Parsing: <foo:// !"$%&'()*+,-.;<=>@[\]^_`{|}~@host/> against <about:blank>
-  assert_equals: href expected "foo://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo:// !\"$%&'()*+,-.;<=>@[\\]^_`{|}~@host/"
+[FAIL] Parsing: <foo:// !"$%&'()*+,-.;<=>@[\\]^_`{|}~@host/> against <about:blank>
+  assert_equals: href expected "foo://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo:// !\\"$%&'()*+,-.;<=>@[\\\\]^_`{|}~@host/"
 [FAIL] Parsing: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> against <about:blank>
   assert_equals: href expected "wss://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/" but got "wss://%20!%22$%&%27()*+,-.%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/"
-[FAIL] Parsing: <foo://joe: !"$%&'()*+,-.:;<=>@[\]^_`{|}~@host/> against <about:blank>
-  assert_equals: href expected "foo://joe:%20!%22$%&'()*+,-.%3A%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo://joe: !\"$%&'()*+,-.:;<=>@[\\]^_`{|}~@host/"
+[FAIL] Parsing: <foo://joe: !"$%&'()*+,-.:;<=>@[\\]^_`{|}~@host/> against <about:blank>
+  assert_equals: href expected "foo://joe:%20!%22$%&'()*+,-.%3A%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo://joe: !\\"$%&'()*+,-.:;<=>@[\\\\]^_`{|}~@host/"
 [FAIL] Parsing: <wss://joe: !"$%&'()*+,-.:;<=>@[]^_`{|}~@host/> against <about:blank>
   assert_equals: href expected "wss://joe:%20!%22$%&'()*+,-.%3A%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/" but got "wss://joe:%20!%22$%&%27()*+,-.%3A%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/"
 [FAIL] Parsing: <foo://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
-  assert_equals: host expected "!\"$%&'()*+,-.;=_`{}~" but got ""
+  assert_equals: host expected "!\\"$%&'()*+,-.;=_`{}~" but got ""
 [FAIL] Parsing: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank>
-  assert_equals: href expected "wss://!\"$&'()*+,-.;=_`{}~/" but got "wss://!\"$&'()%2A+,-.;=_`{}~/"
-[FAIL] Parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
-  assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\]^_%60%7B|%7D~" but got "foo://host/ !\"$%&'()*+,-./:;<=>@[\\]^_`{|}~"
-[FAIL] Parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
+  assert_equals: href expected "wss://!\\"$&'()*+,-.;=_`{}~/" but got "wss://!\\"$&'()%2A+,-.;=_`{}~/"
+[FAIL] Parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> against <about:blank>
+  assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]^_%60%7B|%7D~" but got "foo://host/ !\\"$%&'()*+,-./:;<=>@[\\\\]^_`{|}~"
+[FAIL] Parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> against <about:blank>
   assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]^_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
-[FAIL] Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
-  assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\]^_`{|}~" but got "foo://host/dir/?%20!%22$%&%27()*+,-./:;%3C=%3E?@[\\]^_`{|}~"
-[PASS] Parsing: <wss://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
-[FAIL] Parsing: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+[FAIL] Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\\]^_`{|}~> against <about:blank>
+  assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~" but got "foo://host/dir/?%20!%22$%&%27()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~"
+[PASS] Parsing: <wss://host/dir/? !"$%&'()*+,-./:;<=>?@[\\]^_`{|}~> against <about:blank>
+[FAIL] Parsing: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~> against <about:blank>
   assert_equals: host expected "host" but got ""
-[PASS] Parsing: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+[PASS] Parsing: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~> against <about:blank>
 [FAIL] Parsing: <abc:rootless> against <abc://host/path>
   assert_equals: href expected "abc:rootless" but got "abc://host/rootless"
 [FAIL] Parsing: <abc:rootless> against <abc:/path>

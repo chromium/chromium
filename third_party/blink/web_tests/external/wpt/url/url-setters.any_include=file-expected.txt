@@ -24,8 +24,8 @@ This is a testharness.js-based test.
 [FAIL] URL: Setting <file://localhost/>.port = '12'
   assert_equals: expected "file:///" but got "file://localhost/"
 [PASS] URL: Setting <file:///some/path>.pathname = '' Special URLs cannot have their paths erased
-[PASS] URL: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes
-[PASS] URL: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes
+[PASS] URL: Setting <file://monkey/>.pathname = '\\\\' File URLs and (back)slashes
+[PASS] URL: Setting <file:///unicorn>.pathname = '//\\/' File URLs and (back)slashes
 [PASS] URL: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes
 [PASS] URL: Setting <file:///var/log/system.log>.href = 'http://0300.168.0xF0'
 Harness: the test ran to completion.

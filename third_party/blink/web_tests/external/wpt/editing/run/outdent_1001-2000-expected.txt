@@ -693,7 +693,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz": execCommand("outdent", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div id=\"abc\"><div>bar</div></div>baz" but got "foo<br>bar<br>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div id=\\"abc\\"><div>bar</div></div>baz" but got "foo<br>bar<br>baz"
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz" queryCommandValue("defaultparagraphseparator") before
@@ -710,7 +710,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz": execCommand("outdent", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div id=\"abc\"><p>bar</p></div>baz" but got "foo<br>bar<br>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div id=\\"abc\\"><p>bar</p></div>baz" but got "foo<br>bar<br>baz"
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol id=abc><li>[bar]</ol>baz" queryCommandValue("defaultparagraphseparator") before
@@ -727,7 +727,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz": execCommand("outdent", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\"color:rgb(0, 0, 255)\"><div>bar</div></div>baz" but got "foo<br><span style=\"color:rgb(0, 0, 255)\">bar</span><br>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\\"color:rgb(0, 0, 255)\\"><div>bar</div></div>baz" but got "foo<br><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br>baz"
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz" queryCommandValue("defaultparagraphseparator") before
@@ -744,7 +744,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz": execCommand("outdent", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\"color:rgb(0, 0, 255)\"><p>bar</p></div>baz" but got "foo<br><span style=\"color:rgb(0, 0, 255)\">bar</span><br>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\\"color:rgb(0, 0, 255)\\"><p>bar</p></div>baz" but got "foo<br><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br>baz"
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol style=color:blue><li>[bar]</ol>baz" queryCommandValue("defaultparagraphseparator") before
@@ -761,7 +761,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz": execCommand("outdent", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div value=\"5\">bar</div>baz" but got "foo<br>bar<br>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div value=\\"5\\">bar</div>baz" but got "foo<br>bar<br>baz"
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz" queryCommandValue("defaultparagraphseparator") before
@@ -778,7 +778,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz": execCommand("outdent", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p value=\"5\">bar</p>baz" but got "foo<br>bar<br>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p value=\\"5\\">bar</p>baz" but got "foo<br>bar<br>baz"
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li value=5>[bar]</ol>baz" queryCommandValue("defaultparagraphseparator") before
@@ -795,7 +795,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz": execCommand("outdent", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div id=\"abc\">bar</div>baz" but got "foo<br>bar<br>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div id=\\"abc\\">bar</div>baz" but got "foo<br>bar<br>baz"
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz" queryCommandValue("defaultparagraphseparator") before
@@ -812,7 +812,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz": execCommand("outdent", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p id=\"abc\">bar</p>baz" but got "foo<br>bar<br>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p id=\\"abc\\">bar</p>baz" but got "foo<br>bar<br>baz"
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li id=abc>[bar]</ol>baz" queryCommandValue("defaultparagraphseparator") before
@@ -829,7 +829,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz": execCommand("outdent", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\"color:rgb(0, 0, 255)\">bar</div>baz" but got "foo<br><span style=\"color:rgb(0, 0, 255)\">bar</span><br>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\\"color:rgb(0, 0, 255)\\">bar</div>baz" but got "foo<br><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br>baz"
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz" queryCommandValue("defaultparagraphseparator") before
@@ -846,7 +846,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz": execCommand("outdent", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p style=\"color:rgb(0, 0, 255)\">bar</p>baz" but got "foo<br><span style=\"color:rgb(0, 0, 255)\">bar</span><br>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p style=\\"color:rgb(0, 0, 255)\\">bar</p>baz" but got "foo<br><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br>baz"
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["outdent",""]] "foo<ol><li style=color:blue>[bar]</ol>baz" queryCommandValue("defaultparagraphseparator") before
@@ -862,7 +862,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["outdent",""]] "<ol><li>foo</li><ol><li value=5>[bar]</ol></ol>": execCommand("outdent", false, "") return value
 [PASS] [["outdent",""]] "<ol><li>foo</li><ol><li value=5>[bar]</ol></ol>" checks for modifications to non-editable content
 [FAIL] [["outdent",""]] "<ol><li>foo</li><ol><li value=5>[bar]</ol></ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li value=\"5\">bar</li></ol>" but got "<ol><li>foo</li><li>bar<br></li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li value=\\"5\\">bar</li></ol>" but got "<ol><li>foo</li><li>bar<br></li></ol>"
 [PASS] [["outdent",""]] "<ol><li>foo</li><ol><li value=5>[bar]</ol></ol>" queryCommandIndeterm("outdent") before
 [PASS] [["outdent",""]] "<ol><li>foo</li><ol><li value=5>[bar]</ol></ol>" queryCommandState("outdent") before
 [PASS] [["outdent",""]] "<ol><li>foo</li><ol><li value=5>[bar]</ol></ol>" queryCommandValue("outdent") before
@@ -872,7 +872,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["outdent",""]] "<ul><li>foo</li><ol><li value=5>[bar]</ol></ul>": execCommand("outdent", false, "") return value
 [PASS] [["outdent",""]] "<ul><li>foo</li><ol><li value=5>[bar]</ol></ul>" checks for modifications to non-editable content
 [FAIL] [["outdent",""]] "<ul><li>foo</li><ol><li value=5>[bar]</ol></ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li value=\"5\">bar</li></ul>" but got "<ul><li>foo</li><li>bar<br></li></ul>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li><li value=\\"5\\">bar</li></ul>" but got "<ul><li>foo</li><li>bar<br></li></ul>"
 [PASS] [["outdent",""]] "<ul><li>foo</li><ol><li value=5>[bar]</ol></ul>" queryCommandIndeterm("outdent") before
 [PASS] [["outdent",""]] "<ul><li>foo</li><ol><li value=5>[bar]</ol></ul>" queryCommandState("outdent") before
 [PASS] [["outdent",""]] "<ul><li>foo</li><ol><li value=5>[bar]</ol></ul>" queryCommandValue("outdent") before
@@ -903,7 +903,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>": execCommand("outdent", false, "") return value
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><span style=\"color:rgb(0, 0, 255)\">bar</span></li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\"color:rgb(0, 0, 255)\">bar</span><br></li><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span></li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br></li><li>baz</li></ol>"
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" queryCommandIndeterm("stylewithcss") before
 [FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
@@ -921,7 +921,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>": execCommand("outdent", false, "") return value
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><font color=\"#0000ff\">bar</font></li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\"color:rgb(0, 0, 255)\">bar</span><br></li><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><font color=\\"#0000ff\\">bar</font></li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br></li><li>baz</li></ol>"
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>" queryCommandValue("stylewithcss") before
@@ -938,7 +938,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>": execCommand("outdent", false, "") return value
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\"text-indent:1em\">bar</span><br></li><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span><br></li><li>baz</li></ol>"
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" queryCommandValue("stylewithcss") before
@@ -955,7 +955,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>": execCommand("outdent", false, "") return value
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\"text-indent:1em\">bar</span><br></li><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span><br></li><li>baz</li></ol>"
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>" queryCommandValue("stylewithcss") before
@@ -992,7 +992,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>": execCommand("outdent", false, "") return value
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><span style=\"color:rgb(0, 0, 255)\">bar</span></li><li><span style=\"color:rgb(0, 0, 255)\">baz</span></li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\"color:rgb(0, 0, 255)\">bar</span><br></li><li><span style=\"color:rgb(0, 0, 255)\">baz</span><br></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span></li><li><span style=\\"color:rgb(0, 0, 255)\\">baz</span></li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br></li><li><span style=\\"color:rgb(0, 0, 255)\\">baz</span><br></li><li>quz</li></ol>"
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandValue("stylewithcss") before
@@ -1009,7 +1009,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>": execCommand("outdent", false, "") return value
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><font color=\"#0000ff\">bar</font></li><li><font color=\"#0000ff\">baz</font></li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\"color:rgb(0, 0, 255)\">bar</span><br></li><li><span style=\"color:rgb(0, 0, 255)\">baz</span><br></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li><font color=\\"#0000ff\\">bar</font></li><li><font color=\\"#0000ff\\">baz</font></li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"color:rgb(0, 0, 255)\\">bar</span><br></li><li><span style=\\"color:rgb(0, 0, 255)\\">baz</span><br></li><li>quz</li></ol>"
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandValue("stylewithcss") before
@@ -1026,7 +1026,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>": execCommand("outdent", false, "") return value
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\"text-indent:1em\">bar</span><br></li><li><span style=\"text-indent:1em\">baz</span><br></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span><br></li><li><span style=\\"text-indent:1em\\">baz</span><br></li><li>quz</li></ol>"
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandValue("stylewithcss") before
@@ -1043,7 +1043,7 @@ Found 1000 tests; 927 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>": execCommand("outdent", false, "") return value
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\"text-indent:1em\">bar</span><br></li><li><span style=\"text-indent:1em\">baz</span><br></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><li><span style=\\"text-indent:1em\\">bar</span><br></li><li><span style=\\"text-indent:1em\\">baz</span><br></li><li>quz</li></ol>"
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["outdent",""]] "<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>" queryCommandValue("stylewithcss") before

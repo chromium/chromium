@@ -1019,7 +1019,7 @@ Found 1000 tests; 951 PASS, 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertparagraph",""]] "<pre>foo&#10;[]</pre>": execCommand("insertparagraph", false, "") return value
 [PASS] [["insertparagraph",""]] "<pre>foo&#10;[]</pre>" checks for modifications to non-editable content
 [FAIL] [["insertparagraph",""]] "<pre>foo&#10;[]</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\n<br><br></pre>" but got "<pre>foo\n</pre><pre><br></pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\\n<br><br></pre>" but got "<pre>foo\\n</pre><pre><br></pre>"
 [PASS] [["insertparagraph",""]] "<pre>foo&#10;[]</pre>" queryCommandIndeterm("insertparagraph") before
 [PASS] [["insertparagraph",""]] "<pre>foo&#10;[]</pre>" queryCommandState("insertparagraph") before
 [PASS] [["insertparagraph",""]] "<pre>foo&#10;[]</pre>" queryCommandValue("insertparagraph") before
@@ -1029,7 +1029,7 @@ Found 1000 tests; 951 PASS, 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertparagraph",""]] "<pre>foo[]&#10;</pre>": execCommand("insertparagraph", false, "") return value
 [PASS] [["insertparagraph",""]] "<pre>foo[]&#10;</pre>" checks for modifications to non-editable content
 [FAIL] [["insertparagraph",""]] "<pre>foo[]&#10;</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br>\n</pre>" but got "<pre>foo\n</pre><pre><br></pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br>\\n</pre>" but got "<pre>foo\\n</pre><pre><br></pre>"
 [PASS] [["insertparagraph",""]] "<pre>foo[]&#10;</pre>" queryCommandIndeterm("insertparagraph") before
 [PASS] [["insertparagraph",""]] "<pre>foo[]&#10;</pre>" queryCommandState("insertparagraph") before
 [PASS] [["insertparagraph",""]] "<pre>foo[]&#10;</pre>" queryCommandValue("insertparagraph") before
@@ -1039,7 +1039,7 @@ Found 1000 tests; 951 PASS, 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertparagraph",""]] "<pre>foo&#10;[]&#10;</pre>": execCommand("insertparagraph", false, "") return value
 [PASS] [["insertparagraph",""]] "<pre>foo&#10;[]&#10;</pre>" checks for modifications to non-editable content
 [FAIL] [["insertparagraph",""]] "<pre>foo&#10;[]&#10;</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\n<br>\n</pre>" but got "<pre>foo\n\n</pre><pre><br></pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\\n<br>\\n</pre>" but got "<pre>foo\\n\\n</pre><pre><br></pre>"
 [PASS] [["insertparagraph",""]] "<pre>foo&#10;[]&#10;</pre>" queryCommandIndeterm("insertparagraph") before
 [PASS] [["insertparagraph",""]] "<pre>foo&#10;[]&#10;</pre>" queryCommandState("insertparagraph") before
 [PASS] [["insertparagraph",""]] "<pre>foo&#10;[]&#10;</pre>" queryCommandValue("insertparagraph") before

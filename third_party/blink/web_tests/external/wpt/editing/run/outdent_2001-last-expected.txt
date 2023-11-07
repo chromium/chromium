@@ -577,15 +577,15 @@ Found 550 tests; 513 PASS, 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["outdent",""]] "<blockquote><span>foo<br>[bar]</span></blockquote>" queryCommandIndeterm("outdent") after
 [PASS] [["outdent",""]] "<blockquote><span>foo<br>[bar]</span></blockquote>" queryCommandState("outdent") after
 [PASS] [["outdent",""]] "<blockquote><span>foo<br>[bar]</span></blockquote>" queryCommandValue("outdent") after
-[PASS] [["outdent",""]] "<ul><ul><li><span style=\"color:rgb(255, 0, 0)\">[]foo</span></li></ul></ul>": execCommand("outdent", false, "") return value
-[PASS] [["outdent",""]] "<ul><ul><li><span style=\"color:rgb(255, 0, 0)\">[]foo</span></li></ul></ul>" checks for modifications to non-editable content
-[FAIL] [["outdent",""]] "<ul><ul><li><span style=\"color:rgb(255, 0, 0)\">[]foo</span></li></ul></ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li><span style=\"color:rgb(255, 0, 0)\">foo</span></li></ul>" but got "<ul><li><span style=\"color:rgb(255, 0, 0)\">foo</span><br></li></ul>"
-[PASS] [["outdent",""]] "<ul><ul><li><span style=\"color:rgb(255, 0, 0)\">[]foo</span></li></ul></ul>" queryCommandIndeterm("outdent") before
-[PASS] [["outdent",""]] "<ul><ul><li><span style=\"color:rgb(255, 0, 0)\">[]foo</span></li></ul></ul>" queryCommandState("outdent") before
-[PASS] [["outdent",""]] "<ul><ul><li><span style=\"color:rgb(255, 0, 0)\">[]foo</span></li></ul></ul>" queryCommandValue("outdent") before
-[PASS] [["outdent",""]] "<ul><ul><li><span style=\"color:rgb(255, 0, 0)\">[]foo</span></li></ul></ul>" queryCommandIndeterm("outdent") after
-[PASS] [["outdent",""]] "<ul><ul><li><span style=\"color:rgb(255, 0, 0)\">[]foo</span></li></ul></ul>" queryCommandState("outdent") after
-[PASS] [["outdent",""]] "<ul><ul><li><span style=\"color:rgb(255, 0, 0)\">[]foo</span></li></ul></ul>" queryCommandValue("outdent") after
+[PASS] [["outdent",""]] "<ul><ul><li><span style=\\"color:rgb(255, 0, 0)\\">[]foo</span></li></ul></ul>": execCommand("outdent", false, "") return value
+[PASS] [["outdent",""]] "<ul><ul><li><span style=\\"color:rgb(255, 0, 0)\\">[]foo</span></li></ul></ul>" checks for modifications to non-editable content
+[FAIL] [["outdent",""]] "<ul><ul><li><span style=\\"color:rgb(255, 0, 0)\\">[]foo</span></li></ul></ul>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li><span style=\\"color:rgb(255, 0, 0)\\">foo</span></li></ul>" but got "<ul><li><span style=\\"color:rgb(255, 0, 0)\\">foo</span><br></li></ul>"
+[PASS] [["outdent",""]] "<ul><ul><li><span style=\\"color:rgb(255, 0, 0)\\">[]foo</span></li></ul></ul>" queryCommandIndeterm("outdent") before
+[PASS] [["outdent",""]] "<ul><ul><li><span style=\\"color:rgb(255, 0, 0)\\">[]foo</span></li></ul></ul>" queryCommandState("outdent") before
+[PASS] [["outdent",""]] "<ul><ul><li><span style=\\"color:rgb(255, 0, 0)\\">[]foo</span></li></ul></ul>" queryCommandValue("outdent") before
+[PASS] [["outdent",""]] "<ul><ul><li><span style=\\"color:rgb(255, 0, 0)\\">[]foo</span></li></ul></ul>" queryCommandIndeterm("outdent") after
+[PASS] [["outdent",""]] "<ul><ul><li><span style=\\"color:rgb(255, 0, 0)\\">[]foo</span></li></ul></ul>" queryCommandState("outdent") after
+[PASS] [["outdent",""]] "<ul><ul><li><span style=\\"color:rgb(255, 0, 0)\\">[]foo</span></li></ul></ul>" queryCommandValue("outdent") after
 Harness: the test ran to completion.
 

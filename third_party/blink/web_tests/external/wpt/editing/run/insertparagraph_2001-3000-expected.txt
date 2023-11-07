@@ -624,7 +624,7 @@ Found 1000 tests; 971 PASS, 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>": execCommand("insertparagraph", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><b id=\"x\" class=\"y\">foo</b></div><div><b class=\"y\">bar</b></div>" but got "<b id=\"x\" class=\"y\">foo</b><div><b class=\"y\">bar</b></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><b id=\\"x\\" class=\\"y\\">foo</b></div><div><b class=\\"y\\">bar</b></div>" but got "<b id=\\"x\\" class=\\"y\\">foo</b><div><b class=\\"y\\">bar</b></div>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandValue("stylewithcss") before
@@ -648,7 +648,7 @@ Found 1000 tests; 971 PASS, 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>": execCommand("insertparagraph", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><b id=\"x\" class=\"y\">foo</b></div><div><b class=\"y\">bar</b></div>" but got "<b id=\"x\" class=\"y\">foo</b><div><b class=\"y\">bar</b></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><b id=\\"x\\" class=\\"y\\">foo</b></div><div><b class=\\"y\\">bar</b></div>" but got "<b id=\\"x\\" class=\\"y\\">foo</b><div><b class=\\"y\\">bar</b></div>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandValue("stylewithcss") before
@@ -672,7 +672,7 @@ Found 1000 tests; 971 PASS, 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>": execCommand("insertparagraph", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><b id=\"x\" class=\"y\">foo</b></p><p><b class=\"y\">bar</b></p>" but got "<b id=\"x\" class=\"y\">foo</b><p><b class=\"y\">bar</b></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><b id=\\"x\\" class=\\"y\\">foo</b></p><p><b class=\\"y\\">bar</b></p>" but got "<b id=\\"x\\" class=\\"y\\">foo</b><p><b class=\\"y\\">bar</b></p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandValue("stylewithcss") before
@@ -696,7 +696,7 @@ Found 1000 tests; 971 PASS, 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>": execCommand("insertparagraph", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><b id=\"x\" class=\"y\">foo</b></p><p><b class=\"y\">bar</b></p>" but got "<b id=\"x\" class=\"y\">foo</b><p><b class=\"y\">bar</b></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><b id=\\"x\\" class=\\"y\\">foo</b></p><p><b class=\\"y\\">bar</b></p>" but got "<b id=\\"x\\" class=\\"y\\">foo</b><p><b class=\\"y\\">bar</b></p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<b id=x class=y>foo[]bar</b>" queryCommandValue("stylewithcss") before

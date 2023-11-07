@@ -31,7 +31,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<sup>a</sup>bar</div>" but got "<div style=\"text-align:center\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<sup>a</sup>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [PASS] [["superscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
@@ -81,7 +81,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:justify\">foo<sup>a</sup>bar</div>" but got "<div style=\"text-align:justify\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<sup>a</sup>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [PASS] [["superscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
@@ -181,7 +181,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:right\">foo<sup>a</sup>bar</div>" but got "<div style=\"text-align:right\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<sup>a</sup>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [PASS] [["superscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
@@ -228,7 +228,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["outdent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>bar" but got "foo<span style=\"vertical-align:super\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>bar" but got "foo<span style=\\"vertical-align:super\\">a</span>bar"
 [PASS] [["superscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
@@ -253,7 +253,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["underline",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["underline",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["underline",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<u>a</u>bar" but got "foo<span style=\"text-decoration-line:underline\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<u>a</u>bar" but got "foo<span style=\\"text-decoration-line:underline\\">a</span>bar"
 [PASS] [["underline",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("underline") before
 [PASS] [["underline",""],["inserttext","a"]] "foo[]bar" queryCommandState("underline") before
 [FAIL] [["underline",""],["inserttext","a"]] "foo[]bar" queryCommandValue("underline") before
@@ -410,7 +410,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["underline",""],["indent",""]] "foo[]bar": execCommand("indent", false, "") return value
 [PASS] [["underline",""],["indent",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["underline",""],["indent",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar</blockquote>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">foobar</blockquote>"
 [PASS] [["underline",""],["indent",""]] "foo[]bar" queryCommandIndeterm("underline") before
 [PASS] [["underline",""],["indent",""]] "foo[]bar" queryCommandState("underline") before
 [FAIL] [["underline",""],["indent",""]] "foo[]bar" queryCommandValue("underline") before
@@ -431,7 +431,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["underline",""],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["underline",""],["indent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["underline",""],["indent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<u>a</u>bar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">fooabar</blockquote>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<u>a</u>bar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">fooabar</blockquote>"
 [PASS] [["underline",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("underline") before
 [PASS] [["underline",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("underline") before
 [FAIL] [["underline",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("underline") before
@@ -569,7 +569,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["underline",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["underline",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["underline",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\"/img/lion.svg\"><u>a</u>bar" but got "foo<img src=\"/img/lion.svg\">abar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\\"/img/lion.svg\\"><u>a</u>bar" but got "foo<img src=\\"/img/lion.svg\\">abar"
 [PASS] [["underline",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("underline") before
 [PASS] [["underline",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("underline") before
 [FAIL] [["underline",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("underline") before
@@ -595,7 +595,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["underline",""],["insertlinebreak",""]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
 [PASS] [["underline",""],["insertlinebreak",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["underline",""],["insertlinebreak",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\"text-decoration-line:underline\"><br></span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\\"text-decoration-line:underline\\"><br></span>bar"
 [PASS] [["underline",""],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("underline") before
 [PASS] [["underline",""],["insertlinebreak",""]] "foo[]bar" queryCommandState("underline") before
 [FAIL] [["underline",""],["insertlinebreak",""]] "foo[]bar" queryCommandValue("underline") before
@@ -615,7 +615,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["underline",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["underline",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["underline",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><u>a</u>bar" but got "foo<span style=\"text-decoration-line:underline\"><br>a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><u>a</u>bar" but got "foo<span style=\\"text-decoration-line:underline\\"><br>a</span>bar"
 [PASS] [["underline",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("underline") before
 [PASS] [["underline",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("underline") before
 [FAIL] [["underline",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("underline") before
@@ -710,7 +710,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["underline",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["underline",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["underline",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><u>a</u>bar</p>" but got "foo<div><span style=\"text-decoration-line:underline\">a</span>bar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><u>a</u>bar</p>" but got "foo<div><span style=\\"text-decoration-line:underline\\">a</span>bar</div>"
 [PASS] [["underline",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("underline") before
 [PASS] [["underline",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("underline") before
 [FAIL] [["underline",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("underline") before
@@ -807,7 +807,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["underline",""],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["underline",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["underline",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<u>a</u>bar</div>" but got "<div style=\"text-align:center\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<u>a</u>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [PASS] [["underline",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("underline") before
 [PASS] [["underline",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("underline") before
 [FAIL] [["underline",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("underline") before
@@ -857,7 +857,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["underline",""],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["underline",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["underline",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:justify\">foo<u>a</u>bar</div>" but got "<div style=\"text-align:justify\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<u>a</u>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [PASS] [["underline",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("underline") before
 [PASS] [["underline",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("underline") before
 [FAIL] [["underline",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("underline") before
@@ -957,7 +957,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["underline",""],["justifyright",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["underline",""],["justifyright",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["underline",""],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:right\">foo<u>a</u>bar</div>" but got "<div style=\"text-align:right\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<u>a</u>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [PASS] [["underline",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("underline") before
 [PASS] [["underline",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("underline") before
 [FAIL] [["underline",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("underline") before
@@ -1004,7 +1004,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["underline",""],["outdent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["underline",""],["outdent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["underline",""],["outdent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<u>a</u>bar" but got "foo<span style=\"text-decoration-line:underline\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<u>a</u>bar" but got "foo<span style=\\"text-decoration-line:underline\\">a</span>bar"
 [PASS] [["underline",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("underline") before
 [PASS] [["underline",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("underline") before
 [FAIL] [["underline",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("underline") before
@@ -1063,7 +1063,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["backcolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["backcolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "foabar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "foabar"
 [PASS] [["backcolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
 [PASS] [["backcolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
 [PASS] [["backcolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
@@ -1105,7 +1105,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["backcolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["backcolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</div>" but got "<div>fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>" but got "<div>fooabar</div>"
 [PASS] [["backcolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
 [PASS] [["backcolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
 [PASS] [["backcolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
@@ -1147,7 +1147,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["backcolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["backcolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>ar" but got "fooaar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>ar" but got "fooaar"
 [PASS] [["backcolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
 [PASS] [["backcolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
 [PASS] [["backcolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before
@@ -1171,7 +1171,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["backcolor","#00FFFF"],["indent",""]] "foo[]bar": execCommand("indent", false, "") return value
 [PASS] [["backcolor","#00FFFF"],["indent",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["indent",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar</blockquote>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">foobar</blockquote>"
 [PASS] [["backcolor","#00FFFF"],["indent",""]] "foo[]bar" queryCommandIndeterm("backcolor") before
 [PASS] [["backcolor","#00FFFF"],["indent",""]] "foo[]bar" queryCommandState("backcolor") before
 [PASS] [["backcolor","#00FFFF"],["indent",""]] "foo[]bar" queryCommandValue("backcolor") before
@@ -1190,7 +1190,7 @@ Found 1000 tests; 802 PASS, 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">fooabar</blockquote>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">fooabar</blockquote>"
 [PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("backcolor") before
 [PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("backcolor") before
 [PASS] [["backcolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("backcolor") before

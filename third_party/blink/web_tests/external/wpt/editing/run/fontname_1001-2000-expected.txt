@@ -10,7 +10,7 @@ Found 1000 tests; 936 PASS, 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"font-family:sans-serif\">foo<samp><span style=\"font-family:sans-serif\">bar</span></samp>baz</span>" but got "<span style=\"font-family:sans-serif\">foo<samp>bar</samp>baz</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"font-family:sans-serif\\">foo<samp><span style=\\"font-family:sans-serif\\">bar</span></samp>baz</span>" but got "<span style=\\"font-family:sans-serif\\">foo<samp>bar</samp>baz</span>"
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" queryCommandIndeterm("stylewithcss") before
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
@@ -29,7 +29,7 @@ Found 1000 tests; 936 PASS, 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font face=\"sans-serif\">foo<samp><font face=\"sans-serif\">bar</font></samp>baz</font>" but got "<font face=\"sans-serif\">foo<samp>bar</samp>baz</font>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font face=\\"sans-serif\\">foo<samp><font face=\\"sans-serif\\">bar</font></samp>baz</font>" but got "<font face=\\"sans-serif\\">foo<samp>bar</samp>baz</font>"
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<samp>bar</samp>baz]" queryCommandValue("stylewithcss") before
@@ -47,7 +47,7 @@ Found 1000 tests; 936 PASS, 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"font-family:sans-serif\">foo<tt><span style=\"font-family:sans-serif\">bar</span></tt>baz</span>" but got "<span style=\"font-family:sans-serif\">foo<tt>bar</tt>baz</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"font-family:sans-serif\\">foo<tt><span style=\\"font-family:sans-serif\\">bar</span></tt>baz</span>" but got "<span style=\\"font-family:sans-serif\\">foo<tt>bar</tt>baz</span>"
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]" queryCommandValue("stylewithcss") before
@@ -65,7 +65,7 @@ Found 1000 tests; 936 PASS, 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font face=\"sans-serif\">foo<tt><font face=\"sans-serif\">bar</font></tt>baz</font>" but got "<font face=\"sans-serif\">foo<tt>bar</tt>baz</font>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font face=\\"sans-serif\\">foo<tt><font face=\\"sans-serif\\">bar</font></tt>baz</font>" but got "<font face=\\"sans-serif\\">foo<tt>bar</tt>baz</font>"
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "[foo<tt>bar</tt>baz]" queryCommandValue("stylewithcss") before
@@ -487,112 +487,112 @@ Found 1000 tests; 936 PASS, 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<tt>b[ar</tt>baz]" queryCommandIndeterm("fontname") after
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<tt>b[ar</tt>baz]" queryCommandState("fontname") after
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<tt>b[ar</tt>baz]" queryCommandValue("fontname") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz": execCommand("stylewithcss", false, "true") return value
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz": execCommand("fontname", false, "sans-serif") return value
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" checks for modifications to non-editable content
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" compare innerHTML
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandState("stylewithcss") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandValue("stylewithcss") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandState("stylewithcss") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandValue("stylewithcss") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandIndeterm("fontname") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandState("fontname") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandValue("fontname") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandIndeterm("fontname") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandState("fontname") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandValue("fontname") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz": execCommand("stylewithcss", false, "false") return value
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz": execCommand("fontname", false, "sans-serif") return value
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" checks for modifications to non-editable content
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" compare innerHTML
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandState("stylewithcss") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandValue("stylewithcss") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandState("stylewithcss") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandValue("stylewithcss") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandIndeterm("fontname") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandState("fontname") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandValue("fontname") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandIndeterm("fontname") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandState("fontname") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">[bar]</span>baz" queryCommandValue("fontname") after
-[PASS] [["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">b[a]r</span>baz": execCommand("fontname", false, "sans-serif") return value
-[PASS] [["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">b[a]r</span>baz" checks for modifications to non-editable content
-[FAIL] [["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">b[a]r</span>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\"font-family:sans-serif\">bar</span>baz" but got "foo<span style=\"font-family:sans-serif\">b</span><font face=\"sans-serif\">a</font><span style=\"font-family:sans-serif\">r</span>baz"
-[PASS] [["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">b[a]r</span>baz" queryCommandIndeterm("fontname") before
-[PASS] [["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">b[a]r</span>baz" queryCommandState("fontname") before
-[PASS] [["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">b[a]r</span>baz" queryCommandValue("fontname") before
-[PASS] [["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">b[a]r</span>baz" queryCommandIndeterm("fontname") after
-[PASS] [["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">b[a]r</span>baz" queryCommandState("fontname") after
-[PASS] [["fontname","sans-serif"]] "foo<span style=\"font-family: sans-serif\">b[a]r</span>baz" queryCommandValue("fontname") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz": execCommand("stylewithcss", false, "true") return value
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz": execCommand("fontname", false, "sans-serif") return value
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" checks for modifications to non-editable content
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" compare innerHTML
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandState("stylewithcss") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandValue("stylewithcss") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandState("stylewithcss") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandValue("stylewithcss") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandIndeterm("fontname") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandState("fontname") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandValue("fontname") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandIndeterm("fontname") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandState("fontname") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandValue("fontname") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz": execCommand("stylewithcss", false, "false") return value
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz": execCommand("fontname", false, "sans-serif") return value
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" checks for modifications to non-editable content
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" compare innerHTML
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandState("stylewithcss") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandValue("stylewithcss") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandState("stylewithcss") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandValue("stylewithcss") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandIndeterm("fontname") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandState("fontname") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandValue("fontname") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandIndeterm("fontname") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandState("fontname") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">[bar]</span>baz" queryCommandValue("fontname") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz": execCommand("stylewithcss", false, "true") return value
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz": execCommand("fontname", false, "sans-serif") return value
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" checks for modifications to non-editable content
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" compare innerHTML
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandIndeterm("stylewithcss") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandState("stylewithcss") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandValue("stylewithcss") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandIndeterm("stylewithcss") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandState("stylewithcss") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandValue("stylewithcss") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandIndeterm("fontname") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandState("fontname") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandValue("fontname") before
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandIndeterm("fontname") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandState("fontname") after
-[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandValue("fontname") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz": execCommand("stylewithcss", false, "false") return value
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz": execCommand("fontname", false, "sans-serif") return value
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" checks for modifications to non-editable content
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" compare innerHTML
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandIndeterm("stylewithcss") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandState("stylewithcss") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandValue("stylewithcss") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandIndeterm("stylewithcss") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandState("stylewithcss") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandValue("stylewithcss") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandIndeterm("fontname") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandState("fontname") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandValue("fontname") before
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandIndeterm("fontname") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandState("fontname") after
-[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\"font-family: monospace\">b[a]r</span>baz" queryCommandValue("fontname") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz": execCommand("fontname", false, "sans-serif") return value
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandIndeterm("fontname") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandState("fontname") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandValue("fontname") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandIndeterm("fontname") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandState("fontname") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandValue("fontname") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz": execCommand("fontname", false, "sans-serif") return value
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandIndeterm("fontname") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandState("fontname") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandValue("fontname") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandIndeterm("fontname") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandState("fontname") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">[bar]</span>baz" queryCommandValue("fontname") after
+[PASS] [["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">b[a]r</span>baz": execCommand("fontname", false, "sans-serif") return value
+[PASS] [["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">b[a]r</span>baz" checks for modifications to non-editable content
+[FAIL] [["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">b[a]r</span>baz" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\\"font-family:sans-serif\\">bar</span>baz" but got "foo<span style=\\"font-family:sans-serif\\">b</span><font face=\\"sans-serif\\">a</font><span style=\\"font-family:sans-serif\\">r</span>baz"
+[PASS] [["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">b[a]r</span>baz" queryCommandIndeterm("fontname") before
+[PASS] [["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">b[a]r</span>baz" queryCommandState("fontname") before
+[PASS] [["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">b[a]r</span>baz" queryCommandValue("fontname") before
+[PASS] [["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">b[a]r</span>baz" queryCommandIndeterm("fontname") after
+[PASS] [["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">b[a]r</span>baz" queryCommandState("fontname") after
+[PASS] [["fontname","sans-serif"]] "foo<span style=\\"font-family: sans-serif\\">b[a]r</span>baz" queryCommandValue("fontname") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz": execCommand("fontname", false, "sans-serif") return value
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandIndeterm("fontname") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandState("fontname") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandValue("fontname") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandIndeterm("fontname") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandState("fontname") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandValue("fontname") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz": execCommand("fontname", false, "sans-serif") return value
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandIndeterm("fontname") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandState("fontname") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandValue("fontname") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandIndeterm("fontname") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandState("fontname") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">[bar]</span>baz" queryCommandValue("fontname") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz": execCommand("fontname", false, "sans-serif") return value
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandIndeterm("fontname") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandState("fontname") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandValue("fontname") before
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandIndeterm("fontname") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandState("fontname") after
+[PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandValue("fontname") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz": execCommand("fontname", false, "sans-serif") return value
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandIndeterm("fontname") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandState("fontname") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandValue("fontname") before
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandIndeterm("fontname") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandState("fontname") after
+[PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<span style=\\"font-family: monospace\\">b[a]r</span>baz" queryCommandValue("fontname") after
 [PASS] [["fontname","sans-serif"]] "foo<tt contenteditable=false>ba[r</tt>b]az": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["fontname","sans-serif"]] "foo<tt contenteditable=false>ba[r</tt>b]az" checks for modifications to non-editable content
 [PASS] [["fontname","sans-serif"]] "foo<tt contenteditable=false>ba[r</tt>b]az" compare innerHTML
@@ -608,7 +608,7 @@ Found 1000 tests; 936 PASS, 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected false but got true
 [PASS] [["fontname","sans-serif"]] "fo[o<tt contenteditable=false>b]ar</tt>baz" checks for modifications to non-editable content
 [FAIL] [["fontname","sans-serif"]] "fo[o<tt contenteditable=false>b]ar</tt>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<tt contenteditable=\"false\">bar</tt>baz" but got "fo<font face=\"sans-serif\">o</font><tt contenteditable=\"false\">bar</tt>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<tt contenteditable=\\"false\\">bar</tt>baz" but got "fo<font face=\\"sans-serif\\">o</font><tt contenteditable=\\"false\\">bar</tt>baz"
 [PASS] [["fontname","sans-serif"]] "fo[o<tt contenteditable=false>b]ar</tt>baz" queryCommandIndeterm("fontname") before
 [PASS] [["fontname","sans-serif"]] "fo[o<tt contenteditable=false>b]ar</tt>baz" queryCommandState("fontname") before
 [PASS] [["fontname","sans-serif"]] "fo[o<tt contenteditable=false>b]ar</tt>baz" queryCommandValue("fontname") before
@@ -630,7 +630,7 @@ Found 1000 tests; 936 PASS, 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>}bar": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>}bar" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>}bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<tt><span style=\"font-family:sans-serif\"><br></span></tt>bar" but got "foo<tt style=\"font-family:sans-serif\"><br></tt>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<tt><span style=\\"font-family:sans-serif\\"><br></span></tt>bar" but got "foo<tt style=\\"font-family:sans-serif\\"><br></tt>bar"
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>}bar" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>}bar" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>}bar" queryCommandValue("stylewithcss") before
@@ -667,7 +667,7 @@ Found 1000 tests; 936 PASS, 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<tt><span style=\"font-family:sans-serif\"><br></span></tt><span style=\"font-family:sans-serif\">b</span>ar" but got "foo<span style=\"font-family:sans-serif\"><tt><br></tt>b</span>ar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<tt><span style=\\"font-family:sans-serif\\"><br></span></tt><span style=\\"font-family:sans-serif\\">b</span>ar" but got "foo<span style=\\"font-family:sans-serif\\"><tt><br></tt>b</span>ar"
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar" queryCommandValue("stylewithcss") before
@@ -686,7 +686,7 @@ Found 1000 tests; 936 PASS, 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar": execCommand("fontname", false, "sans-serif") return value
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<tt><font face=\"sans-serif\"><br></font></tt><font face=\"sans-serif\">b</font>ar" but got "foo<font face=\"sans-serif\"><tt><br></tt>b</font>ar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<tt><font face=\\"sans-serif\\"><br></font></tt><font face=\\"sans-serif\\">b</font>ar" but got "foo<font face=\\"sans-serif\\"><tt><br></tt>b</font>ar"
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["fontname","sans-serif"]] "foo<tt>{<br></tt>b]ar" queryCommandValue("stylewithcss") before

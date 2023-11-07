@@ -3,7 +3,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "foo[]bar": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "foo<a href=\\"http://www.google.com/\\">http://www.google.com/</a>bar"
 [PASS] [["createlink","http://www.google.com/"]] "foo[]bar" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "foo[]bar" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "foo[]bar" queryCommandValue("createlink") before
@@ -31,7 +31,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><a href=\"http://www.google.com/\">foo</a></p><p> <a href=\"http://www.google.com/\"><span>bar</span></a> </p><p><a href=\"http://www.google.com/\">baz</a></p>" but got "<p><a href=\"http://www.google.com/\">foo</a></p><p> <a href=\"http://www.google.com/\"><span>bar</span> </a></p><p><a href=\"http://www.google.com/\">baz</a></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><a href=\\"http://www.google.com/\\">foo</a></p><p> <a href=\\"http://www.google.com/\\"><span>bar</span></a> </p><p><a href=\\"http://www.google.com/\\">baz</a></p>" but got "<p><a href=\\"http://www.google.com/\\">foo</a></p><p> <a href=\\"http://www.google.com/\\"><span>bar</span> </a></p><p><a href=\\"http://www.google.com/\\">baz</a></p>"
 [PASS] [["createlink","http://www.google.com/"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandValue("createlink") before
@@ -50,7 +50,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<b>foo[]bar</b>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<b>foo[]bar</b>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<b>foo[]bar</b>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b>foobar</b>" but got "<b>foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar</b>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b>foobar</b>" but got "<b>foo<a href=\\"http://www.google.com/\\">http://www.google.com/</a>bar</b>"
 [PASS] [["createlink","http://www.google.com/"]] "<b>foo[]bar</b>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<b>foo[]bar</b>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<b>foo[]bar</b>" queryCommandValue("createlink") before
@@ -60,7 +60,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<i>foo[]bar</i>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<i>foo[]bar</i>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<i>foo[]bar</i>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<i>foobar</i>" but got "<i>foo<a href=\"http://www.google.com/\">http://www.google.com/</a>bar</i>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<i>foobar</i>" but got "<i>foo<a href=\\"http://www.google.com/\\">http://www.google.com/</a>bar</i>"
 [PASS] [["createlink","http://www.google.com/"]] "<i>foo[]bar</i>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<i>foo[]bar</i>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<i>foo[]bar</i>" queryCommandValue("createlink") before
@@ -70,7 +70,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<span>foo</span>{}<span>bar</span>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<span>foo</span>{}<span>bar</span>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<span>foo</span>{}<span>bar</span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span><span>bar</span>" but got "<span>foo<a href=\"http://www.google.com/\">http://www.google.com/</a></span><span>bar</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span><span>bar</span>" but got "<span>foo<a href=\\"http://www.google.com/\\">http://www.google.com/</a></span><span>bar</span>"
 [PASS] [["createlink","http://www.google.com/"]] "<span>foo</span>{}<span>bar</span>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<span>foo</span>{}<span>bar</span>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<span>foo</span>{}<span>bar</span>" queryCommandValue("createlink") before
@@ -80,7 +80,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<span>foo[</span><span>]bar</span>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<span>foo[</span><span>]bar</span>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<span>foo[</span><span>]bar</span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span><span>bar</span>" but got "<span>foo<a href=\"http://www.google.com/\">http://www.google.com/</a></span><span>bar</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span><span>bar</span>" but got "<span>foo<a href=\\"http://www.google.com/\\">http://www.google.com/</a></span><span>bar</span>"
 [PASS] [["createlink","http://www.google.com/"]] "<span>foo[</span><span>]bar</span>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<span>foo[</span><span>]bar</span>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<span>foo[</span><span>]bar</span>" queryCommandValue("createlink") before
@@ -288,7 +288,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[bar]baz</a>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[bar]baz</a>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[bar]baz</a>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://www.google.com/\">foobarbaz</a>" but got "<a href=\"otherurl\">foo</a><a href=\"http://www.google.com/\">bar</a><a href=\"otherurl\">baz</a>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://www.google.com/\\">foobarbaz</a>" but got "<a href=\\"otherurl\\">foo</a><a href=\\"http://www.google.com/\\">bar</a><a href=\\"otherurl\\">baz</a>"
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[bar]baz</a>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[bar]baz</a>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[bar]baz</a>" queryCommandValue("createlink") before
@@ -298,7 +298,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[barbaz</a>}": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[barbaz</a>}" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[barbaz</a>}" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://www.google.com/\">foobarbaz</a>" but got "<a href=\"otherurl\">foo</a><a href=\"http://www.google.com/\">barbaz</a>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://www.google.com/\\">foobarbaz</a>" but got "<a href=\\"otherurl\\">foo</a><a href=\\"http://www.google.com/\\">barbaz</a>"
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[barbaz</a>}" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[barbaz</a>}" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl>foo[barbaz</a>}" queryCommandValue("createlink") before
@@ -308,7 +308,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "{<a href=otherurl>foobar]baz</a>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "{<a href=otherurl>foobar]baz</a>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "{<a href=otherurl>foobar]baz</a>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://www.google.com/\">foobarbaz</a>" but got "<a href=\"http://www.google.com/\">foobar</a><a href=\"otherurl\">baz</a>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://www.google.com/\\">foobarbaz</a>" but got "<a href=\\"http://www.google.com/\\">foobar</a><a href=\\"otherurl\\">baz</a>"
 [PASS] [["createlink","http://www.google.com/"]] "{<a href=otherurl>foobar]baz</a>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "{<a href=otherurl>foobar]baz</a>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "{<a href=otherurl>foobar]baz</a>" queryCommandValue("createlink") before
@@ -381,7 +381,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[bar]baz</b></a>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[bar]baz</b></a>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[bar]baz</b></a>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://www.google.com/\"><b>foobarbaz</b></a>" but got "<b><a href=\"otherurl\">foo</a><a href=\"http://www.google.com/\">bar</a><a href=\"otherurl\">baz</a></b>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://www.google.com/\\"><b>foobarbaz</b></a>" but got "<b><a href=\\"otherurl\\">foo</a><a href=\\"http://www.google.com/\\">bar</a><a href=\\"otherurl\\">baz</a></b>"
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[bar]baz</b></a>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[bar]baz</b></a>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[bar]baz</b></a>" queryCommandValue("createlink") before
@@ -391,7 +391,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[barbaz</b></a>}": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[barbaz</b></a>}" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[barbaz</b></a>}" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://www.google.com/\"><b>foobarbaz</b></a>" but got "<b><a href=\"otherurl\">foo</a><a href=\"http://www.google.com/\">barbaz</a></b>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://www.google.com/\\"><b>foobarbaz</b></a>" but got "<b><a href=\\"otherurl\\">foo</a><a href=\\"http://www.google.com/\\">barbaz</a></b>"
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[barbaz</b></a>}" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[barbaz</b></a>}" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>foo[barbaz</b></a>}" queryCommandValue("createlink") before
@@ -401,7 +401,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "{<a href=otherurl><b>foobar]baz</b></a>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "{<a href=otherurl><b>foobar]baz</b></a>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "{<a href=otherurl><b>foobar]baz</b></a>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://www.google.com/\"><b>foobarbaz</b></a>" but got "<b><a href=\"http://www.google.com/\">foobar</a><a href=\"otherurl\">baz</a></b>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://www.google.com/\\"><b>foobarbaz</b></a>" but got "<b><a href=\\"http://www.google.com/\\">foobar</a><a href=\\"otherurl\\">baz</a></b>"
 [PASS] [["createlink","http://www.google.com/"]] "{<a href=otherurl><b>foobar]baz</b></a>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "{<a href=otherurl><b>foobar]baz</b></a>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "{<a href=otherurl><b>foobar]baz</b></a>" queryCommandValue("createlink") before
@@ -411,7 +411,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>[foobarbaz]</b></a>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>[foobarbaz]</b></a>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>[foobarbaz]</b></a>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://www.google.com/\"><b>foobarbaz</b></a>" but got "<b><a href=\"http://www.google.com/\">foobarbaz</a></b>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://www.google.com/\\"><b>foobarbaz</b></a>" but got "<b><a href=\\"http://www.google.com/\\">foobarbaz</a></b>"
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>[foobarbaz]</b></a>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>[foobarbaz]</b></a>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a href=otherurl><b>[foobarbaz]</b></a>" queryCommandValue("createlink") before
@@ -421,7 +421,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<a name=abc>foo[bar]baz</a>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<a name=abc>foo[bar]baz</a>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<a name=abc>foo[bar]baz</a>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span name=\"abc\">foo<a href=\"http://www.google.com/\">bar</a>baz</span>" but got "<a name=\"abc\">foo</a><a href=\"http://www.google.com/\">bar</a><a name=\"abc\">baz</a>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span name=\\"abc\\">foo<a href=\\"http://www.google.com/\\">bar</a>baz</span>" but got "<a name=\\"abc\\">foo</a><a href=\\"http://www.google.com/\\">bar</a><a name=\\"abc\\">baz</a>"
 [PASS] [["createlink","http://www.google.com/"]] "<a name=abc>foo[bar]baz</a>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a name=abc>foo[bar]baz</a>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a name=abc>foo[bar]baz</a>" queryCommandValue("createlink") before
@@ -431,7 +431,7 @@ Found 441 tests; 426 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"]] "<a name=abc><b>foo[bar]baz</b></a>": execCommand("createlink", false, "http://www.google.com/") return value
 [PASS] [["createlink","http://www.google.com/"]] "<a name=abc><b>foo[bar]baz</b></a>" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"]] "<a name=abc><b>foo[bar]baz</b></a>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span name=\"abc\"><b>foo<a href=\"http://www.google.com/\">bar</a>baz</b></span>" but got "<b><a name=\"abc\">foo</a><a href=\"http://www.google.com/\">bar</a><a>baz</a></b>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span name=\\"abc\\"><b>foo<a href=\\"http://www.google.com/\\">bar</a>baz</b></span>" but got "<b><a name=\\"abc\\">foo</a><a href=\\"http://www.google.com/\\">bar</a><a>baz</a></b>"
 [PASS] [["createlink","http://www.google.com/"]] "<a name=abc><b>foo[bar]baz</b></a>" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a name=abc><b>foo[bar]baz</b></a>" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"]] "<a name=abc><b>foo[bar]baz</b></a>" queryCommandValue("createlink") before

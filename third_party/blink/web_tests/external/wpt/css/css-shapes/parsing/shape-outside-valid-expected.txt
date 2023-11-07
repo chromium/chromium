@@ -35,8 +35,8 @@ This is a testharness.js-based test.
 [PASS] e.style['shape-outside'] = "margin-box ellipse(at 1em 2em)" should set the property value
 [PASS] e.style['shape-outside'] = "content-box polygon(1% 2%)" should set the property value
 [PASS] e.style['shape-outside'] = "url(https://example.com/)" should set the property value
-[PASS] e.style['shape-outside'] = "url(\"https://example.com/\")" should set the property value
-[FAIL] e.style['shape-outside'] = "cross-fade(url(\"https://example.com/\"), green)" should set the property value
+[PASS] e.style['shape-outside'] = "url(\\"https://example.com/\\")" should set the property value
+[FAIL] e.style['shape-outside'] = "cross-fade(url(\\"https://example.com/\\"), green)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [PASS] e.style['shape-outside'] = "linear-gradient(yellow, blue)" should set the property value
 Harness: the test ran to completion.

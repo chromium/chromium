@@ -46,7 +46,7 @@ Found 1000 tests; 961 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz": execCommand("insertparagraph", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"display:none\">foo<br></div><div style=\"display:none\">bar<br></div>baz" but got "<div><br></div><div style=\"display:none\">foobar</div>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:none\\">foo<br></div><div style=\\"display:none\\">bar<br></div>baz" but got "<div><br></div><div style=\\"display:none\\">foobar</div>baz"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" queryCommandIndeterm("stylewithcss") before
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
@@ -71,7 +71,7 @@ Found 1000 tests; 961 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz": execCommand("insertparagraph", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"display:none\">foo<br></div><div style=\"display:none\">bar<br></div>baz" but got "<div><br></div><div style=\"display:none\">foobar</div>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:none\\">foo<br></div><div style=\\"display:none\\">bar<br></div>baz" but got "<div><br></div><div style=\\"display:none\\">foobar</div>baz"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" queryCommandValue("stylewithcss") before
@@ -95,7 +95,7 @@ Found 1000 tests; 961 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz": execCommand("insertparagraph", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"display:none\">foo<br></div><div style=\"display:none\">bar<br></div>baz" but got "<p><br></p><div style=\"display:none\">foobar</div>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:none\\">foo<br></div><div style=\\"display:none\\">bar<br></div>baz" but got "<p><br></p><div style=\\"display:none\\">foobar</div>baz"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" queryCommandValue("stylewithcss") before
@@ -119,7 +119,7 @@ Found 1000 tests; 961 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz": execCommand("insertparagraph", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"display:none\">foo<br></div><div style=\"display:none\">bar<br></div>baz" but got "<p><br></p><div style=\"display:none\">foobar</div>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:none\\">foo<br></div><div style=\\"display:none\\">bar<br></div>baz" but got "<p><br></p><div style=\\"display:none\\">foobar</div>baz"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["insertparagraph",""]] "<div style=display:none>foo[]bar</div>baz" queryCommandValue("stylewithcss") before

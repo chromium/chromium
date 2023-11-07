@@ -5,7 +5,7 @@ This is a testharness.js-based test.
   assert_equals: expected 141 but got 0
 [FAIL] "screenx==141" should set left position of opened window
   assert_equals: expected 141 but got 0
-[FAIL] "\nscreenx= 141" should set left position of opened window
+[FAIL] "\\nscreenx= 141" should set left position of opened window
   assert_equals: expected 141 but got 0
 [FAIL] ",screenx=141,," should set left position of opened window
   assert_equals: expected 141 but got 0
@@ -19,7 +19,7 @@ This is a testharness.js-based test.
   assert_equals: expected 142 but got 0
 [FAIL] "screeny==142" should set top position of opened window
   assert_equals: expected 142 but got 0
-[FAIL] "\nscreeny= 142" should set top position of opened window
+[FAIL] "\\nscreeny= 142" should set top position of opened window
   assert_equals: expected 142 but got 0
 [FAIL] ",screeny=142,," should set top position of opened window
   assert_equals: expected 142 but got 0

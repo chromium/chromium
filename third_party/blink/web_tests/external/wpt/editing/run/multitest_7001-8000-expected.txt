@@ -22,7 +22,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["forecolor","#0000FF"],["outdent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["forecolor","#0000FF"],["outdent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["forecolor","#0000FF"],["outdent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\"#0000ff\">a</font>bar" but got "foo<span style=\"color:rgb(0, 0, 255)\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\\"#0000ff\\">a</font>bar" but got "foo<span style=\\"color:rgb(0, 0, 255)\\">a</span>bar"
 [PASS] [["forecolor","#0000FF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("forecolor") before
 [PASS] [["forecolor","#0000FF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("forecolor") before
 [PASS] [["forecolor","#0000FF"],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forecolor") before
@@ -82,7 +82,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "foabar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "foabar"
 [PASS] [["hilitecolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -126,7 +126,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</div>" but got "<div>fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>" but got "<div>fooabar</div>"
 [PASS] [["hilitecolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -170,7 +170,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>ar" but got "fooaar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>ar" but got "fooaar"
 [PASS] [["hilitecolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -195,7 +195,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["indent",""]] "foo[]bar": execCommand("indent", false, "") return value
 [PASS] [["hilitecolor","#00FFFF"],["indent",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["indent",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar</blockquote>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">foobar</blockquote>"
 [PASS] [["hilitecolor","#00FFFF"],["indent",""]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["indent",""]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["indent",""]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -215,7 +215,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">fooabar</blockquote>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">fooabar</blockquote>"
 [PASS] [["hilitecolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -259,7 +259,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr><span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "foo<hr>abar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr><span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "foo<hr>abar"
 [PASS] [["hilitecolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -303,7 +303,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fooab<b>c</b>d<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "fooab<b>c</b>dabar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fooab<b>c</b>d<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "fooab<b>c</b>dabar"
 [PASS] [["hilitecolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -347,7 +347,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\"/img/lion.svg\"><span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "foo<img src=\"/img/lion.svg\">abar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\\"/img/lion.svg\\"><span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "foo<img src=\\"/img/lion.svg\\">abar"
 [PASS] [["hilitecolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -372,7 +372,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
 [PASS] [["hilitecolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\"background-color:rgb(0, 255, 255)\"><br></span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\\"background-color:rgb(0, 255, 255)\\"><br></span>bar"
 [PASS] [["hilitecolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["insertlinebreak",""]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -392,7 +392,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "foo<span style=\"background-color:rgb(0, 255, 255)\"><br>a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "foo<span style=\\"background-color:rgb(0, 255, 255)\\"><br>a</span>bar"
 [PASS] [["hilitecolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -438,7 +438,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
 [PASS] [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -485,7 +485,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</p>" but got "foo<div><span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</p>" but got "foo<div><span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>"
 [PASS] [["hilitecolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -531,7 +531,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
 [PASS] [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -579,7 +579,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</div>" but got "<div style=\"text-align:center\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [PASS] [["hilitecolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -627,7 +627,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:justify\">foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</div>" but got "<div style=\"text-align:justify\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [PASS] [["hilitecolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -675,7 +675,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar" but got "fooabar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar" but got "fooabar"
 [PASS] [["hilitecolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -723,7 +723,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["hilitecolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["hilitecolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["hilitecolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:right\">foo<span style=\"background-color:rgb(0, 255, 255)\">a</span>bar</div>" but got "<div style=\"text-align:right\">fooabar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<span style=\\"background-color:rgb(0, 255, 255)\\">a</span>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [PASS] [["hilitecolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("hilitecolor") before
 [PASS] [["hilitecolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("hilitecolor") before
 [FAIL] [["hilitecolor","#00FFFF"],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("hilitecolor") before
@@ -794,7 +794,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""],["subscript",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["superscript",""],["subscript",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["subscript",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "foo<span style=\"vertical-align:sub\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "foo<span style=\\"vertical-align:sub\\">a</span>bar"
 [PASS] [["superscript",""],["subscript",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""],["subscript",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["subscript",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
@@ -822,7 +822,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["superscript",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["superscript",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["superscript",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>bar" but got "foo<span style=\"vertical-align:super\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>bar" but got "foo<span style=\\"vertical-align:super\\">a</span>bar"
 [PASS] [["subscript",""],["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -942,7 +942,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"],["forecolor","brown"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["createlink","http://www.google.com/"],["forecolor","brown"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"],["forecolor","brown"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com/\"><font color=\"#a52a2a\">a</font></a>bar" but got "foo<a href=\"http://www.google.com/\" style=\"color:rgb(165, 42, 42)\">a</a>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com/\\"><font color=\\"#a52a2a\\">a</font></a>bar" but got "foo<a href=\\"http://www.google.com/\\" style=\\"color:rgb(165, 42, 42)\\">a</a>bar"
 [PASS] [["createlink","http://www.google.com/"],["forecolor","brown"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"],["forecolor","brown"],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"],["forecolor","brown"],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
@@ -966,7 +966,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["forecolor","brown"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["forecolor","brown"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["forecolor","brown"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com/\"><font color=\"#a52a2a\">a</font></a>bar" but got "foo<a href=\"http://www.google.com/\">a</a>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com/\\"><font color=\\"#a52a2a\\">a</font></a>bar" but got "foo<a href=\\"http://www.google.com/\\">a</a>bar"
 [PASS] [["forecolor","brown"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("forecolor") before
 [PASS] [["forecolor","brown"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandState("forecolor") before
 [PASS] [["forecolor","brown"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandValue("forecolor") before
@@ -991,7 +991,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["createlink","http://www.google.com/"],["forecolor","black"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["createlink","http://www.google.com/"],["forecolor","black"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["createlink","http://www.google.com/"],["forecolor","black"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com/\"><font color=\"#000000\">a</font></a>bar" but got "foo<a href=\"http://www.google.com/\" style=\"color:rgb(0, 0, 0)\">a</a>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com/\\"><font color=\\"#000000\\">a</font></a>bar" but got "foo<a href=\\"http://www.google.com/\\" style=\\"color:rgb(0, 0, 0)\\">a</a>bar"
 [PASS] [["createlink","http://www.google.com/"],["forecolor","black"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("createlink") before
 [PASS] [["createlink","http://www.google.com/"],["forecolor","black"],["inserttext","a"]] "foo[]bar" queryCommandState("createlink") before
 [PASS] [["createlink","http://www.google.com/"],["forecolor","black"],["inserttext","a"]] "foo[]bar" queryCommandValue("createlink") before
@@ -1015,7 +1015,7 @@ Found 1000 tests; 867 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["forecolor","black"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["forecolor","black"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["forecolor","black"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com/\"><font color=\"#000000\">a</font></a>bar" but got "foo<a href=\"http://www.google.com/\">a</a>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com/\\"><font color=\\"#000000\\">a</font></a>bar" but got "foo<a href=\\"http://www.google.com/\\">a</a>bar"
 [PASS] [["forecolor","black"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("forecolor") before
 [PASS] [["forecolor","black"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandState("forecolor") before
 [PASS] [["forecolor","black"],["createlink","http://www.google.com/"],["inserttext","a"]] "foo[]bar" queryCommandValue("forecolor") before

@@ -355,6 +355,8 @@
         if (!text) {
             return '';
         }
+        // Change each '\' to '\\'
+        text = text.replace(/\\/g, '\\\\');
         // Escape null characters, otherwise diff will think the file is binary.
         text = text.replace(/\0/g, '\\0');
         // Escape some special characters to improve readability of the output.

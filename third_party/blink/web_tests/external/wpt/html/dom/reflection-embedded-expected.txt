@@ -115,7 +115,7 @@ Found 8656 tests; 8550 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: IDL get expected (boolean) true but got (undefined) undefined
 [FAIL] iframe.allowUserMedia: setAttribute() to -Infinity
   assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-[FAIL] iframe.allowUserMedia: setAttribute() to "\0"
+[FAIL] iframe.allowUserMedia: setAttribute() to "\\0"
   assert_equals: IDL get expected (boolean) true but got (undefined) undefined
 [FAIL] iframe.allowUserMedia: setAttribute() to object "test-toString"
   assert_equals: IDL get expected (boolean) true but got (undefined) undefined
@@ -152,8 +152,8 @@ Found 8656 tests; 8550 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: IDL get expected (boolean) true but got (number) Infinity
 [FAIL] iframe.allowUserMedia: IDL set to -Infinity
   assert_equals: IDL get expected (boolean) true but got (number) -Infinity
-[FAIL] iframe.allowUserMedia: IDL set to "\0"
-  assert_equals: IDL get expected (boolean) true but got (string) "\0"
+[FAIL] iframe.allowUserMedia: IDL set to "\\0"
+  assert_equals: IDL get expected (boolean) true but got (string) "\\0"
 [FAIL] iframe.allowUserMedia: IDL set to object "test-toString"
   assert_equals: IDL get expected (boolean) true but got (object) object "test-toString"
 [FAIL] iframe.allowUserMedia: IDL set to object "test-valueOf"
@@ -209,8 +209,8 @@ Found 8656 tests; 8550 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: IDL get expected (string) "media" but got (undefined) undefined
 [FAIL] iframe.delegateStickyUserActivation: IDL set to ""
   assert_equals: getAttribute() expected "" but got "MEDIA"
-[FAIL] iframe.delegateStickyUserActivation: IDL set to " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo "
-  assert_equals: getAttribute() expected " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo " but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to " \\0\\x01\\x02\\x03\\x04\\x05\\x06\\x07 \\b\\t\\n\\v\\f\\r\\x0e\\x0f \\x10\\x11\\x12\\x13\\x14\\x15\\x16\\x17 \\x18\\x19\\x1a\\x1b\\x1c\\x1d\\x1e\\x1f  foo "
+  assert_equals: getAttribute() expected " \\0\\x01\\x02\\x03\\x04\\x05\\x06\\x07 \\b\\t\\n\\v\\f\\r\\x0e\\x0f \\x10\\x11\\x12\\x13\\x14\\x15\\x16\\x17 \\x18\\x19\\x1a\\x1b\\x1c\\x1d\\x1e\\x1f  foo " but got "MEDIA"
 [FAIL] iframe.delegateStickyUserActivation: IDL set to undefined
   assert_equals: getAttribute() expected "undefined" but got "MEDIA"
 [FAIL] iframe.delegateStickyUserActivation: IDL set to 7
@@ -235,8 +235,8 @@ Found 8656 tests; 8550 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: getAttribute() expected "Infinity" but got "MEDIA"
 [FAIL] iframe.delegateStickyUserActivation: IDL set to -Infinity
   assert_equals: getAttribute() expected "-Infinity" but got "MEDIA"
-[FAIL] iframe.delegateStickyUserActivation: IDL set to "\0"
-  assert_equals: getAttribute() expected "\0" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "\\0"
+  assert_equals: getAttribute() expected "\\0" but got "MEDIA"
 [PASS] iframe.delegateStickyUserActivation: IDL set to null
 [FAIL] iframe.delegateStickyUserActivation: IDL set to object "test-toString"
   assert_equals: getAttribute() expected "test-toString" but got "MEDIA"
@@ -246,8 +246,8 @@ Found 8656 tests; 8550 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: getAttribute() expected "vibration" but got "MEDIA"
 [FAIL] iframe.delegateStickyUserActivation: IDL set to "xvibration"
   assert_equals: getAttribute() expected "xvibration" but got "MEDIA"
-[FAIL] iframe.delegateStickyUserActivation: IDL set to "vibration\0"
-  assert_equals: getAttribute() expected "vibration\0" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "vibration\\0"
+  assert_equals: getAttribute() expected "vibration\\0" but got "MEDIA"
 [FAIL] iframe.delegateStickyUserActivation: IDL set to "ibration"
   assert_equals: getAttribute() expected "ibration" but got "MEDIA"
 [FAIL] iframe.delegateStickyUserActivation: IDL set to "VIBRATION"
@@ -256,8 +256,8 @@ Found 8656 tests; 8550 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: getAttribute() expected "media" but got "MEDIA"
 [FAIL] iframe.delegateStickyUserActivation: IDL set to "xmedia"
   assert_equals: getAttribute() expected "xmedia" but got "MEDIA"
-[FAIL] iframe.delegateStickyUserActivation: IDL set to "media\0"
-  assert_equals: getAttribute() expected "media\0" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "media\\0"
+  assert_equals: getAttribute() expected "media\\0" but got "MEDIA"
 [FAIL] iframe.delegateStickyUserActivation: IDL set to "edia"
   assert_equals: getAttribute() expected "edia" but got "MEDIA"
 [FAIL] iframe.delegateStickyUserActivation: IDL set to "MEDIA"

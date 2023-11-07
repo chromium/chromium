@@ -54,7 +54,7 @@ Found 193 tests; 154 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <select multiple=""><option>1 - font-size
   assert_equals: expected "16px" but got "13.3333px"
 [FAIL] <select multiple=""><option>1 - font-family
-  assert_equals: expected "\"times new roman\"" but got "Arial"
+  assert_equals: expected "\\"times new roman\\"" but got "Arial"
 [PASS] <select multiple=""><option>1 - writing-mode
 [PASS] <select multiple=""><option>1 - scrollbar-width
 [FAIL] <select multiple=""><option>1 - overflow
@@ -111,7 +111,7 @@ Found 193 tests; 154 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <option>1 (in <select multiple="">) - font-size
   assert_equals: expected "16px" but got "13.3333px"
 [FAIL] <option>1 (in <select multiple="">) - font-family
-  assert_equals: expected "\"times new roman\"" but got "Arial"
+  assert_equals: expected "\\"times new roman\\"" but got "Arial"
 [PASS] <option>1 (in <select multiple="">) - writing-mode
 [PASS] <option>1 (in <select multiple="">) - scrollbar-width
 [PASS] <option>1 (in <select multiple="">) - overflow
@@ -164,7 +164,7 @@ Found 193 tests; 154 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <optgroup label="2"><option>3 (in <select multiple="">) - font-size
   assert_equals: expected "16px" but got "13.3333px"
 [FAIL] <optgroup label="2"><option>3 (in <select multiple="">) - font-family
-  assert_equals: expected "\"times new roman\"" but got "Arial"
+  assert_equals: expected "\\"times new roman\\"" but got "Arial"
 [PASS] <optgroup label="2"><option>3 (in <select multiple="">) - writing-mode
 [PASS] <optgroup label="2"><option>3 (in <select multiple="">) - scrollbar-width
 [PASS] <optgroup label="2"><option>3 (in <select multiple="">) - overflow
@@ -219,7 +219,7 @@ Found 193 tests; 154 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <option>3 (in <select multiple=""><optgroup label="2">) - font-size
   assert_equals: expected "16px" but got "13.3333px"
 [FAIL] <option>3 (in <select multiple=""><optgroup label="2">) - font-family
-  assert_equals: expected "\"times new roman\"" but got "Arial"
+  assert_equals: expected "\\"times new roman\\"" but got "Arial"
 [PASS] <option>3 (in <select multiple=""><optgroup label="2">) - writing-mode
 [PASS] <option>3 (in <select multiple=""><optgroup label="2">) - scrollbar-width
 [PASS] <option>3 (in <select multiple=""><optgroup label="2">) - overflow

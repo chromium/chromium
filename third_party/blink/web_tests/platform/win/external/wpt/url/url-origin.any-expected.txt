@@ -21,22 +21,22 @@ Found 364 tests; 351 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Origin parsing: <> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <  	> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <:foo.com/> against <http://example.org/foo/bar>
-[PASS] Origin parsing: <:foo.com\> against <http://example.org/foo/bar>
+[PASS] Origin parsing: <:foo.com\\> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <:> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <:a> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <:/> against <http://example.org/foo/bar>
-[PASS] Origin parsing: <:\> against <http://example.org/foo/bar>
+[PASS] Origin parsing: <:\\> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <:#> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <#> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <#/> against <http://example.org/foo/bar>
-[PASS] Origin parsing: <#\> against <http://example.org/foo/bar>
+[PASS] Origin parsing: <#\\> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <#;?> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <?> against <http://example.org/foo/bar>
 [PASS] Origin parsing: </> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <:23> against <http://example.org/foo/bar>
 [PASS] Origin parsing: </:23> against <http://example.org/foo/bar>
-[PASS] Origin parsing: <\x> against <http://example.org/foo/bar>
-[FAIL] Origin parsing: <\\x\hello> against <http://example.org/foo/bar>
+[PASS] Origin parsing: <\\x> against <http://example.org/foo/bar>
+[FAIL] Origin parsing: <\\\\x\\hello> against <http://example.org/foo/bar>
   assert_equals: origin expected "http://x" but got "file://"
 [PASS] Origin parsing: <::> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <::23> against <http://example.org/foo/bar>
@@ -46,9 +46,9 @@ Found 364 tests; 351 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Origin parsing: <http://&a:foo(b]c@d:2/> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <http://::@c@d:2> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <http://foo.com:b@d/> against <http://example.org/foo/bar>
-[PASS] Origin parsing: <http://foo.com/\@> against <http://example.org/foo/bar>
-[PASS] Origin parsing: <http:\\foo.com\> against <http://example.org/foo/bar>
-[PASS] Origin parsing: <http:\\a\b:c\d@foo.com\> against <http://example.org/foo/bar>
+[PASS] Origin parsing: <http://foo.com/\\@> against <http://example.org/foo/bar>
+[PASS] Origin parsing: <http:\\\\foo.com\\> against <http://example.org/foo/bar>
+[PASS] Origin parsing: <http:\\\\a\\b:c\\d@foo.com\\> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <foo:/> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <foo:/bar.com/> against <http://example.org/foo/bar>
 [PASS] Origin parsing: <foo://///////> against <http://example.org/foo/bar>
@@ -125,7 +125,7 @@ Found 364 tests; 351 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Origin parsing: <http://example.com/(%28:%3A%29)> without base
 [PASS] Origin parsing: <http://example.com/%3A%3a%3C%3c> without base
 [PASS] Origin parsing: <http://example.com/foo	bar> without base
-[PASS] Origin parsing: <http://example.com\\foo\\bar> without base
+[PASS] Origin parsing: <http://example.com\\\\foo\\\\bar> without base
 [PASS] Origin parsing: <http://example.com/%7Ffp3%3Eju%3Dduvgw%3Dd> without base
 [PASS] Origin parsing: <http://example.com/@asdf%40> without base
 [PASS] Origin parsing: <http://example.com/你好你好> without base
@@ -140,7 +140,7 @@ Found 364 tests; 351 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Origin parsing: <http://www/foo%2Ehtml> without base
 [PASS] Origin parsing: <http://www/foo/%2E/html> without base
 [PASS] Origin parsing: <http://%25DOMAIN:foobar@foodomain.com/> without base
-[PASS] Origin parsing: <http:\\www.google.com\foo> without base
+[PASS] Origin parsing: <http:\\\\www.google.com\\foo> without base
 [PASS] Origin parsing: <http://foo:80/> without base
 [PASS] Origin parsing: <http://foo:81/> without base
 [PASS] Origin parsing: <httpa://foo:80/> without base
@@ -262,14 +262,14 @@ Found 364 tests; 351 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Origin parsing: <sc://ñ.test/> without base
 [FAIL] Origin parsing: <x> against <sc://ñ>
   Failed to construct 'URL': Invalid URL
-[PASS] Origin parsing: <sc:\../> without base
+[PASS] Origin parsing: <sc:\\../> without base
 [PASS] Origin parsing: <sc::a@example.net> without base
 [PASS] Origin parsing: <wow:%NBD> without base
 [PASS] Origin parsing: <wow:%1G> without base
 [PASS] Origin parsing: <wow:￿> without base
 [PASS] Origin parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> without base
 [FAIL] Origin parsing: <http://!"$&'()*+,-.;=_`{}~/> without base
-  assert_equals: origin expected "http://!\"$&'()*+,-.;=_`{}~" but got "http://!\"$&'()%2A+,-.;=_`{}~"
+  assert_equals: origin expected "http://!\\"$&'()*+,-.;=_`{}~" but got "http://!\\"$&'()%2A+,-.;=_`{}~"
 [PASS] Origin parsing: <sc://!"$%&'()*+,-.;=_`{}~/> without base
 [PASS] Origin parsing: <ftp://%e2%98%83> without base
 [PASS] Origin parsing: <https://%e2%98%83> without base
@@ -338,19 +338,19 @@ Found 364 tests; 351 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Origin parsing: <non-special:cannot-be-a-base-url-\0~> without base
 [PASS] Origin parsing: <https://www.example.com/path{path.html?query'=query#fragment<fragment> without base
 [PASS] Origin parsing: <https://user:pass[@foo/bar> against <http://example.org>
-[PASS] Origin parsing: <foo:// !"$%&'()*+,-.;<=>@[\]^_`{|}~@host/> without base
+[PASS] Origin parsing: <foo:// !"$%&'()*+,-.;<=>@[\\]^_`{|}~@host/> without base
 [PASS] Origin parsing: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> without base
-[PASS] Origin parsing: <foo://joe: !"$%&'()*+,-.:;<=>@[\]^_`{|}~@host/> without base
+[PASS] Origin parsing: <foo://joe: !"$%&'()*+,-.:;<=>@[\\]^_`{|}~@host/> without base
 [PASS] Origin parsing: <wss://joe: !"$%&'()*+,-.:;<=>@[]^_`{|}~@host/> without base
 [PASS] Origin parsing: <foo://!"$%&'()*+,-.;=_`{}~/> without base
 [FAIL] Origin parsing: <wss://!"$&'()*+,-.;=_`{}~/> without base
-  assert_equals: origin expected "wss://!\"$&'()*+,-.;=_`{}~" but got "wss://!\"$&'()%2A+,-.;=_`{}~"
-[PASS] Origin parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> without base
-[PASS] Origin parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> without base
-[PASS] Origin parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> without base
-[PASS] Origin parsing: <wss://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> without base
-[PASS] Origin parsing: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> without base
-[PASS] Origin parsing: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> without base
+  assert_equals: origin expected "wss://!\\"$&'()*+,-.;=_`{}~" but got "wss://!\\"$&'()%2A+,-.;=_`{}~"
+[PASS] Origin parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> without base
+[PASS] Origin parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> without base
+[PASS] Origin parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\\]^_`{|}~> without base
+[PASS] Origin parsing: <wss://host/dir/? !"$%&'()*+,-./:;<=>?@[\\]^_`{|}~> without base
+[PASS] Origin parsing: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~> without base
+[PASS] Origin parsing: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~> without base
 [PASS] Origin parsing: <https://example.com/"quoted"> without base
 [PASS] Origin parsing: <https://a%C2%ADb/> without base
 [PASS] Origin parsing: <data://example.com:8080/pathname?search#hash> without base

@@ -31,7 +31,7 @@ Found 69 tests; 55 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["italic",""]] "<span style=font-style:oblique>fo[o</span><span style=font-style:italic>b]ar</span>": execCommand("italic", false, "") return value
 [PASS] [["stylewithcss","false"],["italic",""]] "<span style=font-style:oblique>fo[o</span><span style=font-style:italic>b]ar</span>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["italic",""]] "<span style=font-style:oblique>fo[o</span><span style=font-style:italic>b]ar</span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"font-style:oblique\">fo</span>ob<i>ar</i>" but got "<span style=\"font-style:oblique\">fo</span>ob<span style=\"font-style:italic\">ar</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"font-style:oblique\\">fo</span>ob<i>ar</i>" but got "<span style=\\"font-style:oblique\\">fo</span>ob<span style=\\"font-style:italic\\">ar</span>"
 [PASS] [["stylewithcss","false"],["italic",""]] "<span style=font-style:oblique>fo[o</span><span style=font-style:italic>b]ar</span>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["italic",""]] "<span style=font-style:oblique>fo[o</span><span style=font-style:italic>b]ar</span>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["italic",""]] "<span style=font-style:oblique>fo[o</span><span style=font-style:italic>b]ar</span>" queryCommandValue("stylewithcss") before
@@ -50,7 +50,7 @@ Found 69 tests; 55 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["italic",""]] "<i>fo[o</i><address>b]ar</address>": execCommand("italic", false, "") return value
 [PASS] [["stylewithcss","true"],["italic",""]] "<i>fo[o</i><address>b]ar</address>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["italic",""]] "<i>fo[o</i><address>b]ar</address>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"font-style:italic\">fo</span>o<address><span style=\"font-style:normal\">b</span>ar</address>" but got "<i>fo</i>o<address><span style=\"font-style:normal\">b</span>ar</address>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\\"font-style:italic\\">fo</span>o<address><span style=\\"font-style:normal\\">b</span>ar</address>" but got "<i>fo</i>o<address><span style=\\"font-style:normal\\">b</span>ar</address>"
 [PASS] [["stylewithcss","true"],["italic",""]] "<i>fo[o</i><address>b]ar</address>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["italic",""]] "<i>fo[o</i><address>b]ar</address>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["italic",""]] "<i>fo[o</i><address>b]ar</address>" queryCommandValue("stylewithcss") before

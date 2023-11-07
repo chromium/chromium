@@ -9,7 +9,7 @@ This is a testharness.js-based test.
 [FAIL] insertParagraph in legend of <div><fieldset><legend>abc</legend></fieldset></div>
   assert_equals: expected "<div><fieldset><legend><br>abc</legend></fieldset></div>" but got "<div><fieldset><legend><br></legend><legend>abc</legend></fieldset></div>"
 [FAIL] insertParagraph in meter of <div><meter max="100" value="50">abc</meter></div>
-  assert_equals: expected "<div><br></div><div><meter max=\"100\" value=\"50\">abc</meter></div>" but got "<div><br><meter max=\"100\" value=\"50\">abc</meter></div>"
+  assert_equals: expected "<div><br></div><div><meter max=\\"100\\" value=\\"50\\">abc</meter></div>" but got "<div><br><meter max=\\"100\\" value=\\"50\\">abc</meter></div>"
 [FAIL] insertParagraph in optgroup of <div><select><optgroup><option>abc</option></optgroup></select></div>
   assert_equals: expected "<div><br></div><div><select><optgroup><option>abc</option></optgroup></select></div>" but got "<div><select><optgroup><option>abc</option></optgroup></select></div>"
 [PASS] insertParagraph in option of <div><select><option>abc</option></select></div>

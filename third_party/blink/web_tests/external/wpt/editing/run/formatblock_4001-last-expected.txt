@@ -1054,7 +1054,7 @@ Found 1034 tests; 964 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected false but got true
 [PASS] [["formatblock","p"]] "<div><div contenteditable=false><span contenteditable>[foo]</span></div></div>" checks for modifications to non-editable content
 [FAIL] [["formatblock","p"]] "<div><div contenteditable=false><span contenteditable>[foo]</span></div></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><div contenteditable=\"false\"><span contenteditable=\"\">foo</span></div></div>" but got "<div><div contenteditable=\"false\"><span contenteditable=\"\"><p>foo</p></span></div></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><div contenteditable=\\"false\\"><span contenteditable=\\"\\">foo</span></div></div>" but got "<div><div contenteditable=\\"false\\"><span contenteditable=\\"\\"><p>foo</p></span></div></div>"
 [PASS] [["formatblock","p"]] "<div><div contenteditable=false><span contenteditable>[foo]</span></div></div>" queryCommandIndeterm("formatblock") before
 [PASS] [["formatblock","p"]] "<div><div contenteditable=false><span contenteditable>[foo]</span></div></div>" queryCommandState("formatblock") before
 [PASS] [["formatblock","p"]] "<div><div contenteditable=false><span contenteditable>[foo]</span></div></div>" queryCommandValue("formatblock") before
@@ -1066,7 +1066,7 @@ Found 1034 tests; 964 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected false but got true
 [PASS] [["formatblock","p"]] "<div><p contenteditable=false><span contenteditable>[foo]</span></p></div>" checks for modifications to non-editable content
 [FAIL] [["formatblock","p"]] "<div><p contenteditable=false><span contenteditable>[foo]</span></p></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><p contenteditable=\"false\"><span contenteditable=\"\">foo</span></p></div>" but got "<div><p contenteditable=\"false\"><span contenteditable=\"\"><p>foo</p></span></p></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><p contenteditable=\\"false\\"><span contenteditable=\\"\\">foo</span></p></div>" but got "<div><p contenteditable=\\"false\\"><span contenteditable=\\"\\"><p>foo</p></span></p></div>"
 [PASS] [["formatblock","p"]] "<div><p contenteditable=false><span contenteditable>[foo]</span></p></div>" queryCommandIndeterm("formatblock") before
 [PASS] [["formatblock","p"]] "<div><p contenteditable=false><span contenteditable>[foo]</span></p></div>" queryCommandState("formatblock") before
 [PASS] [["formatblock","p"]] "<div><p contenteditable=false><span contenteditable>[foo]</span></p></div>" queryCommandValue("formatblock") before
@@ -1078,7 +1078,7 @@ Found 1034 tests; 964 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected false but got true
 [PASS] [["formatblock","div"]] "<div><div contenteditable=false><p contenteditable>[foo]</p></div></div>" checks for modifications to non-editable content
 [FAIL] [["formatblock","div"]] "<div><div contenteditable=false><p contenteditable>[foo]</p></div></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><div contenteditable=\"false\"><p contenteditable=\"\">foo</p></div></div>" but got "<div><div contenteditable=\"false\"><p contenteditable=\"\"><div>foo</div></p></div></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><div contenteditable=\\"false\\"><p contenteditable=\\"\\">foo</p></div></div>" but got "<div><div contenteditable=\\"false\\"><p contenteditable=\\"\\"><div>foo</div></p></div></div>"
 [PASS] [["formatblock","div"]] "<div><div contenteditable=false><p contenteditable>[foo]</p></div></div>" queryCommandIndeterm("formatblock") before
 [PASS] [["formatblock","div"]] "<div><div contenteditable=false><p contenteditable>[foo]</p></div></div>" queryCommandState("formatblock") before
 [PASS] [["formatblock","div"]] "<div><div contenteditable=false><p contenteditable>[foo]</p></div></div>" queryCommandValue("formatblock") before

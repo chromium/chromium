@@ -90,7 +90,7 @@ Found 1000 tests; 978 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("forwarddelete", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<font color=\"#0000ff\">quz</font></p>" but got "<p>foo<span style=\"color:rgb(0, 0, 255)\">quz</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<font color=\\"#0000ff\\">quz</font></p>" but got "<p>foo<span style=\\"color:rgb(0, 0, 255)\\">quz</span></p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("stylewithcss") before
@@ -137,7 +137,7 @@ Found 1000 tests; 978 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("forwarddelete", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<font color=\"#0000ff\">quz</font></p>" but got "<p>foo<span style=\"color:rgb(0, 0, 255)\">quz</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<font color=\\"#0000ff\\">quz</font></p>" but got "<p>foo<span style=\\"color:rgb(0, 0, 255)\\">quz</span></p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("stylewithcss") before

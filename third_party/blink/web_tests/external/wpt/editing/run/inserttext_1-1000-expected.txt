@@ -18,16 +18,16 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext",""]] "foo[bar]baz" queryCommandIndeterm("inserttext") after
 [PASS] [["inserttext",""]] "foo[bar]baz" queryCommandState("inserttext") after
 [PASS] [["inserttext",""]] "foo[bar]baz" queryCommandValue("inserttext") after
-[PASS] [["inserttext","\t"]] "foo[]bar": execCommand("inserttext", false, "\t") return value
-[PASS] [["inserttext","\t"]] "foo[]bar" checks for modifications to non-editable content
-[FAIL] [["inserttext","\t"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo\tbar" but got "foo<span style=\"white-space:pre\">\t</span>bar"
-[PASS] [["inserttext","\t"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["inserttext","\t"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["inserttext","\t"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["inserttext","\t"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["inserttext","\t"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["inserttext","\t"]] "foo[]bar" queryCommandValue("inserttext") after
+[PASS] [["inserttext","\\t"]] "foo[]bar": execCommand("inserttext", false, "\\t") return value
+[PASS] [["inserttext","\\t"]] "foo[]bar" checks for modifications to non-editable content
+[FAIL] [["inserttext","\\t"]] "foo[]bar" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo\\tbar" but got "foo<span style=\\"white-space:pre\\">\\t</span>bar"
+[PASS] [["inserttext","\\t"]] "foo[]bar" queryCommandIndeterm("inserttext") before
+[PASS] [["inserttext","\\t"]] "foo[]bar" queryCommandState("inserttext") before
+[PASS] [["inserttext","\\t"]] "foo[]bar" queryCommandValue("inserttext") before
+[PASS] [["inserttext","\\t"]] "foo[]bar" queryCommandIndeterm("inserttext") after
+[PASS] [["inserttext","\\t"]] "foo[]bar" queryCommandState("inserttext") after
+[PASS] [["inserttext","\\t"]] "foo[]bar" queryCommandValue("inserttext") after
 [PASS] [["inserttext","&"]] "foo[]bar": execCommand("inserttext", false, "&") return value
 [PASS] [["inserttext","&"]] "foo[]bar" checks for modifications to non-editable content
 [PASS] [["inserttext","&"]] "foo[]bar" compare innerHTML
@@ -37,83 +37,83 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext","&"]] "foo[]bar" queryCommandIndeterm("inserttext") after
 [PASS] [["inserttext","&"]] "foo[]bar" queryCommandState("inserttext") after
 [PASS] [["inserttext","&"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar": execCommand("defaultparagraphseparator", false, "div") return value
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar": execCommand("inserttext", false, "\n") return value
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" compare innerHTML
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar": execCommand("defaultparagraphseparator", false, "div") return value
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar": execCommand("inserttext", false, "\\n") return value
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" checks for modifications to non-editable content
+[FAIL] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><div>bar</div>" but got "foo<div>bar</div>"
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandState("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","\n"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar": execCommand("defaultparagraphseparator", false, "p") return value
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar": execCommand("inserttext", false, "\n") return value
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" compare innerHTML
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandIndeterm("inserttext") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandState("inserttext") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandValue("inserttext") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandIndeterm("inserttext") after
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandState("inserttext") after
+[PASS] [["defaultparagraphseparator","div"],["inserttext","\\n"]] "foo[]bar" queryCommandValue("inserttext") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar": execCommand("defaultparagraphseparator", false, "p") return value
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar": execCommand("inserttext", false, "\\n") return value
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" checks for modifications to non-editable content
+[FAIL] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p>bar</p>" but got "foo<p>bar</p>"
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandState("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","\n"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar": execCommand("defaultparagraphseparator", false, "div") return value
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar": execCommand("inserttext", false, "abc\ndef") return value
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" compare innerHTML
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandIndeterm("inserttext") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandState("inserttext") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandValue("inserttext") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandIndeterm("inserttext") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandState("inserttext") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","\\n"]] "foo[]bar" queryCommandValue("inserttext") after
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar": execCommand("defaultparagraphseparator", false, "div") return value
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar": execCommand("inserttext", false, "abc\\ndef") return value
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" checks for modifications to non-editable content
+[FAIL] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>fooabc</div><div>defbar</div>" but got "fooabc<div>defbar</div>"
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandState("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar": execCommand("defaultparagraphseparator", false, "p") return value
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar": execCommand("inserttext", false, "abc\ndef") return value
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" compare innerHTML
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandIndeterm("inserttext") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandState("inserttext") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandValue("inserttext") before
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandIndeterm("inserttext") after
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandState("inserttext") after
+[PASS] [["defaultparagraphseparator","div"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandValue("inserttext") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar": execCommand("defaultparagraphseparator", false, "p") return value
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar": execCommand("inserttext", false, "abc\\ndef") return value
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" checks for modifications to non-editable content
+[FAIL] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>fooabc</p><p>defbar</p>" but got "fooabc<p>defbar</p>"
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandState("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\ndef"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["inserttext","\u0007"]] "foo[]bar": execCommand("inserttext", false, "\x07") return value
-[PASS] [["inserttext","\u0007"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["inserttext","\u0007"]] "foo[]bar" compare innerHTML
-[PASS] [["inserttext","\u0007"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["inserttext","\u0007"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["inserttext","\u0007"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["inserttext","\u0007"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["inserttext","\u0007"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["inserttext","\u0007"]] "foo[]bar" queryCommandValue("inserttext") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandIndeterm("inserttext") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandState("inserttext") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandValue("inserttext") before
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandIndeterm("inserttext") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandState("inserttext") after
+[PASS] [["defaultparagraphseparator","p"],["inserttext","abc\\ndef"]] "foo[]bar" queryCommandValue("inserttext") after
+[PASS] [["inserttext","\\u0007"]] "foo[]bar": execCommand("inserttext", false, "\\x07") return value
+[PASS] [["inserttext","\\u0007"]] "foo[]bar" checks for modifications to non-editable content
+[PASS] [["inserttext","\\u0007"]] "foo[]bar" compare innerHTML
+[PASS] [["inserttext","\\u0007"]] "foo[]bar" queryCommandIndeterm("inserttext") before
+[PASS] [["inserttext","\\u0007"]] "foo[]bar" queryCommandState("inserttext") before
+[PASS] [["inserttext","\\u0007"]] "foo[]bar" queryCommandValue("inserttext") before
+[PASS] [["inserttext","\\u0007"]] "foo[]bar" queryCommandIndeterm("inserttext") after
+[PASS] [["inserttext","\\u0007"]] "foo[]bar" queryCommandState("inserttext") after
+[PASS] [["inserttext","\\u0007"]] "foo[]bar" queryCommandValue("inserttext") after
 [PASS] [["inserttext","<b>hi</b>"]] "foo[]bar": execCommand("inserttext", false, "<b>hi</b>") return value
 [PASS] [["inserttext","<b>hi</b>"]] "foo[]bar" checks for modifications to non-editable content
 [PASS] [["inserttext","<b>hi</b>"]] "foo[]bar" compare innerHTML
@@ -751,7 +751,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "<div style=white-space:pre-line>foo &nbsp;[]bar</div>": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "<div style=white-space:pre-line>foo &nbsp;[]bar</div>" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "<div style=white-space:pre-line>foo &nbsp;[]bar</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"white-space:pre-line\">foo &nbsp; bar</div>" but got "<div style=\"white-space:pre-line\">foo&nbsp; &nbsp;bar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"white-space:pre-line\\">foo &nbsp; bar</div>" but got "<div style=\\"white-space:pre-line\\">foo&nbsp; &nbsp;bar</div>"
 [PASS] [["inserttext"," "]] "<div style=white-space:pre-line>foo &nbsp;[]bar</div>" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "<div style=white-space:pre-line>foo &nbsp;[]bar</div>" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "<div style=white-space:pre-line>foo &nbsp;[]bar</div>" queryCommandValue("inserttext") before
@@ -779,7 +779,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "<div style=white-space:pre-line>foo&nbsp;[]</div>": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "<div style=white-space:pre-line>foo&nbsp;[]</div>" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "<div style=white-space:pre-line>foo&nbsp;[]</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"white-space:pre-line\">foo &nbsp;</div>" but got "<div style=\"white-space:pre-line\">foo&nbsp;&nbsp;</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"white-space:pre-line\\">foo &nbsp;</div>" but got "<div style=\\"white-space:pre-line\\">foo&nbsp;&nbsp;</div>"
 [PASS] [["inserttext"," "]] "<div style=white-space:pre-line>foo&nbsp;[]</div>" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "<div style=white-space:pre-line>foo&nbsp;[]</div>" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "<div style=white-space:pre-line>foo&nbsp;[]</div>" queryCommandValue("inserttext") before
@@ -825,7 +825,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "<div style=white-space:nowrap>foo &nbsp;[]bar</div>": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "<div style=white-space:nowrap>foo &nbsp;[]bar</div>" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "<div style=white-space:nowrap>foo &nbsp;[]bar</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"white-space:nowrap\">foo &nbsp; bar</div>" but got "<div style=\"white-space:nowrap\">foo&nbsp; &nbsp;bar</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"white-space:nowrap\\">foo &nbsp; bar</div>" but got "<div style=\\"white-space:nowrap\\">foo&nbsp; &nbsp;bar</div>"
 [PASS] [["inserttext"," "]] "<div style=white-space:nowrap>foo &nbsp;[]bar</div>" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "<div style=white-space:nowrap>foo &nbsp;[]bar</div>" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "<div style=white-space:nowrap>foo &nbsp;[]bar</div>" queryCommandValue("inserttext") before
@@ -853,7 +853,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "<div style=white-space:nowrap>foo&nbsp;[]</div>": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "<div style=white-space:nowrap>foo&nbsp;[]</div>" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "<div style=white-space:nowrap>foo&nbsp;[]</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"white-space:nowrap\">foo &nbsp;</div>" but got "<div style=\"white-space:nowrap\">foo&nbsp;&nbsp;</div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"white-space:nowrap\\">foo &nbsp;</div>" but got "<div style=\\"white-space:nowrap\\">foo&nbsp;&nbsp;</div>"
 [PASS] [["inserttext"," "]] "<div style=white-space:nowrap>foo&nbsp;[]</div>" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "<div style=white-space:nowrap>foo&nbsp;[]</div>" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "<div style=white-space:nowrap>foo&nbsp;[]</div>" queryCommandValue("inserttext") before
@@ -872,7 +872,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "http://a[]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "http://a[]" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "http://a[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://a\">http://a</a>&nbsp;" but got "http://a&nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://a\\">http://a</a>&nbsp;" but got "http://a&nbsp;"
 [PASS] [["inserttext"," "]] "http://a[]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "http://a[]" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "http://a[]" queryCommandValue("inserttext") before
@@ -882,7 +882,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "ftp://a[]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "ftp://a[]" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "ftp://a[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"ftp://a\">ftp://a</a>&nbsp;" but got "ftp://a&nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"ftp://a\\">ftp://a</a>&nbsp;" but got "ftp://a&nbsp;"
 [PASS] [["inserttext"," "]] "ftp://a[]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "ftp://a[]" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "ftp://a[]" queryCommandValue("inserttext") before
@@ -892,7 +892,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "quasit://a[]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "quasit://a[]" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "quasit://a[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"quasit://a\">quasit://a</a>&nbsp;" but got "quasit://a&nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"quasit://a\\">quasit://a</a>&nbsp;" but got "quasit://a&nbsp;"
 [PASS] [["inserttext"," "]] "quasit://a[]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "quasit://a[]" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "quasit://a[]" queryCommandValue("inserttext") before
@@ -902,7 +902,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] ".x-++-.://a[]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] ".x-++-.://a[]" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] ".x-++-.://a[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected ".<a href=\"x-++-.://a\">x-++-.://a</a>&nbsp;" but got ".x-++-.://a&nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected ".<a href=\\"x-++-.://a\\">x-++-.://a</a>&nbsp;" but got ".x-++-.://a&nbsp;"
 [PASS] [["inserttext"," "]] ".x-++-.://a[]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] ".x-++-.://a[]" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] ".x-++-.://a[]" queryCommandValue("inserttext") before
@@ -912,7 +912,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "(http://a)[]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "(http://a)[]" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "(http://a)[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "(<a href=\"http://a\">http://a</a>)&nbsp;" but got "(http://a)&nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "(<a href=\\"http://a\\">http://a</a>)&nbsp;" but got "(http://a)&nbsp;"
 [PASS] [["inserttext"," "]] "(http://a)[]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "(http://a)[]" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "(http://a)[]" queryCommandValue("inserttext") before
@@ -922,7 +922,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "&lt;http://a>[]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "&lt;http://a>[]" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "&lt;http://a>[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "&lt;<a href=\"http://a\">http://a</a>&gt;&nbsp;" but got "&lt;http://a&gt;&nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "&lt;<a href=\\"http://a\\">http://a</a>&gt;&nbsp;" but got "&lt;http://a&gt;&nbsp;"
 [PASS] [["inserttext"," "]] "&lt;http://a>[]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "&lt;http://a>[]" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "&lt;http://a>[]" queryCommandValue("inserttext") before
@@ -932,37 +932,37 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "http://a![]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "http://a![]" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "http://a![]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://a\">http://a</a>!&nbsp;" but got "http://a!&nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://a\\">http://a</a>!&nbsp;" but got "http://a!&nbsp;"
 [PASS] [["inserttext"," "]] "http://a![]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "http://a![]" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "http://a![]" queryCommandValue("inserttext") before
 [PASS] [["inserttext"," "]] "http://a![]" queryCommandIndeterm("inserttext") after
 [PASS] [["inserttext"," "]] "http://a![]" queryCommandState("inserttext") after
 [PASS] [["inserttext"," "]] "http://a![]" queryCommandValue("inserttext") after
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]": execCommand("inserttext", false, " ") return value
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" checks for modifications to non-editable content
-[FAIL] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "!\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~<a href=\"http://a!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~\">http://a!\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~</a>&nbsp;" but got "!\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~http://a!\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~&nbsp;"
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandIndeterm("inserttext") before
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandState("inserttext") before
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandValue("inserttext") before
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandIndeterm("inserttext") after
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandState("inserttext") after
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandValue("inserttext") after
-[PASS] [["inserttext"," "]] "http://a!\"'(),-.:;&lt;>`[]": execCommand("inserttext", false, " ") return value
-[PASS] [["inserttext"," "]] "http://a!\"'(),-.:;&lt;>`[]" checks for modifications to non-editable content
-[FAIL] [["inserttext"," "]] "http://a!\"'(),-.:;&lt;>`[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://a\">http://a</a>!\"'(),-.:;&lt;&gt;`&nbsp;" but got "http://a!\"'(),-.:;&lt;&gt;`&nbsp;"
-[PASS] [["inserttext"," "]] "http://a!\"'(),-.:;&lt;>`[]" queryCommandIndeterm("inserttext") before
-[PASS] [["inserttext"," "]] "http://a!\"'(),-.:;&lt;>`[]" queryCommandState("inserttext") before
-[PASS] [["inserttext"," "]] "http://a!\"'(),-.:;&lt;>`[]" queryCommandValue("inserttext") before
-[PASS] [["inserttext"," "]] "http://a!\"'(),-.:;&lt;>`[]" queryCommandIndeterm("inserttext") after
-[PASS] [["inserttext"," "]] "http://a!\"'(),-.:;&lt;>`[]" queryCommandState("inserttext") after
-[PASS] [["inserttext"," "]] "http://a!\"'(),-.:;&lt;>`[]" queryCommandValue("inserttext") after
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]": execCommand("inserttext", false, " ") return value
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" checks for modifications to non-editable content
+[FAIL] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "!\\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~<a href=\\"http://a!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~\\">http://a!\\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~</a>&nbsp;" but got "!\\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~http://a!\\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~&nbsp;"
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandIndeterm("inserttext") before
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandState("inserttext") before
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandValue("inserttext") before
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandIndeterm("inserttext") after
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandState("inserttext") after
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~http://a!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandValue("inserttext") after
+[PASS] [["inserttext"," "]] "http://a!\\"'(),-.:;&lt;>`[]": execCommand("inserttext", false, " ") return value
+[PASS] [["inserttext"," "]] "http://a!\\"'(),-.:;&lt;>`[]" checks for modifications to non-editable content
+[FAIL] [["inserttext"," "]] "http://a!\\"'(),-.:;&lt;>`[]" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://a\\">http://a</a>!\\"'(),-.:;&lt;&gt;`&nbsp;" but got "http://a!\\"'(),-.:;&lt;&gt;`&nbsp;"
+[PASS] [["inserttext"," "]] "http://a!\\"'(),-.:;&lt;>`[]" queryCommandIndeterm("inserttext") before
+[PASS] [["inserttext"," "]] "http://a!\\"'(),-.:;&lt;>`[]" queryCommandState("inserttext") before
+[PASS] [["inserttext"," "]] "http://a!\\"'(),-.:;&lt;>`[]" queryCommandValue("inserttext") before
+[PASS] [["inserttext"," "]] "http://a!\\"'(),-.:;&lt;>`[]" queryCommandIndeterm("inserttext") after
+[PASS] [["inserttext"," "]] "http://a!\\"'(),-.:;&lt;>`[]" queryCommandState("inserttext") after
+[PASS] [["inserttext"," "]] "http://a!\\"'(),-.:;&lt;>`[]" queryCommandValue("inserttext") after
 [PASS] [["inserttext"," "]] "http://a#$%&amp;*+/=?^_|~[]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "http://a#$%&amp;*+/=?^_|~[]" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "http://a#$%&amp;*+/=?^_|~[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://a#$%&amp;*+/=?^_|~\">http://a#$%&amp;*+/=?^_|~</a>&nbsp;" but got "http://a#$%&amp;*+/=?^_|~&nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://a#$%&amp;*+/=?^_|~\\">http://a#$%&amp;*+/=?^_|~</a>&nbsp;" but got "http://a#$%&amp;*+/=?^_|~&nbsp;"
 [PASS] [["inserttext"," "]] "http://a#$%&amp;*+/=?^_|~[]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "http://a#$%&amp;*+/=?^_|~[]" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "http://a#$%&amp;*+/=?^_|~[]" queryCommandValue("inserttext") before
@@ -972,7 +972,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "mailto:a[]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "mailto:a[]" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "mailto:a[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"mailto:a\">mailto:a</a>&nbsp;" but got "mailto:a&nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"mailto:a\\">mailto:a</a>&nbsp;" but got "mailto:a&nbsp;"
 [PASS] [["inserttext"," "]] "mailto:a[]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "mailto:a[]" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "mailto:a[]" queryCommandValue("inserttext") before
@@ -982,7 +982,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "a@b[]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "a@b[]" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "a@b[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"mailto:a@b\">a@b</a>&nbsp;" but got "a@b&nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"mailto:a@b\\">a@b</a>&nbsp;" but got "a@b&nbsp;"
 [PASS] [["inserttext"," "]] "a@b[]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "a@b[]" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "a@b[]" queryCommandValue("inserttext") before
@@ -1010,7 +1010,7 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "#@x[]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "#@x[]" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "#@x[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"mailto:#@x\">#@x</a>&nbsp;" but got "#@x&nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"mailto:#@x\\">#@x</a>&nbsp;" but got "#@x&nbsp;"
 [PASS] [["inserttext"," "]] "#@x[]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "#@x[]" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "#@x[]" queryCommandValue("inserttext") before
@@ -1026,20 +1026,20 @@ Found 1000 tests; 954 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "a@.[]" queryCommandIndeterm("inserttext") after
 [PASS] [["inserttext"," "]] "a@.[]" queryCommandState("inserttext") after
 [PASS] [["inserttext"," "]] "a@.[]" queryCommandValue("inserttext") after
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]": execCommand("inserttext", false, " ") return value
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" checks for modifications to non-editable content
-[FAIL] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "!\"#$%&amp;'()*+,-./:;&lt;=&gt;<a href=\"mailto:?^_`|~a@b\">?^_`|~a@b</a>!\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~&nbsp;" but got "!\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~a@b!\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~&nbsp;"
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandIndeterm("inserttext") before
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandState("inserttext") before
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandValue("inserttext") before
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandIndeterm("inserttext") after
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandState("inserttext") after
-[PASS] [["inserttext"," "]] "!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandValue("inserttext") after
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]": execCommand("inserttext", false, " ") return value
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" checks for modifications to non-editable content
+[FAIL] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "!\\"#$%&amp;'()*+,-./:;&lt;=&gt;<a href=\\"mailto:?^_`|~a@b\\">?^_`|~a@b</a>!\\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~&nbsp;" but got "!\\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~a@b!\\"#$%&amp;'()*+,-./:;&lt;=&gt;?^_`|~&nbsp;"
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandIndeterm("inserttext") before
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandState("inserttext") before
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandValue("inserttext") before
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandIndeterm("inserttext") after
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandState("inserttext") after
+[PASS] [["inserttext"," "]] "!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~a@b!\\"#$%&amp;'()*+,-./:;&lt;=>?^_`|~[]" queryCommandValue("inserttext") after
 [PASS] [["inserttext"," "]] "<b>a@b</b>{}": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "<b>a@b</b>{}" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "<b>a@b</b>{}" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"mailto:a@b\"><b>a@b</b></a> " but got "<b>a@b&nbsp;</b>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"mailto:a@b\\"><b>a@b</b></a> " but got "<b>a@b&nbsp;</b>"
 [PASS] [["inserttext"," "]] "<b>a@b</b>{}" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "<b>a@b</b>{}" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "<b>a@b</b>{}" queryCommandValue("inserttext") before

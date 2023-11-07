@@ -48,11 +48,11 @@ This is a testharness.js-based test.
   assert_equals: expected "file:///" but got "file://localhost/"
 [PASS] <a>: Setting <file:///some/path>.pathname = '' Special URLs cannot have their paths erased
 [PASS] <area>: Setting <file:///some/path>.pathname = '' Special URLs cannot have their paths erased
-[PASS] <a>: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes
-[PASS] <area>: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes
-[FAIL] <a>: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes
+[PASS] <a>: Setting <file://monkey/>.pathname = '\\\\' File URLs and (back)slashes
+[PASS] <area>: Setting <file://monkey/>.pathname = '\\\\' File URLs and (back)slashes
+[FAIL] <a>: Setting <file:///unicorn>.pathname = '//\\/' File URLs and (back)slashes
   assert_equals: expected "file://////" but got "file:///"
-[FAIL] <area>: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes
+[FAIL] <area>: Setting <file:///unicorn>.pathname = '//\\/' File URLs and (back)slashes
   assert_equals: expected "file://////" but got "file:///"
 [FAIL] <a>: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes
   assert_equals: expected "file://///" but got "file:///"

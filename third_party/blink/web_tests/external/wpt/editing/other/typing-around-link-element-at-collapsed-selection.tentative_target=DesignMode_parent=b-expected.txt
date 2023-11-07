@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 [PASS] Testing inserting content around link element
 [FAIL] Replacing text in a link in <b> with "XY" in <p><b>[abc]</b></p>
-  assert_in_array: value "<p><b>XY</b></p>" not in array ["<p><b><a href=\"about:blank\">XY</b></a></p>", "<p><b><a href=\"about:blank\">XY</b></a><br></p>"]
+  assert_in_array: value "<p><b>XY</b></p>" not in array ["<p><b><a href=\\"about:blank\\">XY</b></a></p>", "<p><b><a href=\\"about:blank\\">XY</b></a><br></p>"]
 [PASS] Inserting "XY" after making a link in <b> (following Selection.collapseToEnd) in <p><b>[abc]</b></p>
 [PASS] Inserting "XY" after making a link in <b> (following ArrowRight key press) in <p><b>[abc]</b></p>
 [PASS] Inserting "XY" after making a link in <b> (following End key press) in <p><b>[abc]</b></p>

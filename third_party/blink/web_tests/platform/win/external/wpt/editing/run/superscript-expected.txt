@@ -15,7 +15,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo</p> <p>bar]</p>": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo</p> <p>bar]</p>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<p>[foo</p> <p>bar]</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><sup>foo</sup></p> <p><sup>bar</sup></p>" but got "<p><span style=\"vertical-align:super\">foo</span></p> <p><span style=\"vertical-align:super\">bar</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><sup>foo</sup></p> <p><sup>bar</sup></p>" but got "<p><span style=\\"vertical-align:super\\">foo</span></p> <p><span style=\\"vertical-align:super\\">bar</span></p>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo</p> <p>bar]</p>" queryCommandIndeterm("stylewithcss") before
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<p>[foo</p> <p>bar]</p>" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
@@ -53,7 +53,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "<span>[foo</span> <span>bar]</span>": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "<span>[foo</span> <span>bar]</span>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<span>[foo</span> <span>bar]</span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<sup><span>foo</span> <span>bar</span></sup>" but got "<span style=\"vertical-align:super\"><span>foo</span> <span>bar</span></span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<sup><span>foo</span> <span>bar</span></sup>" but got "<span style=\\"vertical-align:super\\"><span>foo</span> <span>bar</span></span>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "<span>[foo</span> <span>bar]</span>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<span>[foo</span> <span>bar]</span>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<span>[foo</span> <span>bar]</span>" queryCommandValue("stylewithcss") before
@@ -90,7 +90,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><sup>foo</sup></p><p> <sup><span>bar</span></sup> </p><p><sup>baz</sup></p>" but got "<p><span style=\"vertical-align:super\">foo</span></p><p> <span style=\"vertical-align:super\"><span>bar</span> </span></p><p><span style=\"vertical-align:super\">baz</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><sup>foo</sup></p><p> <sup><span>bar</span></sup> </p><p><sup>baz</sup></p>" but got "<p><span style=\\"vertical-align:super\\">foo</span></p><p> <span style=\\"vertical-align:super\\"><span>bar</span> </span></p><p><span style=\\"vertical-align:super\\">baz</span></p>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandValue("stylewithcss") before
@@ -128,7 +128,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo<p><br><p>bar]": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo<p><br><p>bar]" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<p>[foo<p><br><p>bar]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><sup>foo</sup></p><p><sup><br></sup></p><p><sup>bar</sup></p>" but got "<p><span style=\"vertical-align:super\">foo</span></p><p><span style=\"vertical-align:super\"><br></span></p><p><span style=\"vertical-align:super\">bar</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><sup>foo</sup></p><p><sup><br></sup></p><p><sup>bar</sup></p>" but got "<p><span style=\\"vertical-align:super\\">foo</span></p><p><span style=\\"vertical-align:super\\"><br></span></p><p><span style=\\"vertical-align:super\\">bar</span></p>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo<p><br><p>bar]" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo<p><br><p>bar]" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<p>[foo<p><br><p>bar]" queryCommandValue("stylewithcss") before
@@ -209,7 +209,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar]baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar]baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo[bar]baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<span style=\"vertical-align:super\">bar</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<span style=\\"vertical-align:super\\">bar</span>baz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar]baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar]baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar]baz" queryCommandValue("stylewithcss") before
@@ -246,7 +246,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar<b>baz]qoz</b>quz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar<b>baz]qoz</b>quz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo[bar<b>baz]qoz</b>quz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup><b><sup>baz</sup>qoz</b>quz" but got "foo<span style=\"vertical-align:super\">bar</span><b><span style=\"vertical-align:super\">baz</span>qoz</b>quz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup><b><sup>baz</sup>qoz</b>quz" but got "foo<span style=\\"vertical-align:super\\">bar</span><b><span style=\\"vertical-align:super\\">baz</span>qoz</b>quz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandValue("stylewithcss") before
@@ -283,7 +283,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar<i>baz]qoz</i>quz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar<i>baz]qoz</i>quz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo[bar<i>baz]qoz</i>quz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup><i><sup>baz</sup>qoz</i>quz" but got "foo<span style=\"vertical-align:super\">bar</span><i><span style=\"vertical-align:super\">baz</span>qoz</i>quz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup><i><sup>baz</sup>qoz</i>quz" but got "foo<span style=\\"vertical-align:super\\">bar</span><i><span style=\\"vertical-align:super\\">baz</span>qoz</i>quz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandValue("stylewithcss") before
@@ -320,7 +320,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "{<p><p> <p>foo</p>}": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "{<p><p> <p>foo</p>}" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "{<p><p> <p>foo</p>}" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p></p><p> </p><p><sup>foo</sup></p>" but got "<p></p><p> </p><p><span style=\"vertical-align:super\">foo</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p></p><p> </p><p><sup>foo</sup></p>" but got "<p></p><p> </p><p><span style=\\"vertical-align:super\\">foo</span></p>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "{<p><p> <p>foo</p>}" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "{<p><p> <p>foo</p>}" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "{<p><p> <p>foo</p>}" queryCommandValue("stylewithcss") before
@@ -357,7 +357,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>foo</td><td>b<sup>a</sup>r</td><td>baz</td></tr></tbody></table>" but got "<table><tbody><tr><td>foo</td><td>b<span style=\"vertical-align:super\">a</span>r</td><td>baz</td></tr></tbody></table>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>foo</td><td>b<sup>a</sup>r</td><td>baz</td></tr></tbody></table>" but got "<table><tbody><tr><td>foo</td><td>b<span style=\\"vertical-align:super\\">a</span>r</td><td>baz</td></tr></tbody></table>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>" queryCommandValue("stylewithcss") before
@@ -394,7 +394,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>foo</td><td><sup>bar</sup></td><td>baz</td></tr></tbody></table>" but got "<table><tbody><tr><td>foo</td><td><span style=\"vertical-align:super\">bar</span></td><td>baz</td></tr></tbody></table>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>foo</td><td><sup>bar</sup></td><td>baz</td></tr></tbody></table>" but got "<table><tbody><tr><td>foo</td><td><span style=\\"vertical-align:super\\">bar</span></td><td>baz</td></tr></tbody></table>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>" queryCommandValue("stylewithcss") before
@@ -431,7 +431,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><sup>foo</sup></td><td><sup>bar</sup></td><td>baz</td></tr></tbody></table>" but got "<table><tbody><tr><td><span style=\"vertical-align:super\">foo</span></td><td><span style=\"vertical-align:super\">bar</span></td><td>baz</td></tr></tbody></table>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><sup>foo</sup></td><td><sup>bar</sup></td><td>baz</td></tr></tbody></table>" but got "<table><tbody><tr><td><span style=\\"vertical-align:super\\">foo</span></td><td><span style=\\"vertical-align:super\\">bar</span></td><td>baz</td></tr></tbody></table>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>" queryCommandValue("stylewithcss") before
@@ -468,7 +468,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><sup>foo</sup></td><td><sup>bar</sup></td><td><sup>baz</sup></td></tr></tbody></table>" but got "<table><tbody><tr><td><span style=\"vertical-align:super\">foo</span></td><td><span style=\"vertical-align:super\">bar</span></td><td><span style=\"vertical-align:super\">baz</span></td></tr></tbody></table>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><sup>foo</sup></td><td><sup>bar</sup></td><td><sup>baz</sup></td></tr></tbody></table>" but got "<table><tbody><tr><td><span style=\\"vertical-align:super\\">foo</span></td><td><span style=\\"vertical-align:super\\">bar</span></td><td><span style=\\"vertical-align:super\\">baz</span></td></tr></tbody></table>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>" queryCommandValue("stylewithcss") before
@@ -505,7 +505,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><sup>foo</sup></td><td><sup>bar</sup></td><td><sup>baz</sup></td></tr></tbody></table>" but got "<table><tbody><tr><td><span style=\"vertical-align:super\">foo</span></td><td><span style=\"vertical-align:super\">bar</span></td><td><span style=\"vertical-align:super\">baz</span></td></tr></tbody></table>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><sup>foo</sup></td><td><sup>bar</sup></td><td><sup>baz</sup></td></tr></tbody></table>" but got "<table><tbody><tr><td><span style=\\"vertical-align:super\\">foo</span></td><td><span style=\\"vertical-align:super\\">bar</span></td><td><span style=\\"vertical-align:super\\">baz</span></td></tr></tbody></table>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>" queryCommandValue("stylewithcss") before
@@ -544,7 +544,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><sup>foo</sup></td><td><sup>bar</sup></td><td><sup>baz</sup></td></tr></tbody></table>" but got "<table><tbody><tr><td><span style=\"vertical-align:super\">foo</span></td><td><span style=\"vertical-align:super\">bar</span></td><td><span style=\"vertical-align:super\">baz</span></td></tr></tbody></table>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><sup>foo</sup></td><td><sup>bar</sup></td><td><sup>baz</sup></td></tr></tbody></table>" but got "<table><tbody><tr><td><span style=\\"vertical-align:super\\">foo</span></td><td><span style=\\"vertical-align:super\\">bar</span></td><td><span style=\\"vertical-align:super\\">baz</span></td></tr></tbody></table>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}" queryCommandValue("stylewithcss") before
@@ -583,7 +583,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>[bar]</sub>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>[bar]</sub>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo<sub>[bar]</sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<span style=\"vertical-align:super\">bar</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<span style=\\"vertical-align:super\\">bar</span>baz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>[bar]</sub>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>[bar]</sub>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>[bar]</sub>baz" queryCommandValue("stylewithcss") before
@@ -620,7 +620,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b[a]r</sub>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b[a]r</sub>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo<sub>b[a]r</sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<sub>b</sub><span style=\"vertical-align:super\">a</span><sub>r</sub>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<sub>b</sub><span style=\\"vertical-align:super\\">a</span><sub>r</sub>baz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b[a]r</sub>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b[a]r</sub>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b[a]r</sub>baz" queryCommandValue("stylewithcss") before
@@ -693,7 +693,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:sub>[bar]</span>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:sub>[bar]</span>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:sub>[bar]</span>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<span style=\"vertical-align:super\">bar</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<span style=\\"vertical-align:super\\">bar</span>baz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:sub>[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:sub>[bar]</span>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:sub>[bar]</span>baz" queryCommandValue("stylewithcss") before
@@ -772,7 +772,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>[bar]</sub></sub>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>[bar]</sub></sub>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>[bar]</sub></sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<span style=\"vertical-align:super\">bar</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<span style=\\"vertical-align:super\\">bar</span>baz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>[bar]</sub></sub>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>[bar]</sub></sub>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>[bar]</sub></sub>baz" queryCommandValue("stylewithcss") before
@@ -809,7 +809,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<sub style=\"vertical-align:sub\">b</sub><span style=\"vertical-align:super\">a</span><sub style=\"vertical-align:sub\">r</sub>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<sub style=\\"vertical-align:sub\\">b</sub><span style=\\"vertical-align:super\\">a</span><sub style=\\"vertical-align:sub\\">r</sub>baz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz" queryCommandValue("stylewithcss") before
@@ -828,7 +828,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<sub style=\"vertical-align:sub\">b</sub><sup>a</sup><sub style=\"vertical-align:sub\">r</sub>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<sub style=\\"vertical-align:sub\\">b</sub><sup>a</sup><sub style=\\"vertical-align:sub\\">r</sub>baz"
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub><sub>b[a]r</sub></sub>baz" queryCommandValue("stylewithcss") before
@@ -847,7 +847,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<span style=\"vertical-align:sub\">b</span><span style=\"vertical-align:super\">a</span><span style=\"vertical-align:sub\">r</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<span style=\\"vertical-align:sub\\">b</span><span style=\\"vertical-align:super\\">a</span><span style=\\"vertical-align:sub\\">r</span>baz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz" queryCommandValue("stylewithcss") before
@@ -866,7 +866,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<sub style=\"vertical-align:sub\">b</sub><sup>a</sup><sub>r</sub>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<sub style=\\"vertical-align:sub\\">b</sub><sup>a</sup><sub>r</sub>baz"
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub>b<sub>[a]</sub>r</sub>baz" queryCommandValue("stylewithcss") before
@@ -920,7 +920,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""]] "foo<sup><sup>b[a]r</sup></sup>baz": execCommand("superscript", false, "") return value
 [PASS] [["superscript",""]] "foo<sup><sup>b[a]r</sup></sup>baz" checks for modifications to non-editable content
 [FAIL] [["superscript",""]] "foo<sup><sup>b[a]r</sup></sup>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>b</sup>a<sup>r</sup>baz" but got "foo<sup style=\"vertical-align:super\">b</sup>a<sup style=\"vertical-align:super\">r</sup>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>b</sup>a<sup>r</sup>baz" but got "foo<sup style=\\"vertical-align:super\\">b</sup>a<sup style=\\"vertical-align:super\\">r</sup>baz"
 [PASS] [["superscript",""]] "foo<sup><sup>b[a]r</sup></sup>baz" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""]] "foo<sup><sup>b[a]r</sup></sup>baz" queryCommandState("superscript") before
 [FAIL] [["superscript",""]] "foo<sup><sup>b[a]r</sup></sup>baz" queryCommandValue("superscript") before
@@ -932,7 +932,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["superscript",""]] "foo<sup>b<sup>[a]</sup>r</sup>baz": execCommand("superscript", false, "") return value
 [PASS] [["superscript",""]] "foo<sup>b<sup>[a]</sup>r</sup>baz" checks for modifications to non-editable content
 [FAIL] [["superscript",""]] "foo<sup>b<sup>[a]</sup>r</sup>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>b</sup>a<sup>r</sup>baz" but got "foo<sup style=\"vertical-align:super\">b</sup>a<sup>r</sup>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>b</sup>a<sup>r</sup>baz" but got "foo<sup style=\\"vertical-align:super\\">b</sup>a<sup>r</sup>baz"
 [PASS] [["superscript",""]] "foo<sup>b<sup>[a]</sup>r</sup>baz" queryCommandIndeterm("superscript") before
 [PASS] [["superscript",""]] "foo<sup>b<sup>[a]</sup>r</sup>baz" queryCommandState("superscript") before
 [FAIL] [["superscript",""]] "foo<sup>b<sup>[a]</sup>r</sup>baz" queryCommandValue("superscript") before
@@ -989,7 +989,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<sup style=\"vertical-align:sub\">b</sup>a<sup style=\"vertical-align:sub\">r</sup>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<sup style=\\"vertical-align:sub\\">b</sup>a<sup style=\\"vertical-align:sub\\">r</sup>baz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz" queryCommandValue("stylewithcss") before
@@ -1011,7 +1011,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<sup style=\"vertical-align:sub\">b</sup>a<sup style=\"vertical-align:sub\">r</sup>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<sup style=\\"vertical-align:sub\\">b</sup>a<sup style=\\"vertical-align:sub\\">r</sup>baz"
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["superscript",""]] "foo<sub><sup>b[a]r</sup></sub>baz" queryCommandValue("stylewithcss") before
@@ -1033,7 +1033,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sup>[a]</sup>r</sub>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sup>[a]</sup>r</sub>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sup>[a]</sup>r</sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<span style=\"vertical-align:sub\">b</span>a<span style=\"vertical-align:sub\">r</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>b</sub><sup>a</sup><sub>r</sub>baz" but got "foo<span style=\\"vertical-align:sub\\">b</span>a<span style=\\"vertical-align:sub\\">r</span>baz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sup>[a]</sup>r</sub>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sup>[a]</sup>r</sub>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<sub>b<sup>[a]</sup>r</sub>baz" queryCommandValue("stylewithcss") before
@@ -1367,7 +1367,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<sup>foob</sup><span style=\"vertical-align:super\">ar</span>" but got "<sup>fo</sup>ob<span style=\"vertical-align:super\">ar</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<sup>foob</sup><span style=\\"vertical-align:super\\">ar</span>" but got "<sup>fo</sup>ob<span style=\\"vertical-align:super\\">ar</span>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>" queryCommandValue("stylewithcss") before
@@ -1389,7 +1389,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","false"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<sup>foob</sup><span style=\"vertical-align:super\">ar</span>" but got "<sup>fo</sup>ob<span style=\"vertical-align:super\">ar</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<sup>foob</sup><span style=\\"vertical-align:super\\">ar</span>" but got "<sup>fo</sup>ob<span style=\\"vertical-align:super\\">ar</span>"
 [PASS] [["stylewithcss","false"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>" queryCommandValue("stylewithcss") before
@@ -1411,7 +1411,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:bottom>b]ar</span>": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:bottom>b]ar</span>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:bottom>b]ar</span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<sup>foob</sup><span style=\"vertical-align:bottom\">ar</span>" but got "<sup>foo</sup><span style=\"vertical-align:super\">b</span><span style=\"vertical-align:bottom\">ar</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<sup>foob</sup><span style=\\"vertical-align:bottom\\">ar</span>" but got "<sup>foo</sup><span style=\\"vertical-align:super\\">b</span><span style=\\"vertical-align:bottom\\">ar</span>"
 [PASS] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:bottom>b]ar</span>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:bottom>b]ar</span>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "<sup>fo[o</sup><span style=vertical-align:bottom>b]ar</span>" queryCommandValue("stylewithcss") before
@@ -1448,7 +1448,7 @@ Found 1269 tests; 1021 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:bottom>[bar]</span>baz": execCommand("superscript", false, "") return value
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:bottom>[bar]</span>baz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:bottom>[bar]</span>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<span style=\"vertical-align:super\">bar</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>bar</sup>baz" but got "foo<span style=\\"vertical-align:super\\">bar</span>baz"
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:bottom>[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:bottom>[bar]</span>baz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["superscript",""]] "foo<span style=vertical-align:bottom>[bar]</span>baz" queryCommandValue("stylewithcss") before

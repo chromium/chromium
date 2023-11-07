@@ -627,7 +627,7 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<a href=/>foo</a>[]bar": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "<a href=/>foo</a>[]bar" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "<a href=/>foo</a>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "<a href=\"/\">fo</a>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "<a href=\\"/\\">fo</a>bar"
 [PASS] [["delete",""]] "<a href=/>foo</a>[]bar" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "<a href=/>foo</a>[]bar" queryCommandState("delete") before
 [PASS] [["delete",""]] "<a href=/>foo</a>[]bar" queryCommandValue("delete") before
@@ -637,7 +637,7 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<a name=abc>foo</a>[]bar": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "<a name=abc>foo</a>[]bar" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "<a name=abc>foo</a>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "<a name=\"abc\">fo</a>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "<a name=\\"abc\\">fo</a>bar"
 [PASS] [["delete",""]] "<a name=abc>foo</a>[]bar" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "<a name=abc>foo</a>[]bar" queryCommandState("delete") before
 [PASS] [["delete",""]] "<a name=abc>foo</a>[]bar" queryCommandValue("delete") before
@@ -647,7 +647,7 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<a href=/ name=abc>foo</a>[]bar": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "<a href=/ name=abc>foo</a>[]bar" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "<a href=/ name=abc>foo</a>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "<a href=\"/\" name=\"abc\">fo</a>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "<a href=\\"/\\" name=\\"abc\\">fo</a>bar"
 [PASS] [["delete",""]] "<a href=/ name=abc>foo</a>[]bar" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "<a href=/ name=abc>foo</a>[]bar" queryCommandState("delete") before
 [PASS] [["delete",""]] "<a href=/ name=abc>foo</a>[]bar" queryCommandValue("delete") before
@@ -667,7 +667,7 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<span><a href=/>foo</a></span>[]bar": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "<span><a href=/>foo</a></span>[]bar" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "<span><a href=/>foo</a></span>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span>bar" but got "<span><a href=\"/\">fo</a></span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span>bar" but got "<span><a href=\\"/\\">fo</a></span>bar"
 [PASS] [["delete",""]] "<span><a href=/>foo</a></span>[]bar" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "<span><a href=/>foo</a></span>[]bar" queryCommandState("delete") before
 [PASS] [["delete",""]] "<span><a href=/>foo</a></span>[]bar" queryCommandValue("delete") before
@@ -677,7 +677,7 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<span><a name=abc>foo</a></span>[]bar": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "<span><a name=abc>foo</a></span>[]bar" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "<span><a name=abc>foo</a></span>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span>bar" but got "<span><a name=\"abc\">fo</a></span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span>bar" but got "<span><a name=\\"abc\\">fo</a></span>bar"
 [PASS] [["delete",""]] "<span><a name=abc>foo</a></span>[]bar" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "<span><a name=abc>foo</a></span>[]bar" queryCommandState("delete") before
 [PASS] [["delete",""]] "<span><a name=abc>foo</a></span>[]bar" queryCommandValue("delete") before
@@ -687,7 +687,7 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "<span><a href=/ name=abc>foo</a></span>[]bar": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "<span><a href=/ name=abc>foo</a></span>[]bar" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "<span><a href=/ name=abc>foo</a></span>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span>bar" but got "<span><a href=\"/\" name=\"abc\">fo</a></span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span>bar" but got "<span><a href=\\"/\\" name=\\"abc\\">fo</a></span>bar"
 [PASS] [["delete",""]] "<span><a href=/ name=abc>foo</a></span>[]bar" queryCommandIndeterm("delete") before
 [PASS] [["delete",""]] "<span><a href=/ name=abc>foo</a></span>[]bar" queryCommandState("delete") before
 [PASS] [["delete",""]] "<span><a href=/ name=abc>foo</a></span>[]bar" queryCommandValue("delete") before

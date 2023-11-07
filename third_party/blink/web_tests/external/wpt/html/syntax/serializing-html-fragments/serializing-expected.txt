@@ -8,11 +8,11 @@ Found 238 tests; 232 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] innerHTML 5 <a b="&nbsp;"></a>
 [PASS] innerHTML 6 <a b="&quot;"></a>
 [FAIL] innerHTML 7 <a b="<"></a>
-  assert_equals: expected "<a b=\"<\"></a>" but got "<a b=\"&lt;\"></a>"
+  assert_equals: expected "<a b=\\"<\\"></a>" but got "<a b=\\"&lt;\\"></a>"
 [FAIL] innerHTML 8 <a b=">"></a>
-  assert_equals: expected "<a b=\">\"></a>" but got "<a b=\"&gt;\"></a>"
+  assert_equals: expected "<a b=\\">\\"></a>" but got "<a b=\\"&gt;\\"></a>"
 [FAIL] innerHTML 9 <a href="javascript:&quot;<>&quot;"></a>
-  assert_equals: expected "<a href=\"javascript:&quot;<>&quot;\"></a>" but got "<a href=\"javascript:&quot;&lt;&gt;&quot;\"></a>"
+  assert_equals: expected "<a href=\\"javascript:&quot;<>&quot;\\"></a>" but got "<a href=\\"javascript:&quot;&lt;&gt;&quot;\\"></a>"
 [PASS] innerHTML 10 <svg xlink:href="a"></svg>
 [PASS] innerHTML 11 <svg xmlns:svg="test"></svg>
 [PASS] innerHTML 12 a
@@ -40,11 +40,11 @@ Found 238 tests; 232 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] outerHTML 5 <span><a b="&nbsp;"></a></span>
 [PASS] outerHTML 6 <span><a b="&quot;"></a></span>
 [FAIL] outerHTML 7 <span><a b="<"></a></span>
-  assert_equals: expected "<span><a b=\"<\"></a></span>" but got "<span><a b=\"&lt;\"></a></span>"
+  assert_equals: expected "<span><a b=\\"<\\"></a></span>" but got "<span><a b=\\"&lt;\\"></a></span>"
 [FAIL] outerHTML 8 <span><a b=">"></a></span>
-  assert_equals: expected "<span><a b=\">\"></a></span>" but got "<span><a b=\"&gt;\"></a></span>"
+  assert_equals: expected "<span><a b=\\">\\"></a></span>" but got "<span><a b=\\"&gt;\\"></a></span>"
 [FAIL] outerHTML 9 <span><a href="javascript:&quot;<>&quot;"></a></span>
-  assert_equals: expected "<span><a href=\"javascript:&quot;<>&quot;\"></a></span>" but got "<span><a href=\"javascript:&quot;&lt;&gt;&quot;\"></a></span>"
+  assert_equals: expected "<span><a href=\\"javascript:&quot;<>&quot;\\"></a></span>" but got "<span><a href=\\"javascript:&quot;&lt;&gt;&quot;\\"></a></span>"
 [PASS] outerHTML 10 <span><svg xlink:href="a"></svg></span>
 [PASS] outerHTML 11 <span><svg xmlns:svg="test"></svg></span>
 [PASS] outerHTML 12 <span>a</span>

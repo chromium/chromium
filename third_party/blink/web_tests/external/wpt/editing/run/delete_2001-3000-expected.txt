@@ -83,40 +83,40 @@ Found 1000 tests; 976 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "foo<blockquote><div>[]bar</div></blockquote>" queryCommandIndeterm("delete") after
 [PASS] [["delete",""]] "foo<blockquote><div>[]bar</div></blockquote>" queryCommandState("delete") after
 [PASS] [["delete",""]] "foo<blockquote><div>[]bar</div></blockquote>" queryCommandValue("delete") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>": execCommand("defaultparagraphseparator", false, "div") return value
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>": execCommand("delete", false, "") return value
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\"color:rgb(0, 0, 255)\">bar</div>" but got "foo<span style=\"color:rgb(0, 0, 255)\">bar</span>"
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandIndeterm("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandState("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandValue("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandIndeterm("delete") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandState("delete") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandValue("delete") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandIndeterm("delete") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandState("delete") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandValue("delete") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>": execCommand("defaultparagraphseparator", false, "p") return value
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>": execCommand("delete", false, "") return value
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\"color:rgb(0, 0, 255)\">bar</div>" but got "foo<span style=\"color:rgb(0, 0, 255)\">bar</span>"
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandIndeterm("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandState("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandValue("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandIndeterm("delete") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandState("delete") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandValue("delete") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandIndeterm("delete") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandState("delete") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\">[]bar</blockquote>" queryCommandValue("delete") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>": execCommand("defaultparagraphseparator", false, "div") return value
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>": execCommand("delete", false, "") return value
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" checks for modifications to non-editable content
+[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\\"color:rgb(0, 0, 255)\\">bar</div>" but got "foo<span style=\\"color:rgb(0, 0, 255)\\">bar</span>"
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandIndeterm("delete") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandState("delete") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandValue("delete") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandIndeterm("delete") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandState("delete") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandValue("delete") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>": execCommand("defaultparagraphseparator", false, "p") return value
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>": execCommand("delete", false, "") return value
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" checks for modifications to non-editable content
+[FAIL] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\\"color:rgb(0, 0, 255)\\">bar</div>" but got "foo<span style=\\"color:rgb(0, 0, 255)\\">bar</span>"
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandIndeterm("delete") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandState("delete") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandValue("delete") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandIndeterm("delete") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandState("delete") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\">[]bar</blockquote>" queryCommandValue("delete") after
 [PASS] [["delete",""]] "foo<blockquote><blockquote><p>[]bar<p>baz</blockquote></blockquote>": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "foo<blockquote><blockquote><p>[]bar<p>baz</blockquote></blockquote>" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "foo<blockquote><blockquote><p>[]bar<p>baz</blockquote></blockquote>" compare innerHTML
@@ -137,40 +137,40 @@ Found 1000 tests; 976 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""]] "foo<blockquote><div><p>[]bar<p>baz</div></blockquote>" queryCommandIndeterm("delete") after
 [PASS] [["delete",""]] "foo<blockquote><div><p>[]bar<p>baz</div></blockquote>" queryCommandState("delete") after
 [PASS] [["delete",""]] "foo<blockquote><div><p>[]bar<p>baz</div></blockquote>" queryCommandValue("delete") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>": execCommand("defaultparagraphseparator", false, "div") return value
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>": execCommand("delete", false, "") return value
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\"color:rgb(0, 0, 255)\"><p>bar</p><blockquote><p>baz</p></blockquote></div>" but got "foo<span style=\"color:rgb(0, 0, 255)\">bar</span><blockquote style=\"color:rgb(0, 0, 255)\"><p>baz</p></blockquote>"
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandState("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandValue("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("delete") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandState("delete") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandValue("delete") before
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("delete") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandState("delete") after
-[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandValue("delete") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>": execCommand("defaultparagraphseparator", false, "p") return value
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>": execCommand("delete", false, "") return value
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\"color:rgb(0, 0, 255)\"><p>bar</p><blockquote><p>baz</p></blockquote></div>" but got "foo<span style=\"color:rgb(0, 0, 255)\">bar</span><blockquote style=\"color:rgb(0, 0, 255)\"><p>baz</p></blockquote>"
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandState("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandValue("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("delete") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandState("delete") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandValue("delete") before
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("delete") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandState("delete") after
-[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\"color: blue\"><p>[]bar<p>baz</blockquote>" queryCommandValue("delete") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>": execCommand("defaultparagraphseparator", false, "div") return value
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>": execCommand("delete", false, "") return value
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" checks for modifications to non-editable content
+[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\\"color:rgb(0, 0, 255)\\"><p>bar</p><blockquote><p>baz</p></blockquote></div>" but got "foo<span style=\\"color:rgb(0, 0, 255)\\">bar</span><blockquote style=\\"color:rgb(0, 0, 255)\\"><p>baz</p></blockquote>"
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("delete") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandState("delete") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandValue("delete") before
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("delete") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandState("delete") after
+[PASS] [["defaultparagraphseparator","div"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandValue("delete") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>": execCommand("defaultparagraphseparator", false, "p") return value
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>": execCommand("delete", false, "") return value
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" checks for modifications to non-editable content
+[FAIL] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<div style=\\"color:rgb(0, 0, 255)\\"><p>bar</p><blockquote><p>baz</p></blockquote></div>" but got "foo<span style=\\"color:rgb(0, 0, 255)\\">bar</span><blockquote style=\\"color:rgb(0, 0, 255)\\"><p>baz</p></blockquote>"
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("delete") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandState("delete") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandValue("delete") before
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandIndeterm("delete") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandState("delete") after
+[PASS] [["defaultparagraphseparator","p"],["delete",""]] "foo<blockquote style=\\"color: blue\\"><p>[]bar<p>baz</blockquote>" queryCommandValue("delete") after
 [PASS] [["delete",""]] "foo<blockquote><p><b>[]bar</b><p>baz</blockquote>": execCommand("delete", false, "") return value
 [PASS] [["delete",""]] "foo<blockquote><p><b>[]bar</b><p>baz</blockquote>" checks for modifications to non-editable content
 [FAIL] [["delete",""]] "foo<blockquote><p><b>[]bar</b><p>baz</blockquote>" compare innerHTML
@@ -799,7 +799,7 @@ Found 1000 tests; 976 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p>[]bar": execCommand("delete", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p>[]bar" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span style=\"color:rgb(0, 0, 255)\">foo</span>bar</p>" but got "<p style=\"color:rgb(0, 0, 255)\">foobar</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span style=\\"color:rgb(0, 0, 255)\\">foo</span>bar</p>" but got "<p style=\\"color:rgb(0, 0, 255)\\">foobar</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p>[]bar" queryCommandIndeterm("stylewithcss") before
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p>[]bar" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
@@ -824,7 +824,7 @@ Found 1000 tests; 976 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p>[]bar": execCommand("delete", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p>[]bar" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"#0000ff\">foo</font>bar</p>" but got "<p style=\"color:rgb(0, 0, 255)\">foobar</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\\"#0000ff\\">foo</font>bar</p>" but got "<p style=\\"color:rgb(0, 0, 255)\\">foobar</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p>[]bar" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p>[]bar" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p>[]bar" queryCommandValue("stylewithcss") before
@@ -848,7 +848,7 @@ Found 1000 tests; 976 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar": execCommand("delete", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span style=\"color:rgb(0, 0, 255)\">foo</span>bar</p>" but got "<p style=\"color:rgb(0, 0, 255)\">foobar</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span style=\\"color:rgb(0, 0, 255)\\">foo</span>bar</p>" but got "<p style=\\"color:rgb(0, 0, 255)\\">foobar</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar" queryCommandValue("stylewithcss") before
@@ -872,7 +872,7 @@ Found 1000 tests; 976 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar": execCommand("delete", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"#0000ff\">foo</font>bar</p>" but got "<p style=\"color:rgb(0, 0, 255)\">foobar</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\\"#0000ff\\">foo</font>bar</p>" but got "<p style=\\"color:rgb(0, 0, 255)\\">foobar</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p>[]bar" queryCommandValue("stylewithcss") before
@@ -919,7 +919,7 @@ Found 1000 tests; 976 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar": execCommand("delete", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\"color:rgb(0, 0, 255)\">foo<font color=\"#a52a2a\">bar</font></p>" but got "<p style=\"color:rgb(0, 0, 255)\">foo<span style=\"color:rgb(165, 42, 42)\">bar</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"color:rgb(0, 0, 255)\\">foo<font color=\\"#a52a2a\\">bar</font></p>" but got "<p style=\\"color:rgb(0, 0, 255)\\">foo<span style=\\"color:rgb(165, 42, 42)\\">bar</span></p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar" queryCommandValue("stylewithcss") before
@@ -966,7 +966,7 @@ Found 1000 tests; 976 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar": execCommand("delete", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\"color:rgb(0, 0, 255)\">foo<font color=\"#a52a2a\">bar</font></p>" but got "<p style=\"color:rgb(0, 0, 255)\">foo<span style=\"color:rgb(165, 42, 42)\">bar</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"color:rgb(0, 0, 255)\\">foo<font color=\\"#a52a2a\\">bar</font></p>" but got "<p style=\\"color:rgb(0, 0, 255)\\">foo<span style=\\"color:rgb(165, 42, 42)\\">bar</span></p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<p style=color:brown>[]bar" queryCommandValue("stylewithcss") before

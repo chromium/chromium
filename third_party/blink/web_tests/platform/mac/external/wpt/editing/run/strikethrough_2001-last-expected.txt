@@ -61,7 +61,7 @@ Found 143 tests; 121 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz": execCommand("strikethrough", false, "") return value
 [PASS] [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz" checks for modifications to non-editable content
 [FAIL] [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<strike>o</strike><s>bar</s>baz" but got "fo<strike>ob</strike><span style=\"text-decoration:line-through\">ar</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<strike>o</strike><s>bar</s>baz" but got "fo<strike>ob</strike><span style=\\"text-decoration:line-through\\">ar</span>baz"
 [FAIL] [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz" queryCommandIndeterm("strikethrough") before
   assert_equals: Wrong result returned expected true but got false
 [PASS] [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz" queryCommandState("strikethrough") before
@@ -145,25 +145,25 @@ Found 143 tests; 121 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["strikethrough",""]] "<s>fo[o</s><del>b]ar</del>" queryCommandState("strikethrough") after
 [FAIL] [["stylewithcss","false"],["strikethrough",""]] "<s>fo[o</s><del>b]ar</del>" queryCommandValue("strikethrough") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi": execCommand("strikethrough", false, "") return value
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi" checks for modifications to non-editable content
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:line-through overline underline\">[def]</span>ghi" compare innerHTML
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:blink overline underline\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:blink overline underline\">[def]</span>ghi": execCommand("strikethrough", false, "") return value
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:blink overline underline\">[def]</span>ghi" checks for modifications to non-editable content
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:blink overline underline\">[def]</span>ghi" compare innerHTML
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:underline blue dotted\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:underline blue dotted\">[def]</span>ghi": execCommand("strikethrough", false, "") return value
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:underline blue dotted\">[def]</span>ghi" checks for modifications to non-editable content
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:underline blue dotted\">[def]</span>ghi" compare innerHTML
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi": execCommand("strikethrough", false, "") return value
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi" checks for modifications to non-editable content
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:blink line-through underline overline\">[def]</span>ghi" compare innerHTML
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi": execCommand("strikethrough", false, "") return value
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi" checks for modifications to non-editable content
-[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\"text-decoration:underline line-through blue dotted\">[def]</span>ghi" compare innerHTML
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:line-through overline underline\\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:line-through overline underline\\">[def]</span>ghi": execCommand("strikethrough", false, "") return value
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:line-through overline underline\\">[def]</span>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:line-through overline underline\\">[def]</span>ghi" compare innerHTML
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:blink overline underline\\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:blink overline underline\\">[def]</span>ghi": execCommand("strikethrough", false, "") return value
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:blink overline underline\\">[def]</span>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:blink overline underline\\">[def]</span>ghi" compare innerHTML
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:underline blue dotted\\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:underline blue dotted\\">[def]</span>ghi": execCommand("strikethrough", false, "") return value
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:underline blue dotted\\">[def]</span>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:underline blue dotted\\">[def]</span>ghi" compare innerHTML
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:blink line-through underline overline\\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:blink line-through underline overline\\">[def]</span>ghi": execCommand("strikethrough", false, "") return value
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:blink line-through underline overline\\">[def]</span>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:blink line-through underline overline\\">[def]</span>ghi" compare innerHTML
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:underline line-through blue dotted\\">[def]</span>ghi": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:underline line-through blue dotted\\">[def]</span>ghi": execCommand("strikethrough", false, "") return value
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:underline line-through blue dotted\\">[def]</span>ghi" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["strikethrough",""]] "abc<span style=\\"text-decoration:underline line-through blue dotted\\">[def]</span>ghi" compare innerHTML
 Harness: the test ran to completion.
 

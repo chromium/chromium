@@ -280,16 +280,16 @@ Found 1205 tests; 956 PASS, 249 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
 [FAIL] window.open(): sc://a[b/ should throw
   assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-[FAIL] URL's constructor's base argument: sc://a\b/ should throw
+[FAIL] URL's constructor's base argument: sc://a\\b/ should throw
   assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-[FAIL] URL's href: sc://a\b/ should throw
+[FAIL] URL's href: sc://a\\b/ should throw
   assert_throws_js: function "() => url.href = test.input" did not throw
-[FAIL] XHR: sc://a\b/ should throw
+[FAIL] XHR: sc://a\\b/ should throw
   assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
-[PASS] sendBeacon(): sc://a\b/ should throw
-[FAIL] Location's href: sc://a\b/ should throw
+[PASS] sendBeacon(): sc://a\\b/ should throw
+[FAIL] Location's href: sc://a\\b/ should throw
   assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-[FAIL] window.open(): sc://a\b/ should throw
+[FAIL] window.open(): sc://a\\b/ should throw
   assert_throws_dom: function "() => self.open(test.input).close()" did not throw
 [FAIL] URL's constructor's base argument: sc://a]b/ should throw
   assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
@@ -923,13 +923,13 @@ Found 1205 tests; 956 PASS, 249 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
 [FAIL] window.open(): asdf://%43|/ should throw
   assert_throws_dom: function "() => self.open(test.input).close()" did not throw
-[FAIL] URL's constructor's base argument: \\\.\Y: should throw
+[FAIL] URL's constructor's base argument: \\\\\\.\\Y: should throw
   assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-[FAIL] URL's href: \\\.\Y: should throw
+[FAIL] URL's href: \\\\\\.\\Y: should throw
   assert_throws_js: function "() => url.href = test.input" did not throw
-[FAIL] URL's constructor's base argument: \\\.\y: should throw
+[FAIL] URL's constructor's base argument: \\\\\\.\\y: should throw
   assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
-[FAIL] URL's href: \\\.\y: should throw
+[FAIL] URL's href: \\\\\\.\\y: should throw
   assert_throws_js: function "() => url.href = test.input" did not throw
 [PASS] URL's constructor's base argument: https://[0::0::0] should throw
 [PASS] URL's href: https://[0::0::0] should throw

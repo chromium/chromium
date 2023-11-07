@@ -38,11 +38,11 @@ Found 389 tests; 377 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] background-clip uses discrete animation when animating between "padding-box" and "content-box" with keyframe easing
 [PASS] background-image (type: discrete) has testInterpolation function
 [FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
-  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.499)"
+  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.499)"
 [FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
-  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.428259)"
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
 [FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing
-  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.428259)"
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
 [PASS] background-origin (type: discrete) has testInterpolation function
 [PASS] background-origin uses discrete animation when animating between "padding-box" and "content-box" with linear easing
 [PASS] background-origin uses discrete animation when animating between "padding-box" and "content-box" with effect easing
@@ -75,11 +75,11 @@ Found 389 tests; 377 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] border-image-repeat uses discrete animation when animating between "stretch repeat" and "round space" with keyframe easing
 [PASS] border-image-source (type: discrete) has testInterpolation function
 [FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
-  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.499)"
+  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.499)"
 [FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
-  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.428259)"
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
 [FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing
-  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.428259)"
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
 [PASS] border-left-color (type: color) has testInterpolation function
 [PASS] border-left-color supports animating as color of rgb()
 [PASS] border-left-color supports animating as color of #RGB
@@ -384,11 +384,11 @@ Found 389 tests; 377 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] grid-row-start uses discrete animation when animating between "1" and "5" with keyframe easing
 [PASS] grid-template-areas (type: discrete) has testInterpolation function
 [FAIL] grid-template-areas uses discrete animation when animating between "". . a b" ". .a b"" and "none" with linear easing
-  assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\". . a b\" \". .a b\"" but got "\". . a b\" \". . a b\""
+  assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\\". . a b\\" \\". .a b\\"" but got "\\". . a b\\" \\". . a b\\""
 [FAIL] grid-template-areas uses discrete animation when animating between "". . a b" ". .a b"" and "none" with effect easing
-  assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\". . a b\" \". .a b\"" but got "\". . a b\" \". . a b\""
+  assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\\". . a b\\" \\". .a b\\"" but got "\\". . a b\\" \\". . a b\\""
 [FAIL] grid-template-areas uses discrete animation when animating between "". . a b" ". .a b"" and "none" with keyframe easing
-  assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\". . a b\" \". .a b\"" but got "\". . a b\" \". . a b\""
+  assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\\". . a b\\" \\". .a b\\"" but got "\\". . a b\\" \\". . a b\\""
 [PASS] hyphens (type: discrete) has testInterpolation function
 [PASS] hyphens uses discrete animation when animating between "manual" and "none" with linear easing
 [PASS] hyphens uses discrete animation when animating between "manual" and "none" with effect easing

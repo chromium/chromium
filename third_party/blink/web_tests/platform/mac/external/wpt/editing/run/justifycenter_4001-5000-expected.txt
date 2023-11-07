@@ -24,7 +24,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><p>foo</p><p>bar</p><p>baz</p></div><p>extra</p>" but got "<div style=\"text-align:center\"><p>foo</p></div><p style=\"text-align:center\">bar</p><div style=\"text-align:center\"><p>baz</p></div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p><p>bar</p><p>baz</p></div><p>extra</p>" but got "<div style=\\"text-align:center\\"><p>foo</p></div><p style=\\"text-align:center\\">bar</p><div style=\\"text-align:center\\"><p>baz</p></div><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" queryCommandIndeterm("stylewithcss") before
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
@@ -51,7 +51,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><p>foo</p><p>bar</p><p>baz</p></div><p>extra</p>" but got "<div style=\"text-align:center\"><p>foo</p></div><p style=\"text-align:center\">bar</p><div style=\"text-align:center\"><p>baz</p></div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p><p>bar</p><p>baz</p></div><p>extra</p>" but got "<div style=\\"text-align:center\\"><p>foo</p></div><p style=\\"text-align:center\\">bar</p><div style=\\"text-align:center\\"><p>baz</p></div><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div><p>[bar]<div style=text-align:center><p>baz</div><p>extra" queryCommandValue("stylewithcss") before
@@ -77,7 +77,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\"center\">foo</p><div style=\"text-align:center\"><p>bar</p></div><p>extra</p>" but got "<p align=\"center\">foo</p><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"center\\">foo</p><div style=\\"text-align:center\\"><p>bar</p></div><p>extra</p>" but got "<p align=\\"center\\">foo</p><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandValue("stylewithcss") before
@@ -103,7 +103,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\"center\">foo</p><div style=\"text-align:center\"><p>bar</p></div><p>extra</p>" but got "<p align=\"center\">foo</p><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"center\\">foo</p><div style=\\"text-align:center\\"><p>bar</p></div><p>extra</p>" but got "<p align=\\"center\\">foo</p><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandValue("stylewithcss") before
@@ -129,7 +129,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\"center\">foo</p><div style=\"text-align:center\"><p>bar</p></div><p>extra</p>" but got "<p align=\"center\">foo</p><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"center\\">foo</p><div style=\\"text-align:center\\"><p>bar</p></div><p>extra</p>" but got "<p align=\\"center\\">foo</p><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandValue("stylewithcss") before
@@ -155,7 +155,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\"center\">foo</p><div style=\"text-align:center\"><p>bar</p></div><p>extra</p>" but got "<p align=\"center\">foo</p><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"center\\">foo</p><div style=\\"text-align:center\\"><p>bar</p></div><p>extra</p>" but got "<p align=\\"center\\">foo</p><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p>extra" queryCommandValue("stylewithcss") before
@@ -181,7 +181,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><p>foo</p></div><p align=\"center\">bar</p><p>extra</p>" but got "<p style=\"text-align:center\">foo</p><p align=\"center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p></div><p align=\\"center\\">bar</p><p>extra</p>" but got "<p style=\\"text-align:center\\">foo</p><p align=\\"center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandValue("stylewithcss") before
@@ -207,7 +207,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><p>foo</p></div><p align=\"center\">bar</p><p>extra</p>" but got "<p style=\"text-align:center\">foo</p><p align=\"center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p></div><p align=\\"center\\">bar</p><p>extra</p>" but got "<p style=\\"text-align:center\\">foo</p><p align=\\"center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandValue("stylewithcss") before
@@ -233,7 +233,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><p>foo</p></div><p align=\"center\">bar</p><p>extra</p>" but got "<p style=\"text-align:center\">foo</p><p align=\"center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p></div><p align=\\"center\\">bar</p><p>extra</p>" but got "<p style=\\"text-align:center\\">foo</p><p align=\\"center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandValue("stylewithcss") before
@@ -259,7 +259,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><p>foo</p></div><p align=\"center\">bar</p><p>extra</p>" but got "<p style=\"text-align:center\">foo</p><p align=\"center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p></div><p align=\\"center\\">bar</p><p>extra</p>" but got "<p style=\\"text-align:center\\">foo</p><p align=\\"center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p>[foo]<p align=center>bar<p>extra" queryCommandValue("stylewithcss") before
@@ -285,7 +285,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\"center\">foo</p><div style=\"text-align:center\"><p>bar</p></div><p align=\"center\">baz</p><p>extra</p>" but got "<p align=\"center\">foo</p><p style=\"text-align:center\">bar</p><p align=\"center\">baz</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"center\\">foo</p><div style=\\"text-align:center\\"><p>bar</p></div><p align=\\"center\\">baz</p><p>extra</p>" but got "<p align=\\"center\\">foo</p><p style=\\"text-align:center\\">bar</p><p align=\\"center\\">baz</p><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandValue("stylewithcss") before
@@ -311,7 +311,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\"center\">foo</p><div style=\"text-align:center\"><p>bar</p></div><p align=\"center\">baz</p><p>extra</p>" but got "<p align=\"center\">foo</p><p style=\"text-align:center\">bar</p><p align=\"center\">baz</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"center\\">foo</p><div style=\\"text-align:center\\"><p>bar</p></div><p align=\\"center\\">baz</p><p>extra</p>" but got "<p align=\\"center\\">foo</p><p style=\\"text-align:center\\">bar</p><p align=\\"center\\">baz</p><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandValue("stylewithcss") before
@@ -337,7 +337,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\"center\">foo</p><div style=\"text-align:center\"><p>bar</p></div><p align=\"center\">baz</p><p>extra</p>" but got "<p align=\"center\">foo</p><p style=\"text-align:center\">bar</p><p align=\"center\">baz</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"center\\">foo</p><div style=\\"text-align:center\\"><p>bar</p></div><p align=\\"center\\">baz</p><p>extra</p>" but got "<p align=\\"center\\">foo</p><p style=\\"text-align:center\\">bar</p><p align=\\"center\\">baz</p><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandValue("stylewithcss") before
@@ -363,7 +363,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\"center\">foo</p><div style=\"text-align:center\"><p>bar</p></div><p align=\"center\">baz</p><p>extra</p>" but got "<p align=\"center\">foo</p><p style=\"text-align:center\">bar</p><p align=\"center\">baz</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p align=\\"center\\">foo</p><div style=\\"text-align:center\\"><p>bar</p></div><p align=\\"center\\">baz</p><p>extra</p>" but got "<p align=\\"center\\">foo</p><p style=\\"text-align:center\\">bar</p><p align=\\"center\\">baz</p><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<p align=center>foo<p>[bar]<p align=center>baz<p>extra" queryCommandValue("stylewithcss") before
@@ -389,7 +389,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><div style=\"text-align:center\">bar</div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><div style=\\"text-align:center\\">bar</div><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandValue("stylewithcss") before
@@ -417,7 +417,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><div style=\"text-align:center\">bar</div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><div style=\\"text-align:center\\">bar</div><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandValue("stylewithcss") before
@@ -445,7 +445,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandValue("stylewithcss") before
@@ -473,7 +473,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>[foo</center>bar]<p>extra" queryCommandValue("stylewithcss") before
@@ -501,7 +501,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><div style=\"text-align:center\">bar</div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><div style=\\"text-align:center\\">bar</div><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandValue("stylewithcss") before
@@ -529,7 +529,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><div style=\"text-align:center\">bar</div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><div style=\\"text-align:center\\">bar</div><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandValue("stylewithcss") before
@@ -557,7 +557,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandValue("stylewithcss") before
@@ -585,7 +585,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<center>foo</center><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<center>fo[o</center>b]ar<p>extra" queryCommandValue("stylewithcss") before
@@ -612,7 +612,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<div align=\"center\">foo</div><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<div align=\\"center\\">foo</div><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra" queryCommandValue("stylewithcss") before
@@ -633,7 +633,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<div align=\"center\">foo</div><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<div align=\\"center\\">foo</div><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>[foo</div>bar]<p>extra" queryCommandValue("stylewithcss") before
@@ -654,7 +654,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<div align=\"center\">foo</div><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<div align=\\"center\\">foo</div><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra" queryCommandValue("stylewithcss") before
@@ -675,7 +675,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<div align=\"center\">foo</div><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<div align=\\"center\\">foo</div><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=center>fo[o</div>b]ar<p>extra" queryCommandValue("stylewithcss") before
@@ -695,7 +695,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["justifycenter",""]] "<div style=text-align:center>[foo</div>bar]<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["justifycenter",""]] "<div style=text-align:center>[foo</div>bar]<p>extra" checks for modifications to non-editable content
 [FAIL] [["justifycenter",""]] "<div style=text-align:center>[foo</div>bar]<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<div style=\"text-align:center\">foo</div><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<div style=\\"text-align:center\\">foo</div><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [FAIL] [["justifycenter",""]] "<div style=text-align:center>[foo</div>bar]<p>extra" queryCommandIndeterm("justifycenter") before
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["justifycenter",""]] "<div style=text-align:center>[foo</div>bar]<p>extra" queryCommandState("justifycenter") before
@@ -709,7 +709,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["justifycenter",""]] "<div style=text-align:center>fo[o</div>b]ar<p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["justifycenter",""]] "<div style=text-align:center>fo[o</div>b]ar<p>extra" checks for modifications to non-editable content
 [FAIL] [["justifycenter",""]] "<div style=text-align:center>fo[o</div>b]ar<p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<br>bar</div><p>extra</p>" but got "<div style=\"text-align:center\">foo</div><p style=\"text-align:center\">bar</p><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<br>bar</div><p>extra</p>" but got "<div style=\\"text-align:center\\">foo</div><p style=\\"text-align:center\\">bar</p><p>extra</p>"
 [FAIL] [["justifycenter",""]] "<div style=text-align:center>fo[o</div>b]ar<p>extra" queryCommandIndeterm("justifycenter") before
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["justifycenter",""]] "<div style=text-align:center>fo[o</div>b]ar<p>extra" queryCommandState("justifycenter") before
@@ -724,7 +724,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div><p>extra</p>" but got "<span style=\"text-align:center\">foo</span><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div><p>extra</p>" but got "<span style=\\"text-align:center\\">foo</span><p>extra</p>"
 [PASS] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra" queryCommandValue("defaultparagraphseparator") before
@@ -744,7 +744,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div><p>extra</p>" but got "<span style=\"text-align:center\">foo</span><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div><p>extra</p>" but got "<span style=\\"text-align:center\\">foo</span><p>extra</p>"
 [PASS] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>[foo]</span><p>extra" queryCommandValue("defaultparagraphseparator") before
@@ -764,7 +764,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div><p>extra</p>" but got "<span style=\"text-align:center\">foo</span><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div><p>extra</p>" but got "<span style=\\"text-align:center\\">foo</span><p>extra</p>"
 [PASS] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra" queryCommandValue("defaultparagraphseparator") before
@@ -784,7 +784,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div><p>extra</p>" but got "<span style=\"text-align:center\">foo</span><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div><p>extra</p>" but got "<span style=\\"text-align:center\\">foo</span><p>extra</p>"
 [PASS] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["justifycenter",""]] "<span style=text-align:center>f[o]o</span><p>extra" queryCommandValue("defaultparagraphseparator") before
@@ -805,7 +805,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div><div style=\"text-align:left\" contenteditable=\"false\">bar</div><div style=\"text-align:center\">baz</div><p>extra</p>" but got "<div style=\"text-align:center\">foo<div style=\"text-align:center\" contenteditable=\"false\">bar</div>baz</div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div><div style=\\"text-align:left\\" contenteditable=\\"false\\">bar</div><div style=\\"text-align:center\\">baz</div><p>extra</p>" but got "<div style=\\"text-align:center\\">foo<div style=\\"text-align:center\\" contenteditable=\\"false\\">bar</div>baz</div><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("stylewithcss") before
@@ -831,7 +831,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div><div style=\"text-align:left\" contenteditable=\"false\">bar</div><div style=\"text-align:center\">baz</div><p>extra</p>" but got "<div style=\"text-align:center\">foo<div style=\"text-align:center\" contenteditable=\"false\">bar</div>baz</div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div><div style=\\"text-align:left\\" contenteditable=\\"false\\">bar</div><div style=\\"text-align:center\\">baz</div><p>extra</p>" but got "<div style=\\"text-align:center\\">foo<div style=\\"text-align:center\\" contenteditable=\\"false\\">bar</div>baz</div><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("stylewithcss") before
@@ -857,7 +857,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div><div style=\"text-align:left\" contenteditable=\"false\">bar</div><div style=\"text-align:center\">baz</div><p>extra</p>" but got "<div style=\"text-align:center\">foo<div style=\"text-align:center\" contenteditable=\"false\">bar</div>baz</div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div><div style=\\"text-align:left\\" contenteditable=\\"false\\">bar</div><div style=\\"text-align:center\\">baz</div><p>extra</p>" but got "<div style=\\"text-align:center\\">foo<div style=\\"text-align:center\\" contenteditable=\\"false\\">bar</div>baz</div><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("stylewithcss") before
@@ -883,7 +883,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div><div style=\"text-align:left\" contenteditable=\"false\">bar</div><div style=\"text-align:center\">baz</div><p>extra</p>" but got "<div style=\"text-align:center\">foo<div style=\"text-align:center\" contenteditable=\"false\">bar</div>baz</div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div><div style=\\"text-align:left\\" contenteditable=\\"false\\">bar</div><div style=\\"text-align:center\\">baz</div><p>extra</p>" but got "<div style=\\"text-align:center\\">foo<div style=\\"text-align:center\\" contenteditable=\\"false\\">bar</div>baz</div><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("stylewithcss") before
@@ -908,7 +908,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><p>foo</p></div><p>extra</p>" but got "<div align=\"nonsense\"><p style=\"text-align:center\">foo</p></div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p></div><p>extra</p>" but got "<div align=\\"nonsense\\"><p style=\\"text-align:center\\">foo</p></div><p>extra</p>"
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra" queryCommandValue("stylewithcss") before
@@ -927,7 +927,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><p>foo</p></div><p>extra</p>" but got "<div align=\"nonsense\"><p style=\"text-align:center\">foo</p></div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p></div><p>extra</p>" but got "<div align=\\"nonsense\\"><p style=\\"text-align:center\\">foo</p></div><p>extra</p>"
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["justifycenter",""]] "<div align=nonsense><p>[foo]</div><p>extra" queryCommandValue("stylewithcss") before
@@ -945,7 +945,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["justifycenter",""]] "<div style=text-align:inherit><p>[foo]</div><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["justifycenter",""]] "<div style=text-align:inherit><p>[foo]</div><p>extra" checks for modifications to non-editable content
 [FAIL] [["justifycenter",""]] "<div style=text-align:inherit><p>[foo]</div><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><p>foo</p></div><p>extra</p>" but got "<div style=\"text-align:inherit\"><p style=\"text-align:center\">foo</p></div><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p></div><p>extra</p>" but got "<div style=\\"text-align:inherit\\"><p style=\\"text-align:center\\">foo</p></div><p>extra</p>"
 [PASS] [["justifycenter",""]] "<div style=text-align:inherit><p>[foo]</div><p>extra" queryCommandIndeterm("justifycenter") before
 [PASS] [["justifycenter",""]] "<div style=text-align:inherit><p>[foo]</div><p>extra" queryCommandState("justifycenter") before
 [FAIL] [["justifycenter",""]] "<div style=text-align:inherit><p>[foo]</div><p>extra" queryCommandValue("justifycenter") before
@@ -959,7 +959,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\"right\"><p style=\"text-align:center\">foo</p></quasit><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\\"right\\"><p style=\\"text-align:center\\">foo</p></quasit><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandValue("stylewithcss") before
@@ -985,7 +985,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\"right\"><p style=\"text-align:center\">foo</p></quasit><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\\"right\\"><p style=\\"text-align:center\\">foo</p></quasit><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandValue("stylewithcss") before
@@ -1011,7 +1011,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\"right\"><p style=\"text-align:center\">foo</p></quasit><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\\"right\\"><p style=\\"text-align:center\\">foo</p></quasit><p>extra</p>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandValue("stylewithcss") before
@@ -1037,7 +1037,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\"right\"><p style=\"text-align:center\">foo</p></quasit><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><quasit><p>foo</p></quasit></div><p>extra</p>" but got "<quasit align=\\"right\\"><p style=\\"text-align:center\\">foo</p></quasit><p>extra</p>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<quasit align=right><p>[foo]</p></quasit><p>extra" queryCommandValue("stylewithcss") before
@@ -1063,7 +1063,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div>" but got "<div align=\"center\"><div align=\"left\" style=\"text-align:center\">foo</div></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div>" but got "<div align=\\"center\\"><div align=\\"left\\" style=\\"text-align:center\\">foo</div></div>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandValue("stylewithcss") before
@@ -1089,7 +1089,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div>" but got "<div align=\"center\"><div align=\"left\" style=\"text-align:center\">foo</div></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div>" but got "<div align=\\"center\\"><div align=\\"left\\" style=\\"text-align:center\\">foo</div></div>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandValue("stylewithcss") before
@@ -1115,7 +1115,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div>" but got "<div align=\"center\"><div align=\"left\" style=\"text-align:center\">foo</div></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div>" but got "<div align=\\"center\\"><div align=\\"left\\" style=\\"text-align:center\\">foo</div></div>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandValue("stylewithcss") before
@@ -1141,7 +1141,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div>" but got "<div align=\"center\"><div align=\"left\" style=\"text-align:center\">foo</div></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div>" but got "<div align=\\"center\\"><div align=\\"left\\" style=\\"text-align:center\\">foo</div></div>"
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div align=center>{<div align=left>foo</div>}</div>" queryCommandValue("stylewithcss") before
@@ -1167,7 +1167,7 @@ Found 1000 tests; 821 PASS, 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=left>{<div align=center>foo</div>}</div>": execCommand("justifycenter", false, "") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=left>{<div align=center>foo</div>}</div>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=left>{<div align=center>foo</div>}</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo</div>" but got "<div align=\"left\"><div align=\"center\">foo</div></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo</div>" but got "<div align=\\"left\\"><div align=\\"center\\">foo</div></div>"
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=left>{<div align=center>foo</div>}</div>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=left>{<div align=center>foo</div>}</div>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "<div align=left>{<div align=center>foo</div>}</div>" queryCommandValue("stylewithcss") before

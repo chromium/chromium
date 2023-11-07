@@ -330,11 +330,11 @@ Found 687 tests; 679 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] content: attr( |bar )
   assert_equals: content raw inline style declaration expected "attr(bar)" but got ""
 [FAIL] content: attr(foo-bar, "fallback")
-  assert_equals: content raw inline style declaration expected "attr(foo-bar, \"fallback\")" but got ""
+  assert_equals: content raw inline style declaration expected "attr(foo-bar, \\"fallback\\")" but got ""
 [FAIL] content: attr(foo_bar, "fallback")
-  assert_equals: content raw inline style declaration expected "attr(foo_bar, \"fallback\")" but got ""
+  assert_equals: content raw inline style declaration expected "attr(foo_bar, \\"fallback\\")" but got ""
 [FAIL] content: attr(|bar, "fallback")
-  assert_equals: content raw inline style declaration expected "attr(bar, \"fallback\")" but got ""
+  assert_equals: content raw inline style declaration expected "attr(bar, \\"fallback\\")" but got ""
 [FAIL] content: attr(foo, "")
   assert_equals: content raw inline style declaration expected "attr(foo)" but got ""
 [FAIL] content: attr( |foo ,  "" )

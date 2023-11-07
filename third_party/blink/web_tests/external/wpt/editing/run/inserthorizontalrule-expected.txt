@@ -125,7 +125,7 @@ Found 1348 tests; 1302 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>": execCommand("inserthorizontalrule", false, "") return value
 [PASS] [["stylewithcss","true"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b id=\"abc\">foo</b><hr><b>bar</b>" but got "<b id=\"abc\">foo<hr>bar</b>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b id=\\"abc\\">foo</b><hr><b>bar</b>" but got "<b id=\\"abc\\">foo<hr>bar</b>"
 [PASS] [["stylewithcss","true"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" queryCommandValue("stylewithcss") before
@@ -142,7 +142,7 @@ Found 1348 tests; 1302 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>": execCommand("inserthorizontalrule", false, "") return value
 [PASS] [["stylewithcss","false"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b id=\"abc\">foo</b><hr><b>bar</b>" but got "<b id=\"abc\">foo<hr>bar</b>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b id=\\"abc\\">foo</b><hr><b>bar</b>" but got "<b id=\\"abc\\">foo<hr>bar</b>"
 [PASS] [["stylewithcss","false"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" queryCommandValue("stylewithcss") before
@@ -158,7 +158,7 @@ Found 1348 tests; 1302 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserthorizontalrule","abc"]] "foo[bar]baz": execCommand("inserthorizontalrule", false, "abc") return value
 [PASS] [["inserthorizontalrule","abc"]] "foo[bar]baz" checks for modifications to non-editable content
 [FAIL] [["inserthorizontalrule","abc"]] "foo[bar]baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr>baz" but got "foo<hr id=\"abc\">baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr>baz" but got "foo<hr id=\\"abc\\">baz"
 [PASS] [["inserthorizontalrule","abc"]] "foo[bar]baz" queryCommandIndeterm("inserthorizontalrule") before
 [PASS] [["inserthorizontalrule","abc"]] "foo[bar]baz" queryCommandState("inserthorizontalrule") before
 [PASS] [["inserthorizontalrule","abc"]] "foo[bar]baz" queryCommandValue("inserthorizontalrule") before
@@ -535,7 +535,7 @@ Found 1348 tests; 1302 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserthorizontalrule",""]] "<a href=/>foo[bar]baz</a>": execCommand("inserthorizontalrule", false, "") return value
 [PASS] [["inserthorizontalrule",""]] "<a href=/>foo[bar]baz</a>" checks for modifications to non-editable content
 [FAIL] [["inserthorizontalrule",""]] "<a href=/>foo[bar]baz</a>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"/\">foo</a><hr><a href=\"/\">baz</a>" but got "<a href=\"/\">foo<hr>baz</a>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"/\\">foo</a><hr><a href=\\"/\\">baz</a>" but got "<a href=\\"/\\">foo<hr>baz</a>"
 [PASS] [["inserthorizontalrule",""]] "<a href=/>foo[bar]baz</a>" queryCommandIndeterm("inserthorizontalrule") before
 [PASS] [["inserthorizontalrule",""]] "<a href=/>foo[bar]baz</a>" queryCommandState("inserthorizontalrule") before
 [PASS] [["inserthorizontalrule",""]] "<a href=/>foo[bar]baz</a>" queryCommandValue("inserthorizontalrule") before
@@ -624,7 +624,7 @@ Found 1348 tests; 1302 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserthorizontalrule",""]] "<bdo dir=rtl>foo[bar]baz</bdo>": execCommand("inserthorizontalrule", false, "") return value
 [PASS] [["inserthorizontalrule",""]] "<bdo dir=rtl>foo[bar]baz</bdo>" checks for modifications to non-editable content
 [FAIL] [["inserthorizontalrule",""]] "<bdo dir=rtl>foo[bar]baz</bdo>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<bdo dir=\"rtl\">foo</bdo><hr><bdo dir=\"rtl\">baz</bdo>" but got "<bdo dir=\"rtl\">foo<hr>baz</bdo>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<bdo dir=\\"rtl\\">foo</bdo><hr><bdo dir=\\"rtl\\">baz</bdo>" but got "<bdo dir=\\"rtl\\">foo<hr>baz</bdo>"
 [PASS] [["inserthorizontalrule",""]] "<bdo dir=rtl>foo[bar]baz</bdo>" queryCommandIndeterm("inserthorizontalrule") before
 [PASS] [["inserthorizontalrule",""]] "<bdo dir=rtl>foo[bar]baz</bdo>" queryCommandState("inserthorizontalrule") before
 [PASS] [["inserthorizontalrule",""]] "<bdo dir=rtl>foo[bar]baz</bdo>" queryCommandValue("inserthorizontalrule") before
@@ -1387,7 +1387,7 @@ Found 1348 tests; 1302 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserthorizontalrule",""]] "fo[o<span contenteditable=false>bar</span>b]az": execCommand("inserthorizontalrule", false, "") return value
 [PASS] [["inserthorizontalrule",""]] "fo[o<span contenteditable=false>bar</span>b]az" checks for modifications to non-editable content
 [FAIL] [["inserthorizontalrule",""]] "fo[o<span contenteditable=false>bar</span>b]az" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<hr><span contenteditable=\"false\">bar</span>az" but got "fo<hr>az"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<hr><span contenteditable=\\"false\\">bar</span>az" but got "fo<hr>az"
 [PASS] [["inserthorizontalrule",""]] "fo[o<span contenteditable=false>bar</span>b]az" queryCommandIndeterm("inserthorizontalrule") before
 [PASS] [["inserthorizontalrule",""]] "fo[o<span contenteditable=false>bar</span>b]az" queryCommandState("inserthorizontalrule") before
 [PASS] [["inserthorizontalrule",""]] "fo[o<span contenteditable=false>bar</span>b]az" queryCommandValue("inserthorizontalrule") before

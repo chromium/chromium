@@ -13,7 +13,7 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext"," "]] "a@b<b>[]c</b>": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "a@b<b>[]c</b>" checks for modifications to non-editable content
 [FAIL] [["inserttext"," "]] "a@b<b>[]c</b>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"mailto:a@b\">a@b</a><b> c</b>" but got "a@b&nbsp;<b>c</b>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"mailto:a@b\\">a@b</a><b> c</b>" but got "a@b&nbsp;<b>c</b>"
 [PASS] [["inserttext"," "]] "a@b<b>[]c</b>" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext"," "]] "a@b<b>[]c</b>" queryCommandState("inserttext") before
 [PASS] [["inserttext"," "]] "a@b<b>[]c</b>" queryCommandValue("inserttext") before
@@ -38,26 +38,26 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext","a"]] "http://a[]" queryCommandIndeterm("inserttext") after
 [PASS] [["inserttext","a"]] "http://a[]" queryCommandState("inserttext") after
 [PASS] [["inserttext","a"]] "http://a[]" queryCommandValue("inserttext") after
-[PASS] [["inserttext","\t"]] "http://a[]": execCommand("inserttext", false, "\t") return value
-[PASS] [["inserttext","\t"]] "http://a[]" checks for modifications to non-editable content
-[FAIL] [["inserttext","\t"]] "http://a[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://a\">http://a</a>\t" but got "http://a<span style=\"white-space:pre\">\t</span>"
-[PASS] [["inserttext","\t"]] "http://a[]" queryCommandIndeterm("inserttext") before
-[PASS] [["inserttext","\t"]] "http://a[]" queryCommandState("inserttext") before
-[PASS] [["inserttext","\t"]] "http://a[]" queryCommandValue("inserttext") before
-[PASS] [["inserttext","\t"]] "http://a[]" queryCommandIndeterm("inserttext") after
-[PASS] [["inserttext","\t"]] "http://a[]" queryCommandState("inserttext") after
-[PASS] [["inserttext","\t"]] "http://a[]" queryCommandValue("inserttext") after
-[PASS] [["inserttext","\f"]] "http://a[]": execCommand("inserttext", false, "\f") return value
-[PASS] [["inserttext","\f"]] "http://a[]" checks for modifications to non-editable content
-[FAIL] [["inserttext","\f"]] "http://a[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"http://a\">http://a</a>\f" but got "http://a\f"
-[PASS] [["inserttext","\f"]] "http://a[]" queryCommandIndeterm("inserttext") before
-[PASS] [["inserttext","\f"]] "http://a[]" queryCommandState("inserttext") before
-[PASS] [["inserttext","\f"]] "http://a[]" queryCommandValue("inserttext") before
-[PASS] [["inserttext","\f"]] "http://a[]" queryCommandIndeterm("inserttext") after
-[PASS] [["inserttext","\f"]] "http://a[]" queryCommandState("inserttext") after
-[PASS] [["inserttext","\f"]] "http://a[]" queryCommandValue("inserttext") after
+[PASS] [["inserttext","\\t"]] "http://a[]": execCommand("inserttext", false, "\\t") return value
+[PASS] [["inserttext","\\t"]] "http://a[]" checks for modifications to non-editable content
+[FAIL] [["inserttext","\\t"]] "http://a[]" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://a\\">http://a</a>\\t" but got "http://a<span style=\\"white-space:pre\\">\\t</span>"
+[PASS] [["inserttext","\\t"]] "http://a[]" queryCommandIndeterm("inserttext") before
+[PASS] [["inserttext","\\t"]] "http://a[]" queryCommandState("inserttext") before
+[PASS] [["inserttext","\\t"]] "http://a[]" queryCommandValue("inserttext") before
+[PASS] [["inserttext","\\t"]] "http://a[]" queryCommandIndeterm("inserttext") after
+[PASS] [["inserttext","\\t"]] "http://a[]" queryCommandState("inserttext") after
+[PASS] [["inserttext","\\t"]] "http://a[]" queryCommandValue("inserttext") after
+[PASS] [["inserttext","\\f"]] "http://a[]": execCommand("inserttext", false, "\\f") return value
+[PASS] [["inserttext","\\f"]] "http://a[]" checks for modifications to non-editable content
+[FAIL] [["inserttext","\\f"]] "http://a[]" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://a\\">http://a</a>\\f" but got "http://a\\f"
+[PASS] [["inserttext","\\f"]] "http://a[]" queryCommandIndeterm("inserttext") before
+[PASS] [["inserttext","\\f"]] "http://a[]" queryCommandState("inserttext") before
+[PASS] [["inserttext","\\f"]] "http://a[]" queryCommandValue("inserttext") before
+[PASS] [["inserttext","\\f"]] "http://a[]" queryCommandIndeterm("inserttext") after
+[PASS] [["inserttext","\\f"]] "http://a[]" queryCommandState("inserttext") after
+[PASS] [["inserttext","\\f"]] "http://a[]" queryCommandValue("inserttext") after
 [PASS] [["inserttext"," "]] "http://a[]": execCommand("inserttext", false, " ") return value
 [PASS] [["inserttext"," "]] "http://a[]" checks for modifications to non-editable content
 [PASS] [["inserttext"," "]] "http://a[]" compare innerHTML
@@ -212,7 +212,7 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext","a"]] "<a href=/>foo[]</a>bar": execCommand("inserttext", false, "a") return value
 [PASS] [["inserttext","a"]] "<a href=/>foo[]</a>bar" checks for modifications to non-editable content
 [FAIL] [["inserttext","a"]] "<a href=/>foo[]</a>bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\"/\">fooa</a>bar" but got "<a href=\"/\">foo</a>abar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"/\\">fooa</a>bar" but got "<a href=\\"/\\">foo</a>abar"
 [PASS] [["inserttext","a"]] "<a href=/>foo[]</a>bar" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext","a"]] "<a href=/>foo[]</a>bar" queryCommandState("inserttext") before
 [PASS] [["inserttext","a"]] "<a href=/>foo[]</a>bar" queryCommandValue("inserttext") before
@@ -415,7 +415,7 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]": execCommand("inserttext", false, "a") return value
 [PASS] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" checks for modifications to non-editable content
 [FAIL] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\"color:rgb(171, 205, 239)\">a</span></p>" but got "<p>foo<font color=\"#abcdef\">a</font></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\\"color:rgb(171, 205, 239)\\">a</span></p>" but got "<p>foo<font color=\\"#abcdef\\">a</font></p>"
 [PASS] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" queryCommandState("inserttext") before
 [PASS] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" queryCommandValue("inserttext") before
@@ -425,7 +425,7 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}": execCommand("inserttext", false, "a") return value
 [PASS] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}" checks for modifications to non-editable content
 [FAIL] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\"color:rgb(171, 205, 239)\">a</span></p>" but got "<p>foo<font color=\"#abcdef\">a</font></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\\"color:rgb(171, 205, 239)\\">a</span></p>" but got "<p>foo<font color=\\"#abcdef\\">a</font></p>"
 [PASS] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}" queryCommandIndeterm("inserttext") before
 [PASS] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}" queryCommandState("inserttext") before
 [PASS] [["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}" queryCommandValue("inserttext") before
@@ -452,7 +452,7 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz": execCommand("inserttext", false, "a") return value
 [PASS] [["stylewithcss","false"],["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","false"],["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\"color:rgb(171, 205, 239)\">a</span>quz</p>" but got "<p>foo<font color=\"#abcdef\">a</font>quz</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\\"color:rgb(171, 205, 239)\\">a</span>quz</p>" but got "<p>foo<font color=\\"#abcdef\\">a</font>quz</p>"
 [PASS] [["stylewithcss","false"],["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["inserttext","a"]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz" queryCommandValue("stylewithcss") before

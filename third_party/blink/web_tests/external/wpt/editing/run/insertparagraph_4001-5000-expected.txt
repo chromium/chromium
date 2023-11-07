@@ -666,7 +666,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertparagraph",""]] "<ul contenteditable><li>{}<br></ul>": execCommand("insertparagraph", false, "") return value
 [PASS] [["insertparagraph",""]] "<ul contenteditable><li>{}<br></ul>" checks for modifications to non-editable content
 [FAIL] [["insertparagraph",""]] "<ul contenteditable><li>{}<br></ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul contenteditable=\"\"><li><br></li></ul>" but got "<p><br></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul contenteditable=\\"\\"><li><br></li></ul>" but got "<p><br></p>"
 [PASS] [["insertparagraph",""]] "<ul contenteditable><li>{}<br></ul>" queryCommandIndeterm("insertparagraph") before
 [PASS] [["insertparagraph",""]] "<ul contenteditable><li>{}<br></ul>" queryCommandState("insertparagraph") before
 [PASS] [["insertparagraph",""]] "<ul contenteditable><li>{}<br></ul>" queryCommandValue("insertparagraph") before
@@ -685,7 +685,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertparagraph",""]] "<div contenteditable=false><ul contenteditable><li>{}<br></ul></div>": execCommand("insertparagraph", false, "") return value
 [PASS] [["insertparagraph",""]] "<div contenteditable=false><ul contenteditable><li>{}<br></ul></div>" checks for modifications to non-editable content
 [FAIL] [["insertparagraph",""]] "<div contenteditable=false><ul contenteditable><li>{}<br></ul></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div contenteditable=\"false\"><ul contenteditable=\"\"><li><br></li></ul></div>" but got "<div contenteditable=\"false\"><ul contenteditable=\"\"><li><br></li><li><br></li></ul></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div contenteditable=\\"false\\"><ul contenteditable=\\"\\"><li><br></li></ul></div>" but got "<div contenteditable=\\"false\\"><ul contenteditable=\\"\\"><li><br></li><li><br></li></ul></div>"
 [PASS] [["insertparagraph",""]] "<div contenteditable=false><ul contenteditable><li>{}<br></ul></div>" queryCommandIndeterm("insertparagraph") before
 [PASS] [["insertparagraph",""]] "<div contenteditable=false><ul contenteditable><li>{}<br></ul></div>" queryCommandState("insertparagraph") before
 [PASS] [["insertparagraph",""]] "<div contenteditable=false><ul contenteditable><li>{}<br></ul></div>" queryCommandValue("insertparagraph") before

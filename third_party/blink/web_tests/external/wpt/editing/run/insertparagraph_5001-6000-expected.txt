@@ -855,7 +855,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>": execCommand("insertparagraph", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\">foo</p></li><li class=\"a\"><p class=\"b\"><br></p></li></ol>" but got "<ol><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\">foo</p></li><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\"><br></p></li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p></li><li class=\\"a\\"><p class=\\"b\\"><br></p></li></ol>" but got "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p></li><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p></li></ol>"
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>" queryCommandValue("defaultparagraphseparator") before
@@ -872,7 +872,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>": execCommand("insertparagraph", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\">foo</p></li><li class=\"a\"><p class=\"b\"><br></p></li></ol>" but got "<ol><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\">foo</p></li><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\"><br></p></li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p></li><li class=\\"a\\"><p class=\\"b\\"><br></p></li></ol>" but got "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p></li><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p></li></ol>"
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>foo[]</ol>" queryCommandValue("defaultparagraphseparator") before
@@ -889,7 +889,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>": execCommand("insertparagraph", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\"a\" id=\"x\"><div class=\"b\" id=\"y\">foo</div><div class=\"b\"><br></div></div>" but got "<div class=\"a\" id=\"x\"><div class=\"b\" id=\"y\">foo</div><div class=\"b\" id=\"y\"><br></div></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\">foo</div><div class=\\"b\\"><br></div></div>" but got "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\">foo</div><div class=\\"b\\" id=\\"y\\"><br></div></div>"
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>" queryCommandValue("defaultparagraphseparator") before
@@ -906,7 +906,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>": execCommand("insertparagraph", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\"a\" id=\"x\"><div class=\"b\" id=\"y\">foo</div><div class=\"b\"><br></div></div>" but got "<div class=\"a\" id=\"x\"><div class=\"b\" id=\"y\">foo</div><div class=\"b\" id=\"y\"><br></div></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\">foo</div><div class=\\"b\\"><br></div></div>" but got "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\">foo</div><div class=\\"b\\" id=\\"y\\"><br></div></div>"
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>foo[]</div></div>" queryCommandValue("defaultparagraphseparator") before
@@ -923,7 +923,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>": execCommand("insertparagraph", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\"a\" id=\"x\"><p class=\"b\" id=\"y\">foo</p><p class=\"b\"><br></p></div>" but got "<div class=\"a\" id=\"x\"><p class=\"b\" id=\"y\">foo</p><p class=\"b\" id=\"y\"><br></p></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p><p class=\\"b\\"><br></p></div>" but got "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p><p class=\\"b\\" id=\\"y\\"><br></p></div>"
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>" queryCommandValue("defaultparagraphseparator") before
@@ -940,7 +940,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>": execCommand("insertparagraph", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\"a\" id=\"x\"><p class=\"b\" id=\"y\">foo</p><p class=\"b\"><br></p></div>" but got "<div class=\"a\" id=\"x\"><p class=\"b\" id=\"y\">foo</p><p class=\"b\" id=\"y\"><br></p></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p><p class=\\"b\\"><br></p></div>" but got "<div class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p><p class=\\"b\\" id=\\"y\\"><br></p></div>"
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><p class=b id=y>foo[]</div>" queryCommandValue("defaultparagraphseparator") before
@@ -957,7 +957,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>": execCommand("insertparagraph", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\"><br></p></li><li class=\"a\"><p class=\"b\">foo</p></li></ol>" but got "<ol><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\"><br></p></li><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\">foo</p></li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p></li><li class=\\"a\\"><p class=\\"b\\">foo</p></li></ol>" but got "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p></li><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p></li></ol>"
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>" queryCommandValue("defaultparagraphseparator") before
@@ -974,7 +974,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>": execCommand("insertparagraph", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\"><br></p></li><li class=\"a\"><p class=\"b\">foo</p></li></ol>" but got "<ol><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\"><br></p></li><li class=\"a\" id=\"x\"><p class=\"b\" id=\"y\">foo</p></li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p></li><li class=\\"a\\"><p class=\\"b\\">foo</p></li></ol>" but got "<ol><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\"><br></p></li><li class=\\"a\\" id=\\"x\\"><p class=\\"b\\" id=\\"y\\">foo</p></li></ol>"
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<ol><li class=a id=x><p class=b id=y>[]foo</ol>" queryCommandValue("defaultparagraphseparator") before
@@ -991,7 +991,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>": execCommand("insertparagraph", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\"a\" id=\"x\"><div class=\"b\" id=\"y\"><br></div><div class=\"b\">foo</div></div>" but got "<div class=\"a\" id=\"x\"><div class=\"b\" id=\"y\"><br></div><div class=\"b\" id=\"y\">foo</div></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\"><br></div><div class=\\"b\\">foo</div></div>" but got "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\"><br></div><div class=\\"b\\" id=\\"y\\">foo</div></div>"
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>" queryCommandValue("defaultparagraphseparator") before
@@ -1008,7 +1008,7 @@ Found 1000 tests; 985 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>": execCommand("insertparagraph", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\"a\" id=\"x\"><div class=\"b\" id=\"y\"><br></div><div class=\"b\">foo</div></div>" but got "<div class=\"a\" id=\"x\"><div class=\"b\" id=\"y\"><br></div><div class=\"b\" id=\"y\">foo</div></div>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\"><br></div><div class=\\"b\\">foo</div></div>" but got "<div class=\\"a\\" id=\\"x\\"><div class=\\"b\\" id=\\"y\\"><br></div><div class=\\"b\\" id=\\"y\\">foo</div></div>"
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<div class=a id=x><div class=b id=y>[]foo</div></div>" queryCommandValue("defaultparagraphseparator") before

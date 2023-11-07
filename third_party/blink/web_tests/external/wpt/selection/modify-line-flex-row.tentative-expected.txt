@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] forward
-  assert_equals: expected "e\n\nTwo\n\nTh" but got "e\nTwo\nTh"
+  assert_equals: expected "e\\n\\nTwo\\n\\nTh" but got "e\\nTwo\\nTh"
 [FAIL] backward
-  assert_equals: expected "e\n\nTwo\n\nTh" but got "e\nTwo\nTh"
+  assert_equals: expected "e\\n\\nTwo\\n\\nTh" but got "e\\nTwo\\nTh"
 Harness: the test ran to completion.
 

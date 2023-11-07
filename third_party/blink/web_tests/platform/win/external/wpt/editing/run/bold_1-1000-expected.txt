@@ -88,7 +88,7 @@ Found 1000 tests; 839 PASS, 161 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["bold",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>": execCommand("bold", false, "") return value
 [PASS] [["stylewithcss","true"],["bold",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" checks for modifications to non-editable content
 [FAIL] [["stylewithcss","true"],["bold",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span style=\"font-weight:bold\">foo</span></p><p> <span style=\"font-weight:bold\"><span>bar</span></span> </p><p><span style=\"font-weight:bold\">baz</span></p>" but got "<p><span style=\"font-weight:bold\">foo</span></p><p> <span style=\"font-weight:bold\"><span>bar</span> </span></p><p><span style=\"font-weight:bold\">baz</span></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span style=\\"font-weight:bold\\">foo</span></p><p> <span style=\\"font-weight:bold\\"><span>bar</span></span> </p><p><span style=\\"font-weight:bold\\">baz</span></p>" but got "<p><span style=\\"font-weight:bold\\">foo</span></p><p> <span style=\\"font-weight:bold\\"><span>bar</span> </span></p><p><span style=\\"font-weight:bold\\">baz</span></p>"
 [PASS] [["stylewithcss","true"],["bold",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["bold",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["bold",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandValue("stylewithcss") before
@@ -383,7 +383,7 @@ Found 1000 tests; 839 PASS, 161 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected false but got true
 [PASS] [["bold",""]] "fo[o<span contenteditable=false>b]ar</span>baz" checks for modifications to non-editable content
 [FAIL] [["bold",""]] "fo[o<span contenteditable=false>b]ar</span>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span contenteditable=\"false\">bar</span>baz" but got "fo<b>o</b><span contenteditable=\"false\">bar</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span contenteditable=\\"false\\">bar</span>baz" but got "fo<b>o</b><span contenteditable=\\"false\\">bar</span>baz"
 [PASS] [["bold",""]] "fo[o<span contenteditable=false>b]ar</span>baz" queryCommandIndeterm("bold") before
 [PASS] [["bold",""]] "fo[o<span contenteditable=false>b]ar</span>baz" queryCommandState("bold") before
 [FAIL] [["bold",""]] "fo[o<span contenteditable=false>b]ar</span>baz" queryCommandValue("bold") before
@@ -480,7 +480,7 @@ Found 1000 tests; 839 PASS, 161 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected false but got true
 [PASS] [["bold",""]] "<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>" checks for modifications to non-editable content
 [FAIL] [["bold",""]] "<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span contenteditable=\"false\">foo<span contenteditable=\"true\">bar</span>baz</span>" but got "<span contenteditable=\"false\">foo<span contenteditable=\"true\">ba<b>r</b></span>baz</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span contenteditable=\\"false\\">foo<span contenteditable=\\"true\\">bar</span>baz</span>" but got "<span contenteditable=\\"false\\">foo<span contenteditable=\\"true\\">ba<b>r</b></span>baz</span>"
 [PASS] [["bold",""]] "<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>" queryCommandIndeterm("bold") before
 [PASS] [["bold",""]] "<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>" queryCommandState("bold") before
 [FAIL] [["bold",""]] "<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>" queryCommandValue("bold") before
@@ -732,41 +732,41 @@ Found 1000 tests; 839 PASS, 161 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["stylewithcss","false"],["bold",""]] "{<table><tr><td>foo<td>bar<td>baz</table>}" queryCommandValue("bold") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz": execCommand("stylewithcss", false, "true") return value
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz": execCommand("bold", false, "") return value
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" checks for modifications to non-editable content
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" compare innerHTML
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandState("stylewithcss") before
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandValue("stylewithcss") before
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandState("stylewithcss") after
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandValue("stylewithcss") after
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandIndeterm("bold") before
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandState("bold") before
-[FAIL] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandValue("bold") before
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandIndeterm("bold") before
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandState("bold") before
+[FAIL] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandIndeterm("bold") after
-[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandState("bold") after
-[FAIL] [["stylewithcss","true"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandValue("bold") after
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandIndeterm("bold") after
+[PASS] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandState("bold") after
+[FAIL] [["stylewithcss","true"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandValue("bold") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz": execCommand("stylewithcss", false, "false") return value
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz": execCommand("bold", false, "") return value
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" checks for modifications to non-editable content
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" compare innerHTML
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandState("stylewithcss") before
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandValue("stylewithcss") before
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandState("stylewithcss") after
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandValue("stylewithcss") after
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandIndeterm("bold") before
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandState("bold") before
-[FAIL] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandValue("bold") before
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandIndeterm("bold") before
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandState("bold") before
+[FAIL] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandIndeterm("bold") after
-[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandState("bold") after
-[FAIL] [["stylewithcss","false"],["bold",""]] "foo<span style=\"font-weight: bold\">[bar]</span>baz" queryCommandValue("bold") after
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandIndeterm("bold") after
+[PASS] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandState("bold") after
+[FAIL] [["stylewithcss","false"],["bold",""]] "foo<span style=\\"font-weight: bold\\">[bar]</span>baz" queryCommandValue("bold") after
   assert_equals: Wrong result returned expected "" but got "false"
 [PASS] [["stylewithcss","true"],["bold",""]] "foo<b>[bar]</b>baz": execCommand("stylewithcss", false, "true") return value
 [PASS] [["stylewithcss","true"],["bold",""]] "foo<b>[bar]</b>baz": execCommand("bold", false, "") return value
@@ -1138,28 +1138,28 @@ Found 1000 tests; 839 PASS, 161 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["bold",""]] "foo<strong>[bar</strong>]baz" queryCommandState("bold") after
 [FAIL] [["bold",""]] "foo<strong>[bar</strong>]baz" queryCommandValue("bold") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz": execCommand("stylewithcss", false, "true") return value
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz": execCommand("bold", false, "") return value
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" checks for modifications to non-editable content
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" compare innerHTML
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandIndeterm("stylewithcss") before
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandState("stylewithcss") before
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandValue("stylewithcss") before
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandIndeterm("stylewithcss") after
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandState("stylewithcss") after
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandValue("stylewithcss") after
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandIndeterm("bold") before
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandState("bold") before
-[FAIL] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandValue("bold") before
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandIndeterm("bold") before
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandState("bold") before
+[FAIL] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandValue("bold") before
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandIndeterm("bold") after
-[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandState("bold") after
-[FAIL] [["stylewithcss","true"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandValue("bold") after
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandIndeterm("bold") after
+[PASS] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandState("bold") after
+[FAIL] [["stylewithcss","true"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandValue("bold") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["stylewithcss","false"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz": execCommand("stylewithcss", false, "false") return value
-[PASS] [["stylewithcss","false"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz": execCommand("bold", false, "") return value
-[PASS] [["stylewithcss","false"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" checks for modifications to non-editable content
-[PASS] [["stylewithcss","false"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" compare innerHTML
-[PASS] [["stylewithcss","false"],["bold",""]] "foo[<span style=\"font-weight: bold\">bar</span>]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz": execCommand("bold", false, "") return value
+[PASS] [["stylewithcss","false"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["bold",""]] "foo[<span style=\\"font-weight: bold\\">bar</span>]baz" queryCommandIndeterm("stylewithcss") before
 Harness: the test ran to completion.
 

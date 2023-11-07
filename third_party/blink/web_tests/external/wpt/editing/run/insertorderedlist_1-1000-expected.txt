@@ -539,7 +539,7 @@ Found 1000 tests; 762 PASS, 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>": execCommand("insertorderedlist", false, "") return value
 [PASS] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><div>bar</div><ol><li>baz</li></ol>" but got "<div style=\"display:inline !important\">foo</div>bar<br><ol><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><div>bar</div><ol><li>baz</li></ol>" but got "<div style=\\"display:inline !important\\">foo</div>bar<br><ol><li>baz</li></ol>"
 [PASS] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandValue("defaultparagraphseparator") before
@@ -558,7 +558,7 @@ Found 1000 tests; 762 PASS, 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>": execCommand("insertorderedlist", false, "") return value
 [PASS] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" checks for modifications to non-editable content
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><p>bar</p><ol><li>baz</li></ol>" but got "<div style=\"display:inline !important\">foo</div>bar<br><ol><li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><p>bar</p><ol><li>baz</li></ol>" but got "<div style=\\"display:inline !important\\">foo</div>bar<br><ol><li>baz</li></ol>"
 [PASS] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandValue("defaultparagraphseparator") before
@@ -1224,7 +1224,7 @@ Found 1000 tests; 762 PASS, 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["insertorderedlist",""]] "<ul><li><div>[foo]</div>bar<li>baz</ul>": execCommand("insertorderedlist", false, "") return value
 [PASS] [["insertorderedlist",""]] "<ul><li><div>[foo]</div>bar<li>baz</ul>" checks for modifications to non-editable content
 [FAIL] [["insertorderedlist",""]] "<ul><li><div>[foo]</div>bar<li>baz</ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li><div>foo</div>bar</li></ol><ul><li>baz</li></ul>" but got "<ol><li><div style=\"display:inline !important\">foo</div>bar</li></ol><ul><li>baz</li></ul>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li><div>foo</div>bar</li></ol><ul><li>baz</li></ul>" but got "<ol><li><div style=\\"display:inline !important\\">foo</div>bar</li></ol><ul><li>baz</li></ul>"
 [PASS] [["insertorderedlist",""]] "<ul><li><div>[foo]</div>bar<li>baz</ul>" queryCommandIndeterm("insertorderedlist") before
 [PASS] [["insertorderedlist",""]] "<ul><li><div>[foo]</div>bar<li>baz</ul>" queryCommandState("insertorderedlist") before
 [FAIL] [["insertorderedlist",""]] "<ul><li><div>[foo]</div>bar<li>baz</ul>" queryCommandValue("insertorderedlist") before

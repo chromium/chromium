@@ -17,7 +17,7 @@ This is a testharness.js-based test.
   assert_equals: expected 142 but got 0
 [FAIL] "top==142" should set top position of opened window
   assert_equals: expected 142 but got 0
-[FAIL] "\ttop= 142" should set top position of opened window
+[FAIL] "\\ttop= 142" should set top position of opened window
   assert_equals: expected 142 but got 0
 [FAIL] ",top=142,," should set top position of opened window
   assert_equals: expected 142 but got 0

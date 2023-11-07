@@ -9,7 +9,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["fontsize","2"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["fontsize","2"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["fontsize","2"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "foo<span style=\"vertical-align:sub; font-size:small\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "foo<span style=\\"vertical-align:sub; font-size:small\\">a</span>bar"
 [PASS] [["subscript",""],["fontsize","2"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["fontsize","2"],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["fontsize","2"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -35,7 +35,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["fontsize","2"],["subscript",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["fontsize","2"],["subscript",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["fontsize","2"],["subscript",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "foo<span style=\"font-size:small; vertical-align:sub\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "foo<span style=\\"font-size:small; vertical-align:sub\\">a</span>bar"
 [PASS] [["fontsize","2"],["subscript",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("fontsize") before
 [PASS] [["fontsize","2"],["subscript",""],["inserttext","a"]] "foo[]bar" queryCommandState("fontsize") before
 [PASS] [["fontsize","2"],["subscript",""],["inserttext","a"]] "foo[]bar" queryCommandValue("fontsize") before
@@ -61,7 +61,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["subscript",""],["fontsize","3"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["subscript",""],["fontsize","3"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["fontsize","3"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\"3\"><sub>a</sub></font>bar" but got "foo<span style=\"vertical-align:sub\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"3\\"><sub>a</sub></font>bar" but got "foo<span style=\\"vertical-align:sub\\">a</span>bar"
 [PASS] [["subscript",""],["fontsize","3"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
 [PASS] [["subscript",""],["fontsize","3"],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["fontsize","3"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
@@ -87,7 +87,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["fontsize","3"],["subscript",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
 [PASS] [["fontsize","3"],["subscript",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["fontsize","3"],["subscript",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\"3\"><sub>a</sub></font>bar" but got "foo<span style=\"vertical-align:sub\">a</span>bar"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"3\\"><sub>a</sub></font>bar" but got "foo<span style=\\"vertical-align:sub\\">a</span>bar"
 [PASS] [["fontsize","3"],["subscript",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("fontsize") before
 [PASS] [["fontsize","3"],["subscript",""],["inserttext","a"]] "foo[]bar" queryCommandState("fontsize") before
 [PASS] [["fontsize","3"],["subscript",""],["inserttext","a"]] "foo[]bar" queryCommandValue("fontsize") before
@@ -162,7 +162,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<b>[bar]</b>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<b>[bar]</b>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<b>[bar]</b>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<b>a</b>baz" but got "foo<span style=\"font-weight:700\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<b>a</b>baz" but got "foo<span style=\\"font-weight:700\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<b>[bar]</b>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<b>[bar]</b>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<b>[bar]</b>baz" queryCommandValue("delete") before
@@ -179,7 +179,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<i>[bar]</i>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<i>[bar]</i>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<i>[bar]</i>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<i>a</i>baz" but got "foo<span style=\"font-style:italic\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<i>a</i>baz" but got "foo<span style=\\"font-style:italic\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<i>[bar]</i>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<i>[bar]</i>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<i>[bar]</i>baz" queryCommandValue("delete") before
@@ -196,7 +196,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<s>[bar]</s>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<s>[bar]</s>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<s>[bar]</s>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<s>a</s>baz" but got "foo<span style=\"text-decoration-line:line-through\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<s>a</s>baz" but got "foo<span style=\\"text-decoration-line:line-through\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<s>[bar]</s>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<s>[bar]</s>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<s>[bar]</s>baz" queryCommandValue("delete") before
@@ -213,7 +213,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub>[bar]</sub>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub>[bar]</sub>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<sub>[bar]</sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>baz" but got "foo<span style=\"font-size:13.3333px\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>baz" but got "foo<span style=\\"font-size:13.3333px\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub>[bar]</sub>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub>[bar]</sub>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub>[bar]</sub>baz" queryCommandValue("delete") before
@@ -230,7 +230,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<sup>[bar]</sup>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<sup>[bar]</sup>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<sup>[bar]</sup>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>baz" but got "foo<span style=\"font-size:13.3333px\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>baz" but got "foo<span style=\\"font-size:13.3333px\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<sup>[bar]</sup>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sup>[bar]</sup>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sup>[bar]</sup>baz" queryCommandValue("delete") before
@@ -247,7 +247,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<u>[bar]</u>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<u>[bar]</u>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<u>[bar]</u>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<u>a</u>baz" but got "foo<span style=\"text-decoration-line:underline\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<u>a</u>baz" but got "foo<span style=\\"text-decoration-line:underline\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<u>[bar]</u>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<u>[bar]</u>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<u>[bar]</u>baz" queryCommandValue("delete") before
@@ -264,7 +264,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar]</a>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar]</a>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar]</a>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com\">a</a>baz" but got "fooabaz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>baz" but got "fooabaz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar]</a>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar]</a>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar]</a>baz" queryCommandValue("delete") before
@@ -281,7 +281,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar]</font>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar]</font>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar]</font>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font face=\"sans-serif\">a</font>baz" but got "foo<span style=\"font-family:sans-serif\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font face=\\"sans-serif\\">a</font>baz" but got "foo<span style=\\"font-family:sans-serif\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar]</font>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar]</font>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar]</font>baz" queryCommandValue("delete") before
@@ -298,7 +298,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar]</font>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar]</font>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar]</font>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\"4\">a</font>baz" but got "foo<span style=\"font-size:large\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"4\\">a</font>baz" but got "foo<span style=\\"font-size:large\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar]</font>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar]</font>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar]</font>baz" queryCommandValue("delete") before
@@ -315,7 +315,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar]</font>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar]</font>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar]</font>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\"#0000ff\">a</font>baz" but got "foo<span style=\"color:rgb(0, 0, 255)\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\\"#0000ff\\">a</font>baz" but got "foo<span style=\\"color:rgb(0, 0, 255)\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar]</font>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar]</font>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar]</font>baz" queryCommandValue("delete") before
@@ -348,7 +348,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=blue>[bar]</font></a>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=blue>[bar]</font></a>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=blue>[bar]</font></a>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com\">a</a>baz" but got "fooabaz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>baz" but got "fooabaz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=blue>[bar]</font></a>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=blue>[bar]</font></a>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=blue>[bar]</font></a>baz" queryCommandValue("delete") before
@@ -365,7 +365,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=blue><a href=http://www.google.com>[bar]</a></font>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=blue><a href=http://www.google.com>[bar]</a></font>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font color=blue><a href=http://www.google.com>[bar]</a></font>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com\">a</a>baz" but got "foo<span style=\"color:rgb(0, 0, 255)\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>baz" but got "foo<span style=\\"color:rgb(0, 0, 255)\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=blue><a href=http://www.google.com>[bar]</a></font>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=blue><a href=http://www.google.com>[bar]</a></font>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=blue><a href=http://www.google.com>[bar]</a></font>baz" queryCommandValue("delete") before
@@ -382,7 +382,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=brown>[bar]</font></a>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=brown>[bar]</font></a>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=brown>[bar]</font></a>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com\"><font color=\"#a52a2a\">a</font></a>baz" but got "foo<span style=\"color:rgb(165, 42, 42)\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\"><font color=\\"#a52a2a\\">a</font></a>baz" but got "foo<span style=\\"color:rgb(165, 42, 42)\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=brown>[bar]</font></a>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=brown>[bar]</font></a>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=brown>[bar]</font></a>baz" queryCommandValue("delete") before
@@ -399,7 +399,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=brown><a href=http://www.google.com>[bar]</a></font>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=brown><a href=http://www.google.com>[bar]</a></font>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font color=brown><a href=http://www.google.com>[bar]</a></font>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com\">a</a>baz" but got "fooabaz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>baz" but got "fooabaz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=brown><a href=http://www.google.com>[bar]</a></font>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=brown><a href=http://www.google.com>[bar]</a></font>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=brown><a href=http://www.google.com>[bar]</a></font>baz" queryCommandValue("delete") before
@@ -416,7 +416,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=black>[bar]</font></a>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=black>[bar]</font></a>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=black>[bar]</font></a>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com\"><font color=\"#000000\">a</font></a>baz" but got "fooabaz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\"><font color=\\"#000000\\">a</font></a>baz" but got "fooabaz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=black>[bar]</font></a>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=black>[bar]</font></a>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><font color=black>[bar]</font></a>baz" queryCommandValue("delete") before
@@ -433,7 +433,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><u>[bar]</u></a>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><u>[bar]</u></a>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><u>[bar]</u></a>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com\">a</a>baz" but got "fooabaz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>baz" but got "fooabaz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><u>[bar]</u></a>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><u>[bar]</u></a>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com><u>[bar]</u></a>baz" queryCommandValue("delete") before
@@ -450,7 +450,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<u><a href=http://www.google.com>[bar]</a></u>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<u><a href=http://www.google.com>[bar]</a></u>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<u><a href=http://www.google.com>[bar]</a></u>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com\">a</a>baz" but got "foo<span style=\"text-decoration-line:underline\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>baz" but got "foo<span style=\\"text-decoration-line:underline\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<u><a href=http://www.google.com>[bar]</a></u>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<u><a href=http://www.google.com>[bar]</a></u>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<u><a href=http://www.google.com>[bar]</a></u>baz" queryCommandValue("delete") before
@@ -467,7 +467,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub><font size=2>[bar]</font></sub>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub><font size=2>[bar]</font></sub>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<sub><font size=2>[bar]</font></sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>baz" but got "foo<span style=\"font-size:small\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>baz" but got "foo<span style=\\"font-size:small\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub><font size=2>[bar]</font></sub>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub><font size=2>[bar]</font></sub>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub><font size=2>[bar]</font></sub>baz" queryCommandValue("delete") before
@@ -484,7 +484,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar]</sub></font>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar]</sub></font>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar]</sub></font>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\"1\"><sub>a</sub></font>baz" but got "foo<span style=\"font-size:10.8333px\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"1\\"><sub>a</sub></font>baz" but got "foo<span style=\\"font-size:10.8333px\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar]</sub></font>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar]</sub></font>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar]</sub></font>baz" queryCommandValue("delete") before
@@ -501,7 +501,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar]</font></sub>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar]</font></sub>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar]</font></sub>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\"3\"><sub>a</sub></font>baz" but got "fooabaz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"3\\"><sub>a</sub></font>baz" but got "fooabaz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar]</font></sub>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar]</font></sub>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar]</font></sub>baz" queryCommandValue("delete") before
@@ -518,7 +518,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=3><sub>[bar]</sub></font>baz": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=3><sub>[bar]</sub></font>baz" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font size=3><sub>[bar]</sub></font>baz" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>baz" but got "foo<span style=\"font-size:13.3333px\">a</span>baz"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>baz" but got "foo<span style=\\"font-size:13.3333px\\">a</span>baz"
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=3><sub>[bar]</sub></font>baz" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=3><sub>[bar]</sub></font>baz" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=3><sub>[bar]</sub></font>baz" queryCommandValue("delete") before
@@ -887,7 +887,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<b>[bar</b>baz]": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<b>[bar</b>baz]" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<b>[bar</b>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<b>a</b>" but got "foo<span style=\"font-weight:700\">a</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<b>a</b>" but got "foo<span style=\\"font-weight:700\\">a</span>"
 [PASS] [["delete",""],["inserttext","a"]] "foo<b>[bar</b>baz]" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<b>[bar</b>baz]" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<b>[bar</b>baz]" queryCommandValue("delete") before
@@ -904,7 +904,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<i>[bar</i>baz]": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<i>[bar</i>baz]" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<i>[bar</i>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<i>a</i>" but got "foo<span style=\"font-style:italic\">a</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<i>a</i>" but got "foo<span style=\\"font-style:italic\\">a</span>"
 [PASS] [["delete",""],["inserttext","a"]] "foo<i>[bar</i>baz]" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<i>[bar</i>baz]" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<i>[bar</i>baz]" queryCommandValue("delete") before
@@ -921,7 +921,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<s>[bar</s>baz]": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<s>[bar</s>baz]" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<s>[bar</s>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<s>a</s>" but got "foo<span style=\"text-decoration-line:line-through\">a</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<s>a</s>" but got "foo<span style=\\"text-decoration-line:line-through\\">a</span>"
 [PASS] [["delete",""],["inserttext","a"]] "foo<s>[bar</s>baz]" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<s>[bar</s>baz]" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<s>[bar</s>baz]" queryCommandValue("delete") before
@@ -938,7 +938,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub>[bar</sub>baz]": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub>[bar</sub>baz]" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<sub>[bar</sub>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>" but got "foo<span style=\"font-size:13.3333px\">a</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>" but got "foo<span style=\\"font-size:13.3333px\\">a</span>"
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub>[bar</sub>baz]" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub>[bar</sub>baz]" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sub>[bar</sub>baz]" queryCommandValue("delete") before
@@ -955,7 +955,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<sup>[bar</sup>baz]": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<sup>[bar</sup>baz]" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<sup>[bar</sup>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>" but got "foo<span style=\"font-size:13.3333px\">a</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>" but got "foo<span style=\\"font-size:13.3333px\\">a</span>"
 [PASS] [["delete",""],["inserttext","a"]] "foo<sup>[bar</sup>baz]" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sup>[bar</sup>baz]" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<sup>[bar</sup>baz]" queryCommandValue("delete") before
@@ -972,7 +972,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<u>[bar</u>baz]": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<u>[bar</u>baz]" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<u>[bar</u>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<u>a</u>" but got "foo<span style=\"text-decoration-line:underline\">a</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<u>a</u>" but got "foo<span style=\\"text-decoration-line:underline\\">a</span>"
 [PASS] [["delete",""],["inserttext","a"]] "foo<u>[bar</u>baz]" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<u>[bar</u>baz]" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<u>[bar</u>baz]" queryCommandValue("delete") before
@@ -989,7 +989,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar</a>baz]": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar</a>baz]" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar</a>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\"http://www.google.com\">a</a>" but got "fooa"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a href=\\"http://www.google.com\\">a</a>" but got "fooa"
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar</a>baz]" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar</a>baz]" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<a href=http://www.google.com>[bar</a>baz]" queryCommandValue("delete") before
@@ -1006,7 +1006,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar</font>baz]": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar</font>baz]" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar</font>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font face=\"sans-serif\">a</font>" but got "foo<span style=\"font-family:sans-serif\">a</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font face=\\"sans-serif\\">a</font>" but got "foo<span style=\\"font-family:sans-serif\\">a</span>"
 [PASS] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar</font>baz]" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar</font>baz]" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font face=sans-serif>[bar</font>baz]" queryCommandValue("delete") before
@@ -1023,7 +1023,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar</font>baz]": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar</font>baz]" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar</font>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\"4\">a</font>" but got "foo<span style=\"font-size:large\">a</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\\"4\\">a</font>" but got "foo<span style=\\"font-size:large\\">a</span>"
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar</font>baz]" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar</font>baz]" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font size=4>[bar</font>baz]" queryCommandValue("delete") before
@@ -1040,7 +1040,7 @@ Found 1000 tests; 953 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]": execCommand("inserttext", false, "a") return value
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" checks for modifications to non-editable content
 [FAIL] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\"#0000ff\">a</font>" but got "foo<span style=\"color:rgb(0, 0, 255)\">a</span>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font color=\\"#0000ff\\">a</font>" but got "foo<span style=\\"color:rgb(0, 0, 255)\\">a</span>"
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandIndeterm("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandState("delete") before
 [PASS] [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandValue("delete") before

@@ -164,38 +164,38 @@ Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit>[foobar]</quasit>" queryCommandIndeterm("formatblock") after
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit>[foobar]</quasit>" queryCommandState("formatblock") after
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit>[foobar]</quasit>" queryCommandValue("formatblock") after
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>": execCommand("defaultparagraphseparator", false, "div") return value
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>": execCommand("formatblock", false, "<p>") return value
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" checks for modifications to non-editable content
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" compare innerHTML
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandIndeterm("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandState("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandValue("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandIndeterm("formatblock") before
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandState("formatblock") before
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandValue("formatblock") before
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandIndeterm("formatblock") after
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandState("formatblock") after
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandValue("formatblock") after
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>": execCommand("defaultparagraphseparator", false, "p") return value
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>": execCommand("formatblock", false, "<p>") return value
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" checks for modifications to non-editable content
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" compare innerHTML
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandIndeterm("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandState("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandValue("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandIndeterm("formatblock") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandState("formatblock") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandValue("formatblock") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandIndeterm("formatblock") after
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandState("formatblock") after
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\"display: block\">[foobar]</quasit>" queryCommandValue("formatblock") after
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>": execCommand("defaultparagraphseparator", false, "div") return value
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>": execCommand("formatblock", false, "<p>") return value
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" compare innerHTML
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandIndeterm("formatblock") before
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandState("formatblock") before
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandValue("formatblock") before
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandIndeterm("formatblock") after
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandState("formatblock") after
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandValue("formatblock") after
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>": execCommand("defaultparagraphseparator", false, "p") return value
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>": execCommand("formatblock", false, "<p>") return value
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" checks for modifications to non-editable content
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" compare innerHTML
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandIndeterm("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandIndeterm("formatblock") before
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandState("formatblock") before
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandValue("formatblock") before
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandIndeterm("formatblock") after
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandState("formatblock") after
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<quasit style=\\"display: block\\">[foobar]</quasit>" queryCommandValue("formatblock") after
 [PASS] [["formatblock","<blockquote>"]] "<blockquote>[foo]</blockquote><p>extra": execCommand("formatblock", false, "<blockquote>") return value
 [PASS] [["formatblock","<blockquote>"]] "<blockquote>[foo]</blockquote><p>extra" checks for modifications to non-editable content
 [PASS] [["formatblock","<blockquote>"]] "<blockquote>[foo]</blockquote><p>extra" compare innerHTML

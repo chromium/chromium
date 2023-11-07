@@ -11,13 +11,13 @@ This is a testharness.js-based test.
 [PASS] Web Animations: Interpolate attribute <d> from replace [m 0 0 h 1 h 2] to replace [m 0 0 h 3] at (1) is [m 0 0 h 3]
 [PASS] Web Animations: Interpolate attribute <d> from replace [m 0 0 h 1 h 2] to replace [m 0 0 h 3] at (1.4) is [m 0 0 h 3]
 [FAIL] SMIL: Interpolate attribute <d> from replace [m 10 0 h 1] to replace [m 20 0 v 2] at (0) is [m 10 0 h 1]
-  assert_equals: expected "path ( \" M 10 0 H 11 \" ) " but got "path ( \" M 10 0 \" ) "
+  assert_equals: expected "path ( \\" M 10 0 H 11 \\" ) " but got "path ( \\" M 10 0 \\" ) "
 [FAIL] SMIL: Interpolate attribute <d> from replace [m 10 0 h 1] to replace [m 20 0 v 2] at (0.2) is [m 10 0 h 1]
-  assert_equals: expected "path ( \" M 10 0 H 11 \" ) " but got "path ( \" M 12 0 \" ) "
+  assert_equals: expected "path ( \\" M 10 0 H 11 \\" ) " but got "path ( \\" M 12 0 \\" ) "
 [FAIL] SMIL: Interpolate attribute <d> from replace [m 10 0 h 1] to replace [m 20 0 v 2] at (0.6) is [m 20 0 v 2]
-  assert_equals: expected "path ( \" M 20 0 V 2 \" ) " but got "path ( \" M 16 0 \" ) "
+  assert_equals: expected "path ( \\" M 20 0 V 2 \\" ) " but got "path ( \\" M 16 0 \\" ) "
 [FAIL] SMIL: Interpolate attribute <d> from replace [m 10 0 h 1] to replace [m 20 0 v 2] at (1) is [m 20 0 v 2]
-  assert_equals: expected "path ( \" M 20 0 V 2 \" ) " but got "path ( \" M 20 0 \" ) "
+  assert_equals: expected "path ( \\" M 20 0 V 2 \\" ) " but got "path ( \\" M 20 0 \\" ) "
 [PASS] Web Animations: Interpolate attribute <d> from replace [m 10 0 h 1] to replace [m 20 0 v 2] at (-0.4) is [m 10 0 h 1]
 [PASS] Web Animations: Interpolate attribute <d> from replace [m 10 0 h 1] to replace [m 20 0 v 2] at (0) is [m 10 0 h 1]
 [PASS] Web Animations: Interpolate attribute <d> from replace [m 10 0 h 1] to replace [m 20 0 v 2] at (0.2) is [m 10 0 h 1]
