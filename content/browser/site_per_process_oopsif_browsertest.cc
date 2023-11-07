@@ -70,8 +70,16 @@ class BaseUrlInheritanceIframeTest
       public ::testing::WithParamInterface<bool> {
  public:
   BaseUrlInheritanceIframeTest() {
-    feature_list_.InitWithFeatureState(
-        blink::features::kNewBaseUrlInheritanceBehavior, GetParam());
+    if (GetParam()) {  // Test new base url behavior.
+      feature_list_.InitWithFeatureState(
+          blink::features::kNewBaseUrlInheritanceBehavior, true);
+    } else {
+      // Need to force off kIsolateSandboxedIframes if it's enabled in order to
+      // test the legacy base url behavior.
+      feature_list_.InitWithFeatureStates(
+          {{blink::features::kNewBaseUrlInheritanceBehavior, false},
+           {blink::features::kIsolateSandboxedIframes, false}});
+    }
   }
 
   void SetUpOnMainThread() override {
