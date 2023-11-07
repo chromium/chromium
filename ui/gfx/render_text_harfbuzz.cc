@@ -2459,7 +2459,8 @@ void RenderTextHarfBuzz::EnsureLayoutRunList() {
       // If eliding is required, update the eliding breaklist to reduce the
       // width of the visible text. |layout_text_| and |layout_run_list_| are
       // updated by ElideLayoutText(...).
-      if (!multiline() && elide_behavior() == ELIDE_TAIL &&
+      if (!multiline() &&
+          (elide_behavior() == ELIDE_TAIL || elide_behavior() == TRUNCATE) &&
           base::FeatureList::IsEnabled(kRenderTextEarlyEliding)) {
         ElideLayoutText();
       }
@@ -2472,8 +2473,8 @@ void RenderTextHarfBuzz::EnsureLayoutRunList() {
     set_shaped_text(nullptr);
 
     if (base::FeatureList::IsEnabled(kRenderTextEarlyEliding) && !multiline() &&
-        elide_behavior() == ELIDE_TAIL) {
-      // Text eliding was applied on the layout text. It should fit the
+        (elide_behavior() == ELIDE_TAIL || elide_behavior() == TRUNCATE)) {
+      // Text eliding was applied on the layout text. It should fits the
       // display_rect and display text eliding algorithm should not be involved.
       DCHECK_LE(layout_run_list_.width(), display_rect().width());
       DCHECK(!text_elided());
@@ -2501,7 +2502,7 @@ void RenderTextHarfBuzz::ElideLayoutText() {
   }
 
   std::unique_ptr<ElideBehaviorBase> eliding_impl;
-  if (elide_behavior() == ELIDE_TAIL) {
+  if (elide_behavior() == ELIDE_TAIL || elide_behavior() == TRUNCATE) {
     eliding_impl = std::make_unique<TailElideBehaviorImpl>(
         this, &layout_run_list_, available_text_width);
   } else {

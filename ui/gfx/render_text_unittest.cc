@@ -2257,6 +2257,14 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(kElideTruncateTextCases)),
     RenderTextTestWithElideTextCase::ParamInfoToString);
 
+INSTANTIATE_TEST_SUITE_P(
+    EarlyElideTruncate,
+    RenderTextTestWithElideTextCase,
+    testing::Combine(testing::Values(ElideTextTestOptions{TRUNCATE,
+                                                          kUseEarlyEliding}),
+                     testing::ValuesIn(kElideTruncateTextCases)),
+    RenderTextTestWithElideTextCase::ParamInfoToString);
+
 const ElideTextCase kElideEmailTextCases[] = {
     // Invalid email text.
     {"empty", u"", u""},
