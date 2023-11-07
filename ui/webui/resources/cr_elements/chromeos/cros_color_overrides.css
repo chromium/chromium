@@ -8,20 +8,25 @@
  * #css_wrapper_metadata_end */
 
 /*
-Style Module that defines overrides for cr-elements on ChromeOS. This file
-plumbs semantic colors and fonts into cr-elements.
-
-To get ChromeOS System colors, an element must:
-- be beneath a <html> element with a "cros" attribute
-- have a <style include="cros-color-overrides"> module in its style module list
-- import the following URL in JS/TS
-  //resources/cr_elements/chromeos/cros_color_overrides.css.js
-
-To get ChromeOS Jelly colors, an element must:
-- have an ancestor <body> element with the "jelly-enabled" class
-- include "cros-color-overrides" style module in HTML
-- import "//resources/cr_elements/chromeos/cros_color_overrides.css.js" in JS/TS
-*/
+ * Style Module that defines overrides for cr-elements on ChromeOS. This file
+ * plumbs semantic colors and fonts into cr-elements.
+ *
+ * To get ChromeOS System colors, an element must:
+ * 1) Have an ancestor element with the "cros" attribute in the <html> tag.
+ * 2) Import the "cros_color_overrides.css.js" CSS wrapper file in JS/TS.
+ * 3) Include the "cros-color-overrides" style module in HTML.
+ *
+ * To get ChromeOS Jelly colors, an element must:
+ * 1) Have an ancestor element with the "jelly-enabled" class in the <body> tag.
+ * 2) Import the "cros_color_overrides.css.js" CSS wrapper file in JS/TS.
+ * 3) Include the "cros-color-overrides" style module in HTML.
+ *
+ * To apply ChromeOS overrides for Chrome Refresh 2023 styles, an element must:
+ * 1) Have an ancestor element with both the "cros" and "chrome-refresh-2023"
+ *    attributes in the <html> tag.
+ * 2) Import the "cros_color_overrides.css.js" CSS wrapper file in JS/TS.
+ * 3) Include the "cros-color-overrides" style module in HTML.
+ */
 
 :host-context([cros]) a:not(.item)[href] {
   color: var(--cros-link-color);
@@ -297,9 +302,31 @@ To get ChromeOS Jelly colors, an element must:
   --cr-toggle-unchecked-ripple-color: var(--cros-sys-hover_on_prominent);
   /* TODO(b/266837484) Replace with cros.sys.app-elevation1 when available */
   --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
+
+  /* Focus state */
+  --cr-toggle-ripple-ring: 2px solid var(--cros-sys-focus_ring);
   --cr-toggle-ripple-diameter: 32px;
 }
 
-:host-context(body.jelly-enabled) cr-toggle:focus {
-  --cr-toggle-ripple-ring: 2px solid var(--cros-sys-focus_ring);
+:host-context([cros][chrome-refresh-2023]) cr-toggle {
+  --cr-toggle-bar-width: 32px;
+  --cr-toggle-knob-diameter: 12px;
+  --cr-toggle-bar-border: none;
+
+  /* "On" state */
+  --cr-toggle-checked-bar-color: var(--cros-sys-primary);
+  --cr-toggle-checked-button-color: var(--cros-sys-on_primary);
+
+  /* "Off" state */
+  --cr-toggle-unchecked-bar-color: var(--cros-sys-secondary);
+  --cr-toggle-unchecked-button-color: var(--cros-sys-on_secondary);
+
+  /* Hover state */
+  --color-toggle-button-thumb-on-hover: var(--cros-sys-on_primary);
+
+  /* Disabled state */
+  --cr-toggle-disabled-opacity: var(--cros-disabled-opacity);
+
+  /* Focused state */
+  --cr-toggle-ripple-ring: none;
 }
