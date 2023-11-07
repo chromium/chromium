@@ -73,6 +73,7 @@
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
@@ -771,13 +772,21 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 
 #if BUILDFLAG(IS_MAC)
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
-  BrowserWindow* browser_window =
-      BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
-  if (browser_window) {
-    discovery_factory->set_nswindow(reinterpret_cast<uintptr_t>(
-        browser_window->GetNativeWindow().GetNativeNSWindow()));
+  {
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
+    // Not all contexts in which this code runs have a BrowserWindow.
+    // Notably the dialog containing a WebContents that is used for signing
+    // into a new profile does not. Thus the NSWindow is fetched more directly.
+    const views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+        web_contents->GetNativeView());
+    if (widget) {
+      const gfx::NativeWindow window = widget->GetNativeWindow();
+      if (window) {
+        discovery_factory->set_nswindow(
+            reinterpret_cast<uintptr_t>(window.GetNativeNSWindow()));
+      }
+    }
   }
 #endif
 
