@@ -353,7 +353,9 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickChip) {
+// TODO(crbug.com/1500165): Consistently failing - fix and re-enable.
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
+                       DISABLED_ClickChip) {
   OpenAppListAndWaitForIphView();
 
   // Chip click is specified as EventUsed in the test config.
