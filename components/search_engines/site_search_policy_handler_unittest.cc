@@ -85,6 +85,14 @@ TestProvider kEmptyFieldTestProviders[] = {
      .favicon = nullptr},
 };
 
+// Used for tests that require a provider with unknown field.
+TestProvider kUnknownFieldTestProviders[] = {
+    {.name = "work name",
+     .shortcut = "work",
+     .url = "https://work.com/{searchTerms}",
+     .favicon = "https://work.com/favicon.ico"},
+};
+
 // Used for tests that require a list of providers with a duplicated shortcut,
 // but at least one valid entry.
 TestProvider kShortcutNotUniqueTestProviders[] = {
@@ -513,6 +521,44 @@ TEST(SiteSearchPolicyHandlerTest, EmptyRequiredField) {
                            IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY)));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
                            IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY)));
+}
+
+TEST(SiteSearchPolicyHandlerTest, UnknownField) {
+  constexpr char kUnknownFieldName[] = "unknown_field";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::Value::Dict entry =
+      GenerateSiteSearchPolicyEntry(kUnknownFieldTestProviders[0]);
+  entry.Set(kUnknownFieldName, true);
+  base::Value::List policy_value;
+  policy_value.Append(std::move(entry));
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  // A warning is registered during policy validation, but valid fields are
+  // still used for building a new template URL.
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_FALSE(errors.empty());
+
+  handler.ApplyPolicySettings(policies, &prefs);
+  base::Value* providers = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+  ASSERT_NE(providers, nullptr);
+  ASSERT_TRUE(providers->is_list());
+  EXPECT_THAT(providers->GetList(),
+              ElementsAre(IsSiteSearchEntry(kUnknownFieldTestProviders[0])));
 }
 
 TEST(SiteSearchPolicyHandlerTest, ShortcutWithSpace) {
