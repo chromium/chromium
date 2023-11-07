@@ -699,6 +699,19 @@ BASE_FEATURE(kAutofillVirtualCardsOnTouchToFillAndroid,
              "AutofillVirtualCardsOnTouchToFillAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether user tap on an element is needed to show autofill
+// suggestions. If enabled, this flag would disable android autofill suggestions
+// if the focus on an element is Javascript-originated.
+// DidReceiveLeftMouseDownOrGestureTapInNode() will show suggestions if the
+// focus change occurred as a result of a gesture. See crbug.com/730764 for why
+// showing autofill suggestions as a result of JavaScript changing focus is
+// enabled on WebView.
+// TODO(crbug.com/1496382) Clean up autofill feature flag
+// `kAutofillAndroidDisableSuggestionsOnJSFocus`
+BASE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus,
+             "AutofillAndroidDisableSuggestionsOnJSFocus",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, Autofill suggestions are displayed in the keyboard accessory
 // instead of the regular popup.

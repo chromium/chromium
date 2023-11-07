@@ -436,7 +436,16 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   if ((IsKeyboardAccessoryEnabled() || !focus_requires_scroll_) &&
       !element.IsNull() &&
       element.GetDocument().GetFrame()->HasTransientUserActivation()) {
-    HandleFocusChangeComplete(/*focused_node_was_last_clicked=*/true);
+    // If the focus change was caused by a user gesture,
+    // DidReceiveLeftMouseDownOrGestureTapInNode() will show the autofill
+    // suggestions. See crbug.com/730764 for why showing autofill suggestions as
+    // a result of JavaScript changing focus is enabled on WebView.
+    bool focused_node_was_last_clicked =
+        !base::FeatureList::IsEnabled(
+            features::kAutofillAndroidDisableSuggestionsOnJSFocus) ||
+        !focus_requires_scroll_;
+    HandleFocusChangeComplete(
+        /*focused_node_was_last_clicked=*/focused_node_was_last_clicked);
   }
 
   if (focus_moved_to_new_form)
