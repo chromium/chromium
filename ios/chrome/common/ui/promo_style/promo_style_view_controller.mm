@@ -596,11 +596,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // scroll view hasn't been scrolled to the end at least once yet.
   if (_primaryActionButton &&
       (!self.scrollToEndMandatory || self.didReachBottom)) {
-    UIButtonConfiguration* buttonConfiguration =
-        _primaryActionButton.configuration;
-    buttonConfiguration.attributedTitle = nil;
-    buttonConfiguration.title = _primaryActionString;
-    _primaryActionButton.configuration = buttonConfiguration;
+    [_primaryActionButton setAttributedTitle:nil forState:UIControlStateNormal];
+    [_primaryActionButton setTitle:_primaryActionString
+                          forState:UIControlStateNormal];
   }
 }
 
@@ -681,32 +679,41 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
     _primaryActionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-    buttonConfiguration.titlePadding = kMoreArrowMargin;
-    buttonConfiguration.background.backgroundColor =
-        [UIColor colorNamed:kBlueColor];
-    buttonConfiguration.baseForegroundColor =
-        [UIColor colorNamed:kSolidButtonTextColor];
-    buttonConfiguration.background.cornerRadius = kPrimaryButtonCornerRadius;
+
+    // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
+    // deployment target is iOS 15.
+    UIEdgeInsets contentInsets =
+        UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+    SetContentEdgeInsets(_primaryActionButton, contentInsets);
+    UIEdgeInsets titleInsets =
+        UIEdgeInsetsMake(0, kMoreArrowMargin, 0, kMoreArrowMargin);
+    SetTitleEdgeInsets(_primaryActionButton, titleInsets);
+
+    [_primaryActionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
+    UIColor* titleColor = [UIColor colorNamed:kSolidButtonTextColor];
+    [_primaryActionButton setTitleColor:titleColor
+                               forState:UIControlStateNormal];
+    [self setPrimaryActionButtonFont:_primaryActionButton];
+    _primaryActionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
+    _primaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+    _primaryActionButton.pointerInteractionEnabled = YES;
+    _primaryActionButton.pointerStyleProvider =
+        CreateOpaqueButtonPointerStyleProvider();
 
     // Use `primaryActionString` even if scrolling to the end is mandatory
     // because at the viewDidLoad stage, the scroll view hasn't computed its
     // content height, so there is no way to knOow if scrolling is needed.
     // This label will be updated at the viewDidAppear stage if necessary.
-    buttonConfiguration.title = self.primaryActionString;
-    buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-    _primaryActionButton.configuration = buttonConfiguration;
-    [self setPrimaryActionButtonFont:_primaryActionButton];
-
-    _primaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
-    _primaryActionButton.pointerInteractionEnabled = YES;
-    _primaryActionButton.pointerStyleProvider =
-        CreateOpaqueButtonPointerStyleProvider();
+    [_primaryActionButton setTitle:self.primaryActionString
+                          forState:UIControlStateNormal];
+    UILabel* titleLabel = _primaryActionButton.titleLabel;
+    titleLabel.adjustsFontSizeToFitWidth = YES;
+    titleLabel.minimumScaleFactor = 0.7;
+    _primaryActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
     _primaryActionButton.accessibilityIdentifier =
         kPromoStylePrimaryActionAccessibilityIdentifier;
+    _primaryActionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
                    forControlEvents:UIControlEventTouchUpInside];
@@ -907,15 +914,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 }
 
 - (void)setPrimaryActionButtonFont:(UIButton*)button {
-  DCHECK(button.configuration.title);
-  UIButtonConfiguration* buttonConfiguration = button.configuration;
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
-      initWithString:button.configuration.title];
-  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-  buttonConfiguration.attributedTitle = string;
-  button.configuration = buttonConfiguration;
+  button.titleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
 }
 
 // Sets or resets the "Read More" text label when the bottom hasn't been
@@ -971,10 +971,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // fading out to make room for the new image, which looks awkward).
   __weak PromoStyleViewController* weakSelf = self;
   [UIView performWithoutAnimation:^{
-    UIButtonConfiguration* buttonConfiguration =
-        weakSelf.primaryActionButton.configuration;
-    buttonConfiguration.attributedTitle = attributedString;
-    weakSelf.primaryActionButton.configuration = buttonConfiguration;
+    [weakSelf.primaryActionButton setAttributedTitle:attributedString
+                                            forState:UIControlStateNormal];
     [weakSelf.primaryActionButton layoutIfNeeded];
   }];
 }
@@ -982,26 +980,23 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 - (UIButton*)createButtonWithText:(NSString*)buttonText
           accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.title = buttonText;
-  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
-  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  [button setTitle:buttonText forState:UIControlStateNormal];
+  [button setBackgroundColor:[UIColor clearColor]];
+  UIColor* titleColor = [UIColor colorNamed:kBlueColor];
+  [button setTitleColor:titleColor forState:UIControlStateNormal];
 
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSMutableAttributedString* string =
-      [[NSMutableAttributedString alloc] initWithString:buttonText];
-  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-  buttonConfiguration.attributedTitle = string;
-  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-  button.configuration = buttonConfiguration;
+  // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
+  // deployment target is iOS 15.
+  UIEdgeInsets contentInsets =
+      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  SetContentEdgeInsets(button, contentInsets);
 
+  button.titleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.titleLabel.adjustsFontForContentSizeCategory = YES;
   button.accessibilityIdentifier = accessibilityIdentifier;
+  button.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
   button.pointerInteractionEnabled = YES;
   button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
@@ -1078,14 +1073,11 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
   _buttonUpdated = YES;
   HighlightButton* primaryActionButton = self.primaryActionButton;
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.attributedTitle = nil;
-  buttonConfiguration.title = self.primaryActionString;
-  primaryActionButton.configuration = buttonConfiguration;
+  [primaryActionButton setAttributedTitle:nil forState:UIControlStateNormal];
+  [primaryActionButton setTitle:self.primaryActionString
+                       forState:UIControlStateNormal];
   primaryActionButton.accessibilityIdentifier =
       kPromoStylePrimaryActionAccessibilityIdentifier;
-
   // Reset the font to make sure it is properly scaled.
   [self setPrimaryActionButtonFont:primaryActionButton];
 

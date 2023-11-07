@@ -98,7 +98,6 @@ void DismissDefaultBrowserPromo() {
   id<GREYMatcher> buttonMatcher = grey_allOf(
       grey_ancestor(grey_accessibilityID(
           first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
-      grey_accessibilityTrait(UIAccessibilityTraitStaticText),
       grey_accessibilityLabel(l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
       nil);
