@@ -135,6 +135,9 @@ class AggregateTestStatusResultsUnittest(BaseResultsUnittest):
             ct.ResultStatus.FAIL,
             'date':
             '2023-03-01',
+            'is_slow':
+            False,
+            'typ_expectations': ['Pass'],
         },
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'
@@ -147,6 +150,9 @@ class AggregateTestStatusResultsUnittest(BaseResultsUnittest):
             ct.ResultStatus.CRASH,
             'date':
             '2023-03-02',
+            'is_slow':
+            False,
+            'typ_expectations': ['Pass'],
         },
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'
@@ -159,6 +165,9 @@ class AggregateTestStatusResultsUnittest(BaseResultsUnittest):
             ct.ResultStatus.FAIL,
             'date':
             '2023-03-03',
+            'is_slow':
+            True,
+            'typ_expectations': ['Pass', 'Slow'],
         },
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'
@@ -171,6 +180,9 @@ class AggregateTestStatusResultsUnittest(BaseResultsUnittest):
             ct.ResultStatus.FAIL,
             'date':
             '2023-03-04',
+            'is_slow':
+            True,
+            'typ_expectations': ['Pass', 'Slow'],
         },
         {
             'name': ('gpu_tests.pixel_integration_test.PixelIntegrationTest.'
@@ -182,6 +194,9 @@ class AggregateTestStatusResultsUnittest(BaseResultsUnittest):
             ct.ResultStatus.FAIL,
             'date':
             '2023-03-05',
+            'is_slow':
+            False,
+            'typ_expectations': ['Pass'],
         },
     ]
     expected_output = {
@@ -189,26 +204,30 @@ class AggregateTestStatusResultsUnittest(BaseResultsUnittest):
             'conformance/textures/misc/video-rotation.html': {
                 ('nvidia', 'win'): [
                     (ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/1111',
-                     datetime.date.fromisoformat('2023-03-01')),
+                     datetime.date.fromisoformat('2023-03-01'), False, ['Pass'
+                                                                        ]),
                     (ct.ResultStatus.CRASH, 'http://ci.chromium.org/b/2222',
-                     datetime.date.fromisoformat('2023-03-02')),
+                     datetime.date.fromisoformat('2023-03-02'), False, ['Pass'
+                                                                        ]),
                 ],
                 ('amd', 'win'): [
                     (ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/3333',
-                     datetime.date.fromisoformat('2023-03-03')),
+                     datetime.date.fromisoformat('2023-03-03'), True,
+                     ['Pass', 'Slow']),
                 ],
             },
             'conformance/textures/misc/texture-npot-video.html': {
                 ('nvidia', 'win'):
                 [(ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/4444',
-                  datetime.date.fromisoformat('2023-03-04'))],
+                  datetime.date.fromisoformat('2023-03-04'), True,
+                  ['Pass', 'Slow'])],
             },
         },
         'pixel_integration_test': {
             'Pixel_CSS3DBlueBox': {
                 ('nvidia', 'win'):
                 [(ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/5555',
-                  datetime.date.fromisoformat('2023-03-05'))],
+                  datetime.date.fromisoformat('2023-03-05'), False, ['Pass'])],
             },
         },
     }
@@ -253,8 +272,8 @@ class ConvertJsonResultsToResultObjectsUnittest(BaseResultsUnittest):
     self.assertEqual(self._results._ConvertJsonResultsToResultObjects(r),
                      expected_results)
 
-  def testOnQueryResultWithStatusAndDate(self) -> None:
-    """Functionality test on query result with status and date attribute."""
+  def testOnQueryResultWithOptionalAttributes(self) -> None:
+    """Functionality test on query result with optional attributes."""
     r = [
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'
@@ -269,6 +288,9 @@ class ConvertJsonResultsToResultObjectsUnittest(BaseResultsUnittest):
             ct.ResultStatus.FAIL,
             'date':
             '2023-03-01',
+            'is_slow':
+            False,
+            'typ_expectations': ['Pass'],
         },
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'
@@ -281,17 +303,22 @@ class ConvertJsonResultsToResultObjectsUnittest(BaseResultsUnittest):
             ct.ResultStatus.CRASH,
             'date':
             '2023-03-02',
+            'is_slow':
+            True,
+            'typ_expectations': ['Pass', 'Slow'],
         },
     ]
     expected_results = [
         data_types.Result('webgl_conformance_integration_test',
                           'conformance/textures/misc/video-rotation.html',
                           ('nvidia', 'win'), '1111', ct.ResultStatus.FAIL,
-                          datetime.date.fromisoformat('2023-03-01')),
+                          datetime.date.fromisoformat('2023-03-01'), False,
+                          ['Pass']),
         data_types.Result('webgl_conformance_integration_test',
                           'conformance/textures/misc/video-rotation.html',
                           ('nvidia', 'win'), '2222', ct.ResultStatus.CRASH,
-                          datetime.date.fromisoformat('2023-03-02')),
+                          datetime.date.fromisoformat('2023-03-02'), True,
+                          ['Pass', 'Slow']),
     ]
     self.assertEqual(self._results._ConvertJsonResultsToResultObjects(r),
                      expected_results)

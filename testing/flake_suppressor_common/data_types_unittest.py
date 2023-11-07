@@ -33,6 +33,18 @@ class ExpectationUnittest(unittest.TestCase):
                           'id',
                           date=datetime.date(2023, 3, 8))
     self.assertTrue(e.AppliesToResult(r))
+    # With is_slow
+    r = data_types.Result('suite',
+                          'test', ('win', 'nvidia'),
+                          'id',
+                          is_slow=True)
+    self.assertTrue(e.AppliesToResult(r))
+    # With typ_expectations
+    r = data_types.Result('suite',
+                          'test', ('win', 'nvidia'),
+                          'id',
+                          typ_expectations=['Pass'])
+    self.assertTrue(e.AppliesToResult(r))
     # Tag subset
     r = data_types.Result('suite', 'test', ('win', 'nvidia', 'release'), 'id')
     self.assertTrue(e.AppliesToResult(r))
@@ -54,6 +66,18 @@ class ExpectationUnittest(unittest.TestCase):
                           'notatest', ('win', 'nvidia'),
                           'id',
                           date=datetime.date(2023, 3, 8))
+    self.assertFalse(e.AppliesToResult(r))
+    # With is_slow
+    r = data_types.Result('suite',
+                          'notatest', ('win', 'nvidia'),
+                          'id',
+                          is_slow=True)
+    self.assertFalse(e.AppliesToResult(r))
+    # With typ_expectations
+    r = data_types.Result('suite',
+                          'notatest', ('win', 'nvidia'),
+                          'id',
+                          typ_expectations=['Pass'])
     self.assertFalse(e.AppliesToResult(r))
     # Tag superset
     r = data_types.Result('suite', 'test', tuple(['win']), 'id')
@@ -109,6 +133,22 @@ class ResultUnittest(unittest.TestCase):
 
     other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', 'FAIL',
                               datetime.date(2023, 3, 8))
+    self.assertNotEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', '',
+                              datetime.date.min, False)
+    self.assertEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', '',
+                              datetime.date.min, True)
+    self.assertNotEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', '',
+                              datetime.date.min, False, [])
+    self.assertEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', '',
+                              datetime.date.min, False, ['Pass'])
     self.assertNotEqual(r, other)
 
 

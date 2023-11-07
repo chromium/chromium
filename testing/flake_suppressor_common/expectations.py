@@ -221,6 +221,7 @@ class ExpectationProcessor():
       for test, tag_map in test_map.items():
         for typ_tags, result_tuple_list in tag_map.items():
           status = set()
+          slow_test = False
           for test_result in tag_map[typ_tags]:
             if test_result.status == ct.ResultStatus.CRASH:
               status.add('Crash')
@@ -228,11 +229,17 @@ class ExpectationProcessor():
               status.add('Failure')
             elif test_result.status == ct.ResultStatus.ABORT:
               status.add('Timeout')
+              # Mark the test as a Slow test.
+              if 'Slow' in test_result.typ_expectations:
+                slow_test = True
           # Failed tests result must be over all threshold requirement.
           if (status and OverFailedBuildThreshold(
               result_tuple_list, build_fail_total_number_threshold)
               and OverFailedBuildByDayThreshold(
                   result_tuple_list, build_fail_consecutive_day_threshold)):
+            # Only skip slow web tests that are consistently timing out.
+            if slow_test and len(status) == 1 and list(status)[0] == 'Timeout':
+              status.add('Skip')
             status_list = list(status)
             status_list.sort()
             self.ModifyFileForResult(suite, test, typ_tags, '',
