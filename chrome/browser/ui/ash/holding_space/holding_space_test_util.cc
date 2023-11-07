@@ -9,8 +9,23 @@
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
+#include "ui/aura/window.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
+
+void Click(const views::View* view, int flags) {
+  ui::test::EventGenerator event_generator(
+      view->GetWidget()->GetNativeWindow()->GetRootWindow());
+  event_generator.set_flags(flags);
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+}
 
 std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>
 GetSuggestionsInModel(const HoldingSpaceModel& model) {
@@ -22,6 +37,52 @@ GetSuggestionsInModel(const HoldingSpaceModel& model) {
     }
   }
   return model_suggestions;
+}
+
+void PressAndReleaseKey(ui::KeyboardCode key_code, int flags) {
+  ui::test::EventGenerator(
+      HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows())
+      .PressAndReleaseKey(key_code, flags);
+}
+
+void RightClick(const views::View* view, int flags) {
+  ui::test::EventGenerator event_generator(
+      view->GetWidget()->GetNativeWindow()->GetRootWindow());
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.set_flags(flags);
+  event_generator.ClickRightButton();
+}
+
+views::MenuItemView* SelectMenuItemWithCommandId(
+    HoldingSpaceCommandId command_id) {
+  auto* const menu_controller = views::MenuController::GetActiveInstance();
+  if (!menu_controller) {
+    return nullptr;
+  }
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+  auto* const first_selected_menu_item = menu_controller->GetSelectedMenuItem();
+  if (!first_selected_menu_item) {
+    return nullptr;
+  }
+
+  auto* selected_menu_item = first_selected_menu_item;
+  do {
+    if (selected_menu_item->GetCommand() == static_cast<int>(command_id)) {
+      return selected_menu_item;
+    }
+
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+    selected_menu_item = menu_controller->GetSelectedMenuItem();
+
+    // It is expected that context menus loop selection traversal. If the
+    // currently `selected_menu_item` is the `first_selected_menu_item` then the
+    // context menu has been completely traversed.
+  } while (selected_menu_item != first_selected_menu_item);
+
+  // If this LOC is reached the menu has been completely traversed without
+  // finding a menu item for the desired `command_id`.
+  return nullptr;
 }
 
 void WaitForSuggestionsInModel(

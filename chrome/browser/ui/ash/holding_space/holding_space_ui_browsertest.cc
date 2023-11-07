@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -148,15 +149,6 @@ void FlushMessageLoop() {
   run_loop.Run();
 }
 
-// Performs a click on `view` with optional `flags`.
-void Click(const views::View* view, int flags = ui::EF_NONE) {
-  auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
-  ui::test::EventGenerator event_generator(root_window);
-  event_generator.set_flags(flags);
-  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
-  event_generator.ClickLeftButton();
-}
-
 // Performs a double click on `view`.
 void DoubleClick(const views::View* view) {
   auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
@@ -247,53 +239,6 @@ void MoveMouseToView(const views::View* view, size_t count = 1u) {
   auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
   ui::test::EventGenerator event_generator(root_window);
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint(), count);
-}
-
-// Performs a press and release of the specified `key_code` with `flags`.
-void PressAndReleaseKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
-  auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
-  ui::test::EventGenerator event_generator(root_window);
-  event_generator.PressAndReleaseKey(key_code, flags);
-}
-
-// Performs a right click on `view` with the specified `flags`.
-void RightClick(const views::View* view, int flags = ui::EF_NONE) {
-  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
-  ui::test::EventGenerator event_generator(root_window);
-  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
-  event_generator.set_flags(flags);
-  event_generator.ClickRightButton();
-}
-
-// Selects the menu item with the specified command ID. Returns the selected
-// menu item if successful, `nullptr` otherwise.
-views::MenuItemView* SelectMenuItemWithCommandId(
-    HoldingSpaceCommandId command_id) {
-  auto* menu_controller = views::MenuController::GetActiveInstance();
-  if (!menu_controller)
-    return nullptr;
-
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
-  auto* const first_selected_menu_item = menu_controller->GetSelectedMenuItem();
-  if (!first_selected_menu_item)
-    return nullptr;
-
-  auto* selected_menu_item = first_selected_menu_item;
-  do {
-    if (selected_menu_item->GetCommand() == static_cast<int>(command_id))
-      return selected_menu_item;
-
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
-    selected_menu_item = menu_controller->GetSelectedMenuItem();
-
-    // It is expected that context menus loop selection traversal. If the
-    // currently `selected_menu_item` is the `first_selected_menu_item` then the
-    // context menu has been completely traversed.
-  } while (selected_menu_item != first_selected_menu_item);
-
-  // If this LOC is reached the menu has been completely traversed without
-  // finding a menu item for the desired `command_id`.
-  return nullptr;
 }
 
 // Waits for the specified `label` to have the desired `text`.
@@ -531,33 +476,12 @@ class NextMainFrameWaiter : public ui::CompositorObserver {
 
 // HoldingSpaceUiBrowserTest ---------------------------------------------------
 
-// Base class for holding space UI browser tests.
-class HoldingSpaceUiBrowserTest : public HoldingSpaceBrowserTestBase {
+class HoldingSpaceUiBrowserTest : public HoldingSpaceUiBrowserTestBase {
  public:
   HoldingSpaceUiBrowserTest() {
     // TODO(crbug.com/1382945): Parameterize.
     scoped_feature_list_.InitAndDisableFeature(
         features::kHoldingSpacePredictability);
-  }
-
-  // HoldingSpaceBrowserTestBase:
-  void SetUpOnMainThread() override {
-    HoldingSpaceBrowserTestBase::SetUpOnMainThread();
-
-    ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
-    // The holding space tray will not show until the user has added a file to
-    // holding space. Holding space UI browser tests don't need to assert that
-    // behavior since it is already asserted in ash_unittests. As a convenience,
-    // add and remove a holding space item so that the holding space tray will
-    // already be showing during test execution.
-    ASSERT_FALSE(test_api().IsShowingInShelf());
-    RemoveItem(AddDownloadFile());
-    ASSERT_TRUE(test_api().IsShowingInShelf());
-
-    // Confirm that holding space model has been emptied for test execution.
-    ASSERT_TRUE(HoldingSpaceController::Get()->model()->items().empty());
   }
 
  private:

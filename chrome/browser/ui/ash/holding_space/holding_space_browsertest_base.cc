@@ -29,8 +29,8 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/view.h"
 
 namespace ash {
 
@@ -180,6 +180,27 @@ void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
 
   SessionManagerClient::Get()->RequestLockScreen();
   SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
+}
+
+// HoldingSpaceUiBrowserTestBase -----------------------------------------------
+
+void HoldingSpaceUiBrowserTestBase::SetUpOnMainThread() {
+  HoldingSpaceBrowserTestBase::SetUpOnMainThread();
+
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // The holding space tray will not show until the user has added a file to
+  // holding space. Holding space UI browser tests don't need to assert that
+  // behavior since it is already asserted in ash_unittests. As a convenience,
+  // add and remove a holding space item so that the holding space tray will
+  // already be showing during test execution.
+  ASSERT_FALSE(test_api().IsShowingInShelf());
+  RemoveItem(AddDownloadFile());
+  ASSERT_TRUE(test_api().IsShowingInShelf());
+
+  // Confirm that holding space model has been emptied for test execution.
+  ASSERT_TRUE(HoldingSpaceController::Get()->model()->items().empty());
 }
 
 }  // namespace ash

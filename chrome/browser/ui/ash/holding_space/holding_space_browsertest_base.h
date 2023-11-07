@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_BROWSERTEST_BASE_H_
 
 #include <memory>
-#include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
@@ -82,6 +81,15 @@ class HoldingSpaceBrowserTestBase : public SystemWebAppBrowserTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<HoldingSpaceTestApi> test_api_;
+};
+
+// HoldingSpaceUiBrowserTestBase -----------------------------------------------
+
+// Base class for holding space UI browser tests.
+class HoldingSpaceUiBrowserTestBase : public HoldingSpaceBrowserTestBase {
+ protected:
+  // HoldingSpaceBrowserTestBase:
+  void SetUpOnMainThread() override;
 };
 
 }  // namespace ash
