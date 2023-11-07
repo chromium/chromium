@@ -125,7 +125,7 @@ TEST_F(ActionViewControllerTest, TestActionViewDestroyed) {
 
 // Test that action triggered callbacks get called.
 // TODO(crbug.com/1500125): Re-enable this test
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_TriggerAction DISABLED_TriggerAction
 #else
 #define MAYBE_TriggerAction TriggerAction
