@@ -774,7 +774,10 @@ chromium-metrics-reviews@google.com.
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
-    Records how a suggested save location is handled for a new bookmark.
+    Records how a suggested save location provider was used when creating a new
+    bookmark. This will give us an idea of the overlap of different suggestion
+    providers and whether they are being blocked from previous rejections from
+    the user.
   </summary>
   <token key="FeatureName">
     <variant name="ShoppingCollection"/>
