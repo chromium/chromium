@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "net/base/network_anonymization_key.h"
 
+#include <atomic>
 #include <optional>
 
 #include "base/feature_list.h"
@@ -24,7 +25,7 @@ bool g_partition_by_default = false;
 
 // True if NAK::IsPartitioningEnabled has been called, and the value of
 // `g_partition_by_default` cannot be changed.
-bool g_partition_by_default_locked = false;
+ABSL_CONST_INIT std::atomic<bool> g_partition_by_default_locked = false;
 
 }  // namespace
 
@@ -188,7 +189,7 @@ std::optional<std::string> NetworkAnonymizationKey::SerializeSiteWithNonce(
 
 // static
 bool NetworkAnonymizationKey::IsPartitioningEnabled() {
-  g_partition_by_default_locked = true;
+  g_partition_by_default_locked.store(true, std::memory_order_relaxed);
   return g_partition_by_default ||
          base::FeatureList::IsEnabled(
              features::kSplitHostCacheByNetworkIsolationKey) ||
@@ -204,7 +205,7 @@ bool NetworkAnonymizationKey::IsPartitioningEnabled() {
 
 // static
 void NetworkAnonymizationKey::PartitionByDefault() {
-  DCHECK(!g_partition_by_default_locked);
+  DCHECK(!g_partition_by_default_locked.load(std::memory_order_relaxed));
   // Only set the global if none of the relevant features are overridden.
   if (!base::FeatureList::GetInstance()->IsFeatureOverridden(
           "SplitHostCacheByNetworkIsolationKey") &&
@@ -223,7 +224,7 @@ void NetworkAnonymizationKey::PartitionByDefault() {
 // static
 void NetworkAnonymizationKey::ClearGlobalsForTesting() {
   g_partition_by_default = false;
-  g_partition_by_default_locked = false;
+  g_partition_by_default_locked.store(false);
 }
 
 }  // namespace net
