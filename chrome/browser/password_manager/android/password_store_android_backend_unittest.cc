@@ -24,8 +24,10 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
+#include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
+#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -196,6 +198,11 @@ class MockPasswordStoreAndroidBackendBridgeHelper
 class PasswordStoreAndroidBackendTest : public testing::Test {
  protected:
   PasswordStoreAndroidBackendTest() {
+    mock_affiliation_service_ =
+        std::make_unique<testing::NiceMock<MockAffiliationService>>();
+    affiliations_prefetcher_ =
+        std::make_unique<AffiliationsPrefetcher>(mock_affiliation_service());
+
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
     prefs_.registry()->RegisterBooleanPref(
@@ -212,7 +219,8 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     backend_ = std::make_unique<PasswordStoreAndroidBackend>(
         base::PassKey<class PasswordStoreAndroidBackendTest>(),
         CreateMockBridgeHelper(), CreateFakeLifecycleHelper(),
-        CreatePasswordSyncControllerDelegate(), &prefs_);
+        CreatePasswordSyncControllerDelegate(), &prefs_,
+        affiliations_prefetcher_.get());
   }
 
   ~PasswordStoreAndroidBackendTest() override {
@@ -236,6 +244,9 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     return sync_controller_delegate_;
   }
   PrefService* prefs() { return &prefs_; }
+  MockAffiliationService* mock_affiliation_service() {
+    return mock_affiliation_service_.get();
+  }
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   void EnableSyncForTestAccount() {
@@ -259,7 +270,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper>
   CreateMockBridgeHelper() {
     auto unique_bridge_helper = std::make_unique<
-        StrictMock<MockPasswordStoreAndroidBackendBridgeHelper>>();
+        NiceMock<MockPasswordStoreAndroidBackendBridgeHelper>>();
     bridge_helper_ = unique_bridge_helper.get();
     EXPECT_CALL(*bridge_helper_, SetConsumer);
     return unique_bridge_helper;
@@ -281,9 +292,10 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     return unique_delegate;
   }
 
+  std::unique_ptr<MockAffiliationService> mock_affiliation_service_;
+  std::unique_ptr<AffiliationsPrefetcher> affiliations_prefetcher_;
   std::unique_ptr<PasswordStoreAndroidBackend> backend_;
-  raw_ptr<StrictMock<MockPasswordStoreAndroidBackendBridgeHelper>>
-      bridge_helper_;
+  raw_ptr<NiceMock<MockPasswordStoreAndroidBackendBridgeHelper>> bridge_helper_;
   raw_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper_;
   raw_ptr<PasswordSyncControllerDelegateAndroid> sync_controller_delegate_;
   syncer::TestSyncService sync_service_;
@@ -1560,6 +1572,20 @@ TEST_F(PasswordStoreAndroidBackendTest,
                                   UnwrapForms(std::move(returned_forms)));
   EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_results)));
   RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, DisablesAffiliationsPrefetching) {
+  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
+                        PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  EnableSyncForTestAccount();
+
+  EXPECT_CALL(*bridge_helper(), CanUseGetAllLoginsWithBrandingInfoAPI)
+      .WillOnce(Return(true));
+  // Expect call to clear cache of all affiliations.
+  EXPECT_CALL(*mock_affiliation_service(),
+              KeepPrefetchForFacets(testing::IsEmpty()));
+  backend().OnSyncServiceInitialized(sync_service());
 }
 
 class PasswordStoreAndroidBackendTestForMetrics

@@ -5,7 +5,6 @@
 #include "chrome/browser/password_manager/password_store_backend_factory.h"
 
 #include "base/metrics/histogram_functions.h"
-
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/password_manager_buildflags.h"
@@ -23,8 +22,10 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<password_manager::PasswordStoreBackend>
-CreatePasswordStoreBackend(const base::FilePath& login_db_directory,
-                           PrefService* prefs) {
+CreatePasswordStoreBackend(
+    const base::FilePath& login_db_directory,
+    PrefService* prefs,
+    password_manager::AffiliationsPrefetcher* affiliations_prefetcher) {
   TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(USE_LEGACY_PASSWORD_STORE_BACKEND)
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
@@ -52,7 +53,8 @@ CreatePasswordStoreBackend(const base::FilePath& login_db_directory,
             password_manager::CreateLoginDatabaseForProfileStorage(
                 login_db_directory),
             syncer::WipeModelUponSyncDisabledBehavior::kNever),
-        std::make_unique<password_manager::PasswordStoreAndroidBackend>(prefs),
+        std::make_unique<password_manager::PasswordStoreAndroidBackend>(
+            prefs, affiliations_prefetcher),
         prefs);
   }
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(

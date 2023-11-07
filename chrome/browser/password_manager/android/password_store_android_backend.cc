@@ -35,6 +35,7 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -549,9 +550,12 @@ PasswordStoreAndroidBackend::JobReturnHandler::GetOperation() {
   return operation_;
 }
 
-PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(PrefService* prefs)
+PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
+    PrefService* prefs,
+    AffiliationsPrefetcher* affiliations_prefetcher)
     : lifecycle_helper_(std::make_unique<PasswordManagerLifecycleHelperImpl>()),
-      bridge_helper_(PasswordStoreAndroidBackendBridgeHelper::Create()) {
+      bridge_helper_(PasswordStoreAndroidBackendBridgeHelper::Create()),
+      affiliations_prefetcher_(affiliations_prefetcher) {
   DCHECK(bridge_helper_);
   prefs_ = prefs;
   DCHECK(prefs_);
@@ -569,10 +573,12 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
     std::unique_ptr<PasswordSyncControllerDelegateAndroid>
         sync_controller_delegate,
-    PrefService* prefs)
+    PrefService* prefs,
+    AffiliationsPrefetcher* affiliations_prefetcher)
     : lifecycle_helper_(std::move(lifecycle_helper)),
       bridge_helper_(std::move(bridge_helper)),
-      sync_controller_delegate_(std::move(sync_controller_delegate)) {
+      sync_controller_delegate_(std::move(sync_controller_delegate)),
+      affiliations_prefetcher_(affiliations_prefetcher) {
   DCHECK(bridge_helper_);
   prefs_ = prefs;
   DCHECK(prefs_);
@@ -865,6 +871,15 @@ void PasswordStoreAndroidBackend::OnSyncServiceInitialized(
   }
   sync_service_ = sync_service;
   sync_controller_delegate_->OnSyncServiceInitialized(sync_service);
+
+  // Stop fetching affiliations if AndroidBackend can be used and branding info
+  // can be obtained directly from the GMS Core backend.
+  if (!prefs_->GetBoolean(
+          prefs::kUnenrolledFromGoogleMobileServicesDueToErrors) &&
+      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_) &&
+      bridge_helper_->CanUseGetAllLoginsWithBrandingInfoAPI()) {
+    affiliations_prefetcher_->DisablePrefetching();
+  }
 }
 
 void PasswordStoreAndroidBackend::GetAutofillableLoginsAsyncInternal(

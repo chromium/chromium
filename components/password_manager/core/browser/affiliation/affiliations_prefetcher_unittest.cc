@@ -447,6 +447,37 @@ TEST_F(AffiliationsPrefetcherTest, OnLoginsRetained) {
       ->OnLoginsRetained(nullptr, forms);
 }
 
+TEST_F(AffiliationsPrefetcherTest, TestDisablePrefetch) {
+  AddLoginAndWait(password_store(),
+                  GetTestAndroidCredentials(kTestWebFacetURIAlpha1));
+  prefetcher()->RegisterPasswordStore(password_store());
+
+  ExpectKeepPrefetchForFacets({});
+  prefetcher()->DisablePrefetching();
+
+  // KeepPrefetchForFacets is no longer called even if calling
+  // DisablePrefetching() again.
+  EXPECT_CALL(*mock_affiliation_service(), KeepPrefetchForFacets).Times(0);
+  prefetcher()->DisablePrefetching();
+
+  RunUntilIdle();
+  FastForwardBy(kInitializationDelayOnStartup);
+}
+
+TEST_F(AffiliationsPrefetcherTest, TestDisablePrefetchWithLoginsChanges) {
+  prefetcher()->RegisterPasswordStore(password_store());
+
+  ExpectKeepPrefetchForFacets({});
+  prefetcher()->DisablePrefetching();
+
+  RunUntilIdle();
+  FastForwardBy(kInitializationDelayOnStartup);
+
+  EXPECT_CALL(*mock_affiliation_service(), Prefetch).Times(0);
+  AddLoginAndWait(password_store(),
+                  GetTestAndroidCredentials(kTestWebFacetURIAlpha1));
+}
+
 class AffiliationsPrefetcherWithTwoStoresTest
     : public AffiliationsPrefetcherTest {
  protected:

@@ -35,6 +35,9 @@ class AffiliationsPrefetcher : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
+  // Disables affiliations prefetching and clears all the existing cache.
+  void DisablePrefetching();
+
  private:
   // PasswordStoreInterface::Observer:
   void OnLoginsChanged(PasswordStoreInterface* store,
@@ -68,6 +71,9 @@ class AffiliationsPrefetcher : public KeyedService,
   // Indicates whether passwords were fetched for all stores in
   // |password_stores_|.
   bool is_ready_ = false;
+
+  // Whether this class should continue prefetching passwords.
+  bool is_prefetching_canceled_ = false;
 
   base::WeakPtrFactory<AffiliationsPrefetcher> weak_ptr_factory_{this};
 };

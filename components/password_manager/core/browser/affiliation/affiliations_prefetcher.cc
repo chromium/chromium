@@ -73,6 +73,17 @@ void AffiliationsPrefetcher::Shutdown() {
   pending_initializations_.clear();
 }
 
+void AffiliationsPrefetcher::DisablePrefetching() {
+  // Don't do anything if prefetching was canceled already.
+  if (is_prefetching_canceled_) {
+    return;
+  }
+
+  is_prefetching_canceled_ = true;
+  // Clear existing cache.
+  affiliation_service_->KeepPrefetchForFacets({});
+}
+
 void AffiliationsPrefetcher::OnLoginsChanged(
     PasswordStoreInterface* /*store*/,
     const PasswordStoreChangeList& changes) {
@@ -155,6 +166,11 @@ void AffiliationsPrefetcher::OnResultFromAllStoresReceived(
 }
 
 void AffiliationsPrefetcher::InitializeWithPasswordStores() {
+  // Don't do anything if prefetching is canceled.
+  if (is_prefetching_canceled_) {
+    return;
+  }
+
   // If no calls to RegisterPasswordStore happened before
   // |kInitializationDelayOnStartup| return early.
   if (pending_initializations_.empty()) {
