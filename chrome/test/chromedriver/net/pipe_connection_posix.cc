@@ -240,7 +240,7 @@ class PipeWriter {
       : owning_sequence_(base::SequencedTaskRunner::GetCurrentDefault()),
         pipe_connection_(std::move(pipe_connection)),
         write_buffer_(base::MakeRefCounted<net::DrainableIOBuffer>(
-            base::MakeRefCounted<net::IOBuffer>(),
+            base::MakeRefCounted<net::IOBufferWithSize>(),
             0)),
         thread_(new base::Thread("PipeConnectionPosixWriteThread")) {
     DETACH_FROM_THREAD(io_thread_checker_);

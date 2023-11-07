@@ -170,8 +170,8 @@ class HttpOverAdbSocket {
     if (!CheckNetResultOrDie(result))
       return;
 
-    scoped_refptr<net::IOBuffer> response_buffer =
-        base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+    auto response_buffer =
+        base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
 
     result = socket_->Read(
         response_buffer.get(), kBufferSize,

@@ -157,7 +157,7 @@ Copier::Copier(storage::AsyncFileUtil& async_file_util,
       dest_url_(dest_url),
       temp_url_(CreateTempURL(dest_url)),
       temp_url_needs_deleting_(false),
-      io_buffer_(base::MakeRefCounted<net::IOBuffer>(kBufferSize)),
+      io_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize)),
       fs_writer_(nullptr),
       file_(base::File::FILE_ERROR_FAILED) {}
 

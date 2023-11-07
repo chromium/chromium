@@ -62,8 +62,7 @@ void OpenedForCommand(UsbDeviceProvider::CommandCallback callback,
     std::move(callback).Run(result, std::string());
     return;
   }
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
   auto split_callback = base::SplitOnceCallback(base::BindOnce(
       &OnRead, socket, buffer, std::string(), std::move(callback)));
   result =

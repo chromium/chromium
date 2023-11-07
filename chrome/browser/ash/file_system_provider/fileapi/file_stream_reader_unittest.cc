@@ -139,7 +139,7 @@ TEST_F(FileSystemProviderFileStreamReader, Read_AllAtOnce) {
   const int64_t initial_offset = 0;
   FileStreamReader reader(nullptr, file_url_, initial_offset,
                           *fake_file_->metadata->modification_time);
-  scoped_refptr<net::IOBuffer> io_buffer = base::MakeRefCounted<net::IOBuffer>(
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
       base::checked_cast<size_t>(*fake_file_->metadata->size));
 
   const int result =
@@ -162,7 +162,7 @@ TEST_F(FileSystemProviderFileStreamReader, Read_WrongFile) {
   const int64_t initial_offset = 0;
   FileStreamReader reader(nullptr, wrong_file_url_, initial_offset,
                           *fake_file_->metadata->modification_time);
-  scoped_refptr<net::IOBuffer> io_buffer = base::MakeRefCounted<net::IOBuffer>(
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
       base::checked_cast<size_t>(*fake_file_->metadata->size));
 
   const int result =
@@ -183,8 +183,7 @@ TEST_F(FileSystemProviderFileStreamReader, Read_InChunks) {
                           *fake_file_->metadata->modification_time);
 
   for (int64_t offset = 0; offset < *fake_file_->metadata->size; ++offset) {
-    scoped_refptr<net::IOBuffer> io_buffer =
-        base::MakeRefCounted<net::IOBuffer>(1);
+    auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(1);
     const int result =
         reader.Read(io_buffer.get(), 1,
                     base::BindOnce(&EventLogger::OnRead, logger.GetWeakPtr()));
@@ -207,8 +206,7 @@ TEST_F(FileSystemProviderFileStreamReader, Read_Slice) {
 
   FileStreamReader reader(nullptr, file_url_, initial_offset,
                           *fake_file_->metadata->modification_time);
-  scoped_refptr<net::IOBuffer> io_buffer =
-      base::MakeRefCounted<net::IOBuffer>(length);
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(length);
 
   const int result =
       reader.Read(io_buffer.get(), length,
@@ -234,8 +232,7 @@ TEST_F(FileSystemProviderFileStreamReader, Read_Beyond) {
 
   FileStreamReader reader(nullptr, file_url_, initial_offset,
                           *fake_file_->metadata->modification_time);
-  scoped_refptr<net::IOBuffer> io_buffer =
-      base::MakeRefCounted<net::IOBuffer>(length);
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(length);
 
   const int result =
       reader.Read(io_buffer.get(), length,
@@ -258,7 +255,7 @@ TEST_F(FileSystemProviderFileStreamReader, Read_ModifiedFile) {
   FileStreamReader reader(nullptr, file_url_, initial_offset,
                           base::Time::Max());
 
-  scoped_refptr<net::IOBuffer> io_buffer = base::MakeRefCounted<net::IOBuffer>(
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
       base::checked_cast<size_t>(*fake_file_->metadata->size));
   const int result =
       reader.Read(io_buffer.get(), *fake_file_->metadata->size,
@@ -277,7 +274,7 @@ TEST_F(FileSystemProviderFileStreamReader, Read_ExpectedModificationTimeNull) {
   const int64_t initial_offset = 0;
   FileStreamReader reader(nullptr, file_url_, initial_offset, base::Time());
 
-  scoped_refptr<net::IOBuffer> io_buffer = base::MakeRefCounted<net::IOBuffer>(
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
       base::checked_cast<size_t>(*fake_file_->metadata->size));
   const int result =
       reader.Read(io_buffer.get(), *fake_file_->metadata->size,
