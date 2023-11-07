@@ -605,38 +605,46 @@ export class Camera extends View implements CameraViewUI {
       pendingPortrait: Promise<PhotoResult>): Promise<void> {
     state.set(PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, true);
 
-    pendingReference = this.cropIfUsingSquareResolution(pendingReference);
-    pendingPortrait = this.cropIfUsingSquareResolution(pendingPortrait);
+    let filenamer: Filenamer;
 
-    let hasError = false;
-    try {
-      const {timestamp, resolution, blob, metadata} =
-          await this.checkPhotoResult(pendingReference);
-
-      metrics.sendCaptureEvent({
-        facing: this.getFacing(),
-        resolution,
-        shutterType: this.shutterType,
-        isVideoSnapshot: false,
-        resolutionLevel: this.cameraManager.getPhotoResolutionLevel(resolution),
-        aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
-      });
-
-      // Save reference.
-      const filenamer = new Filenamer(timestamp);
-      const name = filenamer.newBurstName(false);
+    const saveReference = async () => {
+      const pendingCroppedReference =
+          this.cropIfUsingSquareResolution(pendingReference);
       try {
+        const {timestamp, resolution, blob, metadata} =
+            await this.checkPhotoResult(pendingCroppedReference);
+
+        metrics.sendCaptureEvent({
+          facing: this.getFacing(),
+          resolution,
+          shutterType: this.shutterType,
+          isVideoSnapshot: false,
+          resolutionLevel:
+              this.cameraManager.getPhotoResolutionLevel(resolution),
+          aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
+        });
+
+        filenamer = filenamer ?? new Filenamer(timestamp);
+        const name = filenamer.newBurstName(false);
         await this.resultSaver.savePhoto(
             blob, ToteMetricFormat.PHOTO, name, metadata);
       } catch (e) {
         toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
         throw e;
       }
+    };
 
+    const savePortrait = async () => {
+      const pendingCroppedPortrait =
+          this.cropIfUsingSquareResolution(pendingPortrait);
       try {
-        // Save portrait.
-        const {blob: portraitBlob, metadata: portraitMetadata} =
-            await pendingPortrait;
+        const {
+          timestamp: portraitTimestamp,
+          blob: portraitBlob,
+          metadata: portraitMetadata,
+        } = await pendingCroppedPortrait;
+
+        filenamer = filenamer ?? new Filenamer(portraitTimestamp);
         const name = filenamer.newBurstName(true);
         await this.resultSaver.savePhoto(
             portraitBlob, ToteMetricFormat.PHOTO, name, portraitMetadata);
@@ -647,13 +655,22 @@ export class Camera extends View implements CameraViewUI {
           throw e;
         }
       }
-    } catch (e) {
-      hasError = true;
-      throw e;
-    } finally {
-      state.set(
-          PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, false,
-          {hasError, facing: this.getFacing()});
+    };
+
+    let error = null;
+    const results = await Promise.allSettled([saveReference(), savePortrait()]);
+    for (const result of results) {
+      if (result.status === 'rejected') {
+        error = result.reason;
+        break;
+      }
+    }
+    const hasError = error !== null;
+    state.set(
+        PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, false,
+        {hasError, facing: this.getFacing()});
+    if (hasError) {
+      throw error;
     }
     ChromeHelper.getInstance().maybeTriggerSurvey();
   }
