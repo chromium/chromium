@@ -1688,7 +1688,7 @@ TEST_F(ArcVmClientAdapterTest, ArcErofsImagesEnabled) {
 
 // Tests that the binary translation type is set to None when no library is
 // enabled by USE flags.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNone) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeNone) {
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
@@ -1699,7 +1699,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNone) {
 
 // Tests that the binary translation type is set to Houdini when only 32-bit
 // Houdini library is enabled by USE flags.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeHoudini) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeHoudini) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-houdini"});
   StartParams start_params(GetPopulatedStartParams());
@@ -1712,7 +1712,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeHoudini) {
 
 // Tests that the binary translation type is set to Houdini when only 64-bit
 // Houdini library is enabled by USE flags.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeHoudini64) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeHoudini64) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-houdini64"});
   StartParams start_params(GetPopulatedStartParams());
@@ -1725,7 +1725,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeHoudini64) {
 
 // Tests that the binary translation type is set to NDK translation when only
 // 32-bit NDK translation library is enabled by USE flags.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNdkTranslation) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeNdkTranslation) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-ndk-translation"});
   StartParams start_params(GetPopulatedStartParams());
@@ -1738,7 +1738,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNdkTranslation) {
 
 // Tests that the binary translation type is set to NDK translation when only
 // 64-bit NDK translation library is enabled by USE flags.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNdkTranslation64) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeNdkTranslation64) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-ndk-translation64"});
   StartParams start_params(GetPopulatedStartParams());
@@ -1752,7 +1752,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNdkTranslation64) {
 // Tests that the binary translation type is set to NDK translation when both
 // Houdini and NDK translation libraries are enabled by USE flags, and the
 // parameter start_params.native_bridge_experiment is set to true.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNativeBridgeExperiment) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeNativeBridgeExperiment) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-houdini", "--enable-ndk-translation"});
   StartParams start_params(GetPopulatedStartParams());
@@ -1767,7 +1767,7 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNativeBridgeExperiment) {
 // Tests that the binary translation type is set to Houdini when both Houdini
 // and NDK translation libraries are enabled by USE flags, and the parameter
 // start_params.native_bridge_experiment is set to false.
-TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNoNativeBridgeExperiment) {
+TEST_F(ArcVmClientAdapterTest, BinaryTranslationTypeNoNativeBridgeExperiment) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--enable-houdini", "--enable-ndk-translation"});
   StartParams start_params(GetPopulatedStartParams());
@@ -2378,6 +2378,14 @@ TEST_F(ArcVmClientAdapterTest, StartArc_EnablePrivacyHubForChrome_Disabled) {
   EXPECT_FALSE(is_system_shutdown().has_value());
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_FALSE(request.mini_instance_request().enable_privacy_hub_for_chrome());
+}
+
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcSwitchToKeymint_Default) {
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.mini_instance_request().arc_switch_to_keymint());
 }
 
 // Test that the value of swappiness is default value when kGuestZram is
