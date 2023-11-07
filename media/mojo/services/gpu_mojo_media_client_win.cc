@@ -52,7 +52,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
       traits.gpu_task_runner, traits.media_log->Clone(), traits.gpu_preferences,
       *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
       GetD3D11DeviceCallback(std::move(d3d11_device)),
-      traits.get_cached_configs_cb.Run(), hdr_enabled);
+      traits.get_cached_configs_cb.Run(), hdr_enabled,
+      traits.gpu_info.active_gpu().luid);
 }
 
 std::unique_ptr<AudioEncoder> CreatePlatformAudioEncoder(

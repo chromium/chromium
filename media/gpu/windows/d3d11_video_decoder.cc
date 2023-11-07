@@ -96,7 +96,8 @@ std::unique_ptr<VideoDecoder> D3D11VideoDecoder::Create(
     base::RepeatingCallback<gpu::CommandBufferStub*()> get_stub_cb,
     D3D11VideoDecoder::GetD3D11DeviceCB get_d3d11_device_cb,
     SupportedConfigs supported_configs,
-    bool system_hdr_enabled) {
+    bool system_hdr_enabled,
+    CHROME_LUID luid) {
   // Note that the output callback will hop to our thread, post the video
   // frame, and along with a callback that will hop back to the impl thread
   // when it's released.
@@ -108,7 +109,7 @@ std::unique_ptr<VideoDecoder> D3D11VideoDecoder::Create(
   return base::WrapUnique<VideoDecoder>(new D3D11VideoDecoder(
       gpu_task_runner, std::move(media_log), gpu_preferences, gpu_workarounds,
       get_helper_cb, std::move(get_d3d11_device_cb),
-      std::move(supported_configs), system_hdr_enabled));
+      std::move(supported_configs), system_hdr_enabled, luid));
 }
 
 D3D11VideoDecoder::D3D11VideoDecoder(
@@ -119,7 +120,8 @@ D3D11VideoDecoder::D3D11VideoDecoder(
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()> get_helper_cb,
     GetD3D11DeviceCB get_d3d11_device_cb,
     SupportedConfigs supported_configs,
-    bool system_hdr_enabled)
+    bool system_hdr_enabled,
+    CHROME_LUID luid)
     : media_log_(std::move(media_log)),
       mailbox_release_helper_(
           base::MakeRefCounted<D3D11VideoFrameMailboxReleaseHelper>(
@@ -135,7 +137,8 @@ D3D11VideoDecoder::D3D11VideoDecoder(
       system_hdr_enabled_(system_hdr_enabled),
       use_shared_handle_(
           base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) ||
-          gpu_preferences.gr_context_type != gpu::GrContextType::kGL) {
+          gpu_preferences.gr_context_type != gpu::GrContextType::kGL),
+      luid_(luid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(media_log_);
 }
