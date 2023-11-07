@@ -17,6 +17,7 @@
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/zoom/page_zoom_constants.h"
+#include "pdf/pdf_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -53,6 +54,10 @@ void AddCommonStrings(base::Value::Dict* dict) {
   dict->Set("chromeRefresh2023Attribute",
             features::IsChromeWebuiRefresh2023() ? "chrome-refresh-2023" : "");
   dict->Set("presetZoomFactors", zoom::GetPresetZoomFactorsAsJSON());
+  dict->Set("pdfOopifEnabled",
+            base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
+                ? "pdfOopifEnabled"
+                : "");
 }
 
 // Adds strings that are used only by the stand-alone PDF Viewer.
