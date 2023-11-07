@@ -172,18 +172,25 @@ AutocompleteResult::~AutocompleteResult() {
 
 void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
                                             AutocompleteResult* old_matches) {
-  // Don't transfer matches from done providers. If the match is still
-  // relevant, it'll already be in `internal_result_`, potentially with updated
-  // fields that shouldn't be deduped with the out-of-date match. Otherwise, the
-  // irrelevant match shouldn't be re-added. Adding outdated matches is
-  // particularly noticeable when the user types the next char before the
-  // copied matches are expired leading to outdated matches surviving multiple
-  // input changes, e.g. 'gooooooooo[oogle.com]'.
-  // Also exclude action matches since matches are annotated and converted
-  // on every pass to keep them associated with the triggering match.
+  // Skip any matches that would have already been added to the new matches if
+  // they're still relevant:
+  // - Don't transfer matches from done providers. If the match is still
+  //   relevant, it'll already be in `internal_result_`, potentially with
+  //   updated fields that shouldn't be deduped with the out-of-date match.
+  //   Otherwise, the irrelevant match shouldn't be re-added. Adding outdated
+  //   matches is particularly noticeable when the user types the next char
+  //   before the copied matches are expired leading to outdated matches
+  //   surviving multiple input changes, e.g. 'gooooooooo[oogle.com]'.
+  // - Don't transfer match types that are guaranteed to be sync as they too
+  //   would have been replaced by the new sync pass. E.g., It doesn't look good
+  //   to show 2 URL-what-you-typed suggestions.
+  // - Don't transfer action matches since matches are annotated and converted
+  //   on every pass to keep them associated with the triggering match.
   base::EraseIf(old_matches->matches_, [](const auto& old_match) {
     return old_match.type == AutocompleteMatchType::PEDAL ||
-           (old_match.provider && old_match.provider->done());
+           (old_match.provider && old_match.provider->done()) ||
+           old_match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
+           old_match.type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
   });
 
   if (old_matches->empty())
