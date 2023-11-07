@@ -64,13 +64,6 @@ bool AudioInitializeConfig(sandbox::TargetConfig* config) {
   if (result != sandbox::SBOX_ALL_OK)
     return false;
 
-  // The Audio Service process uses a base::SyncSocket for transmitting audio
-  // data.
-  result = config->AllowNamedPipes(L"\\\\.\\pipe\\chrome.sync.*");
-  if (result != sandbox::SBOX_ALL_OK) {
-    return false;
-  }
-
   config->SetDesktop(sandbox::Desktop::kAlternateWinstation);
 
   return true;
