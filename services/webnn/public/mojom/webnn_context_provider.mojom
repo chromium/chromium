@@ -63,6 +63,10 @@ interface WebNNContext {
   // executing computational graph, the WebNN graph will be validated and
   // compiled. Initializes the compiled graph for optimal performance of the
   // subsequent graph executions if the initialization is a necessary step.
+  //
+  // TODO(crbug.com/1488162): Remove [Sync] if the standards group decides that
+  // the WebNN sync APIs are not required.
+  [Sync]
   CreateGraph(GraphInfo graph_info) => (CreateGraphResult result);
 };
 

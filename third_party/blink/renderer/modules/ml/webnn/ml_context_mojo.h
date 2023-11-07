@@ -51,6 +51,12 @@ class MODULES_EXPORT MLContextMojo : public MLContext {
       webnn::mojom::blink::GraphInfoPtr graph_info,
       webnn::mojom::blink::WebNNContext::CreateGraphCallback callback);
 
+  // Creates and compiles platform specific graph synchronously in the caller's
+  // thread. Returns if the compilation was successful.
+  bool CreateWebNNGraphSync(
+      webnn::mojom::blink::GraphInfoPtr graph_info,
+      webnn::mojom::blink::CreateGraphResultPtr* out_result);
+
  protected:
   // Create `WebNNContext` message pipe with `ML` mojo interface, then
   // create the context with the hardware accelerated OS machine

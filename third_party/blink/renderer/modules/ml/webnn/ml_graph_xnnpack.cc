@@ -1900,11 +1900,12 @@ void MLGraphXnnpack::ValidateAndBuildAsync(MLContext* context,
 
 // static
 MLGraph* MLGraphXnnpack::ValidateAndBuildSync(
+    ScriptState* script_state,
     MLContext* context,
     const MLNamedOperands& named_outputs,
     ExceptionState& exception_state) {
   return MakeGarbageCollected<MLGraphXnnpack>(context)->BuildSync(
-      named_outputs, exception_state);
+      script_state, named_outputs, exception_state);
 }
 
 MLGraphXnnpack::MLGraphXnnpack(MLContext* context)
@@ -2040,7 +2041,8 @@ void MLGraphXnnpack::OnDidCreateXnnRuntime(
   resolver->Resolve(this);
 }
 
-MLGraph* MLGraphXnnpack::BuildSyncImpl(const MLNamedOperands& named_outputs,
+MLGraph* MLGraphXnnpack::BuildSyncImpl(ScriptState* script_state,
+                                       const MLNamedOperands& named_outputs,
                                        ExceptionState& exception_state) {
   CHECK(!xnn_runtime_wrapper_);
   String error_message;

@@ -1732,17 +1732,32 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
   return promise;
 }
 
-MLGraph* MLGraphBuilder::buildSync(const MLNamedOperands& named_outputs,
+MLGraph* MLGraphBuilder::buildSync(ScriptState* script_state,
+                                   const MLNamedOperands& named_outputs,
                                    ExceptionState& exception_state) {
   if (g_backend_for_testing) {
-    return g_backend_for_testing->BuildGraphSyncImpl(ml_context_, named_outputs,
-                                                     exception_state);
+    return g_backend_for_testing->BuildGraphSyncImpl(
+        script_state, ml_context_, named_outputs, exception_state);
   }
 
 #if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
   if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
-    return MLGraphXnnpack::ValidateAndBuildSync(ml_context_, named_outputs,
-                                                exception_state);
+    return MLGraphXnnpack::ValidateAndBuildSync(script_state, ml_context_,
+                                                named_outputs, exception_state);
+  }
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // GPU support requires a cross-process WebNN acceleration service. This
+  // services is gated behind the EnableMachineLearningNeuralNetworkService
+  // runtime feature.
+  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu &&
+      base::FeatureList::IsEnabled(
+          webnn::features::kEnableMachineLearningNeuralNetworkService)) {
+    MLContextMojo* ml_context_mojo =
+        static_cast<MLContextMojo*>(ml_context_.Get());
+    return MLGraphMojo::ValidateAndBuildSync(script_state, ml_context_mojo,
+                                             named_outputs, exception_state);
   }
 #endif
 

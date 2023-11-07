@@ -209,7 +209,8 @@ void MLGraphCrOS::SetFlatbufferForTesting(
   g_flatbuffer_for_testing = flatbuffer;
 }
 
-MLGraph* MLGraphCrOS::BuildSyncImpl(const MLNamedOperands& named_outputs,
+MLGraph* MLGraphCrOS::BuildSyncImpl(ScriptState* script_state,
+                                    const MLNamedOperands& named_outputs,
                                     ExceptionState& exception_state) {
   // TODO(crbug.com/1273291): Support sync build that is only exposed to
   // dedicated worker.

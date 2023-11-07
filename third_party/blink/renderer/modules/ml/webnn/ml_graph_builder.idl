@@ -206,6 +206,7 @@ dictionary MLSplitOptions {
   ] Promise<MLGraph> build(MLNamedOperands outputs);
 
   [
+    CallWith=ScriptState,
     RaisesException,
     Exposed=DedicatedWorker
   ] MLGraph buildSync(MLNamedOperands outputs);

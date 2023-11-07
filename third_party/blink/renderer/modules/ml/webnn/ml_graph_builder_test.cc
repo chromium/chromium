@@ -4524,11 +4524,12 @@ class FakeMLGraphBackend final : public MLGraph {
   }
 
   // Create and build a FakeMLGraphBackend object synchronously.
-  static MLGraph* ValidateAndBuildSync(MLContext* context,
+  static MLGraph* ValidateAndBuildSync(ScriptState* script_state,
+                                       MLContext* context,
                                        const MLNamedOperands& named_outputs,
                                        ExceptionState& exception_state) {
     return MakeGarbageCollected<FakeMLGraphBackend>(context)->BuildSync(
-        named_outputs, exception_state);
+        script_state, named_outputs, exception_state);
   }
 
   // The constructor shouldn't be called directly. The callers should use
@@ -4547,7 +4548,8 @@ class FakeMLGraphBackend final : public MLGraph {
 
   // Return this FakeMLGraphBackend object for testing the input and output
   // resources info.
-  MLGraph* BuildSyncImpl(const MLNamedOperands& named_outputs,
+  MLGraph* BuildSyncImpl(ScriptState* script_state,
+                         const MLNamedOperands& named_outputs,
                          ExceptionState& exception_state) override {
     return this;
   }
@@ -4588,11 +4590,12 @@ class FakeMLGraphBuilderBackend : public MLGraphBuilder::BackendForTesting {
     FakeMLGraphBackend::ValidateAndBuildAsync(context, named_outputs, resolver);
   }
 
-  MLGraph* BuildGraphSyncImpl(MLContext* context,
+  MLGraph* BuildGraphSyncImpl(ScriptState* script_state,
+                              MLContext* context,
                               const MLNamedOperands& named_outputs,
                               ExceptionState& exception_state) override {
-    return FakeMLGraphBackend::ValidateAndBuildSync(context, named_outputs,
-                                                    exception_state);
+    return FakeMLGraphBackend::ValidateAndBuildSync(
+        script_state, context, named_outputs, exception_state);
   }
 };
 

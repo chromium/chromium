@@ -154,7 +154,8 @@ void MLGraph::BuildAsync(const MLNamedOperands& named_outputs,
   BuildAsyncImpl(named_outputs, resolver);
 }
 
-MLGraph* MLGraph::BuildSync(const MLNamedOperands& named_outputs,
+MLGraph* MLGraph::BuildSync(ScriptState* script_state,
+                            const MLNamedOperands& named_outputs,
                             ExceptionState& exception_state) {
   String error_message;
   if (!ValidateAndInitializeResourcesInfo(named_outputs, error_message)) {
@@ -162,7 +163,7 @@ MLGraph* MLGraph::BuildSync(const MLNamedOperands& named_outputs,
                                       error_message);
     return nullptr;
   }
-  return BuildSyncImpl(named_outputs, exception_state);
+  return BuildSyncImpl(script_state, named_outputs, exception_state);
 }
 
 bool MLGraph::ValidateAndInitializeResourcesInfo(

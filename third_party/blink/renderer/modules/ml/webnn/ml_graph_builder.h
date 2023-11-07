@@ -268,7 +268,8 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                       const MLNamedOperands& outputs,
                       ExceptionState& exception_state);
 
-  MLGraph* buildSync(const MLNamedOperands& named_outputs,
+  MLGraph* buildSync(ScriptState* script_state,
+                     const MLNamedOperands& named_outputs,
                      ExceptionState& exception_state);
 
   // The test cases can override the graph building behavior by implementing
@@ -279,7 +280,8 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                                      const MLNamedOperands& named_outputs,
                                      ScriptPromiseResolver* resolver) = 0;
 
-    virtual MLGraph* BuildGraphSyncImpl(MLContext* context,
+    virtual MLGraph* BuildGraphSyncImpl(ScriptState* script_state,
+                                        MLContext* context,
                                         const MLNamedOperands& named_outputs,
                                         ExceptionState& exception_state) = 0;
   };

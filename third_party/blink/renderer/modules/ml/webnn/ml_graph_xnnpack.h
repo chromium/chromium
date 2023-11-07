@@ -46,7 +46,8 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   // Create and build a MLGraphXnnpack object synchronously in the caller's
   // thread. Return this concrete object if the underlying XNNPACK subgraph
   // builds successfully.
-  static MLGraph* ValidateAndBuildSync(MLContext* context,
+  static MLGraph* ValidateAndBuildSync(ScriptState* script_state,
+                                       MLContext* context,
                                        const MLNamedOperands& named_outputs,
                                        ExceptionState& exception_state);
 
@@ -120,7 +121,8 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   // thread. If the XNNPACK Subgraph and Runtime build successfully, it should
   // return this `MLGraphXnnpack` object. Otherwise, it returns a nullptr and
   // throw a DOMException accordingly.
-  MLGraph* BuildSyncImpl(const MLNamedOperands& named_outputs,
+  MLGraph* BuildSyncImpl(ScriptState* script_state,
+                         const MLNamedOperands& named_outputs,
                          ExceptionState& exception_state) override;
 
   // Post the XNNPACK Runtime object invocation to a background thread. The
