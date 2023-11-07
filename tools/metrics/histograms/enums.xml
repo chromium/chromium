@@ -51186,6 +51186,7 @@ from previous Chrome versions.
   <int value="1197336536" label="printing-ppd-channel"/>
   <int value="1197363734" label="force-companion-pinned-state:disabled"/>
   <int value="1197439314" label="SwapBackquoteKeysInISOKeyboard:disabled"/>
+  <int value="1198011819" label="TimeOfDayWallpaperForcedAutoSchedule:enabled"/>
   <int value="1198019369" label="PlatformKeysAesEncryption:enabled"/>
   <int value="1198604672" label="DiscardExceptionsImprovements:disabled"/>
   <int value="1198839129" label="OfflinePagesLivePageSharing:enabled"/>
@@ -53197,6 +53198,8 @@ from previous Chrome versions.
   <int value="2138431623" label="GlobalMediaControlsCrOSUpdatedUI:disabled"/>
   <int value="2138744939" label="ScreenSaverDuration:disabled"/>
   <int value="2139048614" label="UseSurfaceLayerForVideo:enabled"/>
+  <int value="2139164626"
+      label="TimeOfDayWallpaperForcedAutoSchedule:disabled"/>
   <int value="2139520082" label="EnableRestrictedWebApis:disabled"/>
   <int value="2140205372" label="ScreenAI"/>
   <int value="2140453427"

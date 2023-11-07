@@ -4031,6 +4031,9 @@ extern const char kTimeOfDayScreenSaverDescription[];
 extern const char kTimeOfDayWallpaperName[];
 extern const char kTimeOfDayWallpaperDescription[];
 
+extern const char kTimeOfDayWallpaperForcedAutoScheduleName[];
+extern const char kTimeOfDayWallpaperForcedAutoScheduleDescription[];
+
 extern const char kTimeOfDayDlcName[];
 extern const char kTimeOfDayDlcDescription[];
 

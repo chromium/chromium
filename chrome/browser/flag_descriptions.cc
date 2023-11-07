@@ -7019,6 +7019,13 @@ const char kTimeOfDayWallpaperName[] = "Time of Day Wallpaper";
 const char kTimeOfDayWallpaperDescription[] =
     "Enables Time of Day Wallpaper feature on supported devices.";
 
+const char kTimeOfDayWallpaperForcedAutoScheduleName[] =
+    "Time of Day Wallpaper Forced Auto Schedule";
+const char kTimeOfDayWallpaperForcedAutoScheduleDescription[] =
+    "Forces the time of day wallpaper to change on an automatic "
+    "sunset-to-sunrise schedule, regardless of what dark/light mode settings "
+    "are active. Not used if time of day wallpaper is not enabled.";
+
 const char kTimeOfDayDlcName[] = "Time of Day Dlc";
 const char kTimeOfDayDlcDescription[] =
     "Enables downloading Time of Day Screen Saver assets from DLC rather than "
