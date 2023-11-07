@@ -9,7 +9,7 @@ import {Permission, PermissionType, TriState} from 'chrome://resources/cr_compon
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createTriStatePermission, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeAppPermissionHandler} from './fake_app_permission_handler.js';
@@ -118,5 +118,27 @@ suite('<settings-privacy-hub-app-permission-row>', () => {
         permissionType, PermissionType[updatedPermission.permissionType]);
     assertTrue(isTriStateValue(updatedPermission.value));
     assertEquals(TriState.kAllow, updatedPermission.value.tristateValue);
+  });
+
+  function isPermissionManaged(): boolean {
+    const permission = app.permissions[PermissionType[permissionType]];
+    assertTrue(!!permission);
+    return permission.isManaged;
+  }
+
+  test('Managed icon displayed when permission is managed', () => {
+    assertFalse(isPermissionManaged());
+    assertNull(testRow.shadowRoot!.querySelector('cr-policy-indicator'));
+    assertFalse(getPermissionToggle().disabled);
+
+    // Toggle managed state.
+    testRow.set(
+        'app.permissions.' + PermissionType[permissionType] + '.isManaged',
+        true);
+    flush();
+
+    assertTrue(isPermissionManaged());
+    assertTrue(!!testRow.shadowRoot!.querySelector('cr-policy-indicator'));
+    assertTrue(getPermissionToggle().disabled);
   });
 });

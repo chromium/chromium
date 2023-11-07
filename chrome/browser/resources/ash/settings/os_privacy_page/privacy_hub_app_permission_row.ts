@@ -74,12 +74,18 @@ export class SettingsPrivacyHubAppPermissionRow extends
         type: String,
         value: '',
       },
+
+      isPermissionManaged_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   app: App;
   permissionType: PermissionTypeIndex;
   private checked_: boolean;
+  private isPermissionManaged_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
   private permissionText_: string;
 
@@ -98,6 +104,8 @@ export class SettingsPrivacyHubAppPermissionRow extends
         castExists(this.app.permissions[PermissionType[this.permissionType]]);
 
     this.checked_ = isPermissionEnabled(permission.value);
+
+    this.isPermissionManaged_ = permission.isManaged;
 
     const value = getPermissionValueAsTriState(permission);
 
@@ -121,6 +129,10 @@ export class SettingsPrivacyHubAppPermissionRow extends
   }
 
   private onPermissionRowClick_(): void {
+    if (this.isPermissionManaged_) {
+      return;
+    }
+
     const permission =
         castExists(this.app.permissions[PermissionType[this.permissionType]]);
 

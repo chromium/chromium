@@ -18,6 +18,10 @@
     margin-inline-end: 20px;
     width: 32px;
   }
+
+  cr-policy-indicator {
+    margin-inline-end: var(--cr-controlled-by-spacing);
+  }
 </style>
 <div id="container" on-click="onPermissionRowClick_" actionable>
   <div id="appData">
@@ -28,9 +32,13 @@
       <div id="permissionText" class="secondary">[[permissionText_]]</div>
     </div>
   </div>
+  <template is="dom-if" if="[[isPermissionManaged_]]" restamp>
+    <cr-policy-indicator indicator-type="devicePolicy"></cr-policy-indicator>
+  </template>
   <cr-toggle id="permissionToggle"
       checked="[[checked_]]"
       on-click="onPermissionRowClick_"
+      disabled="[[isPermissionManaged_]]"
       aria-labelledby="appName">
   </cr-toggle>
 </div>
