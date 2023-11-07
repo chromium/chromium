@@ -54,6 +54,8 @@ CookieSettings::CookieSettings(
   if (tracking_protection_settings_) {
     tracking_protection_settings_observation_.Observe(
         tracking_protection_settings_.get());
+    tracking_protection_enabled_for_3pcd_ =
+        tracking_protection_settings_->IsTrackingProtection3pcdEnabled();
   }
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
@@ -403,9 +405,24 @@ void CookieSettings::OnBlockAllThirdPartyCookiesChanged() {
 }
 
 void CookieSettings::OnTrackingProtection3pcdChanged() {
+  bool new_tracking_protection_enabled_for_3pcd =
+      tracking_protection_settings_->IsTrackingProtection3pcdEnabled();
+  {
+    base::AutoLock auto_lock(lock_);
+    if (tracking_protection_enabled_for_3pcd_ ==
+        new_tracking_protection_enabled_for_3pcd) {
+      return;
+    }
+    tracking_protection_enabled_for_3pcd_ =
+        new_tracking_protection_enabled_for_3pcd;
+  }
+  for (Observer& obs : observers_) {
+    obs.OnTrackingProtectionEnabledFor3pcdChanged(
+        new_tracking_protection_enabled_for_3pcd);
+  }
   // If the user opted to block all 3PC while in the experiment, preserve that
   // preference if they are offboarded.
-  if (!tracking_protection_settings_->IsTrackingProtection3pcdEnabled() &&
+  if (!new_tracking_protection_enabled_for_3pcd &&
       pref_change_registrar_.prefs()->GetBoolean(
           prefs::kBlockAll3pcToggleEnabled)) {
     pref_change_registrar_.prefs()->SetInteger(
@@ -440,6 +457,11 @@ bool CookieSettings::ShouldBlockThirdPartyCookies() const {
 bool CookieSettings::MitigationsEnabledFor3pcd() const {
   base::AutoLock auto_lock(lock_);
   return mitigations_enabled_for_3pcd_;
+}
+
+bool CookieSettings::TrackingProtectionEnabledFor3pcd() const {
+  base::AutoLock auto_lock(lock_);
+  return tracking_protection_enabled_for_3pcd_;
 }
 
 }  // namespace content_settings

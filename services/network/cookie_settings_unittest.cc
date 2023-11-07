@@ -80,7 +80,7 @@ struct TestCase {
 };
 
 class CookieSettingsTest
-    : public testing::TestWithParam<std::tuple<bool, TestCase>> {
+    : public testing::TestWithParam<std::tuple<bool, bool, TestCase>> {
  public:
   CookieSettingsTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
@@ -126,16 +126,20 @@ class CookieSettingsTest
     return std::get<0>(GetParam());
   }
 
+  bool IsTrackingProtectionEnabledFor3pcd() const {
+    return std::get<1>(GetParam());
+  }
+
   bool IsStorageAccessGrantEligible() const {
-    return std::get<1>(GetParam()).storage_access_grant_eligible;
+    return std::get<2>(GetParam()).storage_access_grant_eligible;
   }
 
   bool IsTopLevelStorageAccessGrantEligible() const {
-    return std::get<1>(GetParam()).top_level_storage_access_grant_eligible;
+    return std::get<2>(GetParam()).top_level_storage_access_grant_eligible;
   }
 
   bool Is3pcdSupportEligible() const {
-    return std::get<1>(GetParam()).eligible_for_3pcd_support;
+    return std::get<2>(GetParam()).eligible_for_3pcd_support;
   }
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
@@ -998,6 +1002,9 @@ TEST_P(CookieSettingsTest, IsCookieAccessible) {
       net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
 
   settings.set_block_third_party_cookies(true);
+  if (IsTrackingProtectionEnabledFor3pcd()) {
+    settings.set_tracking_protection_enabled_for_3pcd(true);
+  }
 
   // Third-party cookies are blocked, so the cookie should not be accessible by
   // default in a third-party context.
@@ -1009,7 +1016,8 @@ TEST_P(CookieSettingsTest, IsCookieAccessible) {
   EXPECT_FALSE(status.HasWarningReason(
       net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
   EXPECT_TRUE(status.HasExclusionReason(
-      IsForceThirdPartyCookieBlockingFlagEnabled()
+      IsForceThirdPartyCookieBlockingFlagEnabled() ||
+              IsTrackingProtectionEnabledFor3pcd()
           ? net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT
           : net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES));
 
@@ -1022,7 +1030,8 @@ TEST_P(CookieSettingsTest, IsCookieAccessible) {
                                   GetCookieSettingOverrides(), &status),
       IsStorageAccessGrantEligible());
   EXPECT_THAT(status.HasExclusionReason(
-                  IsForceThirdPartyCookieBlockingFlagEnabled()
+                  IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                          IsTrackingProtectionEnabledFor3pcd()
                       ? net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT
                       : net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
               Not(IsStorageAccessGrantEligible()));
@@ -1052,7 +1061,8 @@ TEST_P(CookieSettingsTest, IsCookieAccessible) {
                                   url::Origin::Create(GURL(kOtherURL)),
                                   GetCookieSettingOverrides(), &status));
   EXPECT_TRUE(status.HasExclusionReason(
-      IsForceThirdPartyCookieBlockingFlagEnabled()
+      IsForceThirdPartyCookieBlockingFlagEnabled() ||
+              IsTrackingProtectionEnabledFor3pcd()
           ? net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT
           : net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES));
 }
@@ -1061,6 +1071,9 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   CookieSettings settings;
   net::CookieInclusionStatus status;
   settings.set_block_third_party_cookies(true);
+  if (IsTrackingProtectionEnabledFor3pcd()) {
+    settings.set_tracking_protection_enabled_for_3pcd(true);
+  }
 
   std::unique_ptr<net::CanonicalCookie> partitioned_cookie =
       MakeCanonicalCookie(
@@ -1140,6 +1153,9 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
 TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
+  if (IsTrackingProtectionEnabledFor3pcd()) {
+    settings.set_tracking_protection_enabled_for_3pcd(true);
+  }
 
   net::CookieAccessResultList maybe_included_cookies = {
       {*MakeCanonicalCookie("third_party", kURL), {}},
@@ -1205,7 +1221,8 @@ TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<
                             net::CookieInclusionStatus::ExclusionReason>{
-                            IsForceThirdPartyCookieBlockingFlagEnabled()
+                            IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                                    IsTrackingProtectionEnabledFor3pcd()
                                 ? net::CookieInclusionStatus::
                                       EXCLUDE_THIRD_PARTY_PHASEOUT
                                 : net::CookieInclusionStatus::
@@ -1219,7 +1236,8 @@ TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
                             net::CookieInclusionStatus::ExclusionReason>{
                             net::CookieInclusionStatus::ExclusionReason::
                                 EXCLUDE_SECURE_ONLY,
-                            IsForceThirdPartyCookieBlockingFlagEnabled()
+                            IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                                    IsTrackingProtectionEnabledFor3pcd()
                                 ? net::CookieInclusionStatus::
                                       EXCLUDE_THIRD_PARTY_PHASEOUT
                                 : net::CookieInclusionStatus::
@@ -1231,7 +1249,8 @@ TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<
                             net::CookieInclusionStatus::ExclusionReason>{
-                            IsForceThirdPartyCookieBlockingFlagEnabled()
+                            IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                                    IsTrackingProtectionEnabledFor3pcd()
                                 ? net::CookieInclusionStatus::
                                       EXCLUDE_THIRD_PARTY_PHASEOUT
                                 : net::CookieInclusionStatus::
@@ -1327,6 +1346,9 @@ TEST_P(CookieSettingsTest,
        AnnotateAndMoveUserBlockedCookies_SameSiteEmbed_ThirdPartyContext) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
+  if (IsTrackingProtectionEnabledFor3pcd()) {
+    settings.set_tracking_protection_enabled_for_3pcd(true);
+  }
 
   net::CookieAccessResultList maybe_included_cookies = {
       {*MakeCanonicalCookie("cookie", kDomainURL), {}}};
@@ -1382,7 +1404,8 @@ TEST_P(CookieSettingsTest,
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<
                             net::CookieInclusionStatus::ExclusionReason>{
-                            IsForceThirdPartyCookieBlockingFlagEnabled()
+                            IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                                    IsTrackingProtectionEnabledFor3pcd()
                                 ? net::CookieInclusionStatus::
                                       EXCLUDE_THIRD_PARTY_PHASEOUT
                                 : net::CookieInclusionStatus::
@@ -1396,7 +1419,8 @@ TEST_P(CookieSettingsTest,
                             net::CookieInclusionStatus::ExclusionReason>{
                             net::CookieInclusionStatus::ExclusionReason::
                                 EXCLUDE_SECURE_ONLY,
-                            IsForceThirdPartyCookieBlockingFlagEnabled()
+                            IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                                    IsTrackingProtectionEnabledFor3pcd()
                                 ? net::CookieInclusionStatus::
                                       EXCLUDE_THIRD_PARTY_PHASEOUT
                                 : net::CookieInclusionStatus::
@@ -1409,6 +1433,9 @@ TEST_P(CookieSettingsTest,
        AnnotateAndMoveUserBlockedCookies_SitesInFirstPartySet) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
+  if (IsTrackingProtectionEnabledFor3pcd()) {
+    settings.set_tracking_protection_enabled_for_3pcd(true);
+  }
 
   net::CookieAccessResultList maybe_included_cookies = {
       {*MakeCanonicalCookie("third_party_but_member", kFPSMemberURL), {}}};
@@ -1450,7 +1477,8 @@ TEST_P(CookieSettingsTest,
             MatchesCookieAccessResult(
                 HasExactlyExclusionReasonsForTesting(
                     std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        IsForceThirdPartyCookieBlockingFlagEnabled()
+                        IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                                IsTrackingProtectionEnabledFor3pcd()
                             ? net::CookieInclusionStatus::
                                   EXCLUDE_THIRD_PARTY_PHASEOUT
                             : net::CookieInclusionStatus::
@@ -1489,6 +1517,9 @@ TEST_P(
   // Now we enable third-party-cookie-blocking, and verify that the right
   // exclusion reasons are still applied.
   settings.set_block_third_party_cookies(true);
+  if (IsTrackingProtectionEnabledFor3pcd()) {
+    settings.set_tracking_protection_enabled_for_3pcd(true);
+  }
 
   net::CookieAccessResultList maybe_included_cookies = {{*cookie, {}}};
   net::CookieAccessResultList excluded_cookies = {};
@@ -1529,7 +1560,8 @@ TEST_P(
             MatchesCookieAccessResult(
                 HasExactlyExclusionReasonsForTesting(
                     std::vector<net::CookieInclusionStatus::ExclusionReason>{
-                        IsForceThirdPartyCookieBlockingFlagEnabled()
+                        IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                                IsTrackingProtectionEnabledFor3pcd()
                             ? net::CookieInclusionStatus::
                                   EXCLUDE_THIRD_PARTY_PHASEOUT
                             : net::CookieInclusionStatus::
@@ -1685,12 +1717,17 @@ const TestCase kOverrideTestCases[] = {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTest,
-    testing::Combine(testing::Bool(), testing::ValuesIn(kOverrideTestCases)),
+    testing::Combine(testing::Bool(),
+                     testing::Bool(),
+                     testing::ValuesIn(kOverrideTestCases)),
     // Print test name. `info` is type of std::tuple<bool, TestCase>.
     [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
       std::stringstream ss;
       ss << (std::get<0>(info.param) ? "testing_3pcb_on" : "testing_3pcb_off")
-         << "_AND_" << std::get<1>(info.param).test_name;
+         << "_AND_"
+         << (std::get<1>(info.param) ? "tracking_protection_3pcb_on"
+                                     : "tracking_protection_3pcb_off")
+         << "_AND_" << std::get<2>(info.param).test_name;
       std::string s = ss.str();
       return ss.str();
     });

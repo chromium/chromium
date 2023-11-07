@@ -181,6 +181,7 @@ class ProfileNetworkContextService
   void OnThirdPartyCookieBlockingChanged(
       bool block_third_party_cookies) override;
   void OnMitigationsEnabledFor3pcdChanged(bool enable) override;
+  void OnTrackingProtectionEnabledFor3pcdChanged(bool enable) override;
 
   // PrivacySandboxSettings::Observer:
   void OnFirstPartySetsEnabledChanged(bool enabled) override;
