@@ -705,6 +705,29 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Extensions.{ConsentLevel}{AccessPoint}"
+    units="extensions" expires_after="2024-03-22">
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recording the number of extensions enabled. The record happens when the user
+    is {ConsentLevel} Chrome via {AccessPoint} access point.
+  </summary>
+  <token key="ConsentLevel">
+    <variant name="OnSignin" summary="signing in to"/>
+    <variant name="OnSync" summary="enabling sync in"/>
+  </token>
+  <token key="AccessPoint">
+    <variant name="" summary="any"/>
+    <variant name=".Other" summary="any other"/>
+    <variant name=".PreUnoWebSignin" summary="a regular web sign in (pre UNO)"/>
+    <variant name=".ProfileCreation" summary="any profile creation"/>
+    <variant name=".ProfileMenu" summary="the profile menu (avatar button)"/>
+    <variant name=".UnoSigninBubble" summary="the Chrome Signin bubble"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.GaiaCookieManager.Logout"
     enum="SigninGaiaCookieManagerLogout" expires_after="never">
 <!-- expires-never: monitors logout requests to http://accounts.google.com/Logout endpoint -->

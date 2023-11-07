@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class WaitForNetworkCallbackHelper;
@@ -125,6 +126,10 @@ class ChromeSigninClient : public SigninClient {
   // `BookmarkModel` is nullptr.
   virtual absl::optional<size_t> GetAllBookmarksCount();
   virtual absl::optional<size_t> GetBookmarkBarBookmarksCount();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Returns `absl::nullopt` if the `ExtensionRegistry` is nullptr.
+  virtual absl::optional<size_t> GetExtensionsCount();
+#endif
 
   const std::unique_ptr<WaitForNetworkCallbackHelper>
       wait_for_network_callback_helper_;

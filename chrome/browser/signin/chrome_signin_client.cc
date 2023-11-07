@@ -90,6 +90,12 @@
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/signin/wait_for_network_callback_helper_chrome.h"
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_factory.h"
+#endif
+
 namespace {
 
 // List of sources for which sign out is always allowed.
@@ -166,6 +172,25 @@ void RecordBookmarksCounts(signin_metrics::AccessPoint access_point,
       bar_bookmarks_count);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void RecordExtensionsCounts(signin_metrics::AccessPoint access_point,
+                            signin::ConsentLevel consent_level,
+                            int extensions_count) {
+  static constexpr std::string_view kBaseHistogramName = "Signin.Extensions";
+
+  std::string_view consent_level_token =
+      consent_level == signin::ConsentLevel::kSignin ? ".OnSignin" : ".OnSync";
+
+  base::UmaHistogramCounts1000(
+      base::StrCat({kBaseHistogramName, consent_level_token}),
+      extensions_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat({kBaseHistogramName, consent_level_token,
+                    NameOfGroupedAccessPointHistogram(access_point)}),
+      extensions_count);
+}
+#endif
+
 }  // namespace
 
 ChromeSigninClient::ChromeSigninClient(Profile* profile)
@@ -192,12 +217,15 @@ bool ChromeSigninClient::ProfileAllowsSigninCookies(Profile* profile) {
   return signin::SettingsAllowSigninCookies(cookie_settings.get());
 }
 
-PrefService* ChromeSigninClient::GetPrefs() { return profile_->GetPrefs(); }
+PrefService* ChromeSigninClient::GetPrefs() {
+  return profile_->GetPrefs();
+}
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeSigninClient::GetURLLoaderFactory() {
-  if (url_loader_factory_for_testing_)
+  if (url_loader_factory_for_testing_) {
     return url_loader_factory_for_testing_;
+  }
 
   return profile_->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
@@ -220,14 +248,13 @@ bool ChromeSigninClient::AreSigninCookiesDeletedOnExit() {
 
 void ChromeSigninClient::AddContentSettingsObserver(
     content_settings::Observer* observer) {
-  HostContentSettingsMapFactory::GetForProfile(profile_)
-      ->AddObserver(observer);
+  HostContentSettingsMapFactory::GetForProfile(profile_)->AddObserver(observer);
 }
 
 void ChromeSigninClient::RemoveContentSettingsObserver(
     content_settings::Observer* observer) {
-  HostContentSettingsMapFactory::GetForProfile(profile_)
-      ->RemoveObserver(observer);
+  HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(
+      observer);
 }
 
 bool ChromeSigninClient::IsClearPrimaryAccountAllowed(
@@ -329,16 +356,25 @@ void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
       case signin::PrimaryAccountChangeEvent::Type::kSet:
         CHECK(
             absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
+        signin_metrics::AccessPoint access_point =
+            absl::get<signin_metrics::AccessPoint>(event_source);
+
         absl::optional<size_t> all_bookmarks_count = GetAllBookmarksCount();
         absl::optional<size_t> bar_bookmarks_count =
             GetBookmarkBarBookmarksCount();
         if (all_bookmarks_count.has_value() &&
             bar_bookmarks_count.has_value()) {
-          RecordBookmarksCounts(
-              absl::get<signin_metrics::AccessPoint>(event_source),
-              consent_level, all_bookmarks_count.value(),
-              bar_bookmarks_count.value());
+          RecordBookmarksCounts(access_point, consent_level,
+                                all_bookmarks_count.value(),
+                                bar_bookmarks_count.value());
         }
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+        absl::optional<size_t> extensions_count = GetExtensionsCount();
+        if (extensions_count.has_value()) {
+          RecordExtensionsCounts(access_point, consent_level,
+                                 extensions_count.value());
+        }
+#endif
     }
   }
 }
@@ -396,12 +432,13 @@ SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
 
 void ChromeSigninClient::VerifySyncToken() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // We only verifiy the token once when Profile is just created.
-  if (signin_util::IsForceSigninEnabled() && !force_signin_verifier_)
+  // We only verify the token once when Profile is just created.
+  if (signin_util::IsForceSigninEnabled() && !force_signin_verifier_) {
     force_signin_verifier_ = std::make_unique<ForceSigninVerifier>(
         profile_, IdentityManagerFactory::GetForProfile(profile_),
         base::BindOnce(&ChromeSigninClient::OnTokenFetchComplete,
                        base::Unretained(this)));
+  }
 #endif
 }
 
@@ -466,6 +503,18 @@ absl::optional<size_t> ChromeSigninClient::GetBookmarkBarBookmarksCount() {
   return bookmarks->bookmark_bar_node()->children().size();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+absl::optional<size_t> ChromeSigninClient::GetExtensionsCount() {
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistryFactory::GetForBrowserContext(profile_);
+  if (!registry) {
+    return absl::nullopt;
+  }
+
+  return registry->enabled_extensions().size();
+}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the account that must be auto-signed-in to the Main Profile in
 // Lacros.
@@ -482,13 +531,15 @@ absl::optional<size_t> ChromeSigninClient::GetBookmarkBarBookmarksCount() {
 // signed-in by default.
 absl::optional<account_manager::Account>
 ChromeSigninClient::GetInitialPrimaryAccount() {
-  if (!profile_->IsMainProfile())
+  if (!profile_->IsMainProfile()) {
     return absl::nullopt;
+  }
 
   const crosapi::mojom::AccountPtr& device_account =
       chromeos::BrowserParamsProxy::Get()->DeviceAccount();
-  if (!device_account)
+  if (!device_account) {
     return absl::nullopt;
+  }
 
   return account_manager::FromMojoAccount(device_account);
 }
@@ -499,8 +550,9 @@ ChromeSigninClient::GetInitialPrimaryAccount() {
 // Directory account.
 // Returns null for secondary / non-main profiles in LaCrOS.
 absl::optional<bool> ChromeSigninClient::IsInitialPrimaryAccountChild() const {
-  if (!profile_->IsMainProfile())
+  if (!profile_->IsMainProfile()) {
     return absl::nullopt;
+  }
 
   const bool is_child_session =
       chromeos::BrowserParamsProxy::Get()->SessionType() ==
@@ -589,8 +641,9 @@ void ChromeSigninClient::LockForceSigninProfile(
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_->GetPath());
-  if (!entry)
+  if (!entry) {
     return;
+  }
   entry->LockForceSigninProfile(true);
 }
 

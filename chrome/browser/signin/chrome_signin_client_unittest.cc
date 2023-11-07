@@ -53,6 +53,7 @@ class MockChromeSigninClient : public ChromeSigninClient {
 
   MOCK_METHOD0(GetAllBookmarksCount, absl::optional<size_t>());
   MOCK_METHOD0(GetBookmarkBarBookmarksCount, absl::optional<size_t>());
+  MOCK_METHOD0(GetExtensionsCount, absl::optional<size_t>());
 };
 
 class ChromeSigninClientSignoutTest : public BrowserWithTestWindowTest {
@@ -374,8 +375,12 @@ INSTANTIATE_TEST_SUITE_P(AllSignoutSources,
                          ChromeSigninClientSignoutSourceTest,
                          testing::ValuesIn(kSignoutSources));
 
-struct BookmarkAccessPointHistogramNamesParam {
+struct MetricsAccessPointHistogramNamesParam {
   signin_metrics::AccessPoint access_point;
+
+  std::string extensions_signin_histogram_name;
+  std::string extensions_sync_histogram_name;
+
   std::string all_bookmarks_signin_histogram_name;
   std::string bar_bookmarks_signin_histogram_name;
   std::string all_bookmarks_sync_histogram_name;
@@ -385,9 +390,13 @@ struct BookmarkAccessPointHistogramNamesParam {
 };
 
 // Expected values for each access point group.
-const BookmarkAccessPointHistogramNamesParam params_per_access_point_group[] = {
+const MetricsAccessPointHistogramNamesParam params_per_access_point_group[] = {
     // Expecting 'PreUnoWebSignin'.
     {.access_point = signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+     .extensions_signin_histogram_name =
+         "Signin.Extensions.OnSignin.PreUnoWebSignin",
+     .extensions_sync_histogram_name =
+         "Signin.Extensions.OnSync.PreUnoWebSignin",
      .all_bookmarks_signin_histogram_name =
          "Signin.Bookmarks.OnSignin.AllBookmarks.PreUnoWebSignin",
      .bar_bookmarks_signin_histogram_name =
@@ -401,6 +410,10 @@ const BookmarkAccessPointHistogramNamesParam params_per_access_point_group[] = {
     // Expecting 'UnoSigninBubble'.
     {.access_point = signin_metrics::AccessPoint::
          ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
+     .extensions_signin_histogram_name =
+         "Signin.Extensions.OnSignin.UnoSigninBubble",
+     .extensions_sync_histogram_name =
+         "Signin.Extensions.OnSync.UnoSigninBubble",
      .all_bookmarks_signin_histogram_name =
          "Signin.Bookmarks.OnSignin.AllBookmarks.UnoSigninBubble",
      .bar_bookmarks_signin_histogram_name =
@@ -413,6 +426,10 @@ const BookmarkAccessPointHistogramNamesParam params_per_access_point_group[] = {
 
     // Expecting 'ProfileCreation'.
     {.access_point = signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+     .extensions_signin_histogram_name =
+         "Signin.Extensions.OnSignin.ProfileCreation",
+     .extensions_sync_histogram_name =
+         "Signin.Extensions.OnSync.ProfileCreation",
      .all_bookmarks_signin_histogram_name =
          "Signin.Bookmarks.OnSignin.AllBookmarks.ProfileCreation",
      .bar_bookmarks_signin_histogram_name =
@@ -426,6 +443,9 @@ const BookmarkAccessPointHistogramNamesParam params_per_access_point_group[] = {
     // Expecting 'ProfileMenu'.
     {.access_point =
          signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
+     .extensions_signin_histogram_name =
+         "Signin.Extensions.OnSignin.ProfileMenu",
+     .extensions_sync_histogram_name = "Signin.Extensions.OnSync.ProfileMenu",
      .all_bookmarks_signin_histogram_name =
          "Signin.Bookmarks.OnSignin.AllBookmarks.ProfileMenu",
      .bar_bookmarks_signin_histogram_name =
@@ -438,6 +458,8 @@ const BookmarkAccessPointHistogramNamesParam params_per_access_point_group[] = {
 
     // Expecting 'Other'.
     {.access_point = signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
+     .extensions_signin_histogram_name = "Signin.Extensions.OnSignin.Other",
+     .extensions_sync_histogram_name = "Signin.Extensions.OnSync.Other",
      .all_bookmarks_signin_histogram_name =
          "Signin.Bookmarks.OnSignin.AllBookmarks.Other",
      .bar_bookmarks_signin_histogram_name =
@@ -453,7 +475,7 @@ const BookmarkAccessPointHistogramNamesParam params_per_access_point_group[] = {
 std::string ParamToTestSuffix(
     const ::testing::TestParamInfo<
         std::tuple<signin::ConsentLevel,
-                   BookmarkAccessPointHistogramNamesParam>>& info) {
+                   MetricsAccessPointHistogramNamesParam>>& info) {
   std::string consent_level_string =
       std::get<0>(info.param) == signin::ConsentLevel::kSignin ? "Signin"
                                                                : "Sync";
@@ -463,17 +485,28 @@ std::string ParamToTestSuffix(
 class ChromeSigninClientMetricsTest
     : public ::testing::TestWithParam<
           std::tuple<signin::ConsentLevel,
-                     BookmarkAccessPointHistogramNamesParam>> {
+                     MetricsAccessPointHistogramNamesParam>> {
  public:
   TestingProfile* profile() { return testing_profile_.get(); }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   // Checks both AllBookmarks and BookmarksBar histograms with no access point.
-  void ExpectSigninBookmarksHistogramValues(size_t expected_all_bookmark_count,
-                                            size_t expected_bar_bookmarks_count,
-                                            size_t signin_expected_bucket_count,
-                                            size_t sync_expected_bucket_count) {
+  void ExpectSigninExtensionsAndBookmarksHistogramValues(
+      size_t expected_extensions_count,
+      size_t expected_all_bookmark_count,
+      size_t expected_bar_bookmarks_count,
+      size_t signin_expected_bucket_count,
+      size_t sync_expected_bucket_count) {
+    // Extensions checks.
+    histogram_tester_.ExpectUniqueSample("Signin.Extensions.OnSignin",
+                                         expected_extensions_count,
+                                         signin_expected_bucket_count);
+    histogram_tester_.ExpectUniqueSample("Signin.Extensions.OnSync",
+                                         expected_extensions_count,
+                                         sync_expected_bucket_count);
+
+    // Bookmarks checks.
     histogram_tester_.ExpectUniqueSample(
         "Signin.Bookmarks.OnSignin.AllBookmarks", expected_all_bookmark_count,
         signin_expected_bucket_count);
@@ -496,15 +529,18 @@ class ChromeSigninClientMetricsTest
   base::HistogramTester histogram_tester_;
 };
 
-TEST_P(ChromeSigninClientMetricsTest, BookmarkCount) {
+TEST_P(ChromeSigninClientMetricsTest, ExentsionsAndBookmarkCount) {
   MockChromeSigninClient client(profile());
-  const size_t all_bookmarks_count = 5;
-  const size_t bar_bookmarks_count = 3;
+  size_t all_bookmarks_count = 5;
+  size_t bar_bookmarks_count = 3;
+  size_t extensions_count = 4;
 
   EXPECT_CALL(client, GetAllBookmarksCount())
       .WillOnce(testing::Return(all_bookmarks_count));
   EXPECT_CALL(client, GetBookmarkBarBookmarksCount())
       .WillOnce(testing::Return(bar_bookmarks_count));
+  EXPECT_CALL(client, GetExtensionsCount())
+      .WillOnce(testing::Return(extensions_count));
 
   CoreAccountInfo account;
   account.email = "example@example.com";
@@ -538,7 +574,7 @@ TEST_P(ChromeSigninClientMetricsTest, BookmarkCount) {
               signin::PrimaryAccountChangeEvent::Type::kNone);
   }
 
-  BookmarkAccessPointHistogramNamesParam test_params = std::get<1>(GetParam());
+  MetricsAccessPointHistogramNamesParam test_params = std::get<1>(GetParam());
   // Simulate primary account changed.
   client.OnPrimaryAccountChangedWithEventSource(event_details,
                                                 test_params.access_point);
@@ -550,9 +586,17 @@ TEST_P(ChromeSigninClientMetricsTest, BookmarkCount) {
       consent_level == signin::ConsentLevel::kSync ? 1 : 0;
 
   // Checks histogram values without access point group names.
-  ExpectSigninBookmarksHistogramValues(all_bookmarks_count, bar_bookmarks_count,
-                                       signin_expected_bucket_count,
-                                       sync_expected_bucket_count);
+  ExpectSigninExtensionsAndBookmarksHistogramValues(
+      extensions_count, all_bookmarks_count, bar_bookmarks_count,
+      signin_expected_bucket_count, sync_expected_bucket_count);
+
+  // For Extensions with access point group name.
+  histogram_tester().ExpectUniqueSample(
+      test_params.extensions_signin_histogram_name, extensions_count,
+      signin_expected_bucket_count);
+  histogram_tester().ExpectUniqueSample(
+      test_params.extensions_sync_histogram_name, extensions_count,
+      sync_expected_bucket_count);
 
   // For AllBookmarks with access point group name.
   histogram_tester().ExpectUniqueSample(
@@ -575,20 +619,27 @@ TEST_P(ChromeSigninClientMetricsTest, BookmarkCount) {
   // Signin event and vice versa, or histogram for different access points than
   // the one being tested.
   // Exact sample counts histograms are done above.
-  base::HistogramTester::CountsMap expected_counts;
+  base::HistogramTester::CountsMap expected_bkmark_counts;
+  base::HistogramTester::CountsMap expected_extensions_count;
   if (consent_level == signin::ConsentLevel::kSignin) {
-    expected_counts["Signin.Bookmarks.OnSignin.AllBookmarks"] = 1;
-    expected_counts["Signin.Bookmarks.OnSignin.BookmarksBar"] = 1;
-    expected_counts[test_params.all_bookmarks_signin_histogram_name] = 1;
-    expected_counts[test_params.bar_bookmarks_signin_histogram_name] = 1;
+    expected_extensions_count["Signin.Extensions.OnSignin"] = 1;
+    expected_extensions_count[test_params.extensions_signin_histogram_name] = 1;
+    expected_bkmark_counts["Signin.Bookmarks.OnSignin.AllBookmarks"] = 1;
+    expected_bkmark_counts["Signin.Bookmarks.OnSignin.BookmarksBar"] = 1;
+    expected_bkmark_counts[test_params.all_bookmarks_signin_histogram_name] = 1;
+    expected_bkmark_counts[test_params.bar_bookmarks_signin_histogram_name] = 1;
   } else if (consent_level == signin::ConsentLevel::kSync) {
-    expected_counts["Signin.Bookmarks.OnSync.AllBookmarks"] = 1;
-    expected_counts["Signin.Bookmarks.OnSync.BookmarksBar"] = 1;
-    expected_counts[test_params.all_bookmarks_sync_histogram_name] = 1;
-    expected_counts[test_params.bar_bookmarks_sync_histogram_name] = 1;
+    expected_extensions_count["Signin.Extensions.OnSync"] = 1;
+    expected_extensions_count[test_params.extensions_sync_histogram_name] = 1;
+    expected_bkmark_counts["Signin.Bookmarks.OnSync.AllBookmarks"] = 1;
+    expected_bkmark_counts["Signin.Bookmarks.OnSync.BookmarksBar"] = 1;
+    expected_bkmark_counts[test_params.all_bookmarks_sync_histogram_name] = 1;
+    expected_bkmark_counts[test_params.bar_bookmarks_sync_histogram_name] = 1;
   }
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Signin.Bookmarks."),
-              testing::ContainerEq(expected_counts));
+              testing::ContainerEq(expected_bkmark_counts));
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Signin.Extensions."),
+              testing::ContainerEq(expected_extensions_count));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -602,10 +653,12 @@ INSTANTIATE_TEST_SUITE_P(
 // In this test, the account changes is directly set to `kSync`, without a prior
 // state where `kSignin` is set, this will trigger both changes for `kSignin`
 // and `kSync`, only testing a single access point.
-TEST_F(ChromeSigninClientMetricsTest, BookmarkCountWithAccountInSyncDirectly) {
+TEST_F(ChromeSigninClientMetricsTest,
+       ExentsionsAndBookmarksCountWithAccountInSyncDirectly) {
   MockChromeSigninClient client(profile());
-  const size_t all_bookmarks_count = 7;
-  const size_t bar_bookmarks_count = 5;
+  size_t all_bookmarks_count = 7;
+  size_t bar_bookmarks_count = 5;
+  size_t extensions_count = 3;
 
   // `Times(2)` for both Signin then Sync.
   EXPECT_CALL(client, GetAllBookmarksCount())
@@ -614,6 +667,9 @@ TEST_F(ChromeSigninClientMetricsTest, BookmarkCountWithAccountInSyncDirectly) {
   EXPECT_CALL(client, GetBookmarkBarBookmarksCount())
       .Times(2)
       .WillRepeatedly(testing::Return(bar_bookmarks_count));
+  EXPECT_CALL(client, GetExtensionsCount())
+      .Times(2)
+      .WillRepeatedly(testing::Return(extensions_count));
 
   CoreAccountInfo account;
   account.email = "example@example.com";
@@ -639,6 +695,10 @@ TEST_F(ChromeSigninClientMetricsTest, BookmarkCountWithAccountInSyncDirectly) {
   // Check for expected histograms values below.
 
   // Checks histogram values without access point group names.
+  histogram_tester().ExpectUniqueSample("Signin.Extensions.OnSignin",
+                                        extensions_count, 1);
+  histogram_tester().ExpectUniqueSample("Signin.Extensions.OnSync",
+                                        extensions_count, 1);
   histogram_tester().ExpectUniqueSample(
       "Signin.Bookmarks.OnSignin.AllBookmarks", all_bookmarks_count, 1);
   histogram_tester().ExpectUniqueSample("Signin.Bookmarks.OnSync.AllBookmarks",
@@ -647,6 +707,12 @@ TEST_F(ChromeSigninClientMetricsTest, BookmarkCountWithAccountInSyncDirectly) {
       "Signin.Bookmarks.OnSignin.BookmarksBar", bar_bookmarks_count, 1);
   histogram_tester().ExpectUniqueSample("Signin.Bookmarks.OnSync.BookmarksBar",
                                         bar_bookmarks_count, 1);
+
+  // For Extensions with access point group name.
+  histogram_tester().ExpectUniqueSample(
+      "Signin.Extensions.OnSignin.PreUnoWebSignin", extensions_count, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.Extensions.OnSync.PreUnoWebSignin", extensions_count, 1);
 
   // For AllBookmarks with access point group name.
   histogram_tester().ExpectUniqueSample(
@@ -677,14 +743,26 @@ TEST_F(ChromeSigninClientMetricsTest, BookmarkCountWithAccountInSyncDirectly) {
   expected_counts["Signin.Bookmarks.OnSync.BookmarksBar.PreUnoWebSignin"] = 1;
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Signin.Bookmarks."),
               testing::ContainerEq(expected_counts));
+
+  // Makes sure that no other unwanted histograms are recorded (Mainly for
+  // other access point groups). Exact sample counts are checked above.
+  base::HistogramTester::CountsMap extensions_expected_counts;
+  extensions_expected_counts["Signin.Extensions.OnSignin"] = 1;
+  extensions_expected_counts["Signin.Extensions.OnSignin.PreUnoWebSignin"] = 1;
+  extensions_expected_counts["Signin.Extensions.OnSync"] = 1;
+  extensions_expected_counts["Signin.Extensions.OnSync.PreUnoWebSignin"] = 1;
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Signin.Extensions."),
+              testing::ContainerEq(extensions_expected_counts));
 }
 
 // Not expecting any histogram to be recorded when no account update happens.
-TEST_F(ChromeSigninClientMetricsTest, BookmarkCountWithAccountUpdate_kNone) {
+TEST_F(ChromeSigninClientMetricsTest,
+       ExentsionsAndBookmarksCountWithAccountUpdate_kNone) {
   MockChromeSigninClient client(profile());
 
   EXPECT_CALL(client, GetAllBookmarksCount()).Times(0);
   EXPECT_CALL(client, GetBookmarkBarBookmarksCount()).Times(0);
+  EXPECT_CALL(client, GetExtensionsCount()).Times(0);
 
   // Event details to simulate no update. Either empty or same value set.
   signin::PrimaryAccountChangeEvent event_details{
@@ -700,18 +778,22 @@ TEST_F(ChromeSigninClientMetricsTest, BookmarkCountWithAccountUpdate_kNone) {
       event_details, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
 
   // `expected_counts` is empty as we expect no histograms related to
-  // `Signin.Bookmarks` to be recorded.
+  // `Signin.Bookmarks` or `Signin.Extensions to be recorded.
   base::HistogramTester::CountsMap expected_counts;
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Signin.Bookmarks."),
+              testing::ContainerEq(expected_counts));
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Signin.Extensions."),
               testing::ContainerEq(expected_counts));
 }
 
 // Not expecting any histogram to be recorded when revoking account consent.
-TEST_F(ChromeSigninClientMetricsTest, BookmarkCountWithAccountUpdate_kCleared) {
+TEST_F(ChromeSigninClientMetricsTest,
+       ExentsionsAndBookmarksCountWithAccountUpdate_kCleared) {
   MockChromeSigninClient client(profile());
 
   EXPECT_CALL(client, GetAllBookmarksCount()).Times(0);
   EXPECT_CALL(client, GetBookmarkBarBookmarksCount()).Times(0);
+  EXPECT_CALL(client, GetExtensionsCount()).Times(0);
 
   CoreAccountInfo account;
   account.email = "example@example.com";
@@ -733,21 +815,25 @@ TEST_F(ChromeSigninClientMetricsTest, BookmarkCountWithAccountUpdate_kCleared) {
       event_details, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
 
   // `expected_counts` is empty as we expect no histograms related to
-  // `Signin.Bookmarks` to be recorded.
+  // `Signin.Bookmarks` or `Signin.Extensions to be recorded.
   base::HistogramTester::CountsMap expected_counts;
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Signin.Bookmarks."),
+              testing::ContainerEq(expected_counts));
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Signin.Extensions."),
               testing::ContainerEq(expected_counts));
 }
 
 // Not expecting any histogram to be recorded when the bookmark service is null.
 TEST_F(ChromeSigninClientMetricsTest,
-       BookmarkCountWithAccountSigningin_ServiceNull) {
+       ExentsionsAndBookmarksCountWithAccountSigningin_ServiceNull) {
   MockChromeSigninClient client(profile());
 
   // Returning `absl::nullopt` to simulate the service being nullptr.
   EXPECT_CALL(client, GetAllBookmarksCount())
       .WillOnce(testing::Return(absl::nullopt));
   EXPECT_CALL(client, GetBookmarkBarBookmarksCount())
+      .WillOnce(testing::Return(absl::nullopt));
+  EXPECT_CALL(client, GetExtensionsCount())
       .WillOnce(testing::Return(absl::nullopt));
 
   CoreAccountInfo account;
@@ -770,9 +856,11 @@ TEST_F(ChromeSigninClientMetricsTest,
       event_details, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
 
   // `expected_counts` is empty as we expect no histograms related to
-  // `Signin.Bookmarks` to be recorded despite signing in.
+  // `Signin.Bookmarks` or `Signin.Extensions to be recorded.
   base::HistogramTester::CountsMap expected_counts;
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Signin.Bookmarks."),
+              testing::ContainerEq(expected_counts));
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Signin.Extensions."),
               testing::ContainerEq(expected_counts));
 }
 
