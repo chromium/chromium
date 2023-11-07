@@ -36,12 +36,6 @@ export class Magnifier {
     this.isInitializing_ = true;
 
     /**
-     * Last seen mouse location (cached from event in onMouseMovedOrDragged).
-     * @private {{x: number, y: number}}
-     */
-    this.mouseLocation_;
-
-    /**
      * Last time mouse has moved (from last onMouseMovedOrDragged).
      * @private {Date}
      */
@@ -295,7 +289,6 @@ export class Magnifier {
    */
   onMouseMovedOrDragged_(event) {
     this.lastMouseMovedTime_ = new Date();
-    this.mouseLocation_ = {x: event.mouseX, y: event.mouseY};
   }
 
   /**
