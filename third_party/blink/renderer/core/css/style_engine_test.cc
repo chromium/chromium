@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 
@@ -6960,6 +6961,50 @@ TEST_F(StyleEngineTest, UseCountCSSDeclarationAfterNestedRule) {
     </style>
   )HTML");
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+}
+
+TEST_F(StyleEngineTest, EnsureAppRegionTriggersRelayout) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <head>
+    <style>
+      .drag {
+        app-region: drag
+      }
+      .no-drag {
+        app-region: no-drag
+      }
+    </style>
+    </head>
+    <body>
+       <div id="drag-region"></div>
+    </body>
+  )HTML");
+
+  Element* drag_element =
+      GetDocument().getElementById(AtomicString("drag-region"));
+
+  auto regions = GetDocument().AnnotatedRegions();
+  auto* it =
+      std::find_if(regions.begin(), regions.end(),
+                   [](blink::AnnotatedRegionValue s) { return s.draggable; });
+  EXPECT_EQ(it, regions.end()) << "There should be no drag regions";
+
+  drag_element->classList().Add(AtomicString("drag"));
+  UpdateAllLifecyclePhases();
+
+  regions = GetDocument().AnnotatedRegions();
+  it = std::find_if(regions.begin(), regions.end(),
+                    [](blink::AnnotatedRegionValue s) { return s.draggable; });
+  EXPECT_NE(it, regions.end()) << "There should be one drag region";
+
+  drag_element->classList().Add(AtomicString("no-drag"));
+  UpdateAllLifecyclePhases();
+
+  regions = GetDocument().AnnotatedRegions();
+  it = std::find_if(regions.begin(), regions.end(),
+                    [](blink::AnnotatedRegionValue s) { return s.draggable; });
+
+  EXPECT_EQ(it, regions.end()) << "There should be no drag regions";
 }
 
 }  // namespace blink
