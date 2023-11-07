@@ -230,12 +230,16 @@ DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(
       action.set_action(
           ClientSafeBrowsingReportRequest::DownloadWarningAction::OPEN_SUBPAGE);
       break;
-    case DownloadItemWarningData::WarningAction::SHOWN:
-      NOTREACHED();
-      break;
     case DownloadItemWarningData::WarningAction::PROCEED_DEEP_SCAN:
       action.set_action(ClientSafeBrowsingReportRequest::DownloadWarningAction::
                             PROCEED_DEEP_SCAN);
+      break;
+    case DownloadItemWarningData::WarningAction::OPEN_LEARN_MORE_LINK:
+      action.set_action(ClientSafeBrowsingReportRequest::DownloadWarningAction::
+                            OPEN_LEARN_MORE_LINK);
+      break;
+    case DownloadItemWarningData::WarningAction::SHOWN:
+      NOTREACHED();
       break;
   }
   action.set_is_terminal_action(event.is_terminal_action);

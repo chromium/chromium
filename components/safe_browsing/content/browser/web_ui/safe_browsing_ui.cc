@@ -1528,6 +1528,10 @@ base::Value::Dict SerializeDownloadWarningAction(
         PROCEED_DEEP_SCAN:
       action = "PROCEED_DEEP_SCAN";
       break;
+    case ClientSafeBrowsingReportRequest::DownloadWarningAction::
+        OPEN_LEARN_MORE_LINK:
+      action = "OPEN_LEARN_MORE_LINK";
+      break;
   }
   action_dict.Set("action", action);
   action_dict.Set("is_terminal_action",

@@ -295,6 +295,13 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
           DownloadItemWarningData::WarningAction::PROCEED_DEEP_SCAN);
       commands.ExecuteCommand(command);
       break;
+    case DownloadCommands::LEARN_MORE_SCANNING:
+    case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
+      DownloadItemWarningData::AddWarningActionEvent(
+          model->GetDownloadItem(), warning_surface,
+          DownloadItemWarningData::WarningAction::OPEN_LEARN_MORE_LINK);
+      commands.ExecuteCommand(command);
+      break;
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::RESUME:
     case DownloadCommands::PAUSE:
@@ -302,8 +309,6 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
     case DownloadCommands::CANCEL_DEEP_SCAN:
-    case DownloadCommands::LEARN_MORE_SCANNING:
-    case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
       commands.ExecuteCommand(command);
       break;
