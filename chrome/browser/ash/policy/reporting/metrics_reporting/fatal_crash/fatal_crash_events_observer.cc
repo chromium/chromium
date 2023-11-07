@@ -11,8 +11,10 @@
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/shell.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -32,7 +34,7 @@ namespace reporting {
 
 using ::ash::cros_healthd::mojom::CrashEventInfo;
 using ::ash::cros_healthd::mojom::CrashEventInfoPtr;
-using ::ash::cros_healthd::mojom::CrashUploadInfoPtr;
+using ::ash::cros_healthd::mojom::EventInfoPtr;
 
 namespace {
 
@@ -40,7 +42,6 @@ constexpr std::string_view kDefaultReportedLocalIdSaveFilePath =
     "/var/lib/reporting/crash_events/REPORTED_LOCAL_IDS";
 constexpr std::string_view kDefaultUploadedCrashInfoSaveFilePath =
     "/var/lib/reporting/crash_events/UPLOADED_CRASH_INFO";
-constexpr base::TimeDelta kDefaultBackoffTimeForLoading = base::Seconds(5);
 
 // Get current user session.
 const ash::UserSession* GetCurrentUserSession() {
@@ -90,19 +91,29 @@ FatalCrashEventsObserver::FatalCrashEventsObserver()
     : FatalCrashEventsObserver(
           base::FilePath(kDefaultReportedLocalIdSaveFilePath),
           base::FilePath(kDefaultUploadedCrashInfoSaveFilePath),
-          kDefaultBackoffTimeForLoading) {}
+          /*reported_local_id_io_task_runner=*/nullptr) {}
 
 FatalCrashEventsObserver::FatalCrashEventsObserver(
     base::FilePath reported_local_id_save_file,
     base::FilePath uploaded_crash_info_save_file,
-    base::TimeDelta backoff_time_for_loading)
+    scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner)
     : MojoServiceEventsObserverBase<ash::cros_healthd::mojom::EventObserver>(
           this),
       reported_local_id_manager_{ReportedLocalIdManager::Create(
-          std::move(reported_local_id_save_file))},
+          std::move(reported_local_id_save_file),
+          // Don't BindPostTask here, because it would risk calling
+          // `ProcessEventsBeforeSaveFilesLoaded` twice, once from
+          // reported_local_id_manager_, once from uploaded_crash_info_manager_
+          // (TODO(b/266018440): to be implemented).
+          /*save_file_loaded_callback=*/
+          base::BindOnce(
+              &FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded,
+              // Called from member reported_local_id_manager_ from
+              // the same sequence, safe to assume this instance is still alive.
+              base::Unretained(this)),
+          std::move(reported_local_id_io_task_runner))},
       uploaded_crash_info_manager_{UploadedCrashInfoManager::Create(
-          std::move(uploaded_crash_info_save_file))},
-      backoff_time_for_loading_{backoff_time_for_loading} {}
+          std::move(uploaded_crash_info_save_file))} {}
 
 FatalCrashEventsObserver::~FatalCrashEventsObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -131,24 +142,37 @@ void FatalCrashEventsObserver::SetSkippedUploadedCrashCallback(
   skipped_uploaded_callback_ = std::move(callback);
 }
 
-void FatalCrashEventsObserver::OnEvent(
-    ash::cros_healthd::mojom::EventInfoPtr info) {
+void FatalCrashEventsObserver::SetEventCollectedBeforeSaveFilesLoadedCallback(
+    EventCollectedBeforeSaveFilesLoadedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  event_collected_before_save_files_loaded_callback_ = std::move(callback);
+}
 
-  if (!AreLoaded()) {
-    // If save files are still being loaded, wait for
-    // `backoff_time_for_loading_` (5 seconds in production code).
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&FatalCrashEventsObserver::OnEvent,
-                       weak_factory_.GetWeakPtr(), std::move(info)),
-        backoff_time_for_loading_);
-    return;
-  }
+void FatalCrashEventsObserver::OnEvent(EventInfoPtr info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!info->is_crash_event_info()) {
     return;
   }
+
+  // Events in `event_queue_before_save_files_loaded_` must be processed first.
+  // If the events there have not been cleared, enqueue this event there.
+  if (!AreSaveFilesLoaded() || !event_queue_before_save_files_loaded_.empty()) {
+    if (event_collected_before_save_files_loaded_callback_) {
+      event_collected_before_save_files_loaded_callback_.Run(
+          info->get_crash_event_info().Clone());
+    }
+    event_queue_before_save_files_loaded_.push(std::move(info));
+    return;
+  }
+
+  ProcessEvent(std::move(info));
+}
+
+void FatalCrashEventsObserver::ProcessEvent(EventInfoPtr info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(info->is_crash_event_info());
+
   const auto& crash_event_info = info->get_crash_event_info();
 
   if (crash_event_info->upload_info.is_null()) {
@@ -221,10 +245,43 @@ void FatalCrashEventsObserver::AddObserver() {
                          BindNewPipeAndPassRemote());
 }
 
-bool FatalCrashEventsObserver::AreLoaded() const {
+bool FatalCrashEventsObserver::AreSaveFilesLoaded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(b/266018440): Also off-load uploaded_crash_info_manager_'s save file.
-  return reported_local_id_manager_->IsLoaded();
+  return reported_local_id_manager_->IsSaveFileLoaded();
+}
+
+void FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!AreSaveFilesLoaded()) {
+    // Don't do anything if not yet loaded. There are two save files,
+    // REPORTED_LOCAL_IDS and UPLOADED_CRASH_INFO. This function is called when
+    // either save file is loaded(TODO(b/266018440): UPLOADED_CRASH_INFO to be
+    // implemented).
+    //
+    // The first call to this method would likely reach here as it is called
+    // when the first save file is loaded, since the other file is not yet
+    // loaded.
+    return;
+  }
+
+  if (event_queue_before_save_files_loaded_.empty()) {
+    return;
+  }
+
+  // Only crash events can be enqueued to `events_gathered_before_loaded_`.
+  CHECK(event_queue_before_save_files_loaded_.front()->is_crash_event_info());
+
+  ProcessEvent(std::move(event_queue_before_save_files_loaded_.front()));
+  event_queue_before_save_files_loaded_.pop();
+
+  // Process one crash event at a time to avoid blocking processing other types
+  // of events.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded,
+          weak_factory_.GetWeakPtr()));
 }
 
 MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(

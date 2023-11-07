@@ -6,18 +6,22 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 
+#include <atomic>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_file_util.h"
@@ -34,7 +38,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
-namespace {
 
 using std::literals::string_view_literals::operator""sv;
 
@@ -44,7 +47,10 @@ using ::ash::cros_healthd::mojom::CrashEventInfoPtr;
 using ::ash::cros_healthd::mojom::CrashUploadInfo;
 using ::ash::cros_healthd::mojom::EventCategoryEnum;
 using ::ash::cros_healthd::mojom::EventInfo;
+using ::testing::Eq;
+using ::testing::SizeIs;
 
+namespace {
 // RAII class to interrupt after event is observed.
 class ScopedInterruptedAfterEventObserved {
  public:
@@ -76,6 +82,8 @@ class ScopedInterruptedAfterEventObserved {
  private:
   raw_ptr<FatalCrashEventsObserver> observer_;
 };
+
+}  // namespace
 
 // Base class for testing `FatalCrashEventsObserver`. `NoSessionAshTestBase` is
 // needed here because the observer uses `ash::Shell()` to obtain the user
@@ -381,6 +389,124 @@ TEST_P(FatalCrashEventsObserverTest, ObserveMultipleEvents) {
         std::move(crash_event_info), observer.get(), &test_event);
     ASSERT_TRUE(fatal_crash_telemetry.has_local_id());
     EXPECT_EQ(fatal_crash_telemetry.local_id(), local_id);
+  }
+}
+
+TEST_P(FatalCrashEventsObserverTest, SlowFileLoadingFieldsPassedThrough) {
+  // Test that fields are passed through for crash events that either:
+  //   1. come before save files are loaded, or
+  //   2. before all crashes queued before save files are loaded.
+
+  // Because FakeCrosHealthd::Get()->EmitEventForCategory() causes tasks on the
+  // current thread to be processed, for this test alone, we call
+  // FatalCrashEventsObserver::OnEvent directly to emulate the effect of
+  // FakeCrosHealthd::Get()->EmitEventForCategory().
+
+  if (is_uploaded()) {
+    GTEST_SKIP() << "Slow file loading for uploaded crashes will be added once "
+                    "its IO offloading is done";
+  }
+
+  // Need 4 crash events to work around limitations in manipulating tasks in a
+  // sequence.
+  static constexpr size_t kNumCrashes = 4;
+  static constexpr std::array<std::string_view, kNumCrashes> kLocalIds = {
+      "First local ID", "Second local ID", "Third Local ID", "Fourth Local ID"};
+
+  std::array<CrashEventInfoPtr, kNumCrashes> crash_event_infos = {
+      NewCrashEventInfo(/*is_uploaded=*/is_uploaded()),
+      NewCrashEventInfo(/*is_uploaded=*/is_uploaded()),
+      NewCrashEventInfo(/*is_uploaded=*/is_uploaded()),
+      NewCrashEventInfo(/*is_uploaded=*/is_uploaded())};
+  for (size_t i = 0; i < crash_event_infos.size(); ++i) {
+    // Test the local ID field sufficient.
+    crash_event_infos[i]->local_id = kLocalIds[i];
+  }
+
+  const auto io_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
+
+  // Block the IO thread.
+  FatalCrashEventsObserver::TestEnvironment::SequenceBlocker sequence_blocker(
+      io_task_runner);
+
+  // Create and set up the observer object.
+  auto observer = fatal_crash_test_environment_.CreateFatalCrashEventsObserver(
+      /*reported_local_id_io_task_runner=*/io_task_runner);
+  observer->SetReportingEnabled(true);
+  // Not using `TestFuture`, because it can only accept one value at a time and
+  // generates an error if another values comes in before the first value is
+  // taken. Due to the racing of the task sequence in unit tests, pushing
+  // results to a vector would not be flaky.
+  std::vector<MetricData> results;
+  results.reserve(4u);
+  observer->SetOnEventObservedCallback(base::BindRepeating(
+      [](std::vector<MetricData>* results,
+         scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+         MetricData metric_data) {
+        ASSERT_THAT(base::SequencedTaskRunner::GetCurrentDefault(),
+                    Eq(main_task_runner));
+        results->push_back(std::move(metric_data));
+      },
+      &results, base::SequencedTaskRunner::GetCurrentDefault()));
+  base::test::TestFuture<CrashEventInfoPtr> queued_crash_event_result;
+  observer->SetEventCollectedBeforeSaveFilesLoadedCallback(
+      queued_crash_event_result.GetRepeatingCallback());
+
+  // Emit the first 3 events before the save file is loaded. The event is
+  // queued and saved in RAM.
+  for (size_t i = 0; i < 3u; ++i) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&FatalCrashEventsObserver::OnEvent,
+                                  observer->weak_factory_.GetWeakPtr(),
+                                  EventInfo::NewCrashEventInfo(
+                                      std::move(crash_event_infos[i]))));
+    // Sanity check to ensure that the crash event is indeed queued.
+    EXPECT_THAT(queued_crash_event_result.Take()->local_id, Eq(kLocalIds[i]));
+  }
+
+  // Unblock the IO, flush the IO (thus save files are loaded), and emit the
+  // fourth event. Because the third event has not been processed yet when
+  // `OnEvent` for the fourth event is called, the fourth event is also expected
+  // to be queued up.
+  ASSERT_TRUE(!observer->AreSaveFilesLoaded())
+      << "Internal error: Save files are loaded even task thread is blocked";
+  sequence_blocker.Unblock();
+  FatalCrashEventsObserver::TestEnvironment::FlushIoTasks(*observer);
+  ASSERT_TRUE(observer->AreSaveFilesLoaded())
+      << "Internal error: Flushing IO tasks does not finish loading save files";
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&FatalCrashEventsObserver::OnEvent,
+                                observer->weak_factory_.GetWeakPtr(),
+                                EventInfo::NewCrashEventInfo(
+                                    std::move(crash_event_infos[3]))));
+  // Flushing IO tasks causes the first ProcessEventsBeforeSaveFilesLoaded task
+  // (which has filled result_metric_data) executed and the second
+  // ProcessEventsBeforeSaveFilesLoaded task left in the sequence. Therefore,
+  // the current sequence contains the second ProcessEventsBeforeSaveFilesLoaded
+  // task followed by one OnEvent task.
+  // Sanity check to ensure that the crash event is indeed queued.
+  EXPECT_THAT(queued_crash_event_result.Take()->local_id, Eq(kLocalIds[3]));
+
+  // All crash events should be available in order, and the event collected call
+  // back should never be called from this point on.
+  observer->SetEventCollectedBeforeSaveFilesLoadedCallback(
+      base::BindRepeating([](CrashEventInfoPtr crash_event_info) {
+        // Sanity check to ensure that no more crash event is queued.
+        EXPECT_FALSE(true) << "Found unexpected queued crash event: "
+                           << crash_event_info->local_id;
+      }));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_THAT(results, SizeIs(4u));
+  for (size_t i = 0; i < results.size(); ++i) {
+    const auto& metric_data = results[i];
+    ASSERT_TRUE(metric_data.has_telemetry_data());
+    ASSERT_TRUE(metric_data.telemetry_data().has_fatal_crash_telemetry());
+    const auto& fatal_crash_telemetry =
+        metric_data.telemetry_data().fatal_crash_telemetry();
+
+    ASSERT_TRUE(fatal_crash_telemetry.has_local_id());
+    EXPECT_EQ(fatal_crash_telemetry.local_id(), kLocalIds[i]);
   }
 }
 
@@ -1554,6 +1680,4 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<
         FatalCrashEventsObserverUploadedCrashCorruptSaveFileTest::ParamType>&
            info) { return info.param.name; });
-
-}  // namespace
 }  // namespace reporting

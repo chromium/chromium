@@ -11,9 +11,12 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
@@ -21,12 +24,21 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_runner.h"
+#include "base/task/thread_pool.h"
 
 namespace reporting {
 
 FatalCrashEventsObserver::ReportedLocalIdManager::ReportedLocalIdManager(
-    base::FilePath save_file_path)
-    : save_file_{std::move(save_file_path)} {
+    base::FilePath save_file_path,
+    SaveFileLoadedCallback save_file_loaded_callback,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
+    : save_file_{std::move(save_file_path)},
+      save_file_loaded_callback_{std::move(save_file_loaded_callback)},
+      io_task_runner_{io_task_runner == nullptr
+                          ? base::ThreadPool::CreateSequencedTaskRunner(
+                                {base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+                                 base::MayBlock()})
+                          : std::move(io_task_runner)} {
   LoadSaveFile();
 }
 
@@ -37,9 +49,12 @@ FatalCrashEventsObserver::ReportedLocalIdManager::~ReportedLocalIdManager() {
 // static
 std::unique_ptr<FatalCrashEventsObserver::ReportedLocalIdManager>
 FatalCrashEventsObserver::ReportedLocalIdManager::Create(
-    base::FilePath save_file_path) {
-  return base::WrapUnique(
-      new ReportedLocalIdManager(std::move(save_file_path)));
+    base::FilePath save_file_path,
+    SaveFileLoadedCallback save_file_loaded_callback,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
+  return base::WrapUnique(new ReportedLocalIdManager(
+      std::move(save_file_path), std::move(save_file_loaded_callback),
+      io_task_runner));
 }
 
 bool FatalCrashEventsObserver::ReportedLocalIdManager::HasBeenReported(
@@ -156,11 +171,14 @@ void FatalCrashEventsObserver::ReportedLocalIdManager::LoadSaveFile() {
 void FatalCrashEventsObserver::ReportedLocalIdManager::ResumeLoadingSaveFile(
     const std::string& content) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(save_file_loaded_callback_);
 
-  // It is OK to set loaded_ at the beginning of this method, because all future
-  // tasks in this sequence would see the save file has been loaded. Setting at
-  // the front avoids repeating this statement before every return.
-  loaded_ = true;
+  base::ScopedClosureRunner run_callback_on_return(base::BindOnce(
+      [](bool* save_file_loaded, SaveFileLoadedCallback callback) {
+        *save_file_loaded = true;
+        std::move(callback).Run();
+      },
+      &save_file_loaded_, std::move(save_file_loaded_callback_)));
 
   // Parse the CSV file line by line. If one line is erroneous, stop parsing the
   // rest.
@@ -284,9 +302,10 @@ void FatalCrashEventsObserver::ReportedLocalIdManager::
   local_id_entry_queue_.pop();
 }
 
-bool FatalCrashEventsObserver::ReportedLocalIdManager::IsLoaded() const {
+bool FatalCrashEventsObserver::ReportedLocalIdManager::IsSaveFileLoaded()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return loaded_;
+  return save_file_loaded_;
 }
 
 bool FatalCrashEventsObserver::ReportedLocalIdManager::LocalIdEntryComparator::
