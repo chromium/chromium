@@ -14,6 +14,7 @@
 #include "chrome/browser/android/webapk/proto/webapk_database.pb.h"
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_registry_update.h"
+#include "chrome/browser/android/webapk/webapk_sync_bridge.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
@@ -47,7 +48,31 @@ void WebApkDatabase::Write(
     const RegistryUpdateData& update_data,
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     CompletionCallback callback) {
-  // TODO(parsam): implement
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(opened_);
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+
+  // |update_data| can be empty here but we should write |metadata_change_list|
+  // anyway.
+  write_batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
+
+  for (const std::unique_ptr<WebApkProto>& webapk :
+       update_data.apps_to_create) {
+    write_batch->WriteData(
+        ManifestIdStrToAppId(webapk->sync_data().manifest_id()),
+        webapk->SerializeAsString());
+  }
+
+  for (const std::string& app_id : update_data.apps_to_delete) {
+    write_batch->DeleteData(app_id);
+  }
+
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&WebApkDatabase::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebApkDatabase::OnDatabaseOpened(
@@ -111,6 +136,18 @@ void WebApkDatabase::OnAllMetadataRead(
   // This should be a tail call: a callback code may indirectly call |this|
   // methods, like WebApkDatabase::Write()
   std::move(callback).Run(std::move(registry), std::move(metadata_batch));
+}
+
+void WebApkDatabase::OnDataWritten(
+    CompletionCallback callback,
+    const absl::optional<syncer::ModelError>& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (error) {
+    error_callback_.Run(*error);
+    DLOG(ERROR) << "WebApks LevelDB write error: " << error->ToString();
+  }
+
+  std::move(callback).Run(!error);
 }
 
 }  // namespace webapk

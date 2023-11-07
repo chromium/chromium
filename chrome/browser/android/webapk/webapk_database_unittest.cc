@@ -12,6 +12,8 @@
 #include "chrome/browser/android/webapk/test/fake_webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_registrar.h"
+#include "chrome/browser/android/webapk/webapk_registry_update.h"
+#include "chrome/browser/android/webapk/webapk_sync_bridge.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/sync/model/metadata_batch.h"
@@ -47,6 +49,16 @@ bool IsRegistryEqual(const Registry& registry, const Registry& registry2) {
   }
 
   return true;
+}
+
+std::unique_ptr<RegistryUpdateData> RegistryToRegistryUpdateData(
+    Registry* registry) {
+  std::unique_ptr<RegistryUpdateData> update_data =
+      std::make_unique<RegistryUpdateData>();
+  for (auto& entry : *registry) {
+    update_data->apps_to_create.emplace_back(std::move(entry.second));
+  }
+  return update_data;
 }
 
 class WebApkDatabaseTest : public ::testing::Test {
@@ -100,21 +112,27 @@ class WebApkDatabaseTest : public ::testing::Test {
     run_loop.Run();
   }
 
-  Registry WriteWebApps(uint32_t num_apps) {
+  Registry CreateWebApps(uint32_t num_apps) {
     Registry registry;
-
-    auto write_batch = database_factory().GetStore()->CreateWriteBatch();
 
     for (uint32_t i = 0; i < num_apps; ++i) {
       std::unique_ptr<WebApkProto> proto = CreateWebApkProto(i, false);
       const webapps::AppId app_id =
           GenerateAppIdFromManifestId(GURL(proto->sync_data().manifest_id()));
 
-      write_batch->WriteData(app_id, proto->SerializeAsString());
-
       registry.emplace(app_id, std::move(proto));
     }
 
+    return registry;
+  }
+
+  Registry CreateAndWriteWebApps(uint32_t num_apps) {
+    Registry registry = CreateWebApps(num_apps);
+
+    auto write_batch = database_factory().GetStore()->CreateWriteBatch();
+    for (const auto& entry : registry) {
+      write_batch->WriteData(entry.first, entry.second->SerializeAsString());
+    }
     WriteBatch(std::move(write_batch));
 
     return registry;
@@ -142,15 +160,14 @@ class WebApkDatabaseTest : public ::testing::Test {
 };
 
 TEST_F(WebApkDatabaseTest, OpenDatabaseAndReadRegistry) {
-  Registry registry = WriteWebApps(100);
+  Registry registry = CreateAndWriteWebApps(100);
 
-  std::unique_ptr<WebApkDatabase> web_apk_database;
-
-  web_apk_database = std::make_unique<WebApkDatabase>(
-      database_factory_ptr(),
-      base::BindLambdaForTesting([&](const syncer::ModelError& error) {
-        ASSERT_TRUE(false);  // should not be reached
-      }));
+  std::unique_ptr<WebApkDatabase> web_apk_database =
+      std::make_unique<WebApkDatabase>(
+          database_factory_ptr(),
+          base::BindLambdaForTesting([&](const syncer::ModelError& error) {
+            ASSERT_TRUE(false);  // should not be reached
+          }));
 
   {
     base::RunLoop run_loop;
@@ -164,6 +181,150 @@ TEST_F(WebApkDatabaseTest, OpenDatabaseAndReadRegistry) {
         }));
     run_loop.Run();
   }
+}
+
+TEST_F(WebApkDatabaseTest, OpenDatabaseAndWriteRegistry) {
+  Registry registry = CreateWebApps(100);
+  std::unique_ptr<RegistryUpdateData> update_data =
+      RegistryToRegistryUpdateData(&registry);
+
+  std::unique_ptr<WebApkDatabase> web_apk_database =
+      std::make_unique<WebApkDatabase>(
+          database_factory_ptr(),
+          base::BindLambdaForTesting([&](const syncer::ModelError& error) {
+            ASSERT_TRUE(false);  // should not be reached
+          }));
+
+  {
+    base::RunLoop run_loop;
+    web_apk_database->OpenDatabase(base::BindLambdaForTesting(
+        [&](Registry inner_registry,
+            std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+          // we just need to wait here until the db is "fully open"
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  {
+    base::RunLoop run_loop;
+    web_apk_database->Write(*update_data, std::move(metadata_change_list),
+                            base::BindLambdaForTesting([&](bool success) {
+                              EXPECT_TRUE(success);
+                              run_loop.Quit();
+                            }));
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(
+      IsRegistryEqual(database_factory().ReadRegistry(), CreateWebApps(100)));
+}
+
+TEST_F(WebApkDatabaseTest, OpenDatabaseAndDeleteFromRegistry) {
+  Registry registry = CreateAndWriteWebApps(100);
+
+  std::unique_ptr<WebApkDatabase> web_apk_database =
+      std::make_unique<WebApkDatabase>(
+          database_factory_ptr(),
+          base::BindLambdaForTesting([&](const syncer::ModelError& error) {
+            ASSERT_TRUE(false);  // should not be reached
+          }));
+
+  {
+    base::RunLoop run_loop;
+    web_apk_database->OpenDatabase(base::BindLambdaForTesting(
+        [&](Registry inner_registry,
+            std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+          // we just need to wait here until the db is "fully open"
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  RegistryUpdateData update_data;
+  update_data.apps_to_delete.push_back(
+      ManifestIdStrToAppId("https://example.com/id/95"));
+  update_data.apps_to_delete.push_back(
+      ManifestIdStrToAppId("https://example.com/id/96"));
+  update_data.apps_to_delete.push_back(
+      ManifestIdStrToAppId("https://example.com/id/97"));
+  update_data.apps_to_delete.push_back(
+      ManifestIdStrToAppId("https://example.com/id/98"));
+  update_data.apps_to_delete.push_back(
+      ManifestIdStrToAppId("https://example.com/id/99"));
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  {
+    base::RunLoop run_loop;
+    web_apk_database->Write(update_data, std::move(metadata_change_list),
+                            base::BindLambdaForTesting([&](bool success) {
+                              EXPECT_TRUE(success);
+                              run_loop.Quit();
+                            }));
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(
+      IsRegistryEqual(database_factory().ReadRegistry(), CreateWebApps(95)));
+}
+
+TEST_F(WebApkDatabaseTest, OpenDatabaseAndOverwriteRegistry) {
+  Registry registry = CreateAndWriteWebApps(1);
+
+  std::unique_ptr<WebApkDatabase> web_apk_database =
+      std::make_unique<WebApkDatabase>(
+          database_factory_ptr(),
+          base::BindLambdaForTesting([&](const syncer::ModelError& error) {
+            ASSERT_TRUE(false);  // should not be reached
+          }));
+
+  {
+    base::RunLoop run_loop;
+    web_apk_database->OpenDatabase(base::BindLambdaForTesting(
+        [&](Registry inner_registry,
+            std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+          // we just need to wait here until the db is "fully open"
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  std::unique_ptr<WebApkProto> replacement =
+      CreateWebApkProto(0 /* suffix */, true /* is_locally_installed */);
+  sync_pb::WebApkSpecifics* replacement_sync_proto =
+      replacement->mutable_sync_data();
+  replacement_sync_proto->set_name("asfd1234");
+
+  RegistryUpdateData update_data;
+  update_data.apps_to_create.emplace_back(std::move(replacement));
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  {
+    base::RunLoop run_loop;
+    web_apk_database->Write(update_data, std::move(metadata_change_list),
+                            base::BindLambdaForTesting([&](bool success) {
+                              EXPECT_TRUE(success);
+                              run_loop.Quit();
+                            }));
+    run_loop.Run();
+  }
+
+  std::unique_ptr<WebApkProto> final_proto =
+      CreateWebApkProto(0 /* suffix */, true /* is_locally_installed */);
+  sync_pb::WebApkSpecifics* final_sync_proto = final_proto->mutable_sync_data();
+  final_sync_proto->set_name("asfd1234");
+  const webapps::AppId app_id =
+      ManifestIdStrToAppId(final_proto->sync_data().manifest_id());
+
+  Registry final_registry;
+  final_registry.emplace(app_id, std::move(final_proto));
+
+  EXPECT_TRUE(
+      IsRegistryEqual(database_factory().ReadRegistry(), final_registry));
 }
 
 }  // namespace webapk

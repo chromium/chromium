@@ -65,6 +65,9 @@ class WebApkDatabase {
       const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
+  void OnDataWritten(CompletionCallback callback,
+                     const absl::optional<syncer::ModelError>& error);
+
   std::unique_ptr<syncer::ModelTypeStore> store_;
   const raw_ptr<AbstractWebApkDatabaseFactory, DanglingUntriaged>
       database_factory_;
