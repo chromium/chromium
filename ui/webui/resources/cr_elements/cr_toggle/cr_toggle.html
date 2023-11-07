@@ -31,13 +31,18 @@
         --cr-toggle-unchecked-button-color:
             var(--color-toggle-button-thumb-off,
                 var(--cr-fallback-color-outline));
+        --cr-toggle-disabled-opacity: 1;
 
         --cr-toggle-checked-ripple-color: var(--cr-active-background-color);
         --cr-toggle-unchecked-ripple-color: var(--cr-active-background-color);
 
         --cr-toggle-ripple-diameter: 20px;
 
-        --cr-toggle-bar-width_: 26px;
+        --cr-toggle-bar-border-color: var(--cr-toggle-unchecked-button-color);
+        --cr-toggle-bar-border: 1px solid var(--cr-toggle-bar-border-color);
+        --cr-toggle-bar-width: 26px;
+
+        --cr-toggle-knob-diameter: 8px;
 
         height: fit-content;
         isolation: isolate;
@@ -81,6 +86,19 @@
             rgba(var(--google-grey-300-rgb), .4);
       }
 
+      :host-context([chrome-refresh-2023]):host(:active) {
+        --cr-toggle-knob-diameter: 10px;
+      }
+
+      :host-context([chrome-refresh-2023]):host([checked]) {
+        --cr-toggle-bar-border-color: var(--cr-toggle-checked-bar-color);
+        --cr-toggle-knob-diameter: 12px;
+      }
+
+      :host-context([chrome-refresh-2023]):host([checked]:active) {
+        --cr-toggle-knob-diameter: 14px;
+      }
+
       :host([disabled]) {
         cursor: initial;
         opacity: var(--cr-disabled-opacity);
@@ -97,7 +115,12 @@
         --cr-toggle-unchecked-button-color:
             var(--color-toggle-button-thumb-off-disabled,
                 var(--cr-fallback-color-disabled-foreground));
-        opacity: 1;
+        --cr-toggle-bar-border-color: var(--cr-toggle-unchecked-button-color);
+        opacity: var(--cr-toggle-disabled-opacity);
+      }
+
+      :host-context([chrome-refresh-2023]):host([checked][disabled]) {
+        --cr-toggle-bar-border: none;
       }
 
       #bar {
@@ -118,27 +141,16 @@
       }
 
       :host-context([chrome-refresh-2023]) #bar {
-        border: 1px solid var(--cr-toggle-unchecked-button-color);
+        border: var(--cr-toggle-bar-border);
         border-radius: 50px;
         box-sizing: border-box;
         display: block;
         height: 16px;
         opacity: 1;
         position: initial;
-        width: var(--cr-toggle-bar-width_);
+        width: var(--cr-toggle-bar-width);
       }
 
-      :host-context([chrome-refresh-2023]):host([checked]) #bar {
-        border-color: var(--cr-toggle-checked-bar-color);
-      }
-
-      :host-context([chrome-refresh-2023]):host([disabled]) #bar {
-        border-color: var(--cr-toggle-unchecked-button-color);
-      }
-
-      :host-context([chrome-refresh-2023]):host([disabled][checked]) #bar {
-        border: none;
-      }
 
       :host-context([chrome-refresh-2023]):host(:focus-visible) #bar {
         outline: 2px solid var(--cr-toggle-checked-bar-color);
@@ -167,8 +179,6 @@
       }
 
       :host-context([chrome-refresh-2023]) #knob {
-        --cr-toggle-knob-diameter_: 8px;
-
         /* Distance between knob center to the edge of the control is the same
            for both checked and unchecked. */
         --cr-toggle-knob-center-edge-distance_: 8px;
@@ -181,14 +191,14 @@
         /* Absolute distance from the center position to either left or
            right. */
         --cr-toggle-knob-travel-distance_: calc(
-            0.5 * var(--cr-toggle-bar-width_) -
+            0.5 * var(--cr-toggle-bar-width) -
             var(--cr-toggle-knob-center-edge-distance_));
 
         /* Positions in the horizontal (x-axis) dimension that the knob can be
           in. The center position is only used for calculations, and is never
           presented to the user. */
         --cr-toggle-knob-position-center_: calc(
-            0.5 * var(--cr-toggle-bar-width_) + -50%);
+            0.5 * var(--cr-toggle-bar-width) + -50%);
         --cr-toggle-knob-position-start_: calc(
             var(--cr-toggle-knob-position-center_) -
             var(--cr-toggle-knob-direction_) *
@@ -199,13 +209,13 @@
             var(--cr-toggle-knob-travel-distance_));
 
         box-shadow: none;
-        height: var(--cr-toggle-knob-diameter_);
+        height: var(--cr-toggle-knob-diameter);
         position: absolute;
         top: 50%;
         transform: translate(var(--cr-toggle-knob-position-start_), -50%);
         transition: transform linear 80ms, background-color linear 80ms,
             width linear 80ms, height linear 80ms;
-        width: var(--cr-toggle-knob-diameter_);
+        width: var(--cr-toggle-knob-diameter);
       }
 
       :host-context([dir=rtl][chrome-refresh-2023]) #knob {
@@ -214,18 +224,11 @@
         --cr-toggle-knob-direction_: -1;
       }
 
-      :host-context([chrome-refresh-2023]):host(:active) #knob {
-        --cr-toggle-knob-diameter_: 10px;
-      }
 
       :host-context([chrome-refresh-2023]):host([checked]) #knob {
-        --cr-toggle-knob-diameter_: 12px;
         transform: translate(var(--cr-toggle-knob-position-end_), -50%);
       }
 
-      :host-context([chrome-refresh-2023]):host([checked]:active) #knob {
-        --cr-toggle-knob-diameter_: 14px;
-      }
 
       :host-context([chrome-refresh-2023]):host([checked]:active) #knob,
       :host-context([chrome-refresh-2023]):host([checked]:hover) #knob {
@@ -239,9 +242,9 @@
         border-radius: 50%;
         content: '';
         height: var(--cr-toggle-ripple-diameter);
-        left: calc(var(--cr-toggle-knob-diameter_) / 2);
+        left: calc(var(--cr-toggle-knob-diameter) / 2);
         position: absolute;
-        top: calc(var(--cr-toggle-knob-diameter_) / 2);
+        top: calc(var(--cr-toggle-knob-diameter) / 2);
         transform: translate(-50%, -50%);
         width: var(--cr-toggle-ripple-diameter);
       }
