@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/mac_logging.h"
@@ -102,7 +103,7 @@ FilePath PathForFrameworkBundleResource(CFStringRef resourceName) {
   NSBundle* bundle = base::mac::FrameworkBundle();
   NSString* resourcePath = [bundle pathForResource:(NSString*)resourceName
                                             ofType:nil];
-  return NSStringToFilePath(resourcePath);
+  return base::MakeAbsoluteFilePath(NSStringToFilePath(resourcePath));
 }
 
 OSType CreatorCodeForCFBundleRef(CFBundleRef bundle) {
