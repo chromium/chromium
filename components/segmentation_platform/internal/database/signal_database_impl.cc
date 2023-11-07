@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
@@ -80,9 +81,12 @@ leveldb_proto::Enums::KeyIteratorAction GetSamplesIteratorController(
 
 }  // namespace
 
-SignalDatabaseImpl::SignalDatabaseImpl(std::unique_ptr<SignalProtoDb> database,
-                                       base::Clock* clock)
+SignalDatabaseImpl::SignalDatabaseImpl(
+    std::unique_ptr<SignalProtoDb> database,
+    base::Clock* clock,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : database_(std::move(database)),
+      task_runner_(task_runner),
       clock_(clock),
       should_fix_compaction_(
           base::FeatureList::IsEnabled(kSegmentationCompactionFix)) {}
@@ -163,6 +167,7 @@ void IterateOverAllSamples(
     base::Time end_time,
     bool success,
     std::unique_ptr<std::map<std::string, proto::SignalData>> entries,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     VisitSample visit_sample) {
   TRACE_EVENT("segmentation_platform", "IterateOverAllSamples");
   if (!success || !entries) {
@@ -193,6 +198,7 @@ void IterateOverAllSamples(
   }
 
   stats::RecordSignalDatabaseGetSamplesSampleCount(sample_count);
+  task_runner->DeleteSoon(FROM_HERE, std::move(entries));
 }
 
 void SignalDatabaseImpl::OnGetSamples(
@@ -203,7 +209,7 @@ void SignalDatabaseImpl::OnGetSamples(
     std::unique_ptr<std::map<std::string, proto::SignalData>> entries) {
   std::vector<Sample> out;
   IterateOverAllSamples(
-      start_time, end_time, success, std::move(entries),
+      start_time, end_time, success, std::move(entries), task_runner_,
       base::BindRepeating(
           [](std::vector<Sample>* out, const SignalKey&, base::Time timestamp,
              const proto::Sample& sample) {
@@ -226,6 +232,7 @@ void SignalDatabaseImpl::OnGetAllSamples(
     std::unique_ptr<std::map<std::string, proto::SignalData>> entries) {
   IterateOverAllSamples(
       base::Time::Min(), base::Time::Max(), success, std::move(entries),
+      task_runner_,
       base::BindRepeating(
           [](std::vector<DbEntry>* out, const SignalKey& key,
              base::Time timestamp, const proto::Sample& sample) {

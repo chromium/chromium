@@ -50,6 +50,7 @@ StorageService::StorageService(
               leveldb_proto::ProtoDbType::SIGNAL_STORAGE_CONFIG_DATABASE,
               storage_dir.Append(kSignalStorageConfigDBName),
               task_runner),
+          task_runner,
           clock,
           ukm_data_manager,
           std::move(configs),
@@ -63,6 +64,7 @@ StorageService::StorageService(
     std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SignalData>> signal_db,
     std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SignalStorageConfigs>>
         signal_storage_config_db,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::Clock* clock,
     UkmDataManager* ukm_data_manager,
     std::vector<std::unique_ptr<Config>> configs,
@@ -81,7 +83,9 @@ StorageService::StorageService(
           std::move(segment_db),
           std::make_unique<SegmentInfoCache>())),
       signal_database_(
-          std::make_unique<SignalDatabaseImpl>(std::move(signal_db), clock)),
+          std::make_unique<SignalDatabaseImpl>(std::move(signal_db),
+                                               clock,
+                                               task_runner)),
       signal_storage_config_(std::make_unique<SignalStorageConfig>(
           std::move(signal_storage_config_db),
           clock)),

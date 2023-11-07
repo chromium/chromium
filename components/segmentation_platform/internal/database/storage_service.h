@@ -87,6 +87,7 @@ class StorageService {
           signal_db,
       std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SignalStorageConfigs>>
           signal_storage_config_db,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::Clock* clock,
       UkmDataManager* ukm_data_manager,
       std::vector<std::unique_ptr<Config>> configs,

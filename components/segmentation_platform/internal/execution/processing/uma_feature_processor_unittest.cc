@@ -87,7 +87,7 @@ class UmaFeatureProcessorTest : public testing::Test {
             leveldb_proto::ProtoDbType::SIGNAL_DATABASE,
             temp_dir_.GetPath().Append(FILE_PATH_LITERAL("signaldb")),
             task_env_.GetMainThreadTaskRunner()),
-        &clock_);
+        &clock_, task_env_.GetMainThreadTaskRunner());
 
     base::RunLoop wait_for_init;
     signal_database_->Initialize(base::BindOnce(
