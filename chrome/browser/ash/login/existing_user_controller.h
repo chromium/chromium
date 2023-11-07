@@ -300,11 +300,6 @@ class ExistingUserController : public content::NotificationObserver,
   // affect any future attempts.
   void ClearRecordedNames();
 
-  // Restart authpolicy daemon in case of Active Directory authentication.
-  // Used to prevent data from leaking from one user session into another.
-  // Should be called to cancel AuthPolicyHelper::TryAuthenticateUser call.
-  void ClearActiveDirectoryState();
-
   // Public session auto-login timer.
   std::unique_ptr<base::OneShotTimer> auto_login_timer_;
 
