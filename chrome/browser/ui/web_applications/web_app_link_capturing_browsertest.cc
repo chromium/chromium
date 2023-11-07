@@ -369,17 +369,33 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
     })();
   )js";
 
+  // At present we can't create a sandbox srcdoc frame in a top-level
+  // about:blank frame, so navigate to an empty page. See
+  // https://crbug.com/1499982
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  Navigate(browser(), url);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver observer(web_contents);
   ASSERT_TRUE(content::ExecJs(
       web_contents,
       base::ReplaceStringPlaceholders(kIframeCaptureJs, {in_scope_1.spec()},
                                       /*offsets=*/nullptr)));
+  observer.Wait();
+  // When the JS code in `kIframeCaptureJs` finishes executing, we should be
+  // guaranteed that the child frame has been created, but the browser-side
+  // RenderFrameHost for the child may not have received the hit-testing data
+  // necessary for the event to propagate properly.
+  RenderFrameHost* child_frame =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(nullptr, child_frame);
+  content::WaitForHitTestData(child_frame);
 
   BrowserChangeObserver added_observer(
       nullptr, BrowserChangeObserver::ChangeType::kAdded);
 
   // Click the iframe, which should click the <a> tag and open the app.
+  // At this point the hit test data for targeting the event should be valid.
   content::SimulateMouseClickOrTapElementWithId(web_contents, "iframe");
 
   Browser* app_browser = added_observer.Wait();
