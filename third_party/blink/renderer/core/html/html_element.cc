@@ -2270,9 +2270,34 @@ bool HTMLElement::DispatchFocusEvent(
 bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
                                        AtomicString& action) {
   if (PopoverType() == PopoverValueType::kNone) {
-    return false;
+    if (!(EqualIgnoringASCIICase(action, keywords::kToggleFullscreen) ||
+          EqualIgnoringASCIICase(action, keywords::kRequestFullscreen) ||
+          EqualIgnoringASCIICase(action, keywords::kExitFullscreen))) {
+      return false;
+    }
   }
+
   auto& document = GetDocument();
+
+  if (EqualIgnoringASCIICase(action, keywords::kToggleFullscreen)) {
+    if (Fullscreen::IsFullscreenElement(*this)) {
+      Fullscreen::ExitFullscreen(document);
+    } else {
+      Fullscreen::RequestFullscreen(*this);
+    }
+    return true;
+  } else if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
+    if (!Fullscreen::IsFullscreenElement(*this)) {
+      Fullscreen::RequestFullscreen(*this);
+    }
+    return true;
+  } else if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
+    if (Fullscreen::IsFullscreenElement(*this)) {
+      Fullscreen::ExitFullscreen(document);
+    }
+    return true;
+  }
+
   // Note that the order is: `mousedown` which runs popover light dismiss
   // code, then (for clicked elements) focus is set to the clicked
   // element, then |DOMActivate| runs here. Also note that the light

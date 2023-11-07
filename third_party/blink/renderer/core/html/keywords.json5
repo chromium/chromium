@@ -80,6 +80,10 @@
     "open",
     // invokeaction for input and select
     "showPicker",
+    // invokeaction for fullscreen
+    "toggleFullscreen",
+    "requestFullscreen",
+    "exitFullscreen",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used
