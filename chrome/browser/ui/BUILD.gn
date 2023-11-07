@@ -1355,6 +1355,8 @@ static_library("ui") {
       "sad_tab_helper.cc",
       "sad_tab_helper.h",
       "sad_tab_types.h",
+      "safety_hub/extensions_result.cc",
+      "safety_hub/extensions_result.h",
       "safety_hub/menu_notification.cc",
       "safety_hub/menu_notification.h",
       "safety_hub/menu_notification_service.cc",

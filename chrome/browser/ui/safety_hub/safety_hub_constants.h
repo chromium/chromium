@@ -26,7 +26,10 @@ extern const char kSafetyHubMenuNotificationLastImpressionKey[];
 extern const char kSafetyHubMenuNotificationShowAfterTimeKey[];
 extern const char kSafetyHubMenuNotificationResultKey[];
 
-// State that a top card in the SafetyHub page can be in.
+// Key used for the dict of the Extensions result.
+extern const char kSafetyHubTriggeringExtensionIdsKey[];
+
+// State that a top card in the Safety Hub page can be in.
 // Should be kept in sync with the corresponding enum in
 // chrome/browser/resources/settings/safety_hub/safety_hub_browser_proxy.ts
 enum class SafetyHubCardState {
