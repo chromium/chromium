@@ -314,9 +314,6 @@ using base::UserMetricsAction;
           GetApplicationContext()->GetBrowserPolicyConnector();
       mediator.syncService = SyncServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-      mediator.supervisedUserService =
-          SupervisedUserServiceFactory::GetForBrowserState(
-              self.browser->GetBrowserState());
       mediator.promosManager = PromosManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState());
       mediator.readingListBrowserAgent =

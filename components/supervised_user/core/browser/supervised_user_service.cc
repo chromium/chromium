@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -59,7 +60,7 @@ void SupervisedUserService::Init() {
 
   user_prefs_->SetInteger(prefs::kFirstTimeInterstitialBannerState,
                           static_cast<int>(banner_state));
-  SetActive(IsSubjectToParentalControls());
+  SetActive(supervised_user::IsChildAccount(user_prefs_.get()));
 }
 
 void SupervisedUserService::SetDelegate(Delegate* delegate) {
@@ -123,9 +124,9 @@ std::string SupervisedUserService::GetSecondCustodianName() const {
 
 bool SupervisedUserService::IsURLFilteringEnabled() const {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return IsSubjectToParentalControls();
+  return supervised_user::IsChildAccount(user_prefs_.get());
 #else
-  return IsSubjectToParentalControls() &&
+  return supervised_user::IsChildAccount(user_prefs_.get()) &&
          base::FeatureList::IsEnabled(
              kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 #endif
@@ -134,9 +135,9 @@ bool SupervisedUserService::IsURLFilteringEnabled() const {
 bool SupervisedUserService::AreExtensionsPermissionsEnabled() const {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return IsSubjectToParentalControls();
+  return supervised_user::IsChildAccount(user_prefs_.get());
 #else
-  return IsSubjectToParentalControls() &&
+  return supervised_user::IsChildAccount(user_prefs_.get()) &&
          base::FeatureList::IsEnabled(
              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 #endif
@@ -276,10 +277,6 @@ void SupervisedUserService::SetActive(bool active) {
   }
 }
 
-bool SupervisedUserService::IsSubjectToParentalControls() const {
-  return user_prefs_->GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
-}
-
 void SupervisedUserService::OnCustodianInfoChanged() {
   for (SupervisedUserServiceObserver& observer : observer_list_) {
     observer.OnCustodianInfoChanged();
@@ -287,7 +284,7 @@ void SupervisedUserService::OnCustodianInfoChanged() {
 }
 
 void SupervisedUserService::OnSupervisedUserIdChanged() {
-  SetActive(IsSubjectToParentalControls());
+  SetActive(supervised_user::IsChildAccount(user_prefs_.get()));
 }
 
 void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
@@ -312,7 +309,7 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
 }
 
 bool SupervisedUserService::IsSafeSitesEnabled() const {
-  return IsSubjectToParentalControls() &&
+  return supervised_user::IsChildAccount(user_prefs_.get()) &&
          user_prefs_->GetBoolean(prefs::kSupervisedUserSafeSites);
 }
 
@@ -391,7 +388,7 @@ void SupervisedUserService::Shutdown() {
   }
   DCHECK(!did_shutdown_);
   did_shutdown_ = true;
-  if (IsSubjectToParentalControls()) {
+  if (supervised_user::IsChildAccount(user_prefs_.get())) {
     base::RecordAction(UserMetricsAction("ManagedUsers_QuitBrowser"));
   }
   SetActive(false);
@@ -426,7 +423,7 @@ bool SupervisedUserService::IsCookieDeletionDisabled(const GURL& origin) const {
     return false;
   }
 
-  if (!IsSubjectToParentalControls()) {
+  if (!supervised_user::IsChildAccount(user_prefs_.get())) {
     return false;
   }
   return google_util::IsYoutubeDomainUrl(origin, google_util::ALLOW_SUBDOMAIN,

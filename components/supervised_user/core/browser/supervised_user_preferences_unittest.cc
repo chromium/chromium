@@ -36,6 +36,7 @@ TEST_F(SupervisedUserPreferencesTest, RegisterProfilePrefs) {
       pref_service_.GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior),
       static_cast<int>(supervised_user::FilteringBehavior::kAllow));
   EXPECT_EQ(pref_service_.GetBoolean(prefs::kSupervisedUserSafeSites), true);
+  EXPECT_FALSE(supervised_user::IsChildAccount(pref_service_));
   // TODO(b/306376651): When we migrate more preference reading methods in this
   // library, add more test cases for their correct default values.
 }
@@ -104,6 +105,17 @@ TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
       EXPECT_THAT(pref_service_.GetString(property), IsEmpty());
     }
   }
+}
+
+TEST_F(SupervisedUserPreferencesTest, IsChildAccountSupervisedUser) {
+  pref_service_.SetString(prefs::kSupervisedUserId,
+                            supervised_user::kChildAccountSUID);
+  EXPECT_TRUE(supervised_user::IsChildAccount(pref_service_));
+}
+
+TEST_F(SupervisedUserPreferencesTest, IsChildAccountNonSupervisedUser) {
+  pref_service_.SetString(prefs::kSupervisedUserId, std::string());
+  EXPECT_FALSE(supervised_user::IsChildAccount(pref_service_));
 }
 
 }  // namespace

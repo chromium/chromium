@@ -127,12 +127,6 @@ class SupervisedUserService : public KeyedService,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Returns true if both: the user is a type of Family Link supervised account
-  // and the platform supports Family Link supervision features.
-  // This method should be prefered on gating child-specific features if there
-  // is no dedicated method for the feature (e.g IsURLFilteringEnabled).
-  virtual bool IsSubjectToParentalControls() const;
-
   // Updates the kFirstTimeInterstitialBannerState pref to indicate that the
   // user has been shown the interstitial banner. This will only update users
   // who haven't yet seen the banner.

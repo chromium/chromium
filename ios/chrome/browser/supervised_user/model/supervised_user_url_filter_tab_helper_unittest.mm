@@ -11,6 +11,7 @@
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/common/features.h"
@@ -95,8 +96,9 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
             chrome_browser_state_.get());
     supervised_user_service->Init();
 
-    EXPECT_EQ(supervised_user_service->IsSubjectToParentalControls(),
-              is_subject_to_parental_controls);
+    EXPECT_EQ(
+        supervised_user::IsChildAccount(*chrome_browser_state_->GetPrefs()),
+        is_subject_to_parental_controls);
   }
 
   // Calls `ShouldAllowRequest` for a request with the given `url_string`.

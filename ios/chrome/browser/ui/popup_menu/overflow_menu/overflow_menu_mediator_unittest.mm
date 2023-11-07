@@ -264,8 +264,6 @@ class OverflowMenuMediatorTest : public PlatformTest {
     mediator_.isIncognito = is_incognito;
     mediator_.menuOrderer = orderer_;
     mediator_.baseViewController = baseViewController_;
-    mediator_.supervisedUserService =
-        SupervisedUserServiceFactory::GetForBrowserState(browser_state_.get());
     SetUpReadingList();
     return mediator_;
   }

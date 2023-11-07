@@ -28,6 +28,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -107,11 +108,7 @@ bool ShouldDisplayManagedByParentUi(Profile* profile) {
   // * on ChromeOS, because similar UI is displayed at the OS level.
   return false;
 #else
-
-  const auto* const supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-  return supervised_user_service &&
-         supervised_user_service->IsSubjectToParentalControls() &&
+  return profile && supervised_user::IsChildAccount(*profile->GetPrefs()) &&
          base::FeatureList::IsEnabled(
              supervised_user::kEnableManagedByParentUi);
 #endif  // !BUILDFLAG(ENABLE_SUPERVISED_USERS) || BUILDFLAG(IS_CHROMEOS)

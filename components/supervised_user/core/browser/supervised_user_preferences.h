@@ -26,6 +26,11 @@ void DisableParentalControls(PrefService& pref_service);
 
 bool IsChildAccountStatusKnown(PrefService& pref_service);
 
+// Returns true if the user is a type of Family Link supervised account.
+// This method should be preferred on gating child-specific features if there
+// is no dedicated method for the feature (e.g IsURLFilteringEnabled).
+bool IsChildAccount(const PrefService& pref_service);
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_PREFERENCES_H_

@@ -170,6 +170,10 @@ bool IsChildAccountStatusKnown(PrefService& pref_service) {
   return pref_service.GetBoolean(prefs::kChildAccountStatusKnown);
 }
 
+bool IsChildAccount(const PrefService& pref_service) {
+  return pref_service.GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
+}
+
 }  // namespace supervised_user
 
 #if BUILDFLAG(IS_ANDROID)

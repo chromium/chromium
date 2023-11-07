@@ -20,9 +20,6 @@ class Tracker;
 namespace web {
 class WebState;
 }
-namespace supervised_user {
-class SupervisedUserService;
-}
 namespace syncer {
 class SyncService;
 }
@@ -119,10 +116,6 @@ class WebStateList;
 
 // The Sync Service that provides the status of Sync.
 @property(nonatomic, assign) syncer::SyncService* syncService;
-
-// Service that describes the supervision state of the account.
-@property(nonatomic, assign)
-    supervised_user::SupervisedUserService* supervisedUserService;
 
 // The Promos Manager to alert if the user uses What's New.
 @property(nonatomic, assign) PromosManager* promosManager;

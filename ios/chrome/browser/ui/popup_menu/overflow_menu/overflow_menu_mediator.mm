@@ -24,7 +24,7 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
-#import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
@@ -433,17 +433,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   _syncService = syncService;
 
   if (!syncService) {
-    return;
-  }
-
-  [self updateModel];
-}
-
-- (void)setSupervisedUserService:
-    (supervised_user::SupervisedUserService*)supervisedUserService {
-  _supervisedUserService = supervisedUserService;
-
-  if (!supervisedUserService) {
     return;
   }
 
@@ -1243,6 +1232,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       _authenticationService && _browserStatePrefs &&
       CanFetchUserPolicy(_authenticationService, _browserStatePrefs);
   // Set footer (on last section), if any.
+  auto* browser_state =
+      self.webState ? self.webState->GetBrowserState() : nullptr;
+  auto* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state);
   if (hasMachineLevelPolicies || canFetchUserPolicies) {
     // Set the Enterprise footer if there are machine level or user level
     // (aka ChromeBrowserState level) policies.
@@ -1252,8 +1245,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
         @"overflow_menu_footer_managed", ^{
           [self enterpriseLearnMore];
         });
-  } else if (self.supervisedUserService &&
-             self.supervisedUserService->IsSubjectToParentalControls()) {
+  } else if (chrome_browser_state && supervised_user::IsChildAccount(
+                                         *chrome_browser_state->GetPrefs())) {
     self.helpActionsGroup.footer = CreateOverflowMenuManagedFooter(
         IDS_IOS_TOOLS_MENU_PARENT_MANAGED, IDS_IOS_TOOLS_MENU_PARENT_LEARN_MORE,
         kTextMenuFamilyLinkInfo, @"overflow_menu_footer_family_link", ^{
