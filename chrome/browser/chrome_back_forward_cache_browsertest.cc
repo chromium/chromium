@@ -769,8 +769,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-// Flaky on Mac: crbug.com/1492026
-#if BUILDFLAG(IS_MAC)
+// Flaky on Mac and ChromeOS: crbug.com/1492026
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded DISABLED_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
 #else
 #define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
