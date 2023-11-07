@@ -112,7 +112,8 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
-  void DidNavigateMainFramePreCommit() override;
+  void OnOldViewDidNavigatePreCommit() override;
+  void OnNewViewDidNavigatePostCommit() override;
   void DidEnterBackForwardCache() override;
   void DidNavigate() override;
   bool RequestRepaintForTesting() override;

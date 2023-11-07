@@ -380,11 +380,12 @@ void DelegatedFrameHost::ResetFallbackToFirstNavigationSurface() {
     return;
   }
 
-  // If we have a surface from before a navigation and we are not in BFCache,
-  // evict it as well.
-  if (!bfcache_fallback_.is_valid() &&
-      pre_navigation_local_surface_id_.is_valid() &&
+  // If we have a surface from before a navigation, evict it as well.
+  if (pre_navigation_local_surface_id_.is_valid() &&
       !first_local_surface_id_after_navigation_.is_valid()) {
+    // If we have a valid `pre_navigation_local_surface_id_`, we must not be in
+    // BFCache.
+    CHECK(!bfcache_fallback_.is_valid());
     EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
   }
 
@@ -566,13 +567,16 @@ void DelegatedFrameHost::DidNavigateMainFramePreCommit() {
 
 void DelegatedFrameHost::DidEnterBackForwardCache() {
   if (local_surface_id_.is_valid()) {
-    // Resize while hidden (`EmbedSurface` called after
-    // `DidNavigateMainFramePreCommit` and before `DidEnterBackForwardCache`).
+    // `EmbedSurface` can be called after `DidNavigateMainFramePreCommit` and
+    // before `DidEnterBackForwardCache`. This can happen on Mac where the
+    // `DelegatedFrameHost` receives an `EmbedSurface` call directly from
+    // NSView; this can also happen if there is an on-going Hi-DPI capture on
+    // the old frame (see `WebContentsFrameTracker::RenderFrameHostChanged()`).
     //
-    // The `EmbedSurface` for the resize will invalidate
-    // `pre_navigation_local_surface_id_`. In this case we shouldn't restore the
-    // `local_surface_id_` because the surface with a different size should have
-    // a new ID.
+    // The `EmbedSurface` will invalidate `pre_navigation_local_surface_id_`. In
+    // this case we shouldn't restore the `local_surface_id_` nor
+    // `bfcache_fallback_`because the surface should embed the latest
+    // `local_surface_id_`.
     CHECK(!pre_navigation_local_surface_id_.is_valid());
     CHECK(!bfcache_fallback_.is_valid());
   } else {

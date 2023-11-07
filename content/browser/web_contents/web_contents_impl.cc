@@ -6449,7 +6449,7 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
     auto* rwhvb = static_cast<RenderWidgetHostViewBase*>(
         frame_tree_node->current_frame_host()->GetView());
     if (rwhvb) {
-      rwhvb->DidNavigateMainFramePreCommit();
+      rwhvb->OnOldViewDidNavigatePreCommit();
     }
   }
 
@@ -6467,6 +6467,9 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
                         "render_frame_host", render_frame_host);
   const bool is_primary_main_frame = render_frame_host->IsInPrimaryMainFrame();
 
+  auto* rwhvb = static_cast<RenderWidgetHostViewBase*>(
+      render_frame_host->GetMainFrame()->GetView());
+
   if (details.is_navigation_to_different_page()) {
     if (is_primary_main_frame) {
       // Clear the status bubble. This is a workaround for a bug where WebKit
@@ -6476,15 +6479,26 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
       // clear the bubble when a user navigates to a named anchor in the same
       // page.
       ClearTargetURL();
+
+      // If the feature flag is enabled, we only call the PostCommit on the new
+      // View, for a primary main frame navigation. The PreCommit counterpart is
+      // called in `WCImpl:DidNavigateMainFramePreCommit`.
+      if (rwhvb && base::FeatureList::IsEnabled(
+                       features::kInvalidateLocalSurfaceIdPreCommit)) {
+        rwhvb->OnNewViewDidNavigatePostCommit();
+      }
     }
 
-    if (!base::FeatureList::IsEnabled(
-            features::kInvalidateLocalSurfaceIdPreCommit)) {
-      RenderWidgetHostViewBase* rwhvb = static_cast<RenderWidgetHostViewBase*>(
-          render_frame_host->GetMainFrame()->GetView());
-      if (rwhvb) {
-        rwhvb->DidNavigateMainFramePreCommit();
-      }
+    // If the feature flag is disabled, we restore to the "original" behavior (
+    // the behavior prior to https://crrev.com/c/4702023):
+    // When the new view is just made visible, we:
+    // - Reset the LocalSurfaceId on the new View (PreCommit), and
+    // - Cancel the ongoing gestures on the new View (PostCommit), and
+    // - We call the two APIs on all main frames, including non-primary ones.
+    if (rwhvb && !base::FeatureList::IsEnabled(
+                     features::kInvalidateLocalSurfaceIdPreCommit)) {
+      rwhvb->OnOldViewDidNavigatePreCommit();
+      rwhvb->OnNewViewDidNavigatePostCommit();
     }
   }
 

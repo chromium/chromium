@@ -643,10 +643,16 @@ void RenderWidgetHostViewIOS::UpdateCALayerTree(
   display_tree_->UpdateCALayerTree(ca_layer_params);
 }
 
-void RenderWidgetHostViewIOS::DidNavigateMainFramePreCommit() {
-  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
+void RenderWidgetHostViewIOS::OnOldViewDidNavigatePreCommit() {
+  if (base::FeatureList::IsEnabled(
+          features::kInvalidateLocalSurfaceIdPreCommit)) {
+    CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
+    browser_compositor_->DidNavigateMainFramePreCommit();
+  }
+}
+
+void RenderWidgetHostViewIOS::OnNewViewDidNavigatePostCommit() {
   gesture_provider_.ResetDetection();
-  browser_compositor_->DidNavigateMainFramePreCommit();
 }
 
 void RenderWidgetHostViewIOS::DidEnterBackForwardCache() {

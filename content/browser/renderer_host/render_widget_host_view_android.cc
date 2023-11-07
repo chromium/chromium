@@ -1478,10 +1478,15 @@ void RenderWidgetHostViewAndroid::ResetGestureDetection() {
   }
 }
 
-void RenderWidgetHostViewAndroid::DidNavigateMainFramePreCommit() {
+void RenderWidgetHostViewAndroid::OnOldViewDidNavigatePreCommit() {
+  if (delegated_frame_host_) {
+    delegated_frame_host_->DidNavigateMainFramePreCommit();
+  }
+}
+
+void RenderWidgetHostViewAndroid::OnNewViewDidNavigatePostCommit() {
   // Move to front only if we are the primary page (we don't want to receive
-  // events in the Prerender). GetMainRenderFrameHost() may be null in
-  // tests.
+  // events in the Prerender). GetMainRenderFrameHost() may be null in tests.
   if (view_.parent() &&
       RenderViewHostImpl::From(host())->GetMainRenderFrameHost() &&
       RenderViewHostImpl::From(host())
@@ -1491,8 +1496,6 @@ void RenderWidgetHostViewAndroid::DidNavigateMainFramePreCommit() {
     view_.parent()->MoveToFront(&view_);
   }
   ResetGestureDetection();
-  if (delegated_frame_host_)
-    delegated_frame_host_->DidNavigateMainFramePreCommit();
 }
 
 void RenderWidgetHostViewAndroid::DidEnterBackForwardCache() {

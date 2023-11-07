@@ -500,12 +500,35 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // Gets the bounds of the top-level window, in screen coordinates.
   virtual gfx::Rect GetBoundsInRootWindow() = 0;
 
-  // Dispatched when the main frame associated with a `RenderWidgetHostView` is
-  // being navigated to a different Document (won't be dispatched for
-  // same-document navigations).
+  // Dispatched when the a cross-document navigation happens in the primary main
+  // frame, and the old view is still visible. This API is called on the old
+  // view.
   //
-  // "PreCommit" means the new page hasn't been marked as visible yet.
-  virtual void DidNavigateMainFramePreCommit();
+  // "DidNavigate" means this API (and its post commit counterpart) is part of
+  // the browser's atomic "DidCommitNavigation" stack. "PreCommit" means the old
+  // view is still visible and the new view is still invisible.
+  //
+  // The platform-specific overrides should prepare for the old view about to be
+  // swapped out, which typically includes resetting the graphical states on the
+  // old view.
+  //
+  // This API shouldn't be called for a same-doc navigations. For the cross-doc
+  // navigations that don't swap the `RenderWidgetHostView`, the old and new
+  // views are the same.
+  virtual void OnOldViewDidNavigatePreCommit();
+
+  // Dispatched when the new primary main frame's `RenderWidgetHostView` is
+  // swapped in, and is made visible due to a cross-document navigation. This
+  // API is called on the new view.
+  //
+  // The platform-specific overrides should prepare for the new view about to be
+  // made visible, which typically includes cancelling any ongoing gesture
+  // events.
+  //
+  // Same as its pre commit counterpart: this API shouldn't be called for
+  // same-doc navigations, and the new view can be the same as the old view if
+  // the navigation does not swap the `RenderWidgetHostView`.
+  virtual void OnNewViewDidNavigatePostCommit();
 
   // Gives a chance to the caller to perform some task AFTER the page is
   // unloaded and stored in the BFCache.

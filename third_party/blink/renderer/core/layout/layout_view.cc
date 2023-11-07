@@ -532,6 +532,11 @@ PhysicalRect LayoutView::ViewRect() const {
 
       // This adjustment should always be an expansion of the current
       // viewport.
+
+      // TODO(https://crbug.com/1495157): The snapshot size can be smaller (by
+      // one pixel) than the frame on mobile viewport. Investigate why. Consider
+      // adding `<meta name="viewport" content="width=device-width">` to the
+      // HTML if this occurs.
       DCHECK_GE(transition->GetSnapshotRootSize().width(),
                 frame_view_->Size().width());
       DCHECK_GE(transition->GetSnapshotRootSize().height(),

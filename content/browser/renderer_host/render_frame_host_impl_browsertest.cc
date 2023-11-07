@@ -7598,6 +7598,8 @@ class RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition
             /*ignore_outstanding_network_request=*/false);
     enabled_features.push_back(
         {blink::features::kViewTransitionOnNavigation, {{}}});
+    enabled_features.push_back(
+        {features::kInvalidateLocalSurfaceIdPreCommit, {{}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());
@@ -7628,12 +7630,16 @@ void AssertBitmapOfColor(const SkBitmap& bitmap, SkColor color) {
 // visual glitches.
 //
 // TODO(https://crbug.com/1472026): Investigate and re-enable.
-//
-// TODO(https://crbug.com/1487799): Disabled globally as the killswitch has been
-// flipped. Re-enable once the proper fix for VT+BFCache has landed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
+  DISABLED_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
+#else
+#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
+  NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
+#endif
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition,
-    DISABLED_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition) {
+    MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition) {
   // "red_jank_second_pageshow.html" janks the renderer on the second pageshow
   // event.
   const GURL url_red(embedded_test_server()->GetURL(
@@ -7650,13 +7656,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(rfh_red.IsDestroyed());
   ASSERT_TRUE(
       static_cast<RenderFrameHostImpl*>(rfh_red.get())->IsInBackForwardCache());
+  auto* rwhi_red =
+      RenderWidgetHostImpl::From(rfh_red->GetView()->GetRenderWidgetHost());
+  // The BFCached `RenderWidgetHostImpl` must have a stopped timer.
+  ASSERT_FALSE(rwhi_red->IsContentRenderingTimeoutRunning());
 
   // Navigate back to Red.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ASSERT_EQ(rfh_red.get(), web_contents()->GetPrimaryMainFrame());
-
-  RenderWidgetHostImpl* rwhi_red =
-      RenderWidgetHostImpl::From(rfh_red->GetView()->GetRenderWidgetHost());
   ASSERT_TRUE(rwhi_red->IsContentRenderingTimeoutRunning());
 
   gfx::Image screenshot;

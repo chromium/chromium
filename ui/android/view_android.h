@@ -239,6 +239,10 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   EventForwarder* event_forwarder() { return event_forwarder_.get(); }
 
+  size_t GetChildrenCountForTesting() const;
+
+  const ViewAndroid* GetTopMostChildForTesting() const;
+
  protected:
   void RemoveAllChildren(bool attached_to_window);
 

@@ -620,13 +620,16 @@ CursorManager* RenderWidgetHostViewMac::GetCursorManager() {
   return cursor_manager_.get();
 }
 
-void RenderWidgetHostViewMac::DidNavigateMainFramePreCommit() {
-  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
-  gesture_provider_.ResetDetection();
+void RenderWidgetHostViewMac::OnOldViewDidNavigatePreCommit() {
   if (base::FeatureList::IsEnabled(
           features::kInvalidateLocalSurfaceIdPreCommit)) {
+    CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
     browser_compositor_->DidNavigateMainFramePreCommit();
   }
+}
+
+void RenderWidgetHostViewMac::OnNewViewDidNavigatePostCommit() {
+  gesture_provider_.ResetDetection();
 }
 
 void RenderWidgetHostViewMac::DidEnterBackForwardCache() {
