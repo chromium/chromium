@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 # Changes all RPATHs in a given directory from XORIGIN to $ORIGIN
-# See the comment about XORIGIN in instrumented_libraries.gyp
+# See the comment about XORIGIN in BUILD.gn
 
 # Fixes rpath from XORIGIN to $ORIGIN in a single file $1.
 function fix_rpath {

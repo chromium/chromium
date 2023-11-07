@@ -21,29 +21,29 @@ import sys
 SCRIPT_ABSOLUTE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 def unescape_flags(s):
-  """Un-escapes build flags received from GYP.
+  """Un-escapes build flags received from GN.
 
-  GYP escapes build flags as if they are to be inserted directly into a command
+  GN escapes build flags as if they are to be inserted directly into a command
   line, wrapping each flag in double quotes. When flags are passed via
   CFLAGS/LDFLAGS instead, double quotes must be dropped.
   """
   if not s:
-    return ''
+    return []
   try:
-    return ' '.join(ast.literal_eval(s))
+    return ast.literal_eval(s)
   except (SyntaxError, ValueError):
-    return ' '.join(shlex.split(s))
+    return shlex.split(s)
 
 
-def real_path(path_relative_to_gyp):
+def real_path(path_relative_to_gn):
   """Returns the absolute path to a file.
 
-  GYP generates paths relative to the location of the .gyp file, which is one
+  GN generates paths relative to the build directory, which is one
   level above the location of this script. This function converts them to
   absolute paths.
   """
   return os.path.realpath(os.path.join(SCRIPT_ABSOLUTE_PATH, '..',
-                                       path_relative_to_gyp))
+                                       path_relative_to_gn))
 
 
 class InstrumentedPackageBuilder(object):
@@ -71,7 +71,7 @@ class InstrumentedPackageBuilder(object):
     self._cflags = unescape_flags(args.cflags)
     if args.sanitizer_ignorelist:
       ignorelist_file = real_path(args.sanitizer_ignorelist)
-      self._cflags += ' -fsanitize-blacklist=%s' % ignorelist_file  # nocheck
+      self._cflags += ['-fsanitize-blacklist=%s' % ignorelist_file]
 
     self._ldflags = unescape_flags(args.ldflags)
 
@@ -80,11 +80,11 @@ class InstrumentedPackageBuilder(object):
     self._git_url = args.git_url
     self._git_revision = args.git_revision
 
-    self._no_configure = args.no_configure
+    self._make_targets = unescape_flags(args.make_targets)
 
     # Initialized later.
-    self._source_dir = None
-    self._source_archives = None
+    self._source_dir = ''
+    self._source_archives = ''
 
   def init_build_env(self, args_env):
     self._build_env = os.environ.copy()
@@ -94,14 +94,14 @@ class InstrumentedPackageBuilder(object):
     self._build_env['CC'] = self._cc
     self._build_env['CXX'] = self._cxx
 
-    self._build_env['CFLAGS'] = self._cflags
-    self._build_env['CXXFLAGS'] = self._cflags
-    self._build_env['LDFLAGS'] = self._ldflags
+    self._build_env['CFLAGS'] = ' '.join(self._cflags)
+    self._build_env['CXXFLAGS'] = ' '.join(self._cflags)
+    self._build_env['LDFLAGS'] = ' '.join(self._ldflags)
 
     # libappindicator1 needs this.
     self._build_env['CSC'] = '/usr/bin/mono-csc'
 
-  def shell_call(self, command, env=None, cwd=None, ignore_ret_code=False):
+  def shell_call(self, command, env=None, cwd=None, ignore_ret_code=False, shell=False):
     """Wrapper around subprocess.Popen().
 
     Calls command with specific environment and verbosity using
@@ -109,7 +109,7 @@ class InstrumentedPackageBuilder(object):
     """
     child = subprocess.Popen(
         command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-        env=env, shell=True, cwd=cwd)
+        env=env, shell=shell, cwd=cwd)
     stdout = child.communicate()[0].decode('utf-8')
     if ignore_ret_code:
       if self._verbose:
@@ -127,20 +127,21 @@ class InstrumentedPackageBuilder(object):
     Checks out the source code for the package, if required (i.e. unless running
     in no-clobber mode). Initializes self._source_dir and self._source_archives.
     """
+    command = ''
     get_fresh_source = self._clobber or not os.path.exists(self._working_dir)
     if get_fresh_source:
       shutil.rmtree(self._working_dir, ignore_errors=True)
       os.makedirs(self._working_dir)
 
       if self._git_url:
-        command = 'git clone %s' % self._git_url
+        command = ['git', 'clone', self._git_url]
         self.shell_call(command, cwd=self._working_dir)
       else:
         # Download one source package at a time, otherwise, there will
         # be connection errors in gnutls_handshake().
         lock = open('apt-source-lock', 'w')
         fcntl.flock(lock, fcntl.LOCK_EX)
-        command = 'apt-get source %s' % self._package
+        command = ['apt-get', 'source', self._package]
         self.shell_call(command, cwd=self._working_dir)
         fcntl.flock(lock, fcntl.LOCK_UN)
 
@@ -151,7 +152,7 @@ class InstrumentedPackageBuilder(object):
     self._source_component = dirnames[0]
     self._source_dir = os.path.join(dirpath, self._source_component, '')
     if self._git_url:
-      self.shell_call('git checkout %s' % self._git_revision,
+      self.shell_call(['git', 'checkout', self._git_revision],
                       cwd=self._source_dir)
     else:
       if len(filenames) == 0:
@@ -163,9 +164,9 @@ class InstrumentedPackageBuilder(object):
 
   def patch_source(self):
     for patch in self._patches:
-      self.shell_call('patch -p1 -i %s' % patch, cwd=self._source_dir)
+      self.shell_call(['patch', '-p1', '-i', patch], cwd=self._source_dir)
     if self._pre_build:
-      self.shell_call(self._pre_build, cwd=self._source_dir)
+      self.shell_call([self._pre_build], cwd=self._source_dir)
 
   def copy_source_archives(self):
     """Copies the downloaded source archives to the output dir.
@@ -208,12 +209,12 @@ class InstrumentedPackageBuilder(object):
     # Remove downloaded package and generated temporary build files. Failed
     # builds intentionally skip this step to help debug build failures.
     if self._clobber:
-      self.shell_call('rm -rf %s' % self._working_dir)
+      self.shell_call(['rm', '-rf', self._working_dir])
 
   def fix_rpaths(self, directory):
     # TODO(eugenis): reimplement fix_rpaths.sh in Python.
     script = real_path('scripts/fix_rpaths.sh')
-    self.shell_call("%s %s" % (script, directory))
+    self.shell_call([script, directory])
 
   def temp_dir(self):
     """Returns the directory which will be passed to `make install'."""
@@ -232,9 +233,9 @@ class InstrumentedPackageBuilder(object):
     # .la files are not needed, nuke them.
     # In case --no-static is not supported, nuke any static libraries we built.
     self.shell_call(
-        'find %s -name *.la -or -name *.a | xargs rm -f' % self.temp_libdir())
+        'find %s -name *.la -or -name *.a | xargs rm -f' % self.temp_libdir(), shell=True)
     # .pc files are not needed.
-    self.shell_call('rm %s/pkgconfig -rf' % self.temp_libdir())
+    self.shell_call(['rm', '-rf', '%s/pkgconfig' % self.temp_libdir()])
 
   def make(self, args, env=None, cwd=None, ignore_ret_code=False):
     """Invokes `make'.
@@ -246,29 +247,30 @@ class InstrumentedPackageBuilder(object):
       cwd = self._source_dir
     if env is None:
       env = self._build_env
-    cmd = ['make'] + args
-    self.shell_call(' '.join(cmd), env=env, cwd=cwd,
+    self.shell_call(['make'] + args, env=env, cwd=cwd,
                     ignore_ret_code=ignore_ret_code)
 
   def make_install(self, args, **kwargs):
     """Invokes `make install'."""
     self.make(['install'] + args, **kwargs)
 
-  def build_and_install(self, targets=[]):
+  def build_and_install(self):
     """Builds and installs the DSOs.
 
     Builds the package with ./configure + make, installs it to a temporary
     location, then moves the relevant files to their permanent location.
     """
-    if not self._no_configure:
-      configure_cmd = './configure --libdir=/%s/ %s' % (
-          self._libdir, self._extra_configure_flags)
+    if os.path.exists(os.path.join(self._source_dir, 'configure')):
+      configure_cmd = [
+        './configure',
+        '--libdir=/%s/' % self._libdir,
+      ] + self._extra_configure_flags
       self.shell_call(configure_cmd, env=self._build_env, cwd=self._source_dir)
 
     # Some makefiles use BUILDROOT or INSTALL_ROOT instead of DESTDIR.
     args = ['DESTDIR', 'BUILDROOT', 'INSTALL_ROOT']
     make_args = ['%s=%s' % (name, self.temp_dir()) for name in args]
-    self.make(make_args + targets)
+    self.make(make_args + self._make_targets)
 
     self.make_install(make_args)
 
@@ -282,7 +284,7 @@ class InstrumentedPackageBuilder(object):
     # Now move the contents of the temporary destdir to their final place.
     # We only care for the contents of LIBDIR.
     self.shell_call('cp %s/* %s/ -rdf' % (self.temp_libdir(),
-                                          self.dest_libdir()))
+                                          self.dest_libdir()), shell=True)
 
 
 class DebianBuilder(InstrumentedPackageBuilder):
@@ -299,9 +301,9 @@ class DebianBuilder(InstrumentedPackageBuilder):
     self._build_env['CC'] = self._cc
     self._build_env['CXX'] = self._cxx
 
-    self._build_env['DEB_CFLAGS_APPEND'] = self._cflags
-    self._build_env['DEB_CXXFLAGS_APPEND'] = self._cflags
-    self._build_env['DEB_LDFLAGS_APPEND'] = self._ldflags
+    self._build_env['DEB_CFLAGS_APPEND'] = ' '.join(self._cflags)
+    self._build_env['DEB_CXXFLAGS_APPEND'] = ' '.join(self._cflags)
+    self._build_env['DEB_LDFLAGS_APPEND'] = ' '.join(self._ldflags)
     self._build_env['DEB_BUILD_OPTIONS'] = \
       'nocheck notest nodoc nostrip parallel=%d' % os.cpu_count()
 
@@ -310,14 +312,15 @@ class DebianBuilder(InstrumentedPackageBuilder):
     self.install_packaged_libs()
 
   def build_debian_packages(self):
-    configure_cmd = 'dpkg-buildpackage -B -uc'
+    configure_cmd = ['dpkg-buildpackage', '-B', '-uc']
     self.shell_call(configure_cmd, env=self._build_env, cwd=self._source_dir)
 
   def install_packaged_libs(self):
     for deb_file in self.get_deb_files():
-      self.shell_call("dpkg-deb -x %s %s" % (deb_file, self.temp_dir()))
+      self.shell_call(['dpkg-deb', '-x', deb_file, self.temp_dir()])
 
-    dpkg_arch = self.shell_call("dpkg-architecture -qDEB_HOST_MULTIARCH").strip()
+    dpkg_arch_cmd = ['dpkg-architecture', '-qDEB_HOST_MULTIARCH']
+    dpkg_arch = self.shell_call(dpkg_arch_cmd).strip()
     lib_dirs = [
       "usr/lib/%s" % dpkg_arch,
       "lib/%s" % dpkg_arch,
@@ -360,7 +363,7 @@ class LibcapBuilder(InstrumentedPackageBuilder):
     # libcap2 doesn't have a configure script
     build_args = ['CC', 'CXX', 'CFLAGS', 'CXXFLAGS', 'LDFLAGS']
     make_args = [
-        '%s="%s"' % (name, self._build_env[name]) for name in build_args
+        '%s=%s' % (name, self._build_env[name]) for name in build_args
     ]
     self.make(make_args)
 
@@ -379,7 +382,7 @@ class LibcapBuilder(InstrumentedPackageBuilder):
     # Now move the contents of the temporary destdir to their final place.
     # We only care for the contents of LIBDIR.
     self.shell_call('cp %s/* %s/ -rdf' % (self.temp_libdir(),
-                                          self.dest_libdir()))
+                                          self.dest_libdir()), shell=True)
 
 
 class LibcurlBuilder(DebianBuilder):
@@ -413,11 +416,11 @@ class Libpci3Builder(InstrumentedPackageBuilder):
   def build_and_install(self):
     # pciutils doesn't have a configure script
     # This build process follows debian/rules.
-    self.shell_call('mkdir -p %s-udeb/usr/bin' % self.temp_dir())
+    self.shell_call(['mkdir', '-p', '%s-udeb/usr/bin' % self.temp_dir()])
 
     build_args = ['CC', 'CXX', 'CFLAGS', 'CXXFLAGS', 'LDFLAGS']
     make_args = [
-        '%s="%s"' % (name, self._build_env[name]) for name in build_args
+        '%s=%s' % (name, self._build_env[name]) for name in build_args
     ]
     make_args += [
         'LIBDIR=/%s/' % self._libdir,
@@ -438,31 +441,27 @@ class Libpci3Builder(InstrumentedPackageBuilder):
     # Now install the DSOs to their final place.
     self.shell_call(
         'install -m 644 %s/libpci.so* %s' % (self.temp_libdir(),
-                                             self.dest_libdir()))
+                                             self.dest_libdir()), shell=True)
     self.shell_call(
         'ln -sf libpci.so.%s %s/libpci.so.3' % (self.package_version(),
-                                                self.dest_libdir()))
+                                                self.dest_libdir()), shell=True)
 
 
 class MesonBuilder(InstrumentedPackageBuilder):
   def build_and_install(self):
-    meson_flags = {
-      'prefix': '/',
-      'libdir': self._libdir,
-      'sbindir': 'bin',
-    }
     meson_cmd = [
       'meson',
       'build',
       '.',
-      ' '.join('--%s %s' % item for item in meson_flags.items()),
+      '--prefix', '/',
+      '--libdir', self._libdir,
+      '--sbindir', 'bin',
       '-Db_lundef=false',
-      self._extra_configure_flags,
-    ]
+    ] + self._extra_configure_flags
 
-    self.shell_call(' '.join(meson_cmd),
+    self.shell_call(meson_cmd,
                     env=self._build_env, cwd=self._source_dir)
-    self.shell_call('ninja -C build install',
+    self.shell_call(['ninja', '-C', 'build', 'install'],
                     {**self._build_env, 'DESTDIR': self.temp_dir()},
                     cwd=self._source_dir)
     self.post_install()
@@ -475,9 +474,8 @@ class CmakeBuilder(InstrumentedPackageBuilder):
       '.',
       '-DCMAKE_INSTALL_PREFIX=/usr',
       '-DCMAKE_INSTALL_LIBDIR=/%s/' % self._libdir,
-      self._extra_configure_flags,
-    ]
-    self.shell_call(' '.join(cmake_cmd), env=self._build_env,
+    ] + self._extra_configure_flags
+    self.shell_call(cmake_cmd, env=self._build_env,
                     cwd=self._source_dir)
 
     args = ['DESTDIR', 'BUILDROOT', 'INSTALL_ROOT']
@@ -537,15 +535,10 @@ class NSSBuilder(InstrumentedPackageBuilder):
           shutil.copy(full_path, self.dest_libdir())
 
 
-class ZlibBuilder(InstrumentedPackageBuilder):
-  def build_and_install(self):
-    super().build_and_install(['libz.so.1.2.11'])
-
-
 class StubBuilder(InstrumentedPackageBuilder):
   def download_build_install(self):
     self._touch(os.path.join(self._destdir, '%s.txt' % self._package))
-    self.shell_call('mkdir -p %s' % self.dest_libdir())
+    self.shell_call(['mkdir', '-p', self.dest_libdir()])
     self._touch(os.path.join(self.dest_libdir(), '%s.so.0' % self._package))
 
   def _touch(self, path):
@@ -581,9 +574,9 @@ def main():
   parser.add_argument('--env', default='')
   parser.add_argument('--git-url', default='')
   parser.add_argument('--git-revision', default='')
-  parser.add_argument('--no-configure', action='store_true')
+  parser.add_argument('--make-targets', default='')
 
-  # Ignore all empty arguments because in several cases gyp passes them to the
+  # Ignore all empty arguments because in several cases gn passes them to the
   # script, but ArgumentParser treats them as positional arguments instead of
   # ignoring (and doesn't have such options).
   args = parser.parse_args([arg for arg in sys.argv[1:] if len(arg) != 0])
@@ -603,8 +596,6 @@ def main():
     builder = LibcurlBuilder(args, clobber)
   elif args.build_method == 'custom_libpci3':
     builder = Libpci3Builder(args, clobber)
-  elif args.build_method == 'custom_zlib':
-    builder = ZlibBuilder(args, clobber)
   elif args.build_method == 'debian':
     builder = DebianBuilder(args, clobber)
   elif args.build_method == 'meson':
