@@ -93,7 +93,7 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
     return can_accept_format;
   }
 
-  bool DecodeFrame(CMSampleBufferRef sample, void* context) override {
+  bool DecodeFrame(CMSampleBufferRef sample, uintptr_t context) override {
     if (can_decode_frame) {
       pending_decodes_.push(context);
     }
@@ -104,7 +104,7 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
   void CompleteDecode() {
     CHECK(!pending_decodes_.empty());
 
-    void* context = pending_decodes_.front();
+    uintptr_t context = pending_decodes_.front();
     OSStatus status = noErr;
     VTDecodeInfoFlags flags = 0;
     base::apple::ScopedCFTypeRef<CVImageBufferRef> image = CreateImage();
@@ -117,7 +117,7 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
   void FailDecode() {
     CHECK(!pending_decodes_.empty());
 
-    void* context = pending_decodes_.front();
+    uintptr_t context = pending_decodes_.front();
     OSStatus status = -1;
     VTDecodeInfoFlags flags = 0;
     base::apple::ScopedCFTypeRef<CVImageBufferRef> image;
@@ -137,7 +137,7 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
  private:
   VideoToolboxDecompressionSessionImpl::OutputCB output_cb_;
   bool valid_ = false;
-  base::queue<void*> pending_decodes_;
+  base::queue<uintptr_t> pending_decodes_;
 };
 
 }  // namespace

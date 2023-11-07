@@ -8,6 +8,7 @@
 #include <CoreMedia/CoreMedia.h>
 #include <VideoToolbox/VideoToolbox.h>
 
+#include <stdint.h>
 #include <memory>
 #include <utility>
 
@@ -60,7 +61,7 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionInterface {
       std::unique_ptr<VideoToolboxDecompressionSession> decompression_session);
 
   // Public for testing.
-  void OnOutput(void* context,
+  void OnOutput(uintptr_t context,
                 OSStatus status,
                 VTDecodeInfoFlags flags,
                 base::apple::ScopedCFTypeRef<CVImageBufferRef> image);
@@ -96,7 +97,10 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionInterface {
 
   std::unique_ptr<VideoToolboxDecompressionSession> decompression_session_;
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
-  base::flat_map<void*, std::unique_ptr<VideoToolboxDecodeMetadata>>
+  // Pointers to decode metadata are passed to VideoToolbox as decode context,
+  // but returned pointers are always looked up in this table rather than
+  // dereferenced.
+  base::flat_map<uintptr_t, std::unique_ptr<VideoToolboxDecodeMetadata>>
       active_decodes_;
 
   // Destroy the active session once it becomes empty. Used to prepare for

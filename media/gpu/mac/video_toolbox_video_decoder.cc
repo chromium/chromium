@@ -306,7 +306,9 @@ void VideoToolboxVideoDecoder::ResetInternal(DecoderStatus status) {
     decode_cbs_.pop();
   }
 
-  accelerator_->Reset();
+  if (accelerator_) {
+    accelerator_->Reset();
+  }
   video_toolbox_.Reset();
   output_queue_.Reset(status);
 

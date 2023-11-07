@@ -234,7 +234,9 @@ void VideoToolboxFrameConverter::Convert(
       IsMultiPlaneFormatForHardwareVideoEnabled()
           ? SharedImageFormatType::kSharedImageFormat
           : SharedImageFormatType::kLegacy);
-  frame->metadata().frame_duration = metadata->duration;
+  if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
+    frame->metadata().frame_duration = metadata->duration;
+  }
   frame->metadata().allow_overlay = true;
   // Releasing |image| must happen after command buffer commands are complete
   // (not just submitted).

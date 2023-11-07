@@ -138,7 +138,7 @@ bool VideoToolboxDecompressionInterface::Process() {
     }
 
     // Submit the sample for decoding.
-    void* context = static_cast<void*>(metadata.get());
+    uintptr_t context = reinterpret_cast<uintptr_t>(metadata.get());
     if (!decompression_session_->DecodeFrame(sample.get(), context)) {
       return false;
     }
@@ -174,11 +174,11 @@ bool VideoToolboxDecompressionInterface::CreateSession(
       decoder_config.get(),
       kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder,
       kCFBooleanTrue);
+  // TODO(crbug.com/1331597): Use session_metadata.allow_software_decoding.
   CFDictionarySetValue(
       decoder_config.get(),
       kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
-      session_metadata.allow_software_decoding ? kCFBooleanFalse
-                                               : kCFBooleanTrue);
+      kCFBooleanFalse);
 #endif
 
   // Build destination image buffer attributes.
@@ -252,7 +252,7 @@ void VideoToolboxDecompressionInterface::DestroySession() {
 }
 
 void VideoToolboxDecompressionInterface::OnOutput(
-    void* context,
+    uintptr_t context,
     OSStatus status,
     VTDecodeInfoFlags flags,
     base::apple::ScopedCFTypeRef<CVImageBufferRef> image) {

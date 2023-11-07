@@ -21,7 +21,8 @@ void OnOutputThunk(void* decompression_output_refcon,
   VideoToolboxDecompressionSessionImpl* vtdsi =
       static_cast<VideoToolboxDecompressionSessionImpl*>(
           decompression_output_refcon);
-  vtdsi->OnOutputOnAnyThread(source_frame_refcon, status, info_flags,
+  vtdsi->OnOutputOnAnyThread(reinterpret_cast<uintptr_t>(source_frame_refcon),
+                             status, info_flags,
                              base::apple::ScopedCFTypeRef<CVImageBufferRef>(
                                  image_buffer, base::scoped_policy::RETAIN));
 }
@@ -108,7 +109,7 @@ bool VideoToolboxDecompressionSessionImpl::CanAcceptFormat(
 }
 
 bool VideoToolboxDecompressionSessionImpl::DecodeFrame(CMSampleBufferRef sample,
-                                                       void* context) {
+                                                       uintptr_t context) {
   DVLOG(3) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   CHECK(session_);
@@ -117,7 +118,8 @@ bool VideoToolboxDecompressionSessionImpl::DecodeFrame(CMSampleBufferRef sample,
       kVTDecodeFrame_EnableAsynchronousDecompression;
 
   OSStatus status = VTDecompressionSessionDecodeFrame(
-      session_.get(), sample, decode_flags, context, nullptr);
+      session_.get(), sample, decode_flags, reinterpret_cast<void*>(context),
+      nullptr);
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "VTDecompressionSessionDecodeFrame()";
@@ -128,7 +130,7 @@ bool VideoToolboxDecompressionSessionImpl::DecodeFrame(CMSampleBufferRef sample,
 }
 
 void VideoToolboxDecompressionSessionImpl::OnOutputOnAnyThread(
-    void* context,
+    uintptr_t context,
     OSStatus status,
     VTDecodeInfoFlags flags,
     base::apple::ScopedCFTypeRef<CVImageBufferRef> image) {
@@ -140,7 +142,7 @@ void VideoToolboxDecompressionSessionImpl::OnOutputOnAnyThread(
 }
 
 void VideoToolboxDecompressionSessionImpl::OnOutput(
-    void* context,
+    uintptr_t context,
     OSStatus status,
     VTDecodeInfoFlags flags,
     base::apple::ScopedCFTypeRef<CVImageBufferRef> image) {
