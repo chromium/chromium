@@ -273,7 +273,7 @@ group("gn_all") {
 
     deps += root_extra_deps
 
-    if (enable_printing || enable_printing_unittests) {
+    if (enable_printing || enable_printing_tests) {
       deps += [ "//printing:printing_unittests" ]
     }
 

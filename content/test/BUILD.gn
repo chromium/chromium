@@ -3117,7 +3117,7 @@ test("content_unittests") {
     deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics:fuchsia.accessibility.semantics_cpp" ]
   }
 
-  if (enable_printing || enable_printing_unittests) {
+  if (enable_printing || enable_printing_tests) {
     deps += [
       "//printing",
       "//printing/backend",
