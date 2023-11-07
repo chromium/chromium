@@ -9,14 +9,17 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_attributes_storage_observer.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/crosapi/mojom/desk_profiles.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+class Profile;
 class ProfileManager;
 
 namespace crosapi {
 
-class DeskProfilesLacros : public ProfileAttributesStorageObserver {
+class DeskProfilesLacros : public ProfileAttributesStorageObserver,
+                           public ProfileManagerObserver {
  public:
   DeskProfilesLacros(ProfileManager* profile_manager,
                      mojom::DeskProfileObserver* remote);
@@ -32,6 +35,10 @@ class DeskProfilesLacros : public ProfileAttributesStorageObserver {
                             const std::u16string& old_profile_name) override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
 
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
+
   // Sends an upsert of the profile located at `profile_path` to ash.
   void SendProfileUpsert(const base::FilePath& profile_path);
 
@@ -42,6 +49,9 @@ class DeskProfilesLacros : public ProfileAttributesStorageObserver {
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorageObserver>
       storage_observer_{this};
+
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      manager_observer_{this};
 };
 
 }  // namespace crosapi

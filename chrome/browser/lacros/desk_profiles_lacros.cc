@@ -44,6 +44,7 @@ DeskProfilesLacros::DeskProfilesLacros(ProfileManager* profile_manager,
                                        mojom::DeskProfileObserver* remote)
     : profile_manager_(profile_manager), remote_(remote) {
   storage_observer_.Observe(&profile_manager_->GetProfileAttributesStorage());
+  manager_observer_.Observe(profile_manager_);
 
   std::vector<ProfileAttributesEntry*> entries =
       profile_manager_->GetProfileAttributesStorage()
@@ -82,7 +83,22 @@ void DeskProfilesLacros::OnProfileAvatarChanged(
   SendProfileUpsert(profile_path);
 }
 
+void DeskProfilesLacros::OnProfileManagerDestroying() {
+  // To avoid danging pointer errors on shutdown.
+  profile_manager_ = nullptr;
+  manager_observer_.Reset();
+  storage_observer_.Reset();
+}
+
+void DeskProfilesLacros::OnProfileAdded(Profile* profile) {
+  // We are not actually using this overload. However, it must be defined since
+  // we *are* using `ProfileAttributesStorageObserver::OnProfileAdded` and C++
+  // won't let us get away with just defining one the competing overloads.
+}
+
 void DeskProfilesLacros::SendProfileUpsert(const base::FilePath& profile_path) {
+  CHECK(profile_manager_);
+
   if (auto* entry = profile_manager_->GetProfileAttributesStorage()
                         .GetProfileAttributesWithPath(profile_path)) {
     std::vector<mojom::LacrosProfileSummaryPtr> profiles;
