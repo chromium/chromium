@@ -1248,8 +1248,14 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 #endif
 }
 
+// TODO(crbug.com/1500150): Consistently failing on Linux. Re-enable.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_UpdatePrintSettingsFails DISABLED_UpdatePrintSettingsFails
+#else
+#define MAYBE_UpdatePrintSettingsFails UpdatePrintSettingsFails
+#endif
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
-                       UpdatePrintSettingsFails) {
+                       MAYBE_UpdatePrintSettingsFails) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForFailInUpdatePrinterSettings();
