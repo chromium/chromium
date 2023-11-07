@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -167,6 +168,10 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
   // TODO(crbug.com/1479140): Implement
 }
 
+void IsolatedWebAppInstallerViewController::OnManageProfilesLinkClicked() {
+  // TODO(crbug.com/1479140): Implement
+}
+
 // static
 bool IsolatedWebAppInstallerViewController::OnAcceptWrapper(
     base::WeakPtr<IsolatedWebAppInstallerViewController> controller) {
@@ -176,17 +181,19 @@ bool IsolatedWebAppInstallerViewController::OnAcceptWrapper(
   return true;
 }
 
+// Returns true if the dialog should be closed.
 bool IsolatedWebAppInstallerViewController::OnAccept() {
   // TODO(crbug.com/1479140): Implement
   switch (model_->step()) {
-    case IsolatedWebAppInstallerModel::Step::kGetMetadata:
-      return true;
+    case IsolatedWebAppInstallerModel::Step::kConfirmInstall:
+      model_->SetStep(IsolatedWebAppInstallerModel::Step::kInstall);
+      OnModelChanged();
+      return false;
 
     default:
       NOTREACHED();
   }
-  OnModelChanged();
-  return false;
+  return true;
 }
 
 void IsolatedWebAppInstallerViewController::OnComplete() {
@@ -223,6 +230,8 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
       break;
 
     case IsolatedWebAppInstallerModel::Step::kConfirmInstall:
+      IsolatedWebAppInstallerView::SetDialogButtons(
+          dialog_delegate_, IDS_APP_CANCEL, IDS_INSTALL);
       view_->ShowMetadataScreen(model_->bundle_metadata());
       break;
 

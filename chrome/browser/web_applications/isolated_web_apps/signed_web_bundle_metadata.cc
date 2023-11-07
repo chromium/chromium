@@ -202,7 +202,10 @@ void SignedWebBundleMetadata::Create(Profile* profile,
         std::move(callback).Run(install_info.transform(
             [&url_info](const WebAppInstallInfo& install_info)
                 -> SignedWebBundleMetadata {
-              return SignedWebBundleMetadata(install_info, url_info);
+              return SignedWebBundleMetadata(
+                  url_info, install_info.title,
+                  install_info.isolated_web_app_version,
+                  install_info.icon_bitmaps);
             }));
       },
       url_info,
@@ -210,13 +213,24 @@ void SignedWebBundleMetadata::Create(Profile* profile,
           base::DoNothingWithBoundArgs(std::move(fetcher))))));
 }
 
+// static
+SignedWebBundleMetadata SignedWebBundleMetadata::CreateForTesting(
+    const IsolatedWebAppUrlInfo& url_info,
+    const std::u16string& app_name,
+    const base::Version& version,
+    const IconBitmaps& icons) {
+  return SignedWebBundleMetadata(url_info, app_name, version, icons);
+}
+
 SignedWebBundleMetadata::SignedWebBundleMetadata(
-    const WebAppInstallInfo& install_info,
-    const IsolatedWebAppUrlInfo& url_info)
+    const IsolatedWebAppUrlInfo& url_info,
+    const std::u16string& app_name,
+    const base::Version& version,
+    const IconBitmaps& icons)
     : url_info_(url_info),
-      app_name_(install_info.title),
-      version_(install_info.isolated_web_app_version),
-      icons_(install_info.icon_bitmaps) {}
+      app_name_(app_name),
+      version_(version),
+      icons_(icons) {}
 
 SignedWebBundleMetadata::~SignedWebBundleMetadata() = default;
 

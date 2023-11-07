@@ -65,6 +65,7 @@ class IsolatedWebAppInstallerViewController
 
   // `IsolatedWebAppInstallerView::Delegate`:
   void OnSettingsLinkClicked() override;
+  void OnManageProfilesLinkClicked() override;
   void OnChildDialogCanceled() override;
   void OnChildDialogAccepted() override;
 

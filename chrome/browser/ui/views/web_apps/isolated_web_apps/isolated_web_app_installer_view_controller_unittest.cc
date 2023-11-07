@@ -135,6 +135,7 @@ class MockView : public IsolatedWebAppInstallerView,
 
   // `IsolatedWebAppInstallerView::Delegate`:
   MOCK_METHOD(void, OnSettingsLinkClicked, (), (override));
+  MOCK_METHOD(void, OnManageProfilesLinkClicked, (), (override));
   MOCK_METHOD(void, OnChildDialogCanceled, (), (override));
   MOCK_METHOD(void, OnChildDialogAccepted, (), (override));
 };

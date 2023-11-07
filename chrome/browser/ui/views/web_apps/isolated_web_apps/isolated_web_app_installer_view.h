@@ -49,6 +49,7 @@ class IsolatedWebAppInstallerView : public views::BoxLayoutView {
   class Delegate {
    public:
     virtual void OnSettingsLinkClicked() = 0;
+    virtual void OnManageProfilesLinkClicked() = 0;
     virtual void OnChildDialogCanceled() = 0;
     virtual void OnChildDialogAccepted() = 0;
   };

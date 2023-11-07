@@ -6,11 +6,15 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -22,9 +26,11 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/styled_label.h"
@@ -38,6 +44,7 @@ namespace web_app {
 namespace {
 
 constexpr int kIconSize = 32;
+constexpr int kInfoPaneCornerRadius = 10;
 constexpr int kProgressViewHorizontalPadding = 45;
 
 void ConfigureBoxLayoutView(views::BoxLayoutView* view) {
@@ -67,6 +74,46 @@ ui::ImageModel CreateImageModelFromVector(const gfx::VectorIcon& vector_icon,
   return ui::ImageModel::FromVectorIcon(vector_icon, color_id, kIconSize);
 }
 
+ui::ImageModel CreateImageModelFromBundleMetadata(
+    const SignedWebBundleMetadata& metadata) {
+  gfx::ImageSkia icon_image(
+      std::make_unique<WebAppInfoImageSource>(kIconSize, metadata.icons().any),
+      gfx::Size(kIconSize, kIconSize));
+  return ui::ImageModel::FromImageSkia(icon_image);
+}
+
+// A View that displays key/value entries in a pane with a different
+// background color and a rounded border.
+class InfoPane : public views::BoxLayoutView {
+ public:
+  METADATA_HEADER(InfoPane);
+
+  explicit InfoPane(
+      const std::vector<std::pair<int, std::u16string>>& metadata) {
+    views::LayoutProvider* provider = views::LayoutProvider::Get();
+    SetInsideBorderInsets(
+        provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG));
+    SetOrientation(views::BoxLayout::Orientation::kVertical);
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        ui::kColorSubtleEmphasisBackground, kInfoPaneCornerRadius));
+
+    for (const auto& data : metadata) {
+      size_t offset;
+      views::StyledLabel* label = AddChildView(CreateLabelWithContextAndStyle(
+          views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+      label->SetText(
+          l10n_util::GetStringFUTF16(data.first, data.second, &offset));
+
+      views::StyledLabel::RangeStyleInfo style;
+      style.custom_font = label->GetFontList().Derive(
+          0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::BOLD);
+      label->AddStyleRange(gfx::Range(0, offset), style);
+    }
+  }
+};
+BEGIN_METADATA(InfoPane, views::BoxLayoutView)
+END_METADATA
+
 }  // namespace
 
 // The contents view used for all installer screens. This will handle rendering
@@ -83,6 +130,17 @@ class InstallerDialogView : public views::BoxLayoutView {
                       int title_id,
                       int subtitle_id,
                       absl::optional<LinkInfo> subtitle_link = absl::nullopt,
+                      std::unique_ptr<views::View> contents_view = nullptr)
+      : InstallerDialogView(icon_model,
+                            l10n_util::GetStringUTF16(title_id),
+                            subtitle_id,
+                            subtitle_link,
+                            std::move(contents_view)) {}
+
+  InstallerDialogView(const ui::ImageModel& icon_model,
+                      const std::u16string& title,
+                      int subtitle_id,
+                      absl::optional<LinkInfo> subtitle_link = absl::nullopt,
                       std::unique_ptr<views::View> contents_view = nullptr) {
     ConfigureBoxLayoutView(this);
 
@@ -90,9 +148,10 @@ class InstallerDialogView : public views::BoxLayoutView {
     icon->SetImage(icon_model);
     icon->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
 
-    views::StyledLabel* title = AddChildView(CreateLabelWithContextAndStyle(
-        views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
-    title->SetText(l10n_util::GetStringUTF16(title_id));
+    views::StyledLabel* title_label =
+        AddChildView(CreateLabelWithContextAndStyle(
+            views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+    title_label->SetText(title);
 
     views::StyledLabel* subtitle = AddChildView(CreateLabelWithContextAndStyle(
         views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
@@ -187,8 +246,21 @@ void IsolatedWebAppInstallerView::UpdateGetMetadataProgress(
 
 void IsolatedWebAppInstallerView::ShowMetadataScreen(
     const SignedWebBundleMetadata& bundle_metadata) {
-  // TODO(crbug.com/1479140): Implement
-  ShowDisabledScreen();
+  std::vector<std::pair<int, std::u16string>> info = {
+      {IDS_IWA_INSTALLER_SHOW_METADATA_APP_NAME_LABEL,
+       bundle_metadata.app_name()},
+      {IDS_IWA_INSTALLER_SHOW_METADATA_APP_VERSION_LABEL,
+       base::UTF8ToUTF16(bundle_metadata.version().GetString())},
+  };
+  auto app_info = std::make_unique<InfoPane>(info);
+  InstallerDialogView::LinkInfo link(
+      IDS_IWA_INSTALLER_SHOW_METADATA_MANAGE_PROFILES,
+      base::BindRepeating(&Delegate::OnManageProfilesLinkClicked,
+                          base::Unretained(delegate_)));
+  ShowScreen(std::make_unique<InstallerDialogView>(
+      CreateImageModelFromBundleMetadata(bundle_metadata),
+      bundle_metadata.app_name(), IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE,
+      link, std::move(app_info)));
 }
 
 void IsolatedWebAppInstallerView::ShowInstallScreen(
@@ -229,6 +301,9 @@ void IsolatedWebAppInstallerView::ShowDialog(
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       GetWidget()->GetContentsView(), views::BubbleBorder::FLOAT);
   bubble_delegate->SetModalType(ui::MODAL_TYPE_CHILD);
+  bubble_delegate->set_fixed_width(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   bubble_delegate->set_close_on_deactivate(false);
 
   bubble_delegate->SetContentsView(std::make_unique<InstallerDialogView>(

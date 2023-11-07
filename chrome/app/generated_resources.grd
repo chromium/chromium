@@ -16417,6 +16417,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_DISABLED_SUBTITLE" desc="Subtitle of the feature disabled screen of the IWA installer. $1 = IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE">
       You security preferences do not allow installations of Isolated Apps. <ph name="CHANGE_PREFERENCE">$1<ex>Change your preferences</ex></ph>
     </message>
+    <message name="IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE" desc="Subtitle of the pre-installation app info summary screen of the Isolated Web App installer">
+      This application will be installed on your currently used Chrome profile. <ph name="MANAGE_PROFILES">$1<ex>Manage your Chrome profiles</ex></ph>
+    </message>
+    <message name="IDS_IWA_INSTALLER_SHOW_METADATA_MANAGE_PROFILES" desc="Link to a settings page that lets the user manage their active profiles">
+      Manage your Chrome profiles
+    </message>
+    <message name="IDS_IWA_INSTALLER_SHOW_METADATA_APP_NAME_LABEL" desc="Label before the Isolated Web App name in the pre-install app info summary screen">
+      Application: <ph name="APP_NAME">$1<ex>Google Maps</ex></ph>
+    </message>
+    <message name="IDS_IWA_INSTALLER_SHOW_METADATA_APP_VERSION_LABEL" desc="Label before the Isolated Web App version in the pre-install app info summary screen">
+      Version: <ph name="APP_VERSION">$1<ex>1.0.0</ex></ph>
+    </message>
     <message name="IDS_IWA_INSTALLER_VERIFICATION_TITLE" desc="Title of the verification step of the IWA installation">
       Chrome is verifying the installation bundle
     </message>
