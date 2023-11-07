@@ -74,8 +74,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 @property(nonatomic, strong, readonly) NSArray<id<BadgeItem>>* badges;
 
 // The correct badge type for permissions infobar.
-@property(nonatomic, assign, readonly)
-    BadgeType permissionsBadgeType API_AVAILABLE(ios(15.0));
+@property(nonatomic, assign, readonly) BadgeType permissionsBadgeType;
 
 @end
 
@@ -162,11 +161,9 @@ const char kInfobarOverflowBadgeShownUserAction[] =
         BadgeTypeForInfobarType(infobarTypeBadgeStatePair.first);
     // Update BadgeType for permissions to align with current permission states
     // of the web state.
-    if (@available(iOS 15.0, *)) {
-      if (infobarTypeBadgeStatePair.first ==
-          InfobarType::kInfobarTypePermissions) {
-        badgeType = self.permissionsBadgeType;
-      }
+    if (infobarTypeBadgeStatePair.first ==
+        InfobarType::kInfobarTypePermissions) {
+      badgeType = self.permissionsBadgeType;
     }
     BadgeTappableItem* item =
         [[BadgeTappableItem alloc] initWithBadgeType:badgeType];
