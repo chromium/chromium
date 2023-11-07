@@ -1367,12 +1367,12 @@
   {
     "name": "cros-privacy-hub-app-permissions",
     "owners": [ "cros-privacy-features-dev@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 128
   },
   {
     "name": "cros-privacy-hub-v0",
     "owners": [ "chromeos-privacyhub@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "cros-shortstand",
@@ -2318,7 +2318,7 @@
   {
     "name": "enable-cros-privacy-hub",
     "owners": [ "chromeos-privacyhub@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 128
   },
   {
     "name": "enable-cros-system-japanese-physical-typing",
