@@ -237,11 +237,10 @@ export class SettingsGoogleDriveSubpageElement extends
   }
 
   /**
-   * Returns the current bulk pinning stage, or 'unknown' if not defined.
-   * Used for testing.
+   * Returns the current bulk pinning stage, or `undefined` if not defined.
    */
-  get stage(): Stage|'unknown' {
-    return this.bulkPinningStatus_?.stage || 'unknown';
+  get stage(): Stage|undefined {
+    return this.bulkPinningStatus_?.stage;
   }
 
   override connectedCallback(): void {
@@ -271,7 +270,7 @@ export class SettingsGoogleDriveSubpageElement extends
   private onProgress_(status: Status): void {
     this.bulkPinningServiceUnavailable_ = false;
 
-    if (status.stage !== this.bulkPinningStatus_?.stage ||
+    if (status.stage !== this.stage ||
         status.freeSpace !== this.bulkPinningStatus_?.freeSpace ||
         status.requiredSpace !== this.bulkPinningStatus_?.requiredSpace ||
         status.listedFiles !== this.bulkPinningStatus_?.listedFiles) {
@@ -292,13 +291,13 @@ export class SettingsGoogleDriveSubpageElement extends
 
     let requiredSpace: number;
     try {
-      requiredSpace = parseInt(status?.requiredSpace);
+      requiredSpace = parseInt(status.requiredSpace);
     } catch (e) {
       console.error('Could not parse required space', e);
       return;
     }
 
-    this.showSpinner = (status?.stage === Stage.kSyncing && requiredSpace > 0);
+    this.showSpinner = (status.stage === Stage.kSyncing && requiredSpace > 0);
   }
 
   /**
@@ -469,8 +468,7 @@ export class SettingsGoogleDriveSubpageElement extends
    * sublabel.
    */
   private getBulkPinningSubLabel_(): string {
-    if (!this.bulkPinningStatus_ ||
-        this.bulkPinningStatus_?.stage !== Stage.kSuccess ||
+    if (!this.bulkPinningStatus_ || this.stage !== Stage.kSuccess ||
         this.bulkPinningServiceUnavailable_) {
       return this.i18n('googleDriveFileSyncSubtitleWithoutStorage');
     }
@@ -524,14 +522,14 @@ export class SettingsGoogleDriveSubpageElement extends
     target.checked = false;
 
     // When the device is offline, don't allow the user to enable the toggle.
-    if (this.bulkPinningStatus_?.stage === Stage.kPausedOffline) {
+    if (this.stage === Stage.kPausedOffline) {
       this.dialogType_ = ConfirmationDialogType.BULK_PINNING_OFFLINE;
       return;
     }
 
     // If currently enumerating the files, don't allow the user to enable file
     // sync until we're certain the corpus will fit on the device.
-    if (this.bulkPinningStatus_?.stage === Stage.kListingFiles) {
+    if (this.stage === Stage.kListingFiles) {
       this.dialogType_ = ConfirmationDialogType.BULK_PINNING_LISTING_FILES;
       return;
     }
@@ -539,7 +537,7 @@ export class SettingsGoogleDriveSubpageElement extends
     if (this.bulkPinningStatus_?.isError) {
       // If there is not enough free space for the user to reliably turn on bulk
       // pinning, spawn a dialog.
-      if (this.bulkPinningStatus_?.stage === Stage.kNotEnoughSpace) {
+      if (this.stage === Stage.kNotEnoughSpace) {
         this.dialogType_ = ConfirmationDialogType.BULK_PINNING_NOT_ENOUGH_SPACE;
         return;
       }
@@ -561,7 +559,7 @@ export class SettingsGoogleDriveSubpageElement extends
   private shouldEnableCleanUpStorageButton_(
       status: Status|null, cacheSize: string|ContentCacheSizeType): boolean {
     const stage = status?.stage;
-    return (stage == null || stage === Stage.kStopped ||
+    return (stage === undefined || stage === Stage.kStopped ||
             stage === Stage.kSuccess || stage === Stage.kNotEnoughSpace ||
             stage === Stage.kCannotGetFreeSpace ||
             stage === Stage.kCannotListFiles ||
