@@ -1900,6 +1900,8 @@ bool HttpNetworkTransaction::CheckMaxRestarts() {
 
 void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
     RetryReason retry_reason) {
+  // TODO:(crbug.com/1495705): Remove this CHECK after fixing the bug.
+  CHECK(request_);
   base::UmaHistogramEnumeration(
       IsGoogleHostWithAlpnH3(url_.host())
           ? "Net.NetworkTransactionH3SupportedGoogleHost.RetryReason"
