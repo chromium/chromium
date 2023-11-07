@@ -253,7 +253,11 @@ class TestImporter(object):
 
             self._generate_manifest()
             message = 'Update test expectations and baselines.'
-            self._commit_changes(message)
+            if self.project_git.has_working_directory_changes():
+                self._commit_changes(message)
+            # Even if we didn't commit anything here, we may still upload
+            # `TestExpectations`, which are committed earlier (before
+            # rebaselining).
             self._upload_patchset(message)
         return True
 

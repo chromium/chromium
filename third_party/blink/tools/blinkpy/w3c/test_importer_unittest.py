@@ -166,7 +166,6 @@ class TestImporterTest(LoggingTestCase):
             'INFO: All jobs finished.\n',
             'INFO: Skip Slow and Timeout tests.\n',
             'INFO: Generating MANIFEST.json\n',
-            'INFO: Committing changes.\n',
         ])
 
     def test_run_commit_queue_for_cl_pass(self):
