@@ -65,8 +65,10 @@ id<GREYMatcher> GetContinueButtonWithIdentityMatcher(
   NSString* buttonTitle = l10n_util::GetNSStringF(
       IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
       base::SysNSStringToUTF16(fakeIdentity.userGivenName));
-  id<GREYMatcher> matcher = grey_allOf(grey_accessibilityLabel(buttonTitle),
-                                       grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> matcher =
+      grey_allOf(grey_accessibilityLabel(buttonTitle),
+                 grey_accessibilityTrait(UIAccessibilityTraitStaticText),
+                 grey_sufficientlyVisible(), nil);
 
   return matcher;
 }
@@ -99,6 +101,7 @@ void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
 
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(elementMatcher,
+                                          grey_kindOfClassName(@"UILabel"),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 50)
       onElementWithMatcher:scrollView] assertWithMatcher:grey_notNil()];
