@@ -119,9 +119,6 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
   void SetUp() override {
     set_start_session(true);
 
-    // Enable media controls.
-    feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
     LoginTestBase::SetUp();
 
     lock_contents_view_ = new LockContentsView(

@@ -1701,12 +1701,6 @@ BASE_FEATURE(kLockScreenNotifications,
              "LockScreenNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables lock screen media controls UI and use of media keys on the lock
-// screen.
-BASE_FEATURE(kLockScreenMediaControls,
-             "LockScreenMediaControls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature to allow MAC address randomization to be enabled for WiFi networks.
 BASE_FEATURE(kMacAddressRandomization,
              "MacAddressRandomization",

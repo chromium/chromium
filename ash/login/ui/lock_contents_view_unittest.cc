@@ -2270,9 +2270,6 @@ TEST_F(LockContentsViewUnitTest, DisabledAuthMessageFocusBehavior) {
 // Tests that media controls do not show on lock screen when auth is disabled
 // after media session changes to playing.
 TEST_F(LockContentsViewUnitTest, DisableAuthAfterMediaSessionChanged) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
@@ -2301,9 +2298,6 @@ TEST_F(LockContentsViewUnitTest, DisableAuthAfterMediaSessionChanged) {
 // Tests that media controls do not show on lock screen when auth is disabled
 // before media session changes to playing.
 TEST_F(LockContentsViewUnitTest, DisableAuthBeforeMediaSessionChanged) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
@@ -2330,9 +2324,6 @@ TEST_F(LockContentsViewUnitTest, DisableAuthBeforeMediaSessionChanged) {
 }
 
 TEST_F(LockContentsViewUnitTest, DisableAuthAllowMediaControls) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
       DataDispatcher(),
@@ -2855,10 +2846,6 @@ TEST_F(LockContentsViewUnitTest, LoginNotReactingOnEventsWithOobeDialogShown) {
 }
 
 TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsShownIfMediaPlaying) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -2878,10 +2865,6 @@ TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsShownIfMediaPlaying) {
 }
 
 TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsHiddenAfterDelay) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -2918,10 +2901,6 @@ TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsHiddenAfterDelay) {
 
 TEST_F(LockContentsViewUnitTest,
        MediaControlsHiddenIfScreenLockedWhileMediaPaused) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -2941,10 +2920,6 @@ TEST_F(LockContentsViewUnitTest,
 }
 
 TEST_F(LockContentsViewUnitTest, KeepMediaControlsShownWithinDelay) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -2972,10 +2947,6 @@ TEST_F(LockContentsViewUnitTest, KeepMediaControlsShownWithinDelay) {
 }
 
 TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsHiddenNoMedia) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -2993,10 +2964,6 @@ TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsHiddenNoMedia) {
 }
 
 TEST_F(LockContentsViewUnitTest, ShowMediaControlsIfPausedAndAlreadyShowing) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
@@ -3022,10 +2989,6 @@ TEST_F(LockContentsViewUnitTest, ShowMediaControlsIfPausedAndAlreadyShowing) {
 
 TEST_F(LockContentsViewUnitTest,
        LockScreenMediaControlsHiddenIfPreferenceDisabled) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   // Disable user preference for media controls.
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -3050,10 +3013,6 @@ TEST_F(LockContentsViewUnitTest,
 }
 
 TEST_F(LockContentsViewUnitTest, MediaControlsHiddenOnLoginScreen) {
-  // Enable media controls.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
   // Build login screen with 1 user.
   auto* contents = new LockContentsView(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
