@@ -770,6 +770,18 @@ void SetCreditCardInfo(CreditCard* credit_card,
   credit_card->set_billing_address_id(billing_address_id);
 }
 
+CreditCard CreateCreditCardWithInfo(const char* name_on_card,
+                                    const char* card_number,
+                                    const char* expiration_month,
+                                    const char* expiration_year,
+                                    const std::string& billing_address_id,
+                                    const std::u16string& cvc) {
+  CreditCard credit_card;
+  SetCreditCardInfo(&credit_card, name_on_card, card_number, expiration_month,
+                    expiration_year, billing_address_id, cvc);
+  return credit_card;
+}
+
 void DisableSystemServices(PrefService* prefs) {
   // Use a mock Keychain rather than the OS one to store credit card data.
   OSCryptMocker::SetUp();

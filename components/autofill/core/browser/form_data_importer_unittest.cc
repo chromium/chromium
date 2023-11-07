@@ -730,10 +730,8 @@ class FormDataImporterTestBase {
     personal_data_manager_->OnAcceptedLocalCreditCardSave(
         *extracted_credit_card);
 
-    CreditCard expected(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                        test::kEmptyOrigin);
-    test::SetCreditCardInfo(&expected, exp_name, exp_cc_num, exp_cc_month,
-                            exp_cc_year, "");
+    CreditCard expected = test::CreateCreditCardWithInfo(
+        exp_name, exp_cc_num, exp_cc_month, exp_cc_year, "");
     EXPECT_THAT(personal_data_manager_->GetCreditCards(),
                 UnorderedElementsCompareEqual(expected));
   }
@@ -1730,10 +1728,9 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_Valid) {
       AutofillMetrics::HAS_CARD_NUMBER_AND_EXPIRATION_DATE, 1);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
 
-  CreditCard expected(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                      test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
-                          "2999", "");  // Imported cards have no billing info.
+  CreditCard expected = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999",
+      "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 }
@@ -1820,10 +1817,9 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MonthSelectInvalidText) {
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
 
   // See that the invalid option text was converted to the right value.
-  CreditCard expected(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                      test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "02",
-                          "2999", "");  // Imported cards have no billing info.
+  CreditCard expected = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "02", "2999",
+      "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 }
@@ -1837,10 +1833,9 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
   EXPECT_TRUE(extracted_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
 
-  CreditCard expected(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                      test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
-                          "2999", "");  // Imported cards have no billing info.
+  CreditCard expected = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999",
+      "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 
@@ -1858,10 +1853,9 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
   personal_data_manager_->OnAcceptedLocalCreditCardSave(
       *extracted_credit_card2);
 
-  CreditCard expected2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                       test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected2, "", "5500000000000004", "02", "2999",
-                          "");  // Imported cards have no billing info.
+  CreditCard expected2 = test::CreateCreditCardWithInfo(
+      "", "5500000000000004", "02", "2999",
+      "");  // Imported cards have no billing info.
   // We ignore the order because multiple profiles or credit cards that
   // are added to the SQLite DB within the same second will be returned in GUID
   // (i.e., random) order.
@@ -2005,10 +1999,9 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
   EXPECT_TRUE(extracted_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
 
-  CreditCard expected(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                      test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
-                          "2998", "");  // Imported cards have no billing info.
+  CreditCard expected = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2998",
+      "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 
@@ -2027,10 +2020,9 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
 
   // Expect that the newer information is saved.  In this case the year is
   // updated to "2999".
-  CreditCard expected2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                       test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected2, "Biggie Smalls", "4111111111111111", "01",
-                          "2999", "");  // Imported cards have no billing info.
+  CreditCard expected2 = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999",
+      "");  // Imported cards have no billing info.
   const std::vector<CreditCard*>& results2 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
@@ -2050,10 +2042,9 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
   EXPECT_TRUE(extracted_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
 
-  CreditCard expected(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                      test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
-                          "2998", "");  // Imported cards have no billing info.
+  CreditCard expected = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2998",
+      "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 
@@ -2074,10 +2065,9 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
 
   // Expect that the newer information is saved.  In this case the year is
   // updated to "2999".
-  CreditCard expected2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                       test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected2, "Biggie Smalls", "4111111111111111", "01",
-                          "2999", "");  // Imported cards have no billing info.
+  CreditCard expected2 = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999",
+      "");  // Imported cards have no billing info.
   const std::vector<CreditCard*>& results2 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
@@ -2098,10 +2088,9 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
   EXPECT_TRUE(extracted_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
 
-  CreditCard expected(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                      test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
-                          "2998", "");  // Imported cards have no billing info.
+  CreditCard expected = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2998",
+      "");  // Imported cards have no billing info.
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 
@@ -2118,10 +2107,8 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
   EXPECT_FALSE(extracted_credit_card2);
 
   // No change is expected.
-  CreditCard expected2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                       test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected2, "Biggie Smalls", "4111111111111111", "01",
-                          "2998", "");
+  CreditCard expected2 = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2998", "");
   const std::vector<CreditCard*>& results2 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
@@ -2141,10 +2128,8 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   EXPECT_TRUE(extracted_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*extracted_credit_card);
 
-  CreditCard expected(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                      test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
-                          "2999", "");
+  CreditCard expected = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999", "");
   EXPECT_THAT(personal_data_manager_->GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 
@@ -2161,10 +2146,8 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   EXPECT_TRUE(extracted_credit_card2);
 
   // No change is expected.
-  CreditCard expected2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                       test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected2, "Biggie Smalls", "4111111111111111", "01",
-                          "2999", "");
+  CreditCard expected2 = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results2 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
@@ -2184,10 +2167,8 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   EXPECT_FALSE(extracted_credit_card3);
 
   // No change is expected.
-  CreditCard expected3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                       test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected3, "Biggie Smalls", "4111111111111111", "01",
-                          "2999", "");
+  CreditCard expected3 = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results3 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results3.size());
@@ -2223,10 +2204,8 @@ TEST_P(FormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
 
   // Expect that the newer information is saved.  In this case the year is
   // added to the existing credit card.
-  CreditCard expected2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                       test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected2, "Biggie Smalls", "4111111111111111", "01",
-                          "2999", "1");
+  CreditCard expected2 = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999", "1");
   const std::vector<CreditCard*>& results2 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
@@ -2802,10 +2781,8 @@ TEST_P(FormDataImporterTest, ExtractFormData_OneAddressOneCreditCard) {
   EXPECT_THAT(*results_addr[0], ComparesEqual(expected_address));
 
   // Test that the credit card has also been saved.
-  CreditCard expected_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected_card, "Biggie Smalls", "4111111111111111",
-                          "01", "2999", "");
+  CreditCard expected_card = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results_cards =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results_cards.size());
@@ -2836,10 +2813,8 @@ TEST_P(FormDataImporterTest, ExtractFormData_TwoAddressesOneCreditCard) {
   EXPECT_EQ(2U, personal_data_manager_->GetProfiles().size());
 
   // Test that the credit card has been saved.
-  CreditCard expected_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected_card, "Biggie Smalls", "4111111111111111",
-                          "01", "2999", "");
+  CreditCard expected_card = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results.size());
@@ -2968,10 +2943,8 @@ TEST_P(FormDataImporterTest, ExtractFormData_AddressesDisabledOneCreditCard) {
   EXPECT_EQ(0U, personal_data_manager_->GetProfiles().size());
 
   // Test that the credit card has been saved.
-  CreditCard expected_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected_card, "Biggie Smalls", "4111111111111111",
-                          "01", "2999", "");
+  CreditCard expected_card = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results.size());
@@ -3096,10 +3069,8 @@ TEST_P(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
       *extracted_data.extracted_credit_card);
 
   // Test that the credit card has been saved.
-  CreditCard expected_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           test::kEmptyOrigin);
-  test::SetCreditCardInfo(&expected_card, "Biggie Smalls", "4111111111111111",
-                          "01", "2999", "");
+  CreditCard expected_card = test::CreateCreditCardWithInfo(
+      "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results.size());

@@ -285,6 +285,14 @@ void SetCreditCardInfo(CreditCard* credit_card,
                        const std::string& billing_address_id,
                        const std::u16string& cvc = u"");
 
+// Same as SetCreditCardInfo() but returns CreditCard object.
+CreditCard CreateCreditCardWithInfo(const char* name_on_card,
+                                    const char* card_number,
+                                    const char* expiration_month,
+                                    const char* expiration_year,
+                                    const std::string& billing_address_id,
+                                    const std::u16string& cvc = u"");
+
 // TODO(isherman): We should do this automatically for all tests, not manually
 // on a per-test basis: http://crbug.com/57221
 // Disables or mocks out code that would otherwise reach out to system services.
