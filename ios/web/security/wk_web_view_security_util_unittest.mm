@@ -128,22 +128,11 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
   EXPECT_EQ(static_cast<CFIndex>(chain.count),
             SecTrustGetCertificateCount(server_trust.get()));
   [chain enumerateObjectsUsingBlock:^(id expected_cert, NSUInteger i, BOOL*) {
-    // TODO(crbug.com/1418068): Remove after minimum version required is >=
-    // iOS 15.
-    SecCertificateRef secCertificate = nil;
-    if (@available(iOS 15.0, *)) {
-      base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
-          SecTrustCopyCertificateChain(server_trust.get()));
-      secCertificate =
-          base::apple::CFCastStrict<SecCertificateRef>(CFArrayGetValueAtIndex(
-              certificateChain.get(), static_cast<CFIndex>(i)));
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      secCertificate = SecTrustGetCertificateAtIndex(server_trust.get(),
-                                                     static_cast<CFIndex>(i));
-    }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
+        SecTrustCopyCertificateChain(server_trust.get()));
+    SecCertificateRef secCertificate =
+        base::apple::CFCastStrict<SecCertificateRef>(CFArrayGetValueAtIndex(
+            certificateChain.get(), static_cast<CFIndex>(i)));
 
     id actual_cert = static_cast<id>((__bridge id)secCertificate);
     EXPECT_NSEQ(expected_cert, actual_cert);

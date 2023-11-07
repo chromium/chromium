@@ -1695,29 +1695,16 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     // `didFailProvisionalNavigation:` will differ (it is the server-supplied
     // chain), thus if intermediates were considered, the keys would mismatch.
 
-    // TODO(crbug.com/1418068): Remove after minimum version required is >=
-    // iOS 15.
     scoped_refptr<net::X509Certificate> leafCert = nil;
-    if (@available(iOS 15.0, *)) {
-      base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
-          SecTrustCopyCertificateChain(trust));
-      SecCertificateRef secCertificate =
-          base::apple::CFCastStrict<SecCertificateRef>(
-              CFArrayGetValueAtIndex(certificateChain.get(), 0));
-      leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
-          base::apple::ScopedCFTypeRef<SecCertificateRef>(
-              secCertificate, base::scoped_policy::RETAIN),
-          {});
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
-          base::apple::ScopedCFTypeRef<SecCertificateRef>(
-              SecTrustGetCertificateAtIndex(trust, 0),
-              base::scoped_policy::RETAIN),
-          {});
-    }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
+        SecTrustCopyCertificateChain(trust));
+    SecCertificateRef secCertificate =
+        base::apple::CFCastStrict<SecCertificateRef>(
+            CFArrayGetValueAtIndex(certificateChain.get(), 0));
+    leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
+        base::apple::ScopedCFTypeRef<SecCertificateRef>(
+            secCertificate, base::scoped_policy::RETAIN),
+        {});
 
     if (leafCert) {
       bool is_recoverable =
