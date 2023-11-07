@@ -330,10 +330,7 @@ void AnnotationAgentImpl::PerformPreAttachDOMMutation() {
 
     // If the active match is hidden inside a hidden=until-found element, then
     // we should reveal it so we can scroll to it.
-    if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-            first_node.GetExecutionContext())) {
-      DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
-    }
+    DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
 
     // Ensure we leave clean layout since we'll be applying markers after this.
     first_node.GetDocument().UpdateStyleAndLayout(

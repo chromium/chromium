@@ -8735,19 +8735,17 @@ void Element::UpdatePresentationAttributeStyle() {
   element_data.presentation_attribute_style_ =
       ComputePresentationAttributeStyle(*this);
 
-  if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(GetExecutionContext())) {
-    // We could do this in CreatePresentationAttributeStyle or
-    // HTMLElement::CollectStyleForPresentationAttribute when we actually
-    // iterate over attributes, but the presentational style gets cached so
-    // those functions aren't necessarily called every time. This function
-    // actually gets called every time, so we must do this check here.
-    AttributeCollection attributes = AttributesWithoutUpdate();
-    auto* hidden_attr = attributes.Find(html_names::kHiddenAttr);
-    if (hidden_attr && hidden_attr->Value() == "until-found") {
-      EnsureDisplayLockContext().SetIsHiddenUntilFoundElement(true);
-    } else if (DisplayLockContext* context = GetDisplayLockContext()) {
-      context->SetIsHiddenUntilFoundElement(false);
-    }
+  // We could do this in CreatePresentationAttributeStyle or
+  // HTMLElement::CollectStyleForPresentationAttribute when we actually iterate
+  // over attributes, but the presentational style gets cached so those
+  // functions aren't necessarily called every time. This function actually gets
+  // called every time, so we must do this check here.
+  AttributeCollection attributes = AttributesWithoutUpdate();
+  auto* hidden_attr = attributes.Find(html_names::kHiddenAttr);
+  if (hidden_attr && hidden_attr->Value() == "until-found") {
+    EnsureDisplayLockContext().SetIsHiddenUntilFoundElement(true);
+  } else if (DisplayLockContext* context = GetDisplayLockContext()) {
+    context->SetIsHiddenUntilFoundElement(false);
   }
 }
 

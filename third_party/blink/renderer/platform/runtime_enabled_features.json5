@@ -448,13 +448,6 @@
       base_feature: "none",
     },
     {
-      // https://github.com/WICG/display-locking/blob/master/explainer-beforematch.md
-      name: "BeforeMatchEvent",
-      origin_trial_feature_name: "BeforeMatchEvent",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       // There are two different code changes guarded by this feature. Both
       // are about triggering a beforeunload cancel dialog and need adoption
       // from developers.
