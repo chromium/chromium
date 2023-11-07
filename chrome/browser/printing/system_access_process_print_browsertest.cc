@@ -127,7 +127,15 @@ void CancelPrintPreview(content::WebContents* preview_dialog) {
                        .shadowRoot.querySelector('print-preview-button-strip')
                        .shadowRoot.querySelector('.cancel-button');
       button.click();)";
-  ASSERT_TRUE(content::ExecJs(preview_dialog, kScript));
+
+  // It is possible for sufficient processing for the cancel to complete such
+  // that the renderer naturally terminates before ExecJs() returns here.  This
+  // causes ExecJs() to return false, with a JavaScript error of
+  // "Renderer terminated".  Since the termination can actually be a result of
+  // a successful cancel, do not assert on this return result, just ignore the
+  // error instead.  Rely upon tests using other methods to catch errors, such
+  // as monitoring for the Print Preview to be done if that is needed.
+  std::ignore = content::ExecJs(preview_dialog, kScript);
 }
 
 }  // namespace
@@ -1248,14 +1256,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 #endif
 }
 
-// TODO(crbug.com/1500150): Consistently failing on Linux. Re-enable.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_UpdatePrintSettingsFails DISABLED_UpdatePrintSettingsFails
-#else
-#define MAYBE_UpdatePrintSettingsFails UpdatePrintSettingsFails
-#endif
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
-                       MAYBE_UpdatePrintSettingsFails) {
+                       UpdatePrintSettingsFails) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForFailInUpdatePrinterSettings();
