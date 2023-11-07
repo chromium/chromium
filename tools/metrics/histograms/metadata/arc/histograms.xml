@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AndroidBootTime" units="ms" expires_after="2024-03-01">
+<histogram name="Arc.AndroidBootTime" units="ms" expires_after="2024-05-05">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>The time elapsed for booting up the ARC instance.</summary>
@@ -1178,7 +1178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.DelayedActivation.ActivationIsDelayed" enum="Boolean"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>hashimoto@chromium.org</owner>
   <owner>yuholong@chromium.org</owner>
   <owner>arcvm-eng@google.com</owner>
@@ -2223,7 +2223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.Jankiness" units="%"
-    expires_after="2024-03-01">
+    expires_after="2024-05-05">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <summary>

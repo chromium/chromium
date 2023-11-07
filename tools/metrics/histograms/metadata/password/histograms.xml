@@ -2114,7 +2114,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.MigrationToOSCrypt{StoreType}"
-    enum="MigrationToOSCryptEnum" expires_after="2024-03-03">
+    enum="MigrationToOSCryptEnum" expires_after="2024-05-05">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
