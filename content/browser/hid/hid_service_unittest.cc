@@ -997,6 +997,13 @@ TEST_P(HidServiceTest, OpenDevicesThenRevokePermission) {
         .WillOnce(Return(device.get()));
   }
 
+  base::RunLoop disconnect_loop;
+  auto disconnect_closure =
+      base::BarrierClosure(num_devices, disconnect_loop.QuitClosure());
+  for (auto& connection : connections) {
+    connection.set_disconnect_handler(disconnect_closure);
+  }
+
   base::RunLoop run_loop;
   auto barrier = base::BarrierClosure(num_devices, run_loop.QuitClosure());
   url::Origin origin = url::Origin::Create(GURL(kTestUrl));
@@ -1007,7 +1014,12 @@ TEST_P(HidServiceTest, OpenDevicesThenRevokePermission) {
       .WillRepeatedly(RunClosure(barrier));
   hid_delegate().OnPermissionRevoked(origin);
 
+  run_loop.Run();
+  disconnect_loop.Run();
   CheckHidServiceConnectedState(service_creation_type, false);
+  for (auto& connection : connections) {
+    EXPECT_FALSE(connection.is_connected());
+  }
 }
 
 TEST_P(HidServiceTest, OpenDevicesThenHidServiceReset) {
