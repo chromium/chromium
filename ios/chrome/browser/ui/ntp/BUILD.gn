@@ -53,6 +53,7 @@ source_set("component_factory") {
   deps = [
     ":component_factory_protocol",
     ":ntp_internal",
+    "//components/prefs",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/discover_feed",
@@ -62,6 +63,7 @@ source_set("component_factory") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",

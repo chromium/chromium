@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -85,10 +87,17 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 @end
 
-@implementation NewTabPageHeaderViewController
+@implementation NewTabPageHeaderViewController {
+  BOOL _useNewBadgeForLensButton;
+}
 
-- (instancetype)init {
-  return [super initWithNibName:nil bundle:nil];
+- (instancetype)initWithUseNewBadgeForLensButton:
+    (BOOL)useNewBadgeForLensButton {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _useNewBadgeForLensButton = useNewBadgeForLensButton;
+  }
+  return self;
 }
 
 #pragma mark - Public
@@ -243,7 +252,8 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
     CGFloat width = self.view.frame.size.width;
 
-    self.headerView = [[NewTabPageHeaderView alloc] init];
+    self.headerView = [[NewTabPageHeaderView alloc]
+        initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
     self.headerView.isGoogleDefaultSearchEngine =
         self.isGoogleDefaultSearchEngine;
     self.headerView.translatesAutoresizingMaskIntoConstraints = NO;

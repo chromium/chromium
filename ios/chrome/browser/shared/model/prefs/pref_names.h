@@ -84,6 +84,7 @@ extern const char kLinkPreviewEnabled[];
 extern const char kNTPContentSuggestionsEnabled[];
 extern const char kNTPContentSuggestionsForSupervisedUserEnabled[];
 extern const char kNTPFollowingFeedSortType[];
+extern const char kNTPLensEntryPointNewBadgeShownCount[];
 extern const char kDefaultFollowingFeedSortTypeChanged[];
 extern const char kOSLockdownModeEnabled[];
 extern const char kOverflowMenuDestinationUsageHistory[];

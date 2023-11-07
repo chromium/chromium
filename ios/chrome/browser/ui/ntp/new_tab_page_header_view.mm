@@ -10,6 +10,7 @@
 
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -209,14 +210,17 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 @implementation NewTabPageHeaderView {
   CGFloat _lastAnimationPercent;
+  BOOL _useNewBadgeForLensButton;
 }
 
 #pragma mark - Public
 
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame];
+- (instancetype)initWithUseNewBadgeForLensButton:
+    (BOOL)useNewBadgeForLensButton {
+  self = [super initWithFrame:CGRectZero];
   if (self) {
     self.clipsToBounds = YES;
+    _useNewBadgeForLensButton = useNewBadgeForLensButton;
   }
   return self;
 }
@@ -353,7 +357,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   if (useLens) {
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-    content_suggestions::ConfigureLensButton(self.lensButton, searchField);
+    [searchField addSubview:self.lensButton];
+    content_suggestions::ConfigureLensButtonAppearance(
+        self.lensButton, _useNewBadgeForLensButton);
     endButton = self.lensButton;
   }
 

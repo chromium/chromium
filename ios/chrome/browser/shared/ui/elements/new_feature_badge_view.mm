@@ -27,6 +27,7 @@
 
     _badge = [[UIImageView alloc]
         initWithImage:DefaultSymbolWithPointSize(kSealFillSymbol, badgeSize)];
+    _badge.contentMode = UIViewContentModeScaleAspectFit;
     _badge.translatesAutoresizingMaskIntoConstraints = NO;
     _badge.tintColor = [UIColor colorNamed:kBlue600Color];
     [self addSubview:_badge];
@@ -48,6 +49,7 @@
     label.font = [UIFont fontWithDescriptor:fontDescriptor size:fontSize];
     [self addSubview:label];
     AddSameCenterConstraints(label, _badge);
+    AddSameConstraints(self, _badge);
 
     [NSLayoutConstraint activateConstraints:@[
       [_badge.widthAnchor constraintEqualToConstant:badgeSize],

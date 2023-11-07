@@ -293,6 +293,7 @@ source_set("content_suggestions_ui_util") {
     "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",

@@ -9,6 +9,17 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory_protocol.h"
 
+// These values are persisted to IOS.NTP.LensButtonNewBadgeShown histograms.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class IOSNTPNewBadgeShownResult {
+  kShown = 0,
+  kNotShownLimitReached = 1,
+  kNotShownButtonPressed = 2,
+  kMaxValue = kNotShownButtonPressed,
+};
+
+extern const char kNTPLensButtonNewBadgeShownHistogram[];
+
 // A factory which generates various NTP components for the
 // NewTabPageCoordinator.
 @interface NewTabPageComponentFactory

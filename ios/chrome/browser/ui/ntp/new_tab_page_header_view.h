@@ -14,6 +14,12 @@
 // primary toolbar, doodle, and fake omnibox.
 @interface NewTabPageHeaderView : UIView
 
+// Initializes the view with the Lens button new badge status.
+- (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
 // Returns the toolbar view.
 @property(nonatomic, readonly) UIView* toolBarView;
 

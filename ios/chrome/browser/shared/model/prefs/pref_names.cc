@@ -391,6 +391,11 @@ const char kTrackPricesOnTabsEnabled[] = "track_prices_on_tabs.enabled";
 const char kLensCameraAssistedSearchPolicyAllowed[] =
     "ios.lens_camera_assited_search_policy.allowed";
 
+// Number of times the NTP Lens button "new" IPH badge has been shown.
+// This is set to INT_MAX when the user taps the button.
+const char kNTPLensEntryPointNewBadgeShownCount[] =
+    "ios.ntp_lens_new_badge_shown_count";
+
 // A boolean specifying whether Web Inspector support is enabled.
 const char kWebInspectorEnabled[] = "ios.web_inspector_enabled";
 

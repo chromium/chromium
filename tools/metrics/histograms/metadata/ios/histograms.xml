@@ -1676,6 +1676,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.NTP.LensButtonNewBadgeShown"
+    enum="IOSNTPNewBadgeShownResult" expires_after="2024-05-02">
+  <owner>hujasonx@google.com</owner>
+  <owner>lens-in-bling-team@google.com</owner>
+  <summary>
+    The result of an attempt to show the New Feature badge on the Lens button in
+    the NTP on iOS. Logged when the NTP view is created.
+  </summary>
+</histogram>
+
 <histogram name="IOS.NTP.OverscrollAction" enum="IOSNTPOverscrollAction"
     expires_after="2024-04-28">
   <owner>guiperez@google.com</owner>

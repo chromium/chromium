@@ -29,7 +29,8 @@ typedef NS_ENUM(NSInteger, FollowingFeedSortType);
 - (FeedMetricsRecorder*)feedMetricsRecorderForBrowser:(Browser*)browser;
 
 // The header view controller containing the fake omnibox and logo.
-- (NewTabPageHeaderViewController*)headerViewController;
+- (NewTabPageHeaderViewController*)headerViewControllerForBrowser:
+    (Browser*)browser;
 
 // Mediator owned by the NewTabPageCoordinator
 - (NewTabPageMediator*)NTPMediatorForBrowser:(Browser*)browser

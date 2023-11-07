@@ -211,6 +211,9 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
     featureTracker->NotifyEvent(
         feature_engagement::events::kLensButtonKeyboardUsed);
     featureTracker->Dismissed(feature_engagement::kIPHiOSLensKeyboardFeature);
+  } else if (entrypoint == LensEntrypoint::NewTabPage) {
+    browserState->GetPrefs()->SetInteger(
+        prefs::kNTPLensEntryPointNewBadgeShownCount, INT_MAX);
   }
 
   if (!isIncognito) {
