@@ -153,12 +153,6 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual void GetNumberOfInputStreamsWithPermission(
       chromeos::DBusMethodCallback<base::flat_map<std::string, uint32_t>>) = 0;
 
-  // Gets the DeprioritzeBtWbsMic flag. On a few platforms CRAS may
-  // report to deprioritize Bluetooth WBS mic's node priority because
-  // WBS feature is still working to be stabilized.
-  virtual void GetDeprioritizeBtWbsMic(
-      chromeos::DBusMethodCallback<bool> callback) = 0;
-
   // Get the number of active non-chrome output streams.
   virtual void GetNumberOfNonChromeOutputStreams(
       chromeos::DBusMethodCallback<int32_t> callback) = 0;

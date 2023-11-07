@@ -1402,9 +1402,6 @@ const AudioDevice* CrasAudioHandler::GetDeviceFromId(uint64_t device_id) const {
 AudioDevice CrasAudioHandler::ConvertAudioNodeWithModifiedPriority(
     const AudioNode& node) {
   AudioDevice device(node);
-  if (deprioritize_bt_wbs_mic_ && device.is_input &&
-      (device.type == AudioDeviceType::kBluetooth))
-    device.priority = 0;
 
   if (base::FeatureList::IsEnabled(features::kRobustAudioDeviceSelectLogic))
     device.user_priority = audio_pref_handler_->GetUserPriority(device);
@@ -1543,16 +1540,6 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetNumStreamIgnoreUiGains();
   CrasAudioClient::Get()->SetFixA2dpPacketSize(
       base::FeatureList::IsEnabled(features::kBluetoothFixA2dpPacketSize));
-
-  // When the BluetoothWbsDogfood feature flag is enabled, don't bother
-  // calling GetDeprioritizeBtWbsMic().
-  // Otherwise override the Bluetooth WBS mic's priority according to the
-  // |deprioritize_bt_wbs_mic| value returned by CRAS.
-  if (!base::FeatureList::IsEnabled(features::kBluetoothWbsDogfood)) {
-    CrasAudioClient::Get()->GetDeprioritizeBtWbsMic(
-        base::BindOnce(&CrasAudioHandler::HandleGetDeprioritizeBtWbsMic,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
 
   // Sets Floss enabled based on feature flag.
   CrasAudioClient::Get()->SetFlossEnabled(floss::features::IsFlossEnabled());
@@ -2285,15 +2272,6 @@ void CrasAudioHandler::HandleGetNumActiveOutputStreams(
       observer.OnOutputStopped();
   }
   num_active_output_streams_ = *new_output_streams_count;
-}
-
-void CrasAudioHandler::HandleGetDeprioritizeBtWbsMic(
-    absl::optional<bool> deprioritize_bt_wbs_mic) {
-  if (!deprioritize_bt_wbs_mic.has_value()) {
-    LOG(ERROR) << "Failed to retrieve WBS mic deprioritized flag";
-    return;
-  }
-  deprioritize_bt_wbs_mic_ = *deprioritize_bt_wbs_mic;
 }
 
 void CrasAudioHandler::AddAdditionalActiveNode(uint64_t node_id, bool notify) {

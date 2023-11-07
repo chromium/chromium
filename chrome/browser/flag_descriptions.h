@@ -3267,9 +3267,6 @@ extern const char kBluetoothFlossTelephonyDescription[];
 extern const char kBluetoothQualityReportName[];
 extern const char kBluetoothQualityReportDescription[];
 
-extern const char kBluetoothWbsDogfoodName[];
-extern const char kBluetoothWbsDogfoodDescription[];
-
 extern const char kBluetoothCoredumpName[];
 extern const char kBluetoothCoredumpDescription[];
 

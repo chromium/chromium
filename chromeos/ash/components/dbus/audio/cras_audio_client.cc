@@ -282,16 +282,6 @@ class CrasAudioClientImpl : public CrasAudioClient {
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetDeprioritizeBtWbsMic(
-      chromeos::DBusMethodCallback<bool> callback) override {
-    dbus::MethodCall method_call(cras::kCrasControlInterface,
-                                 cras::kGetDeprioritizeBtWbsMic);
-    cras_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&CrasAudioClientImpl::OnGetDeprioritizeBtWbsMic,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
   void GetNumberOfNonChromeOutputStreams(
       chromeos::DBusMethodCallback<int32_t> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
@@ -1146,25 +1136,6 @@ class CrasAudioClientImpl : public CrasAudioClient {
     }
 
     std::move(callback).Run(std::move(res));
-  }
-
-  void OnGetDeprioritizeBtWbsMic(chromeos::DBusMethodCallback<bool> callback,
-                                 dbus::Response* response) {
-    if (!response) {
-      LOG(ERROR) << "Error calling "
-                 << "GetDeprioritizeBtWbsMic";
-      std::move(callback).Run(absl::nullopt);
-      return;
-    }
-    bool deprioritize_bt_wbs_mic = 0;
-    dbus::MessageReader reader(response);
-    if (!reader.PopBool(&deprioritize_bt_wbs_mic)) {
-      LOG(ERROR) << "Error reading response from cras: "
-                 << response->ToString();
-      std::move(callback).Run(absl::nullopt);
-      return;
-    }
-    std::move(callback).Run(deprioritize_bt_wbs_mic);
   }
 
   void OnSetHotwordModel(chromeos::VoidDBusMethodCallback callback,

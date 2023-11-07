@@ -5649,14 +5649,6 @@ const char kBluetoothQualityReportDescription[] =
     "which will send the Bluetooth link quality statistics such as the "
     "signal strength, the lost packet count, etc. to the host.";
 
-const char kBluetoothWbsDogfoodName[] = "Bluetooth WBS dogfood";
-const char kBluetoothWbsDogfoodDescription[] =
-    "Enables Bluetooth wideband speech mic as default audio option. "
-    "Note that flipping this flag makes no difference on most of the "
-    "ChromeOS models, because Bluetooth WBS is either unsupported "
-    "or fully launched. Only on the few models that Bluetooth WBS is "
-    "still stablizing this flag will take effect.";
-
 const char kBluetoothCoredumpName[] = "Enable Bluetooth Device Coredump";
 const char kBluetoothCoredumpDescription[] =
     "Enable Bluetooth coredump collection if supported. Please note that "

@@ -300,12 +300,6 @@ BASE_FEATURE(kBluetoothQualityReport,
              "BluetoothQualityReport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables Bluetooth WBS microphone be selected as default
-// audio input option.
-BASE_FEATURE(kBluetoothWbsDogfood,
-             "BluetoothWbsDogfood",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRobustAudioDeviceSelectLogic,
              "RobustAudioDeviceSelectLogic",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -852,11 +852,6 @@
     "expiry_milestone": 111
   },
   {
-    "name": "bluetooth-wbs-dogfood",
-    "owners": [ "hychao@chromium.org" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "bookmarks-improved-save-flow",
     "owners": ["wylieb@chromium.org", "fgorski@chromium.org", "mdjones@chromium.org"],
     "expiry_milestone": 115
