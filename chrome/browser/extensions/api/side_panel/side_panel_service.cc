@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "components/sessions/core/session_id.h"
@@ -68,6 +69,23 @@ bool SidePanelService::HasSidePanelActionForTab(const Extension& extension,
     return false;
   }
 
+  return HasSidePanelAvailableForTab(extension, tab_id);
+}
+
+bool SidePanelService::HasSidePanelContextMenuActionForTab(
+    const Extension& extension,
+    TabId tab_id) {
+  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning) ||
+      !base::FeatureList::IsEnabled(
+          extensions_features::kExtensionSidePanelIntegration)) {
+    return false;
+  }
+
+  return HasSidePanelAvailableForTab(extension, tab_id);
+}
+
+bool SidePanelService::HasSidePanelAvailableForTab(const Extension& extension,
+                                                   TabId tab_id) {
   api::side_panel::PanelOptions options = GetOptions(extension, tab_id);
   return options.enabled.has_value() && *options.enabled &&
          options.path.has_value();

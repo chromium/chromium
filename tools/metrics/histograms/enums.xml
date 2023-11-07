@@ -23767,6 +23767,10 @@ Called by update_document_policy_enum.py.-->
   <int value="9" label="kPageAccessRunOnSite"/>
   <int value="10" label="kPageAccessRunOnAllSites"/>
   <int value="11" label="kPageAccessLearnMore"/>
+  <int value="12" label="kPageAccessPermissionsPage"/>
+  <int value="13" label="kViewWebPermissions"/>
+  <int value="14" label="kPolicyInstalled"/>
+  <int value="15" label="kToggleSidePanelVisibility"/>
 </enum>
 
 <enum name="ExtensionDisableReason">

@@ -7,12 +7,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_actions.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -20,7 +25,9 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/crx_file/id_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -28,6 +35,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/test_image_loader.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -37,6 +45,30 @@
 
 namespace extensions {
 namespace {
+enum class CommandState {
+  kAbsent,    // The command is not present in the menu.
+  kEnabled,   // The command is present, and enabled.
+  kDisabled,  // The command is present, and disabled.
+};
+
+CommandState GetCommandState(const ExtensionContextMenuModel& menu,
+                             int command_id) {
+  bool is_present = menu.GetIndexOfCommandId(command_id).has_value();
+  bool is_visible = menu.IsCommandIdVisible(command_id);
+
+  // The command is absent if the menu entry is not present, or the entry is
+  // not visible.
+  if (!is_present || !is_visible) {
+    return CommandState::kAbsent;
+  }
+
+  bool is_enabled = menu.IsCommandIdEnabled(command_id);
+  if (!is_enabled) {
+    return CommandState::kDisabled;
+  }
+
+  return CommandState::kEnabled;
+}
 
 SidePanelEntry::Key GetKey(const ExtensionId& id) {
   return SidePanelEntry::Key(SidePanelEntry::Id::kExtension, id);
@@ -234,6 +266,21 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
     actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
         extension_action_id.value(), browser_actions->root_action_item());
     return action_item;
+  }
+
+  ExtensionsToolbarContainer* GetExtensionsToolbarContainer() const {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->extensions_container();
+  }
+
+  extensions::ExtensionContextMenuModel* GetContextMenuForExtension(
+      const ExtensionId& extension_id) {
+    return static_cast<extensions::ExtensionContextMenuModel*>(
+        GetExtensionsToolbarContainer()
+            ->GetActionForId(extension_id)
+            ->GetContextMenu(extensions::ExtensionContextMenuModel::
+                                 ContextMenuSource::kMenuItem));
   }
 
   // Runs a script in the extension's side panel WebContents to retrieve the
@@ -1298,6 +1345,21 @@ class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
     return extension;
   }
 
+  // Loads up a stub extension.
+  const Extension* LoadNoSidePanelExtension() {
+    TestExtensionDir test_dir;
+    static constexpr char kManifest[] =
+        R"({
+             "name": "No Side Panel Extension",
+             "manifest_version": 3,
+             "version": "0.1"
+           })";
+    test_dir.WriteManifest(kManifest);
+    const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+    test_dirs_.push_back(std::move(test_dir));
+    return extension;
+  }
+
   void RunOpenPanelForTab(const Extension& extension, int tab_id) {
     RunOpenPanel(extension, tab_id, /*window_id=*/absl::nullopt);
   }
@@ -1745,6 +1807,121 @@ IN_PROC_BROWSER_TEST_F(
   browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_TRUE(
       side_panel_coordinator()->IsSidePanelEntryShowing(extension2_key));
+}
+
+// Tests that extension context menus show the "(Open / Close) side panel" menu
+// item when appropriate, and that the menu item toggles the global side panel.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionOpenSidePanelBrowserTest,
+    OpenSidePanel_ContextMenu_GlobalPanel_ToggleSidePanelVisibility) {
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+
+  {
+    // Verify the "Open side panel" entry is absent if the extension does not
+    // have the side panel permission.
+    const Extension* no_side_panel_extension = LoadNoSidePanelExtension();
+    ASSERT_TRUE(no_side_panel_extension);
+
+    auto* menu = GetContextMenuForExtension(no_side_panel_extension->id());
+    EXPECT_EQ(
+        GetCommandState(
+            *menu, ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY),
+        CommandState::kAbsent);
+  }
+
+  const Extension* side_panel_extension = LoadSidePanelExtension();
+  ASSERT_TRUE(side_panel_extension);
+
+  {
+    // Verify the "Open side panel" entry is absent if the extension has the
+    // side panel permission but hasn't set a global panel for the tab.
+    auto* menu = GetContextMenuForExtension(side_panel_extension->id());
+    EXPECT_EQ(
+        GetCommandState(
+            *menu, ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY),
+        CommandState::kAbsent);
+  }
+
+  {
+    // Verify the "Open side panel" entry is present if the extension has the
+    // side panel permission and sets a global panel.
+    RunSetOptions(*side_panel_extension, /*tab_id=*/absl::nullopt,
+                  /*path=*/"panel_1.html",
+                  /*enabled=*/true);
+    auto* menu = GetContextMenuForExtension(side_panel_extension->id());
+    EXPECT_EQ(
+        GetCommandState(
+            *menu, ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY),
+        CommandState::kEnabled);
+
+    // Simulate clicking on the "Open side panel" menu item. This should open
+    // the side panel.
+    menu->ExecuteCommand(
+        extensions::ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY, 0);
+    EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
+        GetKey(side_panel_extension->id())));
+
+    // Clicking on the menu item again should close the side panel.
+    menu->ExecuteCommand(
+        extensions::ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY, 0);
+    EXPECT_FALSE(side_panel_coordinator()->IsSidePanelEntryShowing(
+        GetKey(side_panel_extension->id())));
+  }
+}
+
+// Tests that extension context menus show the "(Open / Close) side panel" menu
+// item when appropriate, and that the menu item toggles the contextual side
+// panel.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionOpenSidePanelBrowserTest,
+    OpenSidePanel_ContextMenu_ContextualPanel_ToggleSidePanelVisibility) {
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+
+  const Extension* side_panel_extension = LoadSidePanelExtension();
+  ASSERT_TRUE(side_panel_extension);
+
+  // Add a second tab to the browser and set a contextual panel for it.
+  OpenNewForegroundTab();
+  int new_tab_id = GetCurrentTabId();
+  RunSetOptions(*side_panel_extension, /*tab_id=*/new_tab_id,
+                /*path=*/"panel_1.html",
+                /*enabled=*/true);
+
+  {
+    // Verify the "Open side panel" entry is present if the extension has the
+    // side panel permission and a contextual panel is set for the tab.
+    auto* menu = GetContextMenuForExtension(side_panel_extension->id());
+    EXPECT_EQ(
+        GetCommandState(
+            *menu, ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY),
+        CommandState::kEnabled);
+
+    // Simulate clicking on the "Open side panel" menu item. This should open
+    // the side panel.
+    menu->ExecuteCommand(
+        extensions::ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY, 0);
+    EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
+        GetKey(side_panel_extension->id())));
+
+    // Clicking on the menu item again should close the side panel.
+    menu->ExecuteCommand(
+        extensions::ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY, 0);
+    EXPECT_FALSE(side_panel_coordinator()->IsSidePanelEntryShowing(
+        GetKey(side_panel_extension->id())));
+  }
+
+  // Activate the first tab which does not have a contextual panel.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  {
+    // Verify the "Open side panel" entry is absent if the extension has the
+    // side panel permission but no contextual panel set on the tab.
+    auto* menu = GetContextMenuForExtension(side_panel_extension->id());
+    EXPECT_EQ(
+        GetCommandState(
+            *menu, ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY),
+        CommandState::kAbsent);
+  }
 }
 
 // TODO(crbug.com/1378048): Add a test here which requires a browser in

@@ -25,6 +25,7 @@ namespace extensions {
 class ContextMenuMatcher;
 class Extension;
 class ExtensionAction;
+class SidePanelService;
 
 // The context menu model for extension icons.
 class ExtensionContextMenuModel : public ui::SimpleMenuModel,
@@ -48,6 +49,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     PAGE_ACCESS_PERMISSIONS_PAGE,
     VIEW_WEB_PERMISSIONS,
     POLICY_INSTALLED,
+    TOGGLE_SIDE_PANEL_VISIBILITY,
     // NOTE: If you update this, you probably need to update the
     // ContextMenuAction enum below.
   };
@@ -75,7 +77,10 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     kPageAccessPermissionsPage = 12,
     kViewWebPermissions = 13,
     kPolicyInstalled = 14,
-    kMaxValue = kPolicyInstalled,
+    kToggleSidePanelVisibility = 15,
+    kMaxValue = kToggleSidePanelVisibility,
+    // NOTE: Please update ExtensionContextMenuAction in enums.xml if you modify
+    // this enum.
   };
 
   // Location where the context menu is open from.
@@ -141,8 +146,15 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // Returns the active web contents.
   content::WebContents* GetActiveWebContents() const;
 
+  // Returns the side panel service for the current profile.
+  SidePanelService* GetSidePanelService() const;
+
   // Appends the extension's context menu items.
   void AppendExtensionItems();
+
+  // Appends the side panel menu item to the context menu if `extension` has one
+  // it can open.
+  void AddSidePanelEntryIfPresent(const Extension& extension);
 
   // A copy of the extension's id.
   ExtensionId extension_id_;

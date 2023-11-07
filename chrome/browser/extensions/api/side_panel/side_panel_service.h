@@ -52,6 +52,11 @@ class SidePanelService : public BrowserContextKeyedAPI,
   // `extension` and `tab_id`.
   bool HasSidePanelActionForTab(const Extension& extension, TabId tab_id);
 
+  // Returns if there is an action to toggle the side panel from the extension
+  // context menu for the given `extension` and `tab_id`.
+  bool HasSidePanelContextMenuActionForTab(const Extension& extension,
+                                           TabId tab_id);
+
   // Get options for `tab_id`. Options are loaded in order first from service
   // storage, manifest, or an empty object will be returned, if they're unset.
   api::side_panel::PanelOptions GetOptions(const Extension& extension,
@@ -121,6 +126,9 @@ class SidePanelService : public BrowserContextKeyedAPI,
   static const char* service_name() { return "SidePanelService"; }
   static const bool kServiceRedirectedInIncognito = true;
   static const bool kServiceIsNULLWhileTesting = true;
+
+  // Returns if there is an extension side panel for `tab_id`.
+  bool HasSidePanelAvailableForTab(const Extension& extension, TabId tab_id);
 
   // Remove extension id and associated options from `panels_`.
   void RemoveExtensionOptions(const ExtensionId& id);
