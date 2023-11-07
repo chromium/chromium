@@ -19985,6 +19985,21 @@
             ]
         }
     ],
+    "VideoToolboxVideoDecoder": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VideoToolboxVideoDecoder"
+                    ]
+                }
+            ]
+        }
+    ],
     "VideoTutorials": [
         {
             "platforms": [
