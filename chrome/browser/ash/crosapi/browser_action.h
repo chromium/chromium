@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_ACTION_H_
 
 #include "base/containers/queue.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/tab_groups/tab_group_info.h"

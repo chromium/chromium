@@ -12,7 +12,7 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"

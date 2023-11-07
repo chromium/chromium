@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "extensions/common/extensions_api_provider.h"
 
 namespace extensions {

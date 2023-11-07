@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/profiles/profile.h"

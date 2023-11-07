@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_HWID_CHECKER_H_
 #define CHROME_BROWSER_ASH_LOGIN_HWID_CHECKER_H_
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace ash {
 

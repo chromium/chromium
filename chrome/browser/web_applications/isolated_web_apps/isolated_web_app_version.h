@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 
 namespace web_app {

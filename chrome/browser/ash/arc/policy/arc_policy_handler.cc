@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"

@@ -4,7 +4,7 @@
 
 #include <inttypes.h>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
 
 #include "base/json/json_reader.h"

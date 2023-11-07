@@ -21,7 +21,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

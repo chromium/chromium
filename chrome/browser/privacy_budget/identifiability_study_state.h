@@ -14,7 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/privacy_budget/encountered_surface_tracker.h"
 #include "chrome/browser/privacy_budget/mesa_distribution.h"

@@ -7,7 +7,7 @@
 
 #include <array>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

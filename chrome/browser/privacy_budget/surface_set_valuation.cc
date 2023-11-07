@@ -16,7 +16,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/privacy_budget/representative_surface_set.h"
 #include "chrome/browser/privacy_budget/surface_set_equivalence.h"
 #include "chrome/common/privacy_budget/field_trial_param_conversions.h"

@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"

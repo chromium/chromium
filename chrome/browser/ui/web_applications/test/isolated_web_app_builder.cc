@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/version.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"

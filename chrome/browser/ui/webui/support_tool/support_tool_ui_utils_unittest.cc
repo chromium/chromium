@@ -10,7 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
