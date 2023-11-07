@@ -2056,10 +2056,8 @@ IN_PROC_BROWSER_TEST_F(
 // From that system dialog we can cause a cancel to occur.
 // TODO(crbug.com/809738):  Expand this to also cover in-browser, once an
 // appropriate signal is available to use for tracking expected events.
-// TODO(crbug.com/1435566):  Enable this test once it works without the need
-// for --single-process-tests flag.
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
-                       DISABLED_SystemPrintFromPrintPreviewCancelRetry) {
+                       SystemPrintFromPrintPreviewCancelRetry) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForCancelInAskUserForSettings();
@@ -2073,11 +2071,18 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
+  // First invoke system print from Print Preview.  Must wait until the
+  // PrintPreviewUI is completely done before proceeding to the second part
+  // of this test to ensure that the client is unregistered from the
+  // `PrintBackendServiceManager`.
+  SetCheckForPrintPreviewDone(/*check=*/true);
+
   // The expected events for this are:
   // 1.  Update the print settings, which indicates to cancel the print
-  //     request.  No further printing calls are made.
-  // No print job is created because of such an early cancel.
-  SetNumExpectedMessages(/*num=*/1);
+  //     request.  No further printing calls are made.  No print job is
+  //     created because of such an early cancel.
+  // 2.  Print Preview UI is done.
+  SetNumExpectedMessages(/*num=*/2);
 
   SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
 
@@ -2087,6 +2092,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 
   // Now try to initiate the system print from a Print Preview again.
   // Same number of expected events.
+  PrepareRunloop();
   ResetNumReceivedMessages();
 
   SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
