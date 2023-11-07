@@ -959,8 +959,8 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
   delegate().StartPasswordCheck();
   EXPECT_EQ(events::PASSWORDS_PRIVATE_ON_PASSWORD_CHECK_STATUS_CHANGED,
             event_iter->second->histogram_value);
-  auto status = PasswordCheckStatus::FromValueDeprecated(
-      event_iter->second->event_args.front());
+  auto status =
+      PasswordCheckStatus::FromValue(event_iter->second->event_args.front());
   EXPECT_EQ(api::passwords_private::PasswordCheckState::kRunning,
             status->state);
   EXPECT_EQ(0, *status->already_processed);
@@ -969,8 +969,8 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(false));
 
-  status = PasswordCheckStatus::FromValueDeprecated(
-      event_iter->second->event_args.front());
+  status =
+      PasswordCheckStatus::FromValue(event_iter->second->event_args.front());
   EXPECT_EQ(api::passwords_private::PasswordCheckState::kRunning,
             status->state);
   EXPECT_EQ(2, *status->already_processed);
@@ -979,8 +979,8 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
       LeakCheckCredential(kUsername2, kPassword2), IsLeaked(false));
 
-  status = PasswordCheckStatus::FromValueDeprecated(
-      event_iter->second->event_args.front());
+  status =
+      PasswordCheckStatus::FromValue(event_iter->second->event_args.front());
   EXPECT_EQ(api::passwords_private::PasswordCheckState::kRunning,
             status->state);
   EXPECT_EQ(4, *status->already_processed);
