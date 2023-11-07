@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/scripts_internal/script_serialization.h"
+#include "extensions/common/api/scripts_internal/script_serialization.h"
 
 #include "base/test/values_test_util.h"
-#include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
@@ -131,8 +130,7 @@ TEST(ScriptSerializationUnitTest, ParseMaximalScript) {
 // Tests serializing a UserScript object to a SerializedUserScript.
 TEST(ScriptSerializationUnitTest, SerializeUserScript) {
   auto stub_extension = ExtensionBuilder("foo").Build();
-  const int valid_schemes = UserScript::ValidUserScriptSchemes(
-      scripting::kScriptsCanExecuteEverywhere);
+  const int valid_schemes = UserScript::ValidUserScriptSchemes();
 
   UserScript script;
   script.set_host_id(mojom::HostID(mojom::HostID::HostType::kExtensions,

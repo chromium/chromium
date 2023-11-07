@@ -10,7 +10,8 @@ namespace scriptsInternal {
   // for code, etc).
   enum Source {
     DYNAMIC_CONTENT_SCRIPT,
-    DYNAMIC_USER_SCRIPT
+    DYNAMIC_USER_SCRIPT,
+    MANIFEST_CONTENT_SCRIPT
   };
 
   // The source of the script to inject.

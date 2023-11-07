@@ -209,42 +209,6 @@ CreateScopedMaxScriptsLengthPerExtensionForTesting(size_t max) {
       &g_max_scripts_length_per_extension_in_bytes, max);
 }
 
-mojom::RunLocation ConvertManifestRunLocation(
-    api::content_scripts::RunAt run_at) {
-  switch (run_at) {
-    case api::content_scripts::RunAt::kDocumentEnd:
-      return mojom::RunLocation::kDocumentEnd;
-    case api::content_scripts::RunAt::kDocumentIdle:
-      return mojom::RunLocation::kDocumentIdle;
-    case api::content_scripts::RunAt::kDocumentStart:
-      return mojom::RunLocation::kDocumentStart;
-    case api::content_scripts::RunAt::kNone:
-      NOTREACHED();
-      return mojom::RunLocation::kDocumentIdle;
-  }
-}
-
-api::content_scripts::RunAt ConvertRunLocationToManifestType(
-    mojom::RunLocation run_at) {
-  // api::extension_types does not have analogues for kUndefined, kRunDeferred
-  // or kBrowserDriven. We don't expect to encounter them here.
-  switch (run_at) {
-    case mojom::RunLocation::kDocumentEnd:
-      return api::content_scripts::RunAt::kDocumentEnd;
-    case mojom::RunLocation::kDocumentStart:
-      return api::content_scripts::RunAt::kDocumentStart;
-    case mojom::RunLocation::kDocumentIdle:
-      return api::content_scripts::RunAt::kDocumentIdle;
-    case mojom::RunLocation::kUndefined:
-    case mojom::RunLocation::kRunDeferred:
-    case mojom::RunLocation::kBrowserDriven:
-      break;
-  }
-
-  NOTREACHED();
-  return api::content_scripts::RunAt::kDocumentIdle;
-}
-
 bool ParseMatchPatterns(const std::vector<std::string>& matches,
                         const std::vector<std::string>* exclude_matches,
                         int creation_flags,
@@ -310,41 +274,6 @@ bool ParseMatchPatterns(const std::vector<std::string>& matches,
 
       result->add_exclude_url_pattern(pattern);
     }
-  }
-
-  return true;
-}
-
-bool ParseFileSources(const Extension* extension,
-                      const std::vector<std::string>* js,
-                      const std::vector<std::string>* css,
-                      absl::optional<int> definition_index,
-                      UserScript* result,
-                      std::u16string* error) {
-  if (js) {
-    result->js_scripts().reserve(js->size());
-    for (const std::string& relative : *js) {
-      GURL url = extension->GetResourceURL(relative);
-      ExtensionResource resource = extension->GetResource(relative);
-      result->js_scripts().push_back(UserScript::Content::CreateFile(
-          resource.extension_root(), resource.relative_path(), url));
-    }
-  }
-
-  if (css) {
-    result->css_scripts().reserve(css->size());
-    for (const std::string& relative : *css) {
-      GURL url = extension->GetResourceURL(relative);
-      ExtensionResource resource = extension->GetResource(relative);
-      result->css_scripts().push_back(UserScript::Content::CreateFile(
-          resource.extension_root(), resource.relative_path(), url));
-    }
-  }
-
-  // The manifest needs to have at least one js or css user script definition.
-  if (result->js_scripts().empty() && result->css_scripts().empty()) {
-    *error = GetEmptyFilesError(result->id(), definition_index);
-    return false;
   }
 
   return true;

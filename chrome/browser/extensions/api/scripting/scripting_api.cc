@@ -18,7 +18,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/browser/api/scripting/scripting_utils.h"
-#include "extensions/browser/api/scripts_internal/script_serialization.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
@@ -29,6 +28,7 @@
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/api/scripts_internal.h"
+#include "extensions/common/api/scripts_internal/script_serialization.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -444,17 +444,6 @@ bool CanAccessTarget(const PermissionsData& permissions,
 api::scripts_internal::SerializedUserScript
 ConvertRegisteredContentScriptToSerializedUserScript(
     api::scripting::RegisteredContentScript content_script) {
-  auto convert_source_files = [](std::vector<std::string> files) {
-    std::vector<api::scripts_internal::ScriptSource> converted;
-    converted.reserve(files.size());
-    for (auto& file : files) {
-      api::scripts_internal::ScriptSource converted_source;
-      converted_source.file = std::move(file);
-      converted.push_back(std::move(converted_source));
-    }
-    return converted;
-  };
-
   auto convert_execution_world = [](api::scripting::ExecutionWorld world) {
     switch (world) {
       case api::scripting::ExecutionWorld::kNone:
@@ -475,11 +464,12 @@ ConvertRegisteredContentScriptToSerializedUserScript(
   serialized_script.matches = std::move(*content_script.matches);
   serialized_script.exclude_matches = std::move(content_script.exclude_matches);
   if (content_script.css) {
-    serialized_script.css =
-        convert_source_files(std::move(*content_script.css));
+    serialized_script.css = script_serialization::GetSourcesFromFileNames(
+        std::move(*content_script.css));
   }
   if (content_script.js) {
-    serialized_script.js = convert_source_files(std::move(*content_script.js));
+    serialized_script.js = script_serialization::GetSourcesFromFileNames(
+        std::move(*content_script.js));
   }
   serialized_script.all_frames = content_script.all_frames;
   serialized_script.match_origin_as_fallback =

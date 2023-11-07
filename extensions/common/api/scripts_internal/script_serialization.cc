@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/scripts_internal/script_serialization.h"
+#include "extensions/common/api/scripts_internal/script_serialization.h"
 
 #include "base/types/optional_util.h"
-#include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -13,6 +12,27 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions::script_serialization {
+
+namespace {
+
+// TODO(crbug.com/1168627): The can_execute_script_everywhere flag is currently
+// only used by the legacy version Chromevox extension. We can assume it will
+// always be false here, but it may be added back if needed.
+constexpr bool kScriptsCanExecuteEverywhere = false;
+
+}  // namespace
+
+std::vector<api::scripts_internal::ScriptSource> GetSourcesFromFileNames(
+    std::vector<std::string> file_names) {
+  std::vector<api::scripts_internal::ScriptSource> script_sources;
+  script_sources.reserve(file_names.size());
+  for (auto& file : file_names) {
+    api::scripts_internal::ScriptSource script_source;
+    script_source.file = std::move(file);
+    script_sources.push_back(std::move(script_source));
+  }
+  return script_sources;
+}
 
 api::scripts_internal::SerializedUserScript SerializeUserScript(
     const UserScript& user_script) {
@@ -129,7 +149,12 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
     const api::scripts_internal::SerializedUserScript& serialized_script,
     const Extension& extension,
     bool allowed_in_incognito,
-    std::u16string* error_out) {
+    std::u16string* error_out,
+    bool* wants_file_access_out,
+    absl::optional<int> index_for_error,
+    absl::optional<int> custom_schemes,
+    absl::optional<bool> can_execute_script_everywhere,
+    bool all_urls_includes_chrome_urls) {
   bool source_matches_id = true;
   switch (serialized_script.source) {
     case api::scripts_internal::Source::kDynamicContentScript:
@@ -139,6 +164,10 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
     case api::scripts_internal::Source::kDynamicUserScript:
       source_matches_id = base::StartsWith(
           serialized_script.id, UserScript::kDynamicUserScriptPrefix);
+      break;
+    case api::scripts_internal::Source::kManifestContentScript:
+      source_matches_id = base::StartsWith(
+          serialized_script.id, UserScript::kManifestContentScriptPrefix);
       break;
     case api::scripts_internal::Source::kNone:
       NOTREACHED();  // This should have been caught by our parsing.
@@ -169,19 +198,22 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
   if (!script_parsing::ParseFileSources(
           &extension, base::OptionalToPtr(serialized_script.js),
           base::OptionalToPtr(serialized_script.css),
-          /*definition_index=*/absl::nullopt, user_script.get(), error_out)) {
+          index_for_error, user_script.get(), error_out)) {
     return nullptr;
   }
-  const int valid_schemes = UserScript::ValidUserScriptSchemes(
-      scripting::kScriptsCanExecuteEverywhere);
+  const int valid_schemes =
+      custom_schemes.value_or(
+          UserScript::ValidUserScriptSchemes(
+              kScriptsCanExecuteEverywhere));
   // `excludeMatches`/`matches`.
   if (!script_parsing::ParseMatchPatterns(
           serialized_script.matches,
           base::OptionalToPtr(serialized_script.exclude_matches),
-          extension.creation_flags(), scripting::kScriptsCanExecuteEverywhere,
-          valid_schemes, scripting::kAllUrlsIncludesChromeUrls,
-          /*definition_index=*/absl::nullopt, user_script.get(), error_out,
-          /*wants_file_access=*/nullptr)) {
+          extension.creation_flags(),
+          can_execute_script_everywhere.value_or(kScriptsCanExecuteEverywhere),
+          valid_schemes, all_urls_includes_chrome_urls,
+          index_for_error, user_script.get(), error_out,
+          wants_file_access_out)) {
     return nullptr;
   }
   // `excludeGlobs`/`includeGlobs`.
