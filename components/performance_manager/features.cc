@@ -130,6 +130,14 @@ BASE_FEATURE(kAshUrgentDiscardingFromPerformanceManager,
 
 #endif
 
+BASE_FEATURE(kProbabilisticProactiveDiscarding,
+             "ProbabilisticProactiveDiscarding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kProactiveDiscardingTargetFalsePositivePercent{
+    &kProbabilisticProactiveDiscarding,
+    "proactive_discarding_target_false_positive_percent", 35};
+
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
              "BFCachePerformanceManagerPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -129,6 +129,17 @@ BASE_DECLARE_FEATURE(kPerformanceControlsSidePanel);
 
 #endif
 
+// Enables or disables the availability of the probabilistic proactive tab
+// discarding evaluator.
+BASE_DECLARE_FEATURE(kProbabilisticProactiveDiscarding);
+
+// The target false positive rate, in percent, of the probabilistic proactive
+// tab discarder. For example, if this value is 35, the discarder will attempt
+// to discard tabs such that *at most* 35% of discarded tabs are revisited
+// within 2 days.
+extern const base::FeatureParam<int>
+    kProactiveDiscardingTargetFalsePositivePercent;
+
 // Policy that evicts the BFCache of pages that become non visible or the
 // BFCache of all pages when the system is under memory pressure.
 BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);
