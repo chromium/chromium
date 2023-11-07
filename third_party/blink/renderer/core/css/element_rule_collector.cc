@@ -412,8 +412,12 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
   context.vtt_originating_element = match_request.VTTOriginatingElement();
   context.style_scope_frame =
       &style_scope_frame.GetParentFrameOrThis(context_.GetElement());
-  bool is_initial = !style_recalc_context_.is_ensuring_style &&
-                    !style_recalc_context_.old_style;
+
+  // If we are _not_ in initial style, or we are just collecting rules,
+  // we must skip all rules marked with @starting-style.
+  bool reject_starting_styles = style_recalc_context_.is_ensuring_style ||
+                                style_recalc_context_.old_style ||
+                                mode_ != SelectorChecker::kResolvingStyle;
 
   CascadeLayerSeeker layer_seeker(stop_at_first_match ? nullptr : context.scope,
                                   context.vtt_originating_element,
@@ -437,10 +441,6 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       selector_statistics_collector.EndCollectionForCurrentRule();
       selector_statistics_collector.BeginCollectionForRule(&rule_data);
     }
-    if ((!is_initial || mode_ != SelectorChecker::kResolvingStyle) &&
-        rule_data.IsStartingStyle()) {
-      continue;
-    }
     if (can_use_fast_reject_ &&
         selector_filter_.FastRejectSelector(
             rule_data.DescendantSelectorIdentifierHashes(
@@ -459,6 +459,10 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         continue;
       }
       DCHECK_EQ(selector.Relation(), CSSSelector::kUAShadow);
+    }
+
+    if (reject_starting_styles && rule_data.IsStartingStyle()) {
+      continue;
     }
 
     SelectorChecker::MatchResult result;
