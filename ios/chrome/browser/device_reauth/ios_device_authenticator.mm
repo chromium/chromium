@@ -19,10 +19,7 @@ IOSDeviceAuthenticator::IOSDeviceAuthenticator(
 IOSDeviceAuthenticator::~IOSDeviceAuthenticator() = default;
 
 bool IOSDeviceAuthenticator::CanAuthenticateWithBiometrics() {
-  // Currently ReauthenticationModule does not support checking for only the
-  // Biometric auth. Considering support that in the future if needed.
-  NOTIMPLEMENTED();
-  return false;
+  return [authentication_module_ canAttemptReauthWithBiometrics];
 }
 
 bool IOSDeviceAuthenticator::CanAuthenticateWithBiometricOrScreenLock() {

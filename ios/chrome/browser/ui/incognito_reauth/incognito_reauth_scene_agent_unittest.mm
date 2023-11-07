@@ -25,6 +25,7 @@
 
 @interface StubReauthenticationModule : NSObject <ReauthenticationProtocol>
 
+@property(nonatomic, assign) BOOL canAttemptReauthWithBiometrics;
 @property(nonatomic, assign) BOOL canAttemptReauth;
 @property(nonatomic, assign) ReauthenticationResult returnedResult;
 
@@ -87,6 +88,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
 
   void SetUp() override {
     // Set up default stub reauth module behavior.
+    stub_reauth_module_.canAttemptReauthWithBiometrics = YES;
     stub_reauth_module_.canAttemptReauth = YES;
     stub_reauth_module_.returnedResult = ReauthenticationResult::kSuccess;
   }

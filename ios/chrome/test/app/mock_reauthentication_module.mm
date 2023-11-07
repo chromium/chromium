@@ -24,6 +24,7 @@ typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
 @synthesize localizedReasonForAuthentication =
     _localizedReasonForAuthentication;
 @synthesize expectedResult = _expectedResult;
+@synthesize canAttemptWithBiometrics = _canAttemptWithBiometrics;
 @synthesize canAttempt = _canAttempt;
 
 - (instancetype)init {
@@ -35,8 +36,13 @@ typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
 }
 
 - (void)setExpectedResult:(ReauthenticationResult)expectedResult {
+  _canAttemptWithBiometrics = YES;
   _canAttempt = YES;
   _expectedResult = expectedResult;
+}
+
+- (BOOL)canAttemptReauthWithBiometrics {
+  return _canAttemptWithBiometrics;
 }
 
 - (BOOL)canAttemptReauth {

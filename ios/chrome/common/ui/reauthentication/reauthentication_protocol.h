@@ -18,6 +18,9 @@ enum class ReauthenticationResult {
 // Protocol for implementor of hardware reauthentication check.
 @protocol ReauthenticationProtocol <NSObject>
 
+// Checks whether biometric authentication is enabled for the device.
+- (BOOL)canAttemptReauthWithBiometrics;
+
 // Checks whether Touch ID and/or passcode is enabled for the device.
 - (BOOL)canAttemptReauth;
 
