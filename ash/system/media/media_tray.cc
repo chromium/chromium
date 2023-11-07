@@ -52,9 +52,9 @@ namespace {
 constexpr int kNoMediaTextFontSizeIncrease = 2;
 constexpr int kNoMediaTextFontSize = 14;
 constexpr int kTitleFontSizeIncrease = 4;
-constexpr int kTitleViewHeight = 56;
+constexpr int kTitleViewHeight = 60;
 
-constexpr auto kTitleViewInsets = gfx::Insets::TLBR(0, 16, 0, 16);
+constexpr gfx::Insets kTitleViewInsets = gfx::Insets::VH(16, 16);
 
 // Minimum screen diagonal (in inches) for pinning global media controls
 // on shelf by default.
@@ -92,7 +92,6 @@ class GlobalMediaControlsTitleView : public views::View {
   GlobalMediaControlsTitleView() {
     auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, kTitleViewInsets));
-    box_layout->set_minimum_cross_axis_size(kTitleViewHeight);
     box_layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
 
@@ -106,12 +105,13 @@ class GlobalMediaControlsTitleView : public views::View {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                             *title_label_);
-
+      SetPreferredSize(gfx::Size(kRevampedTrayMenuWidth, kTitleViewHeight));
     } else {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       title_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
           kTitleFontSizeIncrease, gfx::Font::NORMAL,
           gfx::Font::Weight::MEDIUM));
+      SetPreferredSize(gfx::Size(kTrayMenuWidth, kTitleViewHeight));
     }
 
     // Media tray should always be pinned to shelf when we are opening the
@@ -390,6 +390,7 @@ void MediaTray::ShowBubbleWithItem(const std::string& item_id) {
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
           kMenuSeparatorWidth, /*should_clip_height=*/true, item_id));
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
+    bubble_view->SetPreferredWidth(kRevampedTrayMenuWidth);
     content_view_->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, 0, kMediaNotificationListViewBottomPadding, 0)));
   }

@@ -78,7 +78,8 @@ class MediaItemUIDeviceSelectorView
   void OnColorsChanged(SkColor foreground_color,
                        SkColor background_color) override;
   void UpdateCurrentAudioDevice(const std::string& current_device_id) override;
-  void ShowOrHideDeviceList() override;
+  void ShowDevices() override;
+  void HideDevices() override;
   bool IsDeviceSelectorExpanded() override;
 
   // Called when the audio device switching has become enabled or disabled.
@@ -118,8 +119,7 @@ class MediaItemUIDeviceSelectorView
   void UpdateVisibility();
   bool ShouldBeVisible() const;
   void CreateExpandButtonStrip(bool show_expand_button);
-  void ShowDevices();
-  void HideDevices();
+  void ShowOrHideDeviceList();
   void RemoveDevicesOfType(DeviceEntryUIType type);
   void OnCastDeviceSelected(const std::string& device_id);
   DeviceEntryUI* GetDeviceEntryUI(views::View* view) const;

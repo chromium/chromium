@@ -52,6 +52,7 @@ constexpr gfx::Size kCrOSDismissButtonSize = gfx::Size(20, 20);
 constexpr int kCrOSDismissButtonIconSize = 12;
 constexpr gfx::Size kModernDismissButtonSize = gfx::Size(14, 14);
 constexpr int kModernDismissButtonIconSize = 10;
+constexpr int kCrOSDeviceSelectorSeparatorHeight = 22;
 constexpr gfx::Insets kSwipeableContainerInsets =
     gfx::Insets::TLBR(4, 16, 8, 16);
 
@@ -101,26 +102,26 @@ MediaItemUIView::MediaItemUIView(
   // The updated UI requires media color theme to be set while the toolbar
   // media button does not provide it, so we need to verify the source display
   // page is from the quick settings.
-  bool use_cros_updated_ui =
+  use_cros_updated_ui_ =
       base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI) &&
       chromeos::features::IsJellyrollEnabled() &&
       media_display_page.has_value();
 #else
-  bool use_cros_updated_ui = false;
+  use_cros_updated_ui_ = false;
 #endif
 
   auto swipeable_container = std::make_unique<views::View>();
   swipeable_container->SetLayoutManager(std::make_unique<views::FillLayout>());
   swipeable_container->SetPaintToLayer();
   swipeable_container->layer()->SetFillsBoundsOpaquely(false);
-  if (use_cros_updated_ui) {
+  if (use_cros_updated_ui_) {
     swipeable_container->SetBorder(
         views::CreateEmptyBorder(kSwipeableContainerInsets));
   }
   swipeable_container_ = AddChildView(std::move(swipeable_container));
 
   std::unique_ptr<media_message_center::MediaNotificationView> view;
-  if (use_cros_updated_ui) {
+  if (use_cros_updated_ui_) {
     CHECK(media_color_theme.has_value());
     if (footer_view) {
       footer_view_ = footer_view.get();
@@ -467,7 +468,10 @@ void MediaItemUIView::ContainerClicked() {
 
 void MediaItemUIView::OnSizeChanged() {
   gfx::Size new_size;
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
+  if (use_cros_updated_ui_) {
+    new_size = kCrOSMediaItemUpdatedUISize;
+  } else if (base::FeatureList::IsEnabled(
+                 media::kGlobalMediaControlsModernUI)) {
     new_size = kModernUISize;
   } else {
     new_size = is_expanded_ ? kExpandedSize : kNormalSize;
@@ -479,12 +483,18 @@ void MediaItemUIView::OnSizeChanged() {
   if (device_selector_view_) {
     auto device_selector_view_size = device_selector_view_->GetPreferredSize();
     CHECK(device_selector_view_size.width() == kWidth);
-    new_size.set_height(new_size.height() + device_selector_view_size.height());
+    if (device_selector_view_size.height() > 0) {
+      new_size.set_height(new_size.height() +
+                          device_selector_view_size.height());
+      if (use_cros_updated_ui_) {
+        new_size.set_height(new_size.height() +
+                            kCrOSDeviceSelectorSeparatorHeight);
+      }
+    }
     view_->UpdateDeviceSelectorVisibility(device_selector_view_->GetVisible());
   }
 
   SetPreferredSize(new_size);
-  PreferredSizeChanged();
 
   for (auto& observer : observers_)
     observer.OnMediaItemUISizeChanged();

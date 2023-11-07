@@ -52,6 +52,10 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationContainer {
   // settings media detailed view.
   virtual void OnShowCastingDevicesRequested() {}
 
+  // Called when the device selector view size has changed to request UI updates
+  // for view parents.
+  virtual void OnDeviceSelectorViewSizeChanged() {}
+
   // Called when a media action button in MediaNotificationView is pressed and
   // MediaNotificationContainer needs to handle the button event.
   virtual void OnMediaSessionActionButtonPressed(

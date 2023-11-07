@@ -27,9 +27,11 @@ class MediaItemUIDeviceSelector : public views::View {
   virtual void UpdateCurrentAudioDevice(
       const std::string& current_device_id) = 0;
 
-  // Called to show the device list if it is hidden before, or hide the device
-  // list if it is shown before.
-  virtual void ShowOrHideDeviceList() = 0;
+  // Called to show the device list since it is hidden before.
+  virtual void ShowDevices() = 0;
+
+  // Called to hide the device list since it is shown before.
+  virtual void HideDevices() = 0;
 
   // Returns whether the device list has been expanded.
   virtual bool IsDeviceSelectorExpanded() = 0;
