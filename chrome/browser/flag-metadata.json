@@ -984,7 +984,7 @@
   {
     "name": "canvas-2d-layers",
     "owners": [ "fserb@chromium.org", "jpgravel@chromium.org", "yiyix@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "canvas-oop-rasterization",
