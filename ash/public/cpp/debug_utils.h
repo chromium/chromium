@@ -15,14 +15,21 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace ui {
+class Layer;
+}  // namespace ui
+
 namespace ash {
 namespace debug {
 
 class ASH_EXPORT DebugWindowHierarchyDelegate {
  public:
   virtual ~DebugWindowHierarchyDelegate() = default;
-  virtual std::vector<aura::Window*> GetAdjustedChildren(
+  virtual std::vector<aura::Window*> GetAdjustedWindowChildren(
       aura::Window* window) const = 0;
+
+  virtual std::vector<ui::Layer*> GetAdjustedLayerChildren(
+      const ui::Layer* layer) const = 0;
 };
 
 ASH_EXPORT void SetDebugWindowHierarchyDelegate(

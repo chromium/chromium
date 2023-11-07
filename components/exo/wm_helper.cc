@@ -82,13 +82,68 @@ class ExoDebugWindowHierarchyDelegate
   // Exo windows have their window tree up to the root surface disconnected
   // (see crbug.com/1405015). We want to keep them in debug output though, so
   // special case them here.
-  std::vector<aura::Window*> GetAdjustedChildren(
+  std::vector<aura::Window*> GetAdjustedWindowChildren(
       aura::Window* window) const override {
-    Surface* surface = Surface::AsSurface(window);
-    if (!surface || window->children().size()) {
-      return window->children();
+    if (ShouldUseAdjustedChildren(window)) {
+      return Surface::AsSurface(window)->GetChildWindows();
     }
-    return surface->GetChildWindows();
+    return window->children();
+  }
+
+  std::vector<ui::Layer*> GetAdjustedLayerChildren(
+      const ui::Layer* layer) const override {
+    // For non-exo windows, just return the regular children. Note that we still
+    // need to check leaf layers with no children.
+    if (!layer->children().empty()) {
+      return layer->children();
+    }
+
+    // Attempt to map this layer to the window that owns it.
+    auto* window = MaybeGetWindowForLayer(layer);
+    // If we found a window and it should have adjusted children, grab the
+    // layers from its child windows.
+    if (window && ShouldUseAdjustedChildren(window)) {
+      std::vector<ui::Layer*> children;
+      for (aura::Window* child : GetAdjustedWindowChildren(window)) {
+        children.push_back(child->layer());
+      }
+      return children;
+    }
+    return layer->children();
+  }
+
+ private:
+  // True if we should use adjusted children (e.g. the exo root surface window).
+  bool ShouldUseAdjustedChildren(aura::Window* window) const {
+    return Surface::AsSurface(window) && !window->children().size();
+  }
+
+  // We are doing a traversal of the entire window tree for each layer, which
+  // may be slow. This is only called on debug methods to print the hierarchy,
+  // so it should be fine. It is otherwise difficult to map from a layer to a
+  // window.
+  aura::Window* MaybeGetWindowForLayer(const ui::Layer* layer) const {
+    for (auto* root_window : ash::Shell::Get()->GetAllRootWindows()) {
+      auto* window = MaybeGetWindowForLayerImpl(root_window, layer);
+      if (window != nullptr) {
+        return window;
+      }
+    }
+    return nullptr;
+  }
+
+  aura::Window* MaybeGetWindowForLayerImpl(aura::Window* parent,
+                                           const ui::Layer* layer) const {
+    if (parent->layer() == layer) {
+      return parent;
+    }
+    for (auto* child : GetAdjustedWindowChildren(parent)) {
+      auto* window = MaybeGetWindowForLayerImpl(child, layer);
+      if (window != nullptr) {
+        return window;
+      }
+    }
+    return nullptr;
   }
 };
 

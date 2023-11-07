@@ -39,13 +39,18 @@ void SetDebugWindowHierarchyDelegate(
 }
 
 void PrintLayerHierarchy(std::ostringstream* out) {
+  ui::DebugLayerChildCallback child_cb =
+      instance ? base::BindRepeating(
+                     &DebugWindowHierarchyDelegate::GetAdjustedLayerChildren,
+                     base::Unretained(instance.get()))
+               : ui::DebugLayerChildCallback();
   for (aura::Window* root : Shell::Get()->GetAllRootWindows()) {
     ui::Layer* layer = root->layer();
     if (layer) {
       ui::PrintLayerHierarchy(
           layer,
           RootWindowController::ForWindow(root)->GetLastMouseLocationInRoot(),
-          out);
+          out, child_cb);
     }
   }
 }
@@ -127,7 +132,8 @@ void PrintWindowHierarchy(const aura::Window* active_window,
   }
 
   std::vector<aura::Window*> children =
-      instance ? instance->GetAdjustedChildren(window) : window->children();
+      instance ? instance->GetAdjustedWindowChildren(window)
+               : window->children();
   for (aura::Window* child : children) {
     PrintWindowHierarchy(active_window, focused_window, capture_window, child,
                          indent + 3, scrub_data, out_window_titles, out);
