@@ -71,6 +71,10 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
 
   const gpu::Mailbox& mailbox_for_test() const { return mailbox_; }
 
+  viz::RasterContextProvider* context_provider_for_test() {
+    return context_provider_.get();
+  }
+
   int get_pending_bitmaps_size_for_test() const {
     return pending_bitmaps_.size();
   }
