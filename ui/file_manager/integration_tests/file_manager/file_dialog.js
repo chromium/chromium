@@ -1029,6 +1029,11 @@ testcase.openFileDialogGuestOs = async () => {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.selectPlaceholderItemByType('bruschetta');
 
+  // Wait for the directory scanning to finish to guarantee the FileWatcher call
+  // is finished.
+  await remoteCall.waitForElement(
+      appId, `#list-container[scan-completed="Bluejohn"]`);
+
   // Wait for the actual volume to appear.
   await directoryTree.waitForItemByType('bruschetta');
 };
@@ -1059,6 +1064,11 @@ testcase.saveFileDialogGuestOs = async () => {
   // Click the Guest OS placeholder.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.selectPlaceholderItemByType('bruschetta');
+
+  // Wait for the directory scanning to finish to guarantee the FileWatcher call
+  // is finished.
+  await remoteCall.waitForElement(
+      appId, `#list-container[scan-completed="Bluejohn"]`);
 
   // Wait for the actual volume to appear.
   await directoryTree.waitForItemByType('bruschetta');
