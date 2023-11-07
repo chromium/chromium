@@ -621,20 +621,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.CertVerifier.InvalidRsaPssParams" enum="Boolean"
-    expires_after="M101">
-  <obsolete>
-    Removed 2022-02.
-  </obsolete>
-  <owner>bcb@chromium.org</owner>
-  <owner>rsleevi@chromium.org</owner>
-  <summary>
-    While parsing an RSASSA-PSS signature algorithm, whether any invalid
-    parameters were encountered that currently are not enforced as parsing
-    errors.
-  </summary>
-</histogram>
-
 <histogram name="Net.CertVerifier.MacKeychainCerts.IntermediateCacheInitTime"
     units="ms" expires_after="2024-02-01">
   <owner>mattm@chromium.org</owner>
@@ -953,23 +939,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.DNS.DnsConfig.Nsswitch.NisServiceInHosts"
-    enum="BooleanIncluded" expires_after="2023-02-19">
-  <obsolete>
-    Deprecated 2022-20. As of M108, NIS is treated as incompatible. Instances
-    where it was the cause of incompatibility will be recorded in
-    Net.DNS.DnsConfig.Nsswitch.IncompatibleService.
-  </obsolete>
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Whether or not NIS service is registered in the &quot;hosts:&quot; database
-    of an nsswitch.conf. Recorded when a resolv.conf file is successfully read
-    by Chrome and the DNS configuration read from the resolv.conf file is
-    considered compatible with Chrome.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.DnsConfig.Nsswitch.Read" enum="BooleanReceived"
     expires_after="2024-04-28">
   <owner>horo@chromium.org</owner>
@@ -1107,19 +1076,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Status of HTTPS DNS records received as additional records in a DnsTask
     querying for a type other than HTTPS. Recorded as DNS responses are parsed.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.DnsTask.Errors" enum="NetErrorCodes"
-    expires_after="M77">
-  <obsolete>
-    Removed in crrev.com/c/1355602.
-  </obsolete>
-  <owner>pauljensen@chromium.org</owner>
-  <owner>mef@chromium.org</owner>
-  <summary>
-    Counts of specific error codes returned by DnsTask if a subsequent
-    HostResolverSystemTask succeeded.
   </summary>
 </histogram>
 
@@ -1281,24 +1237,6 @@ chromium-metrics-reviews@google.com.
     Enumerated status of the reason why the built-in DNS resolver has detected a
     &quot;low entropy&quot; situation for DNS over UDP and has switched to DNS
     over TCP.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability"
-    enum="DNS.TaskTypeMetadataAvailability" expires_after="M110">
-  <obsolete>
-    Replaced by Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability2 on
-    2022-12.
-  </obsolete>
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The succeeded DNS Task type of HostResolverManager::Job (the basic internal
-    unit of work for non-local host resolutions, potentially merging redundant
-    requests from Chrome) that succeeded with or without valid HTTPS DNS
-    metadata. This is recorded when a DNS Job succeeded for a domain if the
-    domain is one of Google hosts which that is expected to have valid HTTPS DNS
-    metadata with HTTP/3 support.
   </summary>
 </histogram>
 
@@ -1856,20 +1794,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HasBrokenNEON" enum="BooleanBroken"
-    expires_after="2023-02-19">
-  <obsolete>
-    Removed 2023-01. The workaround is now effectively disabled in Chromium (but
-    not Cronet, as of writing), and the latest Chromium-side metrics report
-    0.00% of devices are still affected.
-  </obsolete>
-  <owner>davidben@chromium.org</owner>
-  <summary>
-    Records, on startup, for ARM devices running Android, whether the CPU is
-    known to have a broken NEON unit. See https://crbug.com/341598.
-  </summary>
-</histogram>
-
 <histogram name="Net.HttpAuthCount" enum="HttpAuthCount"
     expires_after="2024-02-29">
   <owner>mpdenton@chromium.org</owner>
@@ -2350,19 +2274,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.PushedStreamVaryResponseHeader"
-    enum="PushedStreamVaryResponseHeaderValues" expires_after="2024-04-03">
-  <obsolete>
-    Removed 2023-05.
-  </obsolete>
-  <owner>bnc@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Information about the value of the Vary response header in HTTP/2 pushed
-    streams.
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicActiveSessions" units="units"
     expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
@@ -2684,20 +2595,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The percentage comparison between alternative port response time when
     default path is degrading and response time in general.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicMultiPort.NumDefaultPathDegrading" units="times"
-    expires_after="2023-10-22">
-  <obsolete>
-    Replaced by Net.QuicSession.NumDefaultPathDegrading in May 2023, as
-    num_path_degrading is no longer specific to the multi-port feature.
-  </obsolete>
-  <owner>renjietang@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The number of time that a session which has multi-port enabled enters
-    path-degrading state on the default path.
   </summary>
 </histogram>
 
@@ -3958,54 +3855,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.Pushed" units="count"
-    expires_after="2024-04-03">
-  <obsolete>
-    Removed 2023-06.
-  </obsolete>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The number of push streams received when the session is closed.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.PushedAndClaimed" units="count"
-    expires_after="2024-04-03">
-  <obsolete>
-    Removed 2023-06.
-  </obsolete>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The number of pushed and used streams when the session is closed.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.PushedAndUnclaimedBytes" units="count"
-    expires_after="2024-04-03">
-  <obsolete>
-    Removed 2023-06.
-  </obsolete>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The number of bytes that is pushed but not used when the session is closed.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.PushedBytes" units="count"
-    expires_after="2023-11-19">
-  <obsolete>
-    Removed 2023-06.
-  </obsolete>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The number of bytes that is pushed when the session is closed.
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicSession.Qpack.HeaderListCountWhenBlockedStreamLimited"
     units="count" expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>
@@ -5145,19 +4994,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.SpdyPushedStreamFate" enum="SpdyPushedStreamFate"
-    expires_after="2024-04-03">
-  <obsolete>
-    Removed 2023-05.
-  </obsolete>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    This histogram is recorded exactly once for every PUSH_PROMISE frame
-    received on an HTTP/2 connection, and tracks the fate of the pushed stream.
-  </summary>
-</histogram>
-
 <histogram name="Net.SpdyResponseCode" enum="HttpResponseCode"
     expires_after="2022-09-11">
   <owner>dschinazi@chromium.org</owner>
@@ -5266,30 +5102,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.SpdySession.PushedAndUnclaimedBytes" units="count"
-    expires_after="2024-04-03">
-  <obsolete>
-    Removed 2023-06.
-  </obsolete>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The number of bytes that is pushed but not used when the session is closed.
-  </summary>
-</histogram>
-
-<histogram name="Net.SpdySession.PushedBytes" units="count"
-    expires_after="2024-04-03">
-  <obsolete>
-    Removed 2023-06.
-  </obsolete>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The number of bytes that is pushed when the session is closed.
-  </summary>
-</histogram>
-
 <histogram name="Net.SpdySession.RstStreamReceived" enum="Http2WireErrorCodes"
     expires_after="2024-04-03">
   <owner>bashi@chromium.org</owner>
@@ -5359,28 +5171,6 @@ chromium-metrics-reviews@google.com.
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>The number of streams issued over a single session.</summary>
-</histogram>
-
-<histogram name="Net.SpdyStreamsPushedAndClaimedPerSession" units="units"
-    expires_after="2023-12-04">
-  <obsolete>
-    Removed 2023-06.
-  </obsolete>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The number of pushed, and used streams over a single session.
-  </summary>
-</histogram>
-
-<histogram name="Net.SpdyStreamsPushedPerSession" units="units"
-    expires_after="2024-04-03">
-  <obsolete>
-    Removed 2023-06.
-  </obsolete>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>The number of push streams received over a single session.</summary>
 </histogram>
 
 <histogram name="Net.SSL.ECHResult" enum="SSLECHResult"
@@ -5530,26 +5320,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.SSLLegacyCryptoFallback" enum="SSLLegacyCryptoFallback"
-    expires_after="2022-12-25">
-  <obsolete>
-    Replaced by Net.SSLLegacyCryptoFallback2. This one incorrectly counted all
-    SHA-1-based algorithms in certificates, rather than just RSASSA-PKCS1-v1_5.
-  </obsolete>
-  <owner>davidben@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    For each TLS connection, whether it needed the legacy crypto fallback and a
-    classification as to why. See https://crbug.com/658905 and
-    https://crbug.com/691888. Note some connections are reported as sending
-    SHA-1 certificates because, although SHA-1 is no longer accepted in
-    certificates, servers may send unused certificates in the handshake. Some
-    such servers additionally match their certificate chains against the
-    ClientHello. These servers require the client advertise legacy algorithms
-    despite not actually using them.
-  </summary>
-</histogram>
-
 <histogram name="Net.SSLLegacyCryptoFallback2" enum="SSLLegacyCryptoFallback"
     expires_after="2024-04-28">
   <owner>davidben@chromium.org</owner>
@@ -5643,58 +5413,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time from when the Connect() starts until it completes. Only times under 10
     minutes are logged.
-  </summary>
-</histogram>
-
-<histogram name="Net.TCP_Connection_Latency_IPv4_No_Race" units="ms"
-    expires_after="M85">
-  <obsolete>
-    Removed 2022-02.
-  </obsolete>
-  <owner>mgersh@chromium.org</owner>
-  <summary>
-    Time from when the Connect() starts until it completes when the network
-    address only contains IPv4 addresses. Only times under 10 minutes are
-    logged.
-  </summary>
-</histogram>
-
-<histogram name="Net.TCP_Connection_Latency_IPv4_Wins_Race" units="ms"
-    expires_after="M85">
-  <obsolete>
-    Removed 2022-02.
-  </obsolete>
-  <owner>mgersh@chromium.org</owner>
-  <summary>
-    Time from when the Connect() starts until it completes when the IPv4
-    fallback connection won the race against IPv6. Only times under 10 minutes
-    are logged.
-  </summary>
-</histogram>
-
-<histogram name="Net.TCP_Connection_Latency_IPv6_Raceable" units="ms"
-    expires_after="M85">
-  <obsolete>
-    Removed 2022-02.
-  </obsolete>
-  <owner>mgersh@chromium.org</owner>
-  <summary>
-    Time from when the Connect() starts until it completes when we race an IPv6
-    connection against an IPv4 connection with a 300ms delay. Only times under
-    10 minutes are logged.
-  </summary>
-</histogram>
-
-<histogram name="Net.TCP_Connection_Latency_IPv6_Solo" units="ms"
-    expires_after="M85">
-  <obsolete>
-    Removed 2022-02.
-  </obsolete>
-  <owner>mgersh@chromium.org</owner>
-  <summary>
-    Time from when the Connect() starts until it completes when the network
-    address only contains IPv6 addresses. Only times under 10 minutes are
-    logged.
   </summary>
 </histogram>
 

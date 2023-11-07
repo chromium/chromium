@@ -434,44 +434,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.ContinueResultCount.{Type}" units="count"
-    expires_after="2023-02-09">
-  <obsolete>
-    Deprecated Feb 2022 in favor of
-    Apps.AppList.Search.ContinueResultCount.Type. This histogram was recorded in
-    the wrong place to be useful for counting how many Continue results the user
-    sees, vs. how many the search backend is prepared to show.
-  </obsolete>
-  <owner>amandadeacon@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    Recorded on the first publication of zero-state results when opening the
-    launcher. Records the number of {Type} results that are ready for display.
-  </summary>
-  <token key="Type">
-    <variant name="Drive" summary="Count of Drive results"/>
-    <variant name="Local" summary="Count of local file results"/>
-    <variant name="Total" summary="Count of all results"/>
-  </token>
-</histogram>
-
-<histogram name="Apps.AppList.ContinueResultRemoved"
-    enum="LauncherContinueSectionResultType" expires_after="2023-02-14">
-  <obsolete>
-    Deprecated April 2022 in favor of
-    Apps.AppList.Search.ContinueResultRemoved.Type. This histogram was recorded
-    wrongly with the missing Search prefic. It is missing data for drive backed
-    files.
-  </obsolete>
-  <owner>anasalazar@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>
-    Records the type of a zero-state result when it is removed from the Continue
-    section. Recorded once every time a result is removed. Chrome OS only.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppList.ContinueSectionHiddenByUser{TabletOrClamshell}"
     enum="Boolean" expires_after="2024-04-28">
   <owner>jamescook@chromium.org</owner>
@@ -543,20 +505,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time between sending a zero state query and receiving file
     recommendations back from DriveZeroStateProvider.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppList.DriveZeroStateProvider.Status"
-    enum="DriveZeroStateProviderStatus" expires_after="2023-05-30">
-  <obsolete>
-    Deprecated September 2022, now that it's replaced by
-    Ash.Search.DriveFileSuggestDataValidation.Status
-  </obsolete>
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    The outcome of a query for search results from DriverZeroStateProvider.
-    Recorded once per zero-state query.
   </summary>
 </histogram>
 
@@ -1693,38 +1641,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppListPlayStoreAppLaunchedIndex" units="indices"
-    expires_after="2021-12-31">
-  <obsolete>
-    Deprecated in M108. Tiled app results are no longer shown.
-  </obsolete>
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The index of the app within all play store apps displayed when it is
-    launched.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppListPlayStoreQueryState"
     enum="AppListPlayStoreQueryState" expires_after="2024-04-28">
   <owner>tby@chromium.org</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>The state of a Play Store app search request.</summary>
-</histogram>
-
-<histogram name="Apps.AppListPlayStoreSearchAppsDisplayed" units="apss"
-    expires_after="2021-12-31">
-  <obsolete>
-    Deprecated in M108. Tiled app results are no longer shown.
-  </obsolete>
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Deprecated in Oct 2022. The number of the play store apps displayed to user
-    as tile items for a query.
-  </summary>
 </histogram>
 
 <histogram name="Apps.AppListRecommendedResponse"
@@ -1769,24 +1691,6 @@ chromium-metrics-reviews@google.com.
     matching user entered text with search result text. This metric is split by
     prefix match, substring match, and no match. This is gathered each time app
     list attempts to perform an autocomplete.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppListSearchQueryLength" units="characters"
-    expires_after="2022-08-01">
-  <obsolete>
-    Deprecated in July 2022. Replaced with Apps.AppListSearchQueryLenghtV2,
-    which, unlike this histogram, only records query length for results from
-    launcher search results UI. Apps.AppListSearchQueryLength was recording
-    query length when launching results from continue section.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
-
-  <owner>yulunwu@chromium.org</owner>
-  <owner>calamity@chromium.org</owner>
-  <summary>
-    The length of the app list search query when a result is opened. This is
-    gathered per click of a search result.
   </summary>
 </histogram>
 
@@ -1896,30 +1800,6 @@ chromium-metrics-reviews@google.com.
     Records the result of validating the code signature of a web app shim
     connecting to the browser on macOS.
   </summary>
-</histogram>
-
-<histogram name="Apps.AppsInFolders{AppListFolderExperiment}" units="Apps"
-    expires_after="2022-10-09">
-  <obsolete>
-    Deprecated in May 2022. Replaced with
-    Apps.AppList.NumberOfAppsInNonSystemFolders, which is recorded periodically,
-    for consistency with other app list metrics.
-  </obsolete>
-  <owner>mmourgos@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The total number of apps in folders ignoring OEM folders. This is logged
-    each time the app list is initialized. The
-    &quot;FullscreenAppListDisabled&quot; suffix has been deprecated.
-    {AppListFolderExperiment}
-  </summary>
-  <token key="AppListFolderExperiment">
-    <variant name=""/>
-    <variant name=".FullscreenAppListDisabled"
-        summary="Peeking Launcher Disabled"/>
-    <variant name=".FullscreenAppListEnabled"
-        summary="Peeking Launcher Enabled"/>
-  </token>
 </histogram>
 
 <histogram name="Apps.ArcGhostWindowLaunch" enum="Boolean"
@@ -2112,24 +1992,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.FirstLauncherActionByNewUsers{TabletOrClamshell}"
-    enum="AppListLaunchedFrom" expires_after="M107">
-  <obsolete>
-    Deprecated in M103. Replaced with Apps.NewUserFirstLauncherAction.
-  </obsolete>
-  <owner>andrewxu@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>
-    Records which launcher action a new user takes for the first time within a
-    session. Launcher actions include the following: activating a launcher app
-    and opening a search result from either a launcher suggestion chip or the
-    search box. The metric is recorded when a launcher action performs on a new
-    user's session for the first time. Split depending on whether the first
-    launcher action occurred in clamshell or tablet mode.
-  </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
-</histogram>
-
 <histogram name="Apps.FullRestoreTabCount" units="count"
     expires_after="2024-06-20">
   <owner>sammiequon@chromium.org</owner>
@@ -2283,38 +2145,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The result of attempting to launch the user-specified preferred note-taking
     app, if any, on Chrome OS.
-  </summary>
-</histogram>
-
-<histogram name="Apps.NumberOfFolders" units="folder(s)"
-    expires_after="2022-10-04">
-  <obsolete>
-    Deprecated in May 2022. Replaced with Apps.AppList.NumberOfFolders, which is
-    recorded periodically, for consistency with other app list metrics.
-  </obsolete>
-  <owner>tbarzic@chromium.org</owner>
-  <owner>mmourgos@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The number of folders that users have in their Launcher. Includes
-    system-created folders like &quot;Linux apps&quot; or the OEM folder.
-    Recorded every time the launcher is shown.
-  </summary>
-</histogram>
-
-<histogram name="Apps.NumberOfNonSystemFolders" units="folder(s)"
-    expires_after="2022-10-04">
-  <obsolete>
-    Deprecated in May 2022. Replaced with Apps.AppList.NumberOfNonSystemFolders,
-    which is recorded periodically, for consistency with other app list metrics.
-  </obsolete>
-  <owner>tbarzic@chromium.org</owner>
-  <owner>jamescook@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The number of folders that users have in their launcher. Does not include
-    system-created folders like &quot;Linux apps&quot; or the OEM folder.
-    Recorded every time the launcher is shown.
   </summary>
 </histogram>
 

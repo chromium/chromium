@@ -206,19 +206,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Notification.Permission.Status"
-    enum="BooleanWebApkNotificationPermission" expires_after="2022-12-04">
-  <obsolete>
-    Replaced by WebApk.Notification.Permission.Status2 in June 20220.
-  </obsolete>
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    When a WebAPK receives a notification, log whether it has permission to
-    display that notification.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.Notification.Permission.Status2" enum="ContentSetting"
     expires_after="2024-02-25">
   <owner>hartmanng@chromium.org</owner>

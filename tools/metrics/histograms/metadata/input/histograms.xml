@@ -618,20 +618,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.Grammar.CapitalizationCorrection"
-    enum="IMEGrammarActions" expires_after="2022-03-31">
-  <obsolete>
-    Removed in M100.
-  </obsolete>
-  <owner>jiwan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The actions taken by on-device grammar checker, such as underlining a word.
-    Recorded after a grammar checker action is performed and the suggestion is
-    only correcting the capitalization of the text.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.Grammar.Count" enum="IMETextInputClient"
     expires_after="2023-10-22">
   <owner>curtismcmullan@google.com</owner>
@@ -827,19 +813,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.TimeToAccept.Emoji" units="ms"
-    expires_after="2021-09-12">
-  <obsolete>
-    Removed in M100.
-  </obsolete>
-  <owner>myy@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The duration from when emoji suggestions show up to when users accept a
-    suggestion. Recorded when users accept the suggestion.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.TimeToAccept.MultiWord" units="ms"
     expires_after="2023-12-01">
   <owner>curtismcmullan@google.com</owner>
@@ -848,19 +821,6 @@ chromium-metrics-reviews@google.com.
     The duration from when a multi word suggestion is shown to a user, to the
     time the user accepts that suggestion. The metric is recorded when the user
     accepts the suggestion.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.Assistive.TimeToDismiss.Emoji" units="ms"
-    expires_after="2021-01-01">
-  <obsolete>
-    Removed in M100.
-  </obsolete>
-  <owner>myy@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The duration from when emoji suggestions show up to when users dismiss a
-    suggestion. Recorded when users dismiss the suggestion.
   </summary>
 </histogram>
 
@@ -1879,38 +1839,6 @@ chromium-metrics-reviews@google.com.
 These viewport metrics are in input/ since they're related to pinch-zoom, which
 is owned by the Blink input team.
 -->
-
-<histogram name="Viewport.DidScalePage" enum="BooleanDidScalePage"
-    expires_after="M108">
-  <obsolete>
-    Removed in M108.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Tracks the proportion of non-mobile optimized (i.e. zoom disabled or layout
-    width matches viewport) page views that had a user-initiated page scale
-    (e.g. pinch-zoom, double-tap). Recorded on navigation to a new page - on
-    Android only.
-  </summary>
-</histogram>
-
-<histogram name="Viewport.MaxPageScale" enum="PageScaleFactorRange"
-    expires_after="M108">
-  <obsolete>
-    Removed in M108.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Tracks the maximum scale factor that a user has scaled to over the lifetime
-    of the page. The scale is counted at pinch end (e.g. zooming to 300% and
-    back out to 150% in one gesture would count as 150%). Reported only on
-    non-mobile optimized pages (i.e. zoom disabled or layout width matches
-    viewport) which have had a page scale changing gesture. Recorded on
-    navigation to a new page - on Android only.
-  </summary>
-</histogram>
 
 <histogram name="Viewport.MetaTagType" enum="MetaTagTypeEnum"
     expires_after="2024-03-23">

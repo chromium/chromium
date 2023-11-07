@@ -262,68 +262,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.BatteryLevel.Accepted.Geolocation" units="%"
-    expires_after="M85">
-  <obsolete>
-    Removed in July 2022, as it's been unused for some time.
-  </obsolete>
-  <owner>timloh@chromium.org</owner>
-  <summary>
-    Battery percentage when a geolocation permission prompt was accepted on
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.BatteryLevel.Accepted.LocationSettingsDialog"
-    units="%" expires_after="2022-08-28">
-  <obsolete>
-    Removed in July 2022, as it's been unused for some time.
-  </obsolete>
-  <owner>andypaicu@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <owner>ravjit@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
-  <summary>
-    Battery percentage when a location settings dialog was accepted.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.BatteryLevel.Denied.Geolocation" units="%"
-    expires_after="M85">
-  <obsolete>
-    Removed in July 2022, as it's been unused for some time.
-  </obsolete>
-  <owner>timloh@chromium.org</owner>
-  <summary>
-    Battery percentage when a geolocation permission prompt was denied on
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.BatteryLevel.Denied.LocationSettingsDialog"
-    units="%" expires_after="M77">
-  <obsolete>
-    Removed in July 2022, as it's been unused for some time.
-  </obsolete>
-  <owner>timloh@chromium.org</owner>
-  <summary>
-    Battery percentage when a location settings dialog was denied.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.BatteryLevel.Dismissed.Geolocation" units="%"
-    expires_after="M85">
-  <obsolete>
-    Removed in July 2022, as it's been unused for some time.
-  </obsolete>
-  <owner>timloh@chromium.org</owner>
-  <summary>
-    Battery percentage when a geolocation permission prompt was dismissed on
-    Android.
-  </summary>
-</histogram>
-
 <histogram name="Permissions.Chip.TimeToDecision.{RequestAction}" units="ms"
     expires_after="2024-07-31">
   <owner>elklm@chromium.org</owner>
@@ -475,58 +413,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Permissions.DSE.InvalidAutoPermissionRevertTransition.BackedUpSetting"
-    enum="ContentSetting" expires_after="2022-07-01">
-  <obsolete>
-    Removed in June 2022, since the data it provides is no longer relevant.
-  </obsolete>
-  <owner>andypaicu@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded when the Default Search Engine automatic permission grant is
-    reverted and the recorded transition is invalid. Used to help investigate
-    the scenario in which this happens. Records the backed up setting for the
-    DSE origin, which is the setting that was in effect before the DSE autogrant
-    overwrote it in the first place. Suffixed by `PermissionTypes` to provide
-    information per permission type.
-  </summary>
-</histogram>
-
-<histogram
-    name="Permissions.DSE.InvalidAutoPermissionRevertTransition.EffectiveSetting"
-    enum="ContentSetting" expires_after="2022-07-01">
-  <obsolete>
-    Removed in June 2022, since the data it provides is no longer relevant.
-  </obsolete>
-  <owner>andypaicu@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded when the Default Search Engine automatic permission grant is
-    reverted and the recorded transition is invalid. Used to help investigate
-    the scenario in which this happens. Records the effecting setting for the
-    DSE origin, which is the setting that was in effect before the revert.
-    Suffixed by `PermissionTypes` to provide information per permission type.
-  </summary>
-</histogram>
-
-<histogram
-    name="Permissions.DSE.InvalidAutoPermissionRevertTransition.EndStateSetting"
-    enum="ContentSetting" expires_after="2022-07-01">
-  <obsolete>
-    Removed in June 2022, since the data it provides is no longer relevant.
-  </obsolete>
-  <owner>andypaicu@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded when the Default Search Engine automatic permission grant is
-    reverted and the recorded transition is invalid. Used to help investigate
-    the scenario in which this happens. Records the end state setting for the
-    DSE origin, which is the setting that is in effect after the revert.
-    Suffixed by `PermissionTypes` to provide information per permission type.
-  </summary>
-</histogram>
-
 <histogram name="Permissions.Engagement.Accepted" units="%"
     expires_after="2024-01-14">
   <owner>engedy@chromium.org</owner>
@@ -619,37 +505,6 @@ chromium-metrics-reviews@google.com.
     used in a cross origin frame.
   </summary>
   <token key="PermissionType" variants="AllPermissionTypes"/>
-</histogram>
-
-<histogram name="Permissions.FCM.Revocation" enum="FcmTokenRevocation"
-    expires_after="2023-10-31">
-  <obsolete>
-    Removed in 2023/01, as it's no longer needed. To track Notification
-    revocation use `Notifications.AppNotificationStatus` and
-    `PushMessaging.DeliveryStatus`.
-  </obsolete>
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records when Chrome has no app-level Notifications permission on Android and
-    receives a push message.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.FCM.Revocation.ResetGracePeriod" units="ms"
-    expires_after="2023-10-31">
-  <obsolete>
-    Removed in 2023/01, as it's no longer needed. To track Notification
-    revocation use `Notifications.AppNotificationStatus` and
-    `PushMessaging.DeliveryStatus`.
-  </obsolete>
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records when Chrome has app-level Notifications permission on Android,
-    receives a push message but the grace period was initialized and needs to be
-    reset.
-  </summary>
 </histogram>
 
 <histogram name="Permissions.MissingOSLevelPermission.Action"
@@ -765,21 +620,6 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="AllPermissionTypes"/>
 </histogram>
 
-<histogram name="Permissions.PredictionService.GeolocationRequest"
-    enum="BooleanSent" expires_after="2022-06-19">
-  <obsolete>
-    Removed on 02/2022. Replaced with the newer histogram
-    Permissions.PredictionService.GeolocationResponse
-  </obsolete>
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded whenever a geolocation permission request is eligible for
-    Permissions predictions service. Records whether the request was sent to the
-    backend or if it was held back.
-  </summary>
-</histogram>
-
 <histogram name="Permissions.PredictionService.PredictionSource"
     enum="PermissionPredictionSource" expires_after="2024-04-28">
   <owner>ravjit@chromium.org</owner>
@@ -799,21 +639,6 @@ chromium-metrics-reviews@google.com.
     Recorded whenever on-device Permissions prediciton service model is
     executed. Records if the threshold value for the non-grant score is obtained
     from the model's metadata or if the default fallback was used.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.PredictionService.Request" enum="BooleanSent"
-    expires_after="2022-06-12">
-  <obsolete>
-    Removed on 02/2022. Replaced with the newer histogram
-    Permissions.PredictionService.NotificationResponse
-  </obsolete>
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded whenever a notification permission request is eligible for
-    Permissions predictions service. Records whether the request was sent to the
-    backend or if it was held back.
   </summary>
 </histogram>
 
@@ -1505,100 +1330,6 @@ chromium-metrics-reviews@google.com.
     time is the time between the &quot;GetAllSites&quot; request start and the
     time when the storage is fetched and the full information is returned to the
     UI.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged" enum="ContentType"
-    expires_after="M81">
-  <obsolete>
-    Expired in M81, stopped emitting in M100.
-  </obsolete>
-  <owner>miguelg@chromium.org</owner>
-  <owner>finnur@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is changed using the
-    content settings menu.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged.Allowed"
-    enum="ContentType" expires_after="M81">
-  <obsolete>
-    Expired in M81, stopped emitting in M100.
-  </obsolete>
-  <owner>miguelg@chromium.org</owner>
-  <owner>finnur@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is set to 'Allowed'
-    using the content settings menu.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged.Ask" enum="ContentType"
-    expires_after="M77">
-  <obsolete>
-    Expired in M77, stopped emitting in M100.
-  </obsolete>
-  <owner>miguelg@chromium.org</owner>
-  <owner>finnur@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is set to 'Ask'
-    using the content settings menu.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged.Blocked"
-    enum="ContentType" expires_after="M81">
-  <obsolete>
-    Expired in M81, stopped emitting in M100.
-  </obsolete>
-  <owner>miguelg@chromium.org</owner>
-  <owner>finnur@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is set to 'Blocked'
-    using the content settings menu.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged.Reset"
-    enum="ContentType" expires_after="M77">
-  <obsolete>
-    Expired in M77, stopped emitting in M100.
-  </obsolete>
-  <owner>miguelg@chromium.org</owner>
-  <owner>finnur@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is reset to the
-    default value using the content settings menu.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged.SessionOnly"
-    enum="ContentType" expires_after="M96">
-  <obsolete>
-    Expired in M96, stopped emitting in M100.
-  </obsolete>
-  <owner>andypaicu@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <owner>ravjit@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is changed to the
-    session only value using the content settings menu. This option only exists
-    for cookies.
   </summary>
 </histogram>
 

@@ -143,18 +143,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.ImagePressed" enum="ContentSettingImageType"
-    expires_after="2021-02-01">
-  <obsolete>
-    Removed in Nov 2022.
-  </obsolete>
-  <owner>alancutter@chromium.org</owner>
-  <owner>src/chrome/browser/ui/page_action/OWNERS</owner>
-  <summary>
-    Counts which content setting buttons are pressed by the user.
-  </summary>
-</histogram>
-
 <histogram name="ContentSettings.NumberOfExceptions" units="units"
     expires_after="2024-03-24">
   <owner>engedy@chromium.org</owner>
@@ -848,42 +836,6 @@ chromium-metrics-reviews@google.com.
     measure of how stale feed content is when the feed loads without a blocking
     network request. Feed v2 only.
   </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.ContentDuplication.Position{Index}"
-    enum="Boolean" expires_after="2023-09-01">
-  <obsolete>
-    Deprecated in 11/2022. Replaced by ContentDuplication2 metrics.
-  </obsolete>
-  <owner>jianli@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports whether the feed content at the specific position is
-    duplicate. It is reported when the feed content is received from the server.
-  </summary>
-  <token key="Index">
-    <variant name="1" summary="1"/>
-    <variant name="2" summary="2"/>
-    <variant name="3" summary="3"/>
-  </token>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.ContentDuplication.{Range}" units="%"
-    expires_after="2023-09-01">
-  <obsolete>
-    Deprecated in 11/2022. Replaced by ContentDuplication2 metrics.
-  </obsolete>
-  <owner>jianli@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports the percentage of the duplicate contents received for a
-    range of cards. It is reported when the feed contents are received from the
-    server.
-  </summary>
-  <token key="Range">
-    <variant name="All" summary="All cards"/>
-    <variant name="First10" summary="First 10 cards"/>
-  </token>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentDuplication2.Position{Index}"
@@ -1941,22 +1893,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ContentSuggestions.{FeedType}.InvalidNoticeKey" enum="Boolean"
-    expires_after="2023-03-01">
-  <obsolete>
-    Deprecated in 05/2022 since we removed feed notice card related codes.
-  </obsolete>
-  <owner>jianli@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports when an invalid notice key is received from the server.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
-  </token>
-</histogram>
-
 <histogram name="ContentSuggestions.{FeedType}.LoadedCardCount" units="index"
     expires_after="2024-03-24">
   <owner>harringtond@chromium.org</owner>
@@ -2078,65 +2014,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
     <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
-  </token>
-</histogram>
-
-<histogram
-    name="ContentSuggestions.{FeedType}.NoticeAcknowledgementPath.{NoticeType}"
-    enum="FeedNoticeAcknowledgementPath" expires_after="2023-03-01">
-  <obsolete>
-    Deprecated in 05/2022 since we removed feed notice card related codes.
-  </obsolete>
-  <owner>jianli@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports how the notice acknowledgement is reached. Reported when an
-    action, i.e. viewing, tapping or dismissing the notice, results in the
-    notice being acknowledged.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
-  </token>
-  <token key="NoticeType">
-    <variant name="Youtube" summary="YouTube Privacy Notice"/>
-  </token>
-</histogram>
-
-<histogram name="ContentSuggestions.{FeedType}.Notice{Action}.{NoticeType}"
-    enum="Boolean" expires_after="2023-03-01">
-  <obsolete>
-    Deprecated in 05/2022 since we removed feed notice card related codes.
-  </obsolete>
-  <owner>jianli@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports whether an {Action} for an notice is performed.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
-  </token>
-  <token key="Action">
-    <variant name="Acknowledged"
-        summary="Reported when an user action, i.e. viewing, tapping or
-                 dismissing the notice, results in the notice being
-                 acknowledged."/>
-    <variant name="Created"
-        summary="Reported when the notice is created for the first time."/>
-    <variant name="Dismissed"
-        summary="Reported when the user taps the X button to dismiss the
-                 notice."/>
-    <variant name="OpenAction"
-        summary="Reported when the user taps the notice or highlighted link
-                 text to perform an open action, like launching an URL or
-                 settings."/>
-    <variant name="Viewed"
-        summary="Reported when the user scrolls down the NTP and the notice
-                 becomes fully visible on the screen."/>
-  </token>
-  <token key="NoticeType">
-    <variant name="Youtube" summary="YouTube Privacy Notice"/>
   </token>
 </histogram>
 

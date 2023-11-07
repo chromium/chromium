@@ -44,30 +44,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Signin.IsShared"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AccuracyTipInteraction" separator=".">
-  <suffix name="Closed"
-      label="The Accuracy Tip was closed by close button or pressing ESC"/>
-  <suffix name="Ignore" label="Ignore button within Accuracy Tip was clicked"/>
-  <suffix name="LearnMore"
-      label="Learn more button within Accuracy Tip was clicked"/>
-  <suffix name="NoAction"
-      label="The accuracy tip was closed without user interaction"/>
-  <suffix name="OptOut" label="Opt-out button within Accuracy Tip was clicked"/>
-  <suffix name="PermissionRequested"
-      label="The Accuracy Tip was closed because the site requested a
-             permission"/>
-  <affected-histogram name="Privacy.AccuracyTip.AccuracyTipTimeOpen">
-    <obsolete>
-      Deprecated as of 12/2022.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Privacy.AccuracyTip.NumDialogsShown">
-    <obsolete>
-      Deprecated as of 12/2022.
-    </obsolete>
-  </affected-histogram>
-</histogram_suffixes>
-
 <histogram_suffixes name="ActivityType" separator=".">
   <suffix name="CustomTabs" label="CustomTabs"/>
   <suffix name="TabbedMode" label="TabbedMode"/>
@@ -237,17 +213,6 @@ chromium-metrics-reviews@google.com.
       label="For the first boot after Chrome OS update."/>
   <suffix name="RegularBoot" label="For a regular boot."/>
   <affected-histogram name="Arc.AndroidBootTime"/>
-  <affected-histogram name="Arc.boot_progress_ams_ready"/>
-  <affected-histogram name="Arc.boot_progress_enable_screen"/>
-  <affected-histogram name="Arc.boot_progress_pms_data_scan_start"/>
-  <affected-histogram name="Arc.boot_progress_pms_ready"/>
-  <affected-histogram name="Arc.boot_progress_pms_scan_end"/>
-  <affected-histogram name="Arc.boot_progress_pms_start"/>
-  <affected-histogram name="Arc.boot_progress_pms_system_scan_start"/>
-  <affected-histogram name="Arc.boot_progress_preload_end"/>
-  <affected-histogram name="Arc.boot_progress_preload_start"/>
-  <affected-histogram name="Arc.boot_progress_start"/>
-  <affected-histogram name="Arc.boot_progress_system_run"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AndroidFeatureModuleInstallDuration" separator=".">
@@ -1293,53 +1258,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="CustomTabs.DetachedResourceRequest.RedirectsCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataReductionProxyBypassedBytes" separator=".">
-  <suffix name="Current" label="Bypass due to explicit instruction"/>
-  <suffix name="CurrentApplicationOctetStream"
-      label="Bypass due to explicit instruction for
-             'application/octet-stream' content type"/>
-  <suffix name="CurrentAudioVideo"
-      label="Bypass due to explicit instruction for audio/video"/>
-  <suffix name="LocalBypassRules"
-      label="Bypass due to client-side bypass rules or because the proxy
-             config was missing at the client"/>
-  <suffix name="LongAll" label="Long bypass"/>
-  <suffix name="LongTriggeringRequest" label="Triggering request long bypass"/>
-  <suffix name="Malformed407"
-      label="Bypass due to 407 response from proxy without a challenge"/>
-  <suffix name="ManagedProxyConfig"
-      label="Deprecated 1/9/2014 (M-41). Bypass due to a managed config"/>
-  <suffix name="MediumAll" label="Medium bypass"/>
-  <suffix name="MediumTriggeringRequest"
-      label="Triggering request medium bypass"/>
-  <suffix name="MissingViaHeader4xx"
-      label="Bypass due to a 4xx missing via header"/>
-  <suffix name="MissingViaHeaderOther"
-      label="Bypass due to other missing via header"/>
-  <suffix name="NetworkErrorOther" label="Bypass due to any network error"/>
-  <suffix name="NetworkErrorProxyCertificateInvalid"
-      label="Bypass due to invalid proxy certificate"/>
-  <suffix name="NetworkErrorProxyConnectionFailed"
-      label="Bypass due to failed proxy connection"/>
-  <suffix name="NetworkErrorTimedOut" label="Bypass due to network timeout"/>
-  <suffix name="ProxyOverridden"
-      label="Bypass due to another proxy taking precedence"/>
-  <suffix name="ShortAll" label="Short bypass"/>
-  <suffix name="ShortAudioVideo"
-      label="Triggering request short bypass due to audio/video"/>
-  <suffix name="ShortTriggeringRequest"
-      label="Triggering request short bypass"/>
-  <suffix name="SSL" label="Bypass due to SSL"/>
-  <suffix name="Status500HttpInternalServerError"
-      label="Bypass due to internal server error"/>
-  <suffix name="Status502HttpBadGateway"
-      label="Bypass because the request URI was too long"/>
-  <suffix name="Status503HttpServiceUnavailable"
-      label="Bypass due to a 503 response"/>
-  <suffix name="URLRedirectCycle" label="Bypass due to URL redirect cycle"/>
-  <affected-histogram name="DataReductionProxy.BypassedBytes"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="DataUse_AppTabState_Dimensions" separator=".">
   <suffix name="Downstream.AppBackground" label=""/>
   <suffix name="Downstream.AppForeground.TabBackground" label=""/>
@@ -1348,24 +1266,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Upstream.AppForeground.TabBackground" label=""/>
   <suffix name="Upstream.AppForeground.TabForeground" label=""/>
   <affected-histogram name="DataUse.AppTabState"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DataUse_Bytes" separator=".">
-  <suffix name="Delegate" label="As reported by the network delegate."/>
-  <suffix name="OS"
-      label="As reported by the operating system. Currently logged only on
-             Android."/>
-  <affected-histogram name="DataUse.BytesReceived2"/>
-  <affected-histogram name="DataUse.BytesSent"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DataUse_Bytes_ApplicationState" separator=".">
-  <suffix name="Background"
-      label="Data use was recorded with Chrome in background."/>
-  <suffix name="Foreground"
-      label="Data use was recorded with Chrome in foreground."/>
-  <affected-histogram name="DataUse.BytesReceived2.OS"/>
-  <affected-histogram name="DataUse.BytesSent.OS"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="DataUse_Dimensions" separator=".">
@@ -1382,13 +1282,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Upstream.Unknown.Cellular" label=""/>
   <suffix name="Upstream.Unknown.NotCellular" label=""/>
   <affected-histogram name="DataUse.TrafficSize.User"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DataUse_TrafficSource" separator=".">
-  <suffix name="System" label=""/>
-  <suffix name="User" label=""/>
-  <affected-histogram name="DataUse.BackgroundToDataRecievedPerByte"/>
-  <affected-histogram name="DataUse.BackgroundToFirstDownstream"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="DecodedImageType" separator=".">
@@ -2016,29 +1909,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="LoadingPredictor.PreconnectLearningRedirectStatus"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="LocationAttachedStatus" separator=".">
-  <suffix name="LocationAttached"
-      label="This histogram is for when the location was successfully
-             attached to the request."/>
-  <suffix name="LocationNotAttached"
-      label="This histogram is for when the location was not attached to the
-             request. A location may not be attached if it is too old or if
-             the permissions do not allow it."/>
-  <affected-histogram name="Geolocation.Header.TimeListening.BatterySaving"/>
-  <affected-histogram name="Geolocation.Header.TimeListening.GpsOnly"/>
-  <affected-histogram name="Geolocation.Header.TimeListening.HighAccuracy"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="LocationMode" separator=".">
-  <suffix name="BatterySaving"
-      label="This histogram is for location mode Battery Saving."/>
-  <suffix name="GpsOnly" label="This histogram is for location mode GPS Only."/>
-  <suffix name="HighAccuracy"
-      label="This histogram is for location mode High Accuracy."/>
-  <affected-histogram name="Geolocation.Header.LocationAge"/>
-  <affected-histogram name="Geolocation.Header.TimeListening"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MacAudioInputVariants" separator="_">
   <suffix name="HighLatency"
       label="Measures the standard Mac audio driver (i.e. not low-latency)."/>
@@ -2131,16 +2001,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Failure" label="Failure"/>
   <suffix name="Success" label="Success"/>
   <affected-histogram name="MediaRouter.Cast.App.Availability"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MediaStreamAndDecoderType" separator=".">
-  <suffix name="Audio.HW" label="Platform audio decoder"/>
-  <suffix name="Audio.SW" label="Software audio decoder"/>
-  <suffix name="Video.HW" label="Platform video decoder"/>
-  <suffix name="Video.SW" label="Software video decoder"/>
-  <affected-histogram name="Media.ConfigChangeDecoderSelectionTime"/>
-  <affected-histogram name="Media.InitialDecoderSelectionTime"/>
-  <affected-histogram name="Media.MSE.CodecChangeTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="MediaVideoCaptureManagerTime" separator=".">
@@ -2714,16 +2574,6 @@ chromium-metrics-reviews@google.com.
       label="Observed metric was greater than 5100 (inclusive) units"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="OfflinePagesArchiveDirectoryType" separator=".">
-  <obsolete>
-    Histogram was removed in April 2023.
-  </obsolete>
-  <suffix name="Persistent" label="Persistent archive directory"/>
-  <suffix name="Temporary" label="Temporary archive directory"/>
-  <affected-histogram
-      name="OfflinePages.ArchiveManager.ArchiveDirsCreationResult2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="OfflinePagesNamespace" separator=".">
   <suffix name="async_loading" label="Offline async loaded pages"/>
   <suffix name="auto_async_loading"
@@ -2738,12 +2588,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="OfflinePages.Background.LoadingErrorStatusCode"/>
   <affected-histogram name="OfflinePages.PageAccessInterval"/>
   <affected-histogram name="OfflinePages.PageSize"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Omnibox_BitmapFetchLatencyCacheSplit" separator=".">
-  <suffix name="Cached" label="Bitmaps returned from cache"/>
-  <suffix name="Uncached" label="Bitmaps not returned from cache"/>
-  <affected-histogram name="Omnibox.BitmapFetchLatency"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="OmniboxClipboardSuggestionType" separator=".">
@@ -3473,74 +3317,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="NaCl.Perf.PNaClLoadTime.TotalUncachedTime"/>
   <affected-histogram name="NaCl.Perf.Size.PexeNexeSizePct"/>
   <affected-histogram name="NaCl.Perf.Size.PNaClTranslatedNexe"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Power_CpuTimeProcessAndCoreTypes" separator=".">
-  <suffix name="BigLittle.Big.Browser"
-      label="Browser processes on big cores of a BIG.little CPU"/>
-  <suffix name="BigLittle.Big.GPU"
-      label="GPU processes on big cores of a BIG.little CPU"/>
-  <suffix name="BigLittle.Big.Other"
-      label="Other processes on big cores of a BIG.little CPU"/>
-  <suffix name="BigLittle.Big.Renderer"
-      label="Renderer processes on big cores of a BIG.little CPU"/>
-  <suffix name="BigLittle.Little.Browser"
-      label="Browser processes on little cores of a BIG.little CPU"/>
-  <suffix name="BigLittle.Little.GPU"
-      label="GPU processes on little cores of a BIG.little CPU"/>
-  <suffix name="BigLittle.Little.Other"
-      label="Other processes on little cores of a BIG.little CPU"/>
-  <suffix name="BigLittle.Little.Renderer"
-      label="Renderer processes on little cores of a BIG.little CPU"/>
-  <suffix name="BigLittleBigger.Big.Browser"
-      label="Browser processes on big cores of a big-little-bigger CPU"/>
-  <suffix name="BigLittleBigger.Big.GPU"
-      label="GPU processes on big cores of a big-little-bigger CPU"/>
-  <suffix name="BigLittleBigger.Big.Other"
-      label="Other processes on big cores of a big-little-bigger CPU"/>
-  <suffix name="BigLittleBigger.Big.Renderer"
-      label="Renderer processes on big cores of a big-little-bigger CPU"/>
-  <suffix name="BigLittleBigger.Bigger.Browser"
-      label="Browser processes on bigger cores of a big-little-bigger CPU"/>
-  <suffix name="BigLittleBigger.Bigger.GPU"
-      label="GPU processes on bigger cores of a big-little-bigger CPU"/>
-  <suffix name="BigLittleBigger.Bigger.Other"
-      label="Other processes on bigger cores of a big-little-bigger CPU"/>
-  <suffix name="BigLittleBigger.Bigger.Renderer"
-      label="Renderer processes on bigger cores of a big-little-bigger CPU"/>
-  <suffix name="BigLittleBigger.Little.Browser"
-      label="Browser processes on little cores of a big-little-bigger CPU"/>
-  <suffix name="BigLittleBigger.Little.GPU"
-      label="GPU processes on little cores of a big-little-bigger CPU"/>
-  <suffix name="BigLittleBigger.Little.Other"
-      label="Other processes on little cores of a big-little-bigger CPU"/>
-  <suffix name="BigLittleBigger.Little.Renderer"
-      label="Renderer processes on little cores of a big-little-bigger CPU"/>
-  <suffix name="Other.Browser"
-      label="Browser processes on other CPU architectures"/>
-  <suffix name="Other.GPU" label="GPU processes on other CPU architectures"/>
-  <suffix name="Other.Other"
-      label="Other processes on other CPU architectures"/>
-  <suffix name="Other.Renderer"
-      label="Renderer processes on other CPU architectures"/>
-  <suffix name="Symmetric.Browser"
-      label="Browser processes on CPUs with symmetric cores"/>
-  <suffix name="Symmetric.GPU"
-      label="GPU processes on CPUs with symmetric cores"/>
-  <suffix name="Symmetric.Other"
-      label="Other processes on CPUs with symmetric cores"/>
-  <suffix name="Symmetric.Renderer"
-      label="Renderer processes on CPUs with symmetric cores"/>
-  <suffix name="Unknown.Browser"
-      label="Browser processes on unexpected cores (of any architecture)"/>
-  <suffix name="Unknown.GPU"
-      label="GPU processes on unexpected cores (of any architecture)"/>
-  <suffix name="Unknown.Other"
-      label="Other processes on unexpected cores (of any architecture)"/>
-  <suffix name="Unknown.Renderer"
-      label="Renderer processes on unexpected cores (of any architecture)"/>
-  <affected-histogram name="Power.ApproxCpuTimeSecondsPerCoreTypeAndFrequency"/>
-  <affected-histogram name="Power.CpuTimeSecondsPerCoreTypeAndFrequency"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PowerConsumptionSources" separator=".">
@@ -4448,7 +4224,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SafeBrowsing.RT.GetCacheResult"/>
   <affected-histogram name="SafeBrowsing.RT.HasTokenInRequest"/>
   <affected-histogram name="SafeBrowsing.RT.IsLookupSuccessful"/>
-  <affected-histogram name="SafeBrowsing.RT.IsPopulationMbbOrEsb"/>
   <affected-histogram name="SafeBrowsing.RT.Network.Result"/>
   <affected-histogram name="SafeBrowsing.RT.Network.Time"/>
   <affected-histogram name="SafeBrowsing.RT.Request.Size"/>
@@ -5144,7 +4919,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Apps.AppListContinueTaskOpenType"/>
   <affected-histogram name="Apps.AppListFolderNameLength"/>
   <affected-histogram name="Apps.AppListPageSwitcherSource"/>
-  <affected-histogram name="Apps.AppListSearchQueryLength"/>
   <affected-histogram name="Apps.AppListSearchResultOpenTypeV2"/>
   <affected-histogram name="Apps.ContextMenuExecuteCommand.FromApp"/>
   <affected-histogram name="Apps.ContextMenuExecuteCommand.NotFromApp"/>

@@ -1085,20 +1085,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileSignInPromo.NTPContentSuggestions.ImpressionsTilXButton"
-    units="impressions" expires_after="2022-05-10">
-  <obsolete>
-    Removed in 2022/05. Replaced with Signin.SyncPromo.Dismissed.Count.Ntp.
-  </obsolete>
-  <owner>bsazonov@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Counts how many times the explicit &quot;X&quot;-to-close button is clicked
-    per impression. Recorded when the signin promo is dismissed using the
-    &quot;X&quot;.
-  </summary>
-</histogram>
-
 <histogram name="MobileSignInPromo.NTPFeedTop.ImpressionsTilDismiss"
     units="impressions" expires_after="2024-03-10">
   <owner>mrefaat@chromium.org</owner>

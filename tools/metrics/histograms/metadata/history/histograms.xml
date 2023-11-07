@@ -473,30 +473,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Actions.FinalState"
-    enum="HistoryClustersFinalState" expires_after="2022-05-27">
-  <obsolete>
-    Removed as of 05/2022 in favor of
-    History.Clusters.Actions.FinalState.Outcome
-  </obsolete>
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logged when the user closes the chrome://history/journeys page (e.g. closed
-    tab, navigated in the same tab, or closed browser). Logs the final state
-    that ended the use of the journeys page (e.g., a link click away from the
-    page).
-
-    Navigating back/forward aren't distinguished. E.g., if doing so leads to the
-    traditional history UI, a same doc navigation will be recorded; if doing so
-    leads to a different site, a link click will be recorded.
-
-    Before m100, tab refresh and same doc navigations were also not
-    distinguished and would record tab close.
-  </summary>
-</histogram>
-
 <histogram name="History.Clusters.Actions.FinalState.Number{Event}"
     units="count" expires_after="2024-03-31">
   <owner>mcrouse@chromium.org</owner>
@@ -571,24 +547,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Backend.BatchEntityLookupLatency" units="ms"
-    expires_after="2022-07-17">
-  <obsolete>
-    Deprecated for History.Clusters.Backend.BatchEntityLookupLatency2 in
-    02/20222.
-  </obsolete>
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the latency of querying entities for all the visits being clustered by
-    the on-device backend. Logged when clusters have been calculated based on
-    any request to cluster visits, which could be triggered from several things,
-    including loading the journeys UI, putting a query in the journeys page,
-    etc..
-  </summary>
-</histogram>
-
 <histogram name="History.Clusters.Backend.BatchEntityLookupLatency2" units="ms"
     expires_after="2024-04-28">
   <owner>mcrouse@chromium.org</owner>
@@ -618,59 +576,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Backend.ClusterContainsSearch"
-    enum="BooleanContained" expires_after="2022-12-01">
-  <obsolete>
-    Obsolete in 12/22
-  </obsolete>
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs whether each cluster contains a search after it has been finalized.
-    Logged for each cluster that is generated when clusters are created for the
-    purposes of keyword generation to show in the Omnibox, roughly once at the
-    start of each session and every two hours after that.
-  </summary>
-</histogram>
-
-<histogram name="History.Clusters.Backend.ClusterFinalizers.ThreadTime"
-    units="ms" expires_after="2023-06-04">
-  <obsolete>
-    Obsolete as of 12/2022.
-  </obsolete>
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the time taken to run all cluster finalizers during a clustering pass,
-    which is performed on a background worker. This does not include any thread
-    hop or queuing delay. Logged when clusters have been calculated based on any
-    request to cluster visits, which could be triggered from several things,
-    including loading the journeys UI, putting a query in the journeys page,
-    etc...
-  </summary>
-</histogram>
-
-<histogram name="History.Clusters.Backend.ClusterProcessors.ThreadTime"
-    units="ms" expires_after="2023-06-04">
-  <obsolete>
-    Obsolete as of 12/2022.
-  </obsolete>
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the time taken to run all cluster processors during a clustering pass,
-    which is performed on a background worker. This does not include any thread
-    hop or queuing delay. Logged when clusters have been calculated based on any
-    request to cluster visits, which could be triggered from several things,
-    including loading the journeys UI, putting a query in the journeys page,
-    etc. This is a segment within
-    `History.Clusters.Backend.ComputeClusters.ThreadTime`.
-  </summary>
-</histogram>
-
 <histogram
     name="History.Clusters.Backend.ClusterSimilarityHeuristicsProcessor.ClusterSearchTermOverridden"
     enum="Boolean" expires_after="2024-01-31">
@@ -690,26 +595,6 @@ chromium-metrics-reviews@google.com.
     had non-empty search terms that differed from the search terms of the
     previous search visit with non-empty search terms in the same cluster.
   </summary>
-</histogram>
-
-<histogram name="History.Clusters.Backend.ClusterSize.{ClusterStatistic}"
-    units="number visits" expires_after="2022-12-01">
-  <obsolete>
-    Obsolete in 12/22
-  </obsolete>
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the {ClusterStatistic} of all clusters determined by the on-device
-    backend. Logged when clusters have been calculated based on any request to
-    cluster visits, which could be triggered from several things, including
-    loading the
-  </summary>
-  <token key="ClusterStatistic">
-    <variant name="Max" summary="maximum cluster size"/>
-    <variant name="Min" summary="minimum cluster size"/>
-  </token>
 </histogram>
 
 <histogram name="History.Clusters.Backend.ComputeClusters.ThreadTime"
@@ -740,27 +625,6 @@ chromium-metrics-reviews@google.com.
     visits, which could be triggered from several things, including loading the
     journeys UI, putting a query in the journeys page, etc. This is a segment
     within `History.Clusters.Backend.ComputeClusters.ThreadTime`.
-  </summary>
-</histogram>
-
-<histogram
-    name="History.Clusters.Backend.ComputeClusterTriggerability.ThreadTime"
-    units="ms" expires_after="2022-12-29">
-  <obsolete>
-    Obsolete as of 12/2022.
-  </obsolete>
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the time taken to run the steps during a clustering pass that are
-    required for determinining the triggerability for a cluster, which is
-    performed on a background worker. This does not include any thread hop or
-    queuing delay. Logged once per resulting cluster when clusters have been
-    calculated based on any clustering request, which could be triggered from
-    several things, including loading the journeys UI, putting a query in the
-    journeys page, etc. This is a segment within
-    `History.Clusters.Backend.ComputeClusters.ThreadTime`.
   </summary>
 </histogram>
 
@@ -1006,27 +870,6 @@ chromium-metrics-reviews@google.com.
   <token key="Source" variants="ClusteringRequestSource"/>
 </histogram>
 
-<histogram name="History.Clusters.Backend.KeywordCache.AllKeywordPhraseCount"
-    units="count" expires_after="2022-04-06">
-  <obsolete>
-    Deprecated 04/2022 because we no longer break keywords apart before storing
-    in the cache.
-  </obsolete>
-  <owner>manukh@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the number of keyword phrases stored in the primary cache.
-
-    Each cluster can have multiple keyword phrases; each phrase consists of 1 or
-    more words.
-
-    Logged each time the primary cache is refreshed, i.e. on omnibox key stroke
-    limited to at most once every 2 hours, though clearing history items will
-    reset the cache timer.
-  </summary>
-</histogram>
-
 <histogram name="History.Clusters.Backend.KeywordCache.AllKeywordsCount"
     units="count" expires_after="2024-04-28">
   <owner>manukh@chromium.org</owner>
@@ -1039,26 +882,6 @@ chromium-metrics-reviews@google.com.
     Logged each time the primary cache is refreshed, i.e. on omnibox key stroke
     limited to at most once every 2 hours, though clearing history items will
     reset the cache timer.
-  </summary>
-</histogram>
-
-<histogram name="History.Clusters.Backend.KeywordCache.ShortKeywordPhraseCount"
-    units="count" expires_after="2022-04-06">
-  <obsolete>
-    Deprecated 04/2022 because we no longer break keywords apart before storing
-    in the cache.
-  </obsolete>
-  <owner>manukh@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the number of keywords stored in the short cache.
-
-    Each cluster can have multiple keyword phrases; each phrase consists of 1 or
-    more words.
-
-    Logged each time the short cache is refreshed, i.e. on omnibox key stroke if
-    the primary cache is not stale and limited to at most once every 10 seconds.
   </summary>
 </histogram>
 
@@ -1079,22 +902,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Backend.NumBatchesProcessedForVisits"
-    units="number of batches" expires_after="2022-05-11">
-  <obsolete>
-    Obsolete as of 05/2022.
-  </obsolete>
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the number of batches used to process visits. Logged once per request
-    for clusters to be calculated based on any request to cluster visits, which
-    could be triggered from several things, including loading the journeys UI,
-    putting a query in the journeys page, etc..
-  </summary>
-</histogram>
-
 <histogram name="History.Clusters.Backend.NumClustersReturned"
     units="number clusters returned" expires_after="2024-01-31">
   <owner>mcrouse@chromium.org</owner>
@@ -1106,43 +913,6 @@ chromium-metrics-reviews@google.com.
     could be triggered from several things, including loading the journeys UI,
     putting a query in the journeys page, etc..
   </summary>
-</histogram>
-
-<histogram name="History.Clusters.Backend.NumKeywordsPerCluster"
-    units="number keywords" expires_after="2022-12-01">
-  <obsolete>
-    Obsolete in 12/22
-  </obsolete>
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the number of keywords associated with each cluster after it has been
-    finalized. Logged for each cluster that is generated when clusters are
-    created for the purposes of keyword generation to show in the Omnibox,
-    roughly once at the start of each session and every two hours after that.
-  </summary>
-</histogram>
-
-<histogram
-    name="History.Clusters.Backend.NumKeywordsPerCluster.{KeywordStatistic}"
-    units="number keywords" expires_after="2022-12-01">
-  <obsolete>
-    Obsolete in 12/22
-  </obsolete>
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the {KeywordStatistic} over all clusters determined by the on-device
-    backend. Logged when clusters have been calculated based on any request to
-    cluster visits, which could be triggered from several things, including
-    loading the journeys UI, putting a query in the journeys page, etc..
-  </summary>
-  <token key="KeywordStatistic">
-    <variant name="Max" summary="maximum keywords"/>
-    <variant name="Min" summary="minimum keywords"/>
-  </token>
 </histogram>
 
 <histogram name="History.Clusters.Backend.NumVisitsBelowFold"
@@ -1169,22 +939,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Backend.NumVisitsPerCluster"
-    units="number visits" expires_after="2022-12-01">
-  <obsolete>
-    Obsolete in 12/22
-  </obsolete>
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the number of visits contained in each cluster after it has been
-    finalized. Logged for each cluster that is generated when clusters are
-    created for the purposes of keyword generation to show in the Omnibox,
-    roughly once at the start of each session and every two hours after that.
-  </summary>
-</histogram>
-
 <histogram name="History.Clusters.Backend.NumVisitsToCluster"
     units="number visits" expires_after="2024-01-31">
   <owner>mcrouse@chromium.org</owner>
@@ -1195,23 +949,6 @@ chromium-metrics-reviews@google.com.
     Logged when any request to cluster visits is made, which could be triggered
     from several things, including loading the journeys UI, putting a query in
     the journeys page, etc..
-  </summary>
-</histogram>
-
-<histogram name="History.Clusters.Backend.ProcessBatchOfVisits.BatchSize"
-    units="number visits" expires_after="2022-05-11">
-  <obsolete>
-    Obsolete as of 05/2022.
-  </obsolete>
-  <owner>tbansal@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the number of visits that were processed on the UI thread in a batch.
-    Can be logged multiple times when a request to cluster visits is made, which
-    could be triggered from several things, including loading the journeys UI,
-    putting a query in the journeys page, etc... depending on how many visits
-    were sent to the backend to cluster.
   </summary>
 </histogram>
 
@@ -1724,69 +1461,6 @@ chromium-metrics-reviews@google.com.
     +
     History.Clusters.Backend.GetMostRecentClusters.GetMostRecentPersistedClustersLatency.WebUI
     + History.Clusters.ProcessClustersDuration
-  </summary>
-</histogram>
-
-<histogram name="History.Clusters.Survey.CanShowAnySurvey" enum="Boolean"
-    expires_after="2023-05-01">
-  <obsolete>
-    No longer used. The survey is gone.
-  </obsolete>
-  <owner>tommycli@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Recorded each time a History Clusters HaTS survey was requested. Records if
-    the HaTS service can show ANY survey BEFORE we make the actual request.
-
-    Used for debugging missing HaTs survey impressions.
-  </summary>
-</histogram>
-
-<histogram name="History.Clusters.Survey.CanShowSurvey" enum="Boolean"
-    expires_after="2023-05-01">
-  <obsolete>
-    No longer used, the survey is gone.
-  </obsolete>
-  <owner>tommycli@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Recorded each time a History Clusters HaTS survey was requested. Records if
-    the HaTS service can show this survey BEFORE we make the actual request.
-
-    Used for debugging missing HaTs survey impressions.
-  </summary>
-</histogram>
-
-<histogram name="History.Clusters.Survey.Requested"
-    enum="HistoryClustersSurvey" expires_after="2023-05-01">
-  <obsolete>
-    No longer used, the survey is gone.
-  </obsolete>
-  <owner>tommycli@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Recorded each time a History Clusters HaTS survey was requested. Records
-    which entrypoint survey was requested.
-  </summary>
-</histogram>
-
-<histogram name="History.Clusters.Survey.Success" enum="Boolean"
-    expires_after="2023-05-01">
-  <obsolete>
-    No longer used, the survey is gone.
-  </obsolete>
-  <owner>tommycli@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Recorded each time a History Clusters HaTS survey was requested. Records if
-    the survey request succeeded. Note that a true count doesn't mean that the
-    survey was actually shown. It only measures if the HaTS service accepted the
-    request. The survey may still not be shown by HaTS for a different reason,
-    such as another survey being shown too recently.
   </summary>
 </histogram>
 
@@ -2371,35 +2045,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.InMemoryURLIndexRestoreCacheTime" units="ms"
-    expires_after="2023-05-01">
-  <obsolete>
-    No longer used. The InMemoryURLIndex cache is gone now.
-  </obsolete>
-  <owner>tommycli@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Time to restore the in-memory url index from disk cache. Recorded on profile
-    open.
-  </summary>
-</histogram>
-
-<histogram name="History.InMemoryURLIndexSaveCacheTime" units="ms"
-    expires_after="2023-05-01">
-  <obsolete>
-    No longer used. The InMemoryURLIndex cache is gone now.
-  </obsolete>
-  <owner>tommycli@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Time to write in-memory url index to disk cache. Recorded once shortly after
-    profile open (after rebuilding the in-memory url index from history) and
-    again upon (clean) shutdown.
-  </summary>
-</histogram>
-
 <histogram name="History.MigrateFailureFromVersion" units="units"
     expires_after="2024-04-28">
   <owner>sky@chromium.org</owner>
@@ -2437,41 +2082,6 @@ chromium-metrics-reviews@google.com.
     Unique URLs in History database urls table with last-visit times in the last
     30 days. Metrics are logged on initialization of the History DB on 0.3% of
     starts.
-  </summary>
-</histogram>
-
-<histogram name="History.QueryMostRepeatedQueriesCount" units="counts"
-    expires_after="2023-10-10">
-  <obsolete>
-    Expired in M110.
-  </obsolete>
-  <owner>mahmadi@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>
-    The number of search terms extracted from the HistoryDatabase db_ in
-    HistoryBackend::QueryMostRepeatedQueriesForKeyword() to produce the most
-    repeated search terms. Excludes the case where local HistoryDatabase db_ is
-    unavailable, i.e. where the query doesn't really happen. Emitted on NTP load
-    and on omnibox popup shown on Android where the repeatable queries are
-    requested to be shown in the Most Visited tiles.
-  </summary>
-</histogram>
-
-<histogram name="History.QueryMostRepeatedQueriesTime" units="ms"
-    expires_after="2023-10-10">
-  <obsolete>
-    Expired in M110 in favor of History.QueryMostRepeatedQueriesTimeV2.
-  </obsolete>
-  <owner>mahmadi@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>
-    The amount of time for HistoryBackend::QueryMostRepeatedQueriesForKeyword()
-    to extract the search terms from the HistoryDatabase db_ and sort them by
-    frecency scores to produce the most repeated search terms. Excludes the case
-    where local HistoryDatabase db_ is unavailable, i.e. where the query doesn't
-    really happen. Emitted on NTP load and on omnibox popup shown on Android
-    where the repeatable queries are requested to be shown in the Most Visited
-    tiles.
   </summary>
 </histogram>
 
@@ -2522,36 +2132,6 @@ chromium-metrics-reviews@google.com.
     Excludes the case where local HistoryDatabase db_ is unavailable, i.e. where
     the query doesn't really happen. Emitted on NTP load and on omnibox popup
     shown on Android where the Most Visited tiles are shown.
-  </summary>
-</histogram>
-
-<histogram name="History.TopSites.SearchTermsExtractedCount" units="counts"
-    expires_after="2023-02-19">
-  <obsolete>
-    Deprecated in M108 in favor of History.QueryMostRepeatedQueriesCount
-  </obsolete>
-  <owner>mahmadi@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>
-    The number of search terms extracted from the in-memory URLDatabase to
-    produce the most repeated search suggestions. Emitted on NTP load and on
-    omnibox popup shown on Android NTP when repeatable queries are requested to
-    be shown in the Most Visited tiles.
-  </summary>
-</histogram>
-
-<histogram name="History.TopSites.SearchTermsExtractionTime" units="ms"
-    expires_after="2022-10-16">
-  <obsolete>
-    Deprecated in M108 in favor of History.QueryMostRepeatedQueriesTime
-  </obsolete>
-  <owner>mahmadi@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>
-    The length of time it takes to extract the most repeated search terms from
-    the in-memory URLDatabase and sort by frecency scores. Emitted on NTP load
-    and on omnibox popup shown on Android NTP when repeatable queries are
-    requested to be shown in the Most Visited tiles.
   </summary>
 </histogram>
 

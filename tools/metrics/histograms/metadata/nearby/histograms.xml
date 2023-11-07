@@ -1123,17 +1123,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Nearby.Share.Payload.FuseBox.Open.Success"
-    enum="BooleanSuccess" expires_after="2024-07-10">
-  <obsolete>
-    Removed in 10/2022. Now using
-    Nearby.Share.Payload{Operation}.Success{FilePath} to support different
-    operation and file path types.
-  </obsolete>
-  <owner>alanding@google.com</owner>
-  <owner>cros-sharesheet@google.com</owner>
-</histogram>
-
 <histogram name="Nearby.Share.Payload.Medium" enum="NearbyShareUpgradedMedium"
     expires_after="2024-07-10">
   <owner>pushi@google.com</owner>

@@ -1133,40 +1133,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCScavengerBackground" units="ms"
-    expires_after="2022-04-01">
-  <obsolete>
-    Removed 02/2022.
-  </obsolete>
-  <owner>hpayer@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent in scavenging phase of GC in a background isolate.
-  </summary>
-</histogram>
-
-<histogram name="V8.GCScavengeReason" enum="GarbageCollectionReason"
-    expires_after="2022-06-05">
-  <obsolete>
-    Removed 02/2022. Superseded by V8.GC.Cycle.Reason.Young.
-  </obsolete>
-  <owner>mlippautz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>Reason a scavenge garbage collection was started in V8.</summary>
-</histogram>
-
-<histogram name="V8.GCScavengerForeground" units="ms"
-    expires_after="2022-08-07">
-  <obsolete>
-    Removed 02/2022.
-  </obsolete>
-  <owner>hpayer@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent in scavenging phase of GC in a foreground isolate.
-  </summary>
-</histogram>
-
 <histogram name="V8.Initializer.LoadV8Snapshot.Result"
     enum="V8InitializerLoadV8SnapshotResult" expires_after="M77">
   <owner>oth@chromium.org</owner>

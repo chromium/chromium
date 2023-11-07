@@ -394,20 +394,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.CUPS.TotalNetworkPrintersCount" units="printers"
-    expires_after="2024-01-14">
-  <obsolete>
-    Replaced in M116 by Printing.CUPS.TotalNetworkPrintersCount.SettingsOpened
-  </obsolete>
-  <owner>bmgordon@chromium.org</owner>
-  <owner>project-bolton@google.com</owner>
-  <summary>
-    The total number of detected network printers. Recorded when the user
-    navigates to the OS Settings Printing page to set up printers. Only recorded
-    on Chrome OS.
-  </summary>
-</histogram>
-
 <histogram name="Printing.CUPS.TotalNetworkPrintersCount2" units="printers"
     expires_after="2024-05-26">
   <owner>bmgordon@chromium.org</owner>

@@ -270,20 +270,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AccessibilityWithTalkBack" enum="BooleanEnabled"
-    expires_after="2023-04-10">
-  <obsolete>
-    Removed 2022/03.
-  </obsolete>
-  <owner>hirokisato@chromium.org</owner>
-  <owner>arc-framework@google.com</owner>
-  <summary>
-    Whether the ARC window is opened with TalkBack enabled or not. Counted when
-    a user opens a window or toggles the feature. Checked only when the spoken
-    feedback is enabled in Chrome OS.
-  </summary>
-</histogram>
-
 <histogram name="Arc.AdbSideloadingEnablingScreen"
     enum="AdbSideloadingPromptEvent" expires_after="2024-05-05">
   <owner>vraheja@chromium.org</owner>
@@ -859,67 +845,6 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
-<histogram name="Arc.boot_progress{AndroidBootProgressEvents}" units="ms"
-    expires_after="M81">
-  <obsolete>
-    Deprecated Dec 2022. Code that emits this histogram is in ArcMetricsService
-    in Android and needs removal (b/261750670)
-  </obsolete>
-  <owner>jhorwich@google.com</owner>
-  <owner>arc-core@google.com</owner>
-  <summary>
-    The relative time of a boot progress event since the ARC starts.
-    {AndroidBootProgressEvents}
-  </summary>
-  <token key="AndroidBootProgressEvents">
-    <variant name=""/>
-    <variant name="_ams_ready"
-        summary="For the boot_progress_ams_ready event."/>
-    <variant name="_enable_screen"
-        summary="For the boot_progress_enable_screen event."/>
-    <variant name="_pms_data_scan_start"
-        summary="For the boot_progress_pms_data_scan_start event."/>
-    <variant name="_pms_ready"
-        summary="For the boot_progress_pms_ready event."/>
-    <variant name="_pms_scan_end"
-        summary="For the boot_progress_pms_scan_end event."/>
-    <variant name="_pms_start"
-        summary="For the boot_progress_pms_start event."/>
-    <variant name="_pms_system_scan_start"
-        summary="For the boot_progress_pms_system_scan_start event."/>
-    <variant name="_preload_end"
-        summary="For the boot_progress_preload_end event."/>
-    <variant name="_preload_start"
-        summary="For the boot_progress_preload_start event."/>
-    <variant name="_start" summary="For the boot_progress_start event."/>
-    <variant name="_system_run"
-        summary="For the boot_progress_system_run event."/>
-  </token>
-</histogram>
-
-<histogram name="Arc.BootContinueCodeInstallationResult"
-    enum="ArcBootContinueCodeInstallationResult" expires_after="M81">
-  <obsolete>
-    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
-    Chrome OS and needs removal (b/261750670)
-  </obsolete>
-  <owner>jhorwich@google.com</owner>
-  <summary>Code installation result for ARC boot continue.</summary>
-</histogram>
-
-<histogram name="Arc.ChromeOsImeLatency" units="ms" expires_after="2022-04-01">
-  <obsolete>
-    Deprecated Mar 2022.
-  </obsolete>
-  <owner>yhanada@google.com</owner>
-  <owner>arc-framework@google.com</owner>
-  <summary>
-    Chrome OS IME's latency on ARC++ apps. This value is the elapsed time
-    between a key event sent to Chrome OS IME from ArcImeService and an IME
-    command corresponding to the key event arriving to ArcImeService.
-  </summary>
-</histogram>
-
 <histogram name="Arc.ClipboardDragDrop" enum="ArcClipboardDragDropEvent"
     expires_after="2024-03-17">
   <owner>yhanada@google.com</owner>
@@ -940,69 +865,6 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes"/>
   <token key="TimedCloudDpcOp" variants="TimedCloudDpcOp"/>
   <token key="SuccessFailure" variants="SuccessFailure"/>
-</histogram>
-
-<histogram name="Arc.CodeIntegrityCheckingTotalTime" units="ms"
-    expires_after="M81">
-  <obsolete>
-    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
-    Chrome OS and needs removal (b/261750670)
-  </obsolete>
-  <owner>jhorwich@google.com</owner>
-  <summary>
-    Total time needed to check the integrity of host generated code. If
-    signature checking fails, it also includes the time to regenerate and sign
-    the code.
-  </summary>
-</histogram>
-
-<histogram name="Arc.CodeRelocationResult" enum="ArcCodeRelocationResult"
-    expires_after="M81">
-  <obsolete>
-    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
-    Chrome OS and needs removal (b/261750670)
-  </obsolete>
-  <owner>jhorwich@google.com</owner>
-  <summary>Host code relocation result.</summary>
-</histogram>
-
-<histogram name="Arc.CodeRelocationTime" units="ms" expires_after="M81">
-  <obsolete>
-    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
-    Chrome OS and needs removal (b/261750670)
-  </obsolete>
-  <owner>jhorwich@google.com</owner>
-  <summary>Time needed to relocate boot*.art files.</summary>
-</histogram>
-
-<histogram name="Arc.CodeSigningTime" units="ms" expires_after="M85">
-  <obsolete>
-    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
-    Chrome OS and needs removal (b/261750670)
-  </obsolete>
-  <owner>jhorwich@google.com</owner>
-  <summary>Time needed to sign boot*.art files.</summary>
-</histogram>
-
-<histogram name="Arc.CodeVerificationResult" enum="ArcCodeVerificationResult"
-    expires_after="M85">
-  <obsolete>
-    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
-    Chrome OS and needs removal (b/261750670)
-  </obsolete>
-  <owner>jhorwich@google.com</owner>
-  <summary>
-    Code verification result for host generated code for boot for login screen.
-  </summary>
-</histogram>
-
-<histogram name="Arc.CodeVerificationTime" units="ms" expires_after="M85">
-  <obsolete>
-    Deprecated Dec 2022. Code that emits this histogram is in arc_setup in
-    Chrome OS and needs removal (b/261750670)
-  </obsolete>
-  <owner>jhorwich@google.com</owner>
-  <summary>Time needed to verify host generated code.</summary>
 </histogram>
 
 <histogram name="Arc.CompanionLibraryApisCounter"
@@ -1111,49 +973,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired after 2021-03-12 and brought back
     2021-09-17; expired 2022-05-01 and brought back 2022-12-07; data may be
     missing.
-  </summary>
-</histogram>
-
-<histogram name="Arc.CustomTabs.SessionEndReason"
-    enum="ArcCustomTabsSessionEndReason" expires_after="2020-08-23">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>hashimoto@google.com</owner>
-  <summary>
-    Reason why a custom tab session ended. Recorded when a session ends.
-  </summary>
-</histogram>
-
-<histogram name="Arc.CustomTabs.SessionLifetime2.All" units="ms"
-    expires_after="2020-10-04">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>hashimoto@google.com</owner>
-  <summary>Lifetime of each session. Recorded when a session ends.</summary>
-</histogram>
-
-<histogram name="Arc.CustomTabs.SessionLifetime2.Closed" units="ms"
-    expires_after="2020-05-31">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>hashimoto@google.com</owner>
-  <summary>
-    Lifetime of each session. Recorded when a session is closed.
-  </summary>
-</histogram>
-
-<histogram name="Arc.CustomTabs.SessionLifetime2.ForwardedToNormalTab"
-    units="ms" expires_after="2020-05-31">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>hashimoto@google.com</owner>
-  <summary>
-    Lifetime of each session. Recorded when a session ends because the tab was
-    forwarded to a normal tab.
   </summary>
 </histogram>
 
@@ -1940,19 +1759,6 @@ chromium-metrics-reviews@google.com.
     when onboarding (OOBE) is finished. The metric is recorded only once. The
     recording happens when Play Store is launched by the user or when a week has
     passed since onboarding (a check is done at user session initialization).
-  </summary>
-</histogram>
-
-<histogram name="Arc.PlayStoreSearch.DefaultResultClickLatency" units="ms"
-    expires_after="2021-12-31">
-  <obsolete>
-    Deprecated in M108. Tiled app results are no longer shown.
-  </obsolete>
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Time between a default play store result being activated by user pressing
-    ENTER key and being displayed.
   </summary>
 </histogram>
 

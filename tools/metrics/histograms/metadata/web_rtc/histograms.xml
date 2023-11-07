@@ -1132,20 +1132,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.MediaStreamDevices.HasPanTiltZoomCamera"
-    enum="BooleanAvailable" expires_after="2022-04-24">
-  <obsolete>
-    Removed 03/2022.
-  </obsolete>
-  <owner>reillyg@chromium.org</owner>
-  <owner>device-dev@chromium.org</owner>
-  <summary>
-    Records whether a user would potentially see a permission prompt for moving
-    the camera. It is recorded when showing a camera permission prompt
-    regardless of whether or not the site requested camera movement.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.P2P.UDP.BatchingNumberOfReceivedPackets"
     units="packets/batching" expires_after="2024-03-31">
   <owner>handellm@chromium.org</owner>
@@ -1218,28 +1204,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="IPProtocolType" variants="IPProtocolType">
     <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.CandidatePoolUsage.{BundlePolicy}"
-    units="components" expires_after="2022-07-01">
-  <obsolete>
-    This measurement showed that numbers higher than 1 are in frequent use for
-    all policies. Experiment is no longer needed.
-  </obsolete>
-  <owner>hta@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    Measures the configured ice candidate poolsize for the {BundlePolicy}
-    bundlePolicy:
-    https://w3c.github.io/webrtc-pc/#dom-rtcconfiguration-icecandidatepoolsize
-    Recorded during the first DTLS connection establishment. See also
-    WebRTC.PeerConnection.BundlePolicy.
-  </summary>
-  <token key="BundlePolicy">
-    <variant name="Balanced"/>
-    <variant name="MaxBundle"/>
-    <variant name="MaxCompat"/>
   </token>
 </histogram>
 
@@ -1328,23 +1292,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.IceServers.{MeasuredAt}" units="servers"
-    expires_after="2023-04-15">
-  <obsolete>
-    Removed 10/2022.
-  </obsolete>
-  <owner>hta@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    Records the number of configured ICE servers when the peerconnection is
-    created or gets connected, depending on {MeasuredAt}.
-  </summary>
-  <token key="MeasuredAt">
-    <variant name="Configured"/>
-    <variant name="Connected"/>
-  </token>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.IPMetrics" enum="PeerConnectionCounters"
     expires_after="2024-06-15">
   <owner>hta@chromium.org</owner>
@@ -1378,21 +1325,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: This histogram was expired from M81 to M110 Canary (2022-10-29).
     Data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.KeyProtocol"
-    enum="PeerConnectionKeyProtocol" expires_after="2022-10-30">
-  <obsolete>
-    The SDES protocol is no longer available in Chrome as of M98. DTLS is the
-    only possible value.
-  </obsolete>
-  <owner>hta@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    What key exchange protocol (DTLS or SDES) is used to establish the crypto
-    keys for a PeerConnection's RTP transport. Note: This histogram was expired
-    after M82, and resurrected in M89.
   </summary>
 </histogram>
 
@@ -1444,19 +1376,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.Mid.Size" units="characters"
-    expires_after="2022-11-29">
-  <obsolete>
-    Removed 12/2022.
-  </obsolete>
-  <owner>hta@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    Records the length of the SDP mid attribute in order to limit its length to
-    16 characters.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.ProvisionalAnswer"
     enum="PeerConnectionProvisionalAnswer" expires_after="2024-04-28">
   <owner>hta@chromium.org</owner>
@@ -1489,151 +1408,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Which RTCPMuxPolicy was requested for the PeerConnection. Recorded during
     the first DTLS connection establishment.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.SdpComplexUsage.CreateAnswer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
-  <obsolete>
-    Removed 04/2022.
-  </obsolete>
-  <owner>hbos@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    The SDP usage category (&quot;safe&quot;, &quot;unsafe&quot; or
-    &quot;unknown&quot;) of createAnswer(). Using complex SDP without explicitly
-    specifying the sdpSemantics is considered unsafe in this context because
-    such usage is sensitive to the rollout of a different default SDP semantic.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.SdpComplexUsage.CreateOffer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
-  <obsolete>
-    Removed 04/2022.
-  </obsolete>
-  <owner>hbos@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    The SDP usage category (&quot;safe&quot;, &quot;unsafe&quot; or
-    &quot;unknown&quot;) of createOffer(). Using complex SDP without explicitly
-    specifying the sdpSemantics is considered unsafe in this context because
-    such usage is sensitive to the rollout of a different default SDP semantic.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetLocalAnswer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
-  <obsolete>
-    Removed 04/2022.
-  </obsolete>
-  <owner>hbos@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    The SDP usage category (&quot;safe&quot;, &quot;unsafe&quot; or
-    &quot;unknown&quot;) of setLocalDescription(answer). Using complex SDP
-    without explicitly specifying the sdpSemantics is considered unsafe in this
-    context because such usage is sensitive to the rollout of a different
-    default SDP semantic.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetLocalOffer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
-  <obsolete>
-    Removed 04/2022.
-  </obsolete>
-  <owner>hbos@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    The SDP usage category (&quot;safe&quot;, &quot;unsafe&quot; or
-    &quot;unknown&quot;) of setLocalDescription(offer). Using complex SDP
-    without explicitly specifying the sdpSemantics is considered unsafe in this
-    context because such usage is sensitive to the rollout of a different
-    default SDP semantic.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetRemoteAnswer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
-  <obsolete>
-    Removed 04/2022.
-  </obsolete>
-  <owner>hbos@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    The SDP usage category (&quot;safe&quot;, &quot;unsafe&quot; or
-    &quot;unknown&quot;) of setRemoteDescription(answer). Using complex SDP
-    without explicitly specifying the sdpSemantics is considered unsafe in this
-    context because such usage is sensitive to the rollout of a different
-    default SDP semantic.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetRemoteOffer"
-    enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
-  <obsolete>
-    Removed 04/2022.
-  </obsolete>
-  <owner>hbos@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    The SDP usage category (&quot;safe&quot;, &quot;unsafe&quot; or
-    &quot;unknown&quot;) of setRemoteDescription(offer). Using complex SDP
-    without explicitly specifying the sdpSemantics is considered unsafe in this
-    context because such usage is sensitive to the rollout of a different
-    default SDP semantic.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.SdpFormatReceived"
-    enum="PeerConnectionSdpFormatReceived" expires_after="2022-10-30">
-  <obsolete>
-    Removed 09/2022.
-  </obsolete>
-  <owner>steveanton@chromium.org</owner>
-  <owner>hta@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    What SDP format is received in the remote offer. The value &quot;no
-    tracks&quot; means that no audio or video tracks were received. The value
-    &quot;simple&quot; means that at most one audio and at most one video track
-    was received. The value &quot;complex&quot; means that more than one audio
-    or more than one video track was received, and how this was signaled is
-    indicated (&quot;Plan B&quot; meaning with a=ssrc lines within the same m=
-    section and &quot;Unified Plan&quot; meaning with a separate m= section).
-    This is recorded when calling setRemoteDescription with an SDP Offer.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.SdpFormatReceivedAnswer"
-    enum="PeerConnectionSdpFormatReceived" expires_after="2022-11-13">
-  <obsolete>
-    Removed 09/2022.
-  </obsolete>
-  <owner>steveanton@chromium.org</owner>
-  <owner>hta@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    What SDP format is received in the remote answer. See
-    WebRTC.PeerConnection.SdpFormatReceived for the description of the values.
-    This is recorded when calling setRemoteDescription with an SDP Answer.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.SdpSemanticNegotiated"
-    enum="PeerConnectionSdpSemanticNegotiated" expires_after="2023-01-15">
-  <obsolete>
-    Removed 09/2022.
-  </obsolete>
-  <owner>hta@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    What SDP semantic (Unified Plan or Plan B) was detected when completing
-    negotiation of a PeerConnection. This is recorded when accepting an SDP
-    Answer. The value &quot;mixed&quot; means that the accepted answer included
-    both types of marker in the SDP. The value &quot;none&quot; will happen when
-    the answerer sends no media.
   </summary>
 </histogram>
 
@@ -3434,21 +3208,6 @@ chromium-metrics-reviews@google.com.
     The number of received RTCP NACK packets per minute for a sent screenshare
     stream. Recorded when a stream is removed. The total number of packets is
     divided by the time the video stream exists.
-  </summary>
-</histogram>
-
-<histogram
-    name="WebRTC.Video.Screenshare.NumberResolutionDownswitchesPerMinute"
-    units="switches/minute" expires_after="M88">
-  <obsolete>
-    Removed 12/2022.
-  </obsolete>
-  <owner>ilnik@chromium.org</owner>
-  <owner>webrtc-video@google.com</owner>
-  <summary>
-    The average number of resolution down-switches per minute for a receive
-    screenshare stream. Recorded when a stream is removed or content type
-    changes.
   </summary>
 </histogram>
 

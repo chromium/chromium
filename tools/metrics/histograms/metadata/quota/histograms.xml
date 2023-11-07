@@ -263,21 +263,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.QuotaDatabaseResultSuccess" enum="BooleanSuccess"
-    expires_after="2023-10-22">
-  <obsolete>
-    Code for recording this histogram was removed in May 2023 after a refactor.
-    The error rate at the time was less than 0.005%.
-  </obsolete>
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records whether the query to QuotaDatabase was successful. Recorded in
-    QuotaManager after a result is returned from every request to QuotaDatabase.
-    Added to ensure that the failure rate is within bounds of what we expect.
-  </summary>
-</histogram>
-
 <histogram name="Quota.QuotaForOrigin" units="MB" expires_after="2024-05-24">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>

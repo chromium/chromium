@@ -338,22 +338,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApp.CalculatorAppErasureScanResult"
-    enum="CalculatorAppErasureScanResult" expires_after="2023-06-01">
-  <obsolete>
-    Deprecated on 2023-06. Metrics show the fix was not needed by many clients:
-    go/jysec
-  </obsolete>
-  <owner>alancutter@chromium.org</owner>
-  <owner>tsergeant@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records the result of scanning for a duplicate Calculator app erasure bug
-    https://crbug.com/1393284 and whether a fix was applied. Recorded at start
-    up of the browser process.
-  </summary>
-</histogram>
-
 <histogram name="Webapp.CheckServiceWorker.Status"
     enum="ServiceWorkerOfflineCapability" expires_after="2024-04-28">
   <owner>asamidoi@chromium.org</owner>
@@ -867,19 +851,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApp.InstallIphPromo.Result" enum="WebAppInstallIphResult"
-    expires_after="2022-05-22">
-  <obsolete>
-    Deprecated on 2022-04. Collected metrics on IPH usage and no longer needed.
-  </obsolete>
-  <owner>phillis@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Records the result of user reaction to In Product Help promo for Web App
-    Install.
-  </summary>
-</histogram>
-
 <histogram name="Webapp.InstallResult" enum="WebAppInstallResultCode"
     expires_after="2024-04-28">
 <!-- Name completed by histogram_suffixes name="WebAppType" -->
@@ -1122,26 +1093,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApp.Preinstalled.AppDuplicationFixApplied" units="apps"
-    expires_after="2023-06-01">
-  <obsolete>
-    Deprecated on 2023-06. Metrics show the fix got applied in a large burst and
-    has been sitting at low numbers for months: go/nejyv
-  </obsolete>
-  <owner>alancutter@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Chrome apps migrated to preinstalled web apps encountered an issue where
-    apps became duplicated, see https://crbug.com/1266234.
-
-    The PreinstalledWebAppDuplicationFixer was added to fix users that
-    encountered duplicate apps. See https://crbug.com/1290716. This metric
-    records how many app duplications got fixed.
-
-    This gets recorded at start up after Chrome apps have loaded.
-  </summary>
-</histogram>
-
 <histogram name="WebApp.Preinstalled.AppToReplaceStillDefaultInstalledCount"
     units="apps" expires_after="2023-12-01">
   <owner>alancutter@chromium.org</owner>
@@ -1254,66 +1205,6 @@ chromium-metrics-reviews@google.com.
     Records whether the ExternalConfigMap data for an preinstalled app is
     missing in web_app DB. This is recorded when an preinstalled web app is
     getting uninstalled by user.
-  </summary>
-</histogram>
-
-<histogram name="WebApp.Preinstalled.MigratingWebAppAbsentChromeAppAbsent"
-    units="apps" expires_after="2023-06-01">
-  <obsolete>
-    Deprecated on 2023-06. Metrics show the fix got applied in a large burst and
-    has been sitting at low numbers for months: go/nejyv
-  </obsolete>
-  <owner>alancutter@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records how many preinstalled web apps that are migrating from Chrome apps
-    are not installed and their Chrome app is not installed either. This is
-    recorded at start up.
-  </summary>
-</histogram>
-
-<histogram name="WebApp.Preinstalled.MigratingWebAppAbsentChromeAppPresent"
-    units="apps" expires_after="2023-06-01">
-  <obsolete>
-    Deprecated on 2023-06. Metrics show the fix got applied in a large burst and
-    has been sitting at low numbers for months: go/nejyv
-  </obsolete>
-  <owner>alancutter@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records how many preinstalled web apps that are migrating from Chrome apps
-    are not installed and their Chrome app is installed. This is recorded at
-    start up.
-  </summary>
-</histogram>
-
-<histogram name="WebApp.Preinstalled.MigratingWebAppPresentChromeAppAbsent"
-    units="apps" expires_after="2023-06-01">
-  <obsolete>
-    Deprecated on 2023-06. Metrics show the fix got applied in a large burst and
-    has been sitting at low numbers for months: go/nejyv
-  </obsolete>
-  <owner>alancutter@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records how many preinstalled web apps that are migrating from Chrome apps
-    are installed and their Chrome app is not installed. This is recorded at
-    start up.
-  </summary>
-</histogram>
-
-<histogram name="WebApp.Preinstalled.MigratingWebAppPresentChromeAppPresent"
-    units="apps" expires_after="2023-06-01">
-  <obsolete>
-    Deprecated on 2023-06. Metrics show the fix got applied in a large burst and
-    has been sitting at low numbers for months: go/nejyv
-  </obsolete>
-  <owner>alancutter@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records how many preinstalled web apps that are migrating from Chrome apps
-    are installed and their Chrome app is installed as well. This is recorded at
-    start up.
   </summary>
 </histogram>
 
@@ -1543,21 +1434,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2022-04-24 through M106, data may
     be missing.
-  </summary>
-</histogram>
-
-<histogram name="Webapp.SystemApps.BackgroundTaskStartDelay" units="ms"
-    expires_after="2022-04-24">
-  <obsolete>
-    Deprecated in 2022-04. Collected histogram shows the feature is working as
-    intended. Histogram is no longer needed.
-  </obsolete>
-  <owner>dominicschulz@google.com</owner>
-  <owner>qjw@chromium.org</owner>
-  <summary>
-    Records how long the SWA background task waits for the system to become idle
-    before starting to run. Recorded in milliseconds, from 1 millisecond to 1
-    hour. This is logged when a SWA background task starts.
   </summary>
 </histogram>
 

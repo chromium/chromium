@@ -374,23 +374,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordGeneration.UploadStarted" enum="Boolean"
-    expires_after="M117">
-  <obsolete>
-    Obsolete in M116.
-  </obsolete>
-  <owner>kazinova@google.com</owner>
-  <owner>kolos@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The number of times that we try to upload a form that we believe should
-    trigger password generation. False means that something about the form would
-    not allow us to try upload (not an Autofillable field, uploading disabled,
-    Autofill servers in backoff, etc.). True does not mean that the upload
-    actually completed successfully, just that it was started.
-  </summary>
-</histogram>
-
 <histogram name="PasswordGeneration.UserDecision"
     enum="PasswordGenerationUserEvent" expires_after="2024-03-17">
   <owner>ioanap@chromium.org</owner>
@@ -627,20 +610,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AddCredentialFromSettings.UserAction"
-    enum="AddCredentialFromSettingsUserInteractions" expires_after="2023-06-04">
-  <obsolete>
-    Obsolete in M110 because imported passwords were counted as manually added:
-    https://crbug.com/1400263. Replaced with
-    PasswordManager.AddCredentialFromSettings.UserAction2 histogram.
-  </obsolete>
-  <owner>vidhanj@google.com</owner>
-  <summary>
-    Records the user actions performed when a new credential is added from
-    Settings. Only applicable to Desktop and iOS platforms.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.AddCredentialFromSettings.UserAction2"
     enum="AddCredentialFromSettingsUserInteractions" expires_after="2024-04-28">
   <owner>vidhanj@google.com</owner>
@@ -815,19 +784,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AutomaticChange.AcceptanceWithAutoButton"
-    enum="PasswordCheckResolutionAction" expires_after="2023-05-07">
-  <obsolete>
-    Obsolete in M110 after automated password change deprecation.
-  </obsolete>
-  <owner>kolos@chromium.org</owner>
-  <owner>battre@chromium.org</owner>
-  <summary>
-    Resolution action to fix a compromised credential when there is a
-    &quot;Change password automatically&quot; button.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton"
     enum="PasswordCheckResolutionAction" expires_after="2024-01-07">
   <owner>kolos@chromium.org</owner>
@@ -837,36 +793,6 @@ chromium-metrics-reviews@google.com.
     &quot;Change password automatically&quot; button. Starting with M110, no
     credential will have a button to change the password automatically anymore
     so this is recorded for all compromised credentials.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.AutomaticChange.AssistantStoppedBubbleCloseReason"
-    enum="PasswordManager.AssistantStoppedBubble.CloseReason"
-    expires_after="2023-09-26">
-  <obsolete>
-    Obsolete in M110 after automated password change deprecation.
-  </obsolete>
-  <owner>brunobraga@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <summary>
-    The reason why the &quot;Assistant stopped&quot; bubble was closed. The
-    bubble is shown when an automatic password change flow on Desktop is ended
-    prematurely.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.AutomaticChange.ForSitesWithScripts"
-    enum="PasswordCheckResolutionAction" expires_after="2023-05-27">
-  <obsolete>
-    Obsolete in M110 after automated password change deprecation.
-  </obsolete>
-  <owner>kolos@chromium.org</owner>
-  <owner>battre@chromium.org</owner>
-  <summary>
-    Resolution action to fix a compromised credential when there is a password
-    change script for the credential's domain. The metric is reported also if
-    the automated password change feature is disabled.
   </summary>
 </histogram>
 
@@ -1350,19 +1276,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.Enabled4" enum="BooleanEnabled"
-    expires_after="2023-07-09">
-  <obsolete>
-    Obsolete in M113 and superseeded by the PasswordManager.EnableState metrics.
-  </obsolete>
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Indicates whether the password manager is enabled. Recorded 30 seconds after
-    PasswordStore is created at most once per day for regular profiles.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.EnableState" enum="PasswordManagerEnableState"
     expires_after="2024-04-28">
   <owner>markusheintz@google.com</owner>
@@ -1404,19 +1317,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures whether a password vote had a field name collision, i.e. multiple
     fields that should have an Autofill type uploaded have the same name.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.FilledCredentialWasFromAndroidApp"
-    enum="PasswordManagerFilledAndroidCredentials" expires_after="M122">
-  <obsolete>
-    Replaced in M116 by FilledCredentialWasFromAndroidApp2. The metric was
-    overrecording samples on page load.
-  </obsolete>
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    When a credential is filled, whether it comes from an Android app.
   </summary>
 </histogram>
 
@@ -1510,20 +1410,6 @@ chromium-metrics-reviews@google.com.
     to be filled. Only the value of the first decision to fill is recorded.
 
     This is replicated as PasswordForm.Fill.FirstWaitForUsernameReason in UKM.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.FormDataDeserializationStatus"
-    enum="FormDataDeserializationStatus" expires_after="M117">
-  <obsolete>
-    Obsolete in M116.
-  </obsolete>
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The success or failure of deserializing saved FormData. Failure either
-    indicates corrupted data or the presence of bugs in the serialization or
-    deserialization code.
   </summary>
 </histogram>
 
@@ -1735,22 +1621,6 @@ chromium-metrics-reviews@google.com.
     The size of the CSV file (to import passwords from) selected by a user in
     bytes. Recorded when the user tries to import passwords from a CSV file. The
     user has chosen the file, but the file hasn't been read yet.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.ImportResultsStatus"
-    enum="PasswordManagerImportResultsStatus" expires_after="2023-06-11">
-  <obsolete>
-    Obsolete in M111, the enum contained a duplicate - values 7 and 8. Also,
-    those values were never emmited.
-  </obsolete>
-  <owner>eliaskh@chromium.org</owner>
-  <owner>natiahlyi@google.com</owner>
-  <summary>
-    Tracks the final outcome status of importing a CSV File to Chrome Password
-    Manager in settings UI. Recorded when the import flow finishes within
-    password settings. This can be either successfuly or due to an error. Before
-    M111, values 7 and 8 were not emmited.
   </summary>
 </histogram>
 
@@ -2225,43 +2095,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="PasswordManager.PasswordChangeFlowDuration{EntryPoint}{StartEvent}{EndEvent}"
-    units="ms" expires_after="M114">
-  <obsolete>
-    Obsolete in M114 after automated password change deprecation. Look at
-    PasswordChangeFlowDurationV2 for manual change password flows.
-  </obsolete>
-  <owner>jkeitel@google.com</owner>
-  <owner>kolos@chromium.org</owner>
-  <summary>
-    Duration of a password change flow {EntryPoint} {StartEvent} {EndEvent}.
-  </summary>
-  <token key="EntryPoint">
-    <variant name=".LeakCheckInSettings"
-        summary="that was triggered from a leak check"/>
-    <variant name=".LeakWarningDialog"
-        summary="that was triggered from a leak warning dialog"/>
-  </token>
-  <token key="StartEvent">
-    <variant name=".AutomatedFlow"
-        summary="as an automated change password flow"/>
-    <variant name=".ManualFlow" summary="as a manual change password flow"/>
-    <variant name=".ManualResetLinkFlow"
-        summary="as a manual password reset link flow"/>
-  </token>
-  <token key="EndEvent">
-    <variant name="" summary="aggregated over all end events"/>
-    <variant name=".AutomatedFlowPasswordChosen"
-        summary="and ended with a password from an automated flow"/>
-    <variant name=".AutomatedFlowResetLinkRequested"
-        summary="and ended with the request of a password reset link"/>
-    <variant name=".ManualFlowPasswordChosen"
-        summary="and ended with a password from a manual flow"/>
-    <variant name=".Timeout" summary="and ended with a timeout"/>
-  </token>
-</histogram>
-
 <histogram name="PasswordManager.PasswordCheckup.Launch.Success"
     enum="BooleanSuccess" expires_after="2024-04-28">
   <owner>ioanap@chromium.org</owner>
@@ -2355,20 +2188,6 @@ chromium-metrics-reviews@google.com.
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>Logs the state of the password dropdown when it's shown.</summary>
-</histogram>
-
-<histogram name="PasswordManager.PasswordEditUpdatedValues"
-    enum="PasswordEditUpdatedValues" expires_after="2023-07-09">
-  <obsolete>
-    For some time now, SavedPasswordsPresenter::EditSavedCredentials is used not
-    only by &quot;password edit dialog&quot;, so the metrics is not accurate.
-  </obsolete>
-  <owner>vsemeniuk@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    This metric shows what exactly users change in the password edit dialog:
-    nothing, username, password or both.
-  </summary>
 </histogram>
 
 <histogram
@@ -2465,20 +2284,6 @@ chromium-metrics-reviews@google.com.
     corresponding radio button. All other actions are recorded when tapping on
     the corresponding buttons/dismissing the sheet. Multiple buckets can be
     recorded for the same sheet. Android only.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.PasswordNoteActionInSettings"
-    enum="PasswordNoteAction" expires_after="M111">
-  <obsolete>
-    Obsolete in M111 as the logic is moved to settings.
-  </obsolete>
-  <owner>derinel@google.com</owner>
-  <owner>mamir@chromium.org</owner>
-  <summary>
-    This metric shows how user created / edited / cleared the note field in the
-    passwords settings page. Recorded after closing the add/edit password dialog
-    in settings.
   </summary>
 </histogram>
 
@@ -3095,23 +2900,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the type of a promo card shown in the Password Manager UI. Recorded
     when a promo card is shown.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.ProvisionalSaveFailure"
-    enum="ProvisionalSaveFailure" expires_after="M115">
-  <obsolete>
-    Replaced in M115 by PasswordManager.ProvisionalSaveFailure2.
-  </obsolete>
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    NOTE: M85 and older versions record incorrect buckets. For accurate
-    analysis, consider filtering by milestone or looking at at metric
-    PasswordManager.ProvisionalSaveFailure2 instead.
-
-    Breakdown of cases where a password is submitted, but we don't even try and
-    save it. Recorded for every password form submit.
   </summary>
 </histogram>
 
@@ -3903,27 +3691,6 @@ chromium-metrics-reviews@google.com.
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
 </histogram>
 
-<histogram name="PasswordManager.{Store}InaccessiblePasswords2"
-    units="saved passwords" expires_after="2023-06-26">
-  <obsolete>
-    Obsolete in M112 due to renaming profile scoped variant from empty to
-    ProfileStore. Replaced by
-    PasswordManager.ProfileStore.InaccessiblePasswords3 and
-    PasswordManager.AccountStore.InaccessiblePasswords3
-  </obsolete>
-  <owner>derinel@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <owner>mamir@chromium.org</owner>
-  <summary>
-    The number of saved passwords that could not be decrypted in the password
-    manager's {Store}. Recorded once for the regular profile when it's opened.
-  </summary>
-  <token key="Store">
-    <variant name="" summary="profile-scoped store"/>
-    <variant name="AccountStore." summary="account-scoped store"/>
-  </token>
-</histogram>
-
 <histogram name="PasswordManager.{Store}InaccessiblePasswords3"
     units="saved passwords" expires_after="2024-04-28">
   <owner>derinel@google.com</owner>
@@ -3963,23 +3730,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Total number of credentials with non-empty notes in the password manager's
     {Store}. Recorded at most once per day for regular profiles.
-  </summary>
-  <token key="Store" variants="Store"/>
-</histogram>
-
-<histogram name="PasswordManager.{Store}PasswordNotes.CountNotesPerCredential2"
-    units="count" expires_after="2023-06-01">
-  <obsolete>
-    Obsolete since Jan 2022 as emitting credentials with 0 notes is not
-    required. Replaced by
-    PasswordManager.{Store}PasswordNotes.CountNotesPerCredential3
-  </obsolete>
-  <owner>derinel@google.com</owner>
-  <owner>mamir@chromium.org</owner>
-  <summary>
-    Total number of notes attached to a password in the password manager's
-    {Store}. Recorded once for each credential at most once per day for regular
-    profiles.
   </summary>
   <token key="Store" variants="Store"/>
 </histogram>

@@ -509,22 +509,6 @@ chromium-metrics-reviews@google.com.
   <token key="UserState" variants="MetricsCollectorUserState"/>
 </histogram>
 
-<histogram name="SafeBrowsing.DelayedWarnings.Event"
-    enum="SafeBrowsingDelayedWarningEvent" expires_after="2021-08-22">
-  <obsolete>
-    Removed in M103 as this histogram is no longer needed.
-  </obsolete>
-  <owner>meacer@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records when a user in the Delayed Warnings experiment group visits a page
-    with a delayed SafeBrowsing phishing warning, triggers the delayed warning
-    (via keypress), or leaves the page without interacting. Only recorded when
-    user has not disabled URL elision via &quot;Always Show Full URLs&quot;
-    context menu item, or by installing the Suspicious Site Reporter extension.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours"
     enum="SafeBrowsingEnhancedProtegoPingType" expires_after="2024-05-18">
   <owner>jacastro@chromium.org</owner>
@@ -1715,19 +1699,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.Macros.DocumentSize" units="KB"
-    expires_after="2022-06-05">
-  <obsolete>
-    Removed 05-2022. This metric was historically stable and not being used.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the size (in KB) of a download if it is a PDF or Office document
-    before Safe Browsing client side checks are started.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.MetricsCollectorEventCountAtCleanup"
     units="events" expires_after="2024-03-17">
   <owner>drubery@chromium.org</owner>
@@ -2222,20 +2193,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.IsPopulationMbbOrEsb" enum="Boolean"
-    expires_after="2022-10-23">
-  <obsolete>
-    Removed 09-2022. This histogram was added as part of a short-lived
-    investigation, which is no longer being prioritized.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether the user population field is from the enabled populations
-    (MBB and ESB) or not. Logged on every real time lookup.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.RT.LocalMatch.Result"
     enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2024-03-24">
   <owner>thefrog@chromium.org</owner>
@@ -2466,26 +2423,6 @@ chromium-metrics-reviews@google.com.
     Records the outcome of running the tailored security retry logic. It is
     logged once each time Chrome starts for syncing users in the cases where the
     retry attempt could occur.
-  </summary>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult"
-    enum="SafeBrowsingTailoredSecurityNotificationResult"
-    expires_after="2022-12-11">
-  <obsolete>
-    This metric was useful until 2022-07-29, when the experiment for
-    TailoredSecurityDesktopNotice began and values for NoBrowserAvailable and
-    NoWebContentsAvailable could also contain results from showing the disabled
-    modal (due to crbug/1348654).
-  </obsolete>
-  <owner>jacastro@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of trying to show the Chrome enhanced protection
-    opt-in/enabled notification to sync users. It is logged once each time
-    Chrome is informed that the account level enhanced protection bit has been
-    enabled.
   </summary>
 </histogram>
 

@@ -788,27 +788,6 @@ chromium-metrics-reviews@google.com.
   <token key="Result" variants="Autofill.PaymentsRpcResult"/>
 </histogram>
 
-<histogram name="Autofill.BetterAuth.CardUnmaskPreflightCalled"
-    enum="BooleanHit" expires_after="M111">
-  <obsolete>
-    Deprecated in M111. Subsumed by
-    Autofill.BetterAuth.CardUnmaskPreflightCalledWithFidoOptInStatus.
-  </obsolete>
-  <owner>jsaul@google.com</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>autofill-auth-team@google.com</owner>
-  <summary>
-    Tracks the number of times Chrome made a GetDetailsForGetRealPan call. A
-    preflight call is only made when card suggestions are shown, and can only
-    happen when the user has server cards and is eligible for WebAuthn.
-
-    As a percentage of the number of times card suggestions are shown, which is
-    tracked under Autofill.FormEvents.CreditCard, this metric provides an
-    estimate for the potential reach for the Autofill Better Auth project.
-    Moreover, this acts as a baseline value for other metrics in this project.
-  </summary>
-</histogram>
-
 <histogram
     name="Autofill.BetterAuth.CardUnmaskPreflightCalledWithFidoOptInStatus"
     enum="Boolean" expires_after="2024-07-01">
@@ -1129,22 +1108,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.CardUnmaskAuthenticationSelectionDialog.Shown"
-    enum="BooleanShown" expires_after="2023-04-16">
-  <obsolete>
-    Deprecated in M109. Subsumed by
-    Autofill.CardUnmaskAuthenticationSelectionDialog.Shown2.
-  </obsolete>
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <owner>siashah@chromium.org</owner>
-  <summary>
-    Records true every time the card unmask challenge option selection dialog
-    was shown. This dialog is shown when a user needs to select a challenge
-    option to authenticate a card for payments autofill.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.CardUnmaskAuthenticationSelectionDialog.Shown2"
     units="challenge_options" expires_after="2024-07-01">
   <owner>siyua@chromium.org</owner>
@@ -1304,27 +1267,6 @@ chromium-metrics-reviews@google.com.
   <token key="CardMetadataVisible" variants="Autofill.CardMetadataVisible"/>
 </histogram>
 
-<histogram
-    name="Autofill.CreditCard.SuggestionAcceptanceLatencySinceShown.{CardMetadataVisible}"
-    units="ms" expires_after="2023-05-01">
-  <obsolete>
-    Deprecated 01/23 and replaced by
-    Autofill.CreditCard.SelectionLatencySinceShown.AnyCardWithMetadata.{CardMetadataVisible}.
-  </obsolete>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    The latency between Autofill credit card suggestion dropdown being shown,
-    and when a suggestion was selected, in milliseconds. Logged immediately when
-    a card suggestion is selected by the user, on the condition that any card
-    (not necessarily the selected card) in the suggestion list has card metadata
-    available (even if the metadata is not shown). This helps identify whether
-    showing the card metadata has potential impact on assisting card selection
-    in general.
-  </summary>
-  <token key="CardMetadataVisible" variants="Autofill.CardMetadataVisible"/>
-</histogram>
-
 <histogram name="Autofill.CreditCard.{CardIssuer}.{FormEventWithMetadata}"
     enum="Boolean" expires_after="2024-07-01">
   <owner>vishwasuppoor@chromium.org</owner>
@@ -1398,63 +1340,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.CreditCardMessage.DialogPrompt{SaveSituation}{DialogInteraction}"
-    enum="AutofillCreditCardMessageDialogPrompt" expires_after="M110">
-  <obsolete>
-    Deprecated 10/2022. Will not launch save card Message UI.
-  </obsolete>
-  <owner>lazzzis@google.com</owner>
-  <owner>jsaul@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The relative frequency with which users accept, deny, or ignore the Autofill
-    credit card message prompt when card is saved to server and users see the
-    dialog prompt followed by the Message UI. Message prompt is an alternative
-    UI to info bar prompt.
-  </summary>
-  <token key="SaveSituation">
-    <variant name=".ConfirmInfo" summary="confirm card info"/>
-    <variant name=".RequestingCardholderName"
-        summary="explicitly requesting cardholder name"/>
-    <variant name=".RequestingExpirationDate"
-        summary="explicitly requesting expiration date"/>
-  </token>
-  <token key="DialogInteraction">
-    <variant name="" summary="aggregated across all situations"/>
-    <variant name=".DidClickLinks"
-        summary="user clicked on links in the dialog"/>
-  </token>
-</histogram>
-
-<histogram name="Autofill.CreditCardMessage.{SaveDestination}{SaveSituation}"
-    enum="AutofillCreditCardMessage" expires_after="M110">
-  <obsolete>
-    Deprecated 10/2022. Will not launch save card Message UI.
-  </obsolete>
-  <owner>lazzzis@google.com</owner>
-  <owner>jsaul@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The relative frequency with which users accept, deny, or ignore the Autofill
-    credit card message prompt when card is saved to {SaveDestination} and it is
-    {SaveSituation}. Message prompt is an alternative UI to info bar prompt.
-  </summary>
-  <token key="SaveDestination">
-    <variant name="Local" summary="local"/>
-    <variant name="Server" summary="server"/>
-  </token>
-  <token key="SaveSituation">
-    <variant name="" summary="aggregated across all situations"/>
-    <variant name=".RequestingCardholderName"
-        summary="explicitly requesting cardholder name"/>
-    <variant name=".RequestingExpirationDate"
-        summary="explicitly requesting expiration date"/>
-    <variant name=".WithMultipleLegalLines"
-        summary="when legal message has multiple lines"/>
-  </token>
-</histogram>
-
-<histogram
     name="Autofill.CreditCardSaveFlowResult.{SaveDestination}{SaveSituation}"
     enum="AutofillCreditCardSaveFlowResult" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
@@ -1501,18 +1386,6 @@ chromium-metrics-reviews@google.com.
     suppression only applies when the user has not typed any text into the
     field. If any text is in the field, all matching cards are displayed,
     regardless of how recently they have been used and their expiration status.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.CreditCardUploadFeedback"
-    enum="AutofillCreditCardUploadFeedback" expires_after="2022-12-11">
-  <obsolete>
-    Deprecated 11/22. The feature is not going to be launched.
-  </obsolete>
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <summary>
-    Records when credit card upload provides feedback on its status to the user.
   </summary>
 </histogram>
 
@@ -1597,22 +1470,6 @@ chromium-metrics-reviews@google.com.
     once per Chrome User Profile load.
   </summary>
   <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
-</histogram>
-
-<histogram name="Autofill.DaysSinceLastUse.StoredProfile" units="days"
-    expires_after="2023-12-12">
-  <obsolete>
-    Deprecated in M111. Subsumed by
-    Autofill.DaysSinceLastUse.StoredProfile.Legacy.
-  </obsolete>
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    This histogram captures the number of days that have passed since each
-    stored address profile belonging to a given Chrome Profile was last used.
-    This is logged for each Autofill address profile once per Chrome User
-    Profile load.
-  </summary>
 </histogram>
 
 <histogram name="Autofill.DaysSinceLastUse.StoredProfile.{Category}"
@@ -1772,33 +1629,6 @@ chromium-metrics-reviews@google.com.
     This metric measures how many users Clicked on the Edit Address option in
     the extended Autofill menu and the next action. The metric is logged when
     the user closes the edit address profile dialog.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.ExtractNewForms.ShallowEqualityDiffersFromDeepEquality"
-    enum="FormDataEquality" expires_after="M108">
-  <obsolete>
-    The experiment has been launched in 04/2022.
-  </obsolete>
-  <owner>evih@google.com</owner>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    In UpdateFormCache(), we compare FormData structs to re-extract changed
-    ones. This metric records:
-
-    - the number of times the shallow comparison is enough to identify a
-    difference between the forms;
-
-    - the number of times the deep comparison finds a difference between the
-    forms, but the shallow does not;
-
-    - the number of times none of the comparisons find a difference, i.e. the
-    forms are equal.
-
-    The metric takes into account every comparison of FormData structs in
-    UpdateFormCache().
   </summary>
 </histogram>
 
@@ -2051,57 +1881,6 @@ chromium-metrics-reviews@google.com.
     method defines whether the user chose to fill the whole form, a specific
     field or a group of fields (address fields, phone fields, name fields or
     email fields).
-  </summary>
-</histogram>
-
-<histogram name="Autofill.FindFormControlElementByUniqueRendererIdDuration"
-    units="microseconds" expires_after="2022-10-30">
-  <obsolete>
-    The experiment has been launched in 05/2022.
-  </obsolete>
-  <owner>evih@google.com</owner>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the time spent to determine if a form control element, given by its
-    unique renderer id, is in the DOM. It is done by measuring the time it takes
-    for FindFormControlElementByUniqueRendererId() to execute.
-
-    Note that histogram samples for clients without high-resolution clocks are
-    dropped.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.FindFormControlElementsByUniqueRendererIdDuration"
-    units="microseconds" expires_after="2022-10-30">
-  <obsolete>
-    The experiment has been launched in 05/2022.
-  </obsolete>
-  <owner>evih@google.com</owner>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the time spent to determine if a vector of form control elements,
-    given by their unique renderer ids, is in the DOM. It is done by measuring
-    the time it takes for FindFormControlElementsByUniqueRendererId() to
-    execute.
-
-    Note that histogram samples for clients without high-resolution clocks are
-    dropped.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.FormCacheSize" units="forms" expires_after="M108">
-  <obsolete>
-    The experiment has been launched in 04/2022.
-  </obsolete>
-  <owner>evih@google.com</owner>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the peak number of the form cache size. The peak size is reached
-    when navigating to a new page or when the page is refreshed. The metric is
-    counted once for every loaded frame.
   </summary>
 </histogram>
 
@@ -2396,42 +2175,6 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
 
-<histogram name="Autofill.GetUnownedFormFieldsDuration" units="microseconds"
-    expires_after="2022-10-04">
-  <obsolete>
-    The experiment has been launched in 05/2022.
-  </obsolete>
-  <owner>evih@google.com</owner>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the time it takes to get the unowned form field elements. This is
-    done by measuring the time it takes for GetUnownedFormFieldElements() to
-    execute.
-
-    Note that histogram samples for clients without high-resolution clocks are
-    dropped.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.HasPasswordFieldDuration" units="microseconds"
-    expires_after="2022-10-30">
-  <obsolete>
-    The experiment has been launched in 05/2022.
-  </obsolete>
-  <owner>evih@google.com</owner>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the time spent to determine if there is a password field in the web
-    frame. It is done by measuring the time it takes for HasPasswordField() to
-    execute.
-
-    Note that histogram samples for clients without high-resolution clocks are
-    dropped.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.HiddenOrPresentationalSelectFieldsFilled"
     enum="BooleanHiddenPresentationalAutofilled" expires_after="2023-12-12">
   <owner>battre@chromium.org</owner>
@@ -2466,63 +2209,6 @@ chromium-metrics-reviews@google.com.
     gets displayed when a form's field that can be autofilled with an IBAN is
     selected, and the user has at least one IBAN saved. The metric is recorded
     upon each action, such as IBAN suggestions being shown or selected.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.Iframes.NumberOfFramesWithAutofilledCreditCardFields"
-    units="frames" expires_after="2023-01-01">
-  <obsolete>
-    The metric has not produced meaningful results.
-  </obsolete>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Counts per form submission the number of frames across which the form's
-    autofilled credit card fields are distributed.
-
-    A field is an &quot;autofilled credit card field&quot; if it is autofilled
-    at submission time and its field type belongs to the credit card group.
-
-    For example, emits 1 if all fields are in the same frame, and emits 2 if the
-    fields live in two different frames. Never emits 0.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.Iframes.NumberOfFramesWithDetectedCreditCardFields"
-    units="frames" expires_after="2023-01-01">
-  <obsolete>
-    The metric has not produced meaningful results.
-  </obsolete>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Counts per form submission the number of frames across which the form's
-    detected credit card fields are distributed.
-
-    A field is a &quot;detected credit card field&quot; if its field type
-    belongs to the credit card group.
-
-    For example, emits 1 if all fields are in the same frame, and emits 2 if the
-    fields live in two different frames. Never emits 0.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.Iframes.NumberOfFramesWithDetectedFields"
-    units="frames" expires_after="2023-01-01">
-  <obsolete>
-    The metric has not produced meaningful results.
-  </obsolete>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Counts per form submission the number of frames across which the form's
-    detected fields are distributed.
-
-    A field is &quot;detected&quot; if its field type is neither EMPTY_TYPE or
-    UNKNOWN_TYPE.
-
-    For example, emits 1 if all fields are in the same frame, and emits 2 if the
-    fields live in two different frames. Never emits 0.
   </summary>
 </histogram>
 
@@ -2572,42 +2258,6 @@ chromium-metrics-reviews@google.com.
     Autofill or payment Autofill is enabled when Chrome launches. It helps
     deduce the overlap by showing what percentage of users have one type of
     Autofill enabled but not the other.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.IsSomeControlElementVisibleDuration"
-    units="microseconds" expires_after="2022-10-30">
-  <obsolete>
-    The experiment has been launched in 05/2022.
-  </obsolete>
-  <owner>evih@google.com</owner>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the time spent to determine if at least one form control element
-    among the given ones is visible and is in the web frame. It is done by
-    measuring the time it takes for IsSomeControlElementVisible() to execute.
-
-    Note that histogram samples for clients without high-resolution clocks are
-    dropped.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue"
-    enum="Boolean" expires_after="2022-12-25">
-  <obsolete>
-    Deprecated in July 2022. Subsumed by
-    Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue2.
-  </obsolete>
-  <owner>vidhanj@google.com</owner>
-  <owner>koerber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records, for each field, that did not get autofilled due to a prefilled
-    value, whether the submitted field value is the same as the non-empty value
-    that could have been autofilled in the field. This metric is recorded on
-    form submission.
   </summary>
 </histogram>
 
@@ -2959,20 +2609,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Autofill.MigrateUserOptedInToWalletSync"
-    enum="AutofillMigrateUserOptedInToWalletSync" expires_after="2020-11-30">
-  <obsolete>
-    Deprecated in M109 as this migration never applied to ChromeOS ASH.
-  </obsolete>
-  <owner>msarda@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    This metric is recorded when the bit that indicates the user is opted in to
-    wallet sync transport is migrated (part of the migration from using email to
-    using Gaia ID as the account identifier).
-  </summary>
-</histogram>
-
 <histogram name="Autofill.NameTokenVerificationStatusAtProfileUsage.{NameType}"
     enum="AufofillStructuredTokenVerificationStatus" expires_after="M120">
   <owner>koerber@google.com</owner>
@@ -3096,35 +2732,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.Offer.StoredOfferCount" units="offers"
-    expires_after="2022-12-04">
-  <obsolete>
-    Deprecated in June 2022. Subsumed by
-    Autofill.Offer.StoredOfferCount.{OfferType}.
-  </obsolete>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Tracks the number of autofill offers data a user has stored, measured at
-    Chrome profile launch time.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.Offer.StoredOfferCount.{OfferType}" units="offers"
-    expires_after="2022-12-04">
-  <obsolete>
-    Deprecated in August 2022. Subsumed by
-    Autofill.Offer.StoredOfferCount2.{OfferType}.
-  </obsolete>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Tracks the number of Autofill offers a user has stored, separated by offer
-    type, and measured at Chrome profile launch time.
-  </summary>
-  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
-</histogram>
-
 <histogram name="Autofill.Offer.StoredOfferCount2.{OfferType}" units="offers"
     expires_after="2024-07-01">
   <owner>siyua@chromium.org</owner>
@@ -3144,20 +2751,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the number of the credit cards an autofill card linked offer data is
     related to, measured at Chrome profile launch time.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.Offer.StoredOfferRelatedMerchantCount"
-    units="merchants" expires_after="2022-12-04">
-  <obsolete>
-    Deprecated in August 2022. Subsumed by
-    Autofill.Offer.StoredOfferRelatedMerchantCount.{OfferType}.
-  </obsolete>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Tracks the number of the merchants an autofill offer data is related to,
-    measured at Chrome profile launch time.
   </summary>
 </histogram>
 
@@ -3195,23 +2788,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.Offer.Suggestion.{OfferType}"
-    enum="OffersSuggestionsEvent" expires_after="M118">
-  <obsolete>
-    Deprecated August 2022. Subsumed by Autofill.Offer.Suggestion2.{OfferType}.
-  </obsolete>
-  <owner>vinnypersky@google.com</owner>
-  <owner>jsaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    This metric is recorded every time an event related to an individual offer
-    suggestion in the offers suggestions popup gets triggered. The offers
-    suggestions popup gets displayed when a form's field that can be autofilled
-    with an offer is selected.
-  </summary>
-  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
-</histogram>
-
 <histogram name="Autofill.Offer.Suggestion2.{OfferType}"
     enum="OffersSuggestionsEvent" expires_after="2024-07-01">
   <owner>vinnypersky@google.com</owner>
@@ -3232,22 +2808,6 @@ chromium-metrics-reviews@google.com.
     this histogram is logged to, we also needed to create a new histogram.
   </summary>
   <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
-</histogram>
-
-<histogram name="Autofill.Offer.SuggestionsPopupShown"
-    enum="OffersSuggestionsPopupEvent" expires_after="M118">
-  <obsolete>
-    Deprecated August 2022. Subsumed by Autofill.Offer.SuggestionsPopupShown2.
-  </obsolete>
-  <owner>vinnypersky@google.com</owner>
-  <owner>jsaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    This metric records two enums, one for every time the offers suggestions
-    popup is shown, and another for that same event, but only one per unique
-    field. The offers suggestions popup is shown when a form's field that can be
-    autofilled with an offer is selected.
-  </summary>
 </histogram>
 
 <histogram name="Autofill.Offer.SuggestionsPopupShown2"
@@ -4596,18 +4156,6 @@ chromium-metrics-reviews@google.com.
   <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
 </histogram>
 
-<histogram name="Autofill.StoredProfileCount" units="units"
-    expires_after="2023-12-12">
-  <obsolete>
-    Deprecated in M111. Subsumed by Autofill.StoredProfileCount.Legacy.
-  </obsolete>
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The number of Autofill addresses a user has stored, measured at launch time.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.StoredProfileCount.{Category}" units="Profiles"
     expires_after="2024-04-28">
   <owner>battre@chromium.org</owner>
@@ -4629,21 +4177,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.StoredProfileDisusedCount" units="units"
-    expires_after="2023-12-12">
-  <obsolete>
-    Deprecated in M111. Subsumed by Autofill.StoredProfileDisusedCount.Legacy.
-  </obsolete>
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The number of stored Autofill address profiles which have not been used in a
-    sufficiently long time for autofill to consider them disused. Measured once
-    per Chrome user profile launch. This metric is only recorded if the user has
-    at least one profile.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.StoredProfileDisusedCount.{Category}"
     units="Profiles" expires_after="2024-04-28">
   <owner>battre@chromium.org</owner>
@@ -4657,20 +4190,6 @@ chromium-metrics-reviews@google.com.
   <token key="Category" variants="AutofillProfileCategory"/>
 </histogram>
 
-<histogram name="Autofill.StoredProfileUsedCount" units="units"
-    expires_after="M120">
-  <obsolete>
-    Deprecated in M111. Subsumed by Autofill.StoredProfileUsedCount.Legacy.
-  </obsolete>
-  <owner>koerber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The number of stored Autofill address profiles which are not in the disused
-    state. Measured once per Chrome user profile launch. This metric is only
-    recorded if the user has at least one profile.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.StoredProfileUsedCount.{Category}" units="Profiles"
     expires_after="2024-04-28">
   <owner>koerber@google.com</owner>
@@ -4682,20 +4201,6 @@ chromium-metrics-reviews@google.com.
     category.
   </summary>
   <token key="Category" variants="AutofillProfileCategory"/>
-</histogram>
-
-<histogram name="Autofill.StoredProfileUsedPercentage" units="units"
-    expires_after="M120">
-  <obsolete>
-    Deprecated in M111. Subsumed by Autofill.StoredProfileUsedPercentage.Legacy.
-  </obsolete>
-  <owner>koerber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The percentage of stored Autofill address profiles which are not in the
-    disused state. Measured once per Chrome user profile launch. This metric is
-    only recorded if the user has at least one profile.
-  </summary>
 </histogram>
 
 <histogram name="Autofill.StoredProfileUsedPercentage.{Category}"
@@ -4951,21 +4456,6 @@ chromium-metrics-reviews@google.com.
         summary="Suggestions with personal data from AutofillProfiles, e.g.
                  name, address, email address, and or phone number"/>
   </token>
-</histogram>
-
-<histogram name="Autofill.SuggestionClick" enum="AutofillSuggestionClick"
-    expires_after="2023-02-12">
-  <obsolete>
-    The experiment has been launched in 08/2022.
-  </obsolete>
-  <owner>schwering@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records whether a click was ignored (because it came too early after the
-    popup was shown) or accepted. An accepted click was either normally accepted
-    or followed an ignored click. Every click falls into one of the three
-    categories. Recorded on each click on an Autofill popup suggestion.
-  </summary>
 </histogram>
 
 <histogram name="Autofill.SuggestionShown.OffTheRecord" units="units"

@@ -32,23 +32,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.Android.OomKillReverseRank" units="rank"
-    expires_after="2023-01-15">
-  <obsolete>
-    Removed in M111.
-  </obsolete>
-  <owner>boliu@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Records the reverse rank of a child process when it is killed by android if
-    applicable. Chrome on Android ranks some child processes and provides hints
-    to android that it should kill from lowest to highest ranked. The lowest
-    ranked process has reverse rank 0. This is a measure how good the hints to
-    android are; if hints were perfect, then all android kills should have
-    reverse rank 0.
-  </summary>
-</histogram>
-
 <histogram name="Stability.Android.ProcessedCrashCounts"
     enum="AndroidProcessedCrashCounts" expires_after="never">
 <!-- expires-never: Critical stability metric that includes OOM rate. -->

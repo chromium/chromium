@@ -1260,23 +1260,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Calendar.EventListView.EventDisplayedCount" units="int"
-    expires_after="2024-09-04">
-  <obsolete>
-    This metric was originally recording pre CalendarJelly data. Replaced with
-    Ash.Calendar.EventListViewJelly.EventDisplayedCount after the CalendarJelly
-    launch.
-  </obsolete>
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    (For pre Jelly Calendar) Records the number of currently visible events
-    shown to the user when the Calendar Event List view displays in one day.
-    i.e. the user opens the sys tray calendar, clicks on a date cell and sees 2
-    events, this metric will track a count of 2.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Calendar.EventListView.JoinMeetingButton.Pressed"
     enum="CalendarEventSource" expires_after="2024-09-04">
   <owner>newcomer@google.com</owner>
@@ -1318,35 +1301,6 @@ chromium-metrics-reviews@google.com.
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when a calendar fetch returns. The duration of the fetch request.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Calendar.FetchEvents.MaxDistanceBrowsed" units="months"
-    expires_after="2023-04-10">
-  <obsolete>
-    This metric was originally recording something slightly different from what
-    the name suggests. Replaced with Ash.Calendar.MaxDistanceBrowsed.
-  </obsolete>
-  <owner>rtinkoff@google.com</owner>
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Recorded when the calendar is closed. The furthest 'distance' (in months)
-    from today's date to which a users fetch request succeeded.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Calendar.FetchEvents.NoCalendarClient" units="instances"
-    expires_after="2022-11-10">
-  <obsolete>
-    Deprecated Mar 2022, now that it's no longer needed.
-  </obsolete>
-  <owner>rtinkoff@google.com</owner>
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Recorded whenever calendar events are requested, and we can't do the fetch
-    because a a resource we need doesn't exist or is not available.
   </summary>
 </histogram>
 
@@ -1703,23 +1657,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.CaptureAudioOnMetric.{TabletOrClamshell}"
-    enum="BooleanEnabled" expires_after="2024-08-01">
-  <obsolete>
-    This metric was used when we were limited to recording the microphone only.
-    It has been replaced by Ash.CaptureModeController.AudioRecordingMode in
-    M-116.
-  </obsolete>
-  <owner>michelefan@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Recorded whenever a user is in a capture mode screen recording entered from
-    {TabletOrClamshell}. Emits true when audio is enabled, false otherwise.
-  </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
-</histogram>
-
-<histogram
     name="Ash.CaptureModeController.CaptureConfiguration.{TabletOrClamshell}"
     enum="CaptureModeConfiguration" expires_after="2024-08-15">
   <owner>afakhry@chromium.org</owner>
@@ -1952,21 +1889,6 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram name="Ash.CaptureModeController.ScreenRecordingLength"
-    units="seconds" expires_after="2022-09-09">
-  <obsolete>
-    Replaced with
-    Ash.CaptureModeController.ScreenRecordingLength.{TabletOrClamshell} in M99.
-  </obsolete>
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Records the time of a successful video recording in capture mode. This
-    metric will not be recorded if a file was not successfully saved. The upper
-    limit of this histogram is 3 hours.
-  </summary>
-</histogram>
-
 <histogram
     name="Ash.CaptureModeController.ScreenRecordingLength.{TabletOrClamshell}"
     units="seconds" expires_after="2024-08-01">
@@ -2099,34 +2021,6 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram name="Ash.DarkTheme.Settings.IsDarkModeEnabled" enum="Boolean"
-    expires_after="2023-03-01">
-  <obsolete>
-    Deprecated May 2022, now that it's no longer needed.
-  </obsolete>
-  <owner>minch@chromium.org</owner>
-  <owner>changmar@chromium.org</owner>
-  <summary>
-    Emitted true when the user switched to dark mode through (Dark theme) page
-    inside settings. Emitted false if the user switched to light mode in this
-    case. ChromeOS only.
-  </summary>
-</histogram>
-
-<histogram name="Ash.DarkTheme.Settings.IsThemed" enum="Boolean"
-    expires_after="2023-03-01">
-  <obsolete>
-    Deprecated May 2022, now that it's no longer needed.
-  </obsolete>
-  <owner>minch@chromium.org</owner>
-  <owner>changmar@chromium.org</owner>
-  <summary>
-    Emitted true if the user checked (Based on your wallpaper) radio button
-    inside (Dark theme) page of the settings. Emitted false if the user checked
-    (Neutral) radio button inside the page. ChromeOS only.
-  </summary>
-</histogram>
-
 <histogram name="Ash.DarkTheme.SystemTray.IsDarkModeEnabled" enum="Boolean"
     expires_after="2024-03-17">
   <owner>minch@chromium.org</owner>
@@ -2249,34 +2143,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Desks.BentoBarEnabled" enum="Boolean"
-    expires_after="2023-10-01">
-  <obsolete>
-    Deprecated April 2023, the Bento Bar feature has been deleted.
-  </obsolete>
-  <owner>minch@chromium.org</owner>
-  <owner>janetmac@chromium.org</owner>
-  <summary>
-    Emits true if a user clicked `Show deskbar` inside the context menu of bento
-    bar or desks bar in overview mode, false if `Hide deskbar` inside the same
-    context menu being clicked.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Desks.BentoBarIsVisible" enum="Boolean"
-    expires_after="2023-09-24">
-  <obsolete>
-    Deprecated April 2023, the Bento Bar feature has been deleted.
-  </obsolete>
-  <owner>minch@chromium.org</owner>
-  <owner>janetmac@chromium.org</owner>
-  <summary>
-    Emits true when the bento bar is created for the user. Will not emit false
-    if the bento bar has never been created for the user. This will be used to
-    count the number of users who saw the bento bar.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Desks.CloseAllTotal" enum="BooleanHit"
     expires_after="2024-03-17">
   <owner>aprilzhou@google.com</owner>
@@ -2296,21 +2162,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Emitted after a virtual desk being removed with close all option and undo
     toast being clicked.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Desks.CloseAllUndoAndExpired" enum="BooleanHit"
-    expires_after="2023-05-09">
-  <obsolete>
-    Made obsolete 2022-07-13 because the name and summary did not effectively
-    describe what it was recording. Replaced by Ash.Desks.CloseAllTotal.
-  </obsolete>
-  <owner>aprilzhou@google.com</owner>
-  <owner>janetmac@chromium.org</owner>
-  <summary>
-    Emitted after a virtual desk being removed with close all option and undo
-    toast being showed. This metrics is a sum of user undo remove and ignore
-    undo.
   </summary>
 </histogram>
 
@@ -2502,41 +2353,6 @@ chromium-metrics-reviews@google.com.
     recorded is 4. This only gets recorded if a traversal starts. A traversal
     means that the desk has changed onscreen.
   </summary>
-</histogram>
-
-<histogram name="Ash.Desks.NumberOfWindowsClosed" units="units"
-    expires_after="2023-05-09">
-  <obsolete>
-    This metric was originally recording for metrics for both combineDesk and
-    closeAll. Replaced with Ash.Desks.NumberOfWindowsClosed2.
-  </obsolete>
-  <owner>aprilzhou@google.com</owner>
-  <owner>janetmac@chromium.org</owner>
-  <summary>
-    Emitted when a virtual desk is removed and all windows on the desk being
-    closed to record the total number of windows being closed by this operation.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Desks.NumberOfWindowsClosed.{RemovalSource}"
-    units="windows" expires_after="2023-10-03">
-  <obsolete>
-    This metric was originally recording for metrics for both combineDesk and
-    closeAll. Replaced with Ash.Desks.NumberOfWindowsClosed2.{RemovalSource}.
-  </obsolete>
-  <owner>aprilzhou@google.com</owner>
-  <owner>janetmac@chromium.org</owner>
-  <summary>
-    Emitted when a virtual desk is removed and all windows on the desk being
-    closed by {RemovalSource} to record the total number of windows being closed
-    by this operation.
-  </summary>
-  <token key="RemovalSource">
-    <variant name="Api" summary="api"/>
-    <variant name="Button" summary="button"/>
-    <variant name="Keyboard" summary="keyboard"/>
-    <variant name="SaveRecall" summary="save and recall"/>
-  </token>
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsClosed2" units="units"
@@ -2772,21 +2588,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Emitted when a virtual desk is removed to specify the category of this
     remove operation among close all, combine desk, and close all and wait.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Desks.UserHasUsedDesksRecently" enum="Boolean"
-    expires_after="2023-10-01">
-  <obsolete>
-    Deprecated April 2023, the Bento Bar feature has been deleted.
-  </obsolete>
-  <owner>minch@chromium.org</owner>
-  <owner>janetmac@chromium.org</owner>
-  <summary>
-    Emitted true when first session started and detected user pref
-    `kUserHasUsedDesksRecently` has been set to true for the user. Will not emit
-    false otherwise. This will be used to count the number of users that
-    `kUserHasUsedDesksRecently` has been set to true.
   </summary>
 </histogram>
 
@@ -3997,22 +3798,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.LacrosMigrationStatus" enum="LacrosMigrationStatus"
-    expires_after="2024-03-10">
-  <obsolete>
-    Deprecated Sep 2023. See the new metrics Ash.LacrosMigrationStatus2 for data
-    collected for M119 and after.
-  </obsolete>
-<!-- TODO(crbug.com/1486209): Remove once Ash.LacrosMigrationStatus2 is in stable -->
-
-  <owner>ythjkt@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    Migration status from Ash to Lacros. It shows whether the user has migrated
-    from Ash to Lacros and if they did with which migration mode.
-  </summary>
-</histogram>
-
 <histogram name="Ash.LacrosMigrationStatus2" enum="LacrosMigrationStatus"
     expires_after="2024-03-10">
   <owner>ythjkt@chromium.org</owner>
@@ -4068,35 +3853,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The usage of different auth methods (PIN / Password / Smartlock /
     Fingerprint / Challenge response) on Chromebooks in tablet mode.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Login.Lock.NbPasswordAttempts.UntilFailure"
-    units="attempts" expires_after="2023-06-18">
-  <obsolete>
-    Deprecated in M111 and replaced with
-    &quot;Ash.OSAuth.Login/Lock.NbPasswordAttempts.UntilFailure&quot;.
-  </obsolete>
-  <owner>emaamari@google.com</owner>
-  <owner>cros-lurs@google.com</owner>
-  <summary>
-    The number of incorrect passwords entered in Chrome OS login/lock screen
-    until the user gives up (user signs out the current session or shuts down
-    the device).
-  </summary>
-</histogram>
-
-<histogram name="Ash.Login.Lock.NbPasswordAttempts.UntilSuccess"
-    units="attempts" expires_after="2023-06-18">
-  <obsolete>
-    Deprecated in M111 and replaced with
-    &quot;Ash.OSAuth.Login/Lock.NbPasswordAttempts.UntilSuccess&quot;.
-  </obsolete>
-  <owner>emaamari@google.com</owner>
-  <owner>cros-lurs@google.com</owner>
-  <summary>
-    The number of incorrect passwords entered in Chrome OS login/lock screen
-    until a successful attempt.
   </summary>
 </histogram>
 
@@ -4863,26 +4619,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.NotifierFramework.Nudge.{FirstOrSecond}ButtonPressed"
-    enum="NudgeCatalogName" expires_after="2024-07-15">
-  <obsolete>
-    Deprecated Oct 2023. Replaced by
-    Ash.NotifierFramework.Nudge.{PrimaryOrSecondary}ButtonPressed since the
-    first button was the primary action when there was only one button, but
-    secondary when there were two buttons.
-  </obsolete>
-  <owner>kradtke@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Records the nudge catalog name when a user presses one of the nudge's
-    buttons.
-  </summary>
-  <token key="FirstOrSecond">
-    <variant name="First"/>
-    <variant name="Second"/>
-  </token>
-</histogram>
-
 <histogram name="Ash.NotifierFramework.Nudge.{PrimaryOrSecondary}ButtonPressed"
     enum="NudgeCatalogName" expires_after="2024-11-01">
   <owner>kradtke@google.com</owner>
@@ -5506,22 +5242,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid"
-    enum="BooleanValid" expires_after="2023-12-24">
-  <obsolete>
-    Deprecated July 2023. See the new metrics
-    Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2.
-  </obsolete>
-<!-- TODO(b/293605781): Remove once there are data for Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2 on stable channel. -->
-
-  <owner>jasontt@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
-  <summary>
-    Emitted when the keyboard backlight is updated to a new wallpaper extracted
-    color. Non transparent colors are considered valid.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid2"
     enum="BooleanValid" expires_after="2024-07-26">
   <owner>jasontt@chromium.org</owner>
@@ -5843,21 +5563,6 @@ chromium-metrics-reviews@google.com.
     Tracks the interval between UI updates during screencast uploading. Recorded
     at each pending screencast's UI change except for the first one of current
     uploading phase.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Projector.PolicyChangeHandlingError"
-    enum="ProjectorPolicyChangeHandlingError" expires_after="2023-10-17">
-  <obsolete>
-    Deprecated in M116. No longer needed since no error reported and converted
-    to CHECK.
-  </obsolete>
-  <owner>dorianbrandon@google.com</owner>
-  <owner>ligeng@google.com</owner>
-  <owner>cros-projector@google.com</owner>
-  <summary>
-    Records the nullptr error that potentially caused a crash when handling
-    policy changes.
   </summary>
 </histogram>
 
@@ -6198,178 +5903,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of unpinned icons in the shelf. This metric is recorded every 30
     minutes.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.Assistant.CircledPercentage" units="%"
-    expires_after="2021-12-12">
-  <obsolete>
-    Deprecated in M111. No longer needed since metalayer was deprecated in M110.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The percentage of the screen area circled by the Assistant pen. Recorded
-    when the &quot;closed shape&quot; gesture is recognized.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.Assistant.DeprecateStylusFeaturesToastEvent"
-    units="dp" expires_after="2023-04-23">
-  <obsolete>
-    Deprecated in M111.
-  </obsolete>
-  <owner>angelaxiao@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
-  <summary>
-    Whether or not the user is shown the limitation toast notifying that the
-    Assistant stylus features (i.e. what's on my screen) have been deprecated.
-    Also considers whether or not the deprecation flag has been set. Recorded
-    upon every stylus long press action.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.Assistant.GestureDuration" units="ms"
-    expires_after="2021-12-12">
-  <obsolete>
-    Deprecated in M111. No longer needed since metalayer was deprecated in M110.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The duration of an Assistant pen gesture. Recorded at the end of every
-    gesture.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.Assistant.GestureInterval" units="ms"
-    expires_after="2021-12-12">
-  <obsolete>
-    Deprecated in M111. No longer needed since metalayer was deprecated in M110.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The interval between subsequent Assistant pen gestures within a session.
-    Session is defined as the period while the Assistant tool is enabled.
-    Recorded at the end of each gesture except for the first one in the session.
-    The interval is computed excluding the gesture duration.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.Assistant.GesturesPerSession" units="units"
-    expires_after="2021-12-12">
-  <obsolete>
-    Deprecated in M111. No longer needed since metalayer was deprecated in M110.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The number of Assistant pen gestures per session. Session is defined as the
-    period while the Assistant tool is enabled. Recorded at the end of the
-    session.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.Assistant.GesturesPerSession.Recognized"
-    units="units" expires_after="2021-12-12">
-  <obsolete>
-    Deprecated in M111. No longer needed since metalayer was deprecated in M110.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The number of recognized Assistant pen gestures per session. Session is
-    defined as the period while the Assistant tool is enabled. Recorded at the
-    end of the session.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.Assistant.GestureType"
-    enum="AssistantGestureType" expires_after="2023-05-01">
-  <obsolete>
-    Deprecated in M111. No longer needed since metalayer was deprecated in M110.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The type of the Assistant pen gesture. Recorded at the end of each gesture.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.Assistant.HighlighterLength" units="dp"
-    expires_after="2021-12-12">
-  <obsolete>
-    Deprecated in M111. No longer needed since metalayer was deprecated in M110.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The length of a recognized &quot;horizontal stroke&quot; Assistant pen
-    gesture. Recorded at the and of the gesture.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.InAssistantMode" units="ms"
-    expires_after="2021-12-12">
-  <obsolete>
-    Kept to view historical data.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The amount of time spent in Palette Assistant mode. Recorded when the
-    Assistant mode is exited.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.InLaserPointerMode" units="ms"
-    expires_after="2021-12-12">
-  <obsolete>
-    Kept to view historical data.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The amount of time spend in Palette Laser pointer mode. Recorded when the
-    Laser pointer mode is exited.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.InMagnifyMode" units="ms"
-    expires_after="2021-12-12">
-  <obsolete>
-    Kept to view historical data.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The amount of time spend in Palette Magnify mode. Recorded when the Magnify
-    mode is exited.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.Palette.ModeCancellation"
-    enum="PaletteModeCancelType" expires_after="2021-12-12">
-  <obsolete>
-    Kept to view historical data.
-  </obsolete>
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    Tracks the number of times a palette mode is explicitly cancelled or
-    switched out of.
   </summary>
 </histogram>
 
@@ -6866,22 +6399,6 @@ chromium-metrics-reviews@google.com.
     {SplitViewResizeModes}
   </summary>
   <token key="SplitViewResizeModes" variants="SplitViewResizeModes"/>
-</histogram>
-
-<histogram name="Ash.StateKeysPresent" enum="BooleanPresent"
-    expires_after="2023-03-13">
-  <obsolete>
-    Deprecated Mar 2023 because of the b:273278497. The data logged under this
-    histogram is meaningless. Check Ash.StateKeysPresent2 for new data.
-  </obsolete>
-  <owner>igorcov@chromium.org</owner>
-  <owner>vsavu@google.com</owner>
-  <summary>
-    The presense of state keys on first device policy fetch response. It is
-    expected for state keys to be present. The histogram is logged only in case
-    of successful device policy fetch response. Warning: This histogram was
-    expired from 2022-07-03 to 2022-07-05; data may be missing.
-  </summary>
 </histogram>
 
 <histogram name="Ash.StateKeysPresent2" enum="BooleanPresent"
@@ -7596,21 +7113,6 @@ chromium-metrics-reviews@google.com.
   <token key="Api" variants="GooglePhotosApi"/>
 </histogram>
 
-<histogram name="Ash.Wallpaper.GooglePhotos.Source"
-    enum="WallpaperGooglePhotosSource" expires_after="2023-07-09">
-  <obsolete>
-    Replaced 01/2023 by Ash.Wallpaper.GooglePhotos.Source2.
-  </obsolete>
-  <owner>xiaohuic@google.com</owner>
-  <owner>assistive-eng@google.com</owner>
-  <summary>
-    Records the section of the Wallpaper App from which a Google Photos
-    wallpaper was selected. Emitted regardless of the selection's success.
-    b/262449270: Adds new enums to record when a user picks a photo from owned
-    or shared albums with the Google Photos shared albums feature.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Wallpaper.GooglePhotos.Source2"
     enum="WallpaperGooglePhotosSource" expires_after="2024-03-31">
   <owner>thuongphan@google.com</owner>
@@ -8078,19 +7580,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Emits true if the resize widget shows on mouse hover on the ResizeWindows
     and the two windows of the ResizeWindows are snapped.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Wm.WindowSnapActionSource"
-    enum="DeprecatedWindowSnapActionSource" expires_after="2023-05-03">
-  <obsolete>
-    Deprecated Apr 2023. See the new metrics Ash.Wm.WindowSnapActionSource2.
-  </obsolete>
-  <owner>xdai@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
-  <summary>
-    Emitted when a window is to be snapped. Records different ways for a user to
-    snap a window. Deprecated.
   </summary>
 </histogram>
 

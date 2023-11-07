@@ -85,20 +85,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.ArchiveManager.ArchiveDirsCreationResult2"
-    enum="PlatformFileError" expires_after="2021-06-25">
-  <obsolete>
-    Obsoleted April 2023. Histogram was removed after expiration.
-  </obsolete>
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    This is recorded every time the archive directory is being created. It
-    doesn't include the case which the archive directory exists. It has suffixes
-    indicating results for temporary or persistent archives directories.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.Background.ImmediateStart.AvailableRequestCount"
     units="units" expires_after="2021-06-25">
   <owner>dougarnett@chromium.org</owner>

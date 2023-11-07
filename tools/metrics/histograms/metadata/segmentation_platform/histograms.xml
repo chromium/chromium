@@ -172,21 +172,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Processed" summary="after"/>
 </variants>
 
-<histogram name="SegmentationPlatform.AdaptiveToolbar.ModelScore.{SegmentID}"
-    units="%" expires_after="2022-10-24">
-  <obsolete>
-    Deprecated as of 2022-10-24.
-  </obsolete>
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-segmentation-platform@google.com</owner>
-  <summary>
-    Records the segmentation platform model evaluation score for the given
-    {SegmentID}. Recorded whenever the model evaluation is completed
-    successfully.
-  </summary>
-  <token key="SegmentID" variants="SegmentationModel"/>
-</histogram>
-
 <histogram name="SegmentationPlatform.AdaptiveToolbar.SegmentSelected.Startup"
     enum="AdaptiveToolbarButtonVariant" expires_after="2024-04-28">
   <owner>shaktisahu@chromium.org</owner>
@@ -711,21 +696,6 @@ chromium-metrics-reviews@google.com.
     Recorded every time a {SegmentationModel} segmentation model is executed.
   </summary>
   <token key="SegmentationModel" variants="SegmentationModel"/>
-</histogram>
-
-<histogram name="SegmentationPlatform.ModelScore.{SegmentID}" units="%"
-    expires_after="2024-10-01">
-  <obsolete>
-    Deprecated as of 2022-10-24.
-  </obsolete>
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-segmentation-platform@google.com</owner>
-  <summary>
-    Records the segmentation platform model evaluation score for the given
-    {SegmentID}. Recorded whenever the model evaluation is completed
-    successfully.
-  </summary>
-  <token key="SegmentID" variants="SegmentationModel"/>
 </histogram>
 
 <histogram

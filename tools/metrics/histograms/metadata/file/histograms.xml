@@ -200,48 +200,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.ArchiveSize.{Extension}" units="100MiB"
-    expires_after="2022-12-01">
-  <obsolete>
-    Became obsolete on 2022-12-01 as we've collected enough data to understand
-    the user impact of attempting to open large slow mounters without progress
-    reporting.
-  </obsolete>
-  <owner>msalomao@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS File Browser: The size in units of 100MiB of archives users
-    attempt to open. Units are rounded up (e.g., 40MiB gets reported as 100MiB).
-  </summary>
-  <token key="Extension">
-    <variant name="7z"/>
-    <variant name="bz"/>
-    <variant name="bz2"/>
-    <variant name="crx"/>
-    <variant name="gz"/>
-    <variant name="iso"/>
-    <variant name="lz"/>
-    <variant name="lzma"/>
-    <variant name="rar"/>
-    <variant name="tar"/>
-    <variant name="taz"/>
-    <variant name="tb2"/>
-    <variant name="tbz"/>
-    <variant name="tbz2"/>
-    <variant name="tgz"/>
-    <variant name="tlz"/>
-    <variant name="tlzma"/>
-    <variant name="txz"/>
-    <variant name="tz"/>
-    <variant name="tz2"/>
-    <variant name="tzst"/>
-    <variant name="xz"/>
-    <variant name="z"/>
-    <variant name="zip"/>
-    <variant name="zst"/>
-  </token>
-</histogram>
-
 <histogram name="FileBrowser.ChangeDirectory.RootType"
     enum="FileManagerRootType" expires_after="2024-03-17">
   <owner>simmonsjosh@google.com</owner>
@@ -367,32 +325,6 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: number of files and directories in the Downloads
     directory (not including the contents of nested directories). Computed every
     time the File Browser current directory changes to Downloads.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.DriveDuplicateFinder.LongComputeHash" units="ms"
-    expires_after="M108">
-  <obsolete>
-    Became obsolete on 2022-08-18 as this feature is no longer in existence.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    The time taken to calculate the hash of a file, only recorded if the time
-    exceeds a local threshold that is currenty 5 seconds.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.DriveDuplicateFinder.LongSearchByHash" units="ms"
-    expires_after="M118">
-  <obsolete>
-    Became obsolete on 2023-08-18 as this feature is no longer in existence.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    The time taken to search for a file using it's hash value, only recorded if
-    the time exceeds a local threshold that is currently 1 second.
   </summary>
 </histogram>
 
@@ -754,31 +686,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.ImportController.DeviceYanked" enum="Boolean"
-    expires_after="M108">
-  <obsolete>
-    Became obsolete on 2022-08-18 as this feature is no longer in existence.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Files App: Whether an external media device was removed during the
-    upload process.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.ImportController.ImportCancelled"
-    enum="BooleanCanceled" expires_after="M108">
-  <obsolete>
-    Became obsolete on 2022-08-18 as this feature is no longer in existence.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Files App: Whether the media import process was cancelled.
-  </summary>
-</histogram>
-
 <histogram name="FileBrowser.Load{FileBrowserLoad}" units="ms"
     expires_after="2024-08-30">
   <owner>simmonsjosh@google.com</owner>
@@ -859,83 +766,6 @@ chromium-metrics-reviews@google.com.
     Chrome OS Files App: The locations (root types) of top-level entries (root
     entries) when they are clicked in the directory tree. Contains incomplete
     data from M80 to M87 inclusively.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.MediaImport.Cancelled" enum="BooleanCanceled"
-    expires_after="M108">
-  <obsolete>
-    Became obsolete on 2022-08-18 as this feature is no longer in existence.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Files App: Whether the media import (Photos/Video) from external
-    media was cancelled.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.MediaImport.Duplicates" units="count"
-    expires_after="M108">
-  <obsolete>
-    Became obsolete on 2022-08-18 as this feature is no longer in existence.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Files App: Count of duplicate media (Photos/Videos) files that
-    were skipped during a single upload session.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.MediaImport.ErrorCount" units="count"
-    expires_after="M108">
-  <obsolete>
-    Became obsolete on 2022-08-18 as this feature is no longer in existence.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Files App: Number of errors that occured during an upload session.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.MediaImport.ImportCount" units="count"
-    expires_after="M108">
-  <obsolete>
-    Became obsolete on 2022-08-18 as this feature is no longer in existence.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Files App: Count of individual media (Photos/Videos) uploaded from
-    a single upload session.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.MediaImport.ImportMB" units="MBytes"
-    expires_after="M108">
-  <obsolete>
-    Became obsolete on 2022-08-18 as this feature is no longer in existence.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Files App: Size of the media (Photos/Videos) uploaded from a
-    single upload session.
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.MediaImport.Started" enum="BooleanAttempted"
-    expires_after="M108">
-  <obsolete>
-    Became obsolete on 2022-08-18 as this feature is no longer in existence.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS Files App: Whether the media import (Photos/Video) from external
-    media was started.
   </summary>
 </histogram>
 
@@ -1584,32 +1414,6 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: When running as SWA, the mode in which the SWA was
     opened. For the non-SWA, see `FileBrowser.Create`.
   </summary>
-</histogram>
-
-<histogram name="FileBrowser.SWA.PrefsMigrationStatus"
-    enum="FileManagerPrefsMigrationStatus" expires_after="M118">
-  <obsolete>
-    Became obsolete on 2023-08-18 - It's been around for ~20-30 milestones now
-    and most results are either success or failed to find the existing chrome
-    preferences. We probably can't get much more actionable insights from this.
-  </obsolete>
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS File Browser: Status of migration of preferences from Chrome app
-    version to System Web App
-  </summary>
-</histogram>
-
-<histogram name="FileBrowser.SyncStatusTrackerMemoryUsage" units="KiB"
-    expires_after="2024-08-30">
-  <obsolete>
-    Became obsolete on M120 as the Sync Status Tracker has been permanently
-    removed from the codebase.
-  </obsolete>
-  <owner>msalomao@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>Memory used by the Sync Status Tracker.</summary>
 </histogram>
 
 <histogram name="FileBrowser.TeamDrivesCount" units="Team Drives"

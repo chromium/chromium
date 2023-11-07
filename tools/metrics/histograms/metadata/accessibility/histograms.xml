@@ -1255,22 +1255,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ImageLabels" enum="BooleanEnabled"
-    expires_after="2023-11-30">
-  <obsolete>
-    Logged on profile open, including for profiles that do not show web content.
-    (For those profiles, this logged the value of disabled.) Replaced in M-107
-    with Accessibility.ImageLabels2, which is similar but not logged for
-    unnecessary profiles.
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Chrome accessibility image label setting is on. Logged once 45
-    secs after profile open.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.ImageLabels.Android" enum="BooleanEnabled"
     expires_after="2024-04-28">
   <owner>dtseng@chromium.org</owner>
@@ -1491,24 +1475,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaption" enum="BooleanEnabled"
-    expires_after="2024-09-30">
-  <obsolete>
-    Replaced in M-109 with the histogram Accessibility.LiveCaption2, which is
-    similar but not logged for unnecessary profiles such as system profiles and
-    unusual ChromeOS profiles (sign-in profile, etc.)
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Live Caption feature is enabled. This is logged once when the
-    Live Caption controller is initialized on platforms that support Live
-    Caption.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.LiveCaption.AudioPropertyChanged"
     enum="BooleanEnabled" expires_after="2024-09-30">
   <owner>katie@chromium.org</owner>
@@ -1531,30 +1497,6 @@ chromium-metrics-reviews@google.com.
     Records when the caption bubble displays an error. This is logged once each
     time the caption bubble model encounters an error.
   </summary>
-</histogram>
-
-<histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}2"
-    units="ms" expires_after="2022-09-30">
-  <obsolete>
-    Deprecated as of 09/2022. Now using
-    Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3 This metric
-    measured the total speech recognition time not only for Live Caption but
-    also for other applications that use SODA.
-  </obsolete>
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Measures how long SODA was running while the Live Caption UI was
-    {Visibility}. Logged once on the destruction of the
-    SpeechRecognitionRecognizerImpl.
-  </summary>
-  <token key="Visibility">
-    <variant name="Hidden"
-        summary="hidden. This might be because it was closed by user or
-                 because there was an error passing transcriptions to the UI"/>
-    <variant name="Visible" summary="visible and showing transcriptions"/>
-  </token>
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3"
@@ -1600,24 +1542,6 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records when a user expands or collapses the Live Caption bubble.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.LiveCaption.FeatureEnabled"
-    enum="BooleanEnabled" expires_after="2023-11-30">
-  <obsolete>
-    Replaced in M-109 with the histogram
-    Accessibility.LiveCaption.FeatureEnabled2, which is similar but not logged
-    for unnecessary profiles such as system profiles and unusual ChromeOS
-    profiles (sign-in profile, etc.)
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whether the Live Caption feature flag is enabled. This is logged once at the
-    time of component registration.
   </summary>
 </histogram>
 
@@ -2310,35 +2234,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.LoadLibraryResult"
-    enum="ScreenAILoadLibraryResult" expires_after="2023-11-30">
-  <obsolete>
-    Deprecated in May 2023 and replaced with several boolean histograms for
-    different functionality initialization of the library. See
-    Accessibility.ScreenAI.*.Initialized
-  </obsolete>
-  <owner>kyungjunlee@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records whether it loads or fails to load necessary Screen AI libraries.
-    It's being emitted when loading Screen AI libraries according to the
-    configuration. Refer to ScreenAIService::LoadLibrary for details.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ScreenAI.OCR.ImageSize" units="count"
-    expires_after="2023-11-30">
-  <obsolete>
-    Removed in July 2023 in favor of Accessibility.ScreenAI.OCR.ImageSize10M
-    which has a higher max value.
-  </obsolete>
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the number of pixels in the passed image to OCR request.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.ScreenAI.OCR.ImageSize10M" units="count"
     expires_after="2024-10-01">
   <owner>rhalavati@chromium.org</owner>
@@ -2541,21 +2436,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="DomDistiller.InfoBarUsage" enum="BooleanUsage"
-    expires_after="2023-06-25">
-  <obsolete>
-    Deprecated in January 2023 as part of message post-launch cleanup since the
-    messages system records dismissal reasons using
-    Android.Messages.Dismissed.ReaderMode.
-  </obsolete>
-  <owner>mdjones@chromium.org</owner>
-  <summary>
-    &quot;Used&quot; is recorded when the user clicks the infobar to enter
-    Reader Mode. &quot;Not Used&quot; is recorded when the user clicks the close
-    button. If there's no user action, nothing is recorded.
-  </summary>
-</histogram>
-
 <histogram name="DomDistiller.MessageDismissalCondition"
     enum="ReaderModeMessageDismissalCondition" expires_after="2023-09-10">
   <owner>twellington@chromium.org</owner>
@@ -2591,87 +2471,6 @@ chromium-metrics-reviews@google.com.
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records if the panel became visible at any point after a page was navigated.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.ActivelyViewingArticleBeforeDistilling"
-    units="ms" expires_after="2021-08-19">
-  <obsolete>
-    Removed in M118.
-  </obsolete>
-  <owner>katie@chromium.org</owner>
-  <owner>chrome-a11y-core@chromium.org</owner>
-  <summary>
-    Records the amount of active time a user spent on a distillable page before
-    switching that page to Reader Mode. Active time is time that the article was
-    visible, not total time the page was open: the timer is paused when the page
-    is not visible. This is not recorded when the user opens a distillable page
-    but does not switch to Reader Mode from that page (via the omnibox icon or
-    menu option).
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.ArticleProcessing" units="ms"
-    expires_after="M77">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Time spent in DomDistiller's identification of text content.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.DistillationTotal" units="ms"
-    expires_after="M85">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>Complete time spent in DomDistiller's processing of a page.</summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.DistillPage" units="ms" expires_after="M77">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Time spent in DistillPageImpl(), mostly ExecuteJavaScript(), including
-    compilation and execution.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.DocumentConstruction" units="ms"
-    expires_after="M77">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Time spent in creating DomDistiller's internal representation of the HTML
-    document.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.Formatting" units="ms" expires_after="M77">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Time spent in DomDistiller's final processing of article content/formatting.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Time.MarkupParsing" units="ms"
-    expires_after="M77">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Time spent in DomDistiller's processing of article metadata.
   </summary>
 </histogram>
 

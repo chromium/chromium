@@ -437,24 +437,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ChromeElf.ThirdPartyStatus" enum="ThirdPartyStatus"
-    expires_after="M121">
-  <obsolete>
-    Retained for historical data.
-  </obsolete>
-  <owner>pmonette@chromium.org</owner>
-  <owner>kristianm@chromium.org</owner>
-  <summary>
-    Records the different status codes that are emitted by chrome_elf.dll while
-    initializing the NtMapViewOfSection hook used to blocked third-party DLLs.
-    Multiple status codes can be emitted per initialization since some of those
-    status codes represent non-fatal failures. E.g. Failure to clear the
-    previous failure codes. This also means that duplicates are possible. This
-    is recorded shortly after Chrome launches, since chrome_elf.dll doesn't have
-    access to the //base API. This histogram was expired between M82 and M114.
-  </summary>
-</histogram>
-
 <histogram name="ChromeGeneratedCustomTab.IntentToFirstNavigationStartTime"
     units="ms" expires_after="M81">
   <owner>lizeb@chromium.org</owner>

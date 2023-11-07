@@ -38,18 +38,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PhoneHub.Adoption.LoginFeatureStatus"
-    enum="PhoneHubFeatureStatus" expires_after="2023-12-31">
-  <obsolete>
-    There was a bug associated with the recording on this metric. During
-    investigation, we decided that this metric is of no value and so it was
-    removed. Deprecated 07/2022
-  </obsolete>
-  <owner>jonmann@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>The steady state feature status of PhoneHub on user login.</summary>
-</histogram>
-
 <histogram name="PhoneHub.Attestation.GeneratingTime" units="ms"
     expires_after="2024-04-01">
   <owner>pushi@google.com</owner>
@@ -193,21 +181,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PhoneHub.CameraRoll.OptInEvents"
-    enum="PhoneHubInterstitialScreenEvent" expires_after="2023-12-31">
-  <obsolete>
-    No longer valid as combined feature onboarding flow replaced existing camera
-    roll op-in flow. Deprecated 04/2022.
-  </obsolete>
-  <owner>jianbing@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records events from the Camera Roll opt-in view within the Phone Hub tray
-    bubble. Emitted when the opt-in view is shown and when the user clicks the
-    confirm/dismiss buttons.
-  </summary>
-</histogram>
-
 <histogram name="PhoneHub.CompletedUserAction" enum="PhoneHubUserAction"
     expires_after="2024-05-05">
   <owner>jonmann@chromium.org</owner>
@@ -262,20 +235,6 @@ chromium-metrics-reviews@google.com.
     The reason for which a connection attempt to the phone has failed. This is a
     breakdown of the failure bucket of PhoneHub.Connection.Result and is
     recorded on each connection failure.
-  </summary>
-</histogram>
-
-<histogram name="PhoneHub.Connectivity.Latency" units="ms"
-    expires_after="2023-12-31">
-  <obsolete>
-    This metric is being deprecated for PhoneHub.Connection.Latency in order to
-    capture latencies over 10 seconds. Deprecated 09/2022.
-  </obsolete>
-  <owner>jonmann@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    The duration of time the phone is in the connecting state, and becomes
-    connected.
   </summary>
 </histogram>
 
@@ -428,17 +387,6 @@ chromium-metrics-reviews@google.com.
     The message length of a mirrored PhoneHub notification, not including the
     title, logged each time a notification is added or updated.
   </summary>
-</histogram>
-
-<histogram name="PhoneHub.NotificationOptInEvents"
-    enum="PhoneHubInterstitialScreenEvent" expires_after="2023-12-31">
-  <obsolete>
-    No longer valid as combined feature onboarding flow replaced existing
-    notification op-in flow. Deprecated 04/2022.
-  </obsolete>
-  <owner>jonmann@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>Events for the given notification opt-in prompt.</summary>
 </histogram>
 
 <histogram name="PhoneHub.OptInEntryPoint" enum="PhoneHubOptInEntryPoint"

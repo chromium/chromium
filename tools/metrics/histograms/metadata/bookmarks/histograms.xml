@@ -225,28 +225,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.Count.OnProfileLoad" units="bookmarks"
-    expires_after="2024-03-16">
-  <obsolete>
-    Logged on profile open, including for profiles that do not support
-    bookmarks. (We did not investigate thoroughly; we don't know what value
-    typically was logged. Presumably 0.) Replaced in M-107 with the histogram
-    Bookmarks.Count.OnProfileLoad3, which is similar but only emitted on
-    profiles that may support bookmarks.
-  </obsolete>
-  <owner>supertri@chromium.org</owner>
-  <owner>isherman@chromium.org</owner>
-  <owner>aidanday@google.com</owner>
-  <owner>mamir@chromium.org</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    The total number of bookmarks a user has saved, excluding folders. Recorded
-    when a profile is opened - precisely, when bookmarks are loaded into storage
-    from disk. The count includes all bookmarks both in the &quot;Bookmarks
-    Bar&quot; and also under &quot;Other Bookmarks&quot;.
-  </summary>
-</histogram>
-
 <histogram name="Bookmarks.Count.OnProfileLoad3" units="bookmarks"
     expires_after="2024-03-17">
   <owner>supertri@chromium.org</owner>
@@ -529,23 +507,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.Storage.FileSizeAtStartup" units="KB"
-    expires_after="2023-04-21">
-  <obsolete>
-    Logged on profile open, including for profiles that do not support
-    bookmarks. (We did not investigate thoroughly; we don't know what value
-    typically was logged. Presumably 0.) Replaced in M-107 with
-    Bookmarks.Storage.FileSizeAtStartup2, which is similar but only emitted on
-    profiles that may support bookmarks.
-  </obsolete>
-  <owner>wylieb@chromium.org</owner>
-  <owner>chrome-collections@google.com</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Size of the bookmarks file, recorded when the bookmarks model is loaded.
-  </summary>
-</histogram>
-
 <histogram name="Bookmarks.Storage.FileSizeAtStartup2" units="KB"
     expires_after="2024-03-24">
   <owner>wylieb@chromium.org</owner>
@@ -569,24 +530,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time delta between bookmark file saves, recorded when a save occurs.
     Recorded on the first save as the time since startup.
-  </summary>
-</histogram>
-
-<histogram name="Bookmarks.Storage.TimeToLoadAtStartup" units="ms"
-    expires_after="2024-01-20">
-  <obsolete>
-    Logged on profile open, including for profiles that do not support
-    bookmarks. (We did not investigate thoroughly; we don't know what value
-    typically was logged. Presumably something small.) Replaced in M-107 with
-    Bookmarks.Storage.TimeToLoadAtStartup2, which is similar but only emitted on
-    profiles that may support bookmarks.
-  </obsolete>
-  <owner>wylieb@chromium.org</owner>
-  <owner>chrome-collections@google.com</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Duration of loading the bookmarks file, recorded when the bookmark model is
-    loaded.
   </summary>
 </histogram>
 
@@ -675,24 +618,6 @@ chromium-metrics-reviews@google.com.
     Opening a guest session (guest profile) also causes an emit to this
     histogram under certain enterpise configurations where guest sessions can
     have bookmarks.
-  </summary>
-</histogram>
-
-<histogram name="Bookmarks.Times.OnProfileLoad.TimeSinceAdded" units="days"
-    expires_after="2024-01-20">
-  <obsolete>
-    Logged on profile open, including for profiles that do not support
-    bookmarks. (We did not investigate thoroughly; we don't know what value
-    typically was logged. Presumably 0.) Replaced in M-107 with
-    Bookmarks.Times.OnProfileLoad.TimeSinceAdded3, which is similar but only
-    emitted on profiles that may support bookmarks.
-  </obsolete>
-  <owner>wylieb@chromium.org</owner>
-  <owner>chrome-collections@google.com</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Records the average number of days since each bookmark was added. Recorded
-    on profile load.
   </summary>
 </histogram>
 

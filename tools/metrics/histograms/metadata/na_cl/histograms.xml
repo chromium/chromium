@@ -22,20 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="NaCl.AppType" enum="NaClAppTypeEnum"
-    expires_after="2023-04-16">
-  <obsolete>
-    Deprecated in M110 in favor of NaCl.EmbedderType, which has more
-    fine-grained categories such as extensions and their manifest version.
-  </obsolete>
-  <owner>dschuff@chromium.org</owner>
-  <owner>fabiansommer@chromium.org</owner>
-  <summary>
-    Type of NaCl/PNaCl application/extension. Recorded at plugin creation time
-    after the permission check.
-  </summary>
-</histogram>
-
 <histogram name="NaCl.Client.Helper.InitState" enum="NaClHelperStatus"
     expires_after="2024-07-31">
   <owner>dschuff@chromium.org</owner>

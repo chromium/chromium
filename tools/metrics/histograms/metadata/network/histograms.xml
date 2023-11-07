@@ -1054,24 +1054,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Cellular.ESim.InstallViaQrCode.OperationResult"
-    enum="NetworkCellularESimInstallResult" expires_after="2024-09-30">
-  <obsolete>
-    Split into Network.Cellular.ESim.UserInstall.OperationResult.{Type}
-  </obsolete>
-  <owner>azeemarshad@chromium.org</owner>
-  <owner>khorimoto@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
-  <summary>
-    Tracks the result of an attempt to install an eSIM profile via a QR code.
-    This process includes both an attempt to inhibit modem scans as well as a
-    request to install the profile. The metric tracks failures at each step of
-    the process.
-
-    Emitted once the operation completes.
-  </summary>
-</histogram>
-
 <histogram name="Network.Cellular.ESim.InstallViaQrCode.Result{OperationType}"
     enum="HermesResponseStatus" expires_after="2024-09-30">
   <owner>azeemarshad@chromium.org</owner>
@@ -1322,21 +1304,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Cellular.ESim.ServiceAtLogin.Count" units="units"
-    expires_after="2024-09-30">
-  <obsolete>
-    Removed as of 07/2022. This is has been replaced with a new metric that adds
-    information on whether sim locking is allowed or not.
-  </obsolete>
-  <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
-  <summary>
-    Tracks how many eSIM profiles are installed on the devices after a primary
-    user login. Warning: this histogram was expired from 2023-01-15 to
-    2023-01-28; data may be missing
-  </summary>
-</histogram>
-
 <histogram name="Network.Cellular.ESim.SetupFlowResult"
     enum="ESimSetupFlowResult" expires_after="2024-09-30">
   <owner>azeemarshad@chromium.org</owner>
@@ -1478,20 +1445,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Cellular.PSim.ServiceAtLogin.Count" units="units"
-    expires_after="2024-09-30">
-  <obsolete>
-    Removed as of 07/2022. This is has been replaced with a new metric that adds
-    information on whether sim locking is allowed or not.
-  </obsolete>
-  <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
-  <summary>
-    Tracks how many pSIM networks are available on the device after a primary
-    user login.
-  </summary>
-</histogram>
-
 <histogram name="Network.Cellular.PSim.SetupFlowResult"
     enum="PSimSetupFlowResult" expires_after="2024-09-30">
   <owner>azeemarshad@chromium.org</owner>
@@ -1522,28 +1475,6 @@ chromium-metrics-reviews@google.com.
     Tracks the number of times an PSim cellular network is connected as the only
     network, or with other network or not connected at all.
   </summary>
-</histogram>
-
-<histogram name="Network.Cellular.SimPINLockPolicy.{SimPinOperation}"
-    enum="SimPinOperationResult" expires_after="2024-09-30">
-  <obsolete>
-    Replaced this with
-    &quot;Network.Cellular.{SimPinOperation}.SimPINLockPolicy&quot; which emits
-    information on whether the policy is applied or not during the operation.
-  </obsolete>
-  <owner>nikhilcn@chromium.org</owner>
-  <owner>hsuregan@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
-  <summary>
-    Sim PIN Lock policy is applied by enterprise administrators when they want
-    to restrict their users from locking or changing the PIN of their SIM. This
-    metric tracks instances where users have been able to successfully execute
-    lock or change PIN operations on their SIM while this policy is turned on.
-  </summary>
-  <token key="SimPinOperation">
-    <variant name="ChangeSuccess"/>
-    <variant name="RequireLockSuccess"/>
-  </token>
 </histogram>
 
 <histogram name="Network.Cellular.{AllowSIMLock}.ESim.ServiceAtLogin.Count"
@@ -2677,21 +2608,6 @@ chromium-metrics-reviews@google.com.
     configuring Layer 3 state.
 
     NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.PortalDetectionMultiProbeResult"
-    enum="PortalDetectionMultiProbeResult" expires_after="2022-06-17">
-  <obsolete>
-    Removed 6/2022 because it is unmonitored and not technology specific.
-    TODO(b/236386653): Remove entirely once removed from Shill.
-  </obsolete>
-  <owner>matthewmwang@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    ChromeOS network metric recording portal detection results of both the HTTP
-    and HTTPS probes. This is recorded every time a portal detection trial
-    finishes.
   </summary>
 </histogram>
 
@@ -4695,29 +4611,6 @@ chromium-metrics-reviews@google.com.
     This could include several logs from the same client for the same network
     context if the migration fails, since this is reported each time the
     migration is attempted.
-  </summary>
-</histogram>
-
-<histogram
-    name="NetworkService.URLLoader.RequestInitiatorOriginLockCompatibility"
-    enum="RequestInitiatorOriginLockCompatibility" expires_after="2022-04-10">
-  <obsolete>
-    Removed in March 2022 / M101.
-
-    Old results are preserved in
-    https://docs.google.com/document/d/15j6AKzZ-HgyRQVrKpdGHfGf8D_fcUILmcQ34RAWD1TM/edit?resourcekey=0-wwIJsGSoWmhvFMwMTWdAOw
-  </obsolete>
-  <owner>lukasza@chromium.org</owner>
-  <owner>creis@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Whether the request origin (i.e.
-    network::ResourceRequest::request_initiator) matches the origin that the
-    browser process expected when creating the URLLoaderFactory (i.e. whether it
-    matches URLLoaderFactoryParams::request_initiator_origin_lock).
-
-    Recorded when a request is started (i.e. at the time of constructing
-    network::URLLoader).
   </summary>
 </histogram>
 

@@ -1032,20 +1032,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.NavigationRequestCreation.SpeculativeRFHExisted"
-    enum="SpeculativeRenderFrameHostType" expires_after="2022-06-30">
-  <obsolete>
-    Obsolete after 2022-06-30.
-  </obsolete>
-  <owner>rakina@chromium.org</owner>
-  <owner>dcheng@chromium.org</owner>
-  <summary>
-    Records whether a speculative RenderFrameHost for an older navigation
-    existed when a new NavigationRequest is created, causing the speculative
-    RenderFrameHost to be deleted.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.NavigationStartToBeforeUnloadForLegacy" units="ms"
     expires_after="2024-04-28">
   <owner>sky@chromium.org</owner>
@@ -1384,24 +1370,6 @@ chromium-metrics-reviews@google.com.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
-<histogram
-    name="Navigation.RendererInitiatedCancellation.DeferStartToCancellationWindowEnd"
-    units="ms" expires_after="2022-10-21">
-  <obsolete>
-    Obsolete after 2022-10-21. All cancellation window ends within 10000ms. See
-    UMA result:
-    https://docs.google.com/document/d/1VNmvEVuaiNH3ypt6YfrYPsJJp8okCTYjooekarOiWN8/edit#heading=h.tlh3g7tofz2
-  </obsolete>
-  <owner>rakina@chromium.org</owner>
-  <owner>dcheng@chromium.org</owner>
-  <summary>
-    Measures the amount of time it takes from
-    RendererCancellationThrottle::WillProcessResponse() to
-    RendererCancellationThrottle::NavigationCancellationWindowEnded. Recorded
-    for each navigation that gets deferred by RendererCancellationThrottle.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.RequiresDedicatedProcess"
     enum="NavigationRequiresDedicatedProcess" expires_after="2024-04-28">
   <owner>alexmos@chromium.org</owner>
@@ -1527,19 +1495,6 @@ chromium-metrics-reviews@google.com.
 
     This metric is recorded at most once for every new metadata version
     installed.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.UndoCommit.IsSpeculativeRenderFrameLive"
-    enum="BooleanPresent" expires_after="2022-06-30">
-  <obsolete>
-    Obsolete after 2022-06-30.
-  </obsolete>
-  <owner>rakina@chromium.org</owner>
-  <owner>dcheng@chromium.org</owner>
-  <summary>
-    Records whether a speculative RenderFrame is live when UndoCommitNavigation
-    is called.
   </summary>
 </histogram>
 

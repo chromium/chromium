@@ -64,55 +64,6 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Privacy.AccuracyTip.AccuracyTipInteraction"
-    enum="AccuracyTipInteraction" expires_after="2022-08-21">
-  <obsolete>
-    Deprecated as of 12/2022.
-  </obsolete>
-  <owner>dullweber@chromium.org</owner>
-  <owner>eokoyomon@chromium.org</owner>
-  <summary>
-    The interaction performed on the accuracy tip UI. Recorded when UI is
-    closed.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.AccuracyTip.AccuracyTipTimeOpen" units="ms"
-    expires_after="M105">
-  <obsolete>
-    Deprecated as of 12/2022.
-  </obsolete>
-  <owner>dullweber@chromium.org</owner>
-  <owner>eokoyomon@chromium.org</owner>
-  <summary>
-    The amount of time the accuracy tip UI was shown. Recorded when UI is
-    closed.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.AccuracyTip.NumDialogsShown" units="dialogs"
-    expires_after="2022-08-28">
-  <obsolete>
-    Deprecated as of 12/2022.
-  </obsolete>
-  <owner>dullweber@chromium.org</owner>
-  <owner>eokoyomon@chromium.org</owner>
-  <summary>
-    The number of accuracy tip dialogs that have been shown to the user.
-    Recorded when UI is closed.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.AccuracyTip.PageStatus" enum="AccuracyTipStatus"
-    expires_after="2022-10-09">
-  <obsolete>
-    Deprecated as of 12/2022.
-  </obsolete>
-  <owner>dullweber@chromium.org</owner>
-  <owner>eokoyomon@chromium.org</owner>
-  <summary>The accuracy status of a page. Recorded on each page load.</summary>
-</histogram>
-
 <histogram name="Privacy.ClearOnExitSyncEvent" enum="ClearOnExitSyncEvent"
     expires_after="M103">
   <owner>sauski@google.com</owner>
@@ -411,24 +362,6 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Privacy.DoNotTrackSetting" enum="BooleanEnabled"
-    expires_after="never">
-  <obsolete>
-    Logged on profile open, including for profiles such as guest profiles that
-    do not allow modification of this setting. (This value logged on those cases
-    is the default value for the setting.) Replaced in M-110 with the histogram
-    Privacy.DoNotTrackSetting2, which is similar but only emitted on regular
-    profiles.
-  </obsolete>
-<!-- expires-never: tracked as an important privacy metric. -->
-
-  <owner>mkwst@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    Whether the Do Not Track setting is enabled. Recorded at the profile open.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.DoNotTrackSetting2" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: tracked as an important privacy metric. -->
@@ -449,20 +382,6 @@ reviewer.
   <summary>
     Tracks interactions with the Quick Delete feature, including the entry
     points and the dialog.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.ThirdPartyCookieBlockingEnabledForSite" enum="Boolean"
-    expires_after="2022-04-10">
-  <obsolete>
-    Removed in M96. Replaced by
-    Navigation.MainFrame.ThirdPartyCookieBlockingEnabled.
-  </obsolete>
-  <owner>dullweber@chromium.org</owner>
-  <owner>huanzhong@chromium.org</owner>
-  <summary>
-    Records whether third party cookie blocking was enabled for a site on page
-    load. Only recorded for users who enabled the cookie controls ui.
   </summary>
 </histogram>
 
@@ -521,19 +440,6 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.AggregationService.KeyFetcher.Status"
-    enum="PrivacySandboxAggregationServiceKeyFetcherStatus"
-    expires_after="2022-08-23">
-  <obsolete>
-    Replaced with PrivacySandbox.AggregationService.KeyFetcher.Status2, 06/2022.
-  </obsolete>
-  <owner>alexmt@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
-  <summary>
-    Records the high level status of each key network fetch request.
-  </summary>
-</histogram>
-
 <histogram name="PrivacySandbox.AggregationService.KeyFetcher.Status2"
     enum="PrivacySandboxAggregationServiceKeyFetcherStatus"
     expires_after="2024-04-28">
@@ -583,25 +489,6 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.AggregationService.ReportStatus"
-    enum="PrivacySandboxAggregationServiceReportSenderStatus"
-    expires_after="2022-07-16">
-  <obsolete>
-    Replaced with PrivacySandbox.AggregationService.ReportSender.Status,
-    02/2022.
-  </obsolete>
-  <owner>alexmt@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
-  <summary>
-    Records the high level request status of each aggregatable report. These
-    reports are requested by APIs that rely on private, secure aggregation (e.g.
-    Attribution Reporting API).
-
-    Recorded for every aggregatable report sent. It might retry in case of
-    failure but only the final status will be counted for each report.
-  </summary>
-</histogram>
-
 <histogram
     name="PrivacySandbox.AggregationService.ScheduledRequests.NumRetriesBeforeSuccess"
     units="retries" expires_after="2024-03-17">
@@ -622,21 +509,6 @@ reviewer.
     Records the final status of a scheduled report request, i.e. whether it
     succeeded eventually, including after retries (if any). In case of failure,
     records the type of failure in the final retry attempt.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.AggregationService.Storage.Sql.CreationTime"
-    units="ms" expires_after="2023-02-23">
-  <obsolete>
-    PrivacySandbox.AggregationService.Storage.Sql.CreationTime2 which only
-    records when Threadticks is supported, 10/2022.
-  </obsolete>
-  <owner>alexmt@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
-  <summary>
-    Records the time it took to initialize a new aggregation service database
-    from scratch. Recorded when the aggregation service database finishes
-    initialization. Note that 0 is recorded if `ThreadTicks` is not supported.
   </summary>
 </histogram>
 

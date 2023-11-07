@@ -648,20 +648,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.ChildMismatch.AppInfoError" enum="ChildAppInfoError"
-    expires_after="2022-11-01">
-  <obsolete>
-    Replaced by Android.ChildMismatch.AppInfoError2; the previous implementation
-    did not record the metric correctly in all cases.
-  </obsolete>
-  <owner>torne@chromium.org</owner>
-  <owner>boliu@chromium.org</owner>
-  <summary>
-    Records what error (if any) was encountered verifying the child process's
-    app info each time a child process is started via ChildProcessConnection.
-  </summary>
-</histogram>
-
 <histogram name="Android.ChildMismatch.AppInfoError2" enum="ChildAppInfoError"
     expires_after="2024-04-28">
   <owner>torne@chromium.org</owner>
@@ -669,23 +655,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records what error (if any) was encountered verifying the child process's
     app info each time a child process is started via ChildProcessConnection.
-  </summary>
-</histogram>
-
-<histogram name="Android.ChildMismatch.BrowserVersionChanged"
-    enum="BooleanChanged" expires_after="2022-11-01">
-  <obsolete>
-    Replaced by Android.ChildMismatch.BrowserVersionChanged2; the previous
-    implementation did not record the metric correctly in all cases.
-  </obsolete>
-  <owner>torne@chromium.org</owner>
-  <owner>boliu@chromium.org</owner>
-  <summary>
-    Records if the installed browser version appears to have changed since the
-    browser process was launched. Recorded each time a child process is started
-    via ChildProcessConnection, but only if the child's ApplicationInfo did not
-    match (i.e. when Android.ChildMismatch.AppInfoError is recorded as something
-    other than no error).
   </summary>
 </histogram>
 
@@ -882,19 +851,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Android.DarkTheme.EnabledReason" enum="DarkThemeEnabledReason"
-    expires_after="2023-02-26">
-  <obsolete>
-    Removed in M121.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records the reason why dark theme is enabled when dark theme is visible to
-    user.
-  </summary>
-</histogram>
-
 <histogram name="Android.DarkTheme.EnabledState" enum="BooleanEnabled"
     expires_after="2024-03-17">
   <owner>twellington@chromium.org</owner>
@@ -902,19 +858,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether dark theme is enabled or not on cold start and when the
     enabled state changes.
-  </summary>
-</histogram>
-
-<histogram name="Android.DarkTheme.Preference.State"
-    enum="DarkThemePreferences" expires_after="2023-02-26">
-  <obsolete>
-    Removed in M121.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records user theme preference of system default, light or dark theme on cold
-    start and when the theme preference changes.
   </summary>
 </histogram>
 
@@ -942,21 +885,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DeviceSize.LargestDisplaySize" units="dp"
-    expires_after="2022-05-14">
-  <obsolete>
-    Removed May 2022.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records the largest display dimension in dp during deferred startup. The
-    display size is not affected by Android N multi-window mode. Clamped at
-    200dp to 1200dp.
-  </summary>
-</histogram>
-
 <histogram name="Android.DeviceSize.LargestDisplaySize2" units="dp"
     expires_after="2024-03-17">
   <owner>twellington@chromium.org</owner>
@@ -981,21 +909,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DeviceSize.SmallestDisplaySize" units="dp"
-    expires_after="2022-05-14">
-  <obsolete>
-    Removed May 2022.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records the smallest display dimension in dp during deferred startup. The
-    display size is not affected by Android N multi-window mode. Clamped at 0 to
-    1000dp.
-  </summary>
-</histogram>
-
 <histogram name="Android.DeviceSize.SmallestDisplaySize2" units="dp"
     expires_after="2024-03-17">
   <owner>twellington@chromium.org</owner>
@@ -1005,32 +918,6 @@ chromium-metrics-reviews@google.com.
     Records the smallest display dimension in dp during deferred startup. The
     display size is not affected by Android N multi-window mode. Clamped at 100
     to 1000dp. 10dp granularity.
-  </summary>
-</histogram>
-
-<histogram name="Android.DexFixer" enum="DexFixerReason"
-    expires_after="2023-01-30">
-  <obsolete>
-    Removed Feb 2020.
-  </obsolete>
-  <owner>agrieve@chromium.org</owner>
-  <owner>cduvall@chromium.org</owner>
-  <summary>
-    Records the number of times Chrome runs &quot;cmd package compile&quot; to
-    fix dexopt issues, and for what reason.
-  </summary>
-</histogram>
-
-<histogram name="Android.Download.Rename.Dialog.Action"
-    enum="Android.Download.Rename.Dialog.Action" expires_after="2021-08-09">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>hesen@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Records various actions taken by the user on the rename dialog in download
-    home.
   </summary>
 </histogram>
 
@@ -1058,30 +945,6 @@ chromium-metrics-reviews@google.com.
   <owner>dtrainor@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Recorded when a download is opened.</summary>
-</histogram>
-
-<histogram name="Android.DownloadManager.Menu.Delete.SelectedCount"
-    units="units" expires_after="M81">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    The number of items selected when performing a multi-delete action.
-  </summary>
-</histogram>
-
-<histogram name="Android.DownloadManager.Menu.Share.SelectedCount"
-    units="units" expires_after="M81">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    The number of items selected when performing a multi-share action.
-  </summary>
 </histogram>
 
 <histogram name="Android.DownloadManager.NotificationInteraction"
@@ -1133,30 +996,6 @@ chromium-metrics-reviews@google.com.
     been destroyed to see how frequently it occurs. Or, the number of start
     sticky's will indicate how often the service is able to restart due to an
     unexpected stop.
-  </summary>
-</histogram>
-
-<histogram name="Android.DownloadManager.Share.Count" units="units"
-    expires_after="M86">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>The number of downloads shared at the same time.</summary>
-</histogram>
-
-<histogram name="Android.DownloadManager.Share.FileTypes"
-    enum="AndroidDownloadFilterType" expires_after="2020-03-01">
-  <obsolete>
-    Removed in April 2023.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Recorded when downloads are shared through the download manager. A recorded
-    value of &quot;All&quot; indicates that multiple types of downloads were
-    shared.
   </summary>
 </histogram>
 
@@ -1529,35 +1368,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time taken to fetch all available font files from the GMS Core
     Android downloadable font provider.
-  </summary>
-</histogram>
-
-<histogram name="Android.FontLookup.FetchFontName" enum="FetchFontName"
-    expires_after="2022-09-20">
-  <obsolete>
-    Removed 09/2022. No longer needed.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records font fetch requests by font name. These results may be used to
-    determine whether it remains worthwhile to preload fonts that are available
-    for renderer font match requests.
-  </summary>
-</histogram>
-
-<histogram name="Android.FontLookup.FetchFontResult" enum="FetchFontResult"
-    expires_after="2022-09-20">
-  <obsolete>
-    Removed 09/2022. No longer needed.
-  </obsolete>
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records the result of font fetch requests made to the GMS Core Android
-    downloadable font provider. The result may be success, or failure with a
-    reason. In the case of multiple failures, only the first one encountered is
-    reported. See implementation at AndroidFontLookupImpl.
   </summary>
 </histogram>
 
@@ -1968,24 +1778,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.MemoryPressureMonitor.GetMyMemoryState.Failed.Time"
-    units="microseconds" expires_after="M77">
-  <obsolete>
-    Removed 09/2022. Expired and not needed anymore.
-  </obsolete>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    The duration of each failed ActivityManager.getMyMemoryState() call made by
-    MemoryPressureMonitor.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Android.MemoryPressureNotification{AndroidProcessType}"
     enum="Android.MemoryPressureNotification" expires_after="2021-12-05">
   <owner>ssid@chromium.org</owner>
@@ -2150,20 +1942,6 @@ chromium-metrics-reviews@google.com.
     an action (e.g. click a button, dismiss the message, etc.).
   </summary>
   <token key="MessageIdentifier" variants="MessageIdentifiers"/>
-</histogram>
-
-<histogram name="Android.ModerateBindingCount" units="bindings"
-    expires_after="M77">
-  <obsolete>
-    Expired in M77. See Android.ChildProcessBinding.*
-  </obsolete>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>clank-team@google.com</owner>
-  <summary>
-    The number of moderate bindings which were kept while Chrome process is in
-    the foreground. This is logged right before Chrome process goes into the
-    background.
-  </summary>
 </histogram>
 
 <histogram name="Android.MultiInstance.MaxInstanceCount" units="instances"
@@ -2387,36 +2165,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Omnibox.SuggestionList.LayoutTime" units="ms"
-    expires_after="2022-10-23">
-  <obsolete>
-    Retired with M103. Please refer to .CreateTime2
-  </obsolete>
-  <owner>ender@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    Records time spent on positioning all suggestions on screen. This histogram
-    is recorded every time a new suggestion list is received.
-
-    Values recorded here should generally aim to be small, likely below 2ms
-    range. Higher values are an indicator of a performance problem.
-
-    Layout operation should take place just once when suggestion view is shown
-    for the first time.
-
-    This metric is reported for all users and uses 100microsecond granularity.
-
-    When comparing Durations measured here, also compare Total Counts for a
-    correct indication of how frequently views are laid out and how the overall
-    time spent performing layout operation changed.
-
-    This histogram is related to Android.Omnibox.SuggestionView.Reused,
-    Android.Omnibox.SuggestionList.MeasureTime,
-    Android.Omnibox.SuggestionView.CreateTime.
-  </summary>
-</histogram>
-
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime2" units="ms"
     expires_after="2024-04-28">
   <owner>ender@chromium.org</owner>
@@ -2462,37 +2210,6 @@ chromium-metrics-reviews@google.com.
     This histogram is related to Android.Omnibox.SuggestionList.LayoutTime2,
     Android.Omnibox.SuggestionView.CreateTime3, and
     Android.Omnibox.SuggestionList.MeasureTime3
-  </summary>
-</histogram>
-
-<histogram name="Android.Omnibox.SuggestionList.MeasureTime" units="ms"
-    expires_after="2022-06-19">
-  <obsolete>
-    Retired with M103. Please refer to .MeasureTime2
-  </obsolete>
-  <owner>ender@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    Records time spent on measuring all suggestions ahead of positioning them on
-    screen. This histogram is recorded every time a new suggestion list is
-    received.
-
-    Values recorded here should generally aim to be small, likely below 2ms
-    range. Higher values are an indicator of a performance problem.
-
-    Measure operation should take place just once when suggestion view is shown
-    for the first time.
-
-    This metric is reported for all users and uses 100microsecond granularity.
-
-    When comparing Durations measured here, also compare Total Counts for a
-    correct indication of how frequently views are measured and how the overall
-    time spent measuring views changed.
-
-    This histogram is related to Android.Omnibox.SuggestionView.Reused,
-    Android.Omnibox.SuggestionList.LayoutTime,
-    Android.Omnibox.SuggestionView.CreateTime.
   </summary>
 </histogram>
 
@@ -2626,32 +2343,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Omnibox.SuggestionView.CreateTime" units="ms"
-    expires_after="2022-06-19">
-  <obsolete>
-    Retired with M103. Please refer to .CreateTime2
-  </obsolete>
-  <owner>ender@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    Records time spent creating a single suggestion.
-
-    Values recorded here should generally aim to be small, below 1ms range.
-    Higher values may be an indicator of a performance problem.
-
-    This metric is reported for all users and uses 100microsecond granularity.
-
-    When comparing Durations measured here, also compare Total Counts for a
-    correct indication of how frequently views are created and how the overall
-    time spent creating views changed.
-
-    This histogram is related to Android.Omnibox.SuggestionList.LayoutTime,
-    Android.Omnibox.SuggestionList.MeasureTime,
-    Android.Omnibox.SuggestionView.Reused.
-  </summary>
-</histogram>
-
 <histogram name="Android.Omnibox.SuggestionView.CreateTime2" units="ms"
     expires_after="2024-04-28">
   <owner>ender@chromium.org</owner>
@@ -2695,44 +2386,6 @@ chromium-metrics-reviews@google.com.
     This histogram is related to Android.Omnibox.SuggestionView.CreateTime2,
     Android.Omnibox.SuggestionList.LayoutTime3, and
     Android.Omnibox.SuggestionList.MeasureTime3
-  </summary>
-</histogram>
-
-<histogram name="Android.Omnibox.SuggestionView.Reused" enum="BooleanReused"
-    expires_after="M110">
-  <obsolete>
-    Replaced with Android.Omnibox.SessionViewsCreated and
-    Android.Omnibox.SessionViewsReused since M110
-  </obsolete>
-  <owner>ender@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    Records number of times a suggestion was successfully reused.
-
-    Values recorded here tell how efficiently View reuse algorithms operate and
-    how frequently these algorithms have managed to prevent unnecessary view
-    creation. Higher Reuse counts indicate better performance.
-
-    When analysing this metric, consider checking also the Total Counts of
-    Android.Omnibox.SuggestionView.CreateTime metric for a better information
-    regarding how view creations and re-uses have changed:
-
-    * If this metric increased while the Total Count of the CreateTime
-    decreased, the change has positive effect.
-
-    * If this metric increased (or decreased) and there is a similar change in
-    Total Counts of CreateTime, then the effect is neutral.
-
-    * If this metric decreased, while the Total Count increased, then the change
-    has a negative effect (fewer reuses, more time spent creating views)
-
-    Obsolete: Please use Android.Omnibox.SessionViewsCreated and
-    Android.Omnibox.SessionViewsReused.
-
-    This histogram is related to Android.Omnibox.SuggestionList.LayoutTime2,
-    Android.Omnibox.SuggestionList.MeasureTime2,
-    Android.Omnibox.SuggestionView.CreateTime2.
   </summary>
 </histogram>
 
@@ -3615,21 +3268,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.RequestDesktopSite.TabletEligible" enum="Boolean"
-    expires_after="2022-04-17">
-  <obsolete>
-    Deprecated in December 2022. This is no longer recorded as we cleanup
-    feature flag RequestDesktopSiteForTablets.
-  </obsolete>
-  <owner>gangwu@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
-  <summary>
-    Records if Chrome width is eligible for requesting desktop sites. Recorded
-    only when navigating to google or google search. This is recorded when
-    chrome adds X-Eligible-Tablet to the http header per request.
-  </summary>
-</histogram>
-
 <histogram name="Android.RequestDesktopSite.UseDesktopUserAgent" enum="Boolean"
     expires_after="2024-03-17">
   <owner>gangwu@chromium.org</owner>
@@ -3946,30 +3584,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the amount of time due to a StrictMode violation from fetching for
     the thumbnail cache directory.
-  </summary>
-</histogram>
-
-<histogram name="Android.Survey.DownloadAttemptsBeforeAccepted" units="units"
-    expires_after="2024-01-27">
-  <obsolete>
-    Removed from code in Sep 2023.
-  </obsolete>
-  <owner>skym@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    The number of survey download request attempts that have been made before
-    the survey is accepted. Note:
-
-    1) The download attempt might not result in a survey download due to
-    different reasons (e.g. download request failed or network failure). 2)
-    Chrome may have also successfully downloaded the survey several times in
-    previous sessions, but the surveys were not able to be shown for min amount
-    of times. In such scenarios, the total number of attempts across all
-    sessions will be recorded. 3) If the number of allowed download attempts has
-    been saturated before the survey is accepted, nothing will be recorded.
-
-    Recorded when a survey prompt is accepted. Android Only.
   </summary>
 </histogram>
 
@@ -5354,41 +4968,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Nonembedded.FirstServiceInProcess"
-    enum="WebViewNonembeddedService" expires_after="2022-12-11">
-  <obsolete>
-    We collected the data we need about this, these histograms are no longer
-    needed, see https://crbug.com/1266439#c8. Removed in December 2022.
-  </obsolete>
-  <owner>hazems@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the first nonembedded WebView Service to run in the nonembedded
-    &quot;:webview_service&quot; process. This excludes ContentProviders because
-    they are always created during the process startup. This is recorded when
-    the service is created (when `onCreate` is called). Also see
-    &quot;Android.WebView.Nonembedded.IsFreshServiceProcessLaunched&quot;.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.Nonembedded.IsFreshServiceProcessLaunched"
-    enum="Boolean" expires_after="2022-12-11">
-  <obsolete>
-    We collected the data we need about this, these histograms are no longer
-    needed, see https://crbug.com/1266439#c8. Removed in December 2022.
-  </obsolete>
-  <owner>hazems@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Captures if the service is the first service to be created in the process or
-    not. It helps to see how often the nonembedded &quot;:webview_service&quot;
-    process is reused for multiple services. This excludes ContentProviders
-    because they are always created during the process startup. This is recorded
-    when any nonembedded service is created (when `onCreate` is called). Also
-    see &quot;Android.WebView.Nonembedded.FirstServiceInProcess&quot;.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.NonEmbeddedMetrics.HistogramRecordAge"
     units="minutes" expires_after="2024-03-03">
   <owner>hazems@chromium.org</owner>
@@ -5454,20 +5033,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.onReceivedError.ErrorCode"
-    enum="WebViewClientErrorCode" expires_after="2022-05-10">
-  <obsolete>
-    Deprecated in April 2022 (milestone M103).
-  </obsolete>
-  <owner>ntfschr@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    The WebViewClient error code as returned by the onReceivedError callback
-    This is recorded regardless of whether the network service is enabled or
-    disabled.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.OnRenderProcessGoneResult"
     enum="AndroidWebViewRenderProcessGoneResult" expires_after="2024-06-21">
   <owner>ntfschr@chromium.org</owner>
@@ -5506,50 +5071,6 @@ chromium-metrics-reviews@google.com.
     WebView. The purpose of this metric is to slice it by package name to help
     characterize the usage of that package.
   </summary>
-</histogram>
-
-<histogram name="Android.WebView.PageTimeSpent2.{Scheme}{Party}" units="ms"
-    expires_after="2022-07-01">
-  <obsolete>
-    Deprecated in March 2022.
-  </obsolete>
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Time spent on a page with a {Scheme} scheme. This is measured from
-    navigation commit to the start of the next navigation. For http and https
-    schemes it is additionally recorded whether it is a first or third party
-    page. This uses an optional key, in this case the value is
-    &quot;{Party}&quot;.
-  </summary>
-  <token key="Scheme">
-    <variant name="App"/>
-    <variant name="Blob"/>
-    <variant name="Chrome"/>
-    <variant name="ChromeNative"/>
-    <variant name="Content"/>
-    <variant name="CustomTab"/>
-    <variant name="Data"/>
-    <variant name="Devtools"/>
-    <variant name="Document"/>
-    <variant name="File"/>
-    <variant name="Filesystem"/>
-    <variant name="Ftp"/>
-    <variant name="Http"/>
-    <variant name="Https"/>
-    <variant name="Inline"/>
-    <variant name="Intent"/>
-    <variant name="Jar"/>
-    <variant name="JavaScript"/>
-    <variant name="Other"/>
-    <variant name="Sms"/>
-    <variant name="Tel"/>
-  </token>
-  <token key="Party">
-    <variant name=""/>
-    <variant name=".FirstParty"/>
-    <variant name=".ThirdParty"/>
-  </token>
 </histogram>
 
 <histogram name="Android.WebView.PrimaryCpuAbiBitness"
@@ -5596,23 +5117,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.RequestedWithHeader.OnNavigationHeaderMode"
-    enum="WebViewRequestedWithHeaderMode" expires_after="2023-01-01">
-  <obsolete>
-    Replaced before launch by
-    Android.WebView.RequestedWithHeader.OnNavigationRequestedWithHeaderAllowListSize
-  </obsolete>
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the XRequestedWithHeaderMode that was configured to be used on page
-    navigation to decide how to set the X-Requested-With HTTP header. This is
-    recorded on navigation committed, and records the configured setting. It may
-    be the case that javascript or the embedder has overwritten the header,
-    which will not be reflected by this histogram.
-  </summary>
-</histogram>
-
 <histogram
     name="Android.WebView.RequestedWithHeader.OnNavigationRequestedWithHeaderAllowListSize"
     units="entries" expires_after="2024-05-01">
@@ -5650,22 +5154,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.WebView.RequestedWithHeader.SetRequestedWithHeaderMode"
-    enum="WebViewRequestedWithHeaderMode" expires_after="2023-01-01">
-  <obsolete>
-    Replaced before launch by
-    Android.WebView.RequestedWithHeader.SetRequestedWithHeaderModeAllowListSize
-  </obsolete>
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the parameter passed to WebSettingsCompat#setRequestedWithHeaderMode
-    when called by the embedding app. This reflects explict configuration of the
-    X-Requested-With HTTP header by the app for WebViews.
-  </summary>
-</histogram>
-
-<histogram
     name="Android.WebView.RequestedWithHeader.SetRequestedWithHeaderModeAllowListSize"
     units="entries" expires_after="2024-05-01">
   <owner>pbirk@chromium.org</owner>
@@ -5674,23 +5162,6 @@ chromium-metrics-reviews@google.com.
     Records the size of the allow-list passed to
     WebSettingsCompat#setRequestedWithHeaderOriginAllowList when called by the
     embedding app.
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.WebView.RequestedWithHeader.SetServiceWorkerRequestedWithHeaderMode"
-    enum="WebViewRequestedWithHeaderMode" expires_after="2023-01-01">
-  <obsolete>
-    Replaced before launch by
-    Android.WebView.RequestedWithHeader.SetServiceWorkerRequestedWithHeaderModeAllowListSize
-  </obsolete>
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the parameter passed to
-    ServiceWorkerWebSettingsCompat#setRequestedWithHeaderMode when called by the
-    embedding app. This reflects explict configuration of the X-Requested-With
-    HTTP header by the app for WebView service workers.
   </summary>
 </histogram>
 
@@ -6124,23 +5595,6 @@ chromium-metrics-reviews@google.com.
     <variant name="javascript"/>
     <variant name="unknown"/>
   </token>
-</histogram>
-
-<histogram name="Android.WebView.WebViewOpenWebVisible.ScreenPortion2"
-    enum="WebViewOpenWebScreenPortion" expires_after="2022-08-01">
-  <obsolete>
-    Deprecated in March 2022.
-  </obsolete>
-  <owner>idries@google.com</owner>
-  <owner>ntfschr@chromium.org</owner>
-  <owner>peconn@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the number of seconds that WebView is displaying Open Web Content
-    for each bucket of screen proportion, updated with every Metrics upload. For
-    the purposes of bucketing this is rounded down. A separate bucket is used
-    when the screen coverage is exactly zero.
-  </summary>
 </histogram>
 
 <histogram name="AndroidSearchEngineLogo.Events"

@@ -60,65 +60,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Browser.BitmapFetcher.Decode" units="ms"
-    expires_after="2022-09-18">
-  <obsolete>
-    3/2022; feature launched.
-  </obsolete>
-  <owner>manukh@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>The time elapsed decoding an image using BitmapFetcher.</summary>
-</histogram>
-
-<histogram name="Browser.BitmapFetcher.Fetch" units="ms"
-    expires_after="2022-03-06">
-  <obsolete>
-    3/2022; feature launched.
-  </obsolete>
-  <owner>manukh@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>
-    The time elapsed fetching an image from a URL using BitmapFetcher.
-  </summary>
-</histogram>
-
-<histogram name="Browser.ChromeOS.HatsSatisfaction{Survey}" units="score"
-    expires_after="2023-01-01">
-  <obsolete>
-    M109; Replaced by &quot;ChromeOS.HaTS.*&quot;.
-  </obsolete>
-  <owner>aalsum@chromium.org</owner>
-  <owner>jackshira@google.org</owner>
-  <owner>cros-telemetry@google.com</owner>
-  <summary>
-    Records the overall satisfaction score for HaTS, to be analyzed against
-    other OS metrics like performance or number of crashes. There is one score
-    per survey type. Emitted when a user answers the first question on a HaTS
-    survey.
-  </summary>
-  <token key="Survey">
-    <variant name=".ArcGames"/>
-    <variant name=".Audio"/>
-    <variant name=".BorealisGames"/>
-    <variant name=".CameraApp"/>
-    <variant name=".Ent"/>
-    <variant name=".General"/>
-    <variant name=".GeneralCamera"/>
-    <variant name=".MediaAppPdf"/>
-    <variant name=".OnboardingExperience"/>
-    <variant name=".Performance"/>
-    <variant name=".PersonalizationAvatar"/>
-    <variant name=".PersonalizationScreensaver"/>
-    <variant name=".PersonalizationWallpaper"/>
-    <variant name=".PhotosExperience"/>
-    <variant name=".SmartLock"/>
-    <variant name=".Stability"/>
-    <variant name=".Unlock"/>
-  </token>
-</histogram>
-
 <histogram name="Browser.ChromeOS.HatsStatus" enum="HatsStatus"
     expires_after="2024-03-17">
   <owner>aalsum@chromium.org</owner>
@@ -971,26 +912,6 @@ chromium-metrics-reviews@google.com.
     reports true when renderer processes are properly labeled by a primary task
     provider. These values are only reported when the Task Manager is open. This
     can be removed when no unlabeled cases remain, per https://crbug.com/739782.
-  </summary>
-</histogram>
-
-<histogram name="BrowserRenderProcessHost.RoutingIDSpaceUsed"
-    units="% of routing ID space used for browser-allocated routing IDs"
-    expires_after="2023-04-16">
-  <obsolete>
-    4/2023; the data has been collected, verifying that less than 1% of routing
-    ID space is used in practice.
-  </obsolete>
-  <owner>alexmos@chromium.org</owner>
-  <owner>dcheng@chromium.org</owner>
-  <summary>
-    Record the percentage of routing IDs ever used by a RenderProcessHost when
-    the C++ object is destroyed. The denominator is the range of all potentially
-    usable routing IDs—usually std::numeric_limits&lt;int32_t&gt;::max()—but may
-    be smaller (e.g. half that range).
-
-    This histogram does not record data if the routing ID overflows; that event
-    is captured as a browser crash instead.
   </summary>
 </histogram>
 

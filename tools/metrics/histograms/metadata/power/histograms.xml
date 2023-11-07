@@ -243,49 +243,6 @@ chromium-metrics-reviews@google.com.
   <token key="ProcessName" variants="ProcessName"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.EnergyImpact2.Total{UsageScenario}"
-    units="ScaledUnits" expires_after="2024-03-31">
-  <obsolete>
-    Removed 10/2023
-  </obsolete>
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    See definition of PerformanceMonitor.EnergyImpact2.ProcessName. This is
-    recorded every 2 minutes for {UsageScenario} (see
-    go/chrome_power_use_per_scenario). *NB: This metric will be recorded as all
-    zeros starting in mid-October 2023 as an intermediate step towards
-    retirement.*
-  </summary>
-  <token key="UsageScenario" variants="UsageScenario"/>
-</histogram>
-
-<histogram name="PerformanceMonitor.EnergyImpact2.{ProcessName}"
-    units="ScaledUnits" expires_after="2024-03-31">
-  <obsolete>
-    Removed 10/2023
-  </obsolete>
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    (Mac only) The sum of the Energy Impact of each process of the type
-    {ProcessName}. Energy Impact is a synthetic power use estimate, as displayed
-    in macOS Activity Monitor and the battery menu. This incorporates CPU
-    utilization, idle wakeups, IO, and task QoS level using per-machine-model
-    weights. Divide by 100 to match Activity Monitor's scale. Recorded every two
-    minutes.
-
-    NOTE: This metric has one signigicant limitation, it doesn't report the CPU
-    usage of processes that terminate before the end of the interval. This means
-    that short lived processes will rarely be included in the data. Furthermore,
-    we know that short-lived processes are very common (see
-    Renderer.ProcessLifetime). A future version of this metric will address this
-    limitation. *NB: This metric will be recorded as all zeros starting in
-    mid-October 2023 as an intermediate step towards retirement.*
-  </summary>
-  <token key="ProcessName" variants="ProcessName"/>
-</histogram>
-
 <histogram name="PerformanceMonitor.HasPreciseCPUUsage" enum="Boolean"
     expires_after="2022-09-30">
   <owner>pmonette@chromium.org</owner>
@@ -400,23 +357,6 @@ chromium-metrics-reviews@google.com.
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.ResourceCoalition.CPUTime"
-    units="hundredth of percent" expires_after="2024-03-31">
-  <obsolete>
-    Deprecated in 07/2021 because the computation was wrong. Replaced by
-    PerformanceMonitor.ResourceCoalition.CPUTime2.
-  </obsolete>
-  <owner>sebmarchand@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Average CPU utilization reported by the resource coalition mechanism on
-    macOS. Read out at each two-minute interval. The utilization is in the
-    0-100% range per CPU, which is then summed up and multiplied by 100. The
-    histogram is capped at 20000 (equivalent to 2 cores fully loaded). I.e. 4
-    cores busy at 25% each will read as 25 * 4 * 100 = 10000.
-  </summary>
-</histogram>
-
 <histogram
     name="PerformanceMonitor.ResourceCoalition.CPUTime2_10sec{UsageScenario10sec}"
     units="1/100 %" expires_after="2024-03-31">
@@ -448,20 +388,6 @@ chromium-metrics-reviews@google.com.
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.ResourceCoalition.Energy"
-    units="milliwatts" expires_after="2024-03-31">
-  <obsolete>
-    Deprecated in 07/2021 because the name of the metric was wrong. Replaced by
-    PerformanceMonitor.ResourceCoalition.Power.
-  </obsolete>
-  <owner>sebmarchand@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The energy usage reported by the resource coalition mechanism on macOS.
-    Reported every 2 minutes. Only available on devices with an ARM CPU.
-  </summary>
-</histogram>
-
 <histogram
     name="PerformanceMonitor.ResourceCoalition.EnergyImpact{UsageScenario}"
     units="centi-EnergyImpact" expires_after="2024-03-31">
@@ -483,22 +409,6 @@ chromium-metrics-reviews@google.com.
     go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
-</histogram>
-
-<histogram name="PerformanceMonitor.ResourceCoalition.GPUTime"
-    units="hundredth of percent" expires_after="2024-03-31">
-  <obsolete>
-    Deprecated in 07/2021 because the computation was wrong. Replaced by
-    PerformanceMonitor.ResourceCoalition.GPUTime2.
-  </obsolete>
-  <owner>sebmarchand@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Average GPU utilization reported by the resource coalition mechanism on
-    macOS. Read out at each two-minute interval. The utilization is in the
-    0-100% range and is multiplied by 100. The histogram is capped at 10000
-    (equivalent to the GPU being used 100% of the time).
-  </summary>
 </histogram>
 
 <histogram name="PerformanceMonitor.ResourceCoalition.GPUTime2{UsageScenario}"
@@ -787,35 +697,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The Ambient Light Sensor reading sampled on resume from suspend. Only
     applicable to Chrome OS.
-  </summary>
-</histogram>
-
-<histogram name="Power.ApproxCpuTimeSecondsPerCoreTypeAndFrequency"
-    units="50 MHz" expires_after="2022-08-28">
-  <obsolete>
-    Removed in March 2022 without replacement.
-  </obsolete>
-  <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Total seconds of CPU time consumed by Chrome, split by process type as well
-    as core type and core frequency. Currently only implemented on Android. For
-    every second of CPU time consumed by a process on a specific CPU core type
-    and at a specific frequency, a sample is recorded into the bucket for the
-    frequency range. Samples are recorded periodically depending on the task
-    load of each process's main thread. The histogram thus shows the total sum
-    of CPU time seconds spent for a specific process and core type across all
-    users.
-
-    Compared with Power.CpuTimeSecondsPerCoreTypeAndFrequency, the values in
-    this histogram are approximated from more widely supported global
-    per-CPU-core time_in_state stats, while
-    Power.CpuTimeSecondsPerCoreTypeAndFrequency reads per-thread time_in_state
-    stats that are only supported on newer Pixel devices (as of mid-2020).
-
-    For a histogram of daily per-user values, select &quot;Per-Client
-    Aggregation Mode&quot;.
   </summary>
 </histogram>
 
@@ -1300,87 +1181,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.CpuAffinityExperiments.ProcessAffinityMode"
-    enum="CpuAffinityMode" expires_after="2022-10-04">
-  <obsolete>
-    Deprecated in 03/2022 because the Power Scheduler feature did not launch.
-  </obsolete>
-  <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    For clients enrolled in CPU affinity restriction experiments (e.g.
-    restricting execution to little cores only), records the new CPU affinity
-    for a process every time it is changed, provided it was succcessfully set.
-  </summary>
-</histogram>
-
-<histogram name="Power.CpuAffinityExperiments.ProcessAffinityUpdateSuccess"
-    enum="BooleanSuccess" expires_after="2022-10-04">
-  <obsolete>
-    Deprecated in 03/2022 because the Power Scheduler feature did not launch.
-  </obsolete>
-  <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    For clients enrolled in CPU affinity restriction experiments (e.g.
-    restricting execution to little cores only), records whether the CPU
-    affinity for a process could be succcessfully set.
-  </summary>
-</histogram>
-
-<histogram name="Power.CpuTimeSecondsPerCoreTypeAndFrequency" units="50 MHz"
-    expires_after="2022-07-11">
-  <obsolete>
-    Removed in March 2022 without replacement.
-  </obsolete>
-  <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Total seconds of CPU time consumed by Chrome, split by process type as well
-    as core type and core frequency. Currently only implemented on Android. For
-    every second of CPU time consumed by a process on a specific CPU core type
-    and at a specific frequency, a sample is recorded into the bucket for the
-    frequency range. Samples are recorded periodically depending on the task
-    load of each process's main thread. The histogram thus shows the total sum
-    of CPU time seconds spent for a specific process and core type across all
-    users.
-
-    For a histogram of daily per-user values, select &quot;Per-Client
-    Aggregation Mode&quot;.
-  </summary>
-</histogram>
-
-<histogram name="Power.CpuTimeSecondsPerPowerMode.{ProcessType}"
-    enum="PowerMode" expires_after="2024-03-31">
-  <obsolete>
-    Deprecated in 11/2022 without replacement.
-  </obsolete>
-  <owner>eseckler@chromium.org</owner>
-  <owner>oksamyt@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Total seconds of CPU time consumed by Chrome's {ProcessType} process, split
-    by power mode. Currently only implemented on Android. For every second of
-    CPU time consumed by the process, while a specific PowerMode was active, a
-    sample is recorded into the bucket for the PowerMode. Samples are recorded
-    periodically depending on the task load of each process's main thread. The
-    histogram thus shows the total sum of CPU time seconds spent per PowerMode
-    within all {ProcessType} processes across all users.
-
-    For a histogram of daily per-user values, select &quot;Per-Client
-    Aggregation Mode&quot;.
-  </summary>
-  <token key="ProcessType">
-    <variant name="Browser" summary="browser"/>
-    <variant name="GPU" summary="GPU"/>
-    <variant name="Other" summary="other type of"/>
-    <variant name="Renderer" summary="renderer"/>
-  </token>
-</histogram>
-
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
     expires_after="2024-04-28">
   <owner>eseckler@chromium.org</owner>
@@ -1797,28 +1597,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.IdleCpuLoad.{ProcessType}" units="%"
-    expires_after="2023-07-31">
-  <obsolete>
-    Deprecated in 11/2022 without replacement.
-  </obsolete>
-  <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Records the average CPU load caused by the corresponding process over the
-    last 5 sec (or more) of Idle power mode. Emitted at the end of each such
-    period, so not more often that once in 5 sec. Note that CPU load can be
-    greater than 100% on milti-core systems.
-  </summary>
-  <token key="ProcessType">
-    <variant name="Browser"/>
-    <variant name="GPU"/>
-    <variant name="Other"/>
-    <variant name="Renderer"/>
-  </token>
-</histogram>
-
 <histogram name="Power.IdleTimeAfterDimOnAC" units="ms"
     expires_after="2022-04-24">
   <owner>tbroch@chromium.org</owner>
@@ -2108,58 +1886,6 @@ chromium-metrics-reviews@google.com.
     Press power button in tablet mode will result in different scenarios
     according to the power button up state. Counts the different power button
     press scenarios in tablet mode.
-  </summary>
-</histogram>
-
-<histogram name="Power.PowerScheduler.ProcessPowerModeChange.{ProcessType}"
-    enum="PowerMode" expires_after="2024-03-31">
-  <obsolete>
-    Deprecated in 11/2022 without replacement.
-  </obsolete>
-  <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Records the new value of the {ProcessType} process power mode every time a
-    change is detected (happens on the order of once per second).
-  </summary>
-  <token key="ProcessType">
-    <variant name="Browser" summary="browser"/>
-    <variant name="GPU" summary="GPU"/>
-    <variant name="Other" summary="other type of"/>
-    <variant name="Renderer" summary="renderer"/>
-  </token>
-</histogram>
-
-<histogram name="Power.PowerScheduler.ThrottlingDuration" units="ms"
-    expires_after="2022-10-04">
-  <obsolete>
-    Deprecated in 03/2022 because the Power Scheduler feature did not launch.
-  </obsolete>
-  <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Duration during which CPU throttling was active. Only recorded when a CPU
-    throttling policy is active (e.g. throttle while idle). A sample is recorded
-    every time throttling stops (e.g. when exiting idle state).
-  </summary>
-</histogram>
-
-<histogram name="Power.PowerScheduler.ThrottlingDurationPerCpuAffinityMode"
-    enum="CpuAffinityMode" expires_after="2022-10-04">
-  <obsolete>
-    Deprecated in 03/2022 because the Power Scheduler feature did not launch.
-  </obsolete>
-  <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Duration in milliseconds during which CPU throttling was active, split by
-    the CPU affinity for that duration. Only recorded when a CPU throttling
-    policy is active (e.g. throttle while idle). A sample is recorded every time
-    throttling stops (e.g. when exiting idle state), on the order of once per
-    second.
   </summary>
 </histogram>
 

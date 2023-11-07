@@ -357,27 +357,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Browser.PrivateMemoryFootprint.HasZombieProfile"
-    units="MB" expires_after="2022-08-21">
-  <obsolete>
-    This histogram was used to measure the impact of the
-    DestroyProfileOnBrowserClose prior to its general launch. Now that it's 100%
-    launched, there is no active A/B test.
-  </obsolete>
-  <owner>nicolaso@chromium.org</owner>
-  <owner>cbe-eng@google.com</owner>
-  <summary>
-    Same as Memory.Browser.PrivateMemoryFootprint, but only gets recorded after
-    a Profile becomes safe to delete during this browsing session. This lets us
-    measure the memory impact of destroying Profile objects and their
-    KeyedServices.
-
-    This is not meant to be compared with Memory.Browser.PrivateMemoryFootprint,
-    as it measures a different scenario. Instead, it should be compared with
-    itself in an A/B test with the DestroyProfileOnBrowserClose variation.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Browser.PrivateSwapFootprint" units="MB"
     expires_after="2024-03-24">
   <owner>erikchen@chromium.org</owner>
@@ -430,22 +409,6 @@ chromium-metrics-reviews@google.com.
   <owner>kenjibaheux@google.com</owner>
   <owner>kouhei@chromium.org</owner>
   <summary>TBD.</summary>
-</histogram>
-
-<histogram name="Memory.Discardable.FreeListReleaseTime" units="microseconds"
-    expires_after="2022-11-13">
-  <obsolete>
-    No longer needed since the experiment was not launched.
-  </obsolete>
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Records how long it takes for memory to be released from the freelist of the
-    discardable shared memory allocator with |madvise|.
-
-    Note that clients without high-resolution clocks will report 0 for very
-    short times.
-  </summary>
 </histogram>
 
 <histogram name="Memory.Discardable.FreelistSize.Dirty" units="KiB"
@@ -2119,21 +2082,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.StackSamplingProfiler.StackSampleSize" units="KB"
-    expires_after="M119">
-  <obsolete>
-    Replaced by Memory.StackSamplingProfiler.StackSampleSize2. Min bucket size
-    was too large to be useful. Replaced April 2023.
-  </obsolete>
-  <owner>iby@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
-  <summary>
-    The size of the stack copied during a stack-sampled metric capture. One
-    sample per 199 stack captures. Only recorded by clients in the stack-sampled
-    metrics experiment. ChromeOS only.
-  </summary>
-</histogram>
-
 <histogram name="Memory.StackSamplingProfiler.StackSampleSize2" units="KB"
     expires_after="2024-03-10">
   <owner>iby@chromium.org</owner>
@@ -2240,27 +2188,6 @@ chromium-metrics-reviews@google.com.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Total.PrivateMemoryFootprint.HasZombieProfile"
-    units="MB" expires_after="2022-08-21">
-  <obsolete>
-    This histogram was used to measure the impact of the
-    DestroyProfileOnBrowserClose prior to its general launch. Now that it's 100%
-    launched, there is no active A/B test.
-  </obsolete>
-  <owner>nicolaso@chromium.org</owner>
-  <owner>cbe-eng@google.com</owner>
-  <summary>
-    Same as Memory.Total.PrivateMemoryFootprint, but only gets recorded after a
-    Profile becomes safe to delete during this browsing session. This lets us
-    measure the memory impact of destroying Profile objects and their
-    KeyedServices.
-
-    This is not meant to be compared with Memory.Total.PrivateMemoryFootprint,
-    as it measures a different scenario. Instead, it should be compared with
-    itself in an A/B test with the DestroyProfileOnBrowserClose variation.
   </summary>
 </histogram>
 

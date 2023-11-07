@@ -121,21 +121,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.Bubble.LoadAndSetIconLatency" units="ms"
-    expires_after="2023-08-20">
-  <obsolete>
-    Removed 2023-02-24: no longer needed, and now inconvenient to log properly.
-  </obsolete>
-  <owner>chlily@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Measures the time (in ms) taken to load and set the file icon for a download
-    on the download bubble. Recorded each time an icon is loaded and set, which
-    can happen upon adding or updating a download bubble row, or changing the
-    device scale factor.
-  </summary>
-</histogram>
-
 <histogram name="Download.Bubble.PartialToFullViewLatency" units="ms"
     expires_after="2024-03-17">
   <owner>drubery@chromium.org</owner>
@@ -986,18 +971,6 @@ chromium-metrics-reviews@google.com.
     functions after being scheduled. The tasks may be aborted or canceled. This
     metric records the status of background tasks when native functions are
     invoked.
-  </summary>
-</histogram>
-
-<histogram name="Download.Shelf.DragEvent" enum="Download.Shelf.DragEvent"
-    expires_after="M77">
-  <obsolete>
-    Removed 2022-06-06, though it had long expired (in M77).
-  </obsolete>
-  <owner>sdy@chromium.org</owner>
-  <summary>
-    Events related to dragging a completed download from the shelf, which
-    represents dragging a reference to the downloaded file.
   </summary>
 </histogram>
 

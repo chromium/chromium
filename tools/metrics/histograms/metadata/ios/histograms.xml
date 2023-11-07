@@ -198,21 +198,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.ColdStartBackgroundTime" units="msec"
-    expires_after="2023-04-27">
-  <obsolete>
-    This metric is obsolete as of M105, because the max bucket did reach the
-    desired hour-level granularity. IOS.BackgroundTimeBeforeColdStart is the new
-    metric.
-  </obsolete>
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    This event is recorded on every cold start app open. The value represents
-    how long the app was away from the foreground.
-  </summary>
-</histogram>
-
 <histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
     expires_after="2024-09-07">
   <owner>ajuma@chromium.org</owner>
@@ -919,49 +904,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Frame.FirstInputDelay.MainFrame" units="ms"
-    expires_after="2023-03-06">
-  <obsolete>
-    Replaced by IOS.Frame.FirstInputDelay.MainFrame2 due to rebucketing.
-  </obsolete>
-  <owner>danieltwhite@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
-  <summary>
-    Many features include JavaScript injected logic that run in the WebKit
-    renderer process. One Web Vitals metric that evaluates user experience is
-    First Input Delay. First Input Delay is defined as the amount of time
-    between the a user's first interaction with the page and the page receiving
-    the input event for this interaction. This histogram captures the First
-    Input Delay time for every main frame. This histogram's understanding of
-    First Input Delay differs from the traditional understanding because it does
-    not aggregate and compare the First Input Delay times across the frames on a
-    page.
-  </summary>
-</histogram>
-
-<histogram
-    name="IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore"
-    units="ms" expires_after="2023-03-06">
-  <obsolete>
-    Replaced by
-    IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore2 due to
-    rebucketing.
-  </obsolete>
-  <owner>danieltwhite@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
-  <summary>
-    Many features include JavaScript injected logic that run in the WebKit
-    renderer process. One Web Vitals metric that evaluates user experience is
-    First Input Delay. First Input Delay is defined as the amount of time
-    between the a user's first interaction with the page and the page receiving
-    the input event for this interaction. This histogram captures the First
-    Input Delay time for user's main frame that is loaded from the Back/Forward
-    cache. This histogram's understanding of First Contentful Paint differs from
-    the traditional understanding because it does not aggregate and compare the
-    First Input Delay times across the frames on a page.
-  </summary>
-</histogram>
-
 <histogram
     name="IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore2"
     units="ms" expires_after="2024-02-27">
@@ -994,48 +936,6 @@ chromium-metrics-reviews@google.com.
     First Input Delay differs from the traditional understanding because it does
     not aggregate and compare the First Input Delay times across the frames on a
     page.
-  </summary>
-</histogram>
-
-<histogram name="IOS.Frame.FirstInputDelay.SubFrame" units="ms"
-    expires_after="2023-03-06">
-  <obsolete>
-    Replaced by IOS.Frame.FirstInputDelay.SubFrame2 due to rebucketing.
-  </obsolete>
-  <owner>danieltwhite@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
-  <summary>
-    Many features include JavaScript injected logic that run in the WebKit
-    renderer process. One Web Vitals metric that evaluates user experience is
-    First Input Delay. First Input Delay is defined as the amount of time
-    between the a user's first interaction with the page and the page receiving
-    the input event for this interaction. This histogram captures the First
-    Input Delay time for user's subframes. This histogram's understanding of
-    First Contentful Paint differs from the traditional understanding because it
-    does not aggregate and compare the First Input Delay times across the frames
-    on a page.
-  </summary>
-</histogram>
-
-<histogram
-    name="IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore"
-    units="ms" expires_after="2023-03-06">
-  <obsolete>
-    Replaced by IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore2
-    due to rebucketing.
-  </obsolete>
-  <owner>danieltwhite@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
-  <summary>
-    Many features include JavaScript injected logic that run in the WebKit
-    renderer process. One Web Vitals metric that evaluates user experience is
-    First Input Delay. First Input Delay is defined as the amount of time
-    between the a user's first interaction with the page and the page receiving
-    the input event for this interaction. This histogram captures the First
-    Input Delay time for user's subframes that is loaded from the Back/Forward
-    cache. This histogram's understanding of First Contentful Paint differs from
-    the traditional understanding because it does not aggregate and compare the
-    First Input Delay times across the frames on a page.
   </summary>
 </histogram>
 
@@ -1160,20 +1060,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged when the &quot;Ask to Open Links from Other Apps in Incognito&quot;
     setting is enabled or disabled by the user.
-  </summary>
-</histogram>
-
-<histogram name="IOS.IPH.DefaultSite.Presented" enum="BooleanHit"
-    expires_after="2023-02-28">
-  <obsolete>
-    This metric is obsolete as of M112, it is now recorded in
-    InProductHelp.ShouldTriggerHelpUI.IPH_DefaultSiteView.
-  </obsolete>
-  <owner>gambard@chromium.org</owner>
-  <owner>lpromero@chromium.org</owner>
-  <summary>
-    Recorded when the InProductHelp about the DefaultSite is presented to the
-    user. Can be used as a base number to evaluate the impact of IPH.
   </summary>
 </histogram>
 
@@ -3485,39 +3371,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Thumbstrip.CancelBy" enum="ThumbstripOpenByIOS"
-    expires_after="2024-05-14">
-  <obsolete>
-    Deprecated as of 06/2023
-  </obsolete>
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
-  <summary>
-    [iOS] Reports how a thumbstrip opening was cancelled. It uses the same enum
-    as IOS.Thumbstrip.OpenBy.
-  </summary>
-</histogram>
-
-<histogram name="IOS.Thumbstrip.CloseBy" enum="ThumbstripCloseByIOS"
-    expires_after="2024-05-14">
-  <obsolete>
-    Deprecated as of 06/2023
-  </obsolete>
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
-  <summary>[iOS] Reports how the thumbstrip was closed.</summary>
-</histogram>
-
-<histogram name="IOS.Thumbstrip.OpenBy" enum="ThumbstripOpenByIOS"
-    expires_after="2024-05-14">
-  <obsolete>
-    Deprecated as of 06/2023
-  </obsolete>
-  <owner>gambard@chromium.org</owner>
-  <owner>chromeleon@google.com</owner>
-  <summary>[iOS] Reports how the thumbstrip was opened.</summary>
-</histogram>
-
 <histogram name="IOS.Translate.PageLoad.LanguageDetectionComparison"
     enum="LanguageDetectionComparison" expires_after="2023-03-24">
   <owner>olivierrobin@chromium.org</owner>
@@ -3616,21 +3469,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The latency of fetching an initial variations seed during iOS Chrome first
     run. Only considers cases where an HTTP 200 result was received.
-  </summary>
-</histogram>
-
-<histogram name="IOS.WarmStartBackgroundTime" units="msec"
-    expires_after="2023-04-27">
-  <obsolete>
-    This metric is obsolete as of M105, because the max bucket did reach the
-    desired hour-level granularity. IOS.BackgroundTimeBeforeWarmStart is the new
-    metric.
-  </obsolete>
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    This event is recorded on every warm start app open. The value represents
-    how long the app was away from the foreground.
   </summary>
 </histogram>
 
@@ -3761,19 +3599,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Install" summary="installation"/>
     <variant name="Uninstall" summary="removal"/>
   </token>
-</histogram>
-
-<histogram name="IOS.WindowIDInjection.ElapsedTime" units="ms"
-    expires_after="2023-02-26">
-  <obsolete>
-    Removed in M111 because windowId injection was removed.
-  </obsolete>
-  <owner>michaeldo@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    Measures the time taken for windowID injection to complete. Logged once per
-    pageload.
-  </summary>
 </histogram>
 
 <histogram name="IOS.WKWebViewFinishBeforeCommit" enum="Boolean"

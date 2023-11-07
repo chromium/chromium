@@ -1454,27 +1454,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.AudioCapturerDroppedData2.{Duration}" units="permille"
-    expires_after="2023-10-05">
-  <obsolete>
-    Deprecated in favor of Media.AudioCapturerDroppedData10sIntervals and
-    Media.AudioCapturerDroppedDataBelow10s. Data is no longer collected.
-  </obsolete>
-  <owner>olka@chromium.org</owner>
-  <owner>gustaf@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    The proportion of input audio data that was dropped at the browser/renderer
-    boundary due to for example buffer overflow in the writer side buffer or in
-    the socket. Reported at the destruction of low-latency audio input stream.
-    Rounded up, cropped to 1/10 of all callbacks.
-  </summary>
-  <token key="Duration">
-    <variant name="Long" summary="Streams equal or longer than 3000 callbacks"/>
-    <variant name="Short" summary="Streams shorter than 3000 callbacks"/>
-  </token>
-</histogram>
-
 <histogram name="Media.AudioCapturerDroppedDataBelow10s" units="drops"
     expires_after="2024-04-28">
   <owner>fhernqvist@google.com</owner>
@@ -1501,28 +1480,6 @@ chromium-metrics-reviews@google.com.
     seconds for buffer size 10 ms) and is logged at the end of each collection
     interval. Not recorded for streams with less than 1000 input data pushes.
   </summary>
-</histogram>
-
-<histogram name="Media.AudioCapturerMissedReadDeadline2.{Duration}"
-    units="permille" expires_after="2023-10-05">
-  <obsolete>
-    Deprecated in favor of Media.AudioCapturerMissedReadDeadline10sIntervals and
-    Media.AudioCapturerMissedReadDeadlineBelow10s. Data is no longer collected.
-  </obsolete>
-  <owner>olka@chromium.org</owner>
-  <owner>gustaf@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    The proportion of input audio data blocks that had to be buffered because
-    there was not room in the shared memory ring buffer on the browser/renderer
-    boundary. This happens if the reading side hasn't read data in time.
-    Reported at the destruction of low-latency audio input stream. Rounded up,
-    cropped to 1/10 of all callbacks.
-  </summary>
-  <token key="Duration">
-    <variant name="Long" summary="Streams equal or longer than 3000 callbacks"/>
-    <variant name="Short" summary="Streams shorter than 3000 callbacks"/>
-  </token>
 </histogram>
 
 <histogram name="Media.AudioCapturerMissedReadDeadlineBelow10s" units="misses"
@@ -1759,21 +1716,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.AudioRendererAudioGlitches" enum="AudioGlitchResult"
-    expires_after="2023-04-16">
-  <obsolete>
-    Deprecated in favor of Media.AudioRendererAudioGlitches2. Data is no longer
-    collected.
-  </obsolete>
-  <owner>henrika@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Captures if render-side audio glitches are detected or not. Sampled when a
-    low-latency output audio stream is destructed.
-  </summary>
-</histogram>
-
 <histogram name="Media.AudioRendererAudioGlitches2.{LatencyTag}"
     enum="AudioGlitchResult" expires_after="2024-04-28">
   <owner>dalecurtis@chromium.org</owner>
@@ -1807,41 +1749,6 @@ chromium-metrics-reviews@google.com.
     session (i.e., between a play and pause). If audio track changes are ever
     enabled, it may additionally be called for every audio track change.
   </summary>
-</histogram>
-
-<histogram
-    name="Media.AudioRendererMissedDeadline2{Mixing}{Duration}{LatencyTag}"
-    units="permille" expires_after="2023-02-05">
-  <obsolete>
-    Deprecated in favor of Media.AudioRendererMissedDeadline3. Data is no longer
-    collected.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Proportion of SyncReader::Read() calls where the renderer missed its
-    realtime deadline. Rounded up, clipped to 1/10 of the stream callbacks.
-    Sampled when a low-latency output audio stream is destructed.
-  </summary>
-  <token key="Mixing">
-    <variant name="" summary="Whole stream lifetime"/>
-    <variant name=".Mixing" summary="During mixing"/>
-  </token>
-  <token key="Duration">
-    <variant name=".Long"
-        summary="Streams equal or longer than 3000 callbacks"/>
-    <variant name=".Short" summary="Streams shorter than 3000 callbacks"/>
-  </token>
-  <token key="LatencyTag">
-    <variant name="" summary="All latencies combined"/>
-    <variant name=".LatencyExactMs"/>
-    <variant name=".LatencyInteractive"/>
-    <variant name=".LatencyPlayback"/>
-    <variant name=".LatencyRtc"/>
-    <variant name=".LatencyUnknown"/>
-  </token>
 </histogram>
 
 <histogram
@@ -2040,21 +1947,6 @@ chromium-metrics-reviews@google.com.
     Track the delay distribution of invocations of the microtask. Measure this
     independently of whether an explicit API call was made, and independently of
     whether the browser-side timer expired.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Media.ConfigChangeDecoderSelectionTime" units="ms"
-    expires_after="2023-01-01">
-  <obsolete>
-    Removed 02/2023 due to lack of further need for this data.
-  </obsolete>
-  <owner>cassew@google.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Duration of decoder selection during config changes, measured from first
-    call to 'DecoderSelector::SelectDecoder' to
-    'DecoderSelector::FinalizeSelection'. The HW/SW suffix indicates the type of
-    the decoder that was ultimately selected.
   </summary>
 </histogram>
 
@@ -2277,20 +2169,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Clear"/>
     <variant name="Encrypted"/>
   </token>
-</histogram>
-
-<histogram name="Media.DXVAVDA.DecoderLifetimeProgression"
-    enum="DXVALifetimeProgression" expires_after="2022-04-24">
-  <obsolete>
-    Removed 05/2022 due to lack of further need for this data.
-  </obsolete>
-  <owner>liberato@chromium.org</owner>
-  <owner>tmathmeyer@chromium.org</owner>
-  <summary>
-    This enum allows us to count DXVAVideoDecoderWin specific crashes and
-    initialization failures. This is recorded whenever the decoder is
-    initialized or destroyed, or encounters an error.
-  </summary>
 </histogram>
 
 <histogram name="Media.ElementCapture.ProduceTarget.Function.Result"
@@ -2992,19 +2870,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     SQLite specific errors reported while opening and using the Media License
     Database.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.MediaLicenseStorageHostOpenError"
-    enum="MediaLicenseStorageHostOpenError" expires_after="2024-04-11">
-  <obsolete>
-    Deprecated in favor for Media.EME.MediaLicenseStorageHostOpenError.Incognito
-    and Media.EME.MediaLicenseStorageHostOpenError.NotIncognito in 2/2023.
-  </obsolete>
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    General errors reported while attempting to open the MediaLicenseDatabase.
   </summary>
 </histogram>
 
@@ -3718,21 +3583,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Media.InitialDecoderSelectionTime" units="ms"
-    expires_after="2023-03-25">
-  <obsolete>
-    Removed 02/2023 due to lack of further need for this data.
-  </obsolete>
-  <owner>cassew@google.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Duration of initial decoder selection. Measured from first call to
-    'DecoderSelector::SelectDecoder' to 'DecoderSelector::FinalizeSelection'.
-    The HW/SW suffix indicates the type of the decoder that was ultimately
-    selected.
-  </summary>
-</histogram>
-
 <histogram name="Media.InitializeRendererTimeout" enum="CallbackTimeoutStatus"
     expires_after="2024-04-11">
   <owner>xhwang@chromium.org</owner>
@@ -3953,19 +3803,6 @@ chromium-metrics-reviews@google.com.
     Count of MediaDevicesManager starting enumerating video devices (ie cameras)
     with the camera capture service, including enumerations which never
     finished.
-  </summary>
-</histogram>
-
-<histogram name="Media.MediaElement.ContentTypeParseable"
-    enum="ContentTypeParseableResult" expires_after="2022-07-03">
-  <obsolete>
-    Removed 07/2022 due to lack of further need for this data.
-  </obsolete>
-  <owner>jrummell@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Whether the content type provided to HTMLMediaElement would parse with
-    ParsedContentType or not.
   </summary>
 </histogram>
 
@@ -4235,21 +4072,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Media.MSE.CodecChangeTime" units="ms"
-    expires_after="2023-07-02">
-  <obsolete>
-    Removed 02/2023 due to lack of further need for this data.
-  </obsolete>
-  <owner>wolenetz@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Duration of config changes that include codec changes, measured from before
-    decoder flush until after the first output frame is returned. The HW/SW
-    suffix indicates the type of the decoder that was ultimately selected.
-  </summary>
-</histogram>
-
 <histogram name="Media.MSE.DemuxerDestructionTime" units="ms"
     expires_after="2020-10-11">
   <owner>wolenetz@chromium.org</owner>
@@ -4260,20 +4082,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MSE.DetectedShakaPackagerInMp4" enum="BooleanDetected"
-    expires_after="2022-06-19">
-  <obsolete>
-    Removed 02/2022 due to lack of further need for this data.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Tracks if ShakaPackager metadata was detected in the MP4 'moov' atom during
-    MSE based media playback. Recorded for every 'moov' atom, which is expected
-    once per asset. Multiple assets may be played within the same MSE session.
-  </summary>
-</histogram>
-
 <histogram name="Media.MSE.ExecutionContext" enum="MediaSourceExecutionContext"
     expires_after="2020-10-11">
   <owner>wolenetz@chromium.org</owner>
@@ -4281,64 +4089,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each MediaSource instance, records the type of thread that created the
     instance.
-  </summary>
-</histogram>
-
-<histogram name="Media.MSE.Mp4ConsecutiveEmptySamples" units="samples"
-    expires_after="2023-07-02">
-  <obsolete>
-    Removed Jan 2023, no further data needed.
-  </obsolete>
-  <owner>wolenetz@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <summary>
-    Reports the number of consecutive empty samples in a sequence within a track
-    run. There can be zero or more such sequences in a track run, and each
-    sequence is reported separately. This metric is expected to inform a
-    heuristic to realistically bound the parsing complexity of track runs that
-    may contain empty samples. See https://crbug.com/907268.
-  </summary>
-</histogram>
-
-<histogram name="Media.MSE.Mp4EmptySamplesInTRun" units="samples"
-    expires_after="2022-04-17">
-  <obsolete>
-    Removed Jan 2023, no further data needed.
-  </obsolete>
-  <owner>wolenetz@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <summary>
-    Reports the number of empty samples within a track run. This metric is
-    expected to inform a heuristic to realistically bound the parsing complexity
-    of track runs that may contain empty samples. See https://crbug.com/907268.
-  </summary>
-</histogram>
-
-<histogram name="Media.MSE.Mp4SampleSize" units="bytes"
-    expires_after="2023-07-02">
-  <obsolete>
-    Removed Jan 2023, no further data needed.
-  </obsolete>
-  <owner>wolenetz@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <summary>
-    Reports the size of each sample parsed. This metric is expected to inform a
-    heuristic to realistically bound the parsing complexity of track runs that
-    may contain empty or huge samples. See https://crbug.com/907268.
-  </summary>
-</histogram>
-
-<histogram name="Media.MSE.Mp4TrunSampleCount" units="samples"
-    expires_after="2023-07-02">
-  <obsolete>
-    Removed Jan 2023, no further data needed.
-  </obsolete>
-  <owner>wolenetz@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <summary>
-    Reports the number of samples in each track run. This metric is expected to
-    inform a heuristic to realistically bound the parsing complexity of track
-    runs that may contain huge numbers of samples. See https://crbug.com/907268.
   </summary>
 </histogram>
 
@@ -4474,19 +4224,6 @@ chromium-metrics-reviews@google.com.
     when a stream is started until it is stopped. A stream is stopped when it is
     paused, closed (i.e. destructed), or when a device change event causes it to
     be restarted.
-  </summary>
-</histogram>
-
-<histogram name="Media.PeakWebMediaPlayerCount" units="players"
-    expires_after="M100">
-  <obsolete>
-    Removed 04/2022 due to lack of further need for this data.
-  </obsolete>
-  <owner>dalecurtis@google.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records the peak number of WebMediaPlayer objects per RenderFrame upon
-    RenderFrame destruction (both cleanly and via render process termination).
   </summary>
 </histogram>
 
@@ -6030,33 +5767,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCaptureManager.DeviceSessionLockDuration"
-    units="ms" expires_after="2023-04-23">
-  <obsolete>
-    Removed 04/2023. No longer needed.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records the length of time the screen was locked while a device capture
-    session is active. An entry is recorded upon screen unlock or upon closure
-    of all active device capture sessions.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCaptureManager.DeviceSessionWasLocked"
-    enum="Boolean" expires_after="2023-04-23">
-  <obsolete>
-    Removed 04/2023. No longer needed.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Indicates if a device capture session encountered a screen lock during its
-    lifetime. An entry is recorded once upon session closure.
-  </summary>
-</histogram>
-
 <histogram
     name="Media.VideoCaptureService.DurationFromLastConnectToClosingConnectionAfterCapture"
     units="ms" expires_after="M78">
@@ -6351,19 +6061,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoRenderer.LowDelay" enum="Boolean"
-    expires_after="2022-09-11">
-  <obsolete>
-    Removed 09/2022. No longer needed.
-  </obsolete>
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Indicates whether video is rendering in low delay mode. It's recorded when a
-    video starts playing.
-  </summary>
-</histogram>
-
 <histogram name="Media.VTVDA.HardwareAccelerated"
     enum="BooleanHardwareAccelerated" expires_after="2024-09-25">
   <owner>sandersd@chromium.org</owner>
@@ -6463,20 +6160,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".CorsCrossOrigin"
         summary="and the response is cross-origin/opaque,"/>
   </token>
-</histogram>
-
-<histogram name="Media.WebMediaPlayerImpl.WatchTime"
-    enum="WebMediaPlayerWatchTimeType" expires_after="2021-08-01">
-  <obsolete>
-    Removed 09/2022.
-  </obsolete>
-  <owner>sandersd@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Wall time of WebMediaPlayer playbacks. Each count represents one second of
-    media playback. Multiple WebMediaPlayer instances can together accumulate
-    watch time faster than real time.
-  </summary>
 </histogram>
 
 <histogram
@@ -6864,16 +6547,6 @@ chromium-metrics-reviews@google.com.
     Total length of a Cast Streaming mirror session of any type, when the cast
     sink was discovered via access code.
   </summary>
-</histogram>
-
-<histogram name="MediaRouter.CastStreaming.Session.Length.File" units="ms"
-    expires_after="2022-07-01">
-  <obsolete>
-    Removed 04/2022 as local file casting is no longer done via the Cast UI.
-  </obsolete>
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>Total length of a Cast Streaming File mirror session.</summary>
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Length.OffscreenTab"

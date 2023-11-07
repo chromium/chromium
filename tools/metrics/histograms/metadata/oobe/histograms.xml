@@ -358,32 +358,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Verify"/>
 </variants>
 
-<histogram name="OOBE.ArcTermsOfServiceScreen.ReviewFollowingSetup"
-    enum="BooleanChecked" expires_after="2023-11-01">
-  <obsolete>
-    Obsoleted in M-106.
-  </obsolete>
-  <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Whether the review Google Play following setup box is checked. Recorded when
-    user leaves ArcTermsOfService screeen.
-  </summary>
-</histogram>
-
-<histogram name="OOBE.ArcTermsOfServiceScreen.UserActions"
-    enum="ArcTosScreenUserActions" expires_after="2023-11-01">
-  <obsolete>
-    Obsoleted in M-106.
-  </obsolete>
-  <owner>osamafathy@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Tracks all user actions on the ArcTermsOfService screen. Recorded when user
-    clicks on buttons on the ArcTermsOfService screen.
-  </summary>
-</histogram>
-
 <histogram name="OOBE.BootToOOBECompleted.{CompletedOobeFlowType}" units="ms"
     expires_after="2024-05-05">
   <owner>osamafathy@chromium.org</owner>

@@ -86,33 +86,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DmgAnalysisTimedOut" enum="BooleanTimedOut"
-    expires_after="2022-09-30">
-  <obsolete>
-    Replaced with SBClientDownload.DmgArchiveAnalysisResult in 04-2022
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    For each DMG download on Mac, records whether or not analysis of the DMG
-    timed out.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.DmgIterationSuccess" enum="BooleanSuccess"
-    expires_after="2022-09-30">
-  <obsolete>
-    Removed 08-2022. SBClientDownload.DmgArchiveAnalysisResult provides strictly
-    more detail about our ability to unpack DMGs.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    For each DMG download on Mac, records whether or not we were able to iterate
-    through the partitions of the DMG.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.DocumentCheckDownloadStats"
     enum="SBClientDownloadCheckDownloadStats" expires_after="2024-02-20">
   <owner>drubery@chromium.org</owner>
@@ -262,19 +235,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether a downloaded ZIP contains any AES-encryped content. This is
     logged once for every downloaded ZIP containing any encrypted content.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.ExtractDocumentFeaturesTimeMedium" units="ms"
-    expires_after="2022-10-16">
-  <obsolete>
-    Replaced with SBClientDownload.FileAnalysisDuration.Document in 06-2022.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the time it takes for the SafeBrowsing download service to extract
-    info from an Office document.
   </summary>
 </histogram>
 
@@ -663,21 +623,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.MainFrameRemoteExists" enum="BooleanExists"
-    expires_after="2022-08-29">
-  <obsolete>
-    Removed 04-2022 since the logic for how PhishingDetectors are managed
-    changed.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether we have a mojo::Remote for the main frame's
-    PhishingDetector. This is recorded on every classification (a large fraction
-    of navigations).
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.ModelDynamicUpdateSuccess"
     enum="BooleanSuccess" expires_after="2024-06-08">
   <owner>andysjlim@chromium.org</owner>
@@ -774,19 +719,6 @@ chromium-metrics-reviews@google.com.
 
     Starting in M95, the PRIVATE_IP bucket was split to include LOCAL_RESOURCE
     and CHROME_UI_PAGE.
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.RequestSatisfiedFromCache" enum="BooleanHit"
-    expires_after="2022-08-03">
-  <obsolete>
-    Removed 06-2022
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The number of times that a cached phishing classification result was used,
-    rather than pinging the server.
   </summary>
 </histogram>
 

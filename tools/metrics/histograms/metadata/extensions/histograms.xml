@@ -133,19 +133,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ActionSetIconFailureType"
-    enum="ExtensionActionSetIconFailureType" expires_after="M88">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The cause for the failure in the setIcon() extension API function. This is
-    temporary logging to help track down the cause of a crash.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ActiveScriptController.DeniedExtensions"
     units="Extension Count" expires_after="2024-03-31">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -163,18 +150,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of extensions on a page that wanted to execute a script, required
     explicit user consent, and were granted permission.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.AlarmManager.AlarmsLoadedCount" units="alarms"
-    expires_after="2023-12-01">
-  <obsolete>
-    Code removed 2023/06.
-  </obsolete>
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The number of alarms loaded from storage when an extension is loaded.
   </summary>
 </histogram>
 
@@ -227,20 +202,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of extension apps launched grouped by extensions::LaunchType.
     From 2022-09 this no longer includes web app launches.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.AttemptedToDowngradeVersionLocation"
-    enum="ExtensionLocation" expires_after="2022-11-18">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The extension install location of an extension that Chrome attempted to add,
-    but failed because it would downgrade the version. Tracking for
-    https://crbug.com/810799.
   </summary>
 </histogram>
 
@@ -328,55 +289,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The reason a valid ExtensionSyncData could not be parsed from a SyncData
     received from sync.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.Bindings.NativeBindingCreationTime"
-    units="microseconds" expires_after="2023-01-22">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The elapsed time to create a new full instance of an extension API's
-    bindings using native bindings.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.BookmarkAppLaunchContainer"
-    enum="AppLaunchContainer" expires_after="2023-08-14">
-  <obsolete>
-    Replaced by WebApp.LaunchContainer in M113.
-  </obsolete>
-  <owner>phillis@chromium.org</owner>
-  <owner>benwells@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    Records the container used for a web app launch, when the app is launched
-    (eg. via UI surfaces or intents). Not recorded when the web app is navigated
-    to via URL.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.BookmarkAppLaunchSource" enum="AppLaunchSource"
-    expires_after="2023-07-09">
-  <obsolete>
-    Replaced by WebApp.LaunchSource in M113.
-  </obsolete>
-  <owner>phillis@chromium.org</owner>
-  <owner>benwells@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The number of times web apps are launched, grouped by
-    extensions::AppLaunchSource. The equivalent histogram on Android is called
-    Launch.HomeScreenSource.
   </summary>
 </histogram>
 
@@ -506,20 +418,6 @@ chromium-metrics-reviews@google.com.
   <owner>src/extensions/OWNERS</owner>
   <summary>
     Records the action taken by the user from the extension icon context menu.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.CorruptedExtensionLocation"
-    enum="ExtensionLocation" expires_after="2022-01-01">
-  <obsolete>
-    Obsolete in M100.
-  </obsolete>
-  <owner>ydago@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Records the manifest location of a corrupted extension that will be
-    reinstalled silently. Fires when we suspect corruption in an extension and
-    begin the process of reinstalling it.
   </summary>
 </histogram>
 
@@ -1616,16 +1514,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ExtensionUninstalled" units="units"
-    expires_after="2022-05-01">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>An extension has been uninstalled.</summary>
-</histogram>
-
 <histogram name="Extensions.ExternalItemState" enum="ExternalItemState"
     expires_after="2023-07-07">
   <obsolete>
@@ -1669,19 +1557,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records when an extension with the chrome://favicon host permission makes a
     network level request for a favicon resource.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.FeatureProviderStaticInitTime" units="ms"
-    expires_after="M90">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during extensions::FeatureProvider::Static.
-    Only measured while in the browser process.
   </summary>
 </histogram>
 
@@ -2274,28 +2149,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Extensions.Functions.FailedTotalExecutionTime{IsKiosk}"
-    units="ms" expires_after="2022-08-21">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The total amount of time it took to execute an extension function that
-    failed from the time the extension function is called to the time the
-    function responds. Note that since some extension functions are inherently
-    slow (anything that requires user interaction, for instance), this is not a
-    definitive source for function performance. In M-102 this histogram was
-    split and events from kiosk extensions are recorded in the separate
-    Extensions.Functions.FailedTotalExecutionTime.Kiosk histogram.
-  </summary>
-  <token key="IsKiosk">
-    <variant name="" summary="from non-kiosk extension"/>
-    <variant name=".Kiosk" summary="from kiosk extension"/>
-  </token>
-</histogram>
-
 <histogram name="Extensions.Functions.HandleResponseElapsedTime" units="ms"
     expires_after="never">
 <!-- expires-never: Used for monitoring extension API performance. -->
@@ -2740,19 +2593,6 @@ chromium-metrics-reviews@google.com.
     profile&quot; (profiles where people can install extensions, specifically
     profiles that can have non-component extensions installed) initialization.
     See also Extensions.IncognitoAllowed.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.InitPrefGetExtensionsTime" units="ms"
-    expires_after="M90">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during the GetExtensions call within
-    ExtensionPrefs::InitPrefStore.
   </summary>
 </histogram>
 
@@ -3709,20 +3549,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Extensions.Messaging.MessageSize" units="bytes"
-    expires_after="2022-11-18">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The size, in bytes, of a message sent from an extension using one of the
-    messaging APIs (e.g. chrome.runtime.sendMessage). All message sizes are
-    logged, but messages over 64 MB in size aren't sent.
-  </summary>
-</histogram>
-
 <histogram
     name="Extensions.Messaging.SetPortIdTime{ExtensionMessagingPortType}"
     units="ms" expires_after="M85">
@@ -4056,21 +3882,6 @@ chromium-metrics-reviews@google.com.
     This version of the histogram does not include cases where the background
     page startup is deferred, which would have been logged as ~0ms startup in
     Extensions.ProcessManagerStartupHostsTime.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ResetPermissionsIncrease" enum="Boolean"
-    expires_after="2022-12-01">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Whether the DISABLE_PERMISSIONS_INCREASE disable reason was removed from an
-    extension while checking for a permissions increase. Recorded during startup
-    and on reload and update, for each extension that has the
-    DISABLE_PERMISSIONS_INCREASE reason.
   </summary>
 </histogram>
 
@@ -4536,33 +4347,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.SyncGetMessageBundle" units="ms"
-    expires_after="2022-09-11">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The amount of synchronous time spent retrieving an extension's message
-    bundle (the collection of its i18n resources) from the browser.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ThrottledNetworkRequestDelay" units="ms"
-    expires_after="2022-06-01">
-  <obsolete>
-    Code removed 2022/12.
-  </obsolete>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The duration by which a network request was delayed while waiting for
-    extension user script load. Recorded once per request that is delayed, at
-    the time the resource resumes loading.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"
     units="Extension Count" expires_after="2024-04-28">
   <owner>emiliapaz@chromium.org</owner>
@@ -4607,19 +4391,6 @@ chromium-metrics-reviews@google.com.
     this will be 100 if the user has every extension pinned). Recorded once per
     profile during initialization if the user has at least one extension with an
     action in the toolbar.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.UninstallBookmarkApp" enum="Boolean"
-    expires_after="2022-12-01">
-  <obsolete>
-    Obsolete in M110.
-  </obsolete>
-  <owner>phillis@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Tracks whether bookmark app uninstalling succeeded or not. This is emitted
-    whenever a bookmark app (which is deprecated) gets uninstalled.
   </summary>
 </histogram>
 

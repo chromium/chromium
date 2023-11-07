@@ -1623,16 +1623,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.FedCm.Status.Revoke" enum="FedCmRevokeStatus"
-    expires_after="M110">
-  <obsolete>
-    Revoke is deprecated. Removed in June 2022.
-  </obsolete>
-  <owner>yigu@chromium.org</owner>
-  <owner>web-identity-eng@google.com</owner>
-  <summary>Records the status of a revoke call to the FedCM API.</summary>
-</histogram>
-
 <histogram name="Blink.FedCm.Status.Revoke2" enum="FedCmRevokeStatus2"
     expires_after="M125">
   <owner>npm@chromium.org</owner>
@@ -2499,18 +2489,6 @@ chromium-metrics-reviews@google.com.
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
-</histogram>
-
-<histogram name="Blink.Input.GestureScrollBeginAsCursorControl"
-    enum="BooleanSuccess" expires_after="M91">
-  <obsolete>
-    Cursor Control feature is launched, the metrics is no longer needed. Removed
-    in March 2022.
-  </obsolete>
-  <owner>ctzsm@chromium.org</owner>
-  <owner>changwan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>Records if a GestureScrollBegin is for cursor control.</summary>
 </histogram>
 
 <histogram name="Blink.IntersectionObseration.FrameMinScrollDeltaToUpdateX"
