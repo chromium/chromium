@@ -3051,8 +3051,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourcesPerSourceOrigin.{Position}" units="sources"
-    expires_after="2024-04-28">
+<histogram name="Conversions.SourcesPerSourceOrigin2.{Position}"
+    units="sources" expires_after="2024-04-28">
   <owner>anthonygarant@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3070,7 +3070,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.SourceStoredStatus7"
+<histogram name="Conversions.SourceStoredStatus8"
     enum="ConversionStorageSourceStatus" expires_after="2024-03-10">
   <owner>tquintanilla@chromium.org</owner>
   <owner>anthonygarant@chromium.org</owner>
@@ -3116,7 +3116,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.Storage.Sql.FileSize" units="KB"
+<histogram name="Conversions.Storage.Sql.FileSize2" units="KB"
     expires_after="2024-03-24">
   <owner>tquintanilla@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -3128,7 +3128,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.Storage.Sql.FileSize.PerSource" units="bytes"
+<histogram name="Conversions.Storage.Sql.FileSize2.PerSource" units="bytes"
     expires_after="M121">
   <owner>anthonygarant@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -3140,7 +3140,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached"
+<histogram name="Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2"
     units="KB" expires_after="2024-03-31">
   <owner>tquintanilla@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -3153,7 +3153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached.PerSource"
+    name="Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2.PerSource"
     units="bytes" expires_after="2024-03-31">
   <owner>anthonygarant@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>

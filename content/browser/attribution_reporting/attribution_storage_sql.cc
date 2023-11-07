@@ -508,13 +508,13 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     if (int64_t file_size = StorageFileSizeKB(path_to_database_);
         file_size > -1) {
       base::UmaHistogramCounts10M(
-          "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached",
+          "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2",
           file_size);
       absl::optional<int64_t> number_of_sources = NumberOfSources();
       if (number_of_sources.has_value()) {
         CHECK_GT(*number_of_sources, 0);
         base::UmaHistogramCounts1M(
-            "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached."
+            "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2."
             "PerSource",
             file_size * 1024 / *number_of_sources);
       }
@@ -2165,10 +2165,10 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
 
   if (int64_t file_size = StorageFileSizeKB(path_to_database_);
       file_size > -1) {
-    base::UmaHistogramCounts10M("Conversions.Storage.Sql.FileSize", file_size);
+    base::UmaHistogramCounts10M("Conversions.Storage.Sql.FileSize2", file_size);
     absl::optional<int64_t> number_of_sources = NumberOfSources();
     if (number_of_sources.has_value() && *number_of_sources > 0) {
-      base::UmaHistogramCounts1M("Conversions.Storage.Sql.FileSize.PerSource",
+      base::UmaHistogramCounts1M("Conversions.Storage.Sql.FileSize2.PerSource",
                                  file_size * 1024 / *number_of_sources);
     }
   }
@@ -2252,13 +2252,13 @@ void AttributionStorageSql::RecordSourcesPerSourceOrigin() {
       &std::pair<const std::string, int64_t>::second, &CountOnly::count);
 
   // Record sampled top counts.
-  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin.1st",
+  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin2.1st",
                                 k >= 1 ? top_k[0].count : 0);
-  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin.3rd",
+  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin2.3rd",
                                 k >= 3 ? top_k[2].count : 0);
-  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin.7th",
+  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin2.7th",
                                 k >= 7 ? top_k[6].count : 0);
-  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin.20th",
+  base::UmaHistogramCounts10000("Conversions.SourcesPerSourceOrigin2.20th",
                                 k >= 20 ? top_k[19].count : 0);
 }
 

@@ -148,7 +148,7 @@ struct CONTENT_EXPORT AttributionConfig {
   [[nodiscard]] bool Validate() const;
 
   // Controls how many sources can be in the storage per source origin.
-  int max_sources_per_origin = 1024;
+  int max_sources_per_origin = 4096;
 
   // Controls the maximum number of distinct attribution destinations that can
   // be in storage at any time for sources with the same <source site, reporting
