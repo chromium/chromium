@@ -10,6 +10,7 @@
 #include <ostream>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -238,7 +239,7 @@ struct Converter<std::vector<T> > {
       T item;
       if (!Converter<T>::FromV8(isolate, v8_item, &item))
         return false;
-      result.push_back(item);
+      result.push_back(std::move(item));
     }
 
     out->swap(result);
