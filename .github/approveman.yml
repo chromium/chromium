@@ -11,3 +11,7 @@ ownership_rules:
       path: "**/DEPS"
     - name: Root DEPS file
       path: "DEPS"
+    - name: Replay build scripts
+      path: "replay_build_scripts/**"
+    - name: More Replay build scripts
+      path: "replay-scripts/**"

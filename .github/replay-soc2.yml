@@ -16,4 +16,6 @@ allowlist:
   - .github/**
   - "**/DEPS"
   - DEPS
+  - replay_build_scripts/**
+  - replay-scripts/**
 blocklist:
