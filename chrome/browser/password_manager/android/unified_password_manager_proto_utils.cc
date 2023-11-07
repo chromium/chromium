@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_store/unified_password_manager_proto_utils.h"
+#include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 
 #include <string>
 
