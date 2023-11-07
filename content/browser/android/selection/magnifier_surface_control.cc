@@ -122,6 +122,8 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
       gfx::Rect(surface_size_), device_scale,
       local_surface_id_allocator_.GetCurrentLocalSurfaceId());
 
+  GetHostFrameSinkManager()->RegisterFrameSinkId(
+      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
   CreateDisplayAndFrameSink();
   surface_layer_->SetIsDrawable(true);
   root_layer_->SetBounds(surface_size_);
@@ -187,9 +189,6 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
   layer_tree_->SetRoot(root_layer_);
   rounded_corner_layer_->AddChild(zoom_layer_);
   zoom_layer_->AddChild(surface_layer_);
-
-  GetHostFrameSinkManager()->RegisterFrameSinkId(
-      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
 }
 
 MagnifierSurfaceControl::~MagnifierSurfaceControl() {
