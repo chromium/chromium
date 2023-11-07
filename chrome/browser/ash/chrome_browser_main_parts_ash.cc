@@ -1068,8 +1068,11 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       // the session is allowed to continue with policy served from an in-memory
       // cache. If Chrome crashes later in the session, the policy becomes
       // completely unavailable. Exit the session in that case, rather than
-      // allowing it to continue without policy.
-      chrome::AttemptUserExit();
+      // allowing it to continue without policy. Allow the initialization flow
+      // to finish before exiting to avoid dead-lock issues on D-Bus, as
+      // encountered on crbug/836388.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&chrome::AttemptUserExit));
       return;
     }
 
