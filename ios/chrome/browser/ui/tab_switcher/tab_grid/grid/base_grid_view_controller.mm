@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -450,6 +451,29 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   return [LegacyGridTransitionLayout layoutWithInactiveItems:items
                                                   activeItem:activeItem
                                                selectionItem:selectionItem];
+}
+
+- (TabGridTransitionItem*)transitionItemForActiveCell {
+  [self.collectionView layoutIfNeeded];
+
+  NSIndexPath* selectedItemIndexPath = CreateIndexPath(self.selectedIndex);
+  if (![self.collectionView.indexPathsForVisibleItems
+          containsObject:selectedItemIndexPath]) {
+    return nil;
+  }
+
+  GridCell* cell = base::apple::ObjCCastStrict<GridCell>(
+      [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath]);
+
+  UICollectionViewLayoutAttributes* attributes = [self.collectionView
+      layoutAttributesForItemAtIndexPath:selectedItemIndexPath];
+
+  // Normalize frame to window coordinates. The attributes class applies this
+  // change to the other properties such as center, bounds, etc.
+  CGRect frameInWindow = [self.collectionView convertRect:attributes.frame
+                                                   toView:nil];
+
+  return [TabGridTransitionItem itemWithView:cell originalFrame:frameInWindow];
 }
 
 - (void)prepareForAppearance {

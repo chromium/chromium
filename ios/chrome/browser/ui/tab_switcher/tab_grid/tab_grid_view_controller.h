@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_layout_providing.h"
 
 @protocol ApplicationCommands;
 @class GridContainerViewController;
@@ -86,6 +87,7 @@ enum class TabGridPageConfiguration {
                         LegacyGridTransitionAnimationLayoutProviding,
                         TabGridPaging,
                         TabGridToolbarsActionWrangler,
+                        TabGridTransitionLayoutProviding,
                         UISearchBarDelegate>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;

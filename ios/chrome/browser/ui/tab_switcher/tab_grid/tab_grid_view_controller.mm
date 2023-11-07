@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_layout.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -266,8 +267,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         self.scrollView.contentSize.width - self.scrollView.frame.size.width;
     CGFloat offset = scrollView.contentOffset.x / offsetWidth;
     // In RTL, flip the offset.
-    if (UseRTLLayout())
+    if (UseRTLLayout()) {
       offset = 1.0 - offset;
+    }
     self.topToolbar.pageControl.sliderPosition = offset;
 
     TabGridPage page = GetPageFromScrollView(scrollView);
@@ -353,11 +355,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (BOOL)shouldReparentSelectedCell:(GridAnimationDirection)animationDirection {
   switch (animationDirection) {
-    // For contracting animation only selected pinned cells should be
-    // reparented.
+      // For contracting animation only selected pinned cells should be
+      // reparented.
     case GridAnimationDirectionContracting:
       return [self isPinnedCellSelected];
-    // For expanding animation any selected cell should be reparented.
+      // For expanding animation any selected cell should be reparented.
     case GridAnimationDirectionExpanding:
       return YES;
   }
@@ -379,6 +381,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (UIView*)animationViewsContainerBottomView {
   return self.scrollView;
+}
+
+#pragma mark - TabGridTransitionLayoutProviding
+
+- (TabGridTransitionLayout*)transitionLayout {
+  TabGridTransitionItem* activeCell =
+      [self transitionItemForActiveCellWithActivePage:self.activePage];
+  return [TabGridTransitionLayout layoutWithActiveCell:activeCell];
 }
 
 #pragma mark - Public Methods
@@ -1652,6 +1662,28 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     (TabGridPage)destinationPage {
   return [self isPageEnabled:destinationPage] &&
          self.currentPage != TabGridPageRemoteTabs;
+}
+
+// Returns transition layout for the provided `page`.
+- (TabGridTransitionItem*)transitionItemForActiveCellWithActivePage:
+    (TabGridPage)activePage {
+  switch (activePage) {
+    case TabGridPageIncognitoTabs:
+      return [self.incognitoTabsViewController transitionItemForActiveCell];
+    case TabGridPageRegularTabs:
+      return [self transitionItemForRegularActiveCell];
+    case TabGridPageRemoteTabs:
+      return nil;
+  }
+}
+
+// Returns transition layout provider for the regular tabs page.
+- (TabGridTransitionItem*)transitionItemForRegularActiveCell {
+  if (IsPinnedTabsEnabled() && self.pinnedTabsViewController.hasSelectedCell) {
+    return [self.pinnedTabsViewController transitionItemForActiveCell];
+  }
+
+  return [self.regularTabsViewController transitionItemForActiveCell];
 }
 
 #pragma mark - UIGestureRecognizerDelegate

@@ -14,15 +14,17 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
-@protocol TabContextMenuProvider;
-@protocol TabCollectionDragDropHandler;
+@class BaseGridViewController;
 @protocol GridEmptyView;
 @class GridItemIdentifier;
 @protocol GridShareableItemsProvider;
 @class LegacyGridTransitionLayout;
-@class BaseGridViewController;
 @protocol PriceCardDataSource;
 @protocol SuggestedActionsDelegate;
+@protocol TabContextMenuProvider;
+@protocol TabCollectionDragDropHandler;
+@class TabGridTransitionItem;
+
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -138,6 +140,9 @@ class WebStateID;
 
 // Returns the layout of the grid for use in an animated transition.
 - (LegacyGridTransitionLayout*)transitionLayout;
+
+// Returns TabGridTransitionItem for the active cell.
+- (TabGridTransitionItem*)transitionItemForActiveCell;
 
 // Notifies the ViewController that its content might soon be displayed.
 - (void)prepareForAppearance;
