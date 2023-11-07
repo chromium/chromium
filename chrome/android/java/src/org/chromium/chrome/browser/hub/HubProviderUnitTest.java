@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.TestActivity;
 
@@ -38,6 +39,7 @@ public class HubProviderUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private Pane mMockPane;
+    @Mock private BackPressManager mBackPressManagerMock;
     @Mock private ObservableSupplier<Tab> mTabSupplierMock;
 
     private Activity mActivity;
@@ -55,7 +57,11 @@ public class HubProviderUnitTest {
     @SmallTest
     public void testHubProvider() {
         HubProvider provider =
-                new HubProvider(mActivity, new DefaultPaneOrderController(), mTabSupplierMock);
+                new HubProvider(
+                        mActivity,
+                        new DefaultPaneOrderController(),
+                        mBackPressManagerMock,
+                        mTabSupplierMock);
 
         PaneListBuilder builder = provider.getPaneListBuilder();
 

@@ -43,7 +43,7 @@ public class BackPressManager implements Destroyable {
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;
     static {
-        // Max value is 21 - 1 obsolete value +1 for 0 indexing = 20 elements.
+        // Max value is 22 - 1 obsolete value +1 for 0 indexing = 21 elements.
         SparseIntArray map = new SparseIntArray(20);
         map.put(Type.TEXT_BUBBLE, 0);
         map.put(Type.VR_DELEGATE, 1);
@@ -68,8 +68,9 @@ public class BackPressManager implements Destroyable {
         // handling logic.
         map.put(Type.PAGE_INSIGHTS_BOTTOM_SHEET, 19);
         map.put(Type.BOTTOM_CONTROLS, 20);
-        sMetricsMaxValue = 21;
+        map.put(Type.HUB, 21);
         // Add new one here and update array size.
+        sMetricsMaxValue = 22;
         sMetricsMap = map;
     }
 

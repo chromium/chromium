@@ -54,8 +54,10 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     "//base:base_java",
+    "//chrome/browser/back_press/android:java",
     "//chrome/browser/tab:java",
     "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
   sources = [

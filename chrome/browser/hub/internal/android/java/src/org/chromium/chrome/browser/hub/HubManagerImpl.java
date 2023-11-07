@@ -9,7 +9,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
 /**
@@ -22,6 +24,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull Context mContext;
     private final @NonNull PaneManagerImpl mPaneManager;
     private final @NonNull HubContainerView mHubContainerView;
+    private final @NonNull BackPressManager mBackPressManager;
     private final @NonNull ObservableSupplier<Tab> mTabSupplier;
 
     // This is effectively NonNull and final once the HubLayout is initialized.
@@ -33,9 +36,11 @@ public class HubManagerImpl implements HubManager, HubController {
     public HubManagerImpl(
             @NonNull Context context,
             @NonNull PaneListBuilder paneListBuilder,
+            @NonNull BackPressManager backPressManager,
             @NonNull ObservableSupplier<Tab> tabSupplier) {
         mContext = context;
         mPaneManager = new PaneManagerImpl(paneListBuilder);
+        mBackPressManager = backPressManager;
         mTabSupplier = tabSupplier;
 
         // TODO(crbug/1487315): Consider making this a xml file so the entire core UI is inflated.
@@ -78,6 +83,7 @@ public class HubManagerImpl implements HubManager, HubController {
         // TODO(crbug/1487315): Consider deferring this destruction till after a timeout.
         mHubContainerView.removeAllViews();
         if (mHubCoordinator != null) {
+            mBackPressManager.removeHandler(mHubCoordinator);
             mHubCoordinator.destroy();
             mHubCoordinator = null;
         }
@@ -107,6 +113,7 @@ public class HubManagerImpl implements HubManager, HubController {
         mHubCoordinator =
                 new HubCoordinator(
                         mHubContainerView, mPaneManager, mHubLayoutController, mTabSupplier);
+        mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
     }
 
     HubCoordinator getHubCoordinatorForTesting() {

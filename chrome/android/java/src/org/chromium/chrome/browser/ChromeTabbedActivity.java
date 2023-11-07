@@ -1842,6 +1842,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     new HubProvider(
                             this,
                             new DefaultPaneOrderController(),
+                            mBackPressManager,
                             new ObservableSupplierImpl<Tab>());
         }
     }

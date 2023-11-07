@@ -31,7 +31,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link PaneManagerImpl}. */
@@ -45,6 +47,7 @@ public class HubManagerImplUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    @Mock private BackPressManager mBackPressManager;
     @Mock private Tab mTab;
     @Mock private Pane mTabSwitcherPane;
     @Mock private HubLayoutController mHubLayoutController;
@@ -75,7 +78,8 @@ public class HubManagerImplUnitTest {
                                 PaneId.TAB_SWITCHER,
                                 LazyOneshotSupplier.fromValue(mTabSwitcherPane));
         HubManager hubManager =
-                HubManagerFactory.createHubManager(mActivity, builder, mTabSupplier);
+                HubManagerFactory.createHubManager(
+                        mActivity, builder, mBackPressManager, mTabSupplier);
 
         PaneManager paneManager = hubManager.getPaneManager();
         assertNotNull(paneManager);
@@ -88,13 +92,16 @@ public class HubManagerImplUnitTest {
     @SmallTest
     public void testHubController() {
         PaneListBuilder builder = new PaneListBuilder(new DefaultPaneOrderController());
-        HubManagerImpl hubManager = new HubManagerImpl(mActivity, builder, mTabSupplier);
+        HubManagerImpl hubManager =
+                new HubManagerImpl(mActivity, builder, mBackPressManager, mTabSupplier);
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
         assertNull(hubManager.getHubCoordinatorForTesting());
 
         hubController.onHubLayoutShow();
-        assertNotNull(hubManager.getHubCoordinatorForTesting());
+        HubCoordinator coordinator = hubManager.getHubCoordinatorForTesting();
+        assertNotNull(coordinator);
+        verify(mBackPressManager).addHandler(eq(coordinator), eq(BackPressHandler.Type.HUB));
 
         View containerView = hubController.getContainerView();
         assertNotNull(containerView);
@@ -105,6 +112,7 @@ public class HubManagerImplUnitTest {
 
         hubController.onHubLayoutDoneHiding();
         assertNull(hubManager.getHubCoordinatorForTesting());
+        verify(mBackPressManager).removeHandler(eq(coordinator));
 
         // Container is still attached and will be removed separately.
         assertEquals(mRootView, containerView.getParent());
@@ -114,7 +122,8 @@ public class HubManagerImplUnitTest {
     @SmallTest
     public void testBackNavigation() {
         PaneListBuilder builder = new PaneListBuilder(new DefaultPaneOrderController());
-        HubManagerImpl hubManager = new HubManagerImpl(mActivity, builder, mTabSupplier);
+        HubManagerImpl hubManager =
+                new HubManagerImpl(mActivity, builder, mBackPressManager, mTabSupplier);
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
 
