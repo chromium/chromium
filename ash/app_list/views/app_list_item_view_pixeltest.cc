@@ -42,8 +42,7 @@ class AppListItemViewPixelTest
                      /*use_dense_ui=*/bool,
                      /*use_rtl=*/bool,
                      /*is_new_install=*/bool,
-                     /*has_notification=*/bool,
-                     /*jelly_enabled=*/bool>> {
+                     /*has_notification=*/bool>> {
  public:
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -56,8 +55,7 @@ class AppListItemViewPixelTest
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
-        {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor()},
-         {chromeos::features::kJelly, jelly_enabled()}});
+        {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor()}});
 
     AshTestBase::SetUp();
 
@@ -131,9 +129,6 @@ class AppListItemViewPixelTest
         is_new_install() ? "new_install=true" : "new_install=false",
         has_notification() ? "has_notification=true"
                            : "has_notification=false"};
-    if (jelly_enabled()) {
-      parameters.push_back("jelly_enabled");
-    }
     std::string stringified_params = base::JoinString(parameters, "|");
     return base::JoinString({"app_list_item_view", stringified_params}, ".");
   }
@@ -146,20 +141,7 @@ class AppListItemViewPixelTest
                      ->GetWidgetForTesting();
   }
 
-  size_t GetRevisionNumber() {
-    if (jelly_enabled()) {
-      // Revision numbers reset with Jelly.
-      return 5;
-    }
-
-    size_t base_revision_number = 8;
-
-    if (use_drag_drop_refactor()) {
-      ++base_revision_number;
-    }
-
-    return base_revision_number;
-  }
+  size_t GetRevisionNumber() { return 5; }
 
   bool use_drag_drop_refactor() const { return std::get<0>(GetParam()); }
   bool use_folder_icon_refresh() const { return std::get<1>(GetParam()); }
@@ -168,7 +150,6 @@ class AppListItemViewPixelTest
   bool use_rtl() const { return std::get<4>(GetParam()); }
   bool is_new_install() const { return std::get<5>(GetParam()); }
   bool has_notification() const { return std::get<6>(GetParam()); }
-  bool jelly_enabled() const { return std::get<7>(GetParam()); }
 
  private:
   std::unique_ptr<DragDropControllerTestApi> drag_drop_controller_test_api_;
@@ -184,8 +165,7 @@ INSTANTIATE_TEST_SUITE_P(
                      /*use_dense_ui=*/testing::Bool(),
                      /*use_rtl=*/testing::Bool(),
                      /*is_new_install=*/testing::Bool(),
-                     /*has_notification=*/testing::Bool(),
-                     /*jelly_enabled=*/testing::Bool()));
+                     /*has_notification=*/testing::Bool()));
 
 TEST_P(AppListItemViewPixelTest, AppListItemView) {
   CreateAppListItem("App");
@@ -193,7 +173,7 @@ TEST_P(AppListItemViewPixelTest, AppListItemView) {
 
   ShowAppList();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/3, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/5, GetItemViewAt(0),
       GetItemViewAt(1)));
 }
 
@@ -216,17 +196,11 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
   CreateFoldersContainingDifferentNumOfItems(max_items_in_folder);
   ShowAppList();
 
-  if (jelly_enabled()) {
-    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/4, GetItemViewAt(0),
-        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
-        GetItemViewAt(4)));
-  } else {
-    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/5, GetItemViewAt(0),
-        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
-        GetItemViewAt(4)));
-  }
+  // If updating this revision, skip 5 (use 6) as it was used by a previous
+  // test.  Then delete this comment.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GenerateScreenshotName(), /*revision_number=*/4, GetItemViewAt(0),
+      GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 }
 
 // Verifies the folder icon is extended when an app is dragged upon it.
@@ -261,17 +235,11 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
     GetItemViewAt(i)->OnDraggedViewEnter();
   }
 
-  if (jelly_enabled()) {
-    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/4, GetItemViewAt(0),
-        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
-        GetItemViewAt(4)));
-  } else {
-    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/5, GetItemViewAt(0),
-        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
-        GetItemViewAt(4)));
-  }
+  // If updating this revision, skip 5 (use 6) as it was used by a previous
+  // test.  Then delete this comment.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GenerateScreenshotName(), /*revision_number=*/4, GetItemViewAt(0),
+      GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 
   // Reset the states.
   for (int i = 0; i < max_items_in_folder; ++i) {
