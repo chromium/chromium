@@ -10,11 +10,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "components/sync/base/features.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
@@ -36,16 +39,21 @@
 @end
 
 @implementation PostRestoreSignInProvider {
+  syncer::SyncUserSettings* _syncUserSettings;
   PromoStyleViewController* _viewController;
   absl::optional<AccountInfo> _accountInfo;
+  bool _historySyncEnabled;
 }
 
 #pragma mark - Initializers
 
-- (instancetype)init {
+- (instancetype)initWithSyncUserSettings:
+    (syncer::SyncUserSettings*)syncUserSettings {
   if (self = [super init]) {
+    _syncUserSettings = syncUserSettings;
     _localState = GetApplicationContext()->GetLocalState();
     _accountInfo = GetPreRestoreIdentity(_localState);
+    _historySyncEnabled = GetPreRestoreHistorySyncEnabled(_localState);
   }
   return self;
 }
@@ -139,6 +147,15 @@
                                 IOSPostRestoreSigninChoice::Continue);
   ClearPreRestoreIdentity(_localState);
 
+  __weak __typeof(self) weakSelf = self;
+  ShowSigninCommandCompletionCallback callback =
+      ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
+        if (base::FeatureList::IsEnabled(
+                syncer::kReplaceSyncPromosWithSignInPromos) &&
+            result == SigninCoordinatorResultSuccess) {
+          [weakSelf signinDone];
+        }
+      };
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSigninAndSyncReauth
                identity:nil
@@ -146,8 +163,15 @@
                             ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:nil];
+               callback:callback];
   [self.handler showSignin:command];
+}
+
+- (void)signinDone {
+  _syncUserSettings->SetSelectedType(syncer::UserSelectableType::kHistory,
+                                     _historySyncEnabled);
+  _syncUserSettings->SetSelectedType(syncer::UserSelectableType::kTabs,
+                                     _historySyncEnabled);
 }
 
 @end

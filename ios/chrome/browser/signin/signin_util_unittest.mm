@@ -52,7 +52,8 @@ TEST_F(SigninUtilTest, StoreAndGetPreRestoreIdentityFull) {
   EXPECT_FALSE(GetPreRestoreIdentity(&local_state_).has_value());
 
   AccountInfo account = FakeAccountFull();
-  StorePreRestoreIdentity(&local_state_, account);
+  StorePreRestoreIdentity(&local_state_, account,
+                          /*history_sync_enabled=*/false);
 
   // Verify that the retrieved account info is the same as what was stored.
   auto retrieved_account = GetPreRestoreIdentity(&local_state_);
@@ -65,7 +66,8 @@ TEST_F(SigninUtilTest, StoreAndGetPreRestoreIdentityMinimal) {
   EXPECT_FALSE(GetPreRestoreIdentity(&local_state_).has_value());
 
   AccountInfo account = FakeAccountMinimal();
-  StorePreRestoreIdentity(&local_state_, account);
+  StorePreRestoreIdentity(&local_state_, account,
+                          /*history_sync_enabled=*/false);
 
   // Verify that the retrieved account info is the same as what was stored.
   auto retrieved_account = GetPreRestoreIdentity(&local_state_);
@@ -74,9 +76,12 @@ TEST_F(SigninUtilTest, StoreAndGetPreRestoreIdentityMinimal) {
 }
 
 TEST_F(SigninUtilTest, ClearPreRestoreIdentity) {
-  StorePreRestoreIdentity(&local_state_, FakeAccountFull());
+  StorePreRestoreIdentity(&local_state_, FakeAccountFull(),
+                          /*history_sync_enabled=*/true);
   EXPECT_TRUE(GetPreRestoreIdentity(&local_state_).has_value());
+  EXPECT_TRUE(GetPreRestoreHistorySyncEnabled(&local_state_));
 
   ClearPreRestoreIdentity(&local_state_);
   EXPECT_FALSE(GetPreRestoreIdentity(&local_state_).has_value());
+  EXPECT_FALSE(GetPreRestoreHistorySyncEnabled(&local_state_));
 }

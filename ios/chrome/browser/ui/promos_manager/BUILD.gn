@@ -58,6 +58,7 @@ source_set("promos_manager") {
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:types",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/sync/model",
     "//ios/public/provider/chrome/browser/signin:choice_api",
     "//third_party/abseil-cpp:absl",
   ]
@@ -106,6 +107,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

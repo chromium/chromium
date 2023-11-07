@@ -36,9 +36,11 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size);
 // The value is cached. The result is cached for later calls.
 signin::Tribool IsFirstSessionAfterDeviceRestore();
 
-// Stores a user's account info in memory, when we detect that it was
-// forgotten during a device restore.
-void StorePreRestoreIdentity(PrefService* local_state, AccountInfo account);
+// Stores a user's account info and if history sync was enabled or not, when we
+// detect that it was forgotten during a device restore.
+void StorePreRestoreIdentity(PrefService* local_state,
+                             AccountInfo account,
+                             bool history_sync_enabled);
 
 // Clears the identity that was signed-in before the restore.
 void ClearPreRestoreIdentity(PrefService* local_state);
@@ -46,5 +48,8 @@ void ClearPreRestoreIdentity(PrefService* local_state);
 // Returns the identity that was signed-in before the restore, but is now
 // not signed-in.
 absl::optional<AccountInfo> GetPreRestoreIdentity(PrefService* local_state);
+
+// Returns whether history sync was enabled before the restore.
+bool GetPreRestoreHistorySyncEnabled(PrefService* local_state);
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_

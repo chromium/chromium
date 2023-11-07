@@ -6,12 +6,14 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/sync/test/sync_user_settings_mock.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -28,7 +30,8 @@ class PostRestoreSignInProviderTest : public PlatformTest {
  public:
   explicit PostRestoreSignInProviderTest() {
     SetFakePreRestoreAccountInfo();
-    provider_ = [[PostRestoreSignInProvider alloc] init];
+    provider_ = [[PostRestoreSignInProvider alloc]
+        initWithSyncUserSettings:&sync_user_settings_];
   }
 
   void SetFakePreRestoreAccountInfo() {
@@ -36,15 +39,18 @@ class PostRestoreSignInProviderTest : public PlatformTest {
     accountInfo.email = std::string(kFakePreRestoreAccountEmail);
     accountInfo.given_name = std::string(kFakePreRestoreAccountGivenName);
     accountInfo.full_name = std::string(kFakePreRestoreAccountFullName);
-    StorePreRestoreIdentity(local_state_.Get(), accountInfo);
+    StorePreRestoreIdentity(local_state_.Get(), accountInfo,
+                            /*history_sync_enabled=*/false);
   }
 
   void ClearUserName() {
     AccountInfo accountInfo;
     accountInfo.email = std::string(kFakePreRestoreAccountEmail);
-    StorePreRestoreIdentity(local_state_.Get(), accountInfo);
+    StorePreRestoreIdentity(local_state_.Get(), accountInfo,
+                            /*history_sync_enabled=*/false);
     // Reinstantiate a provider so that it picks up the changes.
-    provider_ = [[PostRestoreSignInProvider alloc] init];
+    provider_ = [[PostRestoreSignInProvider alloc]
+        initWithSyncUserSettings:&sync_user_settings_];
   }
 
   void SetupMockHandler() {
@@ -56,6 +62,9 @@ class PostRestoreSignInProviderTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   id mock_handler_;
   PostRestoreSignInProvider* provider_;
+
+ private:
+  testing::NiceMock<syncer::SyncUserSettingsMock> sync_user_settings_;
 };
 
 // Tests `hasIdentifierAlert` method.

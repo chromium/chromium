@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/crash/core/common/crash_key.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_display_handler.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_display_handler.h"
@@ -550,8 +552,12 @@
   // TODO(crbug.com/1360880): Create first StandardPromoViewProvider promo.
 
   // StandardPromoAlertProvider promo(s) below:
+  syncer::SyncUserSettings* syncUserSettings =
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState())
+          ->GetUserSettings();
   _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
-      [[PostRestoreSignInProvider alloc] init];
+      [[PostRestoreSignInProvider alloc]
+          initWithSyncUserSettings:syncUserSettings];
   if (GetPostRestoreDefaultBrowserPromoType() ==
       PostRestoreDefaultBrowserPromoType::kAlert) {
     _alertProviderPromos
