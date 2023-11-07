@@ -23,6 +23,8 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
   MOCK_METHOD(void, InitNativeWidget, (Widget::InitParams), (override));
   MOCK_METHOD(void, OnWidgetInitDone, (), (override));
 
+  MOCK_METHOD(void, ReparentNativeViewImpl, (gfx::NativeView), (override));
+
   MOCK_METHOD(std::unique_ptr<NonClientFrameView>,
               CreateNonClientFrameView,
               (),

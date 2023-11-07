@@ -125,6 +125,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   // window reverts to rectangular.
   virtual void SetShape(std::unique_ptr<Widget::ShapeRects> native_shape) = 0;
 
+  virtual void SetParent(gfx::AcceleratedWidget parent) = 0;
+
   virtual void Activate() = 0;
   virtual void Deactivate() = 0;
   virtual bool IsActive() const = 0;

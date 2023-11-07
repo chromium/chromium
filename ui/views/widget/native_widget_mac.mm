@@ -278,6 +278,50 @@ void NativeWidgetMac::OnWidgetInitDone() {
   ns_window_host_->OnWidgetInitDone();
 }
 
+void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
+  gfx::NativeView child = GetNativeView();
+  DCHECK_NE(child, new_parent);
+  DCHECK([new_parent.GetNativeNSView() window]);
+  CHECK(new_parent);
+  CHECK_NE([child.GetNativeNSView() superview], new_parent.GetNativeNSView());
+
+  NativeWidgetMacNSWindowHost* child_window_host =
+      NativeWidgetMacNSWindowHost::GetFromNativeView(child);
+  DCHECK(child_window_host);
+  gfx::NativeView widget_view =
+      child_window_host->native_widget_mac()->GetNativeView();
+  DCHECK_EQ(child, widget_view);
+  gfx::NativeWindow widget_window =
+      child_window_host->native_widget_mac()->GetNativeWindow();
+  DCHECK(
+      [child.GetNativeNSView() isDescendantOf:widget_view.GetNativeNSView()]);
+  DCHECK(widget_window && ![widget_window.GetNativeNSWindow() isSheet]);
+
+  NativeWidgetMacNSWindowHost* parent_window_host =
+      NativeWidgetMacNSWindowHost::GetFromNativeView(new_parent);
+
+  // Early out for no-op changes.
+  if (child == widget_view &&
+      child_window_host->parent() == parent_window_host) {
+    return;
+  }
+
+  // First notify all the widgets that they are being disassociated from their
+  // previous parent.
+  Widget::Widgets widgets;
+  GetAllChildWidgets(child, &widgets);
+  for (auto* widget : widgets) {
+    widget->NotifyNativeViewHierarchyWillChange();
+  }
+
+  child_window_host->SetParent(parent_window_host);
+
+  // And now, notify them that they have a brand new parent.
+  for (auto* widget : widgets) {
+    widget->NotifyNativeViewHierarchyChanged();
+  }
+}
+
 std::unique_ptr<NonClientFrameView>
 NativeWidgetMac::CreateNonClientFrameView() {
   return std::make_unique<NativeFrameViewMac>(GetWidget());
@@ -1114,44 +1158,9 @@ void NativeWidgetPrivate::GetAllOwnedWidgets(gfx::NativeView native_view,
 // static
 void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView child,
                                              gfx::NativeView new_parent) {
-  DCHECK_NE(child, new_parent);
-  DCHECK([new_parent.GetNativeNSView() window]);
-  CHECK(new_parent);
-  CHECK_NE([child.GetNativeNSView() superview], new_parent.GetNativeNSView());
-
-  NativeWidgetMacNSWindowHost* child_window_host =
-      NativeWidgetMacNSWindowHost::GetFromNativeView(child);
-  DCHECK(child_window_host);
-  gfx::NativeView widget_view =
-      child_window_host->native_widget_mac()->GetNativeView();
-  DCHECK_EQ(child, widget_view);
-  gfx::NativeWindow widget_window =
-      child_window_host->native_widget_mac()->GetNativeWindow();
-  DCHECK(
-      [child.GetNativeNSView() isDescendantOf:widget_view.GetNativeNSView()]);
-  DCHECK(widget_window && ![widget_window.GetNativeNSWindow() isSheet]);
-
-  NativeWidgetMacNSWindowHost* parent_window_host =
-      NativeWidgetMacNSWindowHost::GetFromNativeView(new_parent);
-
-  // Early out for no-op changes.
-  if (child == widget_view &&
-      child_window_host->parent() == parent_window_host) {
-    return;
-  }
-
-  // First notify all the widgets that they are being disassociated from their
-  // previous parent.
-  Widget::Widgets widgets;
-  GetAllChildWidgets(child, &widgets);
-  for (auto* widget : widgets)
-    widget->NotifyNativeViewHierarchyWillChange();
-
-  child_window_host->SetParent(parent_window_host);
-
-  // And now, notify them that they have a brand new parent.
-  for (auto* widget : widgets)
-    widget->NotifyNativeViewHierarchyChanged();
+  Widget::GetWidgetForNativeView(child)
+      ->native_widget_private()
+      ->ReparentNativeViewImpl(new_parent);
 }
 
 // static

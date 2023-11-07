@@ -389,6 +389,10 @@ void DesktopWindowTreeHostWin::SetShape(
   message_handler_->SetRegion(gfx::CreateHRGNFromSkRegion(shape));
 }
 
+void DesktopWindowTreeHostWin::SetParent(gfx::AcceleratedWidget parent) {
+  message_handler_->SetParentOrOwner(parent);
+}
+
 void DesktopWindowTreeHostWin::Activate() {
   message_handler_->Activate();
 }
