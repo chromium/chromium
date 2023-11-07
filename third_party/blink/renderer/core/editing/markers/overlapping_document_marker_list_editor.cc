@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/editing/markers/unsorted_document_marker_list_editor.h"
+#include "third_party/blink/renderer/core/editing/markers/overlapping_document_marker_list_editor.h"
 
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/editing/markers/spell_check_marker_list_impl.h"
 
 namespace blink {
 
-void UnsortedDocumentMarkerListEditor::AddMarker(MarkerList* list,
-                                                 DocumentMarker* marker) {
+void OverlappingDocumentMarkerListEditor::AddMarker(
+    MarkerList* list,
+    DocumentMarker* marker) {
   if (list->empty() || list->back()->StartOffset() <= marker->StartOffset()) {
     list->push_back(marker);
     return;
@@ -26,7 +27,8 @@ void UnsortedDocumentMarkerListEditor::AddMarker(MarkerList* list,
   list->insert(base::checked_cast<wtf_size_t>(pos - list->begin()), marker);
 }
 
-bool UnsortedDocumentMarkerListEditor::MoveMarkers(
+
+bool OverlappingDocumentMarkerListEditor::MoveMarkers(
     MarkerList* src_list,
     int length,
     DocumentMarkerList* dst_list) {
@@ -53,14 +55,14 @@ bool UnsortedDocumentMarkerListEditor::MoveMarkers(
   return did_move_marker;
 }
 
-bool UnsortedDocumentMarkerListEditor::RemoveMarkers(MarkerList* list,
+bool OverlappingDocumentMarkerListEditor::RemoveMarkers(MarkerList* list,
                                                      unsigned start_offset,
                                                      int length) {
   // For overlapping markers, even if sorted, the quickest way to perform
   // this operation is to build a new list with the markers that aren't
   // being removed. Exploiting the sort is difficult because markers
   // may be nested. See
-  // UnsortedDocumentMarkerListEditorTest.RemoveMarkersNestedOverlap
+  // OverlappingDocumentMarkerListEditorTest.RemoveMarkersNestedOverlap
   // for an example.
   const unsigned end_offset = start_offset + length;
   HeapVector<Member<DocumentMarker>> unremoved_markers;
@@ -77,12 +79,13 @@ bool UnsortedDocumentMarkerListEditor::RemoveMarkers(MarkerList* list,
   return did_remove_marker;
 }
 
-bool UnsortedDocumentMarkerListEditor::ShiftMarkers(MarkerList* list,
-                                                    unsigned offset,
-                                                    unsigned old_length,
-                                                    unsigned new_length) {
-  // For an overlapping marker list, the quickest way to perform this operation
-  // is to build a new list with the markers not removed by the shift. Note that
+bool OverlappingDocumentMarkerListEditor::ShiftMarkers(
+    MarkerList* list,
+    unsigned offset,
+    unsigned old_length,
+    unsigned new_length) {
+  // For an overlapping marker list, the quickest way to perform this operation is
+  // to build a new list with the markers not removed by the shift. Note that
   // ComputeOffsetsAfterShift will move markers in such a way that they remain
   // sorted in StartOffset through this operation.
   bool did_shift_marker = false;
@@ -110,7 +113,7 @@ bool UnsortedDocumentMarkerListEditor::ShiftMarkers(MarkerList* list,
 }
 
 HeapVector<Member<DocumentMarker>>
-UnsortedDocumentMarkerListEditor::MarkersIntersectingRange(
+OverlappingDocumentMarkerListEditor::MarkersIntersectingRange(
     const MarkerList& list,
     unsigned start_offset,
     unsigned end_offset) {

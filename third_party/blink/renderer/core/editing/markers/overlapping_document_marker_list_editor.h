@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_UNSORTED_DOCUMENT_MARKER_LIST_EDITOR_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_UNSORTED_DOCUMENT_MARKER_LIST_EDITOR_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_OVERLAPPING_DOCUMENT_MARKER_LIST_EDITOR_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_OVERLAPPING_DOCUMENT_MARKER_LIST_EDITOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_list.h"
@@ -18,7 +18,7 @@ class DocumentMarker;
 // StartOffset. The sort order for markers with the same StartOffset is
 // undefined. It will initially match the order in which markers are
 // added, but calling ShiftMarkers may change that.
-class CORE_EXPORT UnsortedDocumentMarkerListEditor final {
+class CORE_EXPORT OverlappingDocumentMarkerListEditor final {
  public:
   using MarkerList = HeapVector<Member<DocumentMarker>>;
 
@@ -36,10 +36,8 @@ class CORE_EXPORT UnsortedDocumentMarkerListEditor final {
   // If the text marked by a marker is changed by the edit, this method attempts
   // to keep the marker tracking the marked region rather than removing the
   // marker.
-  static bool ShiftMarkers(MarkerList*,
-                           unsigned offset,
-                           unsigned old_length,
-                           unsigned new_length);
+  static bool ShiftMarkers(MarkerList*, unsigned offset,
+                            unsigned old_length, unsigned new_length);
 
   // Returns all markers in the specified MarkerList whose interior overlaps
   // with the range [start_offset, end_offset].
@@ -51,4 +49,4 @@ class CORE_EXPORT UnsortedDocumentMarkerListEditor final {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_UNSORTED_DOCUMENT_MARKER_LIST_EDITOR_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_OVERLAPPING_DOCUMENT_MARKER_LIST_EDITOR_H_
