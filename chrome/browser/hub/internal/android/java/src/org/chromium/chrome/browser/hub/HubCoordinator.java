@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -25,6 +26,15 @@ public class HubCoordinator implements BackPressHandler {
     private final @NonNull HubPaneHostCoordinator mHubPaneHostCoordinator;
     private final @NonNull HubLayoutController mHubLayoutController;
     private final @NonNull ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
+    private final @NonNull ObservableSupplier<Pane> mFocusedPaneSupplier;
+
+    /**
+     * Warning: {@link mFocusedPaneSupplier#get()} may return null if no pane is focused or {@link
+     * Pane#getHandleBackPressChangedSupplier()} contains null.
+     */
+    private final @NonNull TransitiveObservableSupplier<Pane, Boolean>
+            mFocusedPaneHandleBackPressSupplier;
+
     private final @NonNull PaneBackStackHandler mPaneBackStackHandler;
     private final @NonNull ObservableSupplier<Tab> mCurrentTabSupplier;
 
@@ -32,7 +42,7 @@ public class HubCoordinator implements BackPressHandler {
      * Creates the {@link HubCoordinator}.
      *
      * @param containerView The view to attach the Hub to.
-     * @param paneSupplier Used to observe the current pane.
+     * @param paneManager The {@link PaneManager} for Hub.
      * @param hubLayoutController The controller of the {@link HubLayout}.
      * @param currentTabSupplier The supplier of the current {@link Tab}.
      */
@@ -42,6 +52,13 @@ public class HubCoordinator implements BackPressHandler {
             @NonNull HubLayoutController hubLayoutController,
             @NonNull ObservableSupplier<Tab> currentTabSupplier) {
         Context context = containerView.getContext();
+        mFocusedPaneSupplier = paneManager.getFocusedPaneSupplier();
+        mFocusedPaneHandleBackPressSupplier =
+                new TransitiveObservableSupplier<>(
+                        mFocusedPaneSupplier, p -> p.getHandleBackPressChangedSupplier());
+        mFocusedPaneHandleBackPressSupplier.addObserver(
+                (handlesBackPress) -> updateHandleBackPressSupplier());
+
         mContainerView = containerView;
         mMainHubParent = LayoutInflater.from(context).inflate(R.layout.hub_layout, null);
         mContainerView.addView(mMainHubParent);
@@ -77,11 +94,17 @@ public class HubCoordinator implements BackPressHandler {
     @Override
     public @BackPressResult int handleBackPress() {
         // TODO(crbug/1498614): Add support here for in order of priority.
-        // 1) Delegate to the current Pane.
+        // 1) Delegate to the current Pane. - DONE
         // 2) Delegate to PaneBackStackHandler. - DONE
         // 3) No-op if Start Surface was the previous layout. It should be higher priority and
         //    already handle it, but add verification.
-        // 4) Hide the Hub to the most recent tab in the current TabModel. - DONE.
+        // 4) Hide the Hub to the most recent tab in the current TabModel. - DONE
+
+        if (Boolean.TRUE.equals(mFocusedPaneHandleBackPressSupplier.get())
+                && mFocusedPaneSupplier.get().handleBackPress() == BackPressResult.SUCCESS) {
+            return BackPressResult.SUCCESS;
+        }
+
         if (mPaneBackStackHandler.getHandleBackPressChangedSupplier().get()
                 && mPaneBackStackHandler.handleBackPress() == BackPressResult.SUCCESS) {
             return BackPressResult.SUCCESS;
@@ -103,12 +126,13 @@ public class HubCoordinator implements BackPressHandler {
     private void updateHandleBackPressSupplier() {
         // TODO(crbug/1498614): See comment in handleBackPress. The conditions to check for each
         // case are:
-        // 1) Whether the Pane's getHandleBackPressChangedSupplier is set.
+        // 1) Whether the Pane's getHandleBackPressChangedSupplier is set. - DONE
         // 2) Whether the PaneBackStackHandler getHandleBackPressChangeSupplier is set. - DONE
         // 3) Whether Start Surface was the previous layout and we are not in incognito mode.
         // 4) Whether the current TabModel has a selected tab. - DONE
         boolean shouldHandleBackPress =
-                mPaneBackStackHandler.getHandleBackPressChangedSupplier().get()
+                Boolean.TRUE.equals(mFocusedPaneHandleBackPressSupplier.get())
+                        || mPaneBackStackHandler.getHandleBackPressChangedSupplier().get()
                         || mCurrentTabSupplier.get() != null;
         mHandleBackPressSupplier.set(shouldHandleBackPress);
     }
