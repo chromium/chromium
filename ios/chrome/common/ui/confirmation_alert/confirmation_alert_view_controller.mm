@@ -824,14 +824,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [secondaryActionButton addTarget:self
                             action:@selector(didTapSecondaryActionButton)
                   forControlEvents:UIControlEventTouchUpInside];
-  [secondaryActionButton setTitle:self.secondaryActionString
-                         forState:UIControlStateNormal];
-  [secondaryActionButton setBackgroundColor:[UIColor clearColor]];
-  UIColor* titleColor = [UIColor colorNamed:self.secondaryActionTextColor
-                                                ? self.secondaryActionTextColor
-                                                : kBlueColor];
-  [secondaryActionButton setTitleColor:titleColor
-                              forState:UIControlStateNormal];
 
   UIButtonConfiguration* buttonConfiguration =
       secondaryActionButton.configuration
@@ -844,16 +836,24 @@ const CGFloat kFaviconBadgeSideLength = 24;
     buttonConfiguration.image = self.secondaryActionImage;
     buttonConfiguration.imagePadding = kActionButtonImageInsets;
   }
+
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
+      initWithString:self.secondaryActionString];
+  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+  buttonConfiguration.attributedTitle = string;
+
+  UIColor* titleColor = [UIColor colorNamed:self.secondaryActionTextColor
+                                                ? self.secondaryActionTextColor
+                                                : kBlueColor];
+  buttonConfiguration.baseForegroundColor = titleColor;
+  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
   secondaryActionButton.configuration = buttonConfiguration;
 
-  secondaryActionButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  secondaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
   secondaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
   secondaryActionButton.accessibilityIdentifier =
       kConfirmationAlertSecondaryActionAccessibilityIdentifier;
-  secondaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-
   secondaryActionButton.pointerInteractionEnabled = YES;
   secondaryActionButton.pointerStyleProvider =
       CreateOpaqueButtonPointerStyleProvider();
@@ -867,25 +867,26 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [tertiaryActionButton addTarget:self
                            action:@selector(didTapTertiaryActionButton)
                  forControlEvents:UIControlEventTouchUpInside];
-  [tertiaryActionButton setTitle:self.tertiaryActionString
-                        forState:UIControlStateNormal];
 
-  // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
-  // deployment target is iOS 15.
-  UIEdgeInsets contentInsets =
-      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  SetContentEdgeInsets(tertiaryActionButton, contentInsets);
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
+  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
 
-  [tertiaryActionButton setBackgroundColor:[UIColor clearColor]];
-  UIColor* titleColor = [UIColor colorNamed:kBlueColor];
-  [tertiaryActionButton setTitleColor:titleColor forState:UIControlStateNormal];
-  tertiaryActionButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  tertiaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
+  // Customize title string.
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
+      initWithString:self.tertiaryActionString];
+  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+  buttonConfiguration.attributedTitle = string;
+  tertiaryActionButton.configuration = buttonConfiguration;
+
   tertiaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
   tertiaryActionButton.accessibilityIdentifier =
       kConfirmationAlertTertiaryActionAccessibilityIdentifier;
-
   tertiaryActionButton.pointerInteractionEnabled = YES;
   tertiaryActionButton.pointerStyleProvider =
       CreateOpaqueButtonPointerStyleProvider();
