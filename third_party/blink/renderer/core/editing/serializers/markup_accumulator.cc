@@ -572,11 +572,12 @@ std::pair<Node*, Element*> MarkupAccumulator::GetAuxiliaryDOMTree(
     return std::pair<Node*, Element*>();
   }
 
-  // Wrap the shadowroot into a declarative Shadow DOM <template shadowroot>
+  // Wrap the shadowroot into a declarative Shadow DOM <template shadowrootmode>
   // element.
   auto* template_element = MakeGarbageCollected<Element>(
       html_names::kTemplateTag, &(element.GetDocument()));
-  template_element->setAttribute(html_names::kShadowrootAttr, shadowroot_type);
+  template_element->setAttribute(html_names::kShadowrootmodeAttr,
+                                 shadowroot_type);
   if (shadow_root->delegatesFocus()) {
     template_element->SetBooleanAttribute(
         html_names::kShadowrootdelegatesfocusAttr, true);
