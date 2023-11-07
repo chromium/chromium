@@ -1062,6 +1062,11 @@ void FillMiscNavigationParams(
     navigation_params->navigation_api_forward_entries.emplace_back(
         NavigationApiHistoryEntryPtrToWebHistoryItem(*entry));
   }
+  if (entry_arrays->previous_entry) {
+    navigation_params->navigation_api_previous_entry =
+        NavigationApiHistoryEntryPtrToWebHistoryItem(
+            *entry_arrays->previous_entry);
+  }
 
   if (commit_params.fenced_frame_properties) {
     navigation_params->fenced_frame_properties =

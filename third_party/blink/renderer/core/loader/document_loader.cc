@@ -317,6 +317,7 @@ struct SameSizeAsDocumentLoader
   bool is_cross_site_cross_browsing_context_group;
   WebVector<WebHistoryItem> navigation_api_back_entries;
   WebVector<WebHistoryItem> navigation_api_forward_entries;
+  Member<HistoryItem> navigation_api_previous_entry;
   std::unique_ptr<CodeCacheHost> code_cache_host;
   HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
@@ -528,6 +529,7 @@ DocumentLoader::DocumentLoader(
           params_->is_cross_site_cross_browsing_context_group),
       navigation_api_back_entries_(params_->navigation_api_back_entries),
       navigation_api_forward_entries_(params_->navigation_api_forward_entries),
+      navigation_api_previous_entry_(params_->navigation_api_previous_entry),
       extra_data_(std::move(extra_data)),
       reduced_accept_language_(params_->reduced_accept_language),
       navigation_delivery_type_(params_->navigation_delivery_type),
@@ -722,6 +724,7 @@ void DocumentLoader::Trace(Visitor* visitor) const {
   visitor->Trace(document_load_timing_);
   visitor->Trace(prefetched_signed_exchange_manager_);
   visitor->Trace(use_counter_);
+  visitor->Trace(navigation_api_previous_entry_);
 }
 
 uint64_t DocumentLoader::MainResourceIdentifier() const {
@@ -2737,11 +2740,12 @@ void DocumentLoader::CommitNavigation() {
     frame_->DomWindow()->navigation()->InitializeForNewWindow(
         *history_item_, load_type_, commit_reason_,
         previous_window->navigation(), navigation_api_back_entries_,
-        navigation_api_forward_entries_);
+        navigation_api_forward_entries_, navigation_api_previous_entry_);
     // Now that the navigation API's entries array is initialized, we don't need
     // to retain the state from which it was initialized.
     navigation_api_back_entries_.Clear();
     navigation_api_forward_entries_.Clear();
+    navigation_api_previous_entry_ = WebHistoryItem();
   }
 
   if (commit_reason_ == CommitReason::kXSLT)

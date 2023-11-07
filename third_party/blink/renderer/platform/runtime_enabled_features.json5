@@ -2571,6 +2571,10 @@
       status: "experimental",
     },
     {
+      name: "NavigationActivation",
+      status: "experimental",
+    },
+    {
       name: "NavigationId",
       status: "experimental",
       origin_trial_feature_name: "SoftNavigationHeuristics",

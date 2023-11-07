@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/navigation_api/navigate_event.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_activation.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api_method_tracker.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_current_entry_change_event.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
@@ -94,7 +95,13 @@ String DetermineNavigationType(WebFrameLoadType type) {
   NOTREACHED_NORETURN();
 }
 
-NavigationApi::NavigationApi(LocalDOMWindow* window) : window_(window) {}
+NavigationApi::NavigationApi(LocalDOMWindow* window)
+    : window_(window),
+      activation_(MakeGarbageCollected<NavigationActivation>()) {}
+
+NavigationActivation* NavigationApi::activation() const {
+  return HasEntriesAndEventsDisabled() ? nullptr : activation_;
+}
 
 void NavigationApi::setOnnavigate(EventListener* listener) {
   UseCounter::Count(window_, WebFeature::kAppHistory);
@@ -107,13 +114,40 @@ void NavigationApi::PopulateKeySet() {
     keys_to_indices_.insert(entries_[i]->key(), i);
 }
 
+void NavigationApi::UpdateActivation(HistoryItem* previous_item,
+                                     WebFrameLoadType load_type) {
+  NavigationHistoryEntry* previous_history_entry = nullptr;
+  if (previous_item) {
+    if (auto* entry =
+            GetExistingEntryFor(previous_item->GetNavigationApiKey(),
+                                previous_item->GetNavigationApiId())) {
+      previous_history_entry = entry;
+    } else {
+      previous_history_entry = MakeEntryFromItem(*previous_item);
+    }
+  }
+  activation_->Update(currentEntry(), previous_history_entry,
+                      DetermineNavigationType(load_type));
+}
+
+NavigationHistoryEntry* NavigationApi::GetExistingEntryFor(const String& key,
+                                                           const String& id) {
+  const auto& it = keys_to_indices_.find(key);
+  if (it == keys_to_indices_.end()) {
+    return nullptr;
+  }
+  NavigationHistoryEntry* existing_entry = entries_[it->value];
+  return existing_entry->id() == id ? existing_entry : nullptr;
+}
+
 void NavigationApi::InitializeForNewWindow(
     HistoryItem& current,
     WebFrameLoadType load_type,
     CommitReason commit_reason,
     NavigationApi* previous,
     const WebVector<WebHistoryItem>& back_entries,
-    const WebVector<WebHistoryItem>& forward_entries) {
+    const WebVector<WebHistoryItem>& forward_entries,
+    HistoryItem* previous_entry) {
   CHECK(entries_.empty());
 
   // This can happen even when commit_reason is not kInitialization, e.g. when
@@ -159,6 +193,7 @@ void NavigationApi::InitializeForNewWindow(
   for (const auto& entry : forward_entries)
     entries_.emplace_back(MakeEntryFromItem(*entry));
   PopulateKeySet();
+  UpdateActivation(previous_entry, load_type);
 }
 
 void NavigationApi::UpdateForNavigation(HistoryItem& item,
@@ -247,11 +282,11 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
 
 NavigationHistoryEntry* NavigationApi::GetEntryForRestore(
     const mojom::blink::NavigationApiHistoryEntryPtr& entry) {
-  const auto& it = keys_to_indices_.find(entry->key);
-  if (it != keys_to_indices_.end()) {
-    NavigationHistoryEntry* existing_entry = entries_[it->value];
-    if (existing_entry->id() == entry->id)
-      return existing_entry;
+  if (!entry) {
+    return nullptr;
+  }
+  if (auto* existing_entry = GetExistingEntryFor(entry->key, entry->id)) {
+    return existing_entry;
   }
   return MakeGarbageCollected<NavigationHistoryEntry>(
       window_, entry->key, entry->id, KURL(entry->url),
@@ -289,6 +324,9 @@ void NavigationApi::SetEntriesForRestore(
       base::checked_cast<wtf_size_t>(entry_arrays->back_entries.size());
   keys_to_indices_.clear();
   PopulateKeySet();
+  activation_->Update(currentEntry(),
+                      GetEntryForRestore(entry_arrays->previous_entry),
+                      "traverse");
 
   // |new_entries| now contains the previous entries_. Find the ones that are no
   // longer in entries_ so they can be disposed.
@@ -986,6 +1024,7 @@ void NavigationApi::Trace(Visitor* visitor) const {
   visitor->Trace(window_);
   visitor->Trace(entries_);
   visitor->Trace(transition_);
+  visitor->Trace(activation_);
   visitor->Trace(ongoing_api_method_tracker_);
   visitor->Trace(upcoming_traverse_api_method_trackers_);
   visitor->Trace(upcoming_non_traverse_api_method_tracker_);

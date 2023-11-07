@@ -803,6 +803,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   WebVector<WebHistoryItem> navigation_api_back_entries_;
   WebVector<WebHistoryItem> navigation_api_forward_entries_;
+  Member<HistoryItem> navigation_api_previous_entry_;
 
   // This is the interface that handles generated code cache
   // requests to fetch code cache when loading resources.
