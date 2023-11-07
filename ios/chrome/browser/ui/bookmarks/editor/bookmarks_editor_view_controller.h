@@ -28,6 +28,8 @@
 @property(nonatomic, weak) id<BookmarksEditorMutator> mutator;
 // Whether some value was edited.
 @property(nonatomic, assign) BOOL edited;
+// Whether the view can be dismissed.
+@property(nonatomic, assign) BOOL canBeDismissed;
 
 // Designated initializer.
 - (instancetype)initWithName:(NSString*)name
