@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "base/strings/sys_string_conversions.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "content/browser/renderer_host/browser_compositor_ios.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
