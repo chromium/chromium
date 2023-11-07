@@ -1109,7 +1109,7 @@ void AutocompleteController::SortCullAndAnnotateResult(
   UpdateAssistedQueryStats(&internal_result_);
   UpdateTailSuggestPrefix(&internal_result_);
   MaybeRemoveCompanyEntityImages(&internal_result_);
-  MaybeCleanDefaultSuggestionForKeywordMode(input_.text(), &internal_result_);
+  MaybeCleanSuggestionsForKeywordMode(input_.text(), &internal_result_);
 
   if (search_provider_)
     search_provider_->RegisterDisplayedAnswers(internal_result_);
@@ -1902,19 +1902,36 @@ void AutocompleteController::MaybeRemoveCompanyEntityImages(
   }
 }
 
-void AutocompleteController::MaybeCleanDefaultSuggestionForKeywordMode(
+void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
     const std::u16string& input,
     AutocompleteResult* result) {
-  // Intentionally avoid actions and remove button on first suggestion
-  // which may interfere with keyword mode refresh.
   if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
-      input.starts_with(u'@') && result->size() > 1 &&
-      result->match_at(1)->type == AutocompleteMatchType::STARTER_PACK) {
-    result->match_at(0)->actions.clear();
-    result->match_at(0)->deletable = false;
-    for (AutocompleteMatch& duplicate :
-         result->match_at(0)->duplicate_matches) {
-      duplicate.deletable = false;
+      input.starts_with(u'@')) {
+    // Intentionally avoid actions and remove button on first suggestion
+    // which may interfere with keyword mode refresh.
+    if (result->size() > 1 &&
+        result->match_at(1)->type == AutocompleteMatchType::STARTER_PACK) {
+      result->match_at(0)->actions.clear();
+      result->match_at(0)->deletable = false;
+      for (AutocompleteMatch& duplicate :
+           result->match_at(0)->duplicate_matches) {
+        duplicate.deletable = false;
+      }
+    }
+
+    // Clear help text that is repeated across consecutive instant keyword
+    // matches.
+    size_t instant_counter = 0;
+    for (size_t i = 0; i < result->size(); i++) {
+      if (result->match_at(i)->HasInstantKeyword(template_url_service_)) {
+        instant_counter++;
+        if (instant_counter > 1) {
+          result->match_at(i)->contents.clear();
+          result->match_at(i)->contents_class = {{}};
+        }
+      } else {
+        instant_counter = 0;
+      }
     }
   }
 }

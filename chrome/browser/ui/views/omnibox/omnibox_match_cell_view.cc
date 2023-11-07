@@ -364,15 +364,20 @@ void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
   bool is_journeys_suggestion_row =
       match.type == AutocompleteMatchType::HISTORY_CLUSTER &&
       OmniboxFieldTrial::IsActionsUISimplificationEnabled();
+  bool is_instant_keyword_row =
+      match.type == AutocompleteMatchType::STARTER_PACK &&
+      OmniboxFieldTrial::IsKeywordModeRefreshEnabled();
   if (is_pedal_suggestion_row || is_journeys_suggestion_row ||
+      is_instant_keyword_row ||
       OmniboxFieldTrial::kSquareSuggestIconIcons.Get()) {
     // When a PEDAL suggestion has been split out to its own row, apply a square
     // background with a distinctive color to the respective icon. Journeys
     // suggestion rows should also receive the same treatment.
-    const auto background_color =
-        is_pedal_suggestion_row || is_journeys_suggestion_row
-            ? kColorOmniboxAnswerIconGM3Background
-            : kColorOmniboxResultsIconGM3Background;
+    const auto background_color = is_pedal_suggestion_row ||
+                                          is_journeys_suggestion_row ||
+                                          is_instant_keyword_row
+                                      ? kColorOmniboxAnswerIconGM3Background
+                                      : kColorOmniboxResultsIconGM3Background;
     icon_view_->SetImage(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
             gfx::SizeF(kUniformRowHeightIconSize, kUniformRowHeightIconSize),
