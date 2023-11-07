@@ -104,6 +104,8 @@ TEST_F(ShortcutInputProviderTest, NoWidget) {
   EXPECT_FALSE(Shell::Get()
                    ->accelerator_controller()
                    ->ShouldPreventProcessingAccelerators());
+  EXPECT_FALSE(
+      Shell::Get()->shortcut_input_handler()->should_consume_key_events());
 }
 
 TEST_F(ShortcutInputProviderTest, SimpleEvent) {
@@ -120,6 +122,8 @@ TEST_F(ShortcutInputProviderTest, SimpleEvent) {
   EXPECT_TRUE(Shell::Get()
                   ->accelerator_controller()
                   ->ShouldPreventProcessingAccelerators());
+  EXPECT_TRUE(
+      Shell::Get()->shortcut_input_handler()->should_consume_key_events());
 }
 
 TEST_F(ShortcutInputProviderTest, SimpleEventNoFocus) {
@@ -138,6 +142,8 @@ TEST_F(ShortcutInputProviderTest, SimpleEventNoFocus) {
   EXPECT_FALSE(Shell::Get()
                    ->accelerator_controller()
                    ->ShouldPreventProcessingAccelerators());
+  EXPECT_FALSE(
+      Shell::Get()->shortcut_input_handler()->should_consume_key_events());
 
   widget_->Show();
 
@@ -150,6 +156,8 @@ TEST_F(ShortcutInputProviderTest, SimpleEventNoFocus) {
   EXPECT_TRUE(Shell::Get()
                   ->accelerator_controller()
                   ->ShouldPreventProcessingAccelerators());
+  EXPECT_TRUE(
+      Shell::Get()->shortcut_input_handler()->should_consume_key_events());
 }
 
 TEST_F(ShortcutInputProviderTest, StopObservingTest) {
@@ -166,6 +174,8 @@ TEST_F(ShortcutInputProviderTest, StopObservingTest) {
   EXPECT_TRUE(Shell::Get()
                   ->accelerator_controller()
                   ->ShouldPreventProcessingAccelerators());
+  EXPECT_TRUE(
+      Shell::Get()->shortcut_input_handler()->should_consume_key_events());
 
   shortcut_input_provider_->StopObservingShortcutInput();
   shortcut_input_handler_->OnKeyEvent(&pressed_event);
@@ -177,6 +187,8 @@ TEST_F(ShortcutInputProviderTest, StopObservingTest) {
   EXPECT_FALSE(Shell::Get()
                    ->accelerator_controller()
                    ->ShouldPreventProcessingAccelerators());
+  EXPECT_FALSE(
+      Shell::Get()->shortcut_input_handler()->should_consume_key_events());
 }
 
 TEST_F(ShortcutInputProviderTest, WidgetDestroyedTest) {

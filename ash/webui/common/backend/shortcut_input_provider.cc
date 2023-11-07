@@ -27,6 +27,8 @@ ShortcutInputProvider::~ShortcutInputProvider() {
   if (Shell::HasInstance()) {
     auto* shortcut_input_handler = Shell::Get()->shortcut_input_handler();
     if (shortcut_input_handler) {
+      shortcut_input_handler->SetShouldConsumeKeyEvents(
+          /*should_consume_key_events=*/false);
       shortcut_input_handler->RemoveObserver(this);
     }
     Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
@@ -123,11 +125,15 @@ void ShortcutInputProvider::TieProviderToWidget(views::Widget* widget) {
 
 void ShortcutInputProvider::AdjustShortcutBlockingIfNeeded() {
   if (!observing_paused_ && !shortcut_input_observers_.empty()) {
+    Shell::Get()->shortcut_input_handler()->SetShouldConsumeKeyEvents(
+        /*should_consume_key_events=*/true);
     Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
         /*prevent_processing_accelerators=*/true);
     return;
   }
 
+  Shell::Get()->shortcut_input_handler()->SetShouldConsumeKeyEvents(
+      /*should_consume_key_events=*/false);
   Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
       /*prevent_processing_accelerators=*/false);
 }

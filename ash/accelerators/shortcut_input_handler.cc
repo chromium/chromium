@@ -43,6 +43,10 @@ void ShortcutInputHandler::OnKeyEvent(ui::KeyEvent* event) {
       observer.OnShortcutInputEventReleased(key_event);
     }
   }
+
+  if (should_consume_key_events_) {
+    event->StopPropagation();
+  }
 }
 
 void ShortcutInputHandler::AddObserver(Observer* observer) {
@@ -51,6 +55,11 @@ void ShortcutInputHandler::AddObserver(Observer* observer) {
 
 void ShortcutInputHandler::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void ShortcutInputHandler::SetShouldConsumeKeyEvents(
+    bool should_consume_key_events) {
+  should_consume_key_events_ = should_consume_key_events;
 }
 
 }  // namespace ash

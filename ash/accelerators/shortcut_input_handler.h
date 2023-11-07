@@ -44,10 +44,14 @@ class ASH_EXPORT ShortcutInputHandler : public ui::EventHandler {
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
 
+  void SetShouldConsumeKeyEvents(bool should_consume_key_events);
+  bool should_consume_key_events() const { return should_consume_key_events_; }
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  private:
+  bool should_consume_key_events_ = false;
   base::ObserverList<Observer> observers_;
 };
 

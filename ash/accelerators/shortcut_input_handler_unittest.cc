@@ -67,4 +67,16 @@ TEST_F(ShortcutInputHandlerTest, ObserverTest) {
   EXPECT_EQ(1, observer_->num_input_events_released());
 }
 
+TEST_F(ShortcutInputHandlerTest, ConsumeTest) {
+  ui::KeyEvent pressed_event(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE);
+  shortcut_input_handler_->OnEvent(&pressed_event);
+  EXPECT_FALSE(pressed_event.stopped_propagation());
+
+  shortcut_input_handler_->SetShouldConsumeKeyEvents(
+      /*should_consume_key_events=*/true);
+  ui::KeyEvent released_event(ui::ET_KEY_RELEASED, ui::VKEY_0, ui::EF_NONE);
+  shortcut_input_handler_->OnEvent(&released_event);
+  EXPECT_TRUE(released_event.stopped_propagation());
+}
+
 }  // namespace ash
