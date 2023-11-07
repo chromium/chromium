@@ -25,7 +25,7 @@ class CronetExceptionTranslationUtils {
             } else if (nonCronetException.isInstance(e)) {
                 throw (E) e;
             } else {
-                throw new AssertionError("Unexpected exception", e);
+                throw e;
             }
         }
     }
