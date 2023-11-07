@@ -164,19 +164,13 @@ void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstInputDelay(
     bool loaded_from_cache) {
   base::TimeDelta delta = base::Milliseconds(value);
 
-  // WebKit does not reliably support pageshow events
-  // on version iOS 14 and below.
-  // TODO(crbug.com/1276537)
-  const bool page_show_reliably_supported =
-      base::ios::IsRunningOnIOS15OrLater();
-
   if (is_main_frame) {
     if (!loaded_from_cache) {
       UmaHistogramCustomTimes("IOS.Frame.FirstInputDelay.MainFrame2", delta,
                               kTimeRangeInputDelayHistogramMin,
                               kTimeRangeInputDelayHistogramMax,
                               kTimeRangeInputDelayHistogramBucketCount);
-    } else if (loaded_from_cache && page_show_reliably_supported) {
+    } else if (loaded_from_cache) {
       UmaHistogramCustomTimes(
           "IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore2",
           delta, kTimeRangeInputDelayHistogramMin,
@@ -189,7 +183,7 @@ void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstInputDelay(
                               kTimeRangeInputDelayHistogramMin,
                               kTimeRangeInputDelayHistogramMax,
                               kTimeRangeInputDelayHistogramBucketCount);
-    } else if (loaded_from_cache && page_show_reliably_supported) {
+    } else if (loaded_from_cache) {
       UmaHistogramCustomTimes(
           "IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore2",
           delta, kTimeRangeInputDelayHistogramMin,
