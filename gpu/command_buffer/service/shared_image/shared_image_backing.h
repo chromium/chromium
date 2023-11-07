@@ -42,6 +42,7 @@ class ProcessMemoryDump;
 }  // namespace base
 
 namespace gfx {
+class D3DSharedFence;
 class GpuFence;
 }  // namespace gfx
 
@@ -298,6 +299,11 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 #if BUILDFLAG(IS_ANDROID)
   virtual std::unique_ptr<LegacyOverlayImageRepresentation>
   ProduceLegacyOverlay(SharedImageManager* manager, MemoryTypeTracker* tracker);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  virtual void UpdateExternalFence(
+      scoped_refptr<gfx::D3DSharedFence> external_fence);
 #endif
 
   // Updates the estimated size if memory usage changes after creation.

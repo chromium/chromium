@@ -17,7 +17,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <d3d11.h>
+namespace gfx {
+class D3DSharedFence;
+}
 #endif
 
 namespace gpu {
@@ -105,6 +107,11 @@ class GPU_GLES2_EXPORT SharedImageManager
   std::unique_ptr<LegacyOverlayImageRepresentation> ProduceLegacyOverlay(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  void UpdateExternalFence(const Mailbox& mailbox,
+                           scoped_refptr<gfx::D3DSharedFence> external_fence);
 #endif
 
   // Called by SharedImageRepresentation in the destructor.

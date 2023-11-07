@@ -153,6 +153,8 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
   gpu::SharedImageCapabilities MakeCapabilities();
 
+  bool HasSharedImage(const Mailbox& mailbox) const;
+
  private:
   bool IsSharedBetweenThreads(uint32_t usage);
 

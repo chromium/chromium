@@ -97,6 +97,8 @@ class GPU_GLES2_EXPORT D3DImageBacking
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
       std::vector<wgpu::TextureFormat> view_formats) override;
+  void UpdateExternalFence(
+      scoped_refptr<gfx::D3DSharedFence> external_fence) override;
 
   bool BeginAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
                         bool write_access);

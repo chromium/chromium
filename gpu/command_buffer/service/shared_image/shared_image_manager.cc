@@ -25,6 +25,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
@@ -391,6 +392,24 @@ SharedImageManager::ProduceLegacyOverlay(const Mailbox& mailbox,
   }
 
   return representation;
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+void SharedImageManager::UpdateExternalFence(
+    const Mailbox& mailbox,
+    scoped_refptr<gfx::D3DSharedFence> external_fence) {
+  CALLED_ON_VALID_THREAD();
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR)
+        << "SharedImageManager::ProduceVideoDecode: Trying to Produce a D3D"
+           "representation from a non-existent mailbox.";
+    return;
+  }
+
+  (*found)->UpdateExternalFence(std::move(external_fence));
 }
 #endif
 

@@ -889,6 +889,10 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
   return shared_image_caps;
 }
 
+bool SharedImageFactory::HasSharedImage(const Mailbox& mailbox) const {
+  return shared_images_.contains(mailbox);
+}
+
 void SharedImageFactory::SetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
   gpu_extra_info_ = gpu_extra_info;

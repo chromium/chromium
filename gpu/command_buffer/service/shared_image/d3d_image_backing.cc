@@ -661,6 +661,15 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
+void D3DImageBacking::UpdateExternalFence(
+    scoped_refptr<gfx::D3DSharedFence> external_fence) {
+  if (!write_fence_) {
+    write_fence_ = std::move(external_fence);
+  }
+
+  // TODO(crbug.com/1236801): Handle cases that write_fence_ exists.
+}
+
 std::unique_ptr<VideoDecodeImageRepresentation>
 D3DImageBacking::ProduceVideoDecode(SharedImageManager* manager,
                                     MemoryTypeTracker* tracker,

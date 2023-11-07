@@ -16,6 +16,14 @@
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "ui/gfx/gpu_extra_info.h"
 
+namespace gfx {
+#if BUILDFLAG(IS_WIN)
+class D3DSharedFence;
+#endif
+
+struct GpuFenceHandle;
+}  // namespace gfx
+
 namespace gpu {
 class SharedContextState;
 struct Mailbox;
@@ -111,6 +119,14 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   void OnCopyToGpuMemoryBuffer(const Mailbox& mailbox, uint32_t release_id);
   void OnCreateSwapChain(mojom::CreateSwapChainParamsPtr params);
   void OnPresentSwapChain(const Mailbox& mailbox, uint32_t release_id);
+  void OnRegisterDxgiFence(const Mailbox& mailbox,
+                           gfx::DXGIHandleToken dxgi_token,
+                           gfx::GpuFenceHandle fence_handle);
+  void OnUpdateDxgiFence(const Mailbox& mailbox,
+                         gfx::DXGIHandleToken dxgi_token,
+                         uint64_t fence_value);
+  void OnUnregisterDxgiFence(const Mailbox& mailbox,
+                             gfx::DXGIHandleToken dxgi_token);
 #endif  // BUILDFLAG(IS_WIN)
 
   bool MakeContextCurrent(bool needs_gl = false);
@@ -138,6 +154,13 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   // Holds shared memory used in initial data uploads.
   base::ReadOnlySharedMemoryRegion upload_memory_;
   base::ReadOnlySharedMemoryMapping upload_memory_mapping_;
+
+#if BUILDFLAG(IS_WIN)
+  // Fences held by external processes. Registered and signaled from ipc
+  // channel. Using DXGIHandleToken to identify the fence.
+  base::flat_map<Mailbox, base::flat_set<scoped_refptr<gfx::D3DSharedFence>>>
+      registered_dxgi_fences_;
+#endif
 
   base::WeakPtrFactory<SharedImageStub> weak_factory_{this};
 };
