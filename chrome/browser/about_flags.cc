@@ -9936,6 +9936,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsName,
      flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsDescription,
      kOsAndroid, FEATURE_VALUE_TYPE(safe_browsing::kHashPrefixRealTimeLookups)},
+    {"safe-browsing-new-gms-core-api-for-browse-url-database-check",
+     flag_descriptions::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName,
+     flag_descriptions::
+         kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

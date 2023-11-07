@@ -4332,6 +4332,12 @@ const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[] =
     "Enable checking URLs through Safe Browsing hash-prefix real time "
     "protocol.";
 
+const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName[] =
+    "Safe Browsing new GMS API for browse URL database check";
+const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription[] =
+    "Use the new GMS API when performing Safe Browsing local database checks "
+    "for browse URLs.";
+
 const char kScreenshotsForAndroidV2Name[] = "Screenshots for Android V2";
 const char kScreenshotsForAndroidV2Description[] =
     "Adds functionality to the share screenshot panel within Chrome Browser"

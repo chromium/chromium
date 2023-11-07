@@ -47222,6 +47222,8 @@ from previous Chrome versions.
   <int value="369301993" label="PrinterStatus:enabled"/>
   <int value="369352033" label="GenericSensorExtraClasses:enabled"/>
   <int value="369635818" label="PasswordExport:enabled"/>
+  <int value="370045248"
+      label="SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck:disabled"/>
   <int value="370486304" label="enable-origin-chip-on-srp"/>
   <int value="370926002" label="FirmwareUpdateUIV2:enabled"/>
   <int value="371268743" label="OmniboxUIExperimentVerticalMargin:disabled"/>
@@ -50424,6 +50426,8 @@ from previous Chrome versions.
   <int value="1913298816" label="OverlayScrollbar:enabled"/>
   <int value="1913926782" label="ChromeModernAlternateCardLayout:disabled"/>
   <int value="1914131031" label="AndroidSurfaceControlMagnifier:enabled"/>
+  <int value="1914175495"
+      label="SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck:enabled"/>
   <int value="1914347357" label="AutofillEnableVirtualCard:disabled"/>
   <int value="1915028326" label="BuiltInModuleKvStorage:disabled"/>
   <int value="1915178511" label="disable-blink-features"/>

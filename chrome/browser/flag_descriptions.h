@@ -2547,6 +2547,9 @@ extern const char
 extern const char kSafeBrowsingHashPrefixRealTimeLookupsName[];
 extern const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[];
 
+extern const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName[];
+extern const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription[];
+
 extern const char kScreenshotsForAndroidV2Name[];
 extern const char kScreenshotsForAndroidV2Description[];
 
