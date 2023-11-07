@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -250,16 +251,18 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
     base::RecordAction(
         base::UserMetricsAction("Commerce.PriceTracking.OmniboxChip.Tracked"));
     commerce::MaybeEnableEmailNotifications(profile_->GetPrefs());
-    bool should_show_iph = browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHPriceTrackingInSidePanelFeature);
-    if (should_show_iph) {
-      SidePanelUI* side_panel_ui =
-          SidePanelUI::GetSidePanelUIForBrowser(browser_);
-      if (side_panel_ui) {
-        SidePanelRegistry* registry =
-            SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_);
-        registry->SetActiveEntry(registry->GetEntryForKey(
-            SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks)));
+    if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      bool should_show_iph = browser_->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHPriceTrackingInSidePanelFeature);
+      if (should_show_iph) {
+        SidePanelUI* side_panel_ui =
+            SidePanelUI::GetSidePanelUIForBrowser(browser_);
+        if (side_panel_ui) {
+          SidePanelRegistry* registry =
+              SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_);
+          registry->SetActiveEntry(registry->GetEntryForKey(
+              SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks)));
+        }
       }
     }
   }
