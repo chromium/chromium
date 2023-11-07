@@ -30,20 +30,13 @@
     box-shadow: none;
     color: var(--cros-text-color-primary);
     display: flex;
+    font: var(--cros-button-1-font);
     height: unset;
     margin-inline-end: 2px;
     margin-top: 8px;
     padding-inline-end: 0;
     padding-inline-start: 20px;
     text-transform: none;
-  }
-
-  :host-context(body:not(.jelly-enabled)) #advancedButton {
-    font-weight: 500;
-  }
-
-  :host-context(body.jelly-enabled) #advancedButton {
-    font: var(--cros-button-1-font);
   }
 
   #advancedButton:focus {
