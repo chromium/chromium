@@ -484,8 +484,16 @@ class ShoppingService : public KeyedService,
   // per unique navigation.
   void ScheduleProductInfoLocalExtraction(WebWrapper* web);
 
-  // Run the on-page info extraction if needed.
+  // Check conditions to decide if the on-page info extraction should be run and
+  // trigger the run if needed.
   void TryRunningLocalExtractionForProductInfo(base::WeakPtr<WebWrapper> web);
+
+  // Actually run the on-page info extraction if the page is shopping page based
+  // on `is_shopping_page`.
+  void RunLocalExtractionForProductInfoForShoppingPage(
+      base::WeakPtr<WebWrapper> web,
+      const GURL& url,
+      absl::optional<bool> is_shopping_page);
 
   // Whether APIs like |GetProductInfoForURL| are enabled and allowed to be
   // used.

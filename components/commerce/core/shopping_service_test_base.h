@@ -126,6 +126,10 @@ class MockOptGuideDecider
   OptimizationMetadata BuildDiscountsResponse(
       const std::vector<DiscountInfo>& infos);
 
+  // Update the class private member `default_shopping_page_` which decides
+  // whether the MockOptGuideDecider will decide all pages as shopping pages.
+  void SetDefaultShoppingPage(bool default_shopping_page);
+
  private:
   absl::optional<GURL> response_url_;
   absl::optional<OptimizationType> optimization_type_;
@@ -136,6 +140,7 @@ class MockOptGuideDecider
   std::unordered_map<std::string,
                      optimization_guide::OptimizationGuideDecisionWithMetadata>
       on_demand_shopping_responses_;
+  bool default_shopping_page_ = true;
 };
 
 // A mock WebWrapper where returned values can be manually set.

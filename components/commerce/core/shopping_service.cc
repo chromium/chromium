@@ -320,7 +320,24 @@ void ShoppingService::TryRunningLocalExtractionForProductInfo(
     return;
   }
 
+  IsShoppingPage(
+      web->GetLastCommittedURL(),
+      base::BindOnce(
+          &ShoppingService::RunLocalExtractionForProductInfoForShoppingPage,
+          weak_ptr_factory_.GetWeakPtr(), web));
+}
+
+void ShoppingService::RunLocalExtractionForProductInfoForShoppingPage(
+    base::WeakPtr<WebWrapper> web,
+    const GURL& url,
+    absl::optional<bool> is_shopping_page) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!is_shopping_page.has_value() || !is_shopping_page.value()) {
+    return;
+  }
+
+  auto it = product_info_cache_.find(url.spec());
 
   // If there is both an entry in the cache and the local extraction fallback
   // needs to run, run it.

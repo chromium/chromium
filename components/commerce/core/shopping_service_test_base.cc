@@ -18,6 +18,7 @@
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_insights.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
+#include "components/commerce/core/proto/shopping_page_types.pb.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -52,6 +53,22 @@ void MockOptGuideDecider::CanApplyOptimization(
     const GURL& url,
     OptimizationType optimization_type,
     OptimizationGuideDecisionCallback callback) {
+  if (optimization_type == OptimizationType::SHOPPING_PAGE_TYPES &&
+      default_shopping_page_) {
+    OptimizationMetadata meta;
+    ShoppingPageTypes data;
+    data.add_shopping_page_types(commerce::ShoppingPageTypes::SHOPPING_PAGE);
+    data.add_shopping_page_types(
+        commerce::ShoppingPageTypes::MERCHANT_DOMAIN_PAGE);
+    Any any;
+    any.set_type_url(data.GetTypeName());
+    data.SerializeToString(any.mutable_value());
+    meta.set_any_metadata(any);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  OptimizationGuideDecision::kTrue, meta));
+    return;
+  }
   bool type_matches = optimization_type_.has_value() &&
                       optimization_type_.value() == optimization_type;
   bool url_matches = response_url_.has_value() && url == response_url_.value();
@@ -327,6 +344,10 @@ OptimizationMetadata MockOptGuideDecider::BuildDiscountsResponse(
   meta.set_any_metadata(any);
 
   return meta;
+}
+
+void MockOptGuideDecider::SetDefaultShoppingPage(bool default_shopping_page) {
+  default_shopping_page_ = default_shopping_page;
 }
 
 MockWebWrapper::MockWebWrapper(const GURL& last_committed_url,

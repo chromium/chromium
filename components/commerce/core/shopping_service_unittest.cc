@@ -1256,7 +1256,7 @@ TEST_P(ShoppingServiceTest,
 }
 
 TEST_P(ShoppingServiceTest, TestIsShoppingPage) {
-  test_features_.InitAndEnableFeature(kShoppingPageTypes);
+  opt_guide_->SetDefaultShoppingPage(false);
   base::RunLoop run_loop[3];
   OptimizationMetadata meta;
   ShoppingPageTypes data;
