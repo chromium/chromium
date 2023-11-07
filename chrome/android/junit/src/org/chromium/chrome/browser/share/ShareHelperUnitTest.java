@@ -22,8 +22,6 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.os.Parcelable;
 
-import androidx.core.os.BuildCompat;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -268,7 +266,7 @@ public class ShareHelperUnitTest {
     }
 
     @Test
-    @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class})
+    @Config(shadows = {ShadowChooserActionHelper.class})
     public void shareWithCustomActions() throws SendIntentException {
         String actionKey = "key";
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -396,16 +394,6 @@ public class ShareHelperUnitTest {
                                     Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)),
                             "label",
                             mCallbackHelper::notifyCalled));
-        }
-    }
-
-    // Work around shadow to assume runtime is at least U.
-    // TODO(https://crbug.com/1420388): Switch to @Config(sdk=34) this once API 34 exists.
-    @Implements(BuildCompat.class)
-    static class ShadowBuildCompatForU {
-        @Implementation
-        protected static boolean isAtLeastU() {
-            return true;
         }
     }
 

@@ -16,15 +16,15 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
+import android.os.Build;
 import android.os.Parcelable;
+import android.service.chooser.ChooserAction;
 import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.os.BuildCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -40,8 +40,6 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,7 +82,6 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * @param saveLastUsed True if the chosen share component should be saved for future reuse.
      * @param customActionProvider List of custom actions for Android share sheet.
      */
-    @OptIn(markerClass = BuildCompat.PrereleaseSdkCheck.class)
     public static void shareWithSystemShareSheetUi(ShareParams params, @Nullable Profile profile,
             boolean saveLastUsed, @Nullable ChromeCustomShareAction.Provider customActionProvider) {
         assert (customActionProvider == null || ChooserActionHelper.isSupported())
@@ -290,7 +287,9 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         @Override
         protected Intent getChooserIntent(WindowAndroid window, Intent sharingIntent) {
             Intent chooserIntent = super.getChooserIntent(window, sharingIntent);
-            if (mCustomActionProvider == null) return chooserIntent;
+            if (mCustomActionProvider == null || !ChooserActionHelper.isSupported()) {
+                return chooserIntent;
+            }
 
             List<ChromeCustomShareAction> chromeCustomShareActions =
                     mCustomActionProvider.getCustomActions();
@@ -310,7 +309,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             }
 
             Parcelable[] customActions = chooserActions.toArray(new Parcelable[0]);
-            chooserIntent.putExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS, customActions);
+            chooserIntent.putExtra(Intent.EXTRA_CHOOSER_CUSTOM_ACTIONS, customActions);
 
             return chooserIntent;
         }
@@ -330,8 +329,12 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             sendBackIntent.putExtra(EXTRA_SHARE_CUSTOM_ACTION, action.key);
             // Make custom action immutable, since it doesn't need change any chooser component.
             PendingIntent pendingIntent =
-                    PendingIntent.getBroadcast(activity, requestCode++, sendBackIntent,
-                            PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
+                    PendingIntent.getBroadcast(
+                            activity,
+                            requestCode,
+                            sendBackIntent,
+                            PendingIntent.FLAG_CANCEL_CURRENT
+                                    | PendingIntent.FLAG_ONE_SHOT
                                     | PendingIntent.FLAG_IMMUTABLE);
 
             Parcelable chooserAction =
@@ -373,38 +376,15 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     /**
      * Helper class used to build Android custom action.
      */
-    // TODO(https://crbug.com/1420388): Replace calls with Android OS chooser actions.
     @VisibleForTesting
     public static class ChooserActionHelper {
-        /**
-         * Try to query if the builder class exists.
-         */
-        @SuppressWarnings("PrivateApi")
         static boolean isSupported() {
-            try {
-                Class.forName("android.service.chooser.ChooserAction$Builder");
-                return true;
-            } catch (ClassNotFoundException e) {
-                return false;
-            }
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
         }
 
-        @SuppressWarnings("PrivateApi")
         static Parcelable newChooserAction(Icon icon, String name, PendingIntent action) {
-            Parcelable parcelable = null;
-            try {
-                Class<?> chooserActionBuilderClass =
-                        Class.forName("android.service.chooser.ChooserAction$Builder");
-                Constructor<?> ctor = chooserActionBuilderClass.getConstructor(
-                        Icon.class, CharSequence.class, PendingIntent.class);
-                Object builder = ctor.newInstance(icon, name, action);
-                parcelable =
-                        (Parcelable) chooserActionBuilderClass.getMethod("build").invoke(builder);
-            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException
-                    | InvocationTargetException | InstantiationException e) {
-                Log.w(TAG, "Building ChooserAction failed.", e);
-            }
-            return parcelable;
+            if (!isSupported()) return null;
+            return new ChooserAction.Builder(icon, name, action).build();
         }
     }
 }
