@@ -709,6 +709,10 @@ TEST_F(FlossAdapterClientTest, HandlesClearedDevices) {
   EXPECT_EQ(test_observer.cleared_device_.address, device_id.address);
 }
 
+// Block the event in LaCrOS so it won't race with AshChrome. See b/308988818.
+// TODO(b/274706838): Redesign DBus API so it's only received by the correct
+// client.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(FlossAdapterClientTest, HandlesSsp) {
   TestAdapterObserver test_observer(client_.get());
   client_->Init(bus_.get(), kAdapterInterface, adapter_index_, GetCurrVersion(),
@@ -738,6 +742,7 @@ TEST_F(FlossAdapterClientTest, HandlesSsp) {
   EXPECT_EQ(test_observer.variant_, variant);
   EXPECT_EQ(test_observer.passkey_, passkey);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(FlossAdapterClientTest, CreateBond) {
   client_->Init(bus_.get(), kAdapterInterface, adapter_index_, GetCurrVersion(),
