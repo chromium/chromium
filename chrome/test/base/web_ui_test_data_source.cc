@@ -38,6 +38,8 @@ void SetupTestDataSource(content::WebUIDataSource* source,
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameAncestors,
       base::StringPrintf("frame-ancestors %s://* 'self';", scheme.c_str()));
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, "frame-src 'self';");
 
   source->AddResourcePaths(
       base::make_span(kWebuiTestResources, kWebuiTestResourcesSize));

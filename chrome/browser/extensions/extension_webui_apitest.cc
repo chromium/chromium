@@ -13,10 +13,10 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/test_data_source.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_ui_test_data_source.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
@@ -31,6 +31,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace extensions {
 
@@ -385,13 +386,30 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, EmbedExtensionWithoutOptionsPage) {
   ASSERT_TRUE(create_failed_listener.WaitUntilSatisfied());
 }
 
+class ExtensionWebUIListenersTest : public ExtensionWebUITest {
+ public:
+  void SetUpOnMainThread() override {
+    ExtensionWebUITest::SetUpOnMainThread();
+
+    // Load browser_tests.pak.
+    base::FilePath pak_path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pak_path));
+    pak_path = pak_path.AppendASCII("browser_tests.pak");
+    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+        pak_path, ui::kScaleFactorNone);
+    // Register the chrome://webui-test data source.
+    webui::CreateAndAddWebUITestDataSource(profile());
+  }
+};
+
 // Tests crbug.com/1253745 where adding and removing listeners in a WebUI frame
 // causes all listeners to be removed.
-IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, MultipleURLListeners) {
-  content::URLDataSource::Add(profile(),
-                              std::make_unique<TestDataSource>("extensions"));
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL("chrome://test/body1.html")));
+IN_PROC_BROWSER_TEST_F(ExtensionWebUIListenersTest, MultipleURLListeners) {
+  // Use the same URL both for the parent and child frames for convenience.
+  // These could be different WebUI URLs.
+  GURL test_url("chrome://webui-test/whats_new/test.html");
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
@@ -403,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, MultipleURLListeners) {
       var listener = e => {};
       chrome.test.onMessage.addListener(listener);
       const iframe = document.createElement('iframe');
-      iframe.src = 'chrome://test/body2.html';
+      iframe.src = 'chrome://webui-test/whats_new/test.html';
       document.body.appendChild(iframe);
   )"));
   EXPECT_TRUE(event_router->HasEventListener("test.onMessage"));
@@ -411,8 +429,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, MultipleURLListeners) {
 
   // Add and remove the listener in the child frame.
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
-  EXPECT_EQ(GURL("chrome://test/body2.html"),
-            child_frame->GetLastCommittedURL());
+  EXPECT_EQ(test_url, child_frame->GetLastCommittedURL());
   EXPECT_TRUE(content::ExecJs(child_frame, R"(
       const listener = e => {};
       chrome.test.onMessage.addListener(listener);

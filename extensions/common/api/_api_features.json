@@ -742,7 +742,7 @@
       "chrome://extensions/*",
       // System Web App version of File Manager.
       "chrome://file-manager/*",
-      "chrome://test/*"
+      "chrome://webui-test/*"
     ]
   }, {
     "channel": "stable",

@@ -8605,8 +8605,6 @@ if (!is_android) {
     sources = [
       "signin/token_revoker_test_utils.cc",
       "signin/token_revoker_test_utils.h",
-      "ui/webui/test_data_source.cc",
-      "ui/webui/test_data_source.h",
       "ui/webui/web_ui_test_handler.cc",
       "ui/webui/web_ui_test_handler.h",
     ]
