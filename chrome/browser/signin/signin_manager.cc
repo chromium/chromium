@@ -28,6 +28,15 @@
 #include "google_apis/gaia/core_account_id.h"
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Stop the `SigninManager` from removing the primary account and revoke all
+// tokens when there is a valid refresh token. The account reconcilor is
+// expected to rebuild cookies. Used as a kill switch.
+BASE_FEATURE(kPreventSignoutIfAccountValid,
+             "PreventSignoutIfAccountValid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  //  BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 namespace {
 
 class AccountSelectionInProgressHandleInternal
@@ -212,20 +221,23 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
     return CoreAccountInfo();
   }
 
+  bool is_current_primary_account_valid =
+      IsValidUnconsentedPrimaryAccount(current_primary_account);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  AccountInfo extended_account_info =
-      identity_manager_->FindExtendedAccountInfo(current_primary_account);
-  bool is_subject_to_parental_controls =
-      extended_account_info.capabilities.is_subject_to_parental_controls() ==
-      signin::Tribool::kTrue;
-  if (is_subject_to_parental_controls &&
-      IsValidUnconsentedPrimaryAccount(current_primary_account) &&
-      base::FeatureList::IsEnabled(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
-    // For supervised users, in some cases like clear browsing data including
-    // cookies, they shouldn't be signed out. If the refresh token is valid and
-    // not in error state, the account reconcilor will rebuild cookies.
-    return current_primary_account;
+  if (is_current_primary_account_valid) {
+    AccountInfo extended_account_info =
+        identity_manager_->FindExtendedAccountInfo(current_primary_account);
+    bool is_subject_to_parental_controls =
+        extended_account_info.capabilities.is_subject_to_parental_controls() ==
+        signin::Tribool::kTrue;
+    if (is_subject_to_parental_controls &&
+        base::FeatureList::IsEnabled(
+            supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+      // For supervised users, in some cases like clear browsing data including
+      // cookies, they shouldn't be signed out. If the refresh token is valid
+      // and not in error state, the account reconcilor will rebuild cookies.
+      return current_primary_account;
+    }
   }
 #endif
 
@@ -239,28 +251,30 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   if (cookie_info.accounts_are_fresh) {
     // Cookies are fresh and tokens are loaded, UPA is the first account
     // in cookies if it exists and has a refresh token.
-    if (cookie_accounts.empty()) {
+    if (!cookie_accounts.empty()) {
+      AccountInfo account_info =
+          identity_manager_->FindExtendedAccountInfoByAccountId(
+              cookie_accounts[0].id);
+      return IsValidUnconsentedPrimaryAccount(account_info) ? account_info
+                                                            : CoreAccountInfo();
+    }
+    // Cookie accounts are empty.
+    // If `kPreventSignoutIfAccountValid` is enabled, only clear primary account
+    // if the account is not valid. Allow the reconcilor to rebuild cookies.
+    if (!base::FeatureList::IsEnabled(kPreventSignoutIfAccountValid)) {
       // Cookies are empty, the UPA is empty.
       return CoreAccountInfo();
     }
-
-    AccountInfo account_info =
-        identity_manager_->FindExtendedAccountInfoByAccountId(
-            cookie_accounts[0].id);
-    return IsValidUnconsentedPrimaryAccount(account_info) ? account_info
-                                                          : CoreAccountInfo();
   }
 
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return CoreAccountInfo();
-  }
-
-  // If cookies or tokens are not loaded, it is not possible to fully compute
-  // the unconsented primary account. However, if the current unconsented
-  // primary account is no longer valid, it has to be removed.
-  return IsValidUnconsentedPrimaryAccount(current_primary_account)
-             ? current_primary_account
-             : CoreAccountInfo();
+  // If cookie accounts are empty and the primary account is valid allow the
+  // reconcilor to rebuild cookies.
+  // If cookies are not fresh, it is not possible to fully compute
+  // the unconsented primary account.
+  // However, if the current unconsented primary account is no longer valid, it
+  // has to be removed.
+  return is_current_primary_account_valid ? current_primary_account
+                                          : CoreAccountInfo();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
