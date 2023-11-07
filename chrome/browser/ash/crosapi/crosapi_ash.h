@@ -261,7 +261,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindImageWriter(
       mojo::PendingReceiver<mojom::ImageWriter> receiver) override;
   void BindInSessionAuth(
-      mojo::PendingReceiver<mojom::InSessionAuth> receiver) override;
+      mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver)
+      override;
   void BindKerberosInBrowser(
       mojo::PendingReceiver<mojom::KerberosInBrowser> receiver) override;
   void BindKeystoreService(

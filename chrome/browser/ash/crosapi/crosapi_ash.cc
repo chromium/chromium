@@ -646,7 +646,7 @@ void CrosapiAsh::BindImageWriter(
 }
 
 void CrosapiAsh::BindInSessionAuth(
-    mojo::PendingReceiver<mojom::InSessionAuth> receiver) {
+    mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver) {
   in_session_auth_ash_->BindReceiver(std::move(receiver));
 }
 

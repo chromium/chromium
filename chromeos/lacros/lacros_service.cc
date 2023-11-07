@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
+#include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -68,7 +69,6 @@
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/crosapi/mojom/identity_manager.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
-#include "chromeos/crosapi/mojom/in_session_auth.mojom.h"
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
@@ -414,7 +414,7 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::ImageWriter,
                   &crosapi::mojom::Crosapi::BindImageWriter,
                   Crosapi::MethodMinVersions::kBindImageWriterMinVersion>();
-  ConstructRemote<crosapi::mojom::InSessionAuth,
+  ConstructRemote<chromeos::auth::mojom::InSessionAuth,
                   &crosapi::mojom::Crosapi::BindInSessionAuth,
                   Crosapi::MethodMinVersions::kBindInSessionAuthMinVersion>();
   ConstructRemote<

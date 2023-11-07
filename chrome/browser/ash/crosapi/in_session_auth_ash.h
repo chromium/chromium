@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
-#include "chromeos/crosapi/mojom/in_session_auth.mojom-shared.h"
-#include "chromeos/crosapi/mojom/in_session_auth.mojom.h"
+#include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom-shared.h"
+#include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -17,7 +17,7 @@ namespace crosapi {
 // This is the ash-chrome implementation of the InSessionAuth mojo interface.
 // Used by lacros-chrome to call into ash authentication backends to
 // authenticate users in session.
-class InSessionAuthAsh : public mojom::InSessionAuth {
+class InSessionAuthAsh : public chromeos::auth::mojom::InSessionAuth {
  public:
   InSessionAuthAsh();
   InSessionAuthAsh(const InSessionAuthAsh&) = delete;
@@ -27,10 +27,10 @@ class InSessionAuthAsh : public mojom::InSessionAuth {
   void BindReceiver(mojo::PendingReceiver<InSessionAuth> receiver);
 
   // crosapi::mojom::InSessionAuth
-  void RequestToken(mojom::Reason reason,
+  void RequestToken(chromeos::auth::mojom::Reason reason,
                     const absl::optional<std::string>& prompt,
                     RequestTokenCallback callback) override;
-  void CheckToken(mojom::Reason reason,
+  void CheckToken(chromeos::auth::mojom::Reason reason,
                   const std::string& token,
                   CheckTokenCallback callback) override;
   void InvalidateToken(const std::string& token) override;
@@ -43,7 +43,7 @@ class InSessionAuthAsh : public mojom::InSessionAuth {
                       const ash::AuthProofToken& token,
                       base::TimeDelta timeout);
 
-  mojo::ReceiverSet<mojom::InSessionAuth> receivers_;
+  mojo::ReceiverSet<chromeos::auth::mojom::InSessionAuth> receivers_;
 
   base::WeakPtrFactory<InSessionAuthAsh> weak_factory_{this};
 };

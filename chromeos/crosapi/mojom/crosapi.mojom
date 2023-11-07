@@ -4,6 +4,7 @@
 
 module crosapi.mojom;
 
+import "chromeos/components/in_session_auth/mojom/in_session_auth.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
@@ -57,7 +58,6 @@ import "chromeos/crosapi/mojom/holding_space_service.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
-import "chromeos/crosapi/mojom/in_session_auth.mojom";
 import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/launcher_search.mojom";
@@ -437,7 +437,8 @@ interface Crosapi {
   // on ChromeOS
   // Added in M106.
   [MinVersion=92]
-  BindInSessionAuth@96(pending_receiver<InSessionAuth> receiver);
+  BindInSessionAuth@96(
+      pending_receiver<chromeos.auth.mojom.InSessionAuth> receiver);
 
   // Binds the NetworkSettingsService interface for reading and observing
   // network changes.

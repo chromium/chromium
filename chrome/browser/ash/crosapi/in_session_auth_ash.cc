@@ -16,17 +16,18 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
-#include "chromeos/crosapi/mojom/in_session_auth.mojom.h"
+#include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom.h"
 
 namespace crosapi {
 
-ash::InSessionAuthDialogController::Reason ToAshReason(mojom::Reason reason) {
+ash::InSessionAuthDialogController::Reason ToAshReason(
+    chromeos::auth::mojom::Reason reason) {
   switch (reason) {
-    case mojom::Reason::kAccessPasswordManager:
+    case chromeos::auth::mojom::Reason::kAccessPasswordManager:
       return ash::InSessionAuthDialogController::kAccessPasswordManager;
-    case mojom::Reason::kModifyAuthFactors:
+    case chromeos::auth::mojom::Reason::kModifyAuthFactors:
       return ash::InSessionAuthDialogController::kModifyAuthFactors;
-    case mojom::Reason::kModifyAuthFactorsMultidevice:
+    case chromeos::auth::mojom::Reason::kModifyAuthFactorsMultidevice:
       return ash::InSessionAuthDialogController::kModifyAuthFactorsMultidevice;
   }
 }
@@ -39,7 +40,7 @@ void InSessionAuthAsh::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-void InSessionAuthAsh::RequestToken(mojom::Reason reason,
+void InSessionAuthAsh::RequestToken(chromeos::auth::mojom::Reason reason,
                                     const absl::optional<std::string>& prompt,
                                     RequestTokenCallback callback) {
   ash::Shell::Get()->in_session_auth_dialog_controller()->ShowAuthDialog(
@@ -48,7 +49,7 @@ void InSessionAuthAsh::RequestToken(mojom::Reason reason,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void InSessionAuthAsh::CheckToken(mojom::Reason reason,
+void InSessionAuthAsh::CheckToken(chromeos::auth::mojom::Reason reason,
                                   const std::string& token,
                                   CheckTokenCallback callback) {
   bool token_valid;
@@ -84,7 +85,8 @@ void InSessionAuthAsh::OnAuthComplete(RequestTokenCallback callback,
                                       const ash::AuthProofToken& token,
                                       base::TimeDelta timeout) {
   std::move(callback).Run(
-      success ? mojom::RequestTokenReply::New(token, timeout) : nullptr);
+      success ? chromeos::auth::mojom::RequestTokenReply::New(token, timeout)
+              : nullptr);
 }
 
 }  // namespace crosapi

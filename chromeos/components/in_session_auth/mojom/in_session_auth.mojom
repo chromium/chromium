@@ -1,12 +1,20 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module crosapi.mojom;
+// This module serves as an interface for requesting, validating,
+// and invalidated authentication tokens for various sensitive OS
+// settings operations, such as modifying lock screen settings.
+// This module is also used from lacros to authenticate users
+// in password manager scenarios.
+// The aquired token is perishable, and can be reused for as long
+// as it is valid. Token are managed by ash's `AuthSessionStorage`.
+
+module chromeos.auth.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
-[Stable]
+[Stable, RenamedFrom="crosapi.mojom.RequestTokenReply"]
 struct RequestTokenReply {
   // The authentication token that is returned, to use for sensitive
   // operations.
@@ -16,7 +24,7 @@ struct RequestTokenReply {
   mojo_base.mojom.TimeDelta timeout@1;
 };
 
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="crosapi.mojom.Reason"]
 enum Reason {
   [Default] kAccessPasswordManager = 0,
   kModifyAuthFactors,
@@ -24,8 +32,8 @@ enum Reason {
 };
 
 // An interface implemented by Ash to expose Ash's authentication capabilities.
-// Used by Lacros for extension API authentication in Settings.
-[Stable, Uuid="7d4bb0d8-f1fa-46bf-a7a6-b7117526ea63"]
+[Stable, Uuid="7d4bb0d8-f1fa-46bf-a7a6-b7117526ea63",
+  RenamedFrom="crosapi.mojom.InSessionAuth"]
 interface InSessionAuth {
   // Instructs Ash to summon a native authentication dialog to authenticate
   // the currently active user. Returns a prerishable authentication token on
