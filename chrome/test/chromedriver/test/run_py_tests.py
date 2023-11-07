@@ -121,10 +121,8 @@ _OS_SPECIFIC_FILTER['win'] = [
     'HeadlessInvalidCertificateTest.testNavigateNewWindow',
     'ChromeDriverTest.testHeadlessWithUserDataDirStarts',
     'ChromeDriverTest.testHeadlessWithExistingUserDataDirStarts',
-    'RemoteBrowserTest.testConnectToRemoteBrowserLiteralAddressHeadless',
     'JavaScriptTests.testAllJS',
     'LaunchDesktopTest.testExistingDevToolsPortFile',
-    'RemoteBrowserTest.testConnectToRemoteBrowser',
     'SessionHandlingTest.testQuitASessionMoreThanOnce',
     'SupportIPv4AndIPv6.testSupportIPv4AndIPv6',
     # Flaky on Win7 bots: crbug.com/1132559
@@ -6235,6 +6233,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
     ports_generator = util.FindProbableFreePorts()
     exception = None
     for _ in range(3):
+      exception = None
       port = next(ports_generator)
       temp_dir = util.MakeTempDir()
       print('temp dir is ' + temp_dir)
@@ -6252,7 +6251,9 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
         driver.Quit()
       except Exception as e:
         exception = e
-        continue
+
+      # The process must be closed on each iteration otherwise a resource leak
+      # happens.
       if process.poll() is None:
         process.terminate()
         # Wait for Chrome to exit here to prevent a race with Chrome to
@@ -6279,6 +6280,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
       ports_generator = util.FindProbableFreePorts()
       exception = None
       for _ in range(3):
+        exception = None
         port = next(ports_generator)
         temp_dir = util.MakeTempDir()
         print('temp dir is ' + temp_dir)
@@ -6299,7 +6301,9 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
           driver.Quit()
         except Exception as e:
           exception = e
-          continue
+
+        # The process must be closed on each iteration otherwise a resource leak
+        # happens.
         if process.poll() is None:
           process.terminate()
           # Wait for Chrome to exit here to prevent a race with Chrome to
