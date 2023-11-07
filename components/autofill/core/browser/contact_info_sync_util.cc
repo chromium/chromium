@@ -9,7 +9,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -321,8 +323,14 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   if (!AreContactInfoSpecificsValid(specifics))
     return nullptr;
 
+  std::u16string country_name_or_code =
+      base::ASCIIToUTF16(specifics.address_country().value());
+  std::string country_code =
+      CountryNames::GetInstance()->GetCountryCode(country_name_or_code);
+
   std::unique_ptr<AutofillProfile> profile = std::make_unique<AutofillProfile>(
-      specifics.guid(), AutofillProfile::Source::kAccount);
+      specifics.guid(), AutofillProfile::Source::kAccount,
+      AddressCountryCode(country_code));
 
   profile->set_use_count(specifics.use_count());
   profile->set_use_date(base::Time::UnixEpoch() +
@@ -351,7 +359,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.address_city(), ADDRESS_HOME_CITY);
   s.Set(specifics.address_state(), ADDRESS_HOME_STATE);
   s.Set(specifics.address_zip(), ADDRESS_HOME_ZIP);
-  s.Set(specifics.address_country(), ADDRESS_HOME_COUNTRY);
   s.Set(specifics.address_street_address(), ADDRESS_HOME_STREET_ADDRESS);
   s.Set(specifics.address_sorting_code(), ADDRESS_HOME_SORTING_CODE);
   s.Set(specifics.address_dependent_locality(),

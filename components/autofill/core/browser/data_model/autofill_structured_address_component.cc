@@ -136,8 +136,12 @@ bool AddressComponent::SameAs(const AddressComponent& other) const {
       value_verification_status_ != other.value_verification_status_) {
     return false;
   }
-  CHECK_EQ(other.subcomponents_.size(), subcomponents_.size())
-      << GetStorageTypeName();
+
+  if (subcomponents_.size() != other.subcomponents_.size()) {
+    CHECK(base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel))
+        << GetStorageTypeName();
+    return false;
+  }
   for (size_t i = 0; i < other.subcomponents_.size(); i++) {
     if (!(subcomponents_[i]->SameAs(*other.subcomponents_[i]))) {
       return false;
@@ -986,8 +990,13 @@ bool AddressComponent::IsMergeableWithComponent(
   // Checks if all child nodes are mergeable.
   if (merge_mode_ & kMergeChildrenAndReformatIfNeeded) {
     bool is_mergeable = true;
-    CHECK_EQ(newer_component.subcomponents_.size(), subcomponents_.size())
-        << GetStorageTypeName();
+
+    if (subcomponents_.size() != newer_component.subcomponents_.size()) {
+      CHECK(
+          base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel))
+          << GetStorageTypeName();
+      return false;
+    }
     for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
       if (!subcomponents_[i]->IsMergeableWithComponent(
               *newer_component.subcomponents_[i])) {
