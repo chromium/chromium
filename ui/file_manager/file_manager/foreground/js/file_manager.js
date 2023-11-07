@@ -21,7 +21,7 @@ import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveCo
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
-import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {isDlpEnabled, isGuestOsEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
@@ -49,8 +49,8 @@ import {updateDriveConnectionStatus} from '../../state/ducks/drive.js';
 import {updatePreferences} from '../../state/ducks/preferences.js';
 import {getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
-import {trashRootKey} from '../../state/ducks/volumes.js';
-import {getEmptyState, getStore} from '../../state/store.js';
+import {driveRootEntryListKey, trashRootKey} from '../../state/ducks/volumes.js';
+import {getEmptyState, getEntry, getStore} from '../../state/store.js';
 
 import {ActionsController} from './actions_controller.js';
 import {AndroidAppListModel} from './android_app_list_model.js';
@@ -1829,7 +1829,15 @@ export class FileManager extends EventTarget {
     if (!nextCurrentDirEntry) {
       if (isNewDirectoryTreeEnabled()) {
         const myFiles = getMyFiles(this.store_.getState());
-        nextCurrentDirEntry = myFiles.myFilesEntry;
+        // When MyFiles volume is mounted, we rely on the current directory
+        // change to make it as selected (controlled by DirectoryModel),
+        // that's why we can't set MyFiles entry list as the current directory
+        // here.
+        // TODO(b/308504417): MyFiles entry list should be selected before
+        // MyFiles volume mounts.
+        if (myFiles.myFilesVolume) {
+          nextCurrentDirEntry = myFiles.myFilesEntry;
+        }
         // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type
         // 'XfTree | DirectoryTree'.
       } else if (this.ui_.directoryTree.dataModel.myFilesModel_) {
@@ -2157,23 +2165,33 @@ export class FileManager extends EventTarget {
    */
   toggleDriveRootOnPreferencesUpdate_() {
     if (this.driveEnabled_) {
-      const driveFakeRoot = new FakeEntryImpl(
-          str('DRIVE_DIRECTORY_LABEL'),
-          VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
-      if (!this.fakeDriveItem_) {
-        this.fakeDriveItem_ = new NavigationModelFakeItem(
-            str('DRIVE_DIRECTORY_LABEL'), NavigationModelItemType.DRIVE,
-            driveFakeRoot);
-        this.fakeDriveItem_.disabled = this.volumeManager_.isDisabled(
-            VolumeManagerCommon.VolumeType.DRIVE);
+      let driveFakeRoot = /** @type {?EntryList} */
+          (getEntry(this.store_.getState(), driveRootEntryListKey));
+      if (!driveFakeRoot) {
+        driveFakeRoot = new EntryList(
+            str('DRIVE_DIRECTORY_LABEL'),
+            VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
+        this.store_.dispatch(addUiEntry({entry: driveFakeRoot}));
       }
       if (!isNewDirectoryTreeEnabled()) {
-        // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type
-        // 'XfTree | DirectoryTree'.
+        // TODO(b/285977941): Remove the old FakeEntry based drive root.
+        const driveFakeRoot = new FakeEntryImpl(
+            str('DRIVE_DIRECTORY_LABEL'),
+            VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
+        if (!this.fakeDriveItem_) {
+          this.fakeDriveItem_ = new NavigationModelFakeItem(
+              str('DRIVE_DIRECTORY_LABEL'), NavigationModelItemType.DRIVE,
+              driveFakeRoot);
+          this.fakeDriveItem_.disabled = this.volumeManager_.isDisabled(
+              VolumeManagerCommon.VolumeType.DRIVE);
+        }
+        // @ts-ignore: error TS2339: Property 'dataModel' does not exist on
+        // type 'XfTree | DirectoryTree'.
         this.ui_.directoryTree.dataModel.fakeDriveItem = this.fakeDriveItem_;
       }
       return;
     }
+    this.store_.dispatch(removeUiEntry({key: driveRootEntryListKey}));
     if (!isNewDirectoryTreeEnabled()) {
       // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type
       // 'XfTree | DirectoryTree'.
@@ -2185,7 +2203,8 @@ export class FileManager extends EventTarget {
   /**
    * If the root item has been disabled but it is the current visible entry,
    * navigate away from it to the default display root.
-   * @param {?NavigationModelFakeItem} rootItem The item to navigate away from.
+   * @param {?NavigationModelFakeItem} rootItem The item to navigate away
+   *     from.
    * @private
    */
   navigateAwayFromDisabledRoot_(rootItem) {

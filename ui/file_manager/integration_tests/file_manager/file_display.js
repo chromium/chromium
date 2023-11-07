@@ -573,7 +573,7 @@ testcase.fileDisplayWithoutVolumesThenMountDrive = async () => {
 
   // Navigate to the Drive FakeItem.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.waitForGroupRootItemByType('drive');
+  await directoryTree.selectGroupRootItemByType('drive');
 
   // The fake Google Drive should be empty.
   await remoteCall.waitForFiles(appId, []);

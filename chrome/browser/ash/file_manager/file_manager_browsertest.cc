@@ -338,22 +338,21 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayUsb")
             .NewDirectoryTree()
             .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3"}),
-        // TODO(b/301341566): enable the tests
         TestCase("fileDisplayUsbPartition").NewDirectoryTree(),
         TestCase("fileDisplayUsbPartition")
             .EnableSinglePartitionFormat()
             .NewDirectoryTree(),
         TestCase("fileDisplayUsbPartitionSort").NewDirectoryTree(),
         TestCase("fileDisplayPartitionFileTable").NewDirectoryTree(),
-        // TestCase("fileDisplayWithoutVolumesThenMountDownloads")
-        //     .DontMountVolumes()
-        //     .NewDirectoryTree(),
-        // TestCase("fileDisplayWithoutVolumesThenMountDrive")
-        //     .DontMountVolumes()
-        //     .NewDirectoryTree(),
-        // TestCase("fileDisplayWithoutDrive")
-        //     .DontMountVolumes()
-        //     .NewDirectoryTree(),
+        TestCase("fileDisplayWithoutVolumesThenMountDownloads")
+            .DontMountVolumes()
+            .NewDirectoryTree(),
+        TestCase("fileDisplayWithoutVolumesThenMountDrive")
+            .DontMountVolumes()
+            .NewDirectoryTree(),
+        TestCase("fileDisplayWithoutDrive")
+            .DontMountVolumes()
+            .NewDirectoryTree(),
         TestCase("fileDisplayWithHiddenVolume").NewDirectoryTree(),
         TestCase("fileDisplayMountWithFakeItemSelected").NewDirectoryTree(),
         TestCase("fileDisplayUnmountDriveWithSharedWithMeSelected")

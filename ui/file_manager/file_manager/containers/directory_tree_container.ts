@@ -959,12 +959,14 @@ export class DirectoryTreeContainer {
         const navigationRootData = this.navigationRoots_.find(
             navigationRoot => navigationRoot.key === fileData.entry.toURL());
         if (navigationRootData?.type === NavigationType.DRIVE) {
-          // If Drive fake root is selected and we expand it and go to the My
-          // Drive (1st child) directly.
-          if (!element.expanded) {
+          if (fileData.children.length === 0) {
+            // Drive volume is not mounted, we can only change directory to the
+            // fake drive root.
+            this.store_.dispatch(changeDirectory({toKey: entry.toURL()}));
+          } else {
+            // If Drive fake root is selected and it has Drive volume inside, we
+            // expand it and go to the My Drive (1st child) directly.
             element.expanded = true;
-          }
-          if (fileData.children && fileData.children.length > 0) {
             this.store_.dispatch(
                 changeDirectory({toKey: fileData.children[0]!}));
           }
