@@ -556,8 +556,10 @@ bool IsSubtreePrunedForAccessibility(const Element* node) {
   if (IsA<HTMLMapElement>(node))
     return true;  // Contains children for an img, but is not its own object.
 
-  if (node->HasTagName(html_names::kColgroupTag))
+  if (node->HasTagName(html_names::kColgroupTag) ||
+      node->HasTagName(html_names::kColTag)) {
     return true;  // Affects table layout, but doesn't get it's own AXObject.
+  }
 
   if (node->IsPseudoElement()) {
     if (!AXObjectCacheImpl::IsRelevantPseudoElement(*node))
