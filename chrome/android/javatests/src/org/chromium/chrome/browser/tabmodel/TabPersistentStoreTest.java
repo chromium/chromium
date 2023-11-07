@@ -944,10 +944,12 @@ public class TabPersistentStoreTest {
 
             // Undoing tab closures one-by-one results in the first tab always being selected after
             // the initial restoration.
+            Tab currentTab =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(selector::getCurrentTab);
             if (i == 0) {
-                Assert.assertEquals(info.selectedTabId, selector.getCurrentTab().getId());
+                Assert.assertEquals(info.selectedTabId, currentTab.getId());
             } else {
-                Assert.assertEquals(info.contents[0].tabId, selector.getCurrentTab().getId());
+                Assert.assertEquals(info.contents[0].tabId, currentTab.getId());
             }
 
             TestThreadUtils.runOnUiThreadBlocking(

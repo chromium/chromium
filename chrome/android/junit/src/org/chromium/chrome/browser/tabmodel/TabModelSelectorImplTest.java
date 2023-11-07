@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -14,6 +18,7 @@ import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,9 +28,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -44,24 +50,25 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for {@link TabModelSelectorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class TabModelSelectorImplTest {
     // Test activity type that does not restore tab on cold restart.
     // Any type other than ActivityType.TABBED works.
     private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
 
-    @Mock TabModelFilterFactory mMockTabModelFilterFactory;
-    @Mock TabContentManager mMockTabContentManager;
-    @Mock TabDelegateFactory mTabDelegateFactory;
-    @Mock NextTabPolicySupplier mNextTabPolicySupplier;
+    @Mock private TabModelFilterFactory mMockTabModelFilterFactory;
+    @Mock private TabContentManager mMockTabContentManager;
+    @Mock private TabDelegateFactory mTabDelegateFactory;
+    @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
 
     @Mock
-    IncognitoTabModelObserver.IncognitoReauthDialogDelegate mIncognitoReauthDialogDelegateMock;
+    private IncognitoTabModelObserver.IncognitoReauthDialogDelegate
+            mIncognitoReauthDialogDelegateMock;
 
-    @Mock TabModelSelectorObserver mTabModelSelectorObserverMock;
-    @Mock ProfileProvider mProfileProvider;
-    @Mock Profile mProfile;
-    @Mock Profile mIncognitoProfile;
+    @Mock private Callback<TabModel> mTabModelSupplierObserverMock;
+    @Mock private TabModelSelectorObserver mTabModelSelectorObserverMock;
+    @Mock private ProfileProvider mProfileProvider;
+    @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
 
     private TabModelSelectorImpl mTabModelSelector;
     private MockTabCreatorManager mTabCreatorManager;
@@ -86,15 +93,31 @@ public class TabModelSelectorImplTest {
                         mTabCreatorManager,
                         mMockTabModelFilterFactory,
                         mNextTabPolicySupplier,
-                        /* supportUndo= */ realAsyncTabParamsManager,
-                        false,
-                        /* startIncognito= */ NO_RESTORE_TYPE,
-                        false);
+                        realAsyncTabParamsManager,
+                        /* supportUndo= */ false,
+                        NO_RESTORE_TYPE,
+                        /* startIncognito= */ false);
+        assertTrue(currentTabModelSupplierHasObservers());
+        assertNull(mTabModelSelector.getCurrentTabModelSupplier().get());
+
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(
                 mMockTabContentManager,
                 new MockTabModel(mProfile, null),
                 new MockTabModel(mIncognitoProfile, null));
+
+        assertEquals(
+                mTabModelSelector.getModel(/* isIncognito= */ false),
+                mTabModelSelector.getCurrentTabModelSupplier().get());
+        assertEquals(
+                mTabModelSelector.getCurrentModel(),
+                mTabModelSelector.getCurrentTabModelSupplier().get());
+    }
+
+    @After
+    public void tearDown() {
+        mTabModelSelector.destroy();
+        assertFalse(currentTabModelSupplierHasObservers());
     }
 
     @Test
@@ -153,15 +176,27 @@ public class TabModelSelectorImplTest {
             testIncognitoReauthDialogDelegate_OnBeforeIncognitoTabModelSelected_called_Before() {
         doNothing().when(mIncognitoReauthDialogDelegateMock).onBeforeIncognitoTabModelSelected();
         doNothing().when(mTabModelSelectorObserverMock).onTabModelSelected(any(), any());
+        doNothing().when(mTabModelSupplierObserverMock).onResult(any());
         mTabModelSelector.setIncognitoReauthDialogDelegate(mIncognitoReauthDialogDelegateMock);
         mTabModelSelector.addObserver(mTabModelSelectorObserverMock);
+        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mTabModelSupplierObserverMock);
+        ShadowLooper.runUiThreadTasks();
+        verify(mTabModelSupplierObserverMock).onResult(any());
 
-        InOrder order = inOrder(mIncognitoReauthDialogDelegateMock, mTabModelSelectorObserverMock);
+        InOrder order =
+                inOrder(
+                        mIncognitoReauthDialogDelegateMock,
+                        mTabModelSelectorObserverMock,
+                        mTabModelSupplierObserverMock);
         mTabModelSelector.selectModel(/* incognito= */ true);
 
-        order.verify(mIncognitoReauthDialogDelegateMock, times(1))
-                .onBeforeIncognitoTabModelSelected();
-        order.verify(mTabModelSelectorObserverMock, times(1)).onTabModelSelected(any(), any());
+        order.verify(mIncognitoReauthDialogDelegateMock).onBeforeIncognitoTabModelSelected();
+        order.verify(mTabModelSupplierObserverMock).onResult(any());
+        order.verify(mTabModelSelectorObserverMock).onTabModelSelected(any(), any());
+
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .removeObserver(mTabModelSupplierObserverMock);
     }
 
     /**
@@ -182,6 +217,10 @@ public class TabModelSelectorImplTest {
         // separate from the actual test.
         mTabModelSelector.setIncognitoReauthDialogDelegate(mIncognitoReauthDialogDelegateMock);
         mTabModelSelector.addObserver(mTabModelSelectorObserverMock);
+        doNothing().when(mTabModelSupplierObserverMock).onResult(any());
+        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mTabModelSupplierObserverMock);
+        ShadowLooper.runUiThreadTasks();
+        verify(mTabModelSupplierObserverMock).onResult(any());
 
         doNothing().when(mIncognitoReauthDialogDelegateMock).onAfterRegularTabModelChanged();
         doNothing().when(mTabModelSelectorObserverMock).onTabModelSelected(any(), any());
@@ -189,12 +228,22 @@ public class TabModelSelectorImplTest {
 
         InOrder order = inOrder(mTabModelSelectorObserverMock, mIncognitoReauthDialogDelegateMock);
         mTabModelSelector.selectModel(/* incognito= */ false);
-        verify(mTabModelSelectorObserverMock, times(1)).onTabModelSelected(any(), any());
+        verify(mTabModelSelectorObserverMock).onTabModelSelected(any(), any());
+        verify(mTabModelSupplierObserverMock, times(2)).onResult(any());
 
         // The onChange method below is posted as a task to the main looper, and therefore we need
         // to wait until it gets executed.
         ShadowLooper.shadowMainLooper().idle();
-        order.verify(mTabModelSelectorObserverMock, times(1)).onChange();
-        order.verify(mIncognitoReauthDialogDelegateMock, times(1)).onAfterRegularTabModelChanged();
+        order.verify(mTabModelSelectorObserverMock).onChange();
+        order.verify(mIncognitoReauthDialogDelegateMock).onAfterRegularTabModelChanged();
+
+        mTabModelSelector
+                .getCurrentTabModelSupplier()
+                .removeObserver(mTabModelSupplierObserverMock);
+    }
+
+    private boolean currentTabModelSupplierHasObservers() {
+        return ((ObservableSupplierImpl<?>) mTabModelSelector.getCurrentTabModelSupplier())
+                .hasObservers();
     }
 }

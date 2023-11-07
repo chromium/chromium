@@ -202,7 +202,9 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     public void waitForActivityCompletelyLoaded() {
         CriteriaHelper.pollUiThread(
                 () -> getActivity().getActivityTab() != null, "Tab never selected/initialized.");
-        Tab tab = getActivity().getActivityTab();
+        Tab tab =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> getActivity().getActivityTab());
 
         ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
 
@@ -481,11 +483,10 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         return mTestServerRule;
     }
 
-    /**
-     * @return {@link WebContents} of the active tab of the activity.
-     */
+    /** Returns the {@link WebContents} of the active tab of the activity. */
     public WebContents getWebContents() {
-        return getActivity().getActivityTab().getWebContents();
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> getActivity().getActivityTab().getWebContents());
     }
 
     /**

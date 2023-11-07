@@ -6,11 +6,15 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -41,12 +45,14 @@ public abstract class TabModelSelectorBase
     private TabModelFilterProvider mTabModelFilterProvider = new TabModelFilterProvider();
 
     private final TabModelFilterFactory mTabModelFilterFactory;
-    private int mActiveModelIndex;
+    private final ObservableSupplierImpl<TabModel> mTabModelSupplier =
+            new ObservableSupplierImpl<>();
 
     private final ObserverList<TabModelSelectorObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
             new ObserverList<>();
 
+    @NonNull private final Callback<TabModel> mIncognitoReauthDialogDelegateCallback;
     @Nullable
     protected IncognitoReauthDialogDelegate mIncognitoReauthDialogDelegate;
 
@@ -61,6 +67,14 @@ public abstract class TabModelSelectorBase
         mTabCreatorManager = tabCreatorManager;
         mTabModelFilterFactory = tabModelFilterFactory;
         mStartIncognito = startIncognito;
+        // Notify the re-auth code first so we show the re-auth dialog first.
+        mIncognitoReauthDialogDelegateCallback =
+                (tabModel) -> {
+                    if (mIncognitoReauthDialogDelegate != null && tabModel.isIncognito()) {
+                        mIncognitoReauthDialogDelegate.onBeforeIncognitoTabModelSelected();
+                    }
+                };
+        mTabModelSupplier.addObserver(mIncognitoReauthDialogDelegateCallback);
     }
 
     protected final void initialize(TabModel normalModel, IncognitoTabModel incognitoModel) {
@@ -70,8 +84,8 @@ public abstract class TabModelSelectorBase
         mTabModels.add(normalModel);
         mTabModels.add(incognitoModel);
         mIncognitoTabModel = incognitoModel;
-        mActiveModelIndex = getModelIndex(mStartIncognito);
-        assert mActiveModelIndex != MODEL_NOT_FOUND;
+        int activeModelIndex = getModelIndex(mStartIncognito);
+        assert activeModelIndex != MODEL_NOT_FOUND;
         mTabModelFilterProvider.init(mTabModelFilterFactory, mTabModels);
         addObserver(mTabModelFilterProvider);
 
@@ -104,6 +118,7 @@ public abstract class TabModelSelectorBase
 
         incognitoModel.setActive(mStartIncognito);
         normalModel.setActive(!mStartIncognito);
+        mTabModelSupplier.set(mTabModels.get(activeModelIndex));
 
         notifyChanged();
     }
@@ -132,18 +147,13 @@ public abstract class TabModelSelectorBase
         }
         int newIndex = getModelIndex(incognito);
         assert newIndex != MODEL_NOT_FOUND;
-        if (newIndex == mActiveModelIndex) return;
+        if (mTabModels.get(newIndex) == mTabModelSupplier.get()) return;
 
         TabModel newModel = mTabModels.get(newIndex);
-        TabModel previousModel = mTabModels.get(mActiveModelIndex);
+        TabModel previousModel = mTabModelSupplier.get();
         previousModel.setActive(false);
         newModel.setActive(true);
-        mActiveModelIndex = newIndex;
-
-        // Notify the re-auth code first so we show the re-auth dialog first.
-        if (mIncognitoReauthDialogDelegate != null && newModel.isIncognito()) {
-            mIncognitoReauthDialogDelegate.onBeforeIncognitoTabModelSelected();
-        }
+        mTabModelSupplier.set(newModel);
 
         for (TabModelSelectorObserver listener : mObservers) {
             listener.onTabModelSelected(newModel, previousModel);
@@ -173,9 +183,14 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
-    public TabModel getCurrentModel() {
+    public @NonNull TabModel getCurrentModel() {
         if (mTabModels.size() == 0) return EmptyTabModel.getInstance();
-        return mTabModels.get(mActiveModelIndex);
+        return mTabModelSupplier.get();
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<TabModel> getCurrentTabModelSupplier() {
+        return mTabModelSupplier;
     }
 
     @Override
@@ -306,6 +321,7 @@ public abstract class TabModelSelectorBase
 
     @Override
     public void destroy() {
+        mTabModelSupplier.removeObserver(mIncognitoReauthDialogDelegateCallback);
         removeObserver(mTabModelFilterProvider);
         mTabModelFilterProvider.destroy();
 
