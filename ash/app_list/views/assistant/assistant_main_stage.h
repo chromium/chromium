@@ -83,7 +83,7 @@ class ASH_EXPORT AppListAssistantMainStage
   void AnimateInZeroState();
   void AnimateInFooter();
 
-  void MaybeHideZeroState();
+  void MaybeHideZeroStateAndShowFooter();
   void InitializeUIForStartingSession(bool from_search);
 
   const raw_ptr<AssistantViewDelegate, ExperimentalAsh>

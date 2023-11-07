@@ -11,6 +11,8 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
@@ -30,18 +32,7 @@ SkColor GetCenterColor(views::Separator* separator) {
                                      canvas_size.height() / 2);
 }
 
-class AssistantMainStageTest : public AssistantAshTestBase {
- public:
-  // AssistantAshTestBase:
-  void TearDown() override {
-    // NativeTheme instance will be re-used across test cases. Make sure that a
-    // test case ends with setting ShouldUseDarkColors to false.
-    ASSERT_FALSE(
-        ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors());
-
-    AssistantAshTestBase::TearDown();
-  }
-};
+using AssistantMainStageTest = AssistantAshTestBase;
 
 TEST_F(AssistantMainStageTest, DarkAndLightTheme) {
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
@@ -71,6 +62,113 @@ TEST_F(AssistantMainStageTest, DarkAndLightTheme) {
   // false. See a comment in TearDown about details.
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kDarkModeEnabled, false);
+
+  // NativeTheme instance will be re-used across test cases. Make sure that a
+  // test case ends with setting ShouldUseDarkColors to false.
+  ASSERT_FALSE(
+      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors());
+}
+
+TEST_F(AssistantMainStageTest, FooterIsVisible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      assistant::features::kEnableAssistantLearnMore);
+
+  ShowAssistantUi();
+
+  views::View* footer = page_view()->GetViewByID(kFooterView);
+  EXPECT_TRUE(footer->GetVisible());
+}
+
+TEST_F(AssistantMainStageTest, FooterIsNotVisible) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      assistant::features::kEnableAssistantLearnMore);
+
+  ShowAssistantUi();
+
+  views::View* footer = page_view()->GetViewByID(kFooterView);
+  EXPECT_FALSE(footer->GetVisible());
+}
+
+TEST_F(AssistantMainStageTest, FooterIsVisibleAfterQuery) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      assistant::features::kEnableAssistantLearnMore);
+
+  ShowAssistantUi();
+
+  views::View* footer = page_view()->GetViewByID(kFooterView);
+  EXPECT_FALSE(footer->GetVisible());
+
+  MockTextInteraction().WithQuery("The query");
+  EXPECT_TRUE(footer->GetVisible());
+}
+
+TEST_F(AssistantMainStageTest, FooterIsVisibleAfterResponse) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      assistant::features::kEnableAssistantLearnMore);
+
+  ShowAssistantUi();
+
+  views::View* footer = page_view()->GetViewByID(kFooterView);
+  EXPECT_FALSE(footer->GetVisible());
+
+  MockTextInteraction().WithTextResponse("The response");
+  EXPECT_TRUE(footer->GetVisible());
+}
+
+TEST_F(AssistantMainStageTest, FooterIsVisible_Tablet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      assistant::features::kEnableAssistantLearnMore);
+
+  SetTabletMode(true);
+  ShowAssistantUi();
+
+  views::View* footer = page_view()->GetViewByID(kFooterView);
+  EXPECT_TRUE(footer->GetVisible());
+}
+
+TEST_F(AssistantMainStageTest, FooterIsNotVisible_Tablet) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      assistant::features::kEnableAssistantLearnMore);
+
+  SetTabletMode(true);
+  ShowAssistantUi();
+
+  views::View* footer = page_view()->GetViewByID(kFooterView);
+  EXPECT_FALSE(footer->GetVisible());
+}
+
+TEST_F(AssistantMainStageTest, FooterIsVisibleAfterQuery_Tablet) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      assistant::features::kEnableAssistantLearnMore);
+
+  SetTabletMode(true);
+  ShowAssistantUi();
+  // Show Assistant UI in text mode, which is required to set text query.
+  TapOnAndWait(keyboard_input_toggle());
+
+  views::View* footer = page_view()->GetViewByID(kFooterView);
+  EXPECT_FALSE(footer->GetVisible());
+
+  MockTextInteraction().WithQuery("The query");
+  EXPECT_TRUE(footer->GetVisible());
+}
+
+TEST_F(AssistantMainStageTest, FooterIsVisibleAfterResponse_Tablet) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      assistant::features::kEnableAssistantLearnMore);
+
+  SetTabletMode(true);
+  ShowAssistantUi();
+  // Show Assistant UI in text mode, which is required to set text query.
+  TapOnAndWait(keyboard_input_toggle());
+
+  views::View* footer = page_view()->GetViewByID(kFooterView);
+  EXPECT_FALSE(footer->GetVisible());
+
+  MockTextInteraction().WithTextResponse("The response");
+  EXPECT_TRUE(footer->GetVisible());
 }
 
 }  // namespace ash

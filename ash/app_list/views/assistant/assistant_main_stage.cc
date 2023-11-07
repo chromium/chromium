@@ -356,6 +356,7 @@ void AppListAssistantMainStage::AnimateInZeroState() {
 void AppListAssistantMainStage::AnimateInFooter() {
   // Set up our pre-animation values.
   footer_->layer()->SetOpacity(0.f);
+  footer_->SetVisible(true);
 
   // Animate the footer to 100% opacity with delay.
   footer_->layer()->GetAnimator()->StartAnimation(CreateLayerAnimationSequence(
@@ -397,7 +398,7 @@ void AppListAssistantMainStage::OnCommittedQueryChanged(
           // ...then fade in.
           CreateOpacityElement(1.f, kDividerAnimationFadeInDuration)));
 
-  MaybeHideZeroState();
+  MaybeHideZeroStateAndShowFooter();
 }
 
 void AppListAssistantMainStage::OnPendingQueryChanged(
@@ -421,7 +422,7 @@ void AppListAssistantMainStage::OnPendingQueryChanged(
           CreateOpacityElement(1.f, kQueryAnimationFadeInDuration)));
 
   if (!query.Empty())
-    MaybeHideZeroState();
+    MaybeHideZeroStateAndShowFooter();
 }
 
 void AppListAssistantMainStage::OnPendingQueryCleared(bool due_to_commit) {
@@ -435,7 +436,7 @@ void AppListAssistantMainStage::OnPendingQueryCleared(bool due_to_commit) {
 
 void AppListAssistantMainStage::OnResponseChanged(
     const scoped_refptr<AssistantResponse>& response) {
-  MaybeHideZeroState();
+  MaybeHideZeroStateAndShowFooter();
 
   // Show the horizontal separator.
   horizontal_separator_->layer()->GetAnimator()->StartAnimation(
@@ -476,12 +477,16 @@ void AppListAssistantMainStage::InitializeUIForBubbleView() {
   InitializeUIForStartingSession(/*from_search=*/false);
 }
 
-void AppListAssistantMainStage::MaybeHideZeroState() {
+void AppListAssistantMainStage::MaybeHideZeroStateAndShowFooter() {
   if (!IsShown(zero_state_view_))
     return;
 
   assistant::util::FadeOutAndHide(zero_state_view_,
                                   kZeroStateAnimationFadeOutDuration);
+
+  if (assistant::features::IsAssistantLearnMoreEnabled()) {
+    AnimateInFooter();
+  }
 }
 
 void AppListAssistantMainStage::InitializeUIForStartingSession(
@@ -491,13 +496,19 @@ void AppListAssistantMainStage::InitializeUIForStartingSession(
   progress_indicator_->layer()->SetOpacity(0.f);
   horizontal_separator_->layer()->SetOpacity(from_search ? 1.f : 0.f);
 
-  if (!from_search)
-    AnimateInZeroState();
-  else
-    zero_state_view_->SetVisible(false);
-
   footer_->InitializeUIForBubbleView();
-  AnimateInFooter();
+  if (from_search) {
+    zero_state_view_->SetVisible(false);
+    AnimateInFooter();
+  } else {
+    AnimateInZeroState();
+
+    if (assistant::features::IsAssistantLearnMoreEnabled()) {
+      footer_->SetVisible(false);
+    } else {
+      AnimateInFooter();
+    }
+  }
 }
 
 BEGIN_METADATA(AppListAssistantMainStage, views::View)
