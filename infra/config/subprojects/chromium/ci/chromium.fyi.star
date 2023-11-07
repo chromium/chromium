@@ -133,6 +133,47 @@ ci.builder(
 )
 
 ci.builder(
+    name = "chromeos-jacuzzi-rel-skylab-fyi",
+    description_html = """\
+This builder builds public image and runs tests on DUTs in the lab.<br/>\
+This is experimental.
+""",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+                "checkout_lacros_sdk",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "jacuzzi",
+                "arm-generic",
+            ],
+        ),
+        skylab_upload_location = builder_config.skylab_upload_location(
+            gs_bucket = "chrome-test-builds",
+            gs_extra = "ash",
+        ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "ash",
+        short_name = "jcz",
+    ),
+    contact_team_email = "chromeos-velocity@google.com",
+)
+
+ci.builder(
     name = "lacros-amd64-generic-rel-fyi",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

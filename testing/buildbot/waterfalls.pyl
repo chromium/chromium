@@ -3432,6 +3432,16 @@
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
       },
+      'chromeos-jacuzzi-rel-skylab-fyi': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
+
       'ios-blink-dbg-fyi': {
         'additional_compile_targets': [
           'all'

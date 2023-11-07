@@ -314,6 +314,18 @@ try_.builder(
 )
 
 try_.builder(
+    name = "chromeos-jacuzzi-rel-skylab",
+    branch_selector = branches.selector.MAIN,
+    description_html = "This is a builder that runs HW test on Skylab." +
+                       " This builder also build Lacros with alternative toolchain.",
+    mirrors = [
+        "ci/chromeos-jacuzzi-rel-skylab-fyi",
+    ],
+    contact_team_email = "chromeos-velocity@google.com",
+    main_list_view = "try",
+)
+
+try_.builder(
     name = "chromeos-octopus-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = [
