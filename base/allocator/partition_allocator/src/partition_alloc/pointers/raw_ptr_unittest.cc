@@ -1548,6 +1548,13 @@ TEST_F(RawPtrTest, EphemeralRawAddrPointerReference) {
   EXPECT_EQ(ptr.get(), &v1);
 }
 
+#if defined(COMPILER_GCC) && !defined(__clang__)
+// In GCC this test will optimize the return value of the constructor, so
+// assert fails. Disable optimizations to verify uninitialized attribute works
+// as expected.
+#pragma GCC push_options
+#pragma GCC optimize("O0")
+#endif
 TEST_F(RawPtrTest, AllowUninitialized) {
   constexpr uintptr_t kPattern = 0x12345678;
   uintptr_t storage = kPattern;
@@ -1555,6 +1562,9 @@ TEST_F(RawPtrTest, AllowUninitialized) {
   new (&storage) CountingRawPtrUninitialized<int>;
   EXPECT_EQ(storage, kPattern);
 }
+#if defined(COMPILER_GCC) && !defined(__clang__)
+#pragma GCC pop_options
+#endif
 
 }  // namespace
 
