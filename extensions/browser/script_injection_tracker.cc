@@ -14,6 +14,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -108,6 +109,25 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
   const ExtensionIdSet& content_scripts() const { return content_scripts_; }
   const ExtensionIdSet& user_scripts() const { return user_scripts_; }
 
+  void AddFrameDebugString(content::RenderFrameHost& frame,
+                           const std::string& debug_string) {
+    std::string& stored_string =
+        frame_debug_strings_[frame.GetGlobalFrameToken()];
+    stored_string += debug_string;
+
+    // Elide all contents except the last 250 characters.  There are 2
+    // motivations for this:
+    // 1. Preventing unbounded memory usage
+    // 2. Only 256 characters fit into `base::debug::CrashKeySize::Size256`.
+    if (stored_string.size() > 250) {
+      stored_string.replace(0, stored_string.size() - 250, "...");
+    }
+  }
+
+  const std::string& GetFrameDebugString(content::RenderFrameHost& frame) {
+    return frame_debug_strings_[frame.GetGlobalFrameToken()];
+  }
+
  private:
   explicit RenderProcessHostUserData(content::RenderProcessHost& process)
       : process_(process) {
@@ -142,6 +162,11 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
 
   // Only used for tracing.
   const raw_ref<content::RenderProcessHost> process_;
+
+  // TODO(https://crbug.com/1439642): Remove the ad-hoc debugging code after the
+  // bug is fixed.
+  std::map<content::GlobalRenderFrameHostToken, std::string>
+      frame_debug_strings_;
 };
 
 const char* RenderProcessHostUserData::kUserDataKey =
@@ -656,6 +681,54 @@ bool DidProcessRunScriptFromExtension(
   return process_data->HasScript(script_type, extension_id);
 }
 
+void AddFrameDebugStringForBug1439642(const ExtensionRegistry& registry,
+                                      const char* debug_string_label,
+                                      content::RenderFrameHost& frame,
+                                      const GURL& url) {
+  // TODO(https://crbug.com/1439642): Remove the ad-hoc debugging code after the
+  // bug is fixed.
+  auto& process_data =
+      RenderProcessHostUserData::GetOrCreate(*frame.GetProcess());
+  std::string debug_string = ", ";
+  debug_string += debug_string_label;
+  debug_string += ":";
+  const ExtensionId extension_id = "gpdjojdkbbmdfjfahjcgigfpmkopogic";
+  const Extension* extension =
+      registry.enabled_extensions().GetByID(extension_id);
+  if (!extension) {
+    if (registry.disabled_extensions().Contains(extension_id)) {
+      debug_string += "disabled,";
+    }
+    if (registry.terminated_extensions().Contains(extension_id)) {
+      debug_string += "terminated,";
+    }
+    if (registry.blocklisted_extensions().Contains(extension_id)) {
+      debug_string += "blocklisted,";
+    }
+    if (registry.blocked_extensions().Contains(extension_id)) {
+      debug_string += "blocked,";
+    }
+    if (registry.ready_extensions().Contains(extension_id)) {
+      debug_string += "ready,";
+    }
+  } else {
+    debug_string += "enabled+";
+    if (DoDynamicContentScriptsMatch(*extension, frame, url)) {
+      debug_string += "dyn-match";
+    } else {
+      debug_string += "no-dyn-match";
+    }
+  }
+  process_data.AddFrameDebugString(frame, debug_string);
+}
+
+const std::string& GetFrameDebugStringForBug1439642(
+    content::RenderFrameHost& frame) {
+  auto& process_data =
+      RenderProcessHostUserData::GetOrCreate(*frame.GetProcess());
+  return process_data.GetFrameDebugString(frame);
+}
+
 }  // namespace
 
 // static
@@ -737,6 +810,8 @@ void ScriptInjectionTracker::ReadyToCommitNavigation(
   URLLoaderFactoryManager::WillInjectContentScriptsWhenNavigationCommits(
       base::PassKey<ScriptInjectionTracker>(), navigation,
       extensions_injecting_content_scripts);
+
+  AddFrameDebugStringForBug1439642(*registry, "RTCNav", frame, url);
 }
 
 // static
@@ -787,6 +862,8 @@ void ScriptInjectionTracker::DidFinishNavigation(
       extensions_injecting_content_scripts.size() +
       extensions_injecting_user_scripts.size();
   RecordUkm(navigation, num_extensions_injecting_scripts);
+
+  AddFrameDebugStringForBug1439642(*registry, "DFNav", frame, url);
 }
 
 // static
@@ -939,6 +1016,12 @@ base::debug::CrashKeyString* GetLifecycleStateCrashKey() {
   return crash_key;
 }
 
+base::debug::CrashKeyString* GetFrameDebugStringCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "script_frame_debug_string", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
 base::debug::CrashKeyString* GetDoWebViewScriptsMatchCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "do_web_view_scripts_match", base::debug::CrashKeySize::Size32);
@@ -995,6 +1078,8 @@ ScopedScriptInjectionTrackerFailureCrashKeys::
   lifecycle_state_crash_key_.emplace(
       GetLifecycleStateCrashKey(),
       base::NumberToString(static_cast<int>(frame.GetLifecycleState())));
+  frame_debug_string_crash_key_.emplace(
+      GetFrameDebugStringCrashKey(), GetFrameDebugStringForBug1439642(frame));
 
   const ExtensionRegistry* registry =
       ExtensionRegistry::Get(frame.GetBrowserContext());
