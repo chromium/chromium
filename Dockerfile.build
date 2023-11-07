@@ -6,6 +6,7 @@ RUN apt-get update && \
 RUN groupadd -o -g 1000 ubuntu
 RUN useradd -o -m -s /bin/bash -g 1000 -u 1000 ubuntu 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.8 10
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 10
 RUN pip3 install importlib-metadata
 
 USER ubuntu
