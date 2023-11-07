@@ -507,8 +507,8 @@ void ServiceWorkerResourceReaderImpl::ContinueReadResponseHead() {
     return;
   }
 
-  auto buffer =
-      base::MakeRefCounted<net::IOBuffer>(base::checked_cast<size_t>(size));
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(
+      base::checked_cast<size_t>(size));
   int rv = entry_opener_.entry()->Read(
       kResponseInfoIndex, /*offset=*/0, buffer.get(), size,
       base::BindOnce(&ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo,

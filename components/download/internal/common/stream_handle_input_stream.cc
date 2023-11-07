@@ -68,7 +68,7 @@ InputStream::StreamState StreamHandleInputStream::Read(
     return InputStream::EMPTY;
 
   static int bytes_to_read = GetDownloadFileBufferSize();
-  *data = base::MakeRefCounted<net::IOBuffer>(bytes_to_read);
+  *data = base::MakeRefCounted<net::IOBufferWithSize>(bytes_to_read);
   uint32_t u32_len = static_cast<uint32_t>(bytes_to_read);
   MojoResult mojo_result = stream_handle_->stream->ReadData(
       (*data)->data(), &u32_len, MOJO_READ_DATA_FLAG_NONE);

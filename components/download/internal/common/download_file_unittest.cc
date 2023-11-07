@@ -309,8 +309,7 @@ class DownloadFileTest : public testing::Test {
     for (size_t i = 0; i < num_chunks; i++) {
       const char* source_data = data_chunks[i];
       size_t length = strlen(source_data);
-      scoped_refptr<net::IOBuffer> data =
-          base::MakeRefCounted<net::IOBuffer>(length);
+      auto data = base::MakeRefCounted<net::IOBufferWithSize>(length);
       memcpy(data->data(), source_data, length);
       EXPECT_CALL(*input_stream, Read(_, _))
           .InSequence(s)

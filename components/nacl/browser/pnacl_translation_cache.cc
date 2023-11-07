@@ -252,7 +252,7 @@ void PnaclTranslationCacheEntry::DispatchNext(int rv) {
         if (is_read_) {
           int bytes_to_transfer = entry_->GetDataSize(1);
           io_buf_ = base::MakeRefCounted<net::DrainableIOBuffer>(
-              base::MakeRefCounted<net::IOBuffer>(bytes_to_transfer),
+              base::MakeRefCounted<net::IOBufferWithSize>(bytes_to_transfer),
               bytes_to_transfer);
           ReadEntry(0, bytes_to_transfer);
         } else {

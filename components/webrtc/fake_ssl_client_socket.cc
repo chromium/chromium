@@ -74,7 +74,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 scoped_refptr<net::DrainableIOBuffer> NewDrainableIOBufferWithSize(int size) {
   return base::MakeRefCounted<net::DrainableIOBuffer>(
-      base::MakeRefCounted<net::IOBuffer>(size), size);
+      base::MakeRefCounted<net::IOBufferWithSize>(size), size);
 }
 
 }  // namespace

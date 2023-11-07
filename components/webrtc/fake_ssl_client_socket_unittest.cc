@@ -173,7 +173,8 @@ class FakeSSLClientSocketTest : public testing::Test {
       if (fake_ssl_client_socket.IsConnected()) {
         int read_len = std::size(kReadTestData);
         int read_buf_len = 2 * read_len;
-        auto read_buf = base::MakeRefCounted<net::IOBuffer>(read_buf_len);
+        auto read_buf =
+            base::MakeRefCounted<net::IOBufferWithSize>(read_buf_len);
 
         net::TestCompletionCallback read_callback;
         int read_status = fake_ssl_client_socket.Read(
