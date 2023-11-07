@@ -99,7 +99,7 @@ class FirstRunService : public KeyedService {
 
   // Runs `::ShouldOpenFirstRun(Profile*)` with the profile associated with this
   // service instance.
-  bool ShouldOpenFirstRun() const;
+  virtual bool ShouldOpenFirstRun() const;
 
   // This function takes the user through the browser FRE.
   // 1) First, it checks whether the FRE flow can be skipped in the first place.
@@ -118,11 +118,11 @@ class FirstRunService : public KeyedService {
   //    again at the next startup.
   // When this method is called again while FRE is in progress, the previous
   // callback is aborted (called with false), and is replaced by `callback`.
-  void OpenFirstRunIfNeeded(EntryPoint entry_point,
-                            ResumeTaskCallback callback);
+  virtual void OpenFirstRunIfNeeded(EntryPoint entry_point,
+                                    ResumeTaskCallback callback);
 
   // Terminates the first run without re-opening a browser window.
-  void FinishFirstRunWithoutResumeTask();
+  virtual void FinishFirstRunWithoutResumeTask();
 
  private:
   friend class FirstRunServiceFactory;
