@@ -7,11 +7,12 @@
 
 #include <memory>
 
+#include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/chromeos_buildflags.h"
 #include "components/enterprise/data_controls/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/rule.h"
 #include "components/reporting/client/report_queue.h"
-#include "build/chromeos_buildflags.h"
 #include "components/reporting/util/status.h"
 
 class DlpPolicyEvent;
@@ -96,6 +97,13 @@ class DlpReportingManager {
   using ReportQueueSetterCallback =
       base::OnceCallback<void(std::unique_ptr<reporting::ReportQueue>)>;
 
+  // For callers who are interested in observing DLP reporting events.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Invoked whenever a new event is being reported.
+    virtual void OnReportEvent(DlpPolicyEvent event) = 0;
+  };
+
   DlpReportingManager();
   DlpReportingManager(const DlpReportingManager&) = delete;
   ~DlpReportingManager();
@@ -141,6 +149,9 @@ class DlpReportingManager {
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
           report_queue);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
   void OnEventEnqueued(reporting::Status status);
 
@@ -149,6 +160,8 @@ class DlpReportingManager {
 
   std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
       report_queue_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<DlpReportingManager> weak_factory_{this};
 };

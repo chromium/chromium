@@ -12,6 +12,7 @@ build_webui("build") {
     "app.ts",
     "dlp_clipboard_tab.ts",
     "dlp_tabs.ts",
+    "dlp_reporting_tab.ts",
   ]
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/dlp_internals/dlp_internals.mojom-webui.ts" ]
   mojo_files_deps =

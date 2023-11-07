@@ -8,6 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {DlpClipboardElement} from './dlp_clipboard_tab.js';
+import {DlpReportingElement} from './dlp_reporting_tab.js';
 import {getTemplate} from './dlp_tabs.html.js';
 
 interface DlpTab {
@@ -21,10 +22,16 @@ interface DlpTab {
 
 // Set of all DLP tabs. Adding a new entry here will make it automatically
 // show in the UI.
-const DLP_TABS: DlpTab[] = [{
-  title: 'Clipboard',
-  directive: DlpClipboardElement.is,
-}];
+const DLP_TABS: DlpTab[] = [
+  {
+    title: 'Clipboard',
+    directive: DlpClipboardElement.is,
+  },
+  {
+    title: 'Reporting',
+    directive: DlpReportingElement.is,
+  },
+];
 
 class DlpTabsElement extends CustomElement {
   static get is() {
