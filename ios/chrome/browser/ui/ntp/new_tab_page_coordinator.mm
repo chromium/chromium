@@ -367,7 +367,7 @@
   self.containedViewController = nil;
   [self.NTPViewController invalidate];
   self.NTPViewController = nil;
-  self.feedHeaderViewController.ntpDelegate = nil;
+  self.feedHeaderViewController.NTPDelegate = nil;
   self.feedHeaderViewController = nil;
   [self.feedTopSectionCoordinator stop];
   self.feedTopSectionCoordinator = nil;
@@ -640,7 +640,7 @@
   }
 
   self.feedHeaderViewController.feedControlDelegate = self;
-  self.feedHeaderViewController.ntpDelegate = self;
+  self.feedHeaderViewController.NTPDelegate = self;
   self.feedHeaderViewController.feedMetricsRecorder = self.feedMetricsRecorder;
   if (!IsFollowUIUpdateEnabled()) {
     self.feedHeaderViewController.followingFeedSortType =
@@ -701,6 +701,7 @@
   self.contentSuggestionsCoordinator.NTPDelegate = self;
   self.contentSuggestionsCoordinator.delegate = self;
   self.contentSuggestionsCoordinator.NTPMetricsDelegate = self;
+  self.contentSuggestionsCoordinator.NTPViewDelegate = self.NTPViewController;
   [self.contentSuggestionsCoordinator start];
 }
 
@@ -1570,7 +1571,7 @@
       [[FeedTopSectionCoordinator alloc]
           initWithBaseViewController:self.NTPViewController
                              browser:self.browser];
-  feedTopSectionCoordinator.ntpDelegate = self;
+  feedTopSectionCoordinator.NTPDelegate = self;
   [feedTopSectionCoordinator start];
   return feedTopSectionCoordinator;
 }

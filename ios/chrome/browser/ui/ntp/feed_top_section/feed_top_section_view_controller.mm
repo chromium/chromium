@@ -165,7 +165,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
     [self createPromoViewContainer];
   }
   [self applyStackViewConstraintsForTopSectionVisible:YES];
-  [self.ntpDelegate updateFeedLayout];
+  [self.NTPDelegate updateFeedLayout];
 }
 
 - (void)hideSigninPromo {
@@ -176,7 +176,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   self.promoViewContainer = nil;
   self.promoView = nil;
   [self applyStackViewConstraintsForTopSectionVisible:NO];
-  [self.ntpDelegate updateFeedLayout];
+  [self.NTPDelegate updateFeedLayout];
 }
 
 // Configures and creates a signin promo view.

@@ -46,7 +46,7 @@
 @synthesize viewController = _viewController;
 
 - (void)start {
-  DCHECK(self.ntpDelegate);
+  DCHECK(self.NTPDelegate);
   self.feedTopSectionViewController =
       [[FeedTopSectionViewController alloc] init];
   _viewController = self.feedTopSectionViewController;
@@ -68,7 +68,7 @@
 
   self.isSignInPromoEnabled =
       ShouldShowTopOfFeedSyncPromo() && authenticationService &&
-      [self.ntpDelegate isSignInAllowed] &&
+      [self.NTPDelegate isSignInAllowed] &&
       !authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 
   // If the user is signed out and signin is allowed, then start the top-of-feed
@@ -99,9 +99,9 @@
         self.signinPromoMediator;
   }
 
-  self.feedTopSectionMediator.ntpDelegate = self.ntpDelegate;
+  self.feedTopSectionMediator.NTPDelegate = self.NTPDelegate;
   self.feedTopSectionViewController.delegate = self.feedTopSectionMediator;
-  self.feedTopSectionViewController.ntpDelegate = self.ntpDelegate;
+  self.feedTopSectionViewController.NTPDelegate = self.NTPDelegate;
   [self.feedTopSectionMediator setUp];
 }
 

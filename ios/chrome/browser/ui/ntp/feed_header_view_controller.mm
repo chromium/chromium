@@ -193,7 +193,7 @@ NSInteger kFeedSymbolPointSize = 17;
 }
 
 - (CGFloat)customSearchEngineViewHeight {
-  return [self.ntpDelegate isGoogleDefaultSearchEngine] ||
+  return [self.NTPDelegate isGoogleDefaultSearchEngine] ||
                  ![self.feedControlDelegate isFollowingFeedAvailable]
              ? 0
              : kCustomSearchEngineLabelHeight;
@@ -226,7 +226,7 @@ NSInteger kFeedSymbolPointSize = 17;
     return;
   }
 
-  if ([self.ntpDelegate isGoogleDefaultSearchEngine]) {
+  if ([self.NTPDelegate isGoogleDefaultSearchEngine]) {
     [self removeCustomSearchEngineView];
   } else {
     [self addCustomSearchEngineView];
@@ -291,7 +291,7 @@ NSInteger kFeedSymbolPointSize = 17;
       [self addViewsForHiddenFeed];
     }
 
-    if (![self.ntpDelegate isGoogleDefaultSearchEngine]) {
+    if (![self.NTPDelegate isGoogleDefaultSearchEngine]) {
       [self addCustomSearchEngineView];
     }
   } else {
@@ -576,7 +576,7 @@ NSInteger kFeedSymbolPointSize = 17;
 
     // If Google is not the default search engine, anchor the custom search
     // engine view.
-    if (![self.ntpDelegate isGoogleDefaultSearchEngine] &&
+    if (![self.NTPDelegate isGoogleDefaultSearchEngine] &&
         [self.feedControlDelegate shouldFeedBeVisible]) {
       [self.feedHeaderConstraints addObjectsFromArray:@[
         // Anchors custom search engine view.
@@ -701,7 +701,7 @@ NSInteger kFeedSymbolPointSize = 17;
     self.blurBackgroundView.hidden = YES;
   }
 
-  if (![self.ntpDelegate isGoogleDefaultSearchEngine]) {
+  if (![self.NTPDelegate isGoogleDefaultSearchEngine]) {
     [self addCustomSearchEngineView];
   }
 }
@@ -780,7 +780,7 @@ NSInteger kFeedSymbolPointSize = 17;
 
   // Set the title based on the default search engine.
   NSString* feedHeaderTitleText =
-      [self.ntpDelegate isGoogleDefaultSearchEngine]
+      [self.NTPDelegate isGoogleDefaultSearchEngine]
           ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
           : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE_NON_DSE);
 

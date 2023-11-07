@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_view_delegate.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -1141,6 +1142,21 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                         atIndex:insertionIndex];
       [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
                                      afterView:self.mostVisitedModuleContainer];
+      // When feed containment is enabled, the module on top of the magic stack
+      // should match the width of the feed module.
+      if (IsFeedContainmentEnabled()) {
+        [NSLayoutConstraint activateConstraints:@[
+          [self.mostVisitedModuleContainer.widthAnchor
+              constraintEqualToConstant:self.view.frame.size.width -
+                                        [self.NTPViewDelegate
+                                                homeModulePadding]],
+          [self.mostVisitedModuleContainer.centerXAnchor
+              constraintEqualToAnchor:self.view.centerXAnchor],
+          [self.mostVisitedStackView.centerXAnchor
+              constraintEqualToAnchor:self.mostVisitedModuleContainer
+                                          .centerXAnchor],
+        ]];
+      }
     }
   } else {
     [self.verticalStackView insertArrangedSubview:self.mostVisitedStackView
@@ -1262,25 +1278,38 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [_magicStackScrollView addSubview:_magicStack];
 
   AddSameConstraints(_magicStack, _magicStackScrollView);
-  // Define width of ScrollView. Instrinsic content height of the
-  // StackView within the ScrollView will define the height of the
+
+  // Defines height, ensuring only horizontal scrolling. Instrinsic content
+  // height of the StackView within the ScrollView will define the height of the
   // ScrollView.
-  CGFloat width = [MagicStackModuleContainer
-      moduleWidthForHorizontalTraitCollection:self.traitCollection];
-  // Magic Stack has a wider width for wider screens so that clipToBounds can be
-  // YES with a peeking module still visible.
-  if (content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
-                                                          self.view.window)) {
-    width = kMagicStackWideWidth;
-  }
-  _magicStackScrollViewWidthAnchor =
-      [_magicStackScrollView.widthAnchor constraintEqualToConstant:width];
   [NSLayoutConstraint activateConstraints:@[
-    // Ensures only horizontal scrolling
     [_magicStack.heightAnchor
         constraintEqualToAnchor:_magicStackScrollView.heightAnchor],
-    _magicStackScrollViewWidthAnchor
   ]];
+  // Define width of ScrollView.
+  // With feed containment enabled, the magic stack should be left aligned with
+  // the other modules.
+  if (IsFeedContainmentEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [_magicStackScrollView.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor
+                         constant:-([self.NTPViewDelegate homeModulePadding] /
+                                    2)],
+    ]];
+  } else {
+    CGFloat width = [MagicStackModuleContainer
+        moduleWidthForHorizontalTraitCollection:self.traitCollection];
+    // Magic Stack has a wider width for wider screens so that clipToBounds can
+    // be YES with a peeking module still visible.
+    if (content_suggestions::ShouldShowWiderMagicStackLayer(
+            self.traitCollection, self.view.window)) {
+      width = kMagicStackWideWidth;
+    }
+    _magicStackScrollViewWidthAnchor =
+        [_magicStackScrollView.widthAnchor constraintEqualToConstant:width];
+    [NSLayoutConstraint
+        activateConstraints:@[ _magicStackScrollViewWidthAnchor ]];
+  }
 }
 
 // Resets and fills the Magic Stack with modules using `_magicStackModuleOrder`.

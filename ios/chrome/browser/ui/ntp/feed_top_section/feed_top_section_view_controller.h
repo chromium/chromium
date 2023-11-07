@@ -24,7 +24,7 @@
 @property(nonatomic, weak) id<SigninPromoViewDelegate> signinPromoDelegate;
 
 // Delegate for NTP related actions.
-@property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
+@property(nonatomic, weak) id<NewTabPageDelegate> NTPDelegate;
 
 // Returns |YES| if the promo is currently in the feed, whether or not it is
 // visible.

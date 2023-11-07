@@ -12,6 +12,7 @@
 @protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
+@protocol NewTabPageViewDelegate;
 @protocol ParcelTrackingOptInCommands;
 @protocol SafetyCheckViewDelegate;
 @protocol SetUpListViewDelegate;
@@ -43,6 +44,9 @@ class UrlLoadingBrowserAgent;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
 @property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
+
+// Delegate for getting information about NTP views.
+@property(nonatomic, weak) id<NewTabPageViewDelegate> NTPViewDelegate;
 
 // Recorder for content suggestions metrics.
 @property(nonatomic, weak)

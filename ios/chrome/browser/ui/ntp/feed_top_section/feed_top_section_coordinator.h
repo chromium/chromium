@@ -17,7 +17,7 @@
 @property(nonatomic, readonly, strong) UIViewController* viewController;
 
 // Delegate for NTP related actions.
-@property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
+@property(nonatomic, weak) id<NewTabPageDelegate> NTPDelegate;
 
 // Handles the feed top section's signin promo changing visibility.
 - (void)signinPromoHasChangedVisibility:(BOOL)visible;

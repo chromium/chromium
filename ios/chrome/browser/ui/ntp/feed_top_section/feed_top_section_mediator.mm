@@ -115,7 +115,7 @@
 
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator {
-  [self.ntpDelegate handleFeedTopSectionClosed];
+  [self.NTPDelegate handleFeedTopSectionClosed];
   [self.consumer hideSigninPromo];
 }
 
@@ -125,7 +125,7 @@
   PrefService* localState = GetApplicationContext()->GetLocalState();
   // Don't show the promo for incognito or start surface.
   BOOL isStartSurfaceOrIncognito = self.isIncognito ||
-                                   [self.ntpDelegate isStartSurface] ||
+                                   [self.NTPDelegate isStartSurface] ||
                                    !self.isSignInPromoEnabled;
 
   // Don't show the promo if Set Up Lists is Enabled.
