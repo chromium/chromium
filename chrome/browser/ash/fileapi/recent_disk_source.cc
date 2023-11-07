@@ -101,7 +101,6 @@ void RecentDiskSource::GetRecentFiles(Params params) {
   DCHECK(build_start_time_.is_null());
   DCHECK_EQ(0, inflight_readdirs_);
   DCHECK_EQ(0, inflight_stats_);
-  DCHECK(recent_files_.empty());
 
   // Return immediately if mount point does not exist.
   storage::ExternalMountPoints* mount_points =
@@ -113,8 +112,8 @@ void RecentDiskSource::GetRecentFiles(Params params) {
   }
 
   params_.emplace(std::move(params));
-
   DCHECK(params_.has_value());
+  accumulator_ = std::make_unique<FileAccumulator>(params_.value().max_files());
 
   build_start_time_ = base::TimeTicks::Now();
 
@@ -196,9 +195,7 @@ void RecentDiskSource::OnGetMetadata(const storage::FileSystemURL& url,
 
   if (result == base::File::FILE_OK &&
       info.last_modified >= params_.value().cutoff_time()) {
-    recent_files_.emplace(RecentFile(url, info.last_modified));
-    while (recent_files_.size() > params_.value().max_files())
-      recent_files_.pop();
+    accumulator_->Add(RecentFile(url, info.last_modified));
   }
 
   --inflight_stats_;
@@ -212,11 +209,8 @@ void RecentDiskSource::OnReadOrStatFinished() {
     return;
 
   // All reads/scans completed.
-  std::vector<RecentFile> files;
-  while (!recent_files_.empty()) {
-    files.emplace_back(recent_files_.top());
-    recent_files_.pop();
-  }
+  std::vector<RecentFile> files = accumulator_->Get();
+  accumulator_.reset();
 
   DCHECK(!build_start_time_.is_null());
   UmaHistogramTimes(uma_histogram_name_,
@@ -230,7 +224,6 @@ void RecentDiskSource::OnReadOrStatFinished() {
   DCHECK(build_start_time_.is_null());
   DCHECK_EQ(0, inflight_readdirs_);
   DCHECK_EQ(0, inflight_stats_);
-  DCHECK(recent_files_.empty());
 
   std::move(params.callback()).Run(std::move(files));
 }

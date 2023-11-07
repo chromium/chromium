@@ -105,13 +105,13 @@ class RecentModelTest : public testing::Test {
             &profile_,
             base::BindRepeating(
                 [](const RecentSourceListFactory& source_list_factory,
-                   content::BrowserContext* context)
+                   size_t max_files, content::BrowserContext* context)
                     -> std::unique_ptr<KeyedService> {
-                  return RecentModel::CreateForTest(source_list_factory.Run());
+                  return RecentModel::CreateForTest(source_list_factory.Run(),
+                                                    max_files);
                 },
-                std::move(source_list_factory))));
+                std::move(source_list_factory), max_files)));
 
-    model->SetMaxFilesForTest(max_files);
     model->SetScanTimeout(base::Milliseconds(500));
 
     return GetRecentFiles(model, cutoff_delta, file_type, invalidate_cache);
@@ -249,7 +249,7 @@ TEST_F(RecentModelTest, GetRecentFiles_NoSourceIsLate) {
 TEST(RecentModelCacheTest, GetRecentFiles_InvalidateCache) {
   content::BrowserTaskEnvironment task_environment;
   std::unique_ptr<RecentModel> model =
-      RecentModel::CreateForTest(BuildDefaultSources());
+      RecentModel::CreateForTest(BuildDefaultSources(), 10);
 
   std::vector<RecentFile> files1 = GetRecentFiles(
       model.get(), base::TimeDelta::Max(), RecentModel::FileType::kAll, false);

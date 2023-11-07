@@ -6,15 +6,15 @@
 #define CHROME_BROWSER_ASH_FILEAPI_RECENT_MODEL_H_
 
 #include <memory>
-#include <queue>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/fileapi/file_accumulator.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_source.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -70,7 +70,8 @@ class RecentModel : public KeyedService {
 
   // Creates an instance with given sources. Only for testing.
   static std::unique_ptr<RecentModel> CreateForTest(
-      std::vector<std::unique_ptr<RecentSource>> sources);
+      std::vector<std::unique_ptr<RecentSource>> sources,
+      size_t max_files);
 
   // Returns a list of recent files by querying sources.
   // Files are sorted by descending order of last modified time.
@@ -104,14 +105,14 @@ class RecentModel : public KeyedService {
   static const char kLoadHistogramName[];
 
   explicit RecentModel(Profile* profile);
-  explicit RecentModel(std::vector<std::unique_ptr<RecentSource>> sources);
+  explicit RecentModel(std::vector<std::unique_ptr<RecentSource>> sources,
+                       size_t max_files);
 
   // The method called by each of the recent source workers, once they complete
   // their task. This method monitors the number of calls and once it is equal
   // to the number of started recent source workers, it calls
   // OnGetRecentFilesCompleted method.
   void OnGetRecentFiles(uint32_t run_on_sequence_id,
-                        size_t max_files,
                         const base::Time& cutoff_time,
                         const SearchCriteria& search_criteria,
                         std::vector<RecentFile> files);
@@ -125,13 +126,10 @@ class RecentModel : public KeyedService {
   // The callback invoked by the deadline timer.
   void OnScanTimeout(const SearchCriteria& search_criteria);
 
-  void SetMaxFilesForTest(size_t max_files);
-
   std::vector<std::unique_ptr<RecentSource>> sources_;
 
-  // The maximum number of files in Recent. This value won't be changed from
-  // default except for unit tests.
-  size_t max_files_ = 1000;
+  // The accumulator of files found by various recent sources.
+  FileAccumulator accumulator_;
 
   // Cached GetRecentFiles() response.
   absl::optional<std::vector<RecentFile>> cached_files_ = absl::nullopt;
@@ -152,10 +150,6 @@ class RecentModel : public KeyedService {
 
   // Number of in-flight sources building recent file lists.
   int num_inflight_sources_ = 0;
-
-  // Intermediate container of recent files while building a list.
-  std::priority_queue<RecentFile, std::vector<RecentFile>, RecentFileComparator>
-      intermediate_files_;
 
   // The deadline timer started when recent files are requested, if
   // scan_timeout_duration_ is set. This timer enforces the maximum time limit

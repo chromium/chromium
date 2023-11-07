@@ -37,6 +37,9 @@ namespace {
 // not strictly honored.
 constexpr base::TimeDelta kCacheExpiration = base::Seconds(10);
 
+// The default number of files collected from each recent source.
+constexpr size_t kMaxFiles = 1000u;
+
 std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
     Profile* profile) {
   std::vector<std::unique_ptr<RecentSource>> sources;
@@ -89,15 +92,19 @@ RecentModel* RecentModel::GetForProfile(Profile* profile) {
 
 // static
 std::unique_ptr<RecentModel> RecentModel::CreateForTest(
-    std::vector<std::unique_ptr<RecentSource>> sources) {
-  return base::WrapUnique(new RecentModel(std::move(sources)));
+    std::vector<std::unique_ptr<RecentSource>> sources,
+    size_t max_files) {
+  return base::WrapUnique(new RecentModel(std::move(sources), max_files));
 }
 
 RecentModel::RecentModel(Profile* profile)
-    : RecentModel(CreateDefaultSources(profile)) {}
+    : RecentModel(CreateDefaultSources(profile), kMaxFiles) {}
 
-RecentModel::RecentModel(std::vector<std::unique_ptr<RecentSource>> sources)
-    : sources_(std::move(sources)), current_sequence_id_(0) {
+RecentModel::RecentModel(std::vector<std::unique_ptr<RecentSource>> sources,
+                         size_t max_files)
+    : sources_(std::move(sources)),
+      accumulator_(max_files),
+      current_sequence_id_(0) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -146,7 +153,6 @@ void RecentModel::GetRecentFiles(
 
   // Start building a recent file list.
   DCHECK_EQ(0, num_inflight_sources_);
-  DCHECK(intermediate_files_.empty());
   DCHECK(build_start_time_.is_null());
 
   build_start_time_ = base::TimeTicks::Now();
@@ -160,6 +166,7 @@ void RecentModel::GetRecentFiles(
   // cutoff_time is the oldest modified time for a file to be considered recent.
   base::Time cutoff_time = base::Time::Now() - now_delta;
 
+  accumulator_.Clear();
   uint32_t run_on_sequence_id = current_sequence_id_;
   // If there is no scan timeout we set the end_time, i.e., the time by which
   // the scan is supposed to be done, to maximum possible time. In the current
@@ -170,11 +177,11 @@ void RecentModel::GetRecentFiles(
 
   for (const auto& source : sources_) {
     source->GetRecentFiles(RecentSource::Params(
-        file_system_context, origin, max_files_, query, cutoff_time, end_time,
-        file_type,
+        file_system_context, origin, accumulator_.max_capacity(), query,
+        cutoff_time, end_time, file_type,
         base::BindOnce(&RecentModel::OnGetRecentFiles,
                        weak_ptr_factory_.GetWeakPtr(), run_on_sequence_id,
-                       max_files_, cutoff_time, search_criteria)));
+                       cutoff_time, search_criteria)));
   }
   if (scan_timeout_duration_) {
     deadline_timer_.Start(
@@ -208,7 +215,6 @@ void RecentModel::Shutdown() {
 }
 
 void RecentModel::OnGetRecentFiles(uint32_t run_on_sequence_id,
-                                   size_t max_files,
                                    const base::Time& cutoff_time,
                                    const SearchCriteria& search_criteria,
                                    std::vector<RecentFile> files) {
@@ -223,12 +229,8 @@ void RecentModel::OnGetRecentFiles(uint32_t run_on_sequence_id,
 
   for (const auto& file : files) {
     if (file.last_modified() >= cutoff_time) {
-      intermediate_files_.emplace(file);
+      accumulator_.Add(file);
     }
-  }
-
-  while (intermediate_files_.size() > max_files) {
-    intermediate_files_.pop();
   }
 
   --num_inflight_sources_;
@@ -248,17 +250,10 @@ void RecentModel::OnGetRecentFilesCompleted(
   ++current_sequence_id_;
   deadline_timer_.Stop();
 
-  std::vector<RecentFile> files;
-  while (!intermediate_files_.empty()) {
-    files.emplace_back(intermediate_files_.top());
-    intermediate_files_.pop();
-  }
-  std::reverse(files.begin(), files.end());
-  cached_files_ = std::move(files);
+  cached_files_ = accumulator_.Get();
   cached_search_criteria_ = search_criteria;
 
   DCHECK(cached_files_.has_value());
-  DCHECK(intermediate_files_.empty());
 
   UMA_HISTOGRAM_TIMES(kLoadHistogramName,
                       base::TimeTicks::Now() - build_start_time_);
@@ -275,20 +270,15 @@ void RecentModel::OnGetRecentFilesCompleted(
   DCHECK(pending_callbacks_.empty());
   DCHECK(!callbacks_to_call.empty());
   for (auto& callback : callbacks_to_call) {
-    std::move(callback).Run(cached_files_.value());
+    std::move(callback).Run(accumulator_.Get());
   }
+  accumulator_.Clear();
 }
 
 void RecentModel::ClearCache() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   cached_files_.reset();
-}
-
-void RecentModel::SetMaxFilesForTest(size_t max_files) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  max_files_ = max_files;
 }
 
 }  // namespace ash

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_FILEAPI_RECENT_DISK_SOURCE_H_
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <vector>
 
@@ -15,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/fileapi/file_accumulator.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_model.h"
 #include "chrome/browser/ash/fileapi/recent_source.h"
@@ -84,8 +84,7 @@ class RecentDiskSource : public RecentSource {
   // Number of GetMetadata() calls in flight.
   int inflight_stats_ = 0;
   // Most recently modified files.
-  std::priority_queue<RecentFile, std::vector<RecentFile>, RecentFileComparator>
-      recent_files_;
+  std::unique_ptr<FileAccumulator> accumulator_;
 
   base::WeakPtrFactory<RecentDiskSource> weak_ptr_factory_{this};
 };
