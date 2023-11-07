@@ -79,7 +79,7 @@
 #import "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #import "ios/chrome/browser/metrics/incognito_usage_app_state_agent.h"
 #import "ios/chrome/browser/metrics/window_configuration_recorder.h"
-#import "ios/chrome/browser/omaha/omaha_service.h"
+#import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"

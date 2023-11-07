@@ -21,7 +21,7 @@ source_set("model") {
     "//components/password_manager/core/browser",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/version_info",
-    "//ios/chrome/browser/omaha",
+    "//ios/chrome/browser/omaha/model",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/ntp/metrics:home_metrics",

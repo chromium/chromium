@@ -13,7 +13,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/omaha/omaha_service.h"
+#import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"

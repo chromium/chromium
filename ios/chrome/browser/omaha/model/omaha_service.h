@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMAHA_OMAHA_SERVICE_H_
-#define IOS_CHROME_BROWSER_OMAHA_OMAHA_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_OMAHA_MODEL_OMAHA_SERVICE_H_
+#define IOS_CHROME_BROWSER_OMAHA_MODEL_OMAHA_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -235,4 +235,4 @@ class OmahaService {
   OneOffCallback one_off_check_callback_;
 };
 
-#endif  // IOS_CHROME_BROWSER_OMAHA_OMAHA_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_OMAHA_MODEL_OMAHA_SERVICE_H_

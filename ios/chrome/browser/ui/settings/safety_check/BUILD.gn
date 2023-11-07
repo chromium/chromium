@@ -62,7 +62,7 @@ source_set("safety_check") {
     "//components/version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_settings/model",
-    "//ios/chrome/browser/omaha",
+    "//ios/chrome/browser/omaha/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

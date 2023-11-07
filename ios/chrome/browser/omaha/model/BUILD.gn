@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("omaha") {
+source_set("model") {
   sources = [
     "omaha_service.h",
     "omaha_service.mm",
@@ -34,7 +34,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "omaha_service_unittest.mm" ]
   deps = [
-    ":omaha",
+    ":model",
     "//base",
     "//components/metrics",
     "//components/prefs",
