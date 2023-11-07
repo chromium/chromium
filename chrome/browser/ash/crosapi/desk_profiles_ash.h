@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "chromeos/crosapi/mojom/desk_profiles.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {
@@ -48,15 +48,12 @@ class DeskProfilesAsh : public mojom::DeskProfileObserver,
   // was known.
   bool RemoveProfile(uint64_t profile_id);
 
-  // Invoked if Lacros disconnects.
-  void OnDisconnect();
-
   // Cached list of profiles received from Lacros.
   std::vector<ash::LacrosProfileSummary> profiles_;
 
   base::ObserverList<Observer> observers_;
 
-  mojo::Receiver<mojom::DeskProfileObserver> receiver_{this};
+  mojo::ReceiverSet<mojom::DeskProfileObserver> receivers_;
 };
 
 }  // namespace crosapi

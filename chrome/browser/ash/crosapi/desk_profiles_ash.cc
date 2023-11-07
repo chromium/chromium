@@ -30,9 +30,7 @@ DeskProfilesAsh::~DeskProfilesAsh() = default;
 
 void DeskProfilesAsh::BindReceiver(
     mojo::PendingReceiver<mojom::DeskProfileObserver> pending_receiver) {
-  receiver_.Bind(std::move(pending_receiver));
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&DeskProfilesAsh::OnDisconnect, base::Unretained(this)));
+  receivers_.Add(this, std::move(pending_receiver));
 }
 
 void DeskProfilesAsh::OnProfileUpsert(
@@ -85,10 +83,6 @@ bool DeskProfilesAsh::RemoveProfile(uint64_t profile_id) {
                        [profile_id](const ash::LacrosProfileSummary& summary) {
                          return summary.profile_id == profile_id;
                        }) != 0;
-}
-
-void DeskProfilesAsh::OnDisconnect() {
-  receiver_.reset();
 }
 
 }  // namespace crosapi
