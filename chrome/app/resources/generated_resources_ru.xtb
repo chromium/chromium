@@ -4024,7 +4024,7 @@
 <translation id="4159784952369912983">Фиолетовый</translation>
 <translation id="4163560723127662357">Неизвестная клавиатура</translation>
 <translation id="4165942112764990069">Адрес <ph name="USER_EMAIL" /> не принадлежит действительной организации. Обратитесь к администратору. Если вы администратор, перейдите на страницу g.co/ChromeEnterpriseAccount и настройте аккаунт организации.</translation>
-<translation id="4165986682804962316">Настройки сайтов</translation>
+<translation id="4165986682804962316">Настройки сайта</translation>
 <translation id="4167212649627589331">Приложение "<ph name="APP_NAME" />" пытается получить доступ к устройству "<ph name="DEVICE_NAME" />". Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="4167393659000039775">Google не несет ответственности за потерю данных. Операционная система <ph name="DEVICE_OS" /> может не работать на несертифицированных моделях устройств. Подробная информация доступна на странице g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Другие действия для быстрой команды "<ph name="SHORTCUT_TITLE" />"</translation>
@@ -9071,7 +9071,7 @@
 <translation id="828642162569365647">Этот пароль или PIN-код будет защищать ваши данные на текущем устройстве <ph name="DEVICE_TYPE" />, а также информацию, получаемую с телефона. Чтобы выйти из спящего режима, потребуется разблокировать устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8287902281644548111">Поиск по URL или запросу к API</translation>
 <translation id="8288032458496410887">Удалить приложение "<ph name="APP" />"...</translation>
-<translation id="8288553158681886528">Извлекать текст из файлов PDF</translation>
+<translation id="8288553158681886528">Извлечь текст из PDF-файла</translation>
 <translation id="8289128870594824098">Размер диска</translation>
 <translation id="8289509909262565712">Представляем <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Скачать Chrome</translation>
