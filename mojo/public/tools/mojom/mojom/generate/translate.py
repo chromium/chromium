@@ -176,7 +176,6 @@ _EXTENSIBLE_ENUMS_MISSING_DEFAULT = (
     'x:ash.ime.mojom.PersonalizationMode',
     'x:ash.language.mojom.FeatureId',
     'x:blink.mojom.ScrollRestorationType',
-    'x:chrome_cleaner.mojom.PromptAcceptance',
     'x:chromeos.cdm.mojom.CdmKeyStatus',
     'x:chromeos.cdm.mojom.CdmMessageType',
     'x:chromeos.cdm.mojom.CdmSessionType',

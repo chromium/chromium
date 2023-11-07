@@ -24,7 +24,7 @@ enum BillingResponseCode {
 
   // Unknown error calling a Digital Goods action (a more specific error code
   // below is preferred).
-  kError,
+  [Default] kError,
 
   // Item purchased is already owned.
   kItemAlreadyOwned,
@@ -44,7 +44,7 @@ enum BillingResponseCode {
 
 [Extensible, Stable]
 enum ItemType {
-  kUnknown,
+  [Default] kUnknown,
   kProduct,
   kSubscription,
 };
@@ -73,7 +73,7 @@ struct ItemDetails {
 [Extensible, Stable]
 enum CreateDigitalGoodsResponseCode {
   kOk,
-  kError,
+  [Default] kError,
   kUnsupportedPaymentMethod,
   kUnsupportedContext,
 };
