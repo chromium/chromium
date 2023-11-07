@@ -650,7 +650,6 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kAccountsPrefEphemeralUsersEnabled
     //   kAccountsPrefFamilyLinkAccountsAllowed
     //   kAccountsPrefTransferSAMLCookies
-    //   kDeviceAttestationEnabled
     //   kDeviceOwner
     //   kDeviceReportRuntimeCounters
     //   kDeviceReportXDREvents
