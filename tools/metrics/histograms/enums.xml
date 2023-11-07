@@ -8696,9 +8696,6 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="BooleanShown">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
   <int value="0" label="Not Shown"/>
   <int value="1" label="Shown"/>
 </enum>

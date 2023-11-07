@@ -4,6 +4,7 @@
 
 #include "chrome/browser/bookmarks/chrome_bookmark_client.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -15,6 +16,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/managed/managed_bookmark_util.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -88,7 +90,12 @@ ChromeBookmarkClient::ChromeBookmarkClient(
       local_or_syncable_bookmark_sync_service_(
           local_or_syncable_bookmark_sync_service),
       account_bookmark_sync_service_(account_bookmark_sync_service),
-      bookmark_undo_service_(bookmark_undo_service) {}
+      bookmark_undo_service_(bookmark_undo_service) {
+  CHECK(profile_);
+  base::UmaHistogramBoolean(
+      "Bookmarks.BookmarkBar.Shown",
+      profile_->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar));
+}
 
 ChromeBookmarkClient::~ChromeBookmarkClient() {
   if (shopping_save_location_provider_) {
