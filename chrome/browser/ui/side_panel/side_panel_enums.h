@@ -11,6 +11,7 @@
 // here.
 enum class SidePanelOpenTrigger {
   kToolbarButton = 0,
+  kMinValue = kToolbarButton,
   kLensContextMenu = 1,
   kSideSearchPageAction = 2,
   kNotesInPageContextMenu = 3,

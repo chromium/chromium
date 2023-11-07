@@ -2457,6 +2457,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Actions.PinnedToolbarButtonActivation">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when an action pinned to the toolbar is activated.
+  </description>
+</action>
+
 <action name="ActiveBrowserChanged" not_user_triggered="true">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -32616,11 +32624,29 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.Bookmarks.Pinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the bookmarks side panel entry is pinned via the pin button in
+    the side panel header.
+  </description>
+</action>
+
 <action name="SidePanel.Bookmarks.Shown">
   <owner>johntlee@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     Recorded when the bookmarks side panel entry is shown.
+  </description>
+</action>
+
+<action name="SidePanel.Bookmarks.Unpinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the bookmarks side panel entry is unpinned via the pin button
+    in the side panel header.
   </description>
 </action>
 
@@ -32659,10 +32685,30 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.Feed.Pinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>jianli@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the feed side panel entry is pinned via the pin button in the
+    side panel header.
+  </description>
+</action>
+
 <action name="SidePanel.Feed.Shown">
   <owner>jianli@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>Recorded when the feed side panel entry is shown.</description>
+</action>
+
+<action name="SidePanel.Feed.Unpinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>jianli@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the feed side panel entry is unpinned via the pin button in
+    the side panel header.
+  </description>
 </action>
 
 <action name="SidePanel.Hide">
@@ -32680,11 +32726,31 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.HistoryClusters.Pinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>mfacey@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the history clusters side panel entry is pinned via the pin
+    button in the side panel header.
+  </description>
+</action>
+
 <action name="SidePanel.HistoryClusters.Shown">
   <owner>mfacey@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     Recorded when the history clusters side panel entry is shown.
+  </description>
+</action>
+
+<action name="SidePanel.HistoryClusters.Unpinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>mfacey@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the history clusters side panel entry is unpinned via the pin
+    button in the side panel header.
   </description>
 </action>
 
@@ -32703,6 +32769,16 @@ should be able to be added at any place in this file.
   <description>Recorded when the Lens side panel entry is shown.</description>
 </action>
 
+<action name="SidePanel.Performance.Pinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the performance side panel entry is pinned via the pin button
+    in the side panel header.
+  </description>
+</action>
+
 <action name="SidePanel.Performance.Shown">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -32711,11 +32787,41 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.Performance.Unpinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the performance side panel entry is unpinned via the pin
+    button in the side panel header.
+  </description>
+</action>
+
+<action name="SidePanel.ReadAnything.Pinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>abigailbklein@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the read anything side panel entry is pinned via the pin
+    button in the side panel header.
+  </description>
+</action>
+
 <action name="SidePanel.ReadAnything.Shown">
   <owner>abigailbklein@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     Recorded when the read anything side panel entry is shown.
+  </description>
+</action>
+
+<action name="SidePanel.ReadAnything.Unpinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>abigailbklein@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the read anything side panel entry is unpinned via the pin
+    button in the side panel header.
   </description>
 </action>
 
@@ -32735,11 +32841,29 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.ReadingList.Pinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the reading list side panel entry is pinned via the pin button
+    in the side panel header.
+  </description>
+</action>
+
 <action name="SidePanel.ReadingList.Shown">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     Recorded when the reading list side panel entry is shown.
+  </description>
+</action>
+
+<action name="SidePanel.ReadingList.Unpinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the reading list side panel entry is unpinned via the pin
+    button in the side panel header.
   </description>
 </action>
 
@@ -32774,11 +32898,29 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.UserNotes.Pinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the user notes side panel entry is pinned via the pin button
+    in the side panel header.
+  </description>
+</action>
+
 <action name="SidePanel.UserNotes.Shown">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     Recorded when the user notes side panel entry is shown.
+  </description>
+</action>
+
+<action name="SidePanel.UserNotes.Unpinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the user notes side panel entry is unpinned via the pin button
+    in the side panel header.
   </description>
 </action>
 

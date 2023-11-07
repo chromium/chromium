@@ -460,13 +460,14 @@ void SidePanelCoordinator::UpdatePinState() {
     absl::optional<actions::ActionId> action_id =
         GetActionItem(current_entry_->key())->GetActionId();
     CHECK(action_id.has_value());
-    actions_model->UpdatePinnedState(
-        action_id.value(), !actions_model->Contains(action_id.value()));
-    // TODO(b:299464014): Add metrics for pinned panels
+    const bool updated_pin_state = !actions_model->Contains(action_id.value());
+    actions_model->UpdatePinnedState(action_id.value(), updated_pin_state);
+    SidePanelUtil::RecordPinnedButtonClicked(current_entry_->key().id(),
+                                             updated_pin_state);
   } else {
     PrefService* const pref_service = profile->GetPrefs();
     if (pref_service) {
-      bool current_state = pref_service->GetBoolean(
+      const bool current_state = pref_service->GetBoolean(
           prefs::kSidePanelCompanionEntryPinnedToToolbar);
       pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
                                !current_state);

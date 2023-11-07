@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
 
+#include <type_traits>
+
 #include "base/time/time.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -58,6 +60,11 @@ class SidePanelUtil {
       SidePanelEntry::Id id,
       absl::optional<SidePanelOpenTrigger> trigger);
   static void RecordComboboxShown();
+  static void RecordPinnedButtonClicked(SidePanelEntry::Id id, bool is_pinned);
 };
+
+extern const ui::ClassProperty<
+    std::underlying_type_t<SidePanelOpenTrigger>>* const
+    kSidePanelOpenTriggerKey;
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_

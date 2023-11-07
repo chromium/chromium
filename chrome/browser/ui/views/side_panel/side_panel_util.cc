@@ -34,11 +34,22 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_notes/user_notes_features.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/actions/actions.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "extensions/common/extension_features.h"
 #endif
+
+namespace {
+constexpr std::underlying_type_t<SidePanelOpenTrigger>
+    kInvalidSidePanelOpenTrigger = -1;
+}
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelOpenTrigger)
+DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelOpenTrigger>,
+                             kSidePanelOpenTriggerKey,
+                             kInvalidSidePanelOpenTrigger)
 
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
@@ -219,4 +230,11 @@ void SidePanelUtil::RecordEntryShowTriggeredMetrics(
 
 void SidePanelUtil::RecordComboboxShown() {
   base::UmaHistogramBoolean("SidePanel.ComboboxMenuShown", true);
+}
+
+void SidePanelUtil::RecordPinnedButtonClicked(SidePanelEntry::Id id,
+                                              bool is_pinned) {
+  base::RecordComputedAction(base::StrCat(
+      {"SidePanel.", SidePanelEntryIdToHistogramName(id), ".",
+       is_pinned ? "Pinned" : "Unpinned", ".BySidePanelHeaderButton"}));
 }

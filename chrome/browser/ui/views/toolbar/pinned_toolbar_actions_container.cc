@@ -6,14 +6,18 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,6 +29,12 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
+
+namespace {
+void RecordPinnedActionsCount(int count) {
+  base::UmaHistogramCounts100("Browser.Actions.PinnedActionsCount", count);
+}
+}  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 // PinnedToolbarActionsContainer::PinnedActionToolbarButton:
@@ -77,7 +87,15 @@ PinnedToolbarActionsContainer::PinnedActionToolbarButton::GetActionId() {
 }
 
 void PinnedToolbarActionsContainer::PinnedActionToolbarButton::ButtonPressed() {
-  action_item_->InvokeAction();
+  base::RecordAction(
+      base::UserMetricsAction("Actions.PinnedToolbarButtonActivation"));
+  action_item_->InvokeAction(
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(
+              kSidePanelOpenTriggerKey,
+              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                  SidePanelOpenTrigger::kPinnedEntryToolbarButton))
+          .Build());
 }
 
 bool PinnedToolbarActionsContainer::PinnedActionToolbarButton::IsActive() {
@@ -215,12 +233,14 @@ void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
   }
   AddPinnedActionButtonFor(id);
   GetSidePanelCoordinator()->UpdateHeaderPinButtonState();
+  RecordPinnedActionsCount(model_->pinned_action_ids().size());
 }
 
 void PinnedToolbarActionsContainer::OnActionRemoved(
     const actions::ActionId& id) {
   RemovePinnedActionButtonFor(id);
   GetSidePanelCoordinator()->UpdateHeaderPinButtonState();
+  RecordPinnedActionsCount(model_->pinned_action_ids().size());
 }
 
 void PinnedToolbarActionsContainer::OnActionMoved(const actions::ActionId& id,

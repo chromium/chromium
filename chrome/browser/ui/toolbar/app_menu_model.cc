@@ -1141,6 +1141,20 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_CHROME_LABS);
       break;
+    case IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WrenchMenu.TimeToAction.ShowHistoryClustersSidePanel", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_HISTORY_CLUSTER_SIDE_PANEL);
+      break;
+    case IDC_SHOW_READING_MODE_SIDE_PANEL:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WrenchMenu.TimeToAction.ShowReadingModeSidePanel", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_READING_MODE_SIDE_PANEL);
+      break;
 
     // Zoom menu
     case IDC_ZOOM_MINUS:

@@ -50,6 +50,16 @@ chromium-metrics-reviews@google.com.
       summary="Tab has a saved frame in the cache."/>
 </variants>
 
+<histogram name="Browser.Actions.PinnedActionsCount" units="actions"
+    expires_after="2024-03-17">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the number of actions that are currently pinned to the toolbar. This
+    is emitted every time the user pins or unpins an action to the toolbar.
+  </summary>
+</histogram>
+
 <histogram name="Browser.BitmapFetcher.Decode" units="ms"
     expires_after="2022-09-18">
   <obsolete>

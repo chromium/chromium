@@ -82958,6 +82958,8 @@ Called by update_scheduler_enums.py.-->
   <int value="81" label="Show search companion"/>
   <int value="82" label="Show bookmark side panel"/>
   <int value="83" label="Show performance settings"/>
+  <int value="84" label="Show history cluster side panel"/>
+  <int value="85" label="Show reading mode side panel"/>
 </enum>
 
 <enum name="XHRPageDismissalState">

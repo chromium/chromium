@@ -11612,10 +11612,12 @@ regressions. -->
     <variant name="ShowChromeLabs"/>
     <variant name="ShowDownloads"/>
     <variant name="ShowHistory"/>
+    <variant name="ShowHistoryClustersSidePanel"/>
     <variant name="ShowKaleidoscope"/>
     <variant name="ShowPasswordManager"/>
     <variant name="ShowPaymentMethods"/>
     <variant name="ShowPerformanceSettings"/>
+    <variant name="ShowReadingModeSidePanel"/>
     <variant name="ShowSearchCompanion"/>
     <variant name="ShowSigninWhenPaused"/>
     <variant name="ShowSyncSettings"/>
