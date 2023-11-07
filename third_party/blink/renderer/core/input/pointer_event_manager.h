@@ -204,7 +204,6 @@ class CORE_EXPORT PointerEventManager final
   void RemoveTargetFromPointerCapturingMapping(PointerCapturingMap&,
                                                const Element*);
   Element* GetEffectiveTargetForPointerEvent(Element*, PointerId);
-  Element* GetCapturingElement(PointerId);
   void RemovePointer(PointerEvent*);
   WebInputEventResult DispatchPointerEvent(EventTarget*,
                                            PointerEvent*,

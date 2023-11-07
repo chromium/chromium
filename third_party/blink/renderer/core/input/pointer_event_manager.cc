@@ -220,8 +220,9 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
 Element* PointerEventManager::GetEffectiveTargetForPointerEvent(
     Element* target,
     PointerId pointer_id) {
-  if (Element* capturing_target = GetCapturingElement(pointer_id))
-    return capturing_target;
+  if (pointer_capture_target_.Contains(pointer_id)) {
+    return pointer_capture_target_.at(pointer_id);
+  }
   return target;
 }
 
@@ -984,15 +985,12 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
     }
   }
 
-  Element* pointer_event_target = ProcessCaptureAndPositionOfPointerEvent(
+  Element* effective_target = ProcessCaptureAndPositionOfPointerEvent(
       pointer_event, target, &mouse_event);
 
   // Don't send fake mouse event to the DOM.
   if (fake_event)
     return WebInputEventResult::kHandledSuppressed;
-
-  Element* effective_target = GetEffectiveTargetForPointerEvent(
-      pointer_event_target, pointer_event->pointerId());
 
   if ((event_type == WebInputEvent::Type::kPointerDown ||
        event_type == WebInputEvent::Type::kPointerUp) &&
@@ -1121,18 +1119,14 @@ Element* PointerEventManager::ProcessCaptureAndPositionOfPointerEvent(
     const WebMouseEvent* mouse_event) {
   ProcessPendingPointerCapture(pointer_event);
 
-  PointerCapturingMap::const_iterator it =
-      pointer_capture_target_.find(pointer_event->pointerId());
-  if (Element* pointercapture_target =
-          (it != pointer_capture_target_.end()) ? it->value : nullptr) {
-    hit_test_target = pointercapture_target;
-  }
+  Element* effective_target = GetEffectiveTargetForPointerEvent(
+      hit_test_target, pointer_event->pointerId());
 
-  SetElementUnderPointer(pointer_event, hit_test_target);
+  SetElementUnderPointer(pointer_event, effective_target);
   if (mouse_event) {
-    mouse_event_manager_->SetElementUnderMouse(hit_test_target, *mouse_event);
+    mouse_event_manager_->SetElementUnderMouse(effective_target, *mouse_event);
   }
-  return hit_test_target;
+  return effective_target;
 }
 
 void PointerEventManager::ProcessPendingPointerCapture(
@@ -1185,12 +1179,6 @@ void PointerEventManager::RemoveTargetFromPointerCapturingMapping(
     if (it->value == target)
       map.erase(it->key);
   }
-}
-
-Element* PointerEventManager::GetCapturingElement(PointerId pointer_id) {
-  if (pointer_capture_target_.Contains(pointer_id))
-    return pointer_capture_target_.at(pointer_id);
-  return nullptr;
 }
 
 void PointerEventManager::RemovePointer(PointerEvent* pointer_event) {
