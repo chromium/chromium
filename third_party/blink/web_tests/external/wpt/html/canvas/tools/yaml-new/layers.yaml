@@ -308,6 +308,101 @@
     @assert ctx.shadowOffsetY === 20;
     @assert ctx.shadowBlur === 30;
 
+- name: 2d.layer.clip-outside
+  desc: Check clipping set outside the layer
+  size: [100, 100]
+  code: |
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 80);
+    ctx.endLayer();
+  reference: |
+    const canvas2 = new OffscreenCanvas(200, 200);
+    const ctx2 = canvas2.getContext('2d');
+
+    ctx2.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(10, 10, 80, 80);
+    ctx2.endLayer();
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.drawImage(canvas2, 0, 0);
+
+- name: 2d.layer.clip-inside
+  desc: Check clipping set inside the layer
+  size: [100, 100]
+  code: |
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 80);
+    ctx.endLayer();
+  reference: |
+    const canvas2 = new OffscreenCanvas(200, 200);
+    const ctx2 = canvas2.getContext('2d');
+
+    ctx2.beginPath();
+    ctx2.rect(15, 15, 70, 70);
+    ctx2.clip();
+
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(10, 10, 80, 80);
+
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx.drawImage(canvas2, 0, 0);
+    ctx.endLayer();
+
+- name: 2d.layer.clip-inside-and-outside
+  desc: Check clipping set inside and outside the layer
+  size: [100, 100]
+  code: |
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(10, 10, 80, 80);
+    ctx.endLayer();
+  reference: |
+    const canvas2 = new OffscreenCanvas(200, 200);
+    const ctx2 = canvas2.getContext('2d');
+
+    ctx2.beginPath();
+    ctx2.rect(15, 15, 70, 70);
+    ctx2.clip();
+
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(10, 10, 80, 80);
+
+    const canvas3 = new OffscreenCanvas(200, 200);
+    const ctx3 = canvas3.getContext('2d');
+
+    ctx3.beginLayer({filter: {name: "gaussianBlur", stdDeviation: 12}});
+    ctx3.drawImage(canvas2, 0, 0);
+    ctx3.endLayer();
+
+    ctx.beginPath();
+    ctx.rect(15, 15, 70, 70);
+    ctx.clip();
+    ctx.drawImage(canvas3, 0, 0);
+
 - name: 2d.layer.unclosed
   desc: Check that layers are rendered even if not closed.
   size: [200, 200]
