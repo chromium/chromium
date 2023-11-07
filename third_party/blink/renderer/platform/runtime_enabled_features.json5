@@ -3970,6 +3970,10 @@
       base_feature: "none",
     },
     {
+      name: "URLPatternWildcardMoreOften",
+      status: "stable",
+    },
+    {
       name: "URLSearchParamsHasAndDeleteMultipleArgs",
       status: "stable",
     },

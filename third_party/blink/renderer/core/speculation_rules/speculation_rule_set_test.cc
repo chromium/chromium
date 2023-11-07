@@ -1587,9 +1587,9 @@ TEST_F(DocumentRulesTest, ParseHref) {
           MatchesPredicate(Href({URLPattern("/foo#bar")})),
           MatchesPredicate(Href({URLPattern("/foo")})),
           MatchesPredicate(Href({URLPattern("/buzz"), URLPattern("/fizz"),
-                                 URLPattern("https://bar.com")})),
-          MatchesPredicate(Or({Href({URLPattern("https://foo.com")}),
-                               Neg(Href({URLPattern("http://*")}))}))));
+                                 URLPattern("https://bar.com:*")})),
+          MatchesPredicate(Or({Href({URLPattern("https://foo.com:*")}),
+                               Neg(Href({URLPattern("http://*:*")}))}))));
 }
 
 TEST_F(DocumentRulesTest, ParseHref_AllUrlPatternKeys) {
@@ -1604,7 +1604,7 @@ TEST_F(DocumentRulesTest, ParseHref_AllUrlPatternKeys) {
     "hostname": "abc.xyz",
     "baseURL": "https://example.com"
   })");
-  EXPECT_THAT(href_matches, Href({URLPattern("https://abc.xyz:*/*\\?*")}));
+  EXPECT_THAT(href_matches, Href({URLPattern("https://:@abc.xyz:*/*\\?*#")}));
 }
 
 TEST_F(DocumentRulesTest, HrefMatchesWithBaseURL) {
@@ -1802,10 +1802,10 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
   EXPECT_EQ(rule_set->error_type(),
             SpeculationRuleSetErrorType::kInvalidRulesSkipped);
   EXPECT_THAT(rule_set->prefetch_rules(),
-              ElementsAre(MatchesPredicate(
-                  And({Or({Href({URLPattern("/hello.html")}),
-                           Selector({StyleRuleWithSelectorText(".valid")})}),
-                       Neg(And({Href({URLPattern("https://world.com")})}))}))));
+              ElementsAre(MatchesPredicate(And(
+                  {Or({Href({URLPattern("/hello.html")}),
+                       Selector({StyleRuleWithSelectorText(".valid")})}),
+                   Neg(And({Href({URLPattern("https://world.com:*")})}))}))));
 }
 
 // Tests that errors of individual rules which cause them to be ignored are

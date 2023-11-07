@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -113,6 +114,9 @@ void ApplyInit(const URLPatternInit* init,
                String& search,
                String& hash,
                ExceptionState& exception_state) {
+  const bool more_wildcards =
+      RuntimeEnabledFeatures::URLPatternWildcardMoreOftenEnabled();
+
   // If there is a baseURL we need to apply its component values first.  The
   // rest of the URLPatternInit structure will then later override these
   // values.  Note, the baseURL will always set either an empty string or
@@ -128,23 +132,67 @@ void ApplyInit(const URLPatternInit* init,
       return;
     }
 
-    protocol = base_url.Protocol()
+    // With URLPatternWildcardMoreOften enabled, components are only inherited
+    // from the base URL if no "earlier" component is specified in |init|.
+    // Furthermore, when the base URL is being used as the basis of a pattern
+    // (not a URL being matched against), usernames and passwords are always
+    // wildcarded unless explicitly specified otherwise, because they usually do
+    // not affect which resource is requested (though they do often affect
+    // whether access is authorized).
+    //
+    // Even though they appear earlier than the hostname in a URL, the username
+    // and password are treated as appearing after it because they typically
+    // refer to credentials within a realm on an origin, rather than being used
+    // across all hostnames.
+    //
+    // This partial ordering is represented by the following diagram:
+    //
+    //                                 +-> pathname --> search --> hash
+    // protocol --> hostname --> port -|
+    //                                 +-> username --> password
+    protocol = more_wildcards && init->hasProtocol() ? String()
+               : base_url.Protocol()
                    ? EscapeBaseURLString(base_url.Protocol(), type)
                    : g_empty_string;
-    username = base_url.User() ? EscapeBaseURLString(base_url.User(), type)
-                               : g_empty_string;
-    password = base_url.Pass() ? EscapeBaseURLString(base_url.Pass(), type)
-                               : g_empty_string;
-    hostname = base_url.Host() ? EscapeBaseURLString(base_url.Host(), type)
-                               : g_empty_string;
-    port =
-        base_url.Port() > 0 ? String::Number(base_url.Port()) : g_empty_string;
-    pathname = base_url.GetPath()
+    username = more_wildcards && (type == ValueType::kPattern ||
+                                  (init->hasProtocol() || init->hasHostname() ||
+                                   init->hasPort() || init->hasUsername()))
+                   ? String()
+               : base_url.User() ? EscapeBaseURLString(base_url.User(), type)
+                                 : g_empty_string;
+    password = more_wildcards && (type == ValueType::kPattern ||
+                                  (init->hasProtocol() || init->hasHostname() ||
+                                   init->hasPort() || init->hasUsername() ||
+                                   init->hasPassword()))
+                   ? String()
+               : base_url.Pass() ? EscapeBaseURLString(base_url.Pass(), type)
+                                 : g_empty_string;
+    hostname = more_wildcards && (init->hasProtocol() || init->hasHostname())
+                   ? String()
+               : base_url.Host() ? EscapeBaseURLString(base_url.Host(), type)
+                                 : g_empty_string;
+    port = more_wildcards && (init->hasProtocol() || init->hasHostname() ||
+                              init->hasPort())
+               ? String()
+           : base_url.Port() > 0 ? String::Number(base_url.Port())
+                                 : g_empty_string;
+    pathname = more_wildcards && (init->hasProtocol() || init->hasHostname() ||
+                                  init->hasPort() || init->hasPathname())
+                   ? String()
+               : base_url.GetPath()
                    ? EscapeBaseURLString(base_url.GetPath(), type)
                    : g_empty_string;
-    search = base_url.Query() ? EscapeBaseURLString(base_url.Query(), type)
-                              : g_empty_string;
-    hash = base_url.HasFragmentIdentifier()
+    search = more_wildcards && (init->hasProtocol() || init->hasHostname() ||
+                                init->hasPort() || init->hasPathname() ||
+                                init->hasSearch())
+                 ? String()
+             : base_url.Query() ? EscapeBaseURLString(base_url.Query(), type)
+                                : g_empty_string;
+    hash = more_wildcards && (init->hasProtocol() || init->hasHostname() ||
+                              init->hasPort() || init->hasPathname() ||
+                              init->hasSearch() || init->hasHash())
+               ? String()
+           : base_url.HasFragmentIdentifier()
                ? EscapeBaseURLString(base_url.FragmentIdentifier(), type)
                : g_empty_string;
   }
@@ -754,15 +802,18 @@ bool URLPattern::Match(ScriptState* script_state,
                  match(search_, search, search_group_list_ref) &&
                  match(hash_, hash, hash_group_list_ref);
 
-  if (affected_by_string_format_change && script_state) {
-    UseCounter::Count(
-        ExecutionContext::From(script_state),
-        WebFeature::kURLPatternReliantOnImplicitURLComponentsInString);
-  }
-  if (affected_by_base_url_change && script_state) {
-    UseCounter::Count(
-        ExecutionContext::From(script_state),
-        WebFeature::kURLPatternReliantOnLaterComponentFromBaseURL);
+  if (!RuntimeEnabledFeatures::URLPatternWildcardMoreOftenEnabled() &&
+      script_state) {
+    if (affected_by_string_format_change) {
+      UseCounter::Count(
+          ExecutionContext::From(script_state),
+          WebFeature::kURLPatternReliantOnImplicitURLComponentsInString);
+    }
+    if (affected_by_base_url_change) {
+      UseCounter::Count(
+          ExecutionContext::From(script_state),
+          WebFeature::kURLPatternReliantOnLaterComponentFromBaseURL);
+    }
   }
 
   if (!matched || !result)

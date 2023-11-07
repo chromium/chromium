@@ -28,28 +28,28 @@ blink::KURL DefaultBaseUrl() {
 }
 
 blink::SafeUrlPattern DefaultStringUrlPattern() {
+  auto make_fixed_part = [](base::StringPiece value) {
+    liburlpattern::Part part;
+    part.modifier = liburlpattern::Modifier::kNone;
+    part.type = liburlpattern::PartType::kFixed;
+    part.value = value;
+    return part;
+  };
+  auto make_wildcard_part = [](base::StringPiece name) {
+    liburlpattern::Part part;
+    part.modifier = liburlpattern::Modifier::kNone;
+    part.type = liburlpattern::PartType::kFullWildcard;
+    part.name = name;
+    return part;
+  };
   blink::SafeUrlPattern url_pattern;
-  {
-    liburlpattern::Part part;
-    part.modifier = liburlpattern::Modifier::kNone;
-    part.type = liburlpattern::PartType::kFixed;
-    part.value = "https";
-    url_pattern.protocol.emplace_back(part);
-  }
-  {
-    liburlpattern::Part part;
-    part.modifier = liburlpattern::Modifier::kNone;
-    part.type = liburlpattern::PartType::kFixed;
-    part.value = "www.example.com";
-    url_pattern.hostname.emplace_back(part);
-  }
-  {
-    liburlpattern::Part part;
-    part.modifier = liburlpattern::Modifier::kNone;
-    part.type = liburlpattern::PartType::kFixed;
-    part.value = "/test/base/";
-    url_pattern.pathname.emplace_back(part);
-  }
+  url_pattern.protocol.push_back(make_fixed_part("https"));
+  url_pattern.username.push_back(make_wildcard_part("0"));
+  url_pattern.password.push_back(make_wildcard_part("0"));
+  url_pattern.hostname.push_back(make_fixed_part("www.example.com"));
+  url_pattern.pathname.push_back(make_fixed_part("/test/base/"));
+  url_pattern.search.push_back(make_wildcard_part("0"));
+  url_pattern.hash.push_back(make_wildcard_part("0"));
   return url_pattern;
 }
 

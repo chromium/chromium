@@ -92,6 +92,10 @@ class URLPatternHistogramTest : public PageTestBase {
              << " did not log feature " << feature;
     }
   }
+
+  // This histogram does not function correctly when the new behavior is
+  // enabled.
+  ScopedURLPatternWildcardMoreOftenForTest new_behavior{false};
 };
 
 TEST_F(URLPatternHistogramTest, OmittedSearchAndHashInString) {
