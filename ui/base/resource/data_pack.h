@@ -41,7 +41,14 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 
   ~DataPack() override;
 
-#pragma pack(push, 2)
+// Pack Entry and Alias. This removes padding between fields, and alignment
+// requirements, which makes the structs usable for aliasing into the input
+// buffer directly.
+//
+// TODO(davidben): Ideally we would load these structures through memcpy, or
+// a little-endian variant of base/big_endian.h, rather than type-punning
+// pointers. This code currently depends on Chromium disabling strict aliasing.
+#pragma pack(push, 1)
   struct Entry {
     static int CompareById(const void* void_key, const void* void_entry);
 
