@@ -79,7 +79,9 @@ public class FaviconUtils {
      */
     public static Bitmap createGenericFaviconBitmap(
             Context context, int size, @Nullable @ColorInt Integer backgroundColor) {
-        Bitmap bitmap = Bitmap.createBitmap(size, size, Config.ARGB_8888);
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        context.getResources().getDisplayMetrics(), size, size, Config.ARGB_8888);
         Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_globe_48dp);
         drawable.setBounds(0, 0, size, size);
         Canvas canvas = new Canvas(bitmap);
