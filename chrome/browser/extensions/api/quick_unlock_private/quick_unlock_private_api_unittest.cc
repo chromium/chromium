@@ -59,6 +59,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace {
@@ -319,7 +320,7 @@ class QuickUnlockPrivateUnitTest
 
   // Wrapper for chrome.quickUnlockPrivate.getAuthToken. Expects the function
   // to succeed and returns the result.
-  std::unique_ptr<quick_unlock_private::TokenInfo> GetAuthToken(
+  absl::optional<quick_unlock_private::TokenInfo> GetAuthToken(
       const std::string& password) {
     auto func = base::MakeRefCounted<QuickUnlockPrivateGetAuthTokenFunction>();
 
@@ -328,8 +329,7 @@ class QuickUnlockPrivateUnitTest
     absl::optional<base::Value> result =
         RunFunction(std::move(func), std::move(params));
     EXPECT_TRUE(result);
-    auto token_info =
-        quick_unlock_private::TokenInfo::FromValueDeprecated(*result);
+    auto token_info = quick_unlock_private::TokenInfo::FromValue(*result);
     EXPECT_TRUE(token_info);
     return token_info;
   }
@@ -436,9 +436,9 @@ class QuickUnlockPrivateUnitTest
         std::move(params));
     EXPECT_TRUE(result->is_dict());
 
-    CredentialCheck function_result;
-    EXPECT_TRUE(CredentialCheck::Populate(result->GetDict(), function_result));
-    return function_result;
+    auto function_result = CredentialCheck::FromValue(result->GetDict());
+    EXPECT_TRUE(function_result);
+    return std::move(function_result).value();
   }
 
   void CheckGetCredentialRequirements(int expected_pin_min_length,
@@ -452,12 +452,11 @@ class QuickUnlockPrivateUnitTest
                     std::move(params));
     EXPECT_TRUE(result->is_dict());
 
-    CredentialRequirements function_result;
-    EXPECT_TRUE(
-        CredentialRequirements::Populate(result->GetDict(), function_result));
+    auto function_result = CredentialRequirements::FromValue(result->GetDict());
+    ASSERT_TRUE(function_result);
 
-    EXPECT_EQ(function_result.min_length, expected_pin_min_length);
-    EXPECT_EQ(function_result.max_length, expected_pin_max_length);
+    EXPECT_EQ(function_result->min_length, expected_pin_min_length);
+    EXPECT_EQ(function_result->max_length, expected_pin_max_length);
   }
 
   base::Value::List GetSetModesParams(const std::string& token,
@@ -701,7 +700,7 @@ class QuickUnlockPrivateUnitTest
 
 // Verifies that GetAuthTokenValid succeeds when a valid password is provided.
 TEST_P(QuickUnlockPrivateUnitTest, GetAuthTokenValid) {
-  std::unique_ptr<quick_unlock_private::TokenInfo> token_info =
+  absl::optional<quick_unlock_private::TokenInfo> token_info =
       GetAuthToken(kValidPassword);
 
   ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
