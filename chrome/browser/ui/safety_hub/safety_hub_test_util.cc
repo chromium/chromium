@@ -50,6 +50,15 @@ void AddExtension(const std::string& name,
   extensions::ExtensionRegistry::Get(profile)->AddEnabled(extension);
 }
 
+void RemoveExtension(const std::string& name,
+                     extensions::mojom::ManifestLocation location,
+                     Profile* profile) {
+  const std::string kId = crx_file::id_util::GenerateId(name);
+  extensions::ExtensionPrefs::Get(profile)->OnExtensionUninstalled(
+      kId, location, false);
+  extensions::ExtensionRegistry::Get(profile)->RemoveEnabled(kId);
+}
+
 // These `cws_info` variables are used to test the various states that an
 // extension could be in. Is a trigger due to the malware violation.
 static extensions::CWSInfoService::CWSInfo cws_info_malware{
@@ -152,6 +161,24 @@ void CreateMockExtensions(Profile* profile) {
   // extension 7 will not trigger the handler.
   AddExtension("TestExtension7", ManifestLocation::kExternalPolicyDownload,
                profile);
+}
+
+void CleanAllMockExtensions(Profile* profile) {
+  RemoveExtension("TestExtension1", ManifestLocation::kInternal, profile);
+  RemoveExtension("TestExtension2", ManifestLocation::kInternal, profile);
+  RemoveExtension("TestExtension3", ManifestLocation::kInternal, profile);
+  RemoveExtension("TestExtension4", ManifestLocation::kInternal, profile);
+  RemoveExtension("TestExtension5", ManifestLocation::kInternal, profile);
+  RemoveExtension("TestExtension6", ManifestLocation::kInternal, profile);
+  RemoveExtension("TestExtension7", ManifestLocation::kExternalPolicyDownload,
+                  profile);
+
+  // Check that all extensions were successfully uninstalled.
+  const extensions::ExtensionSet extensions =
+      extensions::ExtensionRegistry::Get(profile)
+          ->GenerateInstalledExtensionsSet(
+              extensions::ExtensionRegistry::ENABLED);
+  EXPECT_TRUE(extensions.empty());
 }
 
 }  // namespace safety_hub_test_util
