@@ -45,6 +45,9 @@ class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
   const blink::web_pref::WebPreferences& GetOrCreateWebPreferences() override {
     return mock_web_preferences_;
   }
+  blink::ColorProviderColorMaps GetColorProviderColorMaps() const override {
+    return mock_color_provider_colors_;
+  }
   MOCK_METHOD2(RequestMediaAccessPermission,
                void(const MediaStreamRequest& request,
                     MediaResponseCallback* callback));
@@ -55,6 +58,7 @@ class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
 
  private:
   blink::web_pref::WebPreferences mock_web_preferences_;
+  blink::ColorProviderColorMaps mock_color_provider_colors_;
 };
 
 class MockResponseCallback {
@@ -621,8 +625,13 @@ class MediaStreamUIProxyPermissionsPolicyTest
       return mock_web_preferences_;
     }
 
+    blink::ColorProviderColorMaps GetColorProviderColorMaps() const override {
+      return mock_color_provider_colors_;
+    }
+
    private:
     blink::web_pref::WebPreferences mock_web_preferences_;
+    blink::ColorProviderColorMaps mock_color_provider_colors_;
   };
 
   void GetResultForRequestOnIOThread(

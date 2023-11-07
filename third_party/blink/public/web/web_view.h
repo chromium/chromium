@@ -66,6 +66,7 @@ class SizeF;
 }
 
 namespace blink {
+struct ColorProviderColorMaps;
 class PageScheduler;
 class WebFrame;
 class WebFrameWidget;
@@ -367,6 +368,12 @@ class BLINK_EXPORT WebView {
 
   virtual void SetDeviceColorSpaceForTesting(
       const gfx::ColorSpace& color_space) = 0;
+
+  // Sets the initial color maps for this WebView. All frames in a WebView
+  // share the same color map; updates to the color map will be broadcast
+  // over the `UpdateColorProviders()` Mojo IPC.
+  virtual void SetColorProviders(
+      const ColorProviderColorMaps& color_provider_colors) = 0;
 
   // Scheduling -----------------------------------------------------------
 

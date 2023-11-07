@@ -17,6 +17,8 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
       mojo::PendingAssociatedReceiver<blink::mojom::PageBroadcast> receiver);
   ~TestPageBroadcast() override;
 
+  void FlushForTesting();
+
  private:
   void SetPageLifecycleState(
       blink::mojom::PageLifecycleStatePtr state,
@@ -47,6 +49,8 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
                                           browsing_context_group_info) override;
   void SetPageAttributionSupport(
       network::mojom::AttributionSupport support) override;
+  void UpdateColorProviders(
+      const blink::ColorProviderColorMaps& color_provider_colors) override;
 
   mojo::AssociatedReceiver<blink::mojom::PageBroadcast> receiver_;
 };

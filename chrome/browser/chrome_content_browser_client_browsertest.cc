@@ -65,6 +65,7 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_source.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/test_native_theme.h"
 #include "url/gurl.h"
@@ -429,6 +430,19 @@ class PrefersColorSchemeTest
     const ui::ColorProvider* GetColorProvider() const override {
       return &provider_;
     }
+
+    const ui::RendererColorMap GetRendererColorMap(
+        ui::ColorProviderKey::ColorMode color_mode,
+        ui::ColorProviderKey::ForcedColors forced_colors) const override {
+      auto key = GetColorProviderKey();
+      key.color_mode = color_mode;
+      key.forced_colors = forced_colors;
+      ui::ColorProvider* color_provider =
+          ui::ColorProviderManager::Get().GetColorProviderFor(key);
+      CHECK(color_provider);
+      return ui::CreateRendererColorMap(*color_provider);
+    }
+
     ui::ColorProviderKey GetColorProviderKey() const override { return key_; }
 
    private:

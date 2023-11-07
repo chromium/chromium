@@ -136,6 +136,10 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
               SetPageBaseBackgroundColor,
               (absl::optional<SkColor> color),
               (override));
+  MOCK_METHOD(void,
+              UpdateColorProviders,
+              (const ::blink::ColorProviderColorMaps& color_provider_colors),
+              (override));
   MOCK_METHOD(
       void,
       CreateRemoteMainFrame,

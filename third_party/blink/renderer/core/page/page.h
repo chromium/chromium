@@ -64,12 +64,17 @@
 
 namespace cc {
 class AnimationHost;
-}
+}  // namespace cc
+
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 namespace blink {
 class AutoscrollController;
 class BrowserControls;
 class ChromeClient;
+struct ColorProviderColorMaps;
 class ConsoleMessageStorage;
 class ContextMenuController;
 class Document;
@@ -154,6 +159,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   static void PlatformColorsChanged();
   static void ColorSchemeChanged();
   static void ColorProvidersChanged();
+
+  void UpdateColorProviders(
+      const ColorProviderColorMaps& color_provider_colors);
 
   void InitialStyleChanged();
   void UpdateAcceleratedCompositingSettings();
@@ -570,6 +578,12 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 #endif
 
   int subframe_count_;
+
+  // The light, dark and forced_colors mode ColorProviders corresponding to the
+  // top-level web container this Page is associated with.
+  std::unique_ptr<ui::ColorProvider> light_color_provider_;
+  std::unique_ptr<ui::ColorProvider> dark_color_provider_;
+  std::unique_ptr<ui::ColorProvider> forced_colors_color_provider_;
 
   HeapHashSet<WeakMember<PluginsChangedObserver>> plugins_changed_observers_;
 

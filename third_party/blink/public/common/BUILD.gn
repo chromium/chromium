@@ -256,6 +256,8 @@ source_set("headers") {
     "origin_trials/trial_token_validator.h",
     "page/browsing_context_group_info.h",
     "page/browsing_context_group_info_mojom_traits.h",
+    "page/color_provider_color_maps.h",
+    "page/color_provider_color_maps_mojom_traits.h",
     "page/content_to_visible_time_reporter.h",
     "page/drag_mojom_traits.h",
     "page/drag_operation.h",

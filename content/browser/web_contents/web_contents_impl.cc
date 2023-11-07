@@ -182,6 +182,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/base_event_utils.h"
@@ -531,6 +532,19 @@ class DefaultColorProviderSource : public ui::ColorProviderSource,
   const ui::ColorProvider* GetColorProvider() const override {
     return ui::ColorProviderManager::Get().GetColorProviderFor(
         GetColorProviderKey());
+  }
+
+  const ui::RendererColorMap GetRendererColorMap(
+      ui::ColorProviderKey::ColorMode color_mode,
+      ui::ColorProviderKey::ForcedColors forced_colors) const override {
+    auto key = GetColorProviderKey();
+    key.color_mode = color_mode;
+    key.forced_colors = forced_colors;
+    ui::ColorProvider* color_provider =
+        ui::ColorProviderManager::Get().GetColorProviderFor(key);
+    CHECK(color_provider);
+
+    return ui::CreateRendererColorMap(*color_provider);
   }
 
   // ui::NativeThemeObserver:
@@ -1061,7 +1075,8 @@ class WebContentsOfBrowserContext : public base::SupportsUserData::Data {
 }  // namespace
 
 WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
-    : delegate_(nullptr),
+    : ColorProviderSourceObserver(DefaultColorProviderSource::GetInstance()),
+      delegate_(nullptr),
       render_view_host_delegate_view_(nullptr),
       opened_by_another_window_(false),
       primary_frame_tree_(browser_context,
@@ -1112,13 +1127,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
 #if BUILDFLAG(IS_ANDROID)
   display_cutout_host_impl_ = std::make_unique<DisplayCutoutHostImpl>(this);
 #endif
-
-  // WebContents can exist independently of a ColorProviderSource and is still
-  // expected to be able to render its content and be inserted into a
-  // gfx::NativeView hierarchy. Whilst most WebContents clients should be
-  // setting a ColorProviderSource we must accommodate for cases where this is
-  // not currently being done. For these cases fallback to the default source.
-  SetColorProviderSource(DefaultColorProviderSource::GetInstance());
 
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
   native_theme_observation_.Observe(native_theme);
@@ -6837,6 +6845,18 @@ absl::optional<SkColor> WebContentsImpl::GetBaseBackgroundColor() {
   return page_base_background_color_;
 }
 
+blink::ColorProviderColorMaps WebContentsImpl::GetColorProviderColorMaps()
+    const {
+  const auto* source = GetColorProviderSource();
+  return blink::ColorProviderColorMaps{
+      source->GetRendererColorMap(ui::ColorProviderKey::ColorMode::kLight,
+                                  ui::ColorProviderKey::ForcedColors::kNone),
+      source->GetRendererColorMap(ui::ColorProviderKey::ColorMode::kDark,
+                                  ui::ColorProviderKey::ForcedColors::kNone),
+      source->GetRendererColorMap(source->GetColorMode(),
+                                  ui::ColorProviderKey::ForcedColors::kActive)};
+}
+
 void WebContentsImpl::PrintCrossProcessSubframe(
     const gfx::Rect& rect,
     int document_cookie,
@@ -10098,6 +10118,17 @@ void WebContentsImpl::OnColorProviderChanged() {
     SetColorProviderSource(DefaultColorProviderSource::GetInstance());
     return;
   }
+
+  blink::ColorProviderColorMaps color_map = GetColorProviderColorMaps();
+  ExecutePageBroadcastMethod(base::BindRepeating(
+      [](const blink::ColorProviderColorMaps& color_map,
+         RenderViewHostImpl* rvh) {
+        if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
+          broadcast->UpdateColorProviders(color_map);
+        }
+      },
+      color_map));
+
   observers_.NotifyObservers(&WebContentsObserver::OnColorProviderChanged);
 
   // Web preferences may change in response to events such as

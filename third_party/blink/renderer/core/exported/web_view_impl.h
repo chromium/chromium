@@ -90,6 +90,7 @@ class WebViewHelper;
 }
 
 class BrowserControls;
+struct ColorProviderColorMaps;
 class DevToolsEmulator;
 class Frame;
 class FullscreenController;
@@ -221,6 +222,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetDeviceColorSpaceForTesting(
       const gfx::ColorSpace& color_space) override;
   void PaintContent(cc::PaintCanvas*, const gfx::Rect&) override;
+  void SetColorProviders(
+      const ColorProviderColorMaps& color_provider_colors) override;
   void RegisterRendererPreferenceWatcher(
       CrossVariantMojoRemote<mojom::RendererPreferenceWatcherInterfaceBase>
           watcher) override;
@@ -322,6 +325,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const BrowsingContextGroupInfo& browsing_context_group_info) override;
   void SetPageAttributionSupport(
       network::mojom::AttributionSupport support) override;
+  void UpdateColorProviders(
+      const ColorProviderColorMaps& color_provider_colors) override;
 
   void DispatchPersistedPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);

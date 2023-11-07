@@ -250,6 +250,7 @@ source_set("common") {
     "origin_trials/trial_token_validator.cc",
     "page/browsing_context_group_info.cc",
     "page/browsing_context_group_info_mojom_traits.cc",
+    "page/color_provider_color_maps_mojom_traits.cc",
     "page/content_to_visible_time_reporter.cc",
     "page/drag_mojom_traits.cc",
     "page/drag_operation.cc",

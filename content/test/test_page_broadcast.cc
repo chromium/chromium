@@ -16,6 +16,10 @@ TestPageBroadcast::TestPageBroadcast(
 
 TestPageBroadcast::~TestPageBroadcast() = default;
 
+void TestPageBroadcast::FlushForTesting() {
+  receiver_.FlushForTesting();
+}
+
 // The user should add functionality as needed.
 
 void TestPageBroadcast::SetPageLifecycleState(
@@ -62,5 +66,8 @@ void TestPageBroadcast::UpdatePageBrowsingContextGroup(
 
 void TestPageBroadcast::SetPageAttributionSupport(
     network::mojom::AttributionSupport support) {}
+
+void TestPageBroadcast::UpdateColorProviders(
+    const blink::ColorProviderColorMaps& color_provider_colors) {}
 
 }  // namespace content

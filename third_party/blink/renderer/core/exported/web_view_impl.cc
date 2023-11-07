@@ -49,6 +49,7 @@
 #include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
+#include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
@@ -3266,6 +3267,11 @@ void WebViewImpl::SetPageBaseBackgroundColor(absl::optional<SkColor> color) {
   UpdateBaseBackgroundColor();
 }
 
+void WebViewImpl::UpdateColorProviders(
+    const ColorProviderColorMaps& color_provider_colors) {
+  page_->UpdateColorProviders(color_provider_colors);
+}
+
 void WebViewImpl::SetBaseBackgroundColorOverrideTransparent(
     bool override_to_transparent) {
   DCHECK(does_composite_);
@@ -3955,6 +3961,11 @@ void WebViewImpl::StopDeferringMainFrameUpdate() {
 void WebViewImpl::SetDeviceColorSpaceForTesting(
     const gfx::ColorSpace& color_space) {
   web_widget_->SetDeviceColorSpaceForTesting(color_space);
+}
+
+void WebViewImpl::SetColorProviders(
+    const ColorProviderColorMaps& color_provider_colors) {
+  UpdateColorProviders(color_provider_colors);
 }
 
 const SessionStorageNamespaceId& WebViewImpl::GetSessionStorageNamespaceId() {

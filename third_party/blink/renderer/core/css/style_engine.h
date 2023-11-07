@@ -69,7 +69,7 @@
 
 namespace WTF {
 class TextPosition;
-}
+}  // namespace WTF
 
 namespace blink {
 

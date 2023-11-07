@@ -24,6 +24,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
@@ -92,6 +93,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_utils.h"
 
 namespace blink {
 
@@ -457,6 +460,25 @@ void Page::ColorSchemeChanged() {
 void Page::ColorProvidersChanged() {
   for (Page* page : AllPages())
     page->InvalidatePaint();
+}
+
+void Page::UpdateColorProviders(
+    const ColorProviderColorMaps& color_provider_colors) {
+  if (color_provider_colors.IsEmpty()) {
+    return;
+  }
+
+  // TODO(samomekarajr): Might want to only create new ColorProviders if the
+  // renderer color maps do not match the existing ColorProviders.
+  light_color_provider_ = std::make_unique<ui::ColorProvider>(
+      ui::CreateColorProviderFromRendererColorMap(
+          color_provider_colors.light_colors_map));
+  dark_color_provider_ = std::make_unique<ui::ColorProvider>(
+      ui::CreateColorProviderFromRendererColorMap(
+          color_provider_colors.dark_colors_map));
+  forced_colors_color_provider_ = std::make_unique<ui::ColorProvider>(
+      ui::CreateColorProviderFromRendererColorMap(
+          color_provider_colors.forced_colors_map));
 }
 
 void Page::InitialStyleChanged() {

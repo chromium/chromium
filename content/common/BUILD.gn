@@ -253,6 +253,7 @@ source_set("common") {
     "//ui/base",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime",
+    "//ui/color",
     "//ui/display",
     "//ui/events/blink",
     "//ui/gfx",

@@ -1799,6 +1799,7 @@ test("content_browsertests") {
     "//ui/base/ime",
     "//ui/base/ime/init",
     "//ui/base/ime/mojom",
+    "//ui/color:mixers",
     "//ui/compositor",
     "//ui/display",
     "//ui/display:test_support",

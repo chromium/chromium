@@ -282,6 +282,7 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
   web_view->SetRendererPreferences(params->renderer_preferences);
   web_view->SetWebPreferences(params->web_preferences);
   web_view->SetPageAttributionSupport(params->attribution_support);
+  web_view->SetColorProviders(params->color_provider_colors);
 
   if (!local_main_frame) {
     // Create a remote main frame.

@@ -894,6 +894,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                             WindowOpenDisposition disposition) override;
   void SetOwnerLocationForDebug(
       absl::optional<base::Location> owner_location) override;
+  blink::ColorProviderColorMaps GetColorProviderColorMaps() const override;
 
   network::mojom::AttributionSupport GetAttributionSupport() override;
   void UpdateAttributionSupportRenderer() override;

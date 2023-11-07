@@ -518,6 +518,16 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.ColorProviderColorMaps"
+          cpp = "::blink::ColorProviderColorMaps"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/page/color_provider_color_maps_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/color" ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.Impression"
           cpp = "::blink::Impression"
         },
@@ -1330,6 +1340,7 @@ mojom("mojom_core") {
     "//third_party/blink/public/mojom/storage_key",
     "//ui/base/dragdrop/mojom",
     "//ui/base/mojom",
+    "//ui/color:mojom",
     "//ui/display/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
