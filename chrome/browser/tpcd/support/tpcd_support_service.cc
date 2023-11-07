@@ -56,7 +56,7 @@ void TpcdSupportService::Update3pcdSupportSettings(
       HostContentSettingsMapFactory::GetForProfile(browser_context_);
   CHECK(settings_map);
 
-  const GURL request_site_as_url = net::SchemefulSite(request_origin).GetURL();
+  const GURL request_site_as_url = request_origin.GetURL();
   const GURL partition_site_as_url = GURL(partition_site);
 
   // Check for an existing `TPCD_SUPPORT` setting that allows the pair.
