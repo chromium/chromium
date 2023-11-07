@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Web lokacija koju posjetite može ugraditi sadržaj s drugih web lokacija, naprimjer slike, oglase i tekst. Kolačići koje postavljaju ove druge web lokacije se nazivaju kolačićima treće strane.</translation>
 <translation id="2434158240863470628">Preuzimanje je završeno <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Privremeno ste dopustili ovoj web-lokaciji upotrebu kolačića trećih strana, što znači da će biti manje zaštite pregledavanja, ali će značajke web-lokacije vjerojatnije funkcionirati u skladu s očekivanjima. <ph name="BEGIN_LINK" />Pošaljite svoje dojmove<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Funkcije na nekim web lokacijama možda neće funkcionirati u anonimnom načinu rada</translation>
 <translation id="2442870161001914531">Uvijek zatraži verziju web lokacije za računar</translation>
 <translation id="2469312991797799607">Ova radnja će izbrisati sve podatke i kolačiće za domenu <ph name="ORIGIN" /> i sve njene web lokacije</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Web lokacije moraju tražiti dozvolu za reprodukciju zaštićenog sadržaja</translation>
 <translation id="2932883381142163287">Prijavite zloupotrebu</translation>
 <translation id="2968755619301702150">Preglednik certifikata</translation>
+<translation id="2979365474350987274">Kolačići trećih strana su ograničeni</translation>
 <translation id="3008272652534848354">Poništi odobrenja</translation>
 <translation id="301521992641321250">Automatski blokirano</translation>
 <translation id="3069226013421428034">Dozvolite prijavu trećih stana za određenu web lokaciju.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Izbriši i poništi</translation>
 <translation id="4645575059429386691">Upravlja roditelj</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
+<translation id="4673958474310291465">Pokušajte privremeno dopustiti kolačiće trećih strana, što znači da će biti manje zaštite, ali će značajke web-lokacije vjerojatnije funkcionirati prema očekivanjima</translation>
 <translation id="4751476147751820511">Senzori pokreta ili svjetla</translation>
 <translation id="4779083564647765204">Uvećaj</translation>
 <translation id="4811450222531576619">Saznajte o njenom izvoru i temi</translation>

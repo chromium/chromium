@@ -32,6 +32,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1142732900304639782">Non ofrecer a opción de traducir estes sitios</translation>
 <translation id="1145536944570833626">Elimina os datos existentes.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Usar contrasinal <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Cambiar o nome</translation>
 <translation id="1174479719160874822">Chrome solicitará abrir o sitio para móbiles cando a pantalla sexa estreita</translation>
 <translation id="1177863135347784049">Personalizada</translation>
@@ -125,7 +126,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1633659023549081553">Descubre novo contido na páxina de inicio de Chrome</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
-<translation id="1642309806724967937">En función da túa configuración, é posible que Chrome tamén envíe cookies e o teu URL actual</translation>
 <translation id="164269334534774161">Estás vendo unha copia sen conexión desta páxina creada o <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1657932388559784161">O panel inferior de estatísticas da páxina está pechado</translation>
@@ -149,6 +149,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1779766957982586368">Pechar ventá</translation>
 <translation id="1791662854739702043">Completouse a instalación</translation>
 <translation id="1792959175193046959">Cambia a localización de descarga predeterminada en calquera momento</translation>
+<translation id="1796666869097395659">Minimizar pestana para volver máis tarde</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1810845389119482123">Non se completou a configuración de sincronización inicial</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> non pode continuar usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="4738836084190194332">Última sincronización: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Recibirás suxestións melloradas na barra de enderezos</translation>
 <translation id="4742970037960872810">Deixar de salientar texto</translation>
-<translation id="4743664893327841597">O que escribas na barra de enderezos ou na caixa de busca enviarase ao teu buscador predeterminado</translation>
 <translation id="4749960740855309258">Abrir unha nova pestana</translation>
 <translation id="4750356170202299988">Contido para mentes novas</translation>
 <translation id="4758061975920522644">Compartir só imaxe</translation>
@@ -755,6 +755,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4925120120285606924">Captura de pantalla (<ph name="CURRENT_DATE_ISO" />)</translation>
 <translation id="49268022542405662">Os teus contrasinais exportaranse e descargaranse como ficheiro de texto. Poderá velos calquera persoa e calquera aplicación con acceso ao cartafol de destino.</translation>
 <translation id="4926901776383726965">Podes gardar imaxes e ficheiros para velos sen conexión ou compartilos noutras aplicacións</translation>
+<translation id="4928144016283278047">Protección contra sistemas de seguimento (cookies de terceiros, seguimento de IP, scripts invasivos e moito máis)</translation>
 <translation id="4932247056774066048">Dado que estás pechando sesión nunha conta xestionada por <ph name="DOMAIN_NAME" />, os teus datos de Chrome eliminaranse deste dispositivo. Permanecerá na túa Conta de Google.</translation>
 <translation id="4943703118917034429">Realidade virtual</translation>
 <translation id="4943872375798546930">Non hai resultados</translation>
@@ -1207,6 +1208,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="727288900855680735">Queres enviar <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Bloqueouse o sitio</translation>
 <translation id="7276100255011548441">Chrome elimina automaticamente os temas que leven máis de 4 semanas na lista. Algúns poderían aparecer outra vez na lista ao seguires navegando. Tamén podes bloquear os temas que non queiras que Chrome comparta cos sitios. Máis información sobre <ph name="BEGIN_LINK" />como xestionar a privacidade nos anuncios en Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">A medida que escribes, Chrome envía contido da barra de enderezos ou da caixa de busca ao teu buscador predeterminado</translation>
 <translation id="7286703216224610554">Compártese só a reacción</translation>
 <translation id="7289303553784750393">Se estás en liña, pero o problema persiste, podes probar outras maneiras de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Non está dispoñible a opción de cambiar o nome</translation>

@@ -32,6 +32,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="1142732900304639782">No proposis traduir aquests llocs web</translation>
 <translation id="1145536944570833626">Suprimeix les dades existents.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> s'obrirà a Chrome. En continuar, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Utilitza la contrasenya <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Canvia el nom</translation>
 <translation id="1174479719160874822">Chrome sol·licitarà el lloc web per a mòbils quan la pantalla sigui estreta</translation>
 <translation id="1177863135347784049">Personalitzat</translation>
@@ -125,7 +126,6 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Suprimeix 1 element seleccionat}other{Suprimeix # elements seleccionats}}</translation>
 <translation id="1633659023549081553">Descobreix contingut nou a la pàgina d'inici de Chrome</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
-<translation id="1642309806724967937">En funció de la teva configuració, Chrome també pot enviar galetes i el teu URL actual</translation>
 <translation id="164269334534774161">Es mostra una còpia sense connexió d'aquesta pàgina creada el dia <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1657932388559784161">El full inferior d'estadístiques de la pàgina està tancat</translation>
@@ -149,6 +149,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="1779766957982586368">Tanca la finestra</translation>
 <translation id="1791662854739702043">Instal·lat</translation>
 <translation id="1792959175193046959">Canvia la ubicació predeterminada de baixada en qualsevol moment</translation>
+<translation id="1796666869097395659">Minimitza la pestanya per tornar-hi més endavant</translation>
 <translation id="1807246157184219062">Clar</translation>
 <translation id="1810845389119482123">La configuració de la sincronització inicial no ha finalitzat</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no pot continuar utilitzant <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="4738836084190194332">Última sincronització: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Obtindrás suggeriments millorats a la barra d'adreces</translation>
 <translation id="4742970037960872810">Suprimeix les marques</translation>
-<translation id="4743664893327841597">El que escrius a la barra d'adreces o al quadre de cerca s'envia al motor de cerca predeterminat</translation>
 <translation id="4749960740855309258">Obre una pestanya nova</translation>
 <translation id="4750356170202299988">Contingut per a les ments més joves</translation>
 <translation id="4758061975920522644">Comparteix només la imatge</translation>
@@ -737,6 +737,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4864369630010738180">S'està iniciant la sessió...</translation>
 <translation id="4866368707455379617">No es pot instal·lar <ph name="MODULE" /> per a Chrome</translation>
 <translation id="4871568871368204250">Desactiva la sincronització</translation>
+<translation id="4874961007154620743">Encara que aquesta opció estigui desactivada, continuaràs veient els suggeriments que Chrome proporciona localment</translation>
 <translation id="4875775213178255010">Suggeriments de contingut</translation>
 <translation id="4877678010818027629">Entra al mode d'incògnit</translation>
 <translation id="4878404682131129617">S'ha produït un error en establir un túnel mitjançant el servidor intermediari</translation>
@@ -755,6 +756,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4925120120285606924">Captura de pantalla del dia <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Les teves contrasenyes s'exportaran i es baixaran com a fitxer de text. Qualsevol persona o aplicació que tingui accés a la carpeta de destinació podrà veure també les teves contrasenyes.</translation>
 <translation id="4926901776383726965">Pots desar imatges i fitxers per veure'ls sense connexió o per compartir-los en altres aplicacions</translation>
+<translation id="4928144016283278047">Protecció contra els sistemes de seguiment (galetes de tercers, seguiment d'IP, scripts invasius i més)</translation>
 <translation id="4932247056774066048">Com que estàs tancant la sessió d'un compte gestionat per <ph name="DOMAIN_NAME" />, les teves dades de Chrome se suprimiran d'aquest dispositiu. Tanmateix, es conservaran al teu Compte de Google.</translation>
 <translation id="4943703118917034429">Realitat virtual</translation>
 <translation id="4943872375798546930">No hi ha cap resultat</translation>
@@ -1207,6 +1209,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="727288900855680735">Vols enviar <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Lloc bloquejat</translation>
 <translation id="7276100255011548441">Chrome suprimeix automàticament els temes que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que reaparegui un tema a la llista. També pots bloquejar els temes que no vulguis que Chrome comparteixi amb els llocs web. Obtén més informació sobre com pots <ph name="BEGIN_LINK" />gestionar la privadesa d'anuncis a Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">A mesura que escrius, Chrome envia el contingut de la barra d'adreces o del quadre de cerca al teu motor de cerca predeterminat</translation>
 <translation id="7286703216224610554">Comparteix només la reacció</translation>
 <translation id="7289303553784750393">Si tens connexió però el problema persisteix, pots provar altres maneres de continuar a <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">No es pot canviar el nom</translation>
@@ -1554,6 +1557,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> està a punt</translation>
 <translation id="8937772741022875483">Vols suprimir l'activitat de Chrome a Benestar digital?</translation>
+<translation id="893938492099608175">En funció de la configuració que tinguis, Chrome també pot enviar galetes, el teu URL actual i la teva ubicació</translation>
 <translation id="8942627711005830162">Obre en una altra finestra</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: no s'ha pogut baixar aquest idioma. Torna-ho a provar més tard.</translation>
 <translation id="8955719471735800169">Torna a dalt</translation>

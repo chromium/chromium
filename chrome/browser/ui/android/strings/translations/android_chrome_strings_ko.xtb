@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">이 사이트 번역 옵션 제공 안 함</translation>
 <translation id="1145536944570833626">기존 데이터 삭제</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
+<translation id="115483310321669804">비밀번호(<ph name="PASSWORD" />) 사용</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
 <translation id="1174479719160874822">화면이 좁을 때 Chrome에서 모바일 사이트를 요청합니다</translation>
 <translation id="1177863135347784049">맞춤설정</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{선택한 1개 항목 삭제}other{선택한 #개 항목 삭제}}</translation>
 <translation id="1633659023549081553">Chrome 홈페이지에서 새로운 콘텐츠를 발견하세요.</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
-<translation id="1642309806724967937">설정에 따라 Chrome에서 쿠키 및 현재 URL을 전송할 수도 있습니다.</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" />에 작성된 이 페이지의 오프라인 사본을 보는 중입니다.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1657932388559784161">페이지 통계 하단 시트가 닫힘</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">창 닫기</translation>
 <translation id="1791662854739702043">설치됨</translation>
 <translation id="1792959175193046959">언제든지 기본 다운로드 위치 변경 가능</translation>
+<translation id="1796666869097395659">나중에 다시 보려면 탭 최소화</translation>
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1810845389119482123">초기 동기화 설정이 완료되지 않음</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 계속 사용할 수 없음</translation>
@@ -703,7 +704,6 @@
 <translation id="4738836084190194332">마지막 동기화 시간: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">주소 표시줄에 더 개선된 추천 항목이 표시됩니다.</translation>
 <translation id="4742970037960872810">강조표시 삭제</translation>
-<translation id="4743664893327841597">주소 표시줄이나 검색창에 입력하는 내용은 기본 검색엔진으로 전송됩니다.</translation>
 <translation id="4749960740855309258">새 탭 열기</translation>
 <translation id="4750356170202299988">어린이를 위한 콘텐츠</translation>
 <translation id="4758061975920522644">이미지만 공유</translation>
@@ -755,6 +755,7 @@
 <translation id="4925120120285606924">스크린샷 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">내보낸 비밀번호는 텍스트 파일로 다운로드됩니다. 비밀번호가 저장된 폴더에 대한 액세스 권한이 있는 모든 사용자와 앱에 표시됩니다.</translation>
 <translation id="4926901776383726965">이미지와 파일을 저장하여 오프라인으로 보거나 다른 앱에서 공유할 수 있습니다.</translation>
+<translation id="4928144016283278047">트래커(서드 파티 쿠키, IP 추적, 침습성 스크립트 등)로부터의 보호</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" />이(가) 관리하는 계정에서 로그아웃하면 Chrome 데이터가 이 기기에서 삭제됩니다. Google 계정에서는 데이터가 삭제되지 않습니다.</translation>
 <translation id="4943703118917034429">가상 현실</translation>
 <translation id="4943872375798546930">검색결과가 없습니다.</translation>
@@ -1207,6 +1208,7 @@
 <translation id="727288900855680735"><ph name="ORIGIN" />에 <ph name="ONE_TIME_CODE" /> 코드를 제출하시겠습니까?</translation>
 <translation id="7274013316676448362">차단된 사이트</translation>
 <translation id="7276100255011548441">Chrome은 4주 이상 된 주제를 자동 삭제합니다. 인터넷 사용에 따라 특정 주제가 목록에 다시 표시될 수 있습니다. 또는 사용자가 Chrome에서 사이트와 공유하지 않았으면 하는 주제를 차단할 수 있습니다. <ph name="BEGIN_LINK" />Chrome에서 광고 개인 정보 보호 관리<ph name="END_LINK" />에 대해 자세히 알아보세요.</translation>
+<translation id="7284878711178835966">사용자가 입력하면 Chrome은 주소 표시줄 또는 검색창의 내용을 사용자의 기본 검색엔진으로 전송합니다.</translation>
 <translation id="7286703216224610554">반응만 공유</translation>
 <translation id="7289303553784750393">온라인 상태인데도 이 문제가 계속 발생하는 경우 다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
 <translation id="7290209999329137901">이름 변경 불가</translation>

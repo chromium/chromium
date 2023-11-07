@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">آن</translation>
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />۔ تواریخ کے درمیان نیویگیٹ کرنے کے لیے تیر کے نشان والی کلیدوں کا استعمال کریں۔</translation>
+<translation id="141170878022560212">بیچ کا بٹن</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />، انسٹال کردہ ایپ</translation>
 <translation id="1414919006379339073">حالیہ ونڈو کو بند کریں</translation>
 <translation id="1415846719612499304">نیٹ ورک کی فہرست دکھائیں۔ <ph name="STATE_TEXT" />۔</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">ایموجی منتخب کنندہ کھولیں</translation>
 <translation id="2088116547584365419">گیمز</translation>
 <translation id="209965399369889474">نیٹ ورک سے منسلک نہیں ہے</translation>
+<translation id="2107581415810719320">دوسرا بٹن <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">‏آپ کی USB-C کیبل Thunderbolt کو سپورٹ نہیں کرتی ہے۔ آلے کی کارکردگی محدود ہو سکتی ہے۔</translation>
 <translation id="2108303511227308752">‏Alt + Backspace کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Delete کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + بیک اسپیس کو دبائیں۔</translation>
 <translation id="2126242104232412123">نیا ڈیسک</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">ترتیبات</translation>
 <translation id="3341303451326249809">اسکرین شاٹ کیپچر ہو گیا</translation>
 <translation id="334252345105450327">ایک اسکرین شاٹ لیں</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> کیلئے آلہ کا پاس ورڈ درج کریں</translation>
 <translation id="334927402682780278">کرسر سے لائن کے آخر تک ٹیکسٹ منتخب کریں</translation>
 <translation id="3349345708646875009">ٹاسک مینیجر کھولیں</translation>
 <translation id="3364721542077212959">اسٹائلس ٹولز</translation>
@@ -1588,6 +1591,7 @@
 <translation id="7489261257412536105">فُل اسکرین میں داخل ہوں یا اس سے باہر نکلیں</translation>
 <translation id="7490360161041035804">‏آپ اہم فائز کو پن کر سکتے ہیں، بشمول Google Drive فائلز۔ پن کرنے کے لیے، کسی آئٹم پر گھمائیں یا فائلز کھولیں اور کسی آئٹم پر دائیں کلک کریں۔</translation>
 <translation id="7497767806359279797">زبان اور کی بورڈ منتخب کریں</translation>
+<translation id="7507162824403726948">اپنی شناخت کی تصدیق مکمل کریں</translation>
 <translation id="7508690557411636492">پچھلے مہینے میں کھولا گیا</translation>
 <translation id="7509246181739783082">اپنی شناخت کی توثیق کریں</translation>
 <translation id="7512509370370076552">‏دائیں کلک کے شارٹ کٹ کو <ph name="LAUNCHER_KEY_NAME" /> کلید + کلک سے alt + کلک پر اپ ڈیٹ کیا جاتا ہے</translation>

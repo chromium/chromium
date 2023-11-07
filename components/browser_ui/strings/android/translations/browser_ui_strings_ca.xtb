@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{S'han permès <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}other{S'han permès <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}}</translation>
 <translation id="2410940059315936967">Els llocs web que visites poden inserir contingut d'altres llocs web, com ara imatges, anuncis i text. Les galetes establertes per aquests altres llocs web s'anomenen "galetes de tercers".</translation>
 <translation id="2434158240863470628">S'ha completat la baixada <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Has permès temporalment que aquest lloc web utilitzi galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista. <ph name="BEGIN_LINK" />Envia suggeriments<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">És possible que les funcions d'alguns llocs web no funcionin en mode d'incògnit</translation>
 <translation id="2442870161001914531">Sol·licita sempre el lloc web per a ordinadors</translation>
 <translation id="2469312991797799607">Aquesta acció suprimirà totes les dades i galetes de <ph name="ORIGIN" /> i de tots els llocs web que conté</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Pregunta abans de permetre que els llocs web reprodueixin contingut protegit</translation>
 <translation id="2932883381142163287">Informa d'un ús abusiu</translation>
 <translation id="2968755619301702150">Lector de certificats</translation>
+<translation id="2979365474350987274">Les galetes de tercers estan limitades</translation>
 <translation id="3008272652534848354">Restableix els permisos</translation>
 <translation id="301521992641321250">Bloquejada automàticament</translation>
 <translation id="3069226013421428034">Permet l'inici de sessió de tercers en un lloc web concret.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Suprimeix les dades i restableix els permisos</translation>
 <translation id="4645575059429386691">Gestionat pels pares</translation>
 <translation id="4670064810192446073">Realitat virtual</translation>
+<translation id="4673958474310291465">Prova de permetre temporalment les galetes de tercers. Això implica menys protecció, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
 <translation id="4751476147751820511">Sensors de moviment o de llum</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Més informació sobre la font i el tema</translation>

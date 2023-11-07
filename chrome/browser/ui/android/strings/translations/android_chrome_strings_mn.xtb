@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">Эдгээр сайтыг орчуулахыг бүү санал болго</translation>
 <translation id="1145536944570833626">Одоо байгаа өгөгдлийг устгана уу.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />-г Chrome-д нээнэ. Үргэлжлүүлснээр та <ph name="BEGIN_LINK1" />Google-н үйлчилгээний нөхцөл<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS-н үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> зөвшөөрч байна.</translation>
+<translation id="115483310321669804"><ph name="PASSWORD" /> нууц үгийг ашиглах</translation>
 <translation id="1173894706177603556">Нэр солих</translation>
 <translation id="1174479719160874822">Дэлгэц нарийн үед Chrome мобайл сайтын хүсэлт тавина</translation>
 <translation id="1177863135347784049">Хэвийн</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Сонгосон 1 зүйлийг устгах}other{Сонгосон # зүйлийг устгах}}</translation>
 <translation id="1633659023549081553">Chrome-н нүүр хуудаснаас шинэ контенттой танилцаарай</translation>
 <translation id="1641113438599504367">Аюулгүй хайлт</translation>
-<translation id="1642309806724967937">Таны тохиргооноос хамаарч Chrome мөн күүки болон таны одоогийн URL-г илгээж магадгүй</translation>
 <translation id="164269334534774161">Та энэ хуудасны офлайн хуулбарыг <ph name="CREATION_TIME" />-с харж байна</translation>
 <translation id="1644574205037202324">Түүх</translation>
 <translation id="1657932388559784161">Хуудасны статистикийн доод хүснэгтийг хаасан</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">Цонхыг хаах</translation>
 <translation id="1791662854739702043">Суулгасан</translation>
 <translation id="1792959175193046959">Таталтын өгөгдмөл байршлыг дурын үед өөрчлөх</translation>
+<translation id="1796666869097395659">Таб руу дараа буцаж очихын тулд үүнийг багасгана уу</translation>
 <translation id="1807246157184219062">Гэрэлтүүлэг</translation>
 <translation id="1810845389119482123">Синк хийх эхний тохируулга дуусаагүй байна</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-г үргэлжлүүлэн ашиглах боломжгүй</translation>
@@ -703,7 +704,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4738836084190194332">Хамгийн сүүлд синк хийсэн: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Та хаяг оруулах хэсэгт сайжруулсан зөвлөмжүүд авна</translation>
 <translation id="4742970037960872810">Тодруулгыг хасах</translation>
-<translation id="4743664893327841597">Таны хаяг оруулах хэсэг эсвэл хайх хэсэгт бичсэн зүйлийг өгөгдмөл хайлтын систем рүү тань илгээдэг</translation>
 <translation id="4749960740855309258">Шинэ таб нээх</translation>
 <translation id="4750356170202299988">Залуу сэтгэлгээнд зориулсан контент</translation>
 <translation id="4758061975920522644">Зөвхөн зураг хуваалцана уу</translation>
@@ -736,6 +736,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4864369630010738180">Нэвтэрч байна…</translation>
 <translation id="4866368707455379617"><ph name="MODULE" />-г Chrome-д суулгах боломжгүй байна</translation>
 <translation id="4871568871368204250">Синкийг унтраах</translation>
+<translation id="4874961007154620743">Унтраалттай үед та Chrome-н дотоодод олгодог зөвлөмжүүдийг харсан хэвээр байх болно</translation>
 <translation id="4875775213178255010">Агуулгын зөвлөмж</translation>
 <translation id="4877678010818027629">Нууцлалтай горимд нэвтрэх</translation>
 <translation id="4878404682131129617">Прокси серверээр туннель үүсгэж чадсангүй</translation>
@@ -754,6 +755,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4925120120285606924">Дэлгэцийн агшин <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Таны нууц үгийг текст файлаар экспорт хийж, татна. Татаж оруулах фолдер нь үүнд хандах эрхтэй хүн бүр болон дурын аппад харагдана.</translation>
 <translation id="4926901776383726965">Та офлайн үед харах эсвэл бусад аппад хуваалцах зураг болон файлуудыг хадгалах боломжтой</translation>
+<translation id="4928144016283278047">Хянагчдаас хамгаалах (гуравдагч талын күүки, IP хянах, түрэмгий скрипт болон бусад)</translation>
 <translation id="4932247056774066048">Та <ph name="DOMAIN_NAME" />-с удирдаж буй бүртгэлээс гарч байгаа тул таны Chrome-н өгөгдлийг энэ төхөөрөмжөөс устгана. Энэ нь таны Google бүртгэлд үлдэнэ.</translation>
 <translation id="4943703118917034429">Виртуал бодит байдал</translation>
 <translation id="4943872375798546930">Илэрц байхгүй байна</translation>
@@ -1206,6 +1208,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" />-г <ph name="ORIGIN" />-д илгээх үү?</translation>
 <translation id="7274013316676448362">Блоклосон сайт</translation>
 <translation id="7276100255011548441">Chrome нь 4 долоо хоногоос дээш удсан сэдвүүдийг автоматаар устгадаг. Таныг үргэлжлүүлэн үзэх явцад ямар нэг сэдэв жагсаалтад дахин гарч ирж магадгүй. Эсвэл та Chrome-г сайтуудтай хуваалцахыг хүсэхгүй байгаа сэдвүүдээ блоклож болно. <ph name="BEGIN_LINK" />Зарын нууцлалаа Chrome-д удирдах<ph name="END_LINK" /> талаар нэмэлт мэдээлэл авна уу.</translation>
+<translation id="7284878711178835966">Таныг бичихэд Chrome хаяг оруулах хэсэг эсвэл хайх хэсгийн контентыг таны өгөгдмөл хайлтын систем рүү илгээнэ</translation>
 <translation id="7286703216224610554">Зөвхөн хариу үйлдэл хуваалцана уу</translation>
 <translation id="7289303553784750393">Хэрэв та онлайн байгаа хэдий ч энэ асуудал тохиолдсоор байвал <ph name="SITE_ETLD_PLUS_ONE" />-д үргэлжлүүлэх бусад аргыг турших боломжтой.</translation>
 <translation id="7290209999329137901">Нэр өөрчлөх боломжгүй байна</translation>
@@ -1553,6 +1556,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> бэлэн байна</translation>
 <translation id="8937772741022875483">Chrome-н үйл ажиллагаагаа Дижитал хэрэглээнээс устгах уу?</translation>
+<translation id="893938492099608175">Таны тохиргооноос хамаарч Chrome мөн күүки, таны одоогийн URL болон байршлыг тань илгээж магадгүй</translation>
 <translation id="8942627711005830162">Өөр цонхонд нээх</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Энэ хэлийг татаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="8955719471735800169">Дээшээ очих</translation>

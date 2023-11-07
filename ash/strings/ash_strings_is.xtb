@@ -116,6 +116,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1391102559483454063">Kveikt</translation>
 <translation id="1407069428457324124">Dökkt þema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Notaðu örvalyklana til að fletta á milli daga.</translation>
+<translation id="141170878022560212">Miðhnappur</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, uppsett forrit</translation>
 <translation id="1414919006379339073">Loka núverandi glugga</translation>
 <translation id="1415846719612499304">Sýna lista yfir netkerfi. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2086334242442703436">Opna emoji-val</translation>
 <translation id="2088116547584365419">leikjum</translation>
 <translation id="209965399369889474">Engin nettenging</translation>
+<translation id="2107581415810719320">Annar hnappur <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-snúran styður ekki Thunderbolt. Afköst tækisins kunna að vera takmörkuð.</translation>
 <translation id="2108303511227308752">Flýtilyklinum „Alt + bakklykill“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + bakklykilinn til að nota Delete-lykilinn.</translation>
 <translation id="2126242104232412123">Nýtt svæði</translation>
@@ -563,6 +565,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3340978935015468852">stillingar</translation>
 <translation id="3341303451326249809">Skjámynd var tekin</translation>
 <translation id="334252345105450327">Taka skjámynd</translation>
+<translation id="3346728094401457853">Sláðu inn aðgangsorð tækis fyrir <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Velja texta frá bendli að enda línu</translation>
 <translation id="3349345708646875009">Opna verkstjórn</translation>
 <translation id="3364721542077212959">Pennaverkfæri</translation>
@@ -1589,6 +1592,7 @@ Ný uppsetning</translation>
 <translation id="7489261257412536105">Opna eða loka öllum skjánum</translation>
 <translation id="7490360161041035804">Þú getur fest mikilvægar skrár, þ.m.t. skrár á Google Drive. Til að festa skaltu halda bendlinum yfir atriði eða opna Files og hægrismella á atriði.</translation>
 <translation id="7497767806359279797">Velja tungumál og lyklaborð</translation>
+<translation id="7507162824403726948">Ljúktu við að staðfesta auðkenni þitt</translation>
 <translation id="7508690557411636492">Opnað í liðnum mánuði</translation>
 <translation id="7509246181739783082">Staðfestu hver þú ert</translation>
 <translation id="7512509370370076552">Hægrismellsflýtileiðin var uppfærð í <ph name="LAUNCHER_KEY_NAME" />-lykill + smella úr Alt + smella</translation>

@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}one{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">‏לאתרים שמבקרים בהם יש אפשרות להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. קובצי cookie שהוגדרו על ידי האתרים האלה נקראים 'קובצי cookie של צד שלישי'.</translation>
 <translation id="2434158240863470628">ההורדה הושלמה <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">‏אישרת לאתר הזה להשתמש בקובצי Cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו בלי בעיות. <ph name="BEGIN_LINK" />שליחת משוב<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">יכול להיות שתכונות באתרים מסוימים לא יפעלו במצב פרטי</translation>
 <translation id="2442870161001914531">תמיד תוצג בקשה לגרסת האתר למחשב</translation>
 <translation id="2469312991797799607">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie של <ph name="ORIGIN" /> ושל כל אתרי המשנה שלו</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">הצגת שאלה לפני מתן הרשאה לאתרים להפעיל תוכן מוגן</translation>
 <translation id="2932883381142163287">דיווח על שימוש לרעה</translation>
 <translation id="2968755619301702150">מציג האישורים</translation>
+<translation id="2979365474350987274">‏יש הגבלה על קובצי Cookie של צד שלישי</translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
 <translation id="3069226013421428034">אישור הכניסה של צד שלישי לאתר ספציפי.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">מחיקה ואיפוס</translation>
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
 <translation id="4670064810192446073">מציאות מדומה</translation>
+<translation id="4673958474310291465">‏אפשר להפעיל קובצי Cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו בלי בעיות</translation>
 <translation id="4751476147751820511">חיישני תנועה או אור</translation>
 <translation id="4779083564647765204">מרחק מתצוגה</translation>
 <translation id="4811450222531576619">מידע על המקור והנושא שלו</translation>

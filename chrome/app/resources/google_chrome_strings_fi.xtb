@@ -25,6 +25,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen.}=1{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Incognito-ikkunaasi ei avata uudelleen.}other{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary -sovellukset</translation>
 <translation id="1492280395845991349">Viimeistele Chrome-päivitys käynnistämällä se uudelleen</translation>
+<translation id="1497802159252041924">Asennusvirhe: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Muokkaa uusi Chrome-profiili näköiseksesi</translation>
 <translation id="1516530951338665275">Google Chrome tarvitsee Bluetoothia jatkaakseen
  laiteparin muodostusta. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -87,6 +88,7 @@
 <translation id="2467438592969358367">Google Chrome yrittää viedä salasanojasi tiedostoon. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="2472092250898121027">Tämä laajennus sisältää haittaohjelmia, ja se ei ole turvallinen. Poista se Chromesta, jotta se ei enää voi nähdä tai muuttaa dataasi sivustoilla, joilla vierailet, mukaan lukien henkilökohtaisia tietojasi.</translation>
 <translation id="2485422356828889247">Poista</translation>
+<translation id="2534365042754120737">Datasi suojaamiseksi salli Chromen poistaa luvat sivustoilta, joilla et ole käynyt viime aikoina. Tämä ei estä ilmoituksia.</translation>
 <translation id="2534507159460261402">Google Pay (kopioitu Chromeen)</translation>
 <translation id="2556847002339236023">Kun Chrome on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi sulkee sen. Selausdata on poistettu. Data voi sisältää historian, automaattisen täytön ja lataukset.</translation>
 <translation id="2559253115192232574">Sivustot, joilla käyt, voivat myöhemmin pyytää Chromelta tietoa kiinnostuksen kohteistasi ja personoida näkemiäsi mainoksia. Chrome voi jakaa enintään kolme kiinnostuksen kohdetta.</translation>
@@ -257,13 +259,16 @@
 <translation id="5334487786912937552">Chrome tarvitsee tallennustilan pääsyoikeudet tiedostojen lataamiseen</translation>
 <translation id="5337648990166757586">Valinnainen: Auta parantamaan Chrome-käyttöjärjestelmän ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti.</translation>
 <translation id="5357889879764279201">Apua ChromeOS Flexin kanssa</translation>
+<translation id="5386118856456530849">Siirry Chrome-version asetuksiin</translation>
 <translation id="5386244825306882791">Määrittää myös Chromen ja omnibox-hakujen aloitussivun.</translation>
 <translation id="5394833366792865639">Jaa Chrome-välilehti</translation>
 <translation id="5412485296464121825">Sivustot voivat tallentaa Chromeen tietoja kiinnostuksen kohteistasi. Jos esimerkiksi käyt sivustolla, koska haluat ostaa kengät maratonia varten, sivusto voi määritellä maratonjuoksun sinua kiinnostavaksi aiheeksi. Jos myöhemmin käyt toisella sivustolla, jolla ilmoittaudut juoksukilpailuun, kyseinen sivusto voi näyttää sinulle mainoksen juoksukengistä kiinnostuksen kohteidesi perusteella.</translation>
 <translation id="5430073640787465221">Asetustiedostosi on virheellinen. Google Chrome ei voi palauttaa asetuksiasi.</translation>
+<translation id="5468572406162360320">Chrome lähettää toimintasi Googlelle näiden ominaisuuksien parantamiseksi. Tarkastajat voivat lukea, käsitellä ja tehdä merkintöjä dataan.</translation>
 <translation id="5524761631371622910">Jos Chrome on sijoittanut sinut aktiiviseen kokeiluun satunnaisesti, selaushistoriasi vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiin kokeilujen aikana. Yksityisyytesi suojaamiseksi Chrome poistaa kiinnostuksen kohteesi kuukausittain.</translation>
 <translation id="5530733413481476019">Chromen nopeuttaminen</translation>
 <translation id="5566025111015594046">Google Chrome (saapuva mDNS)</translation>
+<translation id="5572786658631721382">Jos tämä on pois päältä, näet edelleen Chromen paikallisesti tarjoamia ehdotuksia</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> voi olla vaarallinen, joten Chrome on estänyt sen.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Ylläpitäjä pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön.}=1{Ylläpitäjä pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Incognito-ikkunaasi ei avata uudelleen.}other{Ylläpitäjä pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="5686916850681061684">Yksilöi ja ylläpidä Google Chromea. Toimenpiteitä vaaditaan. Katso lisätiedot klikkaamalla.</translation>
@@ -357,6 +362,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7177959540995930968">Voit lukea lisää näistä ominaisuuksista Chromen asetuksista.</translation>
 <translation id="7193885263065350793">Kun Chrome on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi sulkee sen.</translation>
 <translation id="7242029209006116544">Olet kirjautumassa sisään hallinnoidulla tilillä ja antamassa tilin järjestelmänvalvojalle oikeuden hallita Google Chrome -profiiliasi. Chrome-tietosi, kuten sovelluksesi, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi, yhdistetään pysyvästi käyttäjätiliin <ph name="USER_NAME" />. Voit poistaa nämä tiedot Google-tilien Hallintapaneelissa, mutta et voi liittää tietoja toiseen tiliin. Voit myös halutessasi luoda uuden profiilin, jos haluat pitää aiemmat Chrome-tietosi erillään. <ph name="LEARN_MORE" /></translation>
+<translation id="7284878711178835966">Chrome lähettää kirjoittaessasi osoitepalkin tai hakukentän sisällön oletushakukoneellesi</translation>
 <translation id="7295052994004373688">Google Chrome ‑käyttöliittymä näytetään tällä kielellä</translation>
 <translation id="7296210096911315575">Tärkeää käyttö- ja turvallisuustietoa</translation>
 <translation id="7308322188646931570">Chrome tarvitsee tallennustilan käyttöoikeuden tiedostojen lataamiseen.</translation>

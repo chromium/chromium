@@ -116,6 +116,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1391102559483454063">Umewashwa</translation>
 <translation id="1407069428457324124">Mandhari meusi</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Tumia vitufe vya vishale ili usogeze kuangalia tarehe mbalimbali.</translation>
+<translation id="141170878022560212">Kitufe cha Kati</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Programu Iliyosakinishwa</translation>
 <translation id="1414919006379339073">Funga dirisha la sasa</translation>
 <translation id="1415846719612499304">Onyesha orodha ya mitandao. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2086334242442703436">Fungua Kiteua Emoji</translation>
 <translation id="2088116547584365419">michezo</translation>
 <translation id="209965399369889474">Haijaunganishwa kwenye mtandao</translation>
+<translation id="2107581415810719320">Kitufe Kingine <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kebo yako ya USB-C haioani na Thunderbolt. Huenda utendaji kazi wa kifaa usiwe mzuri.</translation>
 <translation id="2108303511227308752">Mikato ya kibodi ya Alt + Backspace imebadilika. Ili utumie kitufe cha Kufuta, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na kitufe cha backspace.</translation>
 <translation id="2126242104232412123">Sehemu mpya ya kufanyia kazi</translation>
@@ -563,6 +565,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3340978935015468852">mipangilio</translation>
 <translation id="3341303451326249809">Picha ya skrini imepigwa</translation>
 <translation id="334252345105450327">Piga picha ya skrini</translation>
+<translation id="3346728094401457853">Weka nenosiri la kifaa katika <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Tafuta maandishi kuanzia kwenye kiteuzi hadi mwisho wa mstari</translation>
 <translation id="3349345708646875009">Fungua kidhibiti cha shughuli kwenye Chrome</translation>
 <translation id="3364721542077212959">Zana za stylus</translation>
@@ -1589,6 +1592,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7489261257412536105">Weka au funga skrini nzima</translation>
 <translation id="7490360161041035804">Unaweza kubandika faili muhimu, ikiwa ni pamoja na faili za Hifadhi ya Google. Ili ubandike, elea juu ya kipengee au fungua Faili na ubofye kulia kwenye kipengee.</translation>
 <translation id="7497767806359279797">Chagua lugha na kibodi</translation>
+<translation id="7507162824403726948">Kumaliza kuthibitisha utambulisho wako</translation>
 <translation id="7508690557411636492">Ilifunguliwa mwezi uliopita</translation>
 <translation id="7509246181739783082">Thibitisha utambulisho wako</translation>
 <translation id="7512509370370076552">Njia ya mkato ya bofya kulia imesasishwa na kuwa kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na click kutoka alt pamoja na click</translation>

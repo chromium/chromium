@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">እነዚህን ጣቢያዎች ለትርጉም አታቅርብ</translation>
 <translation id="1145536944570833626">ነባሩን ውሂብ ይሰርዙ።</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> በChrome ውስጥ ይከፈታል። በመቀጠልዎ በ<ph name="BEGIN_LINK1" />Google አገልግሎት ውል<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የGoogle Chrome እና የChromeOS ተጨማሪ አገልግሎት ውል<ph name="END_LINK2" /> ይስማማሉ።</translation>
+<translation id="115483310321669804">የይለፍ ቃል <ph name="PASSWORD" /> ይጠቀሙ</translation>
 <translation id="1173894706177603556">ዳግም ሰይም</translation>
 <translation id="1174479719160874822">Chrome ማያ ገፁ በሚጠብበት ጊዜ የተንቀሳቃሽ ስልክ ጣቢያን ይጠይቃል</translation>
 <translation id="1177863135347784049">ብጁ</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 የተመረጠ ንጥልን አስወግድ}one{# የተመረጡ ንጥሎችን አስወግድ}other{# የተመረጡ ንጥሎችን አስወግድ}}</translation>
 <translation id="1633659023549081553">በChrome መነሻ ገፅ ላይ ያለውን አዲስ ይዘት ያግኙ</translation>
 <translation id="1641113438599504367">የጥንቃቄ አሰሳ</translation>
-<translation id="1642309806724967937">በቅንብሮችዎ ላይ በመመሥረት Chrome እንዲሁም ኩኪዎች እና የአሁን ዩአርኤልዎን ሊልክ ይችላል</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" /> ላይ የነበረ የዚህን ገፅ የመስመር ውጭ ቅጂ በመመልከት ላይ ነዎት</translation>
 <translation id="1644574205037202324">ታሪክ</translation>
 <translation id="1657932388559784161">የገጽ ግንዛቤዎች የግርጌ ሉህ ተዘግቷል</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">መስኮት ዝጋ</translation>
 <translation id="1791662854739702043">የተጫነ</translation>
 <translation id="1792959175193046959">በማንኛውም ጊዜ ነባሪውን የማውረጃ ቦታ ይቀይሩ</translation>
+<translation id="1796666869097395659">በኋላ ላይ ወደ እሱ ለመመለስ ትርን ያሳንሱ</translation>
 <translation id="1807246157184219062">ብርሃን</translation>
 <translation id="1810845389119482123">የመጀመሪያ የስምረት ማዋቀር አልተጠናቀቀም</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> መጠቀም መቀጠል አይችልም</translation>
@@ -703,7 +704,6 @@
 <translation id="4738836084190194332">የተመሳሰለበት የመጨረሻው ጊዜ፦ <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">በአድራሻ አሞሌው ውስጥ የተሻሻሉ የአስተያየትጥቆማዎችን ያገኛሉ</translation>
 <translation id="4742970037960872810">ማድመቂያውን አስወግድ</translation>
-<translation id="4743664893327841597">በአድራሻ አሞሌ ወይም በፍለጋ ሳጥን ውስጥ የሚተይቡት ነገር ወደ እርስዎ ነባሪ የፍለጋ ፕሮግራም ይላካል</translation>
 <translation id="4749960740855309258">አዲስ ትር ክፈት</translation>
 <translation id="4750356170202299988">ይዘት ለወጣት አእምሮዎች</translation>
 <translation id="4758061975920522644">ምስል ብቻ ያጋሩ</translation>
@@ -755,6 +755,7 @@
 <translation id="4925120120285606924">ቅጽበታዊ ገፅ ዕይታ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">የይለፍ ቃላትዎ ወደ ውጭ ይላካና እንደ የጽሑፍ ፋይል ይወርዳሉ። የመድረሻ አቃፊ መዳረሻ ላለው ማንኛውም ሰው እና ለማንኛውም መተግበሪያ ይታያሉ።</translation>
 <translation id="4926901776383726965">ከመስመር ውጭ ለመመልከት ወይም በሌሎች መተግበሪያዎች ውስጥ ለማጋራት ምስሎችን እና ፋይሎችን ማስቀመጥ ይችላሉ</translation>
+<translation id="4928144016283278047">ጥበቃ ከመከታተያዎች (ሦስተኛ ወገን ኩኪዎች፣ አይፒ መከታተያ፣ ዘልቆ ገብ ስክሪፕቶች እና ሌሎችም)</translation>
 <translation id="4932247056774066048">በ<ph name="DOMAIN_NAME" /> ከሚተዳደር መለያ ዘግተው እየወጡ ስለሆነ የChrome ውሂብዎ ከዚህ መሣሪያ ይሰረዛል። በGoogle መለያዎ ውስጥ እንዳለ ይቆያል።</translation>
 <translation id="4943703118917034429">ምናባዊ እውነታ</translation>
 <translation id="4943872375798546930">ውጤቶች የሉም</translation>
@@ -1207,6 +1208,7 @@
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> ወደ <ph name="ORIGIN" /> ይግባ?</translation>
 <translation id="7274013316676448362">የታገደ ጣቢያ</translation>
 <translation id="7276100255011548441">Chrome ከ4 ሳምንታት በላይ የቆዩ ርዕሶችን በራስ-ሰር ይሰርዛል። ማሰስዎን በሚቀጥሉበት ጊዜ፣ አንድ ርዕስ በዝርዝሩ ላይ እንደገና ሊታይ ይችላል። ወይም Chrome ከጣቢያዎች ጋር እንዲያጋራቸው የማይፈልጓቸውን ርዕሶች ማገድ ይችላሉ። <ph name="BEGIN_LINK" />የማስታወቂያ ግላዊነትዎን በChrome ውስጥ ስለማስተዳደር<ph name="END_LINK" /> የበለጠ ይወቁ።</translation>
+<translation id="7284878711178835966">ሲተይቡ Chrome የአድራሻ አሞሌው ወይም የፍለጋ ሳጥኑን ይዘት ወደ የእርስዎ ነባር የፍለጋ ፕሮግራም ይልካል</translation>
 <translation id="7286703216224610554">ምላሽ ብቻ ያጋሩ</translation>
 <translation id="7289303553784750393">በመስመር ላይ ከሆኑ ነገር ግን ይህ ችግር መከስቱን ከቀጠለ፣ በ<ph name="SITE_ETLD_PLUS_ONE" /> ላይ ለመቀጠል ሌሎች መንገዶችን መሞከር ይችላሉ።</translation>
 <translation id="7290209999329137901">ዳግም መሰየም የለም</translation>

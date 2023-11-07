@@ -4308,6 +4308,17 @@ Het instellen van <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> heeft alle
       Als dit beleid niet is ingesteld, wordt er niet gefilterd en wordt er rekening gehouden met alle printerservers.
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" />.</translation>
+<translation id="4667462525936265103">Met dit beleid bepaal je of gebruikers bestaande browsegegevens mogen overzetten naar een beheerd profiel dat is gemaakt nadat een beheerd account is ingelogd in het contentgedeelte.
+
+Als je dit beleid niet instelt of instelt op <ph name="USER_OPTIN_DATA_ENUM_NAME" /> (waarde 1), kan de gebruiker kiezen of bestaande browsegegevens moeten worden overgezet naar het beheerde profiel. Het selectievakje in het dialoogvenster voor profielen maken is standaard zichtbaar en uitgevinkt.
+
+Als je dit beleid instelt op <ph name="USER_OPTOUT_DATA_ENUM_NAME" /> (waarde 2), kan de gebruiker kiezen of bestaande browsegegevens worden overgezet naar het beheerde profiel. Het selectievakje in het dialoogvenster voor profielen maken is zichtbaar en standaard aangevinkt. Deze optie is alleen toegestaan op beheerde apparaten.
+
+Als je dit beleid instelt op <ph name="USER_ALWAYS_SEPARATE_DATA_ENUM_NAME" /> (waarde 3), kan de gebruiker geen bestaande browsegegevens overzetten naar het beheerde profiel. Het selectievakje in het dialoogvenster voor profielen maken is niet zichtbaar.
+
+Als de gebruiker bestaande browsegegevens toevoegt aan het beheerde profiel, wordt het huidige profiel een beheerd profiel. Er wordt geen nieuw profiel gemaakt.
+
+Als de gebruiker bestaande browsegegevens niet overzet naar het beheerde profiel, wordt er een helemaal nieuw profiel gemaakt. De bestaande browsegegevens blijven in een onbeheerd profiel staan dat via de profielkiezer nog steeds toegankelijk is voor de gebruiker.</translation>
 <translation id="4668325077104657568">Standaardinstelling voor afbeeldingen</translation>
 <translation id="4669083178278833688">Instellen welke functies moeten worden uitgezet in de camera, browserinstellingen, OS-instellingen, scannen, Web Store, canvas, Ontdekken, crosh, Galerij en Terminal</translation>
 <translation id="4669292863736266737">Tenzij het beleid <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> is ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, zorgt het instellen van <ph name="GLS_ENABLED" /> bij de eerste configuratie ervoor dat Google-locatieservices wordt aangezet. Locatieservices blijft uitstaan tijdens de configuratie als je het beleid instelt op <ph name="GLS_DISABLED" /> of niet instelt.
@@ -6945,6 +6956,7 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
 
       De volgende talen worden momenteel ondersteund: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Dubbelzijdig afdrukken over lange zijde aanzetten</translation>
+<translation id="6929639826067341257">Gebruikers een suggestie geven om hun bestaande gegevens in het beheerde profiel te gebruiken en gebruikers de keuze geven om dit niet te doen</translation>
 <translation id="6929746927224321095">Automatisch invullen uitzetten</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitzetten</translation>
 <translation id="6932282102911647185">Paarse achtergrondverlichting van toetsenbord</translation>

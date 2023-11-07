@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">مُفعَّلة</translation>
 <translation id="1407069428457324124">المظهر الداكن</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. يمكنك الانتقال بين التواريخ باستخدام مفاتيح الأسهم.</translation>
+<translation id="141170878022560212">الزر الأوسط</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />، تطبيق مثبّت</translation>
 <translation id="1414919006379339073">إغلاق النافذة الحالية</translation>
 <translation id="1415846719612499304">عرض قائمة الشبكات: <ph name="STATE_TEXT" /></translation>
@@ -283,6 +284,7 @@
 <translation id="2086334242442703436">فتح "أداة اختيار الرموز التعبيرية"</translation>
 <translation id="2088116547584365419">الألعاب</translation>
 <translation id="209965399369889474">لا يتوفّر اتصال بالشبكة</translation>
+<translation id="2107581415810719320">الزر الآخر "<ph name="BUTTON_NUMBER" />"</translation>
 <translation id="2107914222138020205">‏لا يتوافق الكابل المزوّد بمنفذ USB-C مع جهاز Thunderbolt. وقد يصبح أداء الجهاز محدودًا.</translation>
 <translation id="2108303511227308752">‏تم تغيير اختصارات لوحة المفاتيح "Alt + Backspace". لاستخدام مفتاح Delete، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + Backspace".</translation>
 <translation id="2126242104232412123">سطح مكتب جديد</translation>
@@ -564,6 +566,7 @@
 <translation id="3340978935015468852">الإعدادات</translation>
 <translation id="3341303451326249809">تم أخذ لقطة الشاشة.</translation>
 <translation id="334252345105450327">التقاط لقطة شاشة</translation>
+<translation id="3346728094401457853">‏أدخِل كلمة مرور الجهاز الخاصة بالحساب ‎<ph name="EMAIL" />.</translation>
 <translation id="334927402682780278">اختيار النص من موضع المؤشر إلى نهاية السطر</translation>
 <translation id="3349345708646875009">فتح "إدارة المهام"</translation>
 <translation id="3364721542077212959">أدوات قلم الشاشة</translation>
@@ -1592,6 +1595,7 @@
 <translation id="7489261257412536105">الدخول إلى وضع "ملء الشاشة" أو الخروج منه</translation>
 <translation id="7490360161041035804">‏يمكنك تثبيت الملفات المهمة، بما فيها ملفات Google Drive. للتثبيت، مرِّر مؤشر الماوس فوق أحد الملفات أو افتح تطبيق "الملفات" وانقر بزر الماوس الأيمن على أحد الملفات.</translation>
 <translation id="7497767806359279797">اختيار اللغة ولوحة المفاتيح</translation>
+<translation id="7507162824403726948">إكمال عملية إثبات هويتك</translation>
 <translation id="7508690557411636492">تم فتحه الشهر الماضي.</translation>
 <translation id="7509246181739783082">إثبات هويتك</translation>
 <translation id="7512509370370076552">‏تم تعديل اختصار النقر بزر الماوس الأيمن من "alt + النقر" إلى "مفتاح <ph name="LAUNCHER_KEY_NAME" /> + النقر".</translation>

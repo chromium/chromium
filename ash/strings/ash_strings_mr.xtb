@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">सुरू</translation>
 <translation id="1407069428457324124">गडद थीम</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. तारखांदरम्यान नेव्हिगेट करण्यासाठी अ‍ॅरो की वापरा.</translation>
+<translation id="141170878022560212">मधले बटण</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, इंस्टॉल केलेले अ‍ॅप</translation>
 <translation id="1414919006379339073">सध्याची विंडो बंद करा</translation>
 <translation id="1415846719612499304">नेटवर्क सूची दाखवा. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">इमोजी पिकर उघडा</translation>
 <translation id="2088116547584365419">गेम</translation>
 <translation id="209965399369889474">नेटवर्कशी कनेक्ट केलेले नाही</translation>
+<translation id="2107581415810719320">इतर बटण <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">तुमची USB-C केबल ही थंडरबोल्टला सपोर्ट करत नाही. डिव्हाइसचा परफॉर्मन्स मर्यादित असू शकतो.</translation>
 <translation id="2108303511227308752">Alt + बॅकस्पेस कीबोर्ड शॉर्टकट बदलला आहे. हटवा की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + बॅकस्पेस प्रेस करा.</translation>
 <translation id="2126242104232412123">नवीन डेस्क</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">सेटिंग्ज</translation>
 <translation id="3341303451326249809">स्क्रीनशॉट कॅप्चर केला</translation>
 <translation id="334252345105450327">स्क्रीनशॉट घ्या</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> साठी डिव्हाइस पासवर्ड एंटर करा</translation>
 <translation id="334927402682780278">कर्सरपासून ओळीच्या शेवटपर्यंत मजकूर निवडा</translation>
 <translation id="3349345708646875009">टास्क मॅनेजर उघडा</translation>
 <translation id="3364721542077212959">स्टायलस टूल</translation>
@@ -1589,6 +1592,7 @@
 <translation id="7489261257412536105">फुलस्क्रीनमध्ये एंटर करा किंवा बाहेर पाडा</translation>
 <translation id="7490360161041035804">तुम्ही Google Drive फाइलसह महत्त्वाच्या फाइल पिन करू शकता. पिन करण्यासाठी, आयटमवर कर्सर फिरवा किंवा Files उघडा आणि आयटमवर राइट-क्लिक करा.</translation>
 <translation id="7497767806359279797">भाषा आणि कीबोर्ड निवडा</translation>
+<translation id="7507162824403726948">तुमच्या ओळखीची पडताळणी करणे पूर्ण करा</translation>
 <translation id="7508690557411636492">मागील महिन्यात उघडलेली</translation>
 <translation id="7509246181739783082">तुमच्या ओळखीची पडताळणी करा</translation>
 <translation id="7512509370370076552">राइट-क्लिक शॉर्टकट alt + click वरून<ph name="LAUNCHER_KEY_NAME" /> की + क्लिकवर अपडेट केला आहे</translation>

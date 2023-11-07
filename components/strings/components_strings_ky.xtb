@@ -349,6 +349,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Сайттын башкы бетине кирип<ph name="END_LINK" /> көрүңүз.</translation>
 <translation id="1641976391427233992">Чыгаруу төмөнкү убакытка чейин кечиктирилсин:</translation>
 <translation id="164212631332220697"><ph name="CARD_DETAIL" /> картасы менен төлөңүз.</translation>
+<translation id="1643651787397909318">Chrome коопсуздук текшерүү баскычына иштетип, жөндөөлөрдөгү Chrome коопсуздук текшерүү барагына өтүңүз</translation>
 <translation id="1644574205037202324">Таржымал</translation>
 <translation id="1645368109819982629">Колдоого алынбаган протокол</translation>
 <translation id="1650602712345345441">Chrome параметрлерин башкаруу</translation>
@@ -2048,6 +2049,8 @@
 <translation id="5137761395480718572">Бул колдонмо Wi‑Fi эсептик дайындарын орнотууга уруксат сурап жатат. Тууралагандан кийин <ph name="DEVICE_TYPE" /> катышуучу Wi-Fi тармактарына автоматтык түрдө туташат. Бул эсептик дайындарды өчүрүү үчүн колдонмону чыгарып салыңыз. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Виртуалдык карта учурда жеткиликсиз, банк менен байланышыңыз</translation>
 <translation id="5138227688689900538">Азыраак көрсөтүү</translation>
+<translation id="5143309888746105072">Chromium сайттардын Интернеттеги аракеттериңизге көз салуу мүмкүнчүлүгүн берген үчүнчү тараптын cookie файлдарын колдонуу мүмкүнчүлүгүн бөгөттөйт.
+            <ph name="NEW_LINE" />Эгер сайттын функциялары иштебей жатса, <ph name="START_LINK" />үчүнчү тараптын cookie файлдарына убактылуу уруксат берип көрүңүз<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">Саясат жообунда ката коду бар</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> үчүн билдирмелер бөгөттөлдү</translation>
 <translation id="514704532284964975"><ph name="URL" /> телефонуңузда таптаган NFC түзмөктөрүндөгү маалыматты көрүп жана өзгөрткүсү келет</translation>
@@ -2394,6 +2397,7 @@
 <translation id="5873297634595728366">Дизель унаалары</translation>
 <translation id="5877831137320480913">Сулуулук жана фитнес</translation>
 <translation id="5879989559903563723">Конок режиминде тыюу салынат</translation>
+<translation id="5880050725127890683">Chrome коопсуздук текшерүүсүнө өтүңүз</translation>
 <translation id="5883861433316751031">MIDI түзмөктөрүн көзөмөлдөп, кайра программалайсызбы?</translation>
 <translation id="5884465125445718607">Конверт Кытайча #6</translation>
 <translation id="5887400589839399685">Карта сакталды</translation>
@@ -2575,6 +2579,7 @@
 <translation id="6251906504834538140">{0,plural, =1{Файлды жылдыруу бөгөттөлдү}other{<ph name="FILE_COUNT" /> файлды жылдыруу бөгөттөлдү}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'до жүктөлүп алынган файлдарды башкаруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="6254436959401408446">Бул баракчаны ачууга эстутум жетишсиз</translation>
+<translation id="625463612687472648">Төмөнкүнү колдонууга тыюу салуу:</translation>
 <translation id="6259156558325130047">Иреттештирүүнү &amp;кайталоо</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> кыстармалар</translation>
 <translation id="6264376385120300461">Баары бир жүктөп алуу</translation>
@@ -2750,6 +2755,8 @@
 <translation id="6596325263575161958">Шифрлөө параметрлери</translation>
 <translation id="6597665340361269064">90 градус</translation>
 <translation id="6599642189720630047">Көз салынган товарлар</translation>
+<translation id="6606309334576464871">Chrome сайттардын Интернеттеги аракеттериңизге көз салуу мүмкүнчүлүгүн берген үчүнчү тараптын cookie файлдарын колдонуу мүмкүнчүлүгүн бөгөттөйт.
+            <ph name="NEW_LINE" />Эгер сайттын функциялары иштебей жатса, <ph name="START_LINK" />үчүнчү тараптын cookie файлдарына убактылуу уруксат берип көрүңүз<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">Экономикалык жаңылыктар</translation>
 <translation id="6612010098632894193">Онлайн видео</translation>
 <translation id="6613866251791999074">Chrome'догу издөө каражаты жөнүндө кеңири маалымат</translation>
@@ -3424,6 +3431,7 @@
 <translation id="7888575728750733395">Басып чыгаруу аралыгы</translation>
 <translation id="7894280532028510793">Эгер туура жазылса, <ph name="BEGIN_LINK" />Тармактагы мүчүлүштүктөрдү аныктоону<ph name="END_LINK" /> иштетип көрүңүз.</translation>
 <translation id="7901831439558593470">Конверт 7 x 9 дюйм</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Жөндөөлөрдөгү Chrome коопсуздук текшерүү барагына өтүү үчүн Tab, анан Enter баскычын басыңыз</translation>
 <translation id="7916162853251942238">Флексо басып чыгаруу үчүн негиз</translation>
 <translation id="7927971017714848357">Жер жана участок</translation>
 <translation id="793209273132572360">Дарек жаңыртылсынбы?</translation>
@@ -3719,6 +3727,7 @@
 <translation id="8460854335417802511">Аны күйгүзүү</translation>
 <translation id="8461694314515752532">Шайкештирилген дайындарды өзүңүздүн шайкештирүүчү купуя сөз айкашыңыз менен шифрлеңиз</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 насыя карта}other{# насыя карта}}</translation>
+<translation id="8467494337615822642">Жөндөөлөрдөгү Chrome коопсуздук текшерүү барагына өтүү</translation>
 <translation id="8468358362970107653">Конверт C3</translation>
 <translation id="8473626140772740486">300 x 450 мм.</translation>
 <translation id="8473863474539038330">Даректер жана башкалар</translation>

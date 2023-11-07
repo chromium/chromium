@@ -173,6 +173,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="1876851015978093044">Dieses Element wird angezeigt</translation>
 <translation id="1882901927376062252">{count,plural, =1{Das Lesezeichen wurde in deinem Google-Konto ({email}) gespeichert}other{{count} Lesezeichen wurden in deinem Google-Konto ({email}) gespeichert}}</translation>
 <translation id="1883255238294161206">Liste ausblenden</translation>
+<translation id="1889872080060107187">Du meldest dich bei <ph name="URL" /> an</translation>
 <translation id="1890237935065108104">Diese Einstellung ist nicht verfügbar.</translation>
 <translation id="1894023287452300670">Hier den Preis beobachten</translation>
 <translation id="189531189292803889">Dein iPad wurde vor Kurzem wiederhergestellt. Möglicherweise hat sich dadurch dein Standardbrowser geändert.</translation>
@@ -520,6 +521,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="371230970611282515">Erkennt schädliche Ereignisse im Voraus und warnt dich, bevor diese eintreten.</translation>
 <translation id="371398631992790800">Lesezeichen ausblenden</translation>
 <translation id="37207012422556617">Trends bei Suchanfragen</translation>
+<translation id="3725081662140949903">Wenn du verhindern möchtest, dass andere Personen dein Passwort verwenden, öffne die <ph name="APP" /> App und ändere es</translation>
 <translation id="3740397331642243698">Öffnet die eingegebenen URLs in Google Chrome im Inkognitomodus.</translation>
 <translation id="374357899112510277">Downloads ausblenden</translation>
 <translation id="3745190878148784130">„Text zoomen“ ausblenden</translation>
@@ -636,6 +638,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4389019817280890563">Zum Ändern der Sprache hier tippen.</translation>
 <translation id="4405320213589929829">Du kannst Adressen auf Webseiten verwenden, um lokale Informationen und Wegbeschreibungen zu erhalten.</translation>
 <translation id="4420409367264901497">Lesezeichen bearbeiten</translation>
+<translation id="4431224949908513835">Wähle eine Zahlungsmethode für das automatische Ausfüllen aus.</translation>
 <translation id="4442550905108052454">Öffne die <ph name="BEGIN_BOLD" />Einstellungen<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Sprache hinzufügen</translation>
 <translation id="4461286950227634995">Speichern von Passwörtern anbieten</translation>
@@ -1189,6 +1192,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7221173315674413369">Entdecke unter „Neue Funktionen“ Tipps und neue Funktionen</translation>
 <translation id="7223102419539744003">Tab schließen</translation>
 <translation id="722454870747268814">Neuer Inkognitotab</translation>
+<translation id="7233006041370588369">Wähle ein Passwort für das automatische Ausfüllen aus.</translation>
 <translation id="7265758999917665941">Für diese Website niemals</translation>
 <translation id="7272437679830969316">Deine Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Neues Paket verfolgt}other{Neue Pakete verfolgt}}</translation>
@@ -1301,6 +1305,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="785938070103630874">Passwörter, Zahlungsmethoden oder Adresse aufrufen</translation>
 <translation id="7859704718976024901">Browserverlauf</translation>
 <translation id="7866501058614003444">Die Verfolgung dieses Pakets wurde erfolgreich aufgehoben.</translation>
+<translation id="7866993391592926595">Wenn du diese Karte ausblendest, wird die Paketverfolgung deaktiviert und alle deine Daten werden entfernt</translation>
 <translation id="7870750252270996949">Aus Lens kopiertes Bild</translation>
 <translation id="7879275349003161544">Downloads anzeigen</translation>
 <translation id="7883882164760409935">Du hast wiederverwendete Passwörter.</translation>

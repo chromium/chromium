@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">オン</translation>
 <translation id="1407069428457324124">ダークモード</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。矢印キーを使用して日付を変更します。</translation>
+<translation id="141170878022560212">中央ボタン</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />、インストール済みアプリ</translation>
 <translation id="1414919006379339073">現在のウィンドウを閉じる</translation>
 <translation id="1415846719612499304">ネットワーク リストを表示します。<ph name="STATE_TEXT" />。</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">絵文字選択ツールを開く</translation>
 <translation id="2088116547584365419">ゲーム</translation>
 <translation id="209965399369889474">ネットワークに接続されていません</translation>
+<translation id="2107581415810719320">他のボタン <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C ケーブルは Thunderbolt に対応していません。デバイスのパフォーマンスが制限される可能性があります。</translation>
 <translation id="2108303511227308752">キーボード ショートカット「Alt+Backspace」が変更されました。Delete キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+Backspace キーを押してください。</translation>
 <translation id="2126242104232412123">新しいデスク</translation>

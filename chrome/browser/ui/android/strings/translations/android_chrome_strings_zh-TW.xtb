@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">不要詢問是否要翻譯這些網站</translation>
 <translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1150263420752757504">「<ph name="APP_NAME" />」將在 Chrome 中開啟。選擇繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。</translation>
+<translation id="115483310321669804">使用密碼：<ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1174479719160874822">Chrome 會在螢幕較窄時要求使用行動版網站</translation>
 <translation id="1177863135347784049">自訂</translation>
@@ -126,7 +127,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個選取的項目}other{移除 # 個選取的項目}}</translation>
 <translation id="1633659023549081553">透過 Chrome 首頁探索新內容</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
-<translation id="1642309806724967937">視你的設定而定，Chrome 也可能會傳送 Cookie 和你目前的網址</translation>
 <translation id="164269334534774161">您目前瀏覽的是這個網頁的離線複本 (建立時間：<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="1657932388559784161">已關閉網頁洞察資訊底部功能表</translation>
@@ -150,6 +150,7 @@
 <translation id="1779766957982586368">關閉視窗</translation>
 <translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792959175193046959">你隨時可以變更預設的下載位置</translation>
+<translation id="1796666869097395659">將分頁縮到最小，稍後再返回查看</translation>
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1810845389119482123">尚未完成初始同步處理設定</translation>
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
@@ -704,7 +705,6 @@
 <translation id="4738836084190194332">上次同步處理時間：<ph name="WHEN" /></translation>
 <translation id="4741753828624614066">你會在網址列取得更貼近需求的建議</translation>
 <translation id="4742970037960872810">移除醒目顯示</translation>
-<translation id="4743664893327841597">你在網址列/搜尋框中輸入的內容，會傳送至預設的搜尋引擎。</translation>
 <translation id="4749960740855309258">開啟新分頁</translation>
 <translation id="4750356170202299988">適合兒少的內容</translation>
 <translation id="4758061975920522644">僅分享圖片</translation>
@@ -1209,6 +1209,7 @@
 <translation id="727288900855680735">要將 <ph name="ONE_TIME_CODE" /> 提交至 <ph name="ORIGIN" /> 嗎？</translation>
 <translation id="7274013316676448362">已封鎖網站</translation>
 <translation id="7276100255011548441">Chrome 會自動刪除 4 週前的主題，隨著你持續瀏覽內容，清單中可能會再次出現特定主題。你也可以封鎖不希望 Chrome 提供給網站的主題。進一步瞭解如何<ph name="BEGIN_LINK" />在 Chrome 中管理廣告隱私權<ph name="END_LINK" />。</translation>
+<translation id="7284878711178835966">當你輸入文字時，Chrome 會將網址列或搜尋框的內容傳送至預設搜尋引擎</translation>
 <translation id="7286703216224610554">僅分享回應內容</translation>
 <translation id="7289303553784750393">如果已連上網路，但這個問題持續發生，可以在「<ph name="SITE_ETLD_PLUS_ONE" />」上試著透過其他方法繼續操作。</translation>
 <translation id="7290209999329137901">無法重新命名</translation>

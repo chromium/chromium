@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Witryna, którą odwiedzasz, może wykorzystywać treści z innych witryn, np. obrazy, reklamy i tekst. Pliki cookie tworzone przez inne witryny są nazywane plikami cookie innych firm.</translation>
 <translation id="2434158240863470628">Ukończono pobieranie <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Tymczasowo zezwalasz tej witrynie na używanie plików cookie innych firm. Oznacza to słabszą ochronę przeglądania, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami. <ph name="BEGIN_LINK" />Prześlij opinię<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">W niektórych witrynach funkcje mogą nie działać w trybie incognito</translation>
 <translation id="2442870161001914531">Zawsze żądaj strony na komputery</translation>
 <translation id="2469312991797799607">Spowoduje to usunięcie wszystkich danych i plików cookie powiązanych z grupą <ph name="ORIGIN" /> i znajdującymi się w niej stronami</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Pytaj, zanim zezwolisz stronom na odtwarzanie treści chronionej</translation>
 <translation id="2932883381142163287">Zgłoś nadużycie</translation>
 <translation id="2968755619301702150">Przeglądarka certyfikatów</translation>
+<translation id="2979365474350987274">Pliki cookie innych firm są ograniczone</translation>
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
 <translation id="301521992641321250">Automatycznie zablokowane</translation>
 <translation id="3069226013421428034">Zezwalanie na logowanie przez usługę zewnętrzną w określonej witrynie.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Usuń i zresetuj</translation>
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
+<translation id="4673958474310291465">Spróbuj tymczasowo zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami</translation>
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
 <translation id="4779083564647765204">Powiększ</translation>
 <translation id="4811450222531576619">Poznaj jej źródło i temat</translation>

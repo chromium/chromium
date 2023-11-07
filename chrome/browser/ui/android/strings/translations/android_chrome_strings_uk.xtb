@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">Не пропонувати перекладати ці сайти</translation>
 <translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1150263420752757504">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Використати пароль <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1174479719160874822">Якщо екран вузький, Chrome надсилатиме запит на мобільний сайт</translation>
 <translation id="1177863135347784049">Спеціальне</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Вилучити 1 вибраний елемент}one{Вилучити # вибраний елемент}few{Вилучити # вибрані елементи}many{Вилучити # вибраних елементів}other{Вилучити # вибраного елемента}}</translation>
 <translation id="1633659023549081553">Переглядайте новий контент на головній сторінці Chrome</translation>
 <translation id="1641113438599504367">Безпечний перегляд</translation>
-<translation id="1642309806724967937">Залежно від ваших налаштувань Chrome також може надсилати файли cookie й поточну URL-адресу</translation>
 <translation id="164269334534774161">Ви переглядаєте офлайн-копію цієї сторінки, створену <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Історія</translation>
 <translation id="1657932388559784161">Нижній екран зі статистикою сторінки закрито</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">Закрити вікно</translation>
 <translation id="1791662854739702043">Установлено</translation>
 <translation id="1792959175193046959">Будь-коли змінюйте папку для завантажень за умовчанням</translation>
+<translation id="1796666869097395659">Згорнути вкладку, щоб повернутися на неї пізніше</translation>
 <translation id="1807246157184219062">Світла</translation>
 <translation id="1810845389119482123">Початкове налаштування синхронізації не завершено</translation>
 <translation id="1812027881030482584">Не вдається ввійти на сайті <ph name="SITE_ETLD_PLUS_ONE" /> за допомогою сервісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
@@ -703,7 +704,6 @@
 <translation id="4738836084190194332">Остання синхронізація: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">В адресному рядку з’являтимуться покращені підказки</translation>
 <translation id="4742970037960872810">Зняти виділення</translation>
-<translation id="4743664893327841597">Текст, який ви вводите в адресний рядок або поле пошуку, надсилається в пошукову систему за умовчанням</translation>
 <translation id="4749960740855309258">Відкрити нову вкладку</translation>
 <translation id="4750356170202299988">Контент для дітей</translation>
 <translation id="4758061975920522644">Поділитися лише зображенням</translation>
@@ -737,6 +737,7 @@
 <translation id="4864369630010738180">Вхід…</translation>
 <translation id="4866368707455379617">Не вдалося встановити модуль <ph name="MODULE" /> для Chrome</translation>
 <translation id="4871568871368204250">Вимкніть синхронізацію</translation>
+<translation id="4874961007154620743">Якщо вимкнути цю функцію, ви все одно бачитимете пропозиції, які Chrome надає локально</translation>
 <translation id="4875775213178255010">Пропозиції вмісту</translation>
 <translation id="4877678010818027629">Увімкнути режим анонімного перегляду</translation>
 <translation id="4878404682131129617">Не вдалося налагодити зв’язок через проксі-сервер</translation>
@@ -755,6 +756,7 @@
 <translation id="4925120120285606924">Знімок екрана: <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Ваші паролі буде експортовано й завантажено як текстовий файл. Цей файл зможуть переглядати всі користувачі й додатки, які мають доступ до папки, де його збережено.</translation>
 <translation id="4926901776383726965">Ви можете зберігати зображення й файли, щоб переглядати їх у режимі офлайн або ділитися ними в інших додатках</translation>
+<translation id="4928144016283278047">Захист від засобів відстеження (сторонніх файлів cookie, засобів відстеження IP-адрес, інвазивних скриптів тощо)</translation>
 <translation id="4932247056774066048">Оскільки ви виходите з облікового запису, зареєстрованого в домені <ph name="DOMAIN_NAME" />, ваші дані Chrome буде видалено з цього пристрою. Вони залишаться у вашому обліковому записі Google.</translation>
 <translation id="4943703118917034429">Віртуальна реальність</translation>
 <translation id="4943872375798546930">Не знайдено жодного результату</translation>
@@ -1207,6 +1209,7 @@
 <translation id="727288900855680735">Надіслати код <ph name="ONE_TIME_CODE" /> на сайт <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Заблокований сайт</translation>
 <translation id="7276100255011548441">Chrome автоматично видаляє теми через 4 тижні. Але якщо ви продовжите пошук за видаленою темою, вона може знову з’явитися в списку. Ви також можете заблокувати теми, якими Chrome не має ділитись із сайтами. Дізнайтесь, <ph name="BEGIN_LINK" />як керувати конфіденційністю в рекламі в Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">Коли ви вводите текст, Chrome надсилає вміст адресного рядка або поля пошуку в пошукову систему за умовчанням</translation>
 <translation id="7286703216224610554">Поділитися лише реакцією</translation>
 <translation id="7289303553784750393">Якщо ви підключені до Інтернету, але проблема не зникає, спробуйте інші способи ввійти на сайті <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Не можна перейменувати</translation>
@@ -1554,6 +1557,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> – завантажено</translation>
 <translation id="8937772741022875483">Видалити активність у Chrome із Цифрового добробуту?</translation>
+<translation id="893938492099608175">Залежно від ваших налаштувань Chrome також може надсилати файли cookie, вашу поточну URL-адресу й місцезнаходження</translation>
 <translation id="8942627711005830162">Відкрити в іншому вікні</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Не вдалося завантажити цю мову. Повторіть спробу пізніше.</translation>
 <translation id="8955719471735800169">На початок</translation>

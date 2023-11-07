@@ -125,7 +125,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 geselecteerd item verwijderen}other{# geselecteerde items verwijderen}}</translation>
 <translation id="1633659023549081553">Ontdek nieuwe content op de homepage van Chrome</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">Afhankelijk van je instellingen kan Chrome ook cookies en je huidige URL sturen</translation>
 <translation id="164269334534774161">Je bekijkt een offline exemplaar van deze pagina van <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1657932388559784161">Blad onderaan met pagina-inzichten is gesloten</translation>
@@ -703,7 +702,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4738836084190194332">Laatst gesynchroniseerd: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Je krijgt verbeterde suggesties in de adresbalk</translation>
 <translation id="4742970037960872810">Markering verwijderen</translation>
-<translation id="4743664893327841597">Wat je in de adresbalk of het zoekvak typt, wordt naar je standaard zoekmachine gestuurd</translation>
 <translation id="4749960740855309258">Een nieuw tabblad openen</translation>
 <translation id="4750356170202299988">Content voor jongeren</translation>
 <translation id="4758061975920522644">Alleen afbeelding delen</translation>
@@ -737,6 +735,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4864369630010738180">Inloggen...</translation>
 <translation id="4866368707455379617">Kan <ph name="MODULE" /> niet installeren voor Chrome</translation>
 <translation id="4871568871368204250">Synchronisatie uitzetten</translation>
+<translation id="4874961007154620743">Als dit uitstaat, zie je nog steeds suggesties die Chrome lokaal biedt</translation>
 <translation id="4875775213178255010">Contentsuggesties</translation>
 <translation id="4877678010818027629">Incognitomodus starten</translation>
 <translation id="4878404682131129617">Kan geen tunnel tot stand brengen via de proxyserver</translation>
@@ -755,6 +754,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Je wachtwoorden worden geëxporteerd en gedownload als tekstbestand. Ze zijn zichtbaar voor iedereen en elke app met toegang tot de bestemmingsmap.</translation>
 <translation id="4926901776383726965">Je kunt afbeeldingen en bestanden opslaan om ze offline te bekijken of in andere apps te delen</translation>
+<translation id="4928144016283278047">Bescherming tegen trackers (cookies van derden, IP-tracking, invasieve scripts en meer)</translation>
 <translation id="4932247056774066048">Omdat je uitlogt van een account dat wordt beheerd door <ph name="DOMAIN_NAME" />, worden je Chrome-gegevens verwijderd. De gegevens blijven in je Google-account staan.</translation>
 <translation id="4943703118917034429">Virtual reality</translation>
 <translation id="4943872375798546930">Geen resultaten</translation>
@@ -1207,6 +1207,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> sturen naar <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Geblokkeerde site</translation>
 <translation id="7276100255011548441">Chrome verwijdert automatisch onderwerpen die ouder zijn dan 4 weken. Terwijl je browst, kan een onderwerp weer op de lijst komen te staan. Je kunt ook onderwerpen blokkeren als je niet wilt dat Chrome deze met sites deelt. Vind meer informatie over <ph name="BEGIN_LINK" />hoe je de advertentieprivacy in Chrome beheert<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">Terwijl je typt, stuurt Chrome de content van de adresbalk of het zoekvak naar je standaard zoekmachine</translation>
 <translation id="7286703216224610554">Alleen reactie delen</translation>
 <translation id="7289303553784750393">Als je online bent, maar dit probleem zich blijft voordoen, kun je andere manieren proberen om door te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Naam wijzigen niet beschikbaar</translation>
@@ -1554,6 +1555,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is klaar</translation>
 <translation id="8937772741022875483">Je Chrome-activiteit verwijderen uit Digitaal welzijn?</translation>
+<translation id="893938492099608175">Afhankelijk van je instellingen kan Chrome ook cookies, je huidige URL en je locatie sturen</translation>
 <translation id="8942627711005830162">Openen in een ander venster</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Deze taal kan niet worden gedownload. Probeer het later opnieuw.</translation>
 <translation id="8955719471735800169">Bovenkant pagina</translation>

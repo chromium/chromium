@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">不询问是否翻译这些网站</translation>
 <translation id="1145536944570833626">删除现有数据。</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
+<translation id="115483310321669804">使用密码 <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1174479719160874822">当屏幕较窄时，Chrome 会请求改用移动网站</translation>
 <translation id="1177863135347784049">自定义</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 个所选项}other{移除 # 个所选项}}</translation>
 <translation id="1633659023549081553">在 Chrome 主页上发现新内容</translation>
 <translation id="1641113438599504367">安全浏览</translation>
-<translation id="1642309806724967937">Chrome 可能还会发送 Cookie 和当前网址，具体取决于您的设置</translation>
 <translation id="164269334534774161">您目前浏览的是此网页的离线副本（创建时间：<ph name="CREATION_TIME" />）</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1657932388559784161">显示网页数据洞见的底部工作表已关闭</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">关闭窗口</translation>
 <translation id="1791662854739702043">安装位置</translation>
 <translation id="1792959175193046959">随时更改默认的下载内容保存位置</translation>
+<translation id="1796666869097395659">将标签页最小化以便稍后返回</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1810845389119482123">未完成初始同步设置</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> 无法继续使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@
 <translation id="4738836084190194332">上次同步时间：<ph name="WHEN" /></translation>
 <translation id="4741753828624614066">您会在地址栏中获得经过改进的建议</translation>
 <translation id="4742970037960872810">撤消突出显示</translation>
-<translation id="4743664893327841597">系统会将您在地址栏或搜索框中输入的内容发送至默认搜索引擎</translation>
 <translation id="4749960740855309258">打开新标签页</translation>
 <translation id="4750356170202299988">为青少年提供的内容</translation>
 <translation id="4758061975920522644">仅分享图片</translation>
@@ -755,6 +755,7 @@
 <translation id="4925120120285606924">屏幕截图 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">系统会导出您的密码并将其下载为一个文本文件。有权访问目标文件夹的任何人和任何应用都能看到您的密码。</translation>
 <translation id="4926901776383726965">您可保存图片和文件以供离线查看或在其他应用中分享</translation>
+<translation id="4928144016283278047">防范跟踪器（第三方 Cookie、IP 跟踪、入侵脚本等）</translation>
 <translation id="4932247056774066048">您将要退出由 <ph name="DOMAIN_NAME" /> 管理的账号，因此您的 Chrome 数据将会从这部设备中删除，但仍会保留在您的 Google 账号中。</translation>
 <translation id="4943703118917034429">虚拟现实</translation>
 <translation id="4943872375798546930">找不到结果</translation>
@@ -1207,6 +1208,7 @@
 <translation id="727288900855680735">将 <ph name="ONE_TIME_CODE" /> 提交至 <ph name="ORIGIN" />？</translation>
 <translation id="7274013316676448362">禁止访问的网站</translation>
 <translation id="7276100255011548441">Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可屏蔽不希望 Chrome 与网站分享的主题。详细了解如何<ph name="BEGIN_LINK" />在 Chrome 中管理广告隐私权设置<ph name="END_LINK" />。</translation>
+<translation id="7284878711178835966">在您输入内容时，Chrome 会将地址栏或搜索框的内容发送给您的默认搜索引擎</translation>
 <translation id="7286703216224610554">仅分享表情符号</translation>
 <translation id="7289303553784750393">如果您已联网，但此问题仍然存在，您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
 <translation id="7290209999329137901">不可重命名</translation>

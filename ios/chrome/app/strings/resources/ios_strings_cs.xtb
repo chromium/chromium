@@ -48,6 +48,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="1219674500290482172">Nelze se připojit k internetu.</translation>
 <translation id="1226238226094914652">Hesla ve všech vašich zařízeních</translation>
 <translation id="122699739164161391">Zavřít všechny karty</translation>
+<translation id="1227866575467023566">{count,plural, =1{Stránka byla přidána do seznamu četby ve vašem účtu {email}}few{Do seznamu četby ve vašem účtu {email} byly přidány {count} stránky}many{Do seznamu četby ve vašem účtu {email} bylo přidáno {count} stránky}other{Do seznamu četby ve vašem účtu {email} bylo přidáno {count} stránek}}</translation>
 <translation id="1229222343402087523">Vyhledat v Chromu ${searchPhrase}</translation>
 <translation id="1242044645101871359">Znovu se přihlaste</translation>
 <translation id="1248276223555153952">Spravovat účty na tomto zařízení…</translation>
@@ -123,6 +124,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="1580715474678097352">Chrání vás před nebezpečnými weby</translation>
 <translation id="1580783302095112590">E-mail byl odeslán.</translation>
 <translation id="1582732959743469162">Tímto zastavíte veškerý postup aktuálního stahování.</translation>
+<translation id="158591023028013564">{count,plural, =1{Stránka byla přidána do vašeho seznamu četby}few{Do vašeho seznamu četby byly přidány {count} stránky}many{Do vašeho seznamu četby bylo přidáno {count} stránky}other{Do vašeho seznamu četby bylo přidáno {count} stránek}}</translation>
 <translation id="1594034544529347967">Začíná</translation>
 <translation id="160275202205869636">Když je tato možnost zapnutá, používají a ukládají se data ve vašem účtu Google. Když je vypnutá, ukládají se data pouze do tohoto zařízení.</translation>
 <translation id="1605405588277479165">Vypnuto – Nedoporučuje se</translation>
@@ -422,6 +424,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3157387275655328056">Přidat do seznamu četby</translation>
 <translation id="3157684681743766797">Označit vše…</translation>
 <translation id="315778507796115851">Historie</translation>
+<translation id="31652791196570636">Zavřít</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Uložená hesla můžete používat také na svých dalších zařízeních.</translation>
 <translation id="3175081911749765310">Webové služby</translation>
@@ -521,6 +524,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="371230970611282515">Předvídá nebezpečné události a upozorňuje vás na ně ještě předtím, než k nim dojde.</translation>
 <translation id="371398631992790800">Skrýt možnost Záložky</translation>
 <translation id="37207012422556617">Populární vyhledávání</translation>
+<translation id="3725081662140949903">Pokud ostatním v používání vašeho hesla budete chtít zabránit, otevřete aplikaci <ph name="APP" /> a své heslo změňte</translation>
 <translation id="3740397331642243698">Otevře zadané adresy URL v prohlížeči Google Chrome v anonymním režimu.</translation>
 <translation id="374357899112510277">Skrýt možnost Stažení</translation>
 <translation id="3745190878148784130">Skrýt možnost Přiblížit text</translation>
@@ -585,6 +589,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4112644173421521737">Hledat</translation>
 <translation id="4113030288477039509">Spravováno vaším administrátorem</translation>
 <translation id="4113957097611235433">Změňte svá hesla</translation>
+<translation id="4120936477286528673">Tento web se opakovaně pokouší otevřít jinou aplikaci.</translation>
 <translation id="4121993058175073134">Chcete-li odesílat data nástroje net-export, nakonfigurujte e-mailový účet v aplikaci Nastavení.</translation>
 <translation id="4124987746317609294">Časové období</translation>
 <translation id="4133265950310064865">Vylepšená ochrana</translation>
@@ -637,6 +642,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4389019817280890563">Klepnutím změníte jazyk</translation>
 <translation id="4405320213589929829">Používejte adresy na webových stránkách k získání místních informací a tras.</translation>
 <translation id="4420409367264901497">Upravit záložku</translation>
+<translation id="4431224949908513835">Vyberte platební metodu, kterou chcete vyplnit.</translation>
 <translation id="4442550905108052454">Otevřete <ph name="BEGIN_BOLD" />Nastavení<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Přidat jazyk</translation>
 <translation id="4461286950227634995">Nabízet ukládání hesel</translation>
@@ -779,6 +785,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} slabé heslo}few{{COUNT} slabá hesla}many{{COUNT} slabého hesla}other{{COUNT} slabých hesel}}</translation>
 <translation id="5149188072385105201">Přidat heslo…</translation>
 <translation id="5150492518600715772">Odeslat na vaše zařízení</translation>
+<translation id="5157638238828697074">Něco se pokazilo. Aplikaci nelze otevřít.</translation>
 <translation id="5168414296986405587">Vytvořeno pro iPadOS</translation>
 <translation id="5173088371991956744">Synchronizace potřebuje ověřit vaši totožnost</translation>
 <translation id="5173493422621051500">Použít klávesnici</translation>
@@ -805,6 +812,8 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5235389474593199952">Skrýt možnost Historie</translation>
 <translation id="5238301240406177137">Uložit do účtu</translation>
 <translation id="5245322853195994030">Zrušit synchronizaci</translation>
+<translation id="5248640482715684545">Tento web se pokouší otevřít jinou aplikaci.</translation>
+<translation id="5256661381001734217">Tento web se pokouší otevřít aplikaci.  Tím opustíte anonymní režim.</translation>
 <translation id="5256908199795498284">Chrome na navštívených webech rozpozná čísla zásilek a bude vám na stránce Nová karta zobrazovat aktuální informace o zásilkách. Vaše data budou sdílena se společností Google za účelem poskytování této funkce a zlepšování Nákupů pro všechny.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Povinné pole je prázdné. Před uložením ho vyplňte.}few{Některá povinná pole jsou prázdná. Před uložením je vyplňte.}many{Některá povinná pole jsou prázdná. Před uložením je vyplňte.}other{Některá povinná pole jsou prázdná. Před uložením je vyplňte.}}</translation>
 <translation id="5271549068863921519">Uložit heslo</translation>
@@ -904,6 +913,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5834415013958049700">Obrázek Lens, který jste zkopírovali</translation>
 <translation id="5844284118433003733">Když jste přihlášeni, jsou tato data propojena s vaším účtem Google, aby vás ve službách Google bylo možné lépe chránit, například zvýšit ochranu v Gmailu po bezpečnostním incidentu.</translation>
 <translation id="5846482154967366008">Vyhledávač</translation>
+<translation id="5850913622988109693">Možnosti sledování zásilek</translation>
 <translation id="5854790677617711513">Starší než 30 dnů</translation>
 <translation id="5857090052475505287">Nová složka</translation>
 <translation id="5857770089550859117">K zahájení synchronizace je potřeba heslová fráze.</translation>
@@ -1190,6 +1200,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7221173315674413369">Novinky a tipy v sekci Novinky</translation>
 <translation id="7223102419539744003">Zavřít kartu</translation>
 <translation id="722454870747268814">Nová anonymní karta</translation>
+<translation id="7233006041370588369">Vyberte heslo, které chcete vyplnit.</translation>
 <translation id="7265758999917665941">Pro tento web nikdy</translation>
 <translation id="7272437679830969316">Vaši totožnost nelze ověřit. Heslo nebylo zkopírováno.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Je sledována nová zásilka}few{Jsou sledovány nové zásilky}many{Jsou sledovány nové zásilky}other{Jsou sledovány nové zásilky}}</translation>

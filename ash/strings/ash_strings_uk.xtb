@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Увімкнено</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Використовуйте клавіші зі стрілками, щоб переходити між датами.</translation>
+<translation id="141170878022560212">Середня кнопка</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, установлений додаток</translation>
 <translation id="1414919006379339073">Закрити поточне вікно</translation>
 <translation id="1415846719612499304">Показати список мереж. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">Відкрити панель смайлів</translation>
 <translation id="2088116547584365419">ігри</translation>
 <translation id="209965399369889474">Немає з’єднання з мережею</translation>
+<translation id="2107581415810719320">Інша кнопка <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Ваш кабель USB-C не підтримує Thunderbolt. Продуктивність пристрою може бути обмежено.</translation>
 <translation id="2108303511227308752">Комбінацію клавіш Alt + Backspace змінено. Щоб скористатися клавішею Delete, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Новий робочий стіл</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">налаштування</translation>
 <translation id="3341303451326249809">Знімок екрана зроблено</translation>
 <translation id="334252345105450327">Зробити знімок екрана</translation>
+<translation id="3346728094401457853">Введіть пароль пристрою для облікового запису <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Вибрати текст від курсора до кінця рядка</translation>
 <translation id="3349345708646875009">Відкрити Диспетчер завдань</translation>
 <translation id="3364721542077212959">Інструменти стилуса</translation>
@@ -1589,6 +1592,7 @@
 <translation id="7489261257412536105">Відкрити на весь екран або вийти з повноекранного режиму</translation>
 <translation id="7490360161041035804">Ви можете закріпити важливі файли, зокрема з Google Диска. Для цього наведіть курсор на об’єкт або відкрийте додаток Файли й натисніть об’єкт правою кнопкою миші.</translation>
 <translation id="7497767806359279797">Вибрати мову та клавіатуру</translation>
+<translation id="7507162824403726948">Завершити підтвердження особи</translation>
 <translation id="7508690557411636492">Відкрито минулого місяця</translation>
 <translation id="7509246181739783082">Підтвердьте свою особу</translation>
 <translation id="7512509370370076552">Комбінація клавіш для імітації кліку правою кнопкою миші змінилася з "Alt + клік" на "<ph name="LAUNCHER_KEY_NAME" /> + клік"</translation>

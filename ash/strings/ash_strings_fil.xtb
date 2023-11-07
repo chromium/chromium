@@ -116,6 +116,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1391102559483454063">Naka-on</translation>
 <translation id="1407069428457324124">Madilim na tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gamitin ang mga arrow key para mag-navigate sa pagitan ng mga petsa.</translation>
+<translation id="141170878022560212">Button sa Gitna</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Naka-install na App</translation>
 <translation id="1414919006379339073">Isara ang kasalukuyang window</translation>
 <translation id="1415846719612499304">Ipakita ang listahan ng network. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2086334242442703436">Buksan ang Picker ng Emoji</translation>
 <translation id="2088116547584365419">mga laro</translation>
 <translation id="209965399369889474">Hindi nakakonekta sa network</translation>
+<translation id="2107581415810719320">Iba pang Button <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Hindi sinusuportahan ng iyong USB-C cable ang Thunderbolt. Posibleng maging limitado ang performance ng device.</translation>
 <translation id="2108303511227308752">Nagbago ang keyboard shortcut na Alt + Backspace. Para magamit ang Delete key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + backspace.</translation>
 <translation id="2126242104232412123">Bagong desk</translation>
@@ -563,6 +565,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3340978935015468852">mga setting</translation>
 <translation id="3341303451326249809">Na-capture na ang screenshot</translation>
 <translation id="334252345105450327">Kumuha ng screenshot</translation>
+<translation id="3346728094401457853">Ilagay ang password ng device para sa <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">I-highlight ang text mula sa cursor hanggang sa dulo ng linya</translation>
 <translation id="3349345708646875009">Buksan ang task manager</translation>
 <translation id="3364721542077212959">Mga stylus tool</translation>
@@ -1588,6 +1591,7 @@ Kaka-install lang</translation>
 <translation id="7489261257412536105">Pumasok o lumabas sa full screen</translation>
 <translation id="7490360161041035804">Puwede kang mag-pin ng mahahalagang file, kabilang ang mga file sa Google Drive. Para mag-pin, mag-hover sa item at buksan ang Mga File at mag-right click sa item.</translation>
 <translation id="7497767806359279797">Pumili ng wika at keyboard</translation>
+<translation id="7507162824403726948">Tapusin ang pag-verify ng iyong pagkakakilanlan</translation>
 <translation id="7508690557411636492">Binuksan sa nakalipas na buwan</translation>
 <translation id="7509246181739783082">I-verify ang iyong pagkakakilanlan</translation>
 <translation id="7512509370370076552">Na-update ang shortcut sa pag-right click sa <ph name="LAUNCHER_KEY_NAME" /> key + click mula sa dating alt + click</translation>

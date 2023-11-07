@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Уключана</translation>
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Для пераходу паміж датамі выкарыстоўвайце клавішы са стрэлкамі</translation>
+<translation id="141170878022560212">Сярэдняя кнопка</translation>
 <translation id="1414271762428216854">Усталяваная праграма (<ph name="APP_NAME" />)</translation>
 <translation id="1414919006379339073">Закрыць бягучае акно</translation>
 <translation id="1415846719612499304">Паказаць спіс сетак. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">Адкрыць акно выбару эмодзі</translation>
 <translation id="2088116547584365419">гульні</translation>
 <translation id="209965399369889474">Няма падключэння да сеткі</translation>
+<translation id="2107581415810719320">Іншая кнопка <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Ваш кабель USB-C не падыходзіць для выкарыстання з Thunderbolt. Прадукцыйнасць прылады можа быць абмежавана.</translation>
 <translation id="2108303511227308752">Змянілася прызначэнне спалучэння клавіш Alt + Backspace. Каб выканаць дзеянне клавішы Delete, націсніце <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Новы стол</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">налады</translation>
 <translation id="3341303451326249809">Здымак экрана зроблены</translation>
 <translation id="334252345105450327">Зрабіць здымак экрана</translation>
+<translation id="3346728094401457853">Увядзіце пароль прылады для ўліковага запісу <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Вылучыць тэкст ад курсора да канца радка</translation>
 <translation id="3349345708646875009">Адкрыць менеджар заданняў</translation>
 <translation id="3364721542077212959">Інструменты для пяра</translation>
@@ -1589,6 +1592,7 @@
 <translation id="7489261257412536105">Увайсці ў поўнаэкранны рэжым або выйсці з яго</translation>
 <translation id="7490360161041035804">Важныя файлы, у тым ліку файлы Google Дыска, можна замацоўваць. Навядзіце ўказальнік на элемент або адкрыйце Файлы і націсніце на элемент правай кнопкай мышы.</translation>
 <translation id="7497767806359279797">Выбраць мову і клавіятуру</translation>
+<translation id="7507162824403726948">Завяршыце працэдуру спраўджання асобы</translation>
 <translation id="7508690557411636492">Адкрывалася ў мінулым месяцы</translation>
 <translation id="7509246181739783082">Спраўдзіце сваю асобу</translation>
 <translation id="7512509370370076552">Спалучэнне клавіш для дзеяння "Націснуць правай кнопкай мышы" зменена з Alt + Левая кнопка мышы на <ph name="LAUNCHER_KEY_NAME" /> + Левая кнопка мышы</translation>

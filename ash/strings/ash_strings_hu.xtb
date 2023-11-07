@@ -565,6 +565,7 @@
 <translation id="3340978935015468852">beállítások</translation>
 <translation id="3341303451326249809">Képernyőkép létrehozva</translation>
 <translation id="334252345105450327">Képernyőkép készítése</translation>
+<translation id="3346728094401457853">Adja meg az eszköz jelszavát a következőhöz: <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Szöveg kijelölése a kurzortól a sor végéig</translation>
 <translation id="3349345708646875009">Feladatkezelő megnyitása</translation>
 <translation id="3364721542077212959">Érintőceruza eszközök</translation>
@@ -1592,6 +1593,7 @@ Frissen telepítve</translation>
 <translation id="7489261257412536105">Váltás teljes képernyős módról vagy módra</translation>
 <translation id="7490360161041035804">Kitűzheti a fontos fájlokat, köztük a Google Drive-fájlokat is. A kitűzéshez mutasson az egérrel egy elemre, vagy nyissa meg a Fájlok alkalmazást, és kattintson jobb egérgombbal a kívánt elemre.</translation>
 <translation id="7497767806359279797">Nyelv és billentyűzet kiválasztása</translation>
+<translation id="7507162824403726948">Személyazonosság igazolásának befejezése</translation>
 <translation id="7508690557411636492">A múlt hónapban nyitotta meg</translation>
 <translation id="7509246181739783082">Személyazonosság igazolása</translation>
 <translation id="7512509370370076552">A jobb egérgombos kattintás billentyűparancsa a(z) <ph name="LAUNCHER_KEY_NAME" /> billentyű + kattintás billentyűparancsra módosult a következőről: alt + kattintás.</translation>

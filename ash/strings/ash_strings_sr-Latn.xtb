@@ -116,6 +116,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1391102559483454063">Uključeno</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Koristite tastere sa strelicama da biste se kretali između datuma.</translation>
+<translation id="141170878022560212">Srednje dugme</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, instalirana aplikacija</translation>
 <translation id="1414919006379339073">Zatvori prozor u kome se trenutno radi</translation>
 <translation id="1415846719612499304">Pregledajte listu mreža. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2086334242442703436">Otvorite birač emodžija</translation>
 <translation id="2088116547584365419">igre</translation>
 <translation id="209965399369889474">Niste povezani na mrežu</translation>
+<translation id="2107581415810719320"><ph name="BUTTON_NUMBER" />. dugme Drugo</translation>
 <translation id="2107914222138020205">USB-C kabl ne podržava Thunderbolt. Učinak uređaja će možda biti ograničen.</translation>
 <translation id="2108303511227308752">Tasterska prečica Alt + Backspace je promenjena. Da biste koristili taster Delete, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="2126242104232412123">Novi radni prostor</translation>
@@ -563,6 +565,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3340978935015468852">podešavanja</translation>
 <translation id="3341303451326249809">Snimak ekrana je napravljen</translation>
 <translation id="334252345105450327">Napravi snimak ekrana</translation>
+<translation id="3346728094401457853">Unesite lozinku za uređaj za <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Izaberi tekst od kursora do kraja reda</translation>
 <translation id="3349345708646875009">Otvori menadžer zadataka</translation>
 <translation id="3364721542077212959">Alatke za pisaljku</translation>
@@ -1591,6 +1594,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="7489261257412536105">Uđite ili izađite iz režima prikaza preko celog ekrana</translation>
 <translation id="7490360161041035804">Možete da zakačite važne fajlove, uključujući fajlove Google diska. Da biste zakačili fajl, pređite kursorom preko stavke ili otvorite Fajlovi i kliknite desnim tasterom na stavku.</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
+<translation id="7507162824403726948">Dovršite verifikaciju identiteta</translation>
 <translation id="7508690557411636492">Otvarano proteklog meseca</translation>
 <translation id="7509246181739783082">Verifikujte identitet</translation>
 <translation id="7512509370370076552">Prečica za desni klik je sada taster <ph name="LAUNCHER_KEY_NAME" /> + klik, a ne više alt + klik</translation>

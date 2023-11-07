@@ -27,6 +27,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is geüpdatet. Je kunt de nieuwste versie gebruiken nadat je de browser hebt herstart. Daarna worden je huidige tabbladen weer geopend.}=1{Chrome is geüpdatet. Je kunt de nieuwste versie gebruiken nadat je de browser hebt herstart. Daarna worden je huidige tabbladen weer geopend. Je incognitovenster kan niet opnieuw worden geopend.}other{Chrome is geüpdatet. Je kunt de nieuwste versie gebruiken nadat je de browser hebt herstart. Daarna worden je huidige tabbladen weer geopend. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-apps</translation>
 <translation id="1492280395845991349">Herstarten om de Chrome-update af te ronden</translation>
+<translation id="1497802159252041924">Installatiefout: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Je nieuwe Chrome-profiel aanpassen</translation>
 <translation id="1516530951338665275">Google Chrome heeft bluetooth-toegang nodig om door te gaan met koppelen. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />.</translation>
@@ -90,6 +91,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2467438592969358367">Google Chrome wil je wachtwoorden exporteren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="2472092250898121027">Deze extensie bevat malware en is onveilig. Verwijder de extensie van Chrome zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
+<translation id="2534365042754120737">Ter bescherming van je gegevens kun je Chrome de rechten laten verwijderen voor sites die je niet recent hebt bezocht. Hiermee worden meldingen niet gestopt.</translation>
 <translation id="2534507159460261402">Google Pay (gekopieerd naar Chrome)</translation>
 <translation id="2556847002339236023">Je organisatie sluit Chrome als deze <ph name="TIMEOUT_DURATION" /> niet wordt gebruikt. Browsegegevens zijn verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.</translation>
 <translation id="2559253115192232574">Later kan een site die je bezoekt Chrome vragen om je interesses te bekijken zodat de advertenties die je ziet kunnen worden gepersonaliseerd. Chrome kan maximaal 3 interesses delen.</translation>
@@ -269,6 +271,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5524761631371622910">Tijdens actieve proeven en als Chrome je willekeurig in een actieve proef heeft geplaatst, heeft je browsegeschiedenis invloed op de advertenties die je te zien krijgt en de interesses zoals hieronder geschat. Ter bescherming van je privacy verwijdert Chrome je interesses elke maand op voortschrijdende basis.</translation>
 <translation id="5530733413481476019">Maak Chrome sneller</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5572786658631721382">Als dit uitstaat, zie je nog steeds suggesties die Chrome lokaal biedt</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan gevaarlijk zijn en is daarom door Chrome geblokkeerd.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren.}=1{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren. Je incognitovenster kan niet opnieuw worden geopend.}other{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="5686916850681061684">Pas Google Chrome aan en beheer de instellingen. Je aandacht is vereist. Klik voor meer informatie.</translation>
@@ -362,6 +365,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7177959540995930968">Bekijk meer informatie over deze functies in de Chrome-instellingen.</translation>
 <translation id="7193885263065350793">Je organisatie sluit Chrome als deze <ph name="TIMEOUT_DURATION" /> niet wordt gebruikt.</translation>
 <translation id="7242029209006116544">Je logt in op een beheerd account waarmee de eigenaar van dat account beheer krijgt over je Google Chrome-profiel. Je Chrome-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account. Je kunt ook een nieuw profiel maken om je bestaande Chrome-gegevens gescheiden te houden. <ph name="LEARN_MORE" /></translation>
+<translation id="7284878711178835966">Terwijl je typt, stuurt Chrome de content van de adresbalk of het zoekvak naar je standaard zoekmachine</translation>
 <translation id="7295052994004373688">Deze taal wordt gebruikt om de Google Chrome-UI weer te geven</translation>
 <translation id="7296210096911315575">Belangrijke informatie over gebruik en veiligheid</translation>
 <translation id="7308322188646931570">Chrome heeft toegang tot de opslag nodig om bestanden te kunnen downloaden</translation>

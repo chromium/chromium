@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1001716830750249114">Prejsť do nastavení verzie prehliadača Chromium</translation>
 <translation id="1026101648481255140">Pokračovať v inštalácii</translation>
 <translation id="1029669172902658969">Znova spustiť a aktualizovať &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium odporúča, aby ste toto rozšírenie skontrolovali</translation>
@@ -23,6 +24,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1342274909142618978">Odstrániť aj údaje z prehliadača Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Ste prihlásený/-á do prehliadača Chromium.</translation>
 <translation id="1478370723027452770">Získať pomoc s verziou Chrome for Testing</translation>
+<translation id="1497802159252041924">Chyba inštalácie: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Zdieľajte kartu prehliadača Chromium</translation>
 <translation id="1553461853655228091">Chromium potrebuje povolenie použiť fotoaparát, aby mohol vytvoriť 3D mapu vášho okolia</translation>
 <translation id="1574377791422810894">Bezpečnostné nástroje prehliadača Chromium</translation>
@@ -33,6 +35,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať na tento účet. Účty Google môžete spravovať v <ph name="SETTINGS_LINK_BEGIN" />Nastaveniach<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Sťahuje sa…</translation>
 <translation id="1708666629004767631">K dispozícii je nová bezpečnejšia verzia prehliadača Chromium.</translation>
+<translation id="1715127912119967311">Chromium odosiela vaše interakcie s nimi Googlu, aby pomohol tieto funkcie zlepšovať. Tieto údaje môžu čítať, spracúvať a označovať poznámkami kontrolóri.</translation>
 <translation id="17264556997921157">Môžete si prezrieť témy záujmu, pomocou ktorých vám weby zobrazujú reklamy, a odstrániť ich. Chromium odhaduje záujmy na základe nedávnej histórie prehliadania.</translation>
 <translation id="1733725117201708356">Chromium čoskoro odstráni dáta prehliadania</translation>
 <translation id="1745121272106313518">Chromium sa reštartuje o <ph name="REMAINING_TIME" /></translation>
@@ -157,11 +160,13 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="390528597099634151">Používateľ <ph name="EXISTING_USER" /> je už do tohto profilu prehliadača Chromium prihlásený. Ak chcete oddeliť svoje prehliadanie, Chromium vám môže vytvoriť vlastný profil.</translation>
 <translation id="3909353120217047026">Toto rozšírenie porušuje pravidlá Internetového obchodu Chrome a môže byť nebezpečné. Odstráňte ho z prehliadača Chromium, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>
 <translation id="391789666908693569">Váš účet spravuje <ph name="MANAGER_NAME" />. Váš správca si môže zobraziť a upraviť tento profil prehliadača Chromium vrátane jeho údajov, ako sú záložky, história a heslá.</translation>
+<translation id="3922825997980843979">Keď píšete, Chromium odosiela obsah panela s adresou alebo vyhľadávacieho poľa do predvoleného vyhľadávača</translation>
 <translation id="3945058413678539331">Chromium sa pokúša kopírovať heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="3962647064319009959">Ako vás Chromium chráni</translation>
 <translation id="3975724895399328945">Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />, ako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostredie systému Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="4028143804911941282">Keď je táto možnosť vypnutá, naďalej sa vám budú zobrazovať návrhy, ktoré Chromium poskytuje miestne</translation>
 <translation id="4036079820698952681">Nahláste <ph name="BEGIN_LINK" />aktuálne nastavenia<ph name="END_LINK" /> a pomôžte tak zlepšiť prehliadač Chromium</translation>
 <translation id="4050175100176540509">V najnovšej verzii sú k dispozícii dôležité vylepšenia zabezpečenia a nové funkcie.</translation>
 <translation id="4055805654398742145">Správca hesiel</translation>
@@ -253,6 +258,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="6003112304606738118">Sťahuje sa… Zostávajúci čas: <ph name="HOURS" /> h</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6055895534982063517">K dispozícii je nová verzia prehliadača Chromium, ktorá je rýchlejšia ako kedykoľvek predtým.</translation>
+<translation id="6058380562449900225">Povoľte prehliadaču Chromium odstraňovať povolenia z webov, ktoré ste v poslednom čase nenavštívili, a ochráňte tak svoje údaje. Upozornenia sa tým nedeaktivujú.</translation>
 <translation id="6063093106622310249">&amp;Otvoriť v prehliadači Chromium</translation>
 <translation id="6072279588547424923">Rozšírenie <ph name="EXTENSION_NAME" /> bolo pridané do prehliadača Chromium</translation>
 <translation id="6072463441809498330">Zrýchlite Chromium</translation>

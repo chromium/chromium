@@ -25,6 +25,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide.}=1{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Fereastra incognito nu se va mai deschide.}few{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Cele # ferestre incognito nu se vor mai deschide.}other{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="1434626383986940139">Aplicații Chrome Canary</translation>
 <translation id="1492280395845991349">Relansează ca să finalizezi actualizarea pentru Chrome</translation>
+<translation id="1497802159252041924">Eroare la instalare: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personalizează noul profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome are nevoie de acces la Bluetooth pentru a continua conectarea. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Sistemul de operare Chrome este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
@@ -86,6 +87,7 @@
 <translation id="2467438592969358367">Google Chrome vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
 <translation id="2472092250898121027">Această extensie conține programe malware și este nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
 <translation id="2485422356828889247">Dezinstalează</translation>
+<translation id="2534365042754120737">Pentru a-ți proteja datele, permite browserului Chrome să elimine permisiunile de pe site-urile pe care nu le-ai accesat recent. Nu oprește notificările.</translation>
 <translation id="2534507159460261402">Google Pay (copiat în Chrome)</translation>
 <translation id="2556847002339236023">Organizația ta închide Chrome dacă nu este folosit timp de <ph name="TIMEOUT_DURATION" />. Datele de navigare au fost șterse. Aici pot fi incluse istoricul, completările automate și descărcările.</translation>
 <translation id="2559253115192232574">Ulterior, un site pe care-l accesezi poate solicita browserului Chrome să vadă interesele tale pentru a personaliza anunțurile pe care le vezi. Chrome poate afișa până la trei interese.</translation>
@@ -256,13 +258,16 @@
 <translation id="5334487786912937552">Pentru a descărca fișiere, Chrome necesită permisiunea de acces la stocare</translation>
 <translation id="5337648990166757586">Opțional: contribuie la îmbunătățirea funcțiilor și a performanței sistemului de operare Chrome, trimițând automat la Google date de diagnosticare și de utilizare.</translation>
 <translation id="5357889879764279201">Solicită ajutor privind sistemul de operare Chrome Flex</translation>
+<translation id="5386118856456530849">Accesează setările versiunii Chrome</translation>
 <translation id="5386244825306882791">Stabilește și ce pagină se afișează când porniți Chrome sau când căutați din caseta polivalentă.</translation>
 <translation id="5394833366792865639">Arată o filă Chrome</translation>
 <translation id="5412485296464121825">Site-urile pot stoca informații în Chrome despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>
 <translation id="5430073640787465221">Fișierul dvs. de preferințe este fie deteriorat, fie nevalid. Google Chrome nu poate recupera setările dvs.</translation>
+<translation id="5468572406162360320">Pentru a contribui la îmbunătățirea acestor funcții, Chrome îți trimite interacțiunile cu acestea la Google. Aceste date pot fi citite, procesate și adnotate de evaluatori umani.</translation>
 <translation id="5524761631371622910">În versiunile de încercare și dacă Chrome te-a inclus în mod aleatoriu într-o versiune de încercare activă, istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge categoriile de interese în permanență, în fiecare lună.</translation>
 <translation id="5530733413481476019">Crește eficiența în Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5572786658631721382">Când opțiunea este dezactivată, vei vedea în continuare sugestii pe care Chrome le oferă local</translation>
 <translation id="565744775970812598">Este posibil ca <ph name="FILE_NAME" /> să fie periculos, așadar Chrome l-a blocat.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare}=1{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="5686916850681061684">Personalizează și controlează Google Chrome. Ceva are nevoie de atenția ta – dă clic pentru detalii.</translation>
@@ -356,6 +361,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7177959540995930968">Poți afla mai multe despre aceste funcții în setările Chrome.</translation>
 <translation id="7193885263065350793">Organizația ta închide Chrome dacă nu este folosit timp de <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Google Chrome. Datele Chrome, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu alt cont. Aveți opțiunea de a crea un profil nou, pentru a păstra separat datele Chrome existente. <ph name="LEARN_MORE" /></translation>
+<translation id="7284878711178835966">Pe măsură ce introduci text, Chrome trimite conținutul barei de adrese sau al casetei de căutare la motorul de căutare prestabilit</translation>
 <translation id="7295052994004373688">Limba este folosită pentru a afișa IU Google Chrome</translation>
 <translation id="7296210096911315575">Informații importante cu privire la folosire și siguranță</translation>
 <translation id="7308322188646931570">Pentru a descărca fișiere, Chrome necesită acces la stocare</translation>

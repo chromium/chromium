@@ -96,6 +96,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="4654936625574199632">Chromium lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_LINK" />Muokkaa<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ota käyttöön Chromium-lukija</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, joten Chromium-datasi poistetaan tältä laitteelta</translation>
+<translation id="4773487571745795781">Laitoit Chromium-kirjautumisen pois päältä.</translation>
 <translation id="4790638144988730920">Jatka Chromium-datan käyttöä Google-tilillä.</translation>
 <translation id="4828317641996116749">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
 <translation id="4985291216379576555">Chromium ei voi tarkistaa, onko päivityksiä saatavilla</translation>

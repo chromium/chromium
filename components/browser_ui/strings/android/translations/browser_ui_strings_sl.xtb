@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}one{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}two{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}few{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}other{Dovoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Spletno mesto, ki ga obiščete, lahko vdela vsebino z drugih spletnih mest, na primer slike, oglase in besedilo. Piškotki, ki jih nastavijo ta druga spletna mesta, se imenujejo piškotki tretjih oseb.</translation>
 <translation id="2434158240863470628">Prenos je končan <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Temu spletnemu mestu ste začasno dovolili uporabo piškotkov tretjih oseb, kar pomeni manj zaščite brskanja, vendar je verjetneje, da bodo funkcije spletnega mesta delovale po pričakovanjih. <ph name="BEGIN_LINK" />Pošiljanje povratnih informacij<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Funkcije na nekaterih spletnih mestih morda ne bodo delovale v anonimnem načinu</translation>
 <translation id="2442870161001914531">Vedno zahtevaj spletno mesto za namizne računalnike</translation>
 <translation id="2469312991797799607">To dejanje bo izbrisalo vse podatke in piškotke za spletno mesto <ph name="ORIGIN" /> ter vsa njegova podrejena spletna mesta.</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Prikaži poziv, preden se spletnim mestom dovoli predvajanje zaščitene vsebine</translation>
 <translation id="2932883381142163287">Prijavite zlorabo</translation>
 <translation id="2968755619301702150">Pregledovalnik potrdil</translation>
+<translation id="2979365474350987274">Piškotki tretjih oseb so omejeni</translation>
 <translation id="3008272652534848354">Ponastavi dovoljenja</translation>
 <translation id="301521992641321250">Samodejno blokirano</translation>
 <translation id="3069226013421428034">Omogočanje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Izbriši in ponastavi</translation>
 <translation id="4645575059429386691">Upravlja starš</translation>
 <translation id="4670064810192446073">Navidezna resničnost</translation>
+<translation id="4673958474310291465">Poskusite začasno omogočiti piškotke tretjih oseb, kar pomeni manj zaščite, vendar je bolj verjetno, da bodo funkcije spletnega mesta delovale po pričakovanjih</translation>
 <translation id="4751476147751820511">Tipala za gibanje in svetlobo</translation>
 <translation id="4779083564647765204">Povečaj</translation>
 <translation id="4811450222531576619">Preberite več o njenem viru in temi</translation>

@@ -32,6 +32,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1142732900304639782">Non proporre di tradurre questi siti</translation>
 <translation id="1145536944570833626">Elimina i dati esistenti.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Utilizza password <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Rinomina</translation>
 <translation id="1174479719160874822">Chrome richiederà il sito mobile quando lo schermo è stretto</translation>
 <translation id="1177863135347784049">Personalizzati</translation>
@@ -125,7 +126,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Rimuovi 1 elemento selezionato}other{Rimuovi # elementi selezionati}}</translation>
 <translation id="1633659023549081553">Scopri nuovi contenuti nella home page di Chrome</translation>
 <translation id="1641113438599504367">Navigazione sicura</translation>
-<translation id="1642309806724967937">In base alle tue impostazioni, Chrome potrebbe anche inviare i cookie e l'URL corrente</translation>
 <translation id="164269334534774161">È visualizzata una copia offline di questa pagina del giorno <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1657932388559784161">Il riquadro inferiore Statistiche pagine è chiuso</translation>
@@ -149,6 +149,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1779766957982586368">Chiudi finestra</translation>
 <translation id="1791662854739702043">Installato</translation>
 <translation id="1792959175193046959">Modifica il percorso di download predefinito in qualsiasi momento</translation>
+<translation id="1796666869097395659">Riduci a icona la scheda per riaprirla in un secondo momento</translation>
 <translation id="1807246157184219062">Chiaro</translation>
 <translation id="1810845389119482123">Configurazione iniziale della sincronizzazione non terminata</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> non può continuare a utilizzare <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4738836084190194332">Ultima sincronizzazione: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Riceverai suggerimenti migliori nella barra degli indirizzi</translation>
 <translation id="4742970037960872810">Rimuovi evidenziazione</translation>
-<translation id="4743664893327841597">Il testo digitato nella barra degli indirizzi o nella casella di ricerca viene inviato al tuo motore di ricerca predefinito</translation>
 <translation id="4749960740855309258">Apri una nuova scheda</translation>
 <translation id="4750356170202299988">Contenuti per giovani menti</translation>
 <translation id="4758061975920522644">Condividi solo immagini</translation>
@@ -737,6 +737,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4864369630010738180">Accesso in corso...</translation>
 <translation id="4866368707455379617">Impossibile installare <ph name="MODULE" /> per Chrome</translation>
 <translation id="4871568871368204250">Disattiva sincronizzazione</translation>
+<translation id="4874961007154620743">Quando l'opzione è disattivata, continuerai a vedere i suggerimenti forniti da Chrome a livello locale</translation>
 <translation id="4875775213178255010">Contenuti suggeriti</translation>
 <translation id="4877678010818027629">Attiva la modalità di navigazione in incognito</translation>
 <translation id="4878404682131129617">Creazione di un tunnel tramite server proxy non riuscita</translation>
@@ -755,6 +756,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Le tue password verranno esportate e scaricate in un file di testo. Saranno visibili a qualsiasi persona e app con accesso alla cartella di destinazione.</translation>
 <translation id="4926901776383726965">Puoi salvare immagini e file per visualizzarli offline o condividerli in altre app</translation>
+<translation id="4928144016283278047">Protezione dai tracker (cookie di terze parti, monitoraggio degli IP, script invasivi e altro ancora)</translation>
 <translation id="4932247056774066048">Poiché stai uscendo da un account gestito da <ph name="DOMAIN_NAME" />, i tuoi dati di Chrome verranno eliminati da questo dispositivo. Rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="4943703118917034429">Realtà virtuale</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
@@ -1207,6 +1209,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="727288900855680735">Inviare <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sito bloccato</translation>
 <translation id="7276100255011548441">Chrome elimina automaticamente gli argomenti risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un argomento potrebbe riapparire nell'elenco. In alternativa, puoi bloccare gli argomenti che non vuoi che Chrome condivida con i siti. Scopri di più sulla <ph name="BEGIN_LINK" />gestione della privacy per gli annunci in Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">Durante la digitazione, Chrome invia i contenuti della barra degli indirizzi o della casella di ricerca al tuo motore di ricerca predefinito</translation>
 <translation id="7286703216224610554">Condividi solo la reazione</translation>
 <translation id="7289303553784750393">Se sei online, ma il problema persiste, puoi provare altri metodi per continuare su <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Impossibile rinominare</translation>
@@ -1554,6 +1557,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">La lingua <ph name="LANG" /> è pronta</translation>
 <translation id="8937772741022875483">Vuoi rimuovere la tua attività di Chrome da Benessere digitale?</translation>
+<translation id="893938492099608175">In base alle tue impostazioni, Chrome potrebbe anche inviare i cookie, l'URL corrente e la tua posizione</translation>
 <translation id="8942627711005830162">Apri nell'altra finestra</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: impossibile scaricare questa lingua. Riprova più tardi.</translation>
 <translation id="8955719471735800169">Torna all'inizio</translation>

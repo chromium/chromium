@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on lubatud}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on lubatud}}</translation>
 <translation id="2410940059315936967">Sait, mida külastate, saab manustada sisu muudelt saitidelt (nt pilte, reklaame ja teksti). Muude saitide määratud küpsisefaile nimetatakse kolmanda osapoole küpsisefailideks.</translation>
 <translation id="2434158240863470628">Allalaadimine jõudis lõpule: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Lubasite sellel saidil ajutiselt kasutada kolmanda osapoole küpsisefaile, mis tähendab väiksemat sirvimiskaitset, kuid saidi funktsioonid töötavad tõenäolisemalt ootuspäraselt. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Mõne saidi funktsioonid ei pruugi inkognito režiimis toimida</translation>
 <translation id="2442870161001914531">Alati taotletakse arvutisaiti</translation>
 <translation id="2469312991797799607">See toiming kustutab kõik saidigrupi <ph name="ORIGIN" /> ning selle all olevate kõigi saitide andmed ja küpsised</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Küsi enne saitidel kaitstud sisu esitamise lubamist</translation>
 <translation id="2932883381142163287">Teata väärkasutusest</translation>
 <translation id="2968755619301702150">Sertifikaadikuvaja</translation>
+<translation id="2979365474350987274">Kolmanda osapoole küpsisefailid on piiratud</translation>
 <translation id="3008272652534848354">Lähtesta load</translation>
 <translation id="301521992641321250">Automaatselt blokeeritud</translation>
 <translation id="3069226013421428034">Konkreetse saidi jaoks kolmanda osapoole sisselogimise lubamine.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Kustuta ja lähtesta</translation>
 <translation id="4645575059429386691">Vanema hallatud</translation>
 <translation id="4670064810192446073">Virtuaalreaalsus</translation>
+<translation id="4673958474310291465">Proovige kolmanda osapoole küpsisefailid ajutiselt lubada, mis vähendab kaitset, kuid saidi funktsiooni töötavad tõenäolisemalt ootuspäraselt</translation>
 <translation id="4751476147751820511">Liikumis- või valgusandurid</translation>
 <translation id="4779083564647765204">Suumi</translation>
 <translation id="4811450222531576619">Teave selle allika ja teema kohta</translation>

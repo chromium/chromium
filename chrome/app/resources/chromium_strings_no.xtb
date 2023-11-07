@@ -22,6 +22,7 @@
 <translation id="1342274909142618978">Slett også data fra Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Du er logget på Chromium.</translation>
 <translation id="1478370723027452770">Få hjelp med Chrome for testing</translation>
+<translation id="1497802159252041924">Installasjonsfeil: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
 <translation id="1553461853655228091">Chromium trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
 <translation id="1574377791422810894">Sikkerhetsverktøyene i Chromium</translation>
@@ -157,11 +158,13 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> er allerede logget på denne Chromium-profilen. For å holde surfingen din atskilt kan Chromium opprette en egen profil til deg.</translation>
 <translation id="3909353120217047026">Denne utvidelsen er i strid med retningslinjene for Chrome Nettmarked og kan være utrygg. Fjern den fra Chromium, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysningene dine.</translation>
 <translation id="391789666908693569">Kontoen din administreres av <ph name="MANAGER_NAME" />. Administratoren kan se og redigere denne Chromium-nettleserprofilen og tilhørende data, som bokmerker, logg og passord.</translation>
+<translation id="3922825997980843979">Når du skriver, sender Chromium innholdet i adressefeltet eller søkefeltet til standardsøkemotoren din</translation>
 <translation id="3945058413678539331">Chromium prøver å kopiere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="3962647064319009959">Finn ut hvordan Chromium holder deg trygg</translation>
 <translation id="3975724895399328945">Om &amp;Google Chrome for testing</translation>
 <translation id="3997429360543082038">Om ChromiumOS</translation>
 <translation id="4019629340646866719">ChromiumOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="4028143804911941282">Når denne innstillingen er av, ser du fortsatt lokale forslag fra Chromium</translation>
 <translation id="4036079820698952681">Bidra til å gjøre Chromium bedre ved å rapportere de <ph name="BEGIN_LINK" />nåværende innstillingene<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Viktige sikkerhetsforbedringer og nye funksjoner er tilgjengelige i den nyeste versjonen.</translation>
 <translation id="4055805654398742145">P&amp;assordlagring</translation>
@@ -253,6 +256,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6003112304606738118">Laster ned … <ph name="HOURS" /> time(r) igjen</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6055895534982063517">En nyere versjon av Chromium er tilgjengelig, og den er raskere enn noen gang.</translation>
+<translation id="6058380562449900225">Du kan beskytte dataene dine ved å la Chromium fjerne tillatelser fra nettsteder du ikke har besøkt nylig. Dette stopper ikke varsler.</translation>
 <translation id="6063093106622310249">&amp;Åpne i Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> er lagt til i Chromium</translation>
 <translation id="6072463441809498330">Gjør Chromium raskere</translation>

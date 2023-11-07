@@ -125,7 +125,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ausgewähltes Element entfernen}other{# ausgewählte Elemente entfernen}}</translation>
 <translation id="1633659023549081553">Entdecke neue Inhalte auf der Startseite von Chrome</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">Abhängig von deinen Einstellungen kann Chrome auch Cookies und deine aktuelle URL versenden</translation>
 <translation id="164269334534774161">Du siehst dir momentan eine Offlinekopie dieser Seite vom <ph name="CREATION_TIME" /> an</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1657932388559784161">Die Ansicht am unteren Rand mit den Seitenstatistiken ist geschlossen</translation>
@@ -703,7 +702,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4738836084190194332">Letzte Synchronisierung: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Du erhältst bessere Vorschläge in der Adressleiste</translation>
 <translation id="4742970037960872810">Markierung entfernen</translation>
-<translation id="4743664893327841597">Deine Eingaben in der Adressleiste oder im Suchfeld werden an deine Standardsuchmaschine gesendet</translation>
 <translation id="4749960740855309258">Neuen Tab öffnen</translation>
 <translation id="4750356170202299988">Inhalte für betreute Nutzer</translation>
 <translation id="4758061975920522644">Nur Bild teilen</translation>
@@ -737,6 +735,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="4864369630010738180">Anmeldung erfolgt...</translation>
 <translation id="4866368707455379617"><ph name="MODULE" /> kann nicht für Chrome installiert werden</translation>
 <translation id="4871568871368204250">Synchronisierung ausschalten</translation>
+<translation id="4874961007154620743">Wenn dies deaktiviert ist, werden weiterhin Vorschläge angezeigt, die Chrome lokal bereitstellt</translation>
 <translation id="4875775213178255010">Inhaltsvorschläge</translation>
 <translation id="4877678010818027629">Inkognitomodus aktivieren</translation>
 <translation id="4878404682131129617">Tunnelerstellung via Proxyserver ist fehlgeschlagen</translation>
@@ -755,6 +754,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Deine Passwörter werden als Textdatei exportiert und heruntergeladen. Sie sind für jeden Nutzer und jede App mit Zugriff auf den Zielordner sichtbar.</translation>
 <translation id="4926901776383726965">Du kannst Bilder und Dateien speichern, um sie offline anzusehen oder in anderen Apps zu teilen</translation>
+<translation id="4928144016283278047">Schutz vor Tracking (z. B. Drittanbieter-Cookies, IP-Tracking und invasive Scripts)</translation>
 <translation id="4932247056774066048">Da du dich von einem Konto abmeldest, das von <ph name="DOMAIN_NAME" /> verwaltet wird, werden deine Chrome-Daten auf diesem Gerät gelöscht. Die Daten bleiben jedoch in deinem Google-Konto.</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">Keine Ergebnisse</translation>
@@ -1207,6 +1207,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> an <ph name="ORIGIN" /> senden?</translation>
 <translation id="7274013316676448362">Blockierte Website</translation>
 <translation id="7276100255011548441">Themen, die länger als 4 Wochen gelistet sind, werden von Chrome automatisch gelöscht. Je nach deinen Browsingaktivitäten können die Themen wieder in der Liste erscheinen. Du kannst jedoch Themen blockieren, die Chrome nicht mit Websites teilen soll. <ph name="BEGIN_LINK" />Weitere Informationen zum Verwalten des Datenschutzes bei Anzeigen in Chrome<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">Während der Eingabe sendet Chrome den Inhalt der Adressleiste oder des Suchfelds an deine Standardsuchmaschine</translation>
 <translation id="7286703216224610554">Nur Reaktion teilen</translation>
 <translation id="7289303553784750393">Wenn das Problem weiterhin auftritt, obwohl du online bist, kannst du andere Möglichkeiten zum Fortfahren auf <ph name="SITE_ETLD_PLUS_ONE" /> ausprobieren.</translation>
 <translation id="7290209999329137901">Umbenennen nicht verfügbar</translation>
@@ -1345,6 +1346,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7887174313503389866">Sieh dir eine Demo der wichtigsten Datenschutz- und Sicherheitseinstellungen an. Weitere Optionen findest du in den jeweiligen Einstellungen.</translation>
 <translation id="7896724475402191389">Inhalte für betreute Nutzer – aus</translation>
 <translation id="7903184275147100332">Dies kann einen Moment dauern</translation>
+<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">App wurde installiert</translation>
 <translation id="7919123827536834358">Diese Sprachen automatisch übersetzen</translation>
 <translation id="7926975587469166629">Kartenalias</translation>
@@ -1553,6 +1555,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ist bereit</translation>
 <translation id="8937772741022875483">Deine Chrome-Aktivitäten aus Digital Wellbeing entfernen?</translation>
+<translation id="893938492099608175">Abhängig von deinen Einstellungen kann Chrome auch Cookies, deine aktuelle URL und deinen Standort senden</translation>
 <translation id="8942627711005830162">In anderem Fenster öffnen</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Diese Sprache konnte nicht heruntergeladen werden. Versuche es später noch einmal.</translation>
 <translation id="8955719471735800169">Zurück nach oben</translation>

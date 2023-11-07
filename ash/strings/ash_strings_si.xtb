@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">සක්‍රියයි</translation>
 <translation id="1407069428457324124">අඳුරු තේමාව</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. දින අතර සංචාලනය කිරීමට ඊතල යතුරු භාවිත කරන්න.</translation>
+<translation id="141170878022560212">මැද බොත්තම</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ස්ථාපිත යෙදුම</translation>
 <translation id="1414919006379339073">වත්මන් කවුළුව වසන්න</translation>
 <translation id="1415846719612499304">ජාල ලැයිස්තුව පෙන්වන්න. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">ඉමොජි තෝරකය විවෘත කරන්න</translation>
 <translation id="2088116547584365419">ක්‍රීඩා</translation>
 <translation id="209965399369889474">ජාලයට සම්බන්ධ වී නැත</translation>
+<translation id="2107581415810719320">අනෙක් බොත්තම <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">ඔබගේ USB-C කේබලය Thunderbolt සඳහා සහාය නොදක්වයි. උපාංග කාර්ය සාධනය සීමා විය හැකිය.</translation>
 <translation id="2108303511227308752">Alt + Backspace යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Delete යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + Backspace ඔබන්න.</translation>
 <translation id="2126242104232412123">නව මේසය</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">සැකසීම්</translation>
 <translation id="3341303451326249809">තිර රුව ග්‍රහණය කරන ලදි</translation>
 <translation id="334252345105450327">තිර රුවක් ලබා ගන්න</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> සඳහා උපාංග මුරපදය ඇතුළු කරන්න</translation>
 <translation id="334927402682780278">කර්සරයේ සිට පේළියේ අවසානය දක්වා පෙළ තෝරන්න</translation>
 <translation id="3349345708646875009">කාර්ය කළමණාකරු විවෘත කරන්න</translation>
 <translation id="3364721542077212959">පන්හිඳ මෙවලම්</translation>
@@ -1589,6 +1592,7 @@
 <translation id="7489261257412536105">පූර්ණ තිරයට ඇතුළු වන්න හෝ ඉන් පිටවන්න</translation>
 <translation id="7490360161041035804">ඔබට Google Drive ගොනු ඇතුළුව, වැදගත් ගොනු ඇමිණිය හැක. ඇමිණීමට, අයිතමයක් මත සැරිසැරීමට හෝ ගොනු විවෘත කර අයිතමයක් දකුණු-ක්ලික් කරන්න.</translation>
 <translation id="7497767806359279797">භාෂාව සහ යතුරු පුවරුව තෝරන්න</translation>
+<translation id="7507162824403726948">ඔබේ අනන්‍යතාවය සත්‍යාපනය කිරීම අවසන් කරන්න</translation>
 <translation id="7508690557411636492">පසුගිය මාසයේ විවෘත කරන ලදි</translation>
 <translation id="7509246181739783082">ඔබගේ අනන්‍යතාව සත්‍යාපනය කරන්න</translation>
 <translation id="7512509370370076552">දකුණු-ක්ලික් කිරීමේ කෙටිමඟ <ph name="LAUNCHER_KEY_NAME" /> යතුර + alt වෙතින් ක්ලික් කිරීම + ක්ලික් කිරීම වෙත යාවත්කාලීන කර ඇත</translation>

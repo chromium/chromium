@@ -126,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{حذف ۱ مورد انتخاب‌شده}one{حذف # مورد انتخاب‌شده}other{حذف # مورد انتخاب‌شده}}</translation>
 <translation id="1633659023549081553">‏محتوای جدید را در صفحه اصلی Chrome کاوش کنید</translation>
 <translation id="1641113438599504367">مرور ایمن</translation>
-<translation id="1642309806724967937">‏بسته به تنظیمات، Chrome ممکن است کوکی‌ها و نشانی وب فعلی‌تان را نیز ارسال کند</translation>
 <translation id="164269334534774161">شما در حال تماشای کپی آفلاین این صفحه از <ph name="CREATION_TIME" /> هستید</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="1657932388559784161">برگ زیرین اطلاعات آماری صفحه بسته شده است</translation>
@@ -705,7 +704,6 @@
 <translation id="4738836084190194332">آخرین همگام‌سازی: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">پیشنهادهای بهبودیافته‌ای در نوار نشانی دریافت خواهید کرد</translation>
 <translation id="4742970037960872810">برداشتن برجسته‌سازی</translation>
-<translation id="4743664893327841597">آنچه در نوار نشانی یا چارگوش جستجو تایپ می‌کنید به موتور جستجوی پیش‌فرض ارسال می‌شود</translation>
 <translation id="4749960740855309258">باز کردن برگه جدید</translation>
 <translation id="4750356170202299988">محتوای ذهن‌های جوان</translation>
 <translation id="4758061975920522644">فقط هم‌رسانی تصویر</translation>
@@ -739,6 +737,7 @@
 <translation id="4864369630010738180">در حال ورود به سیستم...</translation>
 <translation id="4866368707455379617">‏<ph name="MODULE" /> برای Chrome نصب نشد</translation>
 <translation id="4871568871368204250">خاموش کردن همگام‌سازی</translation>
+<translation id="4874961007154620743">‏وقتی خاموش باشد، همچنان پیشنهادهایی را که Chrome به‌صورت محلی ارائه می‌کند خواهید دید</translation>
 <translation id="4875775213178255010">محتواهای پیشنهادی</translation>
 <translation id="4877678010818027629">ورود به «حالت ناشناس»</translation>
 <translation id="4878404682131129617">برقراری تونل ازطریق سرور پروکسی ناموفق بود</translation>
@@ -757,6 +756,7 @@
 <translation id="4925120120285606924">نماگرفت <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">گذرواژه‌هایتان به‌صورت فایل نوشتاری صادر و بارگیری خواهد شد. گذرواژه‌هایتان برای همه افراد و برنامه‌هایی که به پوشه مقصد دسترسی دارند نمایان خواهد بود.</translation>
 <translation id="4926901776383726965">می‌توانید تصاویر و فایل‌ها را برای مشاهده آفلاین یا هم‌رسانی در برنامه‌های دیگر ذخیره کنید</translation>
+<translation id="4928144016283278047">محافظت دربرابر ردیاب‌ها (کوکی‌های شخص ثالث، ردیابی پروتکل اینترنتی، دستورگان‌های تهاجمی، و موارد دیگر)</translation>
 <translation id="4932247056774066048">‏از آنجایی‌که درحال خروج از سیستم حساب مدیریت‌شده توسط <ph name="DOMAIN_NAME" /> هستید، داده‌های Chrome شما از این دستگاه حذف می‌شود. این مورد در حساب Google شما باقی می‌ماند.</translation>
 <translation id="4943703118917034429">واقعیت مجازی</translation>
 <translation id="4943872375798546930">نتیجه‌ای پیدا نشد</translation>
@@ -1209,6 +1209,7 @@
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> به <ph name="ORIGIN" /> ارسال شود؟</translation>
 <translation id="7274013316676448362">سایت مسدودشده</translation>
 <translation id="7276100255011548441">‏Chrome موضوعات قدیمی‌تر از ۴ هفته را به‌طور خودکار حذف می‌کند. همان‌طور که به مرور ادامه می‌دهید، ممکن است موضوعی دوباره در فهرست ظاهر شود. یا می‌توانید موضوعاتی را که نمی‌خواهید Chrome با سایت‌ها هم‌رسانی کند مسدود کنید. درباره <ph name="BEGIN_LINK" />مدیریت حریم خصوصی آگهی در Chrome<ph name="END_LINK" /> بیشتر بدانید.</translation>
+<translation id="7284878711178835966">‏وقتی تایپ می‌کنید، Chrome محتوای نوار نشانی یا چارگوش جستجو را به موتور جستجوی پیش‌فرض شما ارسال می‌کند</translation>
 <translation id="7286703216224610554">فقط واکنش هم‌رسانی می‌شود</translation>
 <translation id="7289303553784750393">اگر آنلاین هستید اما این مشکل باز هم اتفاق افتاد، می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
 <translation id="7290209999329137901">عدم‌دسترسی به تغییر نام</translation>
@@ -1556,6 +1557,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> آماده است</translation>
 <translation id="8937772741022875483">‏فعالیت Chrome شما در «آسایش دیجیتالی» برداشته شود؟</translation>
+<translation id="893938492099608175">‏بسته به تنظیمات، Chrome ممکن است کوکی‌ها، نشانی وب فعلی، و مکان شما را نیز ارسال کند</translation>
 <translation id="8942627711005830162">باز کردن در پنجره دیگر</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - این زبان بارگیری نشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="8955719471735800169">برگشتن به بالا</translation>

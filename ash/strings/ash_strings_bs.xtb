@@ -116,6 +116,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1391102559483454063">Uključeno</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Pomoću tipki sa strelicama navigirajte datumima.</translation>
+<translation id="141170878022560212">Srednje dugme</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, instalirana aplikacija</translation>
 <translation id="1414919006379339073">Zatvori trenutni prozor</translation>
 <translation id="1415846719612499304">Pogledajte listu mreža. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2086334242442703436">Otvaranje izbornika emoji sličica</translation>
 <translation id="2088116547584365419">igre</translation>
 <translation id="209965399369889474">Niste povezani na mrežu</translation>
+<translation id="2107581415810719320">Drugo dugme <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C kabl ne podržava Thunderbolt. Performanse uređaja su možda ograničene.</translation>
 <translation id="2108303511227308752">Prečica na tastaturi Alt + Backspace je promijenjena. Da koristite tipku Delete, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Novi sto</translation>
@@ -563,6 +565,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3340978935015468852">postavke</translation>
 <translation id="3341303451326249809">Snimak ekrana je napravljen</translation>
 <translation id="334252345105450327">Snimi ekran</translation>
+<translation id="3346728094401457853">Unesite lozinku uređaja za <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Odabir teksta od kursora do kraja reda</translation>
 <translation id="3349345708646875009">Otvorite upravitelja zadataka</translation>
 <translation id="3364721542077212959">Stilos alati</translation>
@@ -1589,6 +1592,7 @@ Nova instalacija</translation>
 <translation id="7489261257412536105">Otvori ili zatvori prikaz preko cijelog ekrana</translation>
 <translation id="7490360161041035804">Možete zakačiti važne fajlove, uključujući fajlove Google Diska. Da zakačite, postaviti pokazivač miša iznad stavke ili otvorite Fajlove i desnim klikom odaberite stavku.</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
+<translation id="7507162824403726948">Dovršite potvrđivanje identiteta</translation>
 <translation id="7508690557411636492">Otvoreno u proteklom mjesecu</translation>
 <translation id="7509246181739783082">Potvrdite identitet</translation>
 <translation id="7512509370370076552">Prečica desnog klika je ažurirana iz Alt i klik u tipku <ph name="LAUNCHER_KEY_NAME" /> i klik</translation>

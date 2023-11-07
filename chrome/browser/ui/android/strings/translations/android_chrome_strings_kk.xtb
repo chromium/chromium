@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">Бұл сайттарды аударуды ұсынбау</translation>
 <translation id="1145536944570833626">Бар деректерді жойыңыз.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> қолданбасы Chrome браузерінде ашылады. Жалғастыру арқылы <ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарына<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome және ChromeOS Қосымша қызмет көрсету шарттарына<ph name="END_LINK2" /> келісесіз.</translation>
+<translation id="115483310321669804"><ph name="PASSWORD" /> құпия сөзін пайдалану</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
 <translation id="1174479719160874822">Экран тар болған кезде, Chrome мобильдік сайтты сұрайды</translation>
 <translation id="1177863135347784049">Реттелетін</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Таңдалған 1 элементті өшіру}other{Таңдалған # элементті өшіру}}</translation>
 <translation id="1633659023549081553">Chrome-ның негізгі бетінен жаңа контентті көріңіз.</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">Сонымен қатар параметрлеріңізге байланысты Chrome cookie файлдары мен қазіргі URL мекенжайыңызды жіберуі мүмкін.</translation>
 <translation id="164269334534774161">Осы беттің <ph name="CREATION_TIME" /> күнгі офлайн көшірмесі шығарылды</translation>
 <translation id="1644574205037202324">Тарих</translation>
 <translation id="1657932388559784161">Бет статистикасының төменгі парақшасы жабылды</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">Терезені жабу</translation>
 <translation id="1791662854739702043">Орнатылды</translation>
 <translation id="1792959175193046959">Әдепкі жүктеп алу орнын кез келген уақытта өзгертіңіз</translation>
+<translation id="1796666869097395659">Қойындыны жиып қойып, кейін қайта оралуға болады.</translation>
 <translation id="1807246157184219062">Ашық</translation>
 <translation id="1810845389119482123">Синхронизация параметрлері орнатылмады</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> сайты <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> провайдерін пайдалануды жалғастыра алмайды.</translation>
@@ -703,7 +704,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4738836084190194332">Соңғы синхрондалған уақыты: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Мекенжай жолағында жақсартылған ұсыныстар аласыз.</translation>
 <translation id="4742970037960872810">Ерекшелемеу</translation>
-<translation id="4743664893327841597">Мекенжай жолағында немесе іздеу өрісінде тергеніңіз әдепкі іздеу жүйесіне жіберіледі.</translation>
 <translation id="4749960740855309258">Жаңа қойынды ашу</translation>
 <translation id="4750356170202299988">Жеткіншектерге арналған контент</translation>
 <translation id="4758061975920522644">Тек кескін бөлісу</translation>
@@ -755,6 +755,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4925120120285606924">Скриншот <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Құпия сөздеріңіз мәтіндік файл түрінде экспортталады және жүктеп алынады. Олар тиісті қалтаға өту мүмкіндігімен барлық пайдаланушыларға және қолданбаларға көрінеді.</translation>
 <translation id="4926901776383726965">Офлайн көру немесе басқа қолданбаларда бөлісу үшін суреттер мен файлдарды сақтауға болады</translation>
+<translation id="4928144016283278047">Трекерлерден (үшінші тарап cookie файлдарынан, IP бақылаудан, мазаны алатын скриптілерден және т.б.) қорғау</translation>
 <translation id="4932247056774066048">Сіз <ph name="DOMAIN_NAME" /> басқаратын аккаунттан шығып бара жатқандықтан, Chrome браузеріңіздегі деректер осы құрылғыдан жойылады. Ол Google аккаунтыңызда сақталады.</translation>
 <translation id="4943703118917034429">Виртуалдық шындық</translation>
 <translation id="4943872375798546930">Нәтижесіз</translation>
@@ -1207,6 +1208,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> коды <ph name="ORIGIN" /> сайтына жіберілсін бе?</translation>
 <translation id="7274013316676448362">Бөгелген сайт</translation>
 <translation id="7276100255011548441">Chrome браузері 4 аптадан асқан тақырыптарды автоматты жояды. Оны қайта қараған кезде, тақырып тізімге қайта қосылуы мүмкін. Болмаса Chrome браузері сайттармен бөлісуді қаламайтын тақырыптарды бөгей аласыз. <ph name="BEGIN_LINK" />Chrome-да жарнамадағы құпиялықты басқару<ph name="END_LINK" /> туралы толық ақпарат.</translation>
+<translation id="7284878711178835966">Сіз терген сайын, Chrome мекенжай жолағының немесе іздеу өрісінің ішіндегі ақпаратты әдепкі іздеу жүйесіне жібереді.</translation>
 <translation id="7286703216224610554">Тек эмоцияны бөлісу</translation>
 <translation id="7289303553784750393">Онлайн болсаңыз да, бұл мәселе қайталана берсе, <ph name="SITE_ETLD_PLUS_ONE" /> сайтында жалғастырудың басқа жолдарын байқап көрсеңіз болады.</translation>
 <translation id="7290209999329137901">Атын өзгерту мүмкін емес.</translation>

@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">عدم اقتراح ترجمة لهذه المواقع الإلكترونية</translation>
 <translation id="1145536944570833626">سيتم حذف البيانات الحالية.</translation>
 <translation id="1150263420752757504">‏سيتم فتح تطبيق "<ph name="APP_NAME" />" في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">استخدام كلمة المرور "<ph name="PASSWORD" />"</translation>
 <translation id="1173894706177603556">إعادة تسمية</translation>
 <translation id="1174479719160874822">‏‫Chrome سيطلب الوصول إلى الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة عندما يكون عرض الشاشة محدودًا</translation>
 <translation id="1177863135347784049">مخصص</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{إزالة عنصر واحد محدد}zero{إزالة # عنصر محدد}two{إزالة عنصرين (#) محددين}few{إزالة # عناصر محددة}many{إزالة # عنصرًا محددًا}other{إزالة # عنصر محدد}}</translation>
 <translation id="1633659023549081553">‏يمكنك الاطّلاع على المحتوى الجديد في صفحة Chrome الرئيسية.</translation>
 <translation id="1641113438599504367">التصفح الآمن</translation>
-<translation id="1642309806724967937">‏استنادًا إلى إعداداتك، قد يرسل متصفِّح Chrome أيضًا ملفات تعريف الارتباط وعنوان URL الحالي.</translation>
 <translation id="164269334534774161">أنت تعرض نسخة بلا اتصال لهذه الصفحة من <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1657932388559784161">تم إغلاق البطاقة السفلية لإحصاءات الصفحة.</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">إغلاق النافذة</translation>
 <translation id="1791662854739702043">تم التثبيت</translation>
 <translation id="1792959175193046959">تغيير موقع التنزيل التلقائي في أي وقت</translation>
+<translation id="1796666869097395659">تصغير علامة التبويب للرجوع إليها لاحقًا</translation>
 <translation id="1807246157184219062">فاتح</translation>
 <translation id="1810845389119482123">إعداد المزامنة الأولية لم يكتمل</translation>
 <translation id="1812027881030482584">ليس بإمكان "<ph name="SITE_ETLD_PLUS_ONE" />" مواصلة استخدام "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
@@ -705,7 +706,6 @@
 <translation id="4738836084190194332">آخر مزامنة: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">ستحصل على اقتراحات محسّنة في شريط العناوين</translation>
 <translation id="4742970037960872810">إزالة التمييز</translation>
-<translation id="4743664893327841597">يتم إرسال ما تكتبه في شريط العناوين أو مربّع البحث إلى محرك البحث التلقائي.</translation>
 <translation id="4749960740855309258">فتح علامة تبويب جديدة</translation>
 <translation id="4750356170202299988">محتوى للأطفال</translation>
 <translation id="4758061975920522644">مشاركة الصورة فقط</translation>
@@ -757,6 +757,7 @@
 <translation id="4925120120285606924">لقطة شاشة بتاريخ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">سيتم تصدير كلمات المرور الخاصة بك وتنزيلها كملف نصي. وستكون مرئية لأي شخص وأي تطبيق لديه إمكانية الوصول إلى هذا الملف النصي.</translation>
 <translation id="4926901776383726965">يمكنك حفظ الصور والملفات لعرضها بلا اتصال بالإنترنت أو مشاركتها في تطبيقات أخرى.</translation>
+<translation id="4928144016283278047">‏الحماية من أدوات التتبُّع (ملفات تعريف الارتباط التابعة لجهات خارجية وتتبُّع عناوين IP والنصوص البرمجية التي تنتهك الخصوصية، وغير ذلك)</translation>
 <translation id="4932247056774066048">‏لأنك بصدد الخروج من حساب تتم إدارته من خلال <ph name="DOMAIN_NAME" />، سيتم حذف بيانات Chrome من هذا الجهاز. وستظل البيانات في حسابك على Google.</translation>
 <translation id="4943703118917034429">الواقع الافتراضي</translation>
 <translation id="4943872375798546930">لا نتائج</translation>
@@ -1209,6 +1210,7 @@
 <translation id="727288900855680735">هل تريد إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="ORIGIN" />؟</translation>
 <translation id="7274013316676448362">تم حظر الموقع.</translation>
 <translation id="7276100255011548441">‏يحذف Chrome تلقائيًا المواضيع التي يمرّ أكثر من 4 أسابيع على إضافتها إلى قائمة "مواضيع الإعلانات". ومع استمرارك في التصفّح، قد يُضاف موضوع إلى القائمة مجددًا. يمكنك أيضًا حظر المواضيع التي لا تريد أن يشاركها Chrome مع المواقع الإلكترونية. مزيد من المعلومات حول <ph name="BEGIN_LINK" />إدارة الخصوصية في عرض الإعلانات في Chrome<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">‏أثناء الكتابة، يرسِل Chrome محتوى شريط العناوين أو مربّع البحث إلى محرك البحث التلقائي.</translation>
 <translation id="7286703216224610554">مشاركة التفاعل فقط</translation>
 <translation id="7289303553784750393">في حالة استمرار ظهور هذه المشكلة أثناء اتصالك بالإنترنت، يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
 <translation id="7290209999329137901">إعادة التسمية غير متوفرة</translation>

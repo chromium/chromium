@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}}</translation>
 <translation id="2410940059315936967">আপুনি চোৱা এটা ছাইটে অন্য এটা ছাইটৰ পৰা প্ৰতিচ্ছবি, বিজ্ঞাপন আৰু পাঠৰ দৰে সমল এম্বেড কৰিব পাৰে। এই অন্য ছাইটসমূহে ছেট কৰা কুকিসমূহক তৃতীয় পক্ষৰ কুকি বুলি কোৱা হয়।</translation>
 <translation id="2434158240863470628">ডাউনল’ড সম্পূর্ণ হৈছে <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">আপুনি এই ছাইটটোক তৃতীয় পক্ষৰ কুকিসমূহ ব্যৱহাৰ কৰিবলৈ অস্থায়ীভাৱে অনুমতি দিছে, যাৰ ফলস্বৰূপে ব্ৰাউজিং কম সুৰক্ষিত হ’ব কিন্তু ছাইটৰ সুবিধাসমূহে আশা কৰা ধৰণে কাম কৰাৰ সম্ভাৱনা অধিক থাকে। <ph name="BEGIN_LINK" />মতামত পঠিয়াওক<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">ইনক’গনিট’ ম’ডত কিছুমান ছাইটৰ সুবিধাসমূহে কাম নকৰিবও পাৰে</translation>
 <translation id="2442870161001914531">সদায়েই ডেস্কটপ ছাইট অনুৰোধ কৰিব</translation>
 <translation id="2469312991797799607">এই কাৰ্যটোৱে <ph name="ORIGIN" />ৰ বাবে আৰু ইয়াৰ অন্তৰ্গত আটাইবোৰ ছাইটৰ বাবে আটাইবোৰ ডাটা আৰু কুকি মচিব</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">ছাইটক প্রতিবন্ধিত সমল প্লে' কৰিব দিয়াৰ আগত সোধক</translation>
 <translation id="2932883381142163287">দুৰ্ব্যৱহাৰৰ অভিযোগ দিয়ক</translation>
 <translation id="2968755619301702150">প্ৰমাণপত্ৰ ভিউৱাৰ</translation>
+<translation id="2979365474350987274">তৃতীয় পক্ষৰ কুকি সীমিত কৰা হৈছে</translation>
 <translation id="3008272652534848354">অনুমতি ৰিছেট কৰক</translation>
 <translation id="301521992641321250">স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
 <translation id="3069226013421428034">নিৰ্দিষ্ট কোনো ছাইটৰ বাবে তৃতীয় পক্ষৰ ছাইন ইনৰ অনুমতি দিয়ক।</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">মচক আৰু ৰিছেট কৰক</translation>
 <translation id="4645575059429386691">আপোনাৰ অভিভাৱকৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="4670064810192446073">ভাৰ্চুৱেল ৰিয়েলিটি</translation>
+<translation id="4673958474310291465">তৃতীয় পক্ষৰ কুকিসমূহক অস্থায়ীভাৱে অনুমতি দি চাওক, যাৰ ফলত কম সুৰক্ষিত হ’ব কিন্তু ছাইটৰ সুবিধাসমূহে আশা কৰা কাম কৰাৰ সম্ভাৱনা অধিক থাকে</translation>
 <translation id="4751476147751820511">গতি বা পোহৰ ধৰা পেলাব পৰা ছেন্সৰ</translation>
 <translation id="4779083564647765204">জুম কৰক</translation>
 <translation id="4811450222531576619">ইয়াৰ উৎস আৰু বিষয়বস্তুৰ সম্পৰ্কে অধিক জানক</translation>

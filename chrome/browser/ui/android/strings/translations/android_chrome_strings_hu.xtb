@@ -126,7 +126,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 kijelölt elem eltávolítása}other{# kijelölt elem eltávolítása}}</translation>
 <translation id="1633659023549081553">Fedezzen fel új tartalmakat a Chrome kezdőlapján</translation>
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
-<translation id="1642309806724967937">A beállításaitól függően a Chrome cookie-kat és az Ön jelenlegi URL-jét is elküldheti.</translation>
 <translation id="164269334534774161">Jelenleg az oldal <ph name="CREATION_TIME" />-i dátummal mentett offline példányát tekinti meg</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1657932388559784161">Az oldalstatisztikák alsó lapja be van zárva</translation>
@@ -705,7 +704,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4738836084190194332">Utolsó szinkronizálás: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Jobb javaslatokat kaphat a címsávban.</translation>
 <translation id="4742970037960872810">Kiemelés eltávolítása</translation>
-<translation id="4743664893327841597">A címsávba beírt szöveget a rendszer elküldi az alapértelmezett keresőmotornak</translation>
 <translation id="4749960740855309258">Új lap megnyitása</translation>
 <translation id="4750356170202299988">Tartalmak fiatal elméknek</translation>
 <translation id="4758061975920522644">Csak kép megosztása</translation>
@@ -757,6 +755,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="4925120120285606924">Képernyőkép (<ph name="CURRENT_DATE_ISO" />)</translation>
 <translation id="49268022542405662">Jelszavainak exportálására és letöltésére szöveges fájl formájában kerül sor. Jelszavai mindenki és minden olyan alkalmazás számára láthatók lesznek, aki és amely hozzáfér a célmappához.</translation>
 <translation id="4926901776383726965">Képeket és fájlokat menthet az offline megtekintéshez vagy más alkalmazásokban való megosztáshoz</translation>
+<translation id="4928144016283278047">Védelem a nyomkövetéssel (harmadik féltől származó cookie-k, IP-cím nyomon követése, invazív szkriptek és egyebek) szemben</translation>
 <translation id="4932247056774066048">Mivel kijelentkezik a(z) <ph name="DOMAIN_NAME" /> által kezelt fiókból, a rendszer törli az Ön Chrome-adatait erről az eszközről. Google-fiókjában továbbra is megmaradnak ezek az adatok.</translation>
 <translation id="4943703118917034429">Virtuális valóság</translation>
 <translation id="4943872375798546930">Nincs találat</translation>
@@ -1209,6 +1208,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="727288900855680735">Elküldi a(z) <ph name="ONE_TIME_CODE" /> kódot ide: <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Letiltott oldal</translation>
 <translation id="7276100255011548441">A Chrome automatikusan törli a négy hétnél régebbi témákat. A böngészési tevékenységei alapján előfordulhat, hogy egy adott téma újra megjelenik a listában. Arra is lehetősége van, hogy letiltsa azokat a témákat, amelyeket nem szeretne, hogy a Chrome megosszon a webhelyekkel. További információ a <ph name="BEGIN_LINK" />hirdetésekhez kapcsolódó adatvédelem Chrome-ban való kezeléséről<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">Gépelés közben a Chrome elküldi a címsáv és a keresőmező tartalmát az alapértelmezett keresőmotornak.</translation>
 <translation id="7286703216224610554">Csak reakció megosztása</translation>
 <translation id="7289303553784750393">Ha online állapotban van, de a probléma továbbra is fennáll, más módon is próbálkozhat a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyen való folytatással.</translation>
 <translation id="7290209999329137901">Nem lehetséges az átnevezés</translation>

@@ -32,6 +32,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1142732900304639782">Ne ponudi prevajanja teh spletnih mest</translation>
 <translation id="1145536944570833626">Izbris obstoječih podatkov.</translation>
 <translation id="1150263420752757504">Aplikacija <ph name="APP_NAME" /> se bo odprla v Chromu. Če nadaljujete, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Uporaba gesla <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1174479719160874822">Chrome bo zahteval spletno mesto za mobilne naprave, ko je zaslon ozek</translation>
 <translation id="1177863135347784049">Po meri</translation>
@@ -125,7 +126,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstranitev 1 izbranega elementa}one{Odstranitev # izbranega elementa}two{Odstranitev # izbranih elementov}few{Odstranitev # izbranih elementov}other{Odstranitev # izbranih elementov}}</translation>
 <translation id="1633659023549081553">Odkrijte novo vsebino na Chromovi domači strani.</translation>
 <translation id="1641113438599504367">Varno brskanje</translation>
-<translation id="1642309806724967937">Chrome lahko glede na nastavitve pošlje tudi piškotke in vaš trenutni URL</translation>
 <translation id="164269334534774161">Ogledujete si kopijo te strani brez povezave z dne <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Zgodovina</translation>
 <translation id="1657932388559784161">Razdelek na dnu zaslona s podrobnimi podatki o strani je zaprt</translation>
@@ -149,6 +149,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1779766957982586368">Zapre okno</translation>
 <translation id="1791662854739702043">Nameščeno</translation>
 <translation id="1792959175193046959">Kadar koli lahko spremenite privzeto mesto za prenose</translation>
+<translation id="1796666869097395659">Minimizirajte zavihek, da se boste pozneje lahko vrnili nanj</translation>
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1810845389119482123">Začetna nastavitev sinhronizacije se ni dokončala</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne more nadaljevati z računom ponudnika identitete <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -703,7 +704,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4738836084190194332">Zadnja sinhronizacija: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">V naslovni vrstici boste prejemali izboljšane predloge.</translation>
 <translation id="4742970037960872810">Odstrani označitev</translation>
-<translation id="4743664893327841597">Kar vnesete v naslovno vrstico ali iskalno polje, se pošlje privzetemu iskalniku</translation>
 <translation id="4749960740855309258">Odpiranje novega zavihka</translation>
 <translation id="4750356170202299988">Vsebina za mlade ume</translation>
 <translation id="4758061975920522644">Deli samo sliko</translation>
@@ -737,6 +737,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4864369630010738180">Prijavljanje ...</translation>
 <translation id="4866368707455379617">Modula <ph name="MODULE" /> za Chrome ni mogoče namestiti</translation>
 <translation id="4871568871368204250">Izklop sinhronizacije</translation>
+<translation id="4874961007154620743">Če je to izklopljeno, bodo še vedno prikazani predlogi, ki jih Chrome zagotavlja lokalno</translation>
 <translation id="4875775213178255010">Predlogi za vsebino</translation>
 <translation id="4877678010818027629">Vklop anonimnega načina</translation>
 <translation id="4878404682131129617">Vzpostavljanje tunela prek strežnika proxy ni uspelo</translation>
@@ -755,6 +756,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4925120120285606924">Posnetek zaslona <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Gesla bodo izvožena in prenesena v obliki besedilne datoteke. Vidna bodo vsem osebam in aplikacijam, ki imajo dostop do ciljne mape.</translation>
 <translation id="4926901776383726965">Slike in datoteke lahko shranite za ogled brez povezave ali deljenje v drugih aplikacijah</translation>
+<translation id="4928144016283278047">Zaščita pred sledilniki (piškotki tretjih oseb, sledenje IP-jem, invazivni skripti in drugo)</translation>
 <translation id="4932247056774066048">Ker se odjavljate iz računa, ki ga upravlja <ph name="DOMAIN_NAME" />, bodo podatki v Chromu izbrisani iz te naprave. Ostali bodo v računu Google.</translation>
 <translation id="4943703118917034429">Navidezna resničnost</translation>
 <translation id="4943872375798546930">Ni rezultatov</translation>
@@ -1207,6 +1209,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="727288900855680735">Želite, da se <ph name="ONE_TIME_CODE" /> pošlje <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blokirano spletno mesto</translation>
 <translation id="7276100255011548441">Chrome samodejno izbriše teme, starejše od 4 tednov. Ko nadaljujete brskanje, se lahko na seznamu znova prikaže tema. Blokirate lahko tudi teme, za katere ne želite, da jih Chrome deli s spletnimi mesti. Preberite več o <ph name="BEGIN_LINK" />upravljanju zasebnosti pri oglaševanju v Chromu.<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">Med vnašanjem Chrome pošlje vsebino naslovne vrstice ali iskalnega polja privzetemu iskalniku</translation>
 <translation id="7286703216224610554">Deli samo odziv</translation>
 <translation id="7289303553784750393">Če ste povezani v splet, vendar se težava ponavlja, lahko na <ph name="SITE_ETLD_PLUS_ONE" /> poskusite nadaljevati na druge načine.</translation>
 <translation id="7290209999329137901">Preimenovanje ni na voljo</translation>
@@ -1554,6 +1557,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Jezik <ph name="LANG" /> je pripravljen.</translation>
 <translation id="8937772741022875483">Ali želite svojo dejavnost v Chromu odstraniti iz Digitalne dobrobiti?</translation>
+<translation id="893938492099608175">Chrome lahko glede na nastavitve pošlje tudi piškotke, trenutni URL in vašo lokacijo</translation>
 <translation id="8942627711005830162">Odpri v drugem oknu</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – tega jezika ni bilo mogoče prenesti. Poskusite pozneje.</translation>
 <translation id="8955719471735800169">Nazaj na vrh</translation>

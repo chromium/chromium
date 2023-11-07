@@ -32,6 +32,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1142732900304639782">Usionyeshe chaguo la kutafsiri tovuti hizi</translation>
 <translation id="1145536944570833626">Futa data iliyopo.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> itafunguka kwenye Chrome. Kwa kuendelea, unakubali <ph name="BEGIN_LINK1" />Sheria na Masharti ya Google<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Tumia nenosiri <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Ipe jina jipya</translation>
 <translation id="1174479719160874822">Chrome itaomba tovuti ya kifaa cha mkononi skrini ikiwa nyembamba</translation>
 <translation id="1177863135347784049">Maalum</translation>
@@ -125,7 +126,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ondoa kipengee 1 kilichochaguliwa}other{Ondoa vipengee # vilivyochaguliwa}}</translation>
 <translation id="1633659023549081553">Gundua maudhui mapya kwenye ukurasa wa kwanza wa Chrome</translation>
 <translation id="1641113438599504367">Kuvinjari Salama</translation>
-<translation id="1642309806724967937">Kulingana na mipangilio yako, Chrome pia inaweza kutuma vidakuzi na URL unayotumia kwa sasa</translation>
 <translation id="164269334534774161">Hii ni nakala ya nje ya mtandao ya ukurasa huu ya terehe <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1657932388559784161">Safu ya chini ya maarifa ya ukurasa imefungwa</translation>
@@ -149,6 +149,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1779766957982586368">Funga dirisha</translation>
 <translation id="1791662854739702043">Imesakinishwa</translation>
 <translation id="1792959175193046959">Badilisha sehemu chaguomsingi ya kupakua wakati wowote</translation>
+<translation id="1796666869097395659">Punguza kichupo ili urudi baadaye</translation>
 <translation id="1807246157184219062">Mwangaza</translation>
 <translation id="1810845389119482123">Haijakamilisha Kuweka mipangilio ya mwanzo ya usawazishaji</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> haiwezi kuendelea kwa kutumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4738836084190194332">Kilisawazishwa mara ya mwisho: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Utapata mapendekezo yaliyoboreshwa katika sehemu ya anwani</translation>
 <translation id="4742970037960872810">Acha kuangazia</translation>
-<translation id="4743664893327841597">Unachoandika katika sehemu ya anwani au kisanduku cha kutafutia hutumwa kwenye mtambo wako chaguomsingi wa kutafuta</translation>
 <translation id="4749960740855309258">Fungua kichupo kipya</translation>
 <translation id="4750356170202299988">Maudhui yanayolenga vijana wadogo</translation>
 <translation id="4758061975920522644">Shiriki picha pekee</translation>
@@ -737,6 +737,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="4864369630010738180">Unaingia katika akaunti...</translation>
 <translation id="4866368707455379617">Imeshindwa kusakinisha <ph name="MODULE" /> kwenye Chrome</translation>
 <translation id="4871568871368204250">Zima usawazishaji</translation>
+<translation id="4874961007154620743">Ukizima kipengele hiki, bado utaona mapendekezo ambayo Chrome hutoa kwenye kivinjari</translation>
 <translation id="4875775213178255010">Mapendekezo ya Maudhui</translation>
 <translation id="4877678010818027629">Ingia katika hali fiche</translation>
 <translation id="4878404682131129617">Imeshindwa kuanzisha mkondo kupitia seva mbadala</translation>
@@ -755,6 +756,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="4925120120285606924">Picha ya skrini <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Manenosiri yako yatatumwa na kupakuliwa katika muundo wa faili ya maandishi. Programu na mtu yeyote aliye na uwezo wa kufikia folda atayaona.</translation>
 <translation id="4926901776383726965">Unaweza kuhifadhi picha na faili ili utazame ukiwa nje ya mtandao au kushiriki katika programu zingine</translation>
+<translation id="4928144016283278047">Ulinzi dhidi ya tovuti zinazofuatilia(vidakuzi vya mshirika mwingine, ufuatiliaji wa IP, hati za uvamizi na zaidi)</translation>
 <translation id="4932247056774066048">Kwa sababu unaondoka katika akaunti inayodhibitiwa na <ph name="DOMAIN_NAME" />, data yako ya Chrome itafutwa kwenye kifaa hiki. Itabaki katika Akaunti yako ya Google.</translation>
 <translation id="4943703118917034429">Uhalisia Pepe</translation>
 <translation id="4943872375798546930">Hakuna matokeo yoyote yaliyopatikana</translation>
@@ -1207,6 +1209,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="727288900855680735">Ungependa kutuma <ph name="ONE_TIME_CODE" /> kwa <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Tovuti imezuiwa</translation>
 <translation id="7276100255011548441">Chrome hufuta kiotomatiki mada zilizohifadhiwa katika orodha kwa zaidi ya wiki 4. Kadiri unavyoendelea kuvinjari, mada inaweza kuonekana tena kwenye orodha. Au unaweza kuzuia mada ambazo usingependa Chrome ishiriki na tovuti. Pata maelezo zaidi kuhusu <ph name="BEGIN_LINK" />kudhibiti faragha yako ya matangazo kwenye Chrome.<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">Unapoendelea kuandika, Chrome hutuma maudhui yaliyo kwenye sehemu ya anwani au kisanduku cha kutafutia kwenye mtambo wako chaguomsingi wa kutafuta</translation>
 <translation id="7286703216224610554">Shiriki maoni pekee</translation>
 <translation id="7289303553784750393">Iwapo upo mtandaoni lakini hitilafu hii inaendelea kutokea, unaweza kujaribu njia nyingine ili uendelee kwenye <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Huwezi kubadilisha jina</translation>
@@ -1554,6 +1557,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Pata Maelezo Zaidi<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Lugha ya <ph name="LANG" /> iko tayari</translation>
 <translation id="8937772741022875483">Ungependa kuondoa Shughuli zako za Chrome kwenye mpango wa Nidhamu Dijitali?</translation>
+<translation id="893938492099608175">Kulingana na mipangilio yako, Chrome inaweza pia kutuma vidakuzi, URL unayotumia na maelezo ya mahali ulipo</translation>
 <translation id="8942627711005830162">Fungua katika dirisha jingine</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Imeshindwa kupakua lugha hii. Jaribu tena baadaye.</translation>
 <translation id="8955719471735800169">Rudi juu</translation>

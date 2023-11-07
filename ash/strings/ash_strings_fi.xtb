@@ -116,6 +116,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1391102559483454063">Päällä</translation>
 <translation id="1407069428457324124">Tumma teema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Siirry päivästä toiseen nuolinäppäimillä.</translation>
+<translation id="141170878022560212">Keskipainike</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, asennettu sovellus</translation>
 <translation id="1414919006379339073">Sulje nykyinen ikkuna</translation>
 <translation id="1415846719612499304">Näytä verkkoluettelo. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2086334242442703436">Avaa emojien valitsin</translation>
 <translation id="2088116547584365419">pelejä</translation>
 <translation id="209965399369889474">Ei verkkoyhteyttä</translation>
+<translation id="2107581415810719320">Muu painike <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-johto ei tue Thunderboltia. Laitteen toiminta voi olla rajoitettua.</translation>
 <translation id="2108303511227308752">Pikanäppäinyhdistelmä Alt + askelpalautin on muuttunut. Jos haluat käyttää Delete-näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + askelpalautin.</translation>
 <translation id="2126242104232412123">Uusi työpöytä</translation>
@@ -376,7 +378,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2531025035050312891">hidas laite</translation>
 <translation id="2531107890083353124">Vedä välilehteä ja paina samalla <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Kopioi valittu sisältö leikepöydälle</translation>
-<translation id="2549711466868162843">Paranna valaistusta</translation>
+<translation id="2549711466868162843">Valaistuksen parantaminen</translation>
 <translation id="2549985041256363841">Aloita tallennus</translation>
 <translation id="255671100581129685">Google Assistantia ei voi käyttää julkisella käyttökerralla.</translation>
 <translation id="256712445991462162">kiinnitetty näytön suurentaja</translation>
@@ -563,6 +565,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3340978935015468852">asetuksissa</translation>
 <translation id="3341303451326249809">Kuvakaappaus tallennettu</translation>
 <translation id="334252345105450327">Ota kuvakaappaus</translation>
+<translation id="3346728094401457853">Lisää laitteen salasana: <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Valitse tekstiä kohdistimesta rivin loppuun</translation>
 <translation id="3349345708646875009">Avaa tehtävänhallinta</translation>
 <translation id="3364721542077212959">Näyttökynätyökalut</translation>
@@ -1589,6 +1592,7 @@ Uusi asennus</translation>
 <translation id="7489261257412536105">Koko näytön tila päälle/pois</translation>
 <translation id="7490360161041035804">Voit kiinnittää tärkeitä tiedostoja, mukaan lukien Google Drive ‐tiedostoja. Voit kiinnittää kohteen viemällä hiiren kohteen päälle tai avaamalla Tiedostot ja klikkaamalla kohdetta hiiren kakkospainikkeella.</translation>
 <translation id="7497767806359279797">Valitse kieli ja näppäimistö</translation>
+<translation id="7507162824403726948">Viimeistele henkilöllisyyden vahvistaminen</translation>
 <translation id="7508690557411636492">Avattu kuluneen kuukauden aikana</translation>
 <translation id="7509246181739783082">Vahvista henkilöllisyys</translation>
 <translation id="7512509370370076552">Kakkospainikkeen pikanäppäinyhdistelmä on nyt <ph name="LAUNCHER_KEY_NAME" /> + klikkaus (vanha: Alt + klikkaus)</translation>

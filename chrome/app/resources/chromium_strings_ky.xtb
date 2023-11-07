@@ -24,6 +24,7 @@
 <translation id="1342274909142618978">Chromium'дан да (<ph name="URL" />) дайындарды өчүрүү</translation>
 <translation id="1414495520565016063">Chromium'га кирдиңиз!</translation>
 <translation id="1478370723027452770">Chrome for Testing боюнча жардам алуу</translation>
+<translation id="1497802159252041924">Орнотуу катасы: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium өтмөгүн бөлүшүү</translation>
 <translation id="1553461853655228091">Chromium айланаңыздын 3D картасын түзүү үчүн камераңызды колдонушу керек</translation>
 <translation id="1574377791422810894">Chromium'дун коопсуздук куралдары</translation>
@@ -159,11 +160,13 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ушул Chromium профилине мурунтан эле кирип турат. Сиз серептеген нерселерди ажыратуу максатында Chromium сиз үчүн өзүнчө профиль түзүп бере алат.</translation>
 <translation id="3909353120217047026">Бул кеңейтүү Chrome Интернет дүкөнүнүн саясатын бузат жана кооптуу болушу мүмкүн. Сиз кирген сайттардагы дайын-даректериңизди, анын ичинде жеке маалыматыңызды мындан ары көрүп жана өзгөртпөшү үчүн аны Chromium'дан алып салыңыз.</translation>
 <translation id="391789666908693569">Аккаунтуңуз <ph name="MANAGER_NAME" /> тарабынан башкарылууда. Администраторуңуз Chromium серепчисиндеги профилди жана андагы маалыматты, мисалы, кыстармаларды, таржымалды жана сырсөздөрдү көрүп, түзөтө алат.</translation>
+<translation id="3922825997980843979">Терип жатканыңызда, Chromium дарек тилкесинин же издөө кутучасынын мазмунун демейки издөө каражатына жөнөтөт</translation>
 <translation id="3945058413678539331">Chromium сырсөздөрдү көчүрүүгө аракет кылууда. Уруксат берүү үчүн Windows сырсөзүңүздү жазыңыз.</translation>
 <translation id="3962647064319009959">Chromium коопсуздугуңузду кантип камсыздаганын билип алыңыз</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing жөнүндө</translation>
 <translation id="3997429360543082038">ChromiumOS жөнүндө</translation>
 <translation id="4019629340646866719">ChromiumOS тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
+<translation id="4028143804911941282">Өчүк болгондо, Chromium'дун түзмөктөгү сунуштарынткөрө бересиз</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Учурдагы жөндөөлөр<ph name="END_LINK" /> жөнүндө кабар берип, Chromium'ду өркүндөтүүгө кол кабыш кылыңыз</translation>
 <translation id="4050175100176540509">Эң акыркы версияда коопсуздукту бекемдөө каражаттары менен жаңы мүмкүнчүлүктөр камтылган.</translation>
 <translation id="4055805654398742145">С&amp;ырсөздөрдү башкаргыч</translation>
@@ -255,6 +258,7 @@
 <translation id="6003112304606738118">Жүктөлүп алынууда... <ph name="HOURS" /> саат калды</translation>
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6055895534982063517">Chromium'дун чагылгандай тездик менен иштеген жаңы версиясы бар.</translation>
+<translation id="6058380562449900225">Маалыматыңызды коргоо үчүн Chromium'га сиз жакында кирбеген сайттардан уруксаттарды алып салууга макулдугуңузду бериңиз. Билдирмелер өчүрүлбөйт.</translation>
 <translation id="6063093106622310249">&amp;Chromiumда ачуу</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium'га кошулду</translation>
 <translation id="6072463441809498330">Chromium'ду ылдамдатуу</translation>

@@ -98,6 +98,7 @@
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1178821169867863726">12 x 16 అంగుళాలు</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
+<translation id="1181381397492575884">Chrome థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేస్తుంది, కాబట్టి మీరు బ్రౌజ్ చేస్తున్నప్పుడు అవి మిమ్మల్ని ట్రాక్ చేయలేవు. <ph name="LINK" /> సెట్టింగ్‌లను చూడండి.</translation>
 <translation id="1186201132766001848">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="1190491977647722791">పేపర్ (హెవీవెయిట్)</translation>
 <translation id="1195073053842921378">ఈ పరికరం నుండి ఈ అడ్రస్ తొలగించబడుతుంది</translation>
@@ -118,6 +119,7 @@
 <translation id="1225570101506606926">బిలియర్డ్స్</translation>
 <translation id="1225607422885279949">Google మీ కోసం డిస్కౌంట్‌లను కనుగొంటుంది</translation>
 <translation id="1227224963052638717">తెలియని విధానం.</translation>
+<translation id="1227677022489889280">తరలించడానికి కారణాన్ని పేర్కొనండి (అవసరం)</translation>
 <translation id="1228893227497259893">ఎంటిటీ ఐడెంటిఫైయర్ చెల్లదు</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ఆటోమేటిక్‌గా గుర్తించబడింది)</translation>
 <translation id="1232569758102978740">శీర్షికలేనిది</translation>
@@ -342,6 +344,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />సైట్ యొక్క హోమ్‌పేజీని సందర్శించడం<ph name="END_LINK" /> ప్రయత్నించండి.</translation>
 <translation id="1641976391427233992">అవుట్‌పుట్‌ను ఇప్పటి వరకు ఆలస్యం చేయి</translation>
 <translation id="164212631332220697">చెక్అవుట్‌లో <ph name="CARD_DETAIL" />తో పేమెంట్ చేయండి.</translation>
+<translation id="1643651787397909318">Chrome సేఫ్టీ చెక్ బటన్‌కు వెళ్లి, సెట్టింగ్‌లలో Chrome సేఫ్టీ చెక్ పేజీకి వెళ్లడానికి యాక్టివేట్ చేయండి</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
 <translation id="1645368109819982629">ప్రోటోకాల్‌కు మద్దతు లేదు</translation>
 <translation id="1650602712345345441">మీ Chrome సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
@@ -1036,6 +1039,7 @@
 <translation id="3140646734028448730">బిజినెస్ సర్వీస్‌లు</translation>
 <translation id="3141093262818886744">ఏదేమైనా తెరవండి</translation>
 <translation id="3141641372357166056">సమ్మతి నిర్ణయం ఏదీ లేదు</translation>
+<translation id="3142736425087361223">దీన్ని <ph name="ORIGIN" />‌లో ఉపయోగించడానికి Chromeకు మీ <ph name="PERMISSION" /> అవసరం</translation>
 <translation id="3144458715650412431">టెస్ట్ పాలసీలు వర్తింపజేయబడ్డాయి. chrome://policy/testలో వాటిని రివ్యూ చేసి, రీసెట్ చేయండి. అడ్మిన్ పాలసీలు వర్తించవు.</translation>
 <translation id="3145945101586104090">ప్రతిస్పందనను డీకోడ్ చేయడంలో విఫలమైంది</translation>
 <translation id="3150653042067488994">తాత్కాలిక సర్వర్ ఎర్రర్</translation>
@@ -1199,6 +1203,7 @@
 <translation id="3447644283769633681">అన్ని మూడవ-పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="3447661539832366887">ఈ పరికర యజమాని డైనోసార్ గేమ్‌ను ఆఫ్ చేశారు.</translation>
 <translation id="3447884698081792621">సర్టిఫికేట్‌ను చూపు (<ph name="ISSUER" /> ద్వారా జారీ చేయబడింది)</translation>
+<translation id="3450323514459570273">మీ MIDI పరికరాలను కంట్రోల్ చేయడానికి, రీప్రోగ్రామ్ చేయమని అడగవచ్చు</translation>
 <translation id="3452404311384756672">విరామాన్ని పొందండి:</translation>
 <translation id="3453962258458347894">పునఃప్రయత్నాల సంఖ్య</translation>
 <translation id="3461266716147554923"><ph name="URL" /> క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం మరియు చిత్రాలను చూడాలనుకుంటోంది.</translation>
@@ -1995,6 +2000,7 @@
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
 <translation id="5051305769747448211">లైవ్ కామెడీ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{'సమీప షేరింగ్'ను ఉపయోగించి ఈ ఫైల్‌ను పంపడానికి, మీ పరికరంలో స్పేస్ (<ph name="DISK_SPACE_SIZE" />)ను ఖాళీ చేయండి}other{'సమీప షేరింగ్'ను ఉపయోగించి ఈ ఫైళ్ళను పంపడానికి, మీ పరికరంలో స్పేస్ (<ph name="DISK_SPACE_SIZE" />)ను ఖాళీ చేయండి}}</translation>
+<translation id="505757197798929356">తెరవడానికి కారణాన్ని అందించండి (అవసరం)</translation>
 <translation id="5060419232449737386">క్యాప్షన్ సెట్టింగ్‌లు</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" />‌ను ఉపయోగించే వెబ్‌సైట్‌లలో Windows Helloతో వెరిఫై చేయాలని మీరు ఎంచుకున్నారు. ఈ ప్రొవైడర్ మీ పేమెంట్ ఆప్షన్‌కు సంబంధించిన సమాచారాన్ని స్టోర్ చేసుకొని ఉండవచ్చు, దీనిని మీరు <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">మీరు <ph name="LOOKALIKE_DOMAIN" /> గురించి అడిగారా?</translation>
@@ -2039,6 +2045,8 @@
 <translation id="5137761395480718572">ఈ యాప్ Wi-Fi ఆధారాలను ఇన్‌స్టాల్ చేయడానికి అనుమతిని రిక్వెస్ట్ చేస్తోంది. సెటప్ చేసిన తర్వాత, మీ <ph name="DEVICE_TYPE" /> ఆటోమేటిక్‌గా పాల్గొనే Wi-Fi నెట్‌వర్క్‌లకు కనెక్ట్ అవుతుంది. ఈ ఆధారాలను తీసివేయడానికి, యాప్‌ను అన్‌ఇన్‌స్టాల్ చేయండి. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ప్రస్తుతానికి వర్చువల్ కార్డ్ అందుబాటులో లేదు, దయచేసి మీ బ్యాంకును సంప్రదించండి</translation>
 <translation id="5138227688689900538">తక్కువ చూపు</translation>
+<translation id="5143309888746105072">Chromium థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేస్తుంది, కాబట్టి మీరు బ్రౌజ్ చేస్తున్నప్పుడు అవి మిమ్మల్ని ట్రాక్ చేయలేవు.
+            <ph name="NEW_LINE" />ఒకవేళ సైట్ ఫీచర్‌లు పని చేయకపోతే, <ph name="START_LINK" />థర్డ్-పార్టీ కుక్కీలను తాత్కాలికంగా అనుమతించడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">విధాన ప్రతిస్పందనలో ఎర్రర్ కోడ్ ఉంది</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> కోసం నోటిఫికేషన్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="514704532284964975">మీరు మీ ఫోన్‌తో ట్యాప్ చేసే NFC పరికరాలలోని సమాచారాన్ని <ph name="URL" /> చూడాలని, మార్చాలనుకుంటోంది</translation>
@@ -2112,6 +2120,7 @@
 <translation id="5288393065350884210">అకౌంటింగ్ &amp; ఆడిటింగ్</translation>
 <translation id="5289384342738547352">అనేక డాక్యుమెంట్‌లను హ్యాండిల్ చేయడం</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{ఈరోజే అప్‌డేట్ చేయాలి}=2{రేపుటి లోపు అప్‌డేట్ చేయాలి}other{# రోజులలోపు అప్‌డేట్ చేయాలి}}</translation>
+<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="5293919335876685914">కూప్స్</translation>
 <translation id="5296589789433599000">వంట &amp; వంటకాలు</translation>
 <translation id="5299298092464848405">విధానాన్ని అన్వయించడంలో ఎర్రర్</translation>
@@ -2384,6 +2393,7 @@
 <translation id="5873297634595728366">డీజిల్ వాహనాలు</translation>
 <translation id="5877831137320480913">అందం &amp; ఆరోగ్యం</translation>
 <translation id="5879989559903563723">గెస్ట్ మోడ్‌లో అనుమతి లేదు</translation>
+<translation id="5880050725127890683">Chrome సేఫ్టీ చెక్‌కు వెళ్లండి</translation>
 <translation id="5883861433316751031">MIDI పరికరాలను కంట్రోల్ చేయాలా, రీప్రోగ్రామ్ చేయాలా?</translation>
 <translation id="5884465125445718607">ఎన్వలప్ చైనీస్ #6</translation>
 <translation id="5887400589839399685">కార్డ్ సేవ్ చేయబడింది</translation>
@@ -2420,6 +2430,7 @@
 <translation id="5951495562196540101">వినియోగదారు ఖాతాతో నమోదు చేయడం సాధ్యపడదు (ప్యాకేజ్డ్ లైసెన్స్ అందుబాటులో ఉంది).</translation>
 <translation id="5953516610448771166">ఈ మీడియాకు లైవ్ క్యాప్షన్ అందుబాటులో లేదు. క్యాప్షన్‌లను పొందడానికి, ఈ సైట్ <ph name="CONTENT_SETTINGS" />ను బ్లాక్ చేయండి.</translation>
 <translation id="5955063559762970069">హోటళ్లు &amp; వసతులు</translation>
+<translation id="595873925609605681">సైట్ ఫీచర్‌లు పని చేయకపోతే, <ph name="BEGIN_LINK" />తాత్కాలికంగా థర్డ్-పార్టీ కుక్కీలను అనుమతించడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
 <translation id="5963413905009737549">విభాగం</translation>
 <translation id="5964247741333118902">పొందుపరచబడిన కంటెంట్</translation>
 <translation id="5967260682280773804">36 x 48 అంగుళాలు</translation>
@@ -2564,6 +2575,7 @@
 <translation id="6251906504834538140">{0,plural, =1{తరలించకుండా ఫైల్ బ్లాక్ చేయబడింది}other{తరలించకుండా <ph name="FILE_COUNT" /> ఫైల్స్ బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeలో మీరు డౌన్‌లోడ్ చేసిన ఫైల్‌లను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="6254436959401408446">ఈ పేజీని తెరవడానికి తగినంత మెమరీ లేదు</translation>
+<translation id="625463612687472648">అనుమతించడాన్ని ఆపివేయండి</translation>
 <translation id="6259156558325130047">&amp;మళ్లీ క్రమం చేయడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> బుక్‌మార్క్‌లు</translation>
 <translation id="6264376385120300461">ఏదేమైనా డౌన్‌లోడ్ చేయండి</translation>
@@ -2723,6 +2735,7 @@
 <translation id="6556866813142980365">మళ్లీ చేయి</translation>
 <translation id="6557715786897013164">14 x 17 అంగుళాలు</translation>
 <translation id="6560786330438719938">ఇన్‌స్టాల్ చేసిన లేదా అన్‌ఇన్‌స్టాల్ చేసిన యాప్‌లు, అలాగే వాటిని ఎంత తరచుగా ఉపయోగించినది తెలిపే వివరాలు</translation>
+<translation id="6567084950885568327">MIDI డివైజ్ కంట్రోల్, రీప్రోగ్రామింగ్</translation>
 <translation id="6568793038316600992">'పేమెంట్ ఆప్షన్‌లను మేనేజ్ చేయండి' బటన్, Chrome సెట్టింగ్‌లలో మీ పేమెంట్‌లను, క్రెడిట్ కార్డ్ సమాచారాన్ని మేనేజ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="6569060085658103619">మీరు ఎక్స్‌టెన్షన్‌ పేజీని వీక్షిస్తున్నారు</translation>
 <translation id="6569366777234823130">డ్రామా శైలి సినిమాలు</translation>
@@ -2738,6 +2751,8 @@
 <translation id="6596325263575161958">ఎన్‌క్రిప్షన్ ఎంపికలు</translation>
 <translation id="6597665340361269064">90 డిగ్రీలు</translation>
 <translation id="6599642189720630047">ట్రాక్ చేసిన ప్రోడక్ట్‌లు</translation>
+<translation id="6606309334576464871">Chrome థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేస్తుంది, కాబట్టి మీరు బ్రౌజ్ చేస్తున్నప్పుడు అవి మిమ్మల్ని ట్రాక్ చేయలేవు.
+            <ph name="NEW_LINE" />ఒకవేళ సైట్ ఫీచర్‌లు పని చేయకపోతే, <ph name="START_LINK" />థర్డ్-పార్టీ కుక్కీలను తాత్కాలికంగా అనుమతించడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">ఆర్థిక రంగం వార్తలు</translation>
 <translation id="6612010098632894193">ఆన్‌లైన్ వీడియో</translation>
 <translation id="6613866251791999074">Chromeలో మీ సెర్చ్ ఇంజిన్ గురించి మరింత తెలుసుకోండి</translation>
@@ -2889,6 +2904,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="691024665142758461">బహుళ ఫైళ్లను డౌన్‌లోడ్ చేయాలనుకుంటోంది</translation>
 <translation id="6915804003454593391">వినియోగదారు:</translation>
+<translation id="6916193791494646625">డౌన్‌లోడ్ చేయడానికి కారణాన్ని పేర్కొనండి (అవసరం)</translation>
 <translation id="6916954549222464607">ఆర్థిక ప్లానింగ్ &amp; మేనేజ్‌మెంట్</translation>
 <translation id="6917795328362592458">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని పాస్‌వర్డ్ మేనేజర్ సిఫార్సు చేస్తోంది.</translation>
 <translation id="6925267999184670015">ఉత్తర అమెరికా B+</translation>
@@ -3090,6 +3106,7 @@
 <translation id="7308436126008021607">బ్యాక్‌గ్రౌండ్ సింక్</translation>
 <translation id="7310392214323165548">పరికరం త్వరలోనే రీస్టార్ట్ అవుతుంది</translation>
 <translation id="7311244614769792472">ఫలితాలు ఏవీ కనుగొనబడలేదు</translation>
+<translation id="7311837626618954149">Chromium థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేస్తుంది, కాబట్టి మీరు బ్రౌజ్ చేస్తున్నప్పుడు అవి మిమ్మల్ని ట్రాక్ చేయలేవు.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">కనెక్షన్ సహాయం</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" విభాగాన్ని దాచు</translation>
@@ -3181,6 +3198,8 @@
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" />‌కు మీరు <ph name="TOP_LEVEL_URL" />‌ను సందర్శించినట్లుగా తెలుస్తుంది</translation>
 <translation id="7465963048299965912">10 x 13 అంగుళాలు</translation>
 <translation id="7469935732330206581">ఫారమ్ సురక్షితమైనది కాదు</translation>
+<translation id="7470854469646445678">కాపీ చేయడానికి కారణాన్ని పేర్కొనండి (అవసరం)</translation>
+<translation id="7471007961486718967">బదిలీ చేయడానికి కారణాన్ని అందించండి (అవసరం)</translation>
 <translation id="7473891865547856676">వద్దు, ధన్యవాదాలు</translation>
 <translation id="7481312909269577407">ఫార్వర్డ్</translation>
 <translation id="7481603210197454575">ఎన్వలప్ ఇటాలియన్</translation>
@@ -3227,6 +3246,7 @@
 <translation id="7550637293666041147">మీ పరికరం వినియోగదారు పేరు మరియు Chrome వినియోగదారు పేరు</translation>
 <translation id="7551484245293639699">ట్రావెల్ బీమా</translation>
 <translation id="7552846755917812628">కింది చిట్కాలను ప్రయత్నించండి:</translation>
+<translation id="7554242657529665960">మీ అడ్మినిస్ట్రేటర్ నుండి: "<ph name="ADMIN_MESSAGE" />"</translation>
 <translation id="7554475479213504905">ఏదేమైనా రీలోడ్ చేసి, చూపు</translation>
 <translation id="7554791636758816595">కొత్త ట్యాబ్</translation>
 <translation id="7555777498260651025">కుటుంబ-తరహా టీవీ షోలు</translation>
@@ -3343,6 +3363,7 @@
 <translation id="7744505202669469867">సేవ్ చేయబడిన అడ్రస్‌ల టేబుల్</translation>
 <translation id="774634243536837715">హానికరమైన కంటెంట్ బ్లాక్ చేయబడింది.</translation>
 <translation id="7748758200357401411">అధిక పనితీరు గల &amp; స్పేర్ పార్ట్‌ల మార్కెట్</translation>
+<translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chromeలో ఫాంట్ సైజ్‌లను, టైప్‌ఫేస్‌లను అనుకూలంగా మార్చండి</translation>
 <translation id="7752995774971033316">నిర్వహించడం లేదు</translation>
 <translation id="7754587126786572336">అప్‌డేట్ చేయడం ప్రారంభమైనప్పుడు మీ Chrome ట్యాబ్‌లు, యాప్‌లు మూసివేయబడతాయి</translation>
@@ -3406,6 +3427,7 @@
 <translation id="7888575728750733395">ప్రింట్ రెండరింగ్ ఇంటెంట్</translation>
 <translation id="7894280532028510793">స్పెల్లింగ్ సరైనది అయితే, <ph name="BEGIN_LINK" />నెట్‌వర్క్ సమస్య విశ్లేషణలను రన్ చేయడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">7 x 9 అంగుళాల ఎన్వలప్</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tabను నొక్కి, తర్వాత Enterను నొక్కి సెట్టింగ్‌లలో Chrome సేఫ్టీ చెక్ పేజీకి వెళ్లండి</translation>
 <translation id="7916162853251942238">ఫ్లెక్సో బేస్</translation>
 <translation id="7927971017714848357">స్థలాలు &amp; భూములు</translation>
 <translation id="793209273132572360">అడ్రస్‌ను అప్‌డేట్ చేయాలా?</translation>
@@ -3423,6 +3445,7 @@
 <translation id="7942349550061667556">ఎరుపు</translation>
 <translation id="7943397946612013052">డౌన్‌లోడ్ చేయకుండా బ్లాక్ చేయబడింది</translation>
 <translation id="7943893128817522649">అనేక ఫైళ్లను ఆటోమేటిక్‌గా డౌన్‌లోడ్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7946724693008564269">గుర్తించబడిన భాష</translation>
 <translation id="7947285636476623132">మీ గడువు ముగింపు సంవత్సరాన్ని చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ఫీచర్‌ల గురించి తెలుసుకోవడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
@@ -3681,6 +3704,7 @@
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8428634594422941299">అర్థమైంది</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ కుక్కీ ప్రాధాన్యతలను మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
+<translation id="8432419784006585012">మీ MIDI పరికరాలను ఉపయోగించడానికి సైట్‌లు మిమ్మల్ని అనుమతి అడగవచ్చు</translation>
 <translation id="8433057134996913067">దీని వలన మీరు చాలా వెబ్‌సైట్‌ల నుండి సైన్ అవుట్ చేయబడతారు.</translation>
 <translation id="8434014327286137412">తర్వాతిసారి వేగంగా పేమెంట్ చేయడానికి, మీ IBANని మీ Google ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="8434840396568290395">పెంపుడు జంతువులు</translation>
@@ -3699,6 +3723,7 @@
 <translation id="8460854335417802511">దీన్ని ఆన్ చేయండి</translation>
 <translation id="8461694314515752532">మీ స్వంత సింక్‌ రహస్య పదబంధంతో సింక్ చేయబడిన డేటాను ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 క్రెడిట్ కార్డ్}other{# క్రెడిట్ కార్డ్‌లు}}</translation>
+<translation id="8467494337615822642">సెట్టింగ్‌లలో Chrome సేఫ్టీ చెక్ పేజీకి వెళ్లండి</translation>
 <translation id="8468358362970107653">ఎన్వలప్ C3</translation>
 <translation id="8473626140772740486">300 x 450 మి.మీ.</translation>
 <translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
@@ -3728,6 +3753,7 @@
 <translation id="853246364274116957">బ్రాడ్‌వే &amp; మ్యూజికల్ థియేటర్</translation>
 <translation id="853332391023689529">పికప్ ట్రక్‌లు</translation>
 <translation id="8533619373899488139">బ్లాక్ చేయబడి ఉన్న URLల లిస్ట్‌ను, మీ సిస్టమ్ అడ్మినిస్ట్రేటర్ ద్వారా అమలు చేయబడిన ఇతర పాలసీలను చూడటానికి &lt;strong&gt;chrome://policy&lt;/strong&gt;ని సందర్శించండి.</translation>
+<translation id="8534934518812659742">మీరు Chrome కోసం <ph name="PERMISSION" />‌ను ఆఫ్ చేశారు.</translation>
 <translation id="8536234749087605613">ఎన్వలప్ (విండో)</translation>
 <translation id="8539500321752640291">2 అనుమతులను ఇవ్వాలా?</translation>
 <translation id="8541158209346794904">బ్లూటూత్ పరికరం</translation>
@@ -3738,6 +3764,7 @@
 <translation id="8543181531796978784">మీరు <ph name="BEGIN_ERROR_LINK" />గుర్తింపు సమస్యను నివేదించవచ్చు<ph name="END_ERROR_LINK" /> లేదా మీకు మీ భద్రతకు పొంచి ఉన్న ప్రమాదాలు అర్థం అయ్యి ఉంటే, మ<ph name="BEGIN_LINK" />ఈ అసురక్షిత సైట్‌ను సందర్శించండి<ph name="END_LINK" />.</translation>
 <translation id="8544303911974837265">పాలియెస్టర్</translation>
 <translation id="854548366864113872">అధిక ధర ఉన్న ఆప్షన్</translation>
+<translation id="8546254312340305428">అప్‌లోడ్ చేయడానికి కారణాన్ని పేర్కొనండి (అవసరం)</translation>
 <translation id="8546350655047701518">JSONకు లాగ్‌లను ఎగుమతి చేయండి</translation>
 <translation id="8546667245446052521">పేపర్ (ఆర్కైవల్)</translation>
 <translation id="854892890027593466">ఎన్వలప్ C6/C5</translation>
@@ -4066,6 +4093,7 @@
 <translation id="939736085109172342">కొత్త  ఫోల్డర్</translation>
 <translation id="940053046584497293">ట్రావెల్ &amp; ట్రాన్స్‌పోర్టేషన్</translation>
 <translation id="944540589955480312">మీ Google ఖాతాలో సేవ్ చేసిన పాస్‌వర్డ్‌లు, పాస్-కీలను ఉపయోగించండి</translation>
+<translation id="945646848072568856">Chrome థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేస్తుంది, కాబట్టి మీరు బ్రౌజ్ చేస్తున్నప్పుడు అవి మిమ్మల్ని ట్రాక్ చేయలేవు.</translation>
 <translation id="945855313015696284">ఈ కింది వివరాలను ఒక్కసారి పరిశీలించి చెల్లని కార్డ్‌లు ఏమైనా ఉంటే తొలగించండి</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sitesలో త్వరగా కొత్త సైట్‌ను క్రియేట్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{కుక్కీలను Chrome ఈరోజు మళ్లీ పరిమితం చేస్తుంది}=1{కుక్కీలను Chrome రేపు మళ్లీ పరిమితం చేస్తుంది}other{కుక్కీలను Chrome # రోజుల తర్వాత మళ్లీ పరిమితం చేస్తుంది}}</translation>

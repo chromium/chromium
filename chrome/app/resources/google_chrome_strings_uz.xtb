@@ -25,6 +25,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi.}=1{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi. Inkognito oynalar qayta ochilmaydi.}other{Chrome yangilandi. Qayta ochilganda oxirgi versiyadan foydalanish mumkin. Keyin joriy varaqlar tiklanadi. # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="1434626383986940139">Chrome Canary ilovalari</translation>
 <translation id="1492280395845991349">Chrome yangilanishini yakunlash uchun qayta oching</translation>
+<translation id="1497802159252041924">O'rnatishdagi xatolik: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Yangi Chrome profilini moslash</translation>
 <translation id="1516530951338665275">Google Chrome ulanishi uchun Bluetooth orqali kirish ruxsati 
  kerak. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -88,6 +89,7 @@
 <translation id="2467438592969358367">Google Chrome parollaringizni eksport qilmoqchi. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="2472092250898121027">Bu kengaytma tarkibida zararli kod bor va u xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromedan olib tashlang.</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
+<translation id="2534365042754120737">Maʼlumotlaringizni himoyalash maqsadida Chrome brauzeriga uzoq vaqt kirmagan saytlardan ruxsatlarni olib tashlashi uchun ruxsat bering. Bildirishnomalar kelishi davom etadi.</translation>
 <translation id="2534507159460261402">Google Pay (Chrome brauzeriga nusxalandi)</translation>
 <translation id="2556847002339236023">Tashkilotingiz Chrome <ph name="TIMEOUT_DURATION" /> ishlatilmasa avtomatik yopilishini sozlagan. Brauzer maʼlumotlari oʻchirib tashlandi. Jumladan, tarix, avtomatik kiritish va yuklanmalar.</translation>
 <translation id="2559253115192232574">Keyinchalik sayt sizga chiqadigan reklamani moslashtirish maqsadida Chromedan qiziqishlaringiz haqida soʻrashi mumkin. Chrome 3 tagacha qiziqishingizni ulasha oladi.</translation>
@@ -271,6 +273,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5524761631371622910">Sinov muddatlari yoqilganida Chrome sizni tasodifiy faol sinovga joylaganida, siz ochgan sahifalar tarixi chiqadigan reklama va quyidagi qiziqishlaringizga taʼsir qiladi. Maxfiylikni himoya qilish maqsadida Chrome har oyda qiziqishlaringizni avtomatik oʻchiradi.</translation>
 <translation id="5530733413481476019">Chromeni tezlashtirish</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5572786658631721382">Nofaolligida Chrome mahalliy takliflarni yuborishda davom etadi</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> zararli bo‘lishi mumkin, shuning uchun u Chrome tomonidan bloklandi.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni soʻramoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni soʻramoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni soʻramoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="5686916850681061684">Google Chrome brauzerini sozlash va boshqarish. Diqqat qaratishingiz zarur. Batafsil axborot olish uchun bu yerga bosing.</translation>
@@ -364,6 +367,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="7177959540995930968">Bu funksiyalar haqida batafsil axborotni Chrome sozlamalari orqali olish mumkin.</translation>
 <translation id="7193885263065350793">Tashkilotingiz Chrome <ph name="TIMEOUT_DURATION" /> ishlatilmasa avtomatik yopilishini sozlagan.</translation>
 <translation id="7242029209006116544">Boshqariladigan hisobga kirish bilan siz administratorga Google Chrome profilingiz sozlamalarini boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz (m-n, ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi) <ph name="USER_NAME" /> hisobiga butunlay bog‘lanadi. Bu ma’lumotlarni Google shaxsiy kabinetida o‘chirish mumkin, lekin boshqa hisobga bog‘lash imkoniyati yo‘q. Chrome ma’lumotlarini saqlab qolish uchun yangi profil yarating. <ph name="LEARN_MORE" /></translation>
+<translation id="7284878711178835966">Matn kiritishni boshlashingiz bilan Chrome manzil qatori yoki qidiruv maydonchasi kontentini asosiy qidiruv vositasiga yuboradi</translation>
 <translation id="7295052994004373688">Google Chrome UI inteyfeysi hozir shu tilda</translation>
 <translation id="7296210096911315575">Foydalanish va xavfsizlik</translation>
 <translation id="7308322188646931570">Yuklab olish uchun Chrome brauzerida omborga saqlash ruxsati bo‘lishi zarur</translation>

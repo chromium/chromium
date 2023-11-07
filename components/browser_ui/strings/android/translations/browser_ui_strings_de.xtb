@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}}</translation>
 <translation id="2410940059315936967">Auf einer Website, die du besuchst, können Inhalte von anderen Websites eingebettet sein, z. B. Bilder, Werbung und Text. Cookies, die von diesen anderen Websites gesetzt werden, werden als Drittanbieter-Cookies bezeichnet.</translation>
 <translation id="2434158240863470628">Download abgeschlossen <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Du hast dieser Website vorübergehend erlaubt, Drittanbieter-Cookies zu verwenden. Das bedeutet zwar weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren. <ph name="BEGIN_LINK" />Feedback geben<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Einige Websites funktionieren im Inkognitomodus möglicherweise nicht richtig</translation>
 <translation id="2442870161001914531">Desktopwebsite immer anfordern</translation>
 <translation id="2469312991797799607">Durch diese Aktion werden alle Daten und Cookies für <ph name="ORIGIN" /> und alle untergeordneten Websites gelöscht</translation>
@@ -207,6 +208,7 @@
 <translation id="4644713492825682049">Löschen und zurücksetzen</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
+<translation id="4673958474310291465">Versuche, Drittanbieter-Cookies vorübergehend zuzulassen. Das bedeutet zwar weniger Schutz, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren.</translation>
 <translation id="4751476147751820511">Bewegungs- oder Lichtsensoren</translation>
 <translation id="4779083564647765204">Zoomen</translation>
 <translation id="4811450222531576619">Informationen zur Quelle und zum Thema</translation>
@@ -355,6 +357,7 @@
 <translation id="7243308994586599757">Optionen unten auf dem Bildschirm verfügbar</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ausgewählt</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> zugelassen</translation>
+<translation id="7284451015630589124">Du hast Websites daran gehindert, Drittanbieter-Cookies zu verwenden, mit denen deine Aktivitäten während des Surfens erfasst werden. Rufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Normalerweise blockierst du Benachrichtigungen. Du kannst auf Details tippen, um sie zuzulassen.</translation>
 <translation id="7366415735885268578">Website hinzufügen</translation>
 <translation id="7368695150573390554">Sämtliche Offlinedaten werden gelöscht</translation>
@@ -433,6 +436,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies zugelassen für <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-Website}other{Cookies zugelassen für <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-Websites}}</translation>
 <translation id="857943718398505171">Zugelassen (empfohlen)</translation>
 <translation id="8609465669617005112">Nach oben</translation>
+<translation id="8649036394979866943">Chrome schränkt die Verwendung von Drittanbieter-Cookies, mit denen deine Aktivitäten während des Surfens erfasst werden, für die meisten Websites ein. Rufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Eingabe löschen</translation>
 <translation id="8681886425883659911">Werbung auf Websites, die bekanntermaßen aufdringliche oder irreführende Anzeigen präsentieren, wird blockiert</translation>
 <translation id="868929229000858085">Kontakte durchsuchen</translation>

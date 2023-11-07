@@ -96,6 +96,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="4654936625574199632">Chromium skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktivera Chromium som skanner</translation>
 <translation id="4736424910885271643">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chromium från enheten</translation>
+<translation id="4773487571745795781">Du har inaktiverat inloggning i Chromium.</translation>
 <translation id="4790638144988730920">Fortsätt använda Chromium-data i Google-kontot.</translation>
 <translation id="4828317641996116749">Chromium kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
 <translation id="4985291216379576555">Chromium kan inte söka efter uppdateringar offline</translation>

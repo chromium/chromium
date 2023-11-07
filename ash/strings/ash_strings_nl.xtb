@@ -563,6 +563,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3340978935015468852">instellingen</translation>
 <translation id="3341303451326249809">Screenshot gemaakt</translation>
 <translation id="334252345105450327">Een screenshot maken</translation>
+<translation id="3346728094401457853">Voer het apparaatwachtwoord in voor <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Tekst vanaf cursor tot het einde van de regel selecteren</translation>
 <translation id="3349345708646875009">Taakbeheer openen</translation>
 <translation id="3364721542077212959">Stylustools</translation>
@@ -1589,6 +1590,7 @@ Nieuwe installatie</translation>
 <translation id="7489261257412536105">Volledig scherm openen of sluiten</translation>
 <translation id="7490360161041035804">Je kunt belangrijke bestanden vastzetten, waaronder Google Drive-bestanden. Als je een item wilt vastzetten, plaats je de cursor op het item of open je Bestanden en klik je met de rechtermuisknop op het item.</translation>
 <translation id="7497767806359279797">Taal en toetsenbord kiezen</translation>
+<translation id="7507162824403726948">De verificatie van je identiteit afronden</translation>
 <translation id="7508690557411636492">Geopend in de afgelopen maand</translation>
 <translation id="7509246181739783082">Je identiteit verifiëren</translation>
 <translation id="7512509370370076552">De sneltoets voor klikken met de rechtermuisknop is geüpdatet van alt + klikken naar <ph name="LAUNCHER_KEY_NAME" />-toets + klikken</translation>

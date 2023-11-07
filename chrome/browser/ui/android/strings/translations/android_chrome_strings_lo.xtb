@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">ບໍ່ສະເໜີແປເວັບໄຊເຫຼົ່ານີ້</translation>
 <translation id="1145536944570833626">ລຶບຂໍ້ມູນທີ່ມີຢູ່.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ຈະເປີດໃນ Chrome. ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດບໍລິການ Google<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ຂໍ້ກຳນົດບໍລິການເພີ່ມເຕີມ Google Chrome ແລະ ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">ໃຊ້ລະຫັດຜ່ານ <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">ໃສ່ຊື່ໃໝ່</translation>
 <translation id="1174479719160874822">Chrome ຈະຮ້ອງຂໍເວັບໄຊມືຖືເມື່ອໜ້າຈໍແຄບ</translation>
 <translation id="1177863135347784049">ກໍານົດເອງ</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ລຶບ 1 ລາຍການທີ່ເລືອກອອກ}other{ລຶບ # ລາຍການທີ່ເລືອກອອກ}}</translation>
 <translation id="1633659023549081553">ຄົ້ນພົບເນື້ອຫາໃໝ່ຢູ່ໜ້າຫຼັກຂອງ Chrome</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">ນອກຈາກນັ້ນ, Chrome ຍັງອາດສົ່ງຄຸກກີ້ ແລະ URL ປັດຈຸບັນຂອງທ່ານນຳ, ຂຶ້ນກັບການຕັ້ງຄ່າຂອງທ່ານ</translation>
 <translation id="164269334534774161">ທ່ານກຳລັງເບິ່ງສຳເນົາອອບລາຍຂອງໜ້ານີ້ຈາກ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
 <translation id="1657932388559784161">ຊີດລຸ່ມສຸດຂໍ້ມູນເຈາະເລິກຂອງໜ້າແມ່ນປິດຢູ່</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">ປິດໜ້າ​ຕ່າງ</translation>
 <translation id="1791662854739702043">ຕິດຕັ້ງແລ້ວ</translation>
 <translation id="1792959175193046959">ປ່ຽນບ່ອນຈັດເກັບການດາວໂຫຼດເລີ່ມຕົ້ນໄດ້ທຸກເວລາ</translation>
+<translation id="1796666869097395659">ຫຍໍ້ແຖບລົງເພື່ອກັບຄືນມາເບິ່ງມັນພາຍຫຼັງ</translation>
 <translation id="1807246157184219062">ແສງ​</translation>
 <translation id="1810845389119482123">ບໍ່ສຳເລັດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນເບື້ອງຕົ້ນ</translation>
 <translation id="1812027881030482584">ບໍ່ສາມາດດຳເນີນການຕໍ່ໂດຍໃຊ້ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ໃນ <ph name="SITE_ETLD_PLUS_ONE" /> ໄດ້</translation>
@@ -703,7 +704,6 @@
 <translation id="4738836084190194332">ຊິ້ງຂໍ້ມູນຫຼ້າສຸດ: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">ທ່ານຈະໄດ້ຮັບການແນະນຳທີ່ມີການປັບປຸງໃນແຖບທີ່ຢູ່</translation>
 <translation id="4742970037960872810">ລຶບໄຮໄລ້ອອກ</translation>
-<translation id="4743664893327841597">ສິ່ງທີ່ທ່ານພິມຢູ່ໃນແຖບທີ່ຢູ່ ຫຼື ກ່ອງຊອກຫາແມ່ນຖືກສົ່ງໄປຫາໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="4749960740855309258">ເປີດແຖບໃໝ່</translation>
 <translation id="4750356170202299988">ເນື້ອຫາສຳລັບເດັກນ້ອຍ</translation>
 <translation id="4758061975920522644">ແບ່ງປັນຮູບເທົ່ານັ້ນ</translation>
@@ -737,6 +737,7 @@
 <translation id="4864369630010738180">ກຳລັງເຂົ້າສູ່ລະບົບ...</translation>
 <translation id="4866368707455379617">ບໍ່ສາມາດຕິດຕັ້ງ <ph name="MODULE" /> ສໍາລັບ Chrome ໄດ້</translation>
 <translation id="4871568871368204250">ປິດການຊິ້ງຂໍ້ມູນ</translation>
+<translation id="4874961007154620743">ເມື່ອປິດໄວ້, ທ່ານຈະຍັງເຫັນຄຳແນະນຳທີ່ Chrome ມີໃຫ້ໃນເຄື່ອງ</translation>
 <translation id="4875775213178255010">ການແນະນຳເນື້ອຫາ</translation>
 <translation id="4877678010818027629">ເຂົ້າໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="4878404682131129617">ການສ້າງຊ່ອງທາງເຊື່ອມຕໍ່ຜ່ານພຣັອກຊີເຊີບເວີບໍ່ສຳເລັດ</translation>
@@ -1208,6 +1209,7 @@
 <translation id="727288900855680735">ສົ່ງ <ph name="ONE_TIME_CODE" /> ໄປໃຫ້ <ph name="ORIGIN" /> ບໍ?</translation>
 <translation id="7274013316676448362">ເວັບໄຊທີ່ຖືກບລັອກໄວ້</translation>
 <translation id="7276100255011548441">Chrome ຈະລຶບເວັບໄຊທີ່ດົນກວ່າ 4 ອາທິດໂດຍອັດຕະໂນມັດ. ເມື່ອທ່ານເລືອກເບິ່ງໄປເລື້ອຍໆ, ຫົວຂໍ້ໃດໜຶ່ງກໍອາດກັບມາປາກົດຢູ່ໃນລາຍຊື່ອີກຄັ້ງ. ຫຼື ທ່ານສາມາດບລັອກຫົວຂໍ້ທີ່ທ່ານບໍ່ຕ້ອງການໃຫ້ Chrome ແບ່ງປັນກັບເວັບໄຊຕ່າງໆໄດ້. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK" />ການຈັດການຄວາມເປັນສ່ວນຕົວກ່ຽວກັບຕົວໂຄສະນາຂອງທ່ານໃນ Chrome.<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">ໃນລະຫວ່າງທີ່ທ່ານພິມ, Chrome ຈະສົ່ງເນື້ອຫາຂອງແຖບທີ່ຢູ່ ຫຼື ກ່ອງຊອກຫາໄປຫາໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="7286703216224610554">ແບ່ງປັນຣີແອັກຊັນເທົ່ານັ້ນ</translation>
 <translation id="7289303553784750393">ຫາກທ່ານອອນລາຍແລ້ວ ແຕ່ບັນຫານີ້ຍັງເກີດຂຶ້ນຢູ່, ທ່ານສາມາດລອງດຳເນີນການຕໍ່ໃນ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍວິທີອື່ນໆໄດ້.</translation>
 <translation id="7290209999329137901">ບໍ່ສາມາດໃຊ້ການປ່ຽນຊື່ໄດ້</translation>
@@ -1555,6 +1557,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ພ້ອມແລ້ວ</translation>
 <translation id="8937772741022875483">ລຶບການເຄື່ອນໄຫວໃນ Chrome ຂອງທ່ານອອກຈາກ Digital Wellbeing ບໍ?</translation>
+<translation id="893938492099608175">ນອກຈາກນີ້ Chrome ອາດສົ່ງຄຸກກີ້ ແລະ URL ປັດຈຸບັນຂອງທ່ານ ແລະ ສະຖານທີ່ຂອງທ່ານນຳ, ເຊິ່ງຂຶ້ນກັບການຕັ້ງຄ່າຂອງທ່ານ</translation>
 <translation id="8942627711005830162">ເປີດໃນໜ້າຈໍອື່ນ</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ບໍ່ສາມາດດາວໂຫຼດພາສານີ້ໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="8955719471735800169">ກັບຄືນໄປດ້ານເທິງ</translation>

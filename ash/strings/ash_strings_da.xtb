@@ -116,6 +116,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1391102559483454063">Til</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Brug piletasterne til at navigere mellem datoer.</translation>
+<translation id="141170878022560212">Midterknap</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installeret app</translation>
 <translation id="1414919006379339073">Luk det aktuelle vindue</translation>
 <translation id="1415846719612499304">Vis netværksliste. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2086334242442703436">Åbn emojivælger</translation>
 <translation id="2088116547584365419">spil</translation>
 <translation id="209965399369889474">Der er ingen netværksforbindelse</translation>
+<translation id="2107581415810719320">Anden knap <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Dit USB-C-kabel understøtter ikke Thunderbolt. Enhedens ydeevne kan være begrænset.</translation>
 <translation id="2108303511227308752">Tastaturgenvejen Alt+Backspace er blevet ændret. Hvis du vil bruge Delete-knappen, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+Backspace.</translation>
 <translation id="2126242104232412123">Nyt skrivebord</translation>
@@ -563,6 +565,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3340978935015468852">indstillinger</translation>
 <translation id="3341303451326249809">Der blev taget et screenshot</translation>
 <translation id="334252345105450327">Tag et screenshot</translation>
+<translation id="3346728094401457853">Angiv enhedens adgangskode for <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Markér tekst fra markør til slutningen af linjen</translation>
 <translation id="3349345708646875009">Åbn Jobliste</translation>
 <translation id="3364721542077212959">Styluspenværktøjer</translation>
@@ -1589,6 +1592,7 @@ Installeret for nylig</translation>
 <translation id="7489261257412536105">Vis eller afslut fuld skærm</translation>
 <translation id="7490360161041035804">Du kan fastgøre vigtige filer, bl.a. Google Drev-filer. Fastgør ved at holde markøren over et element eller åbne Filer og højreklikke på et element.</translation>
 <translation id="7497767806359279797">Vælg sprog og tastatur</translation>
+<translation id="7507162824403726948">Fuldfør verificeringen af din identitet</translation>
 <translation id="7508690557411636492">Åbnet inden for den seneste måned</translation>
 <translation id="7509246181739783082">Verificer din identitet</translation>
 <translation id="7512509370370076552">Genvejen for højreklik er opdateret til tasten <ph name="LAUNCHER_KEY_NAME" /> + klik fra Alt + klik</translation>

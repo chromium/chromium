@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">사용</translation>
 <translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. 화살표 키를 사용하여 날짜 간에 이동합니다.</translation>
+<translation id="141170878022560212">가운데 버튼</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, 설치된 앱</translation>
 <translation id="1414919006379339073">현재 창을 닫습니다.</translation>
 <translation id="1415846719612499304">네트워크 목록을 표시합니다. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">그림 이모티콘 선택 도구 열기</translation>
 <translation id="2088116547584365419">게임</translation>
 <translation id="209965399369889474">네트워크에 연결되어 있지 않음</translation>
+<translation id="2107581415810719320">기타 버튼 <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">사용 중인 USB-C 케이블은 Thunderbolt를 지원하지 않습니다. 기기 성능이 제한될 수 있습니다.</translation>
 <translation id="2108303511227308752">Alt + Backspace 단축키가 변경되었습니다. Delete 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + backspace 키를 누르세요.</translation>
 <translation id="2126242104232412123">새 데스크</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">설정</translation>
 <translation id="3341303451326249809">스크린샷 촬영됨</translation>
 <translation id="334252345105450327">스크린샷 찍기</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" />의 기기 비밀번호를 입력하세요.</translation>
 <translation id="334927402682780278">커서부터 마지막 줄까지 텍스트 선택</translation>
 <translation id="3349345708646875009">작업 관리자 열기</translation>
 <translation id="3364721542077212959">스타일러스 도구</translation>
@@ -1589,6 +1592,7 @@
 <translation id="7489261257412536105">전체 화면을 보거나 종료합니다.</translation>
 <translation id="7490360161041035804">Google Drive 파일 등 중요한 파일을 고정할 수 있습니다. 항목을 고정하려면 항목 위로 마우스를 가져가거나 Files를 열고 고정할 항목을 마우스 오른쪽 버튼으로 클릭합니다.</translation>
 <translation id="7497767806359279797">언어 및 키보드 선택</translation>
+<translation id="7507162824403726948">본인 인증을 완료하세요</translation>
 <translation id="7508690557411636492">지난달에 열림</translation>
 <translation id="7509246181739783082">본인 확인</translation>
 <translation id="7512509370370076552">마우스 오른쪽 버튼 클릭 단축키가 Alt + 클릭에서 <ph name="LAUNCHER_KEY_NAME" /> 키 + 클릭으로 업데이트되었습니다.</translation>

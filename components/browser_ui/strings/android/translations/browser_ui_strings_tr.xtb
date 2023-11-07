@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tanesi için daha izin verildi}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tanesi için daha izin verildi}}</translation>
 <translation id="2410940059315936967">Ziyaret ettiğiniz bir site, diğer sitelerdeki resim, reklam ve metin gibi içerikleri yerleştirebilir. Diğer siteler tarafından ayarlanan çerezlere üçüncü taraf çerezleri denir.</translation>
 <translation id="2434158240863470628">İndirme işlemi tamamlandı <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Bu sitenin, üçüncü taraf çerezlerini kullanmasına geçici olarak izin verdiniz. Bu durumda, internette gezinirken daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir. <ph name="BEGIN_LINK" />Geri bildirim gönderin<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Bazı sitelerdeki özellikler Gizli modda çalışmayabilir</translation>
 <translation id="2442870161001914531">Her zaman masaüstü sitesini iste</translation>
 <translation id="2469312991797799607">Bu işlem, <ph name="ORIGIN" /> ve altındaki tüm sitelere ait verilerin ve çerezlerin tamamını temizler</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Sitelerin korumalı içeriği oynatmasına izin verilmeden önce size sorulur</translation>
 <translation id="2932883381142163287">Kötüye kullanım bildir</translation>
 <translation id="2968755619301702150">Sertifika görüntüleyici</translation>
+<translation id="2979365474350987274">Üçüncü taraf çerezleri sınırlı</translation>
 <translation id="3008272652534848354">İzinleri sıfırla</translation>
 <translation id="301521992641321250">Otomatik olarak engellendi</translation>
 <translation id="3069226013421428034">Belirli bir sitede üçüncü taraf oturum açmaya izin verin.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Sil ve sıfırla</translation>
 <translation id="4645575059429386691">Ebeveyniniz tarafından yönetiliyor</translation>
 <translation id="4670064810192446073">Sanal gerçeklik</translation>
+<translation id="4673958474310291465">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda, daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir</translation>
 <translation id="4751476147751820511">Hareket veya ışık sensörleri</translation>
 <translation id="4779083564647765204">Yakınlaştır</translation>
 <translation id="4811450222531576619">Kaynağı ve konusu hakkında bilgi edinin</translation>

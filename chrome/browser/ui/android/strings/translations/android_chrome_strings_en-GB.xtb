@@ -126,7 +126,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remove 1 selected item}other{Remove # selected items}}</translation>
 <translation id="1633659023549081553">Discover new content on Chrome’s homepage</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">Depending on your settings, Chrome may also send cookies and your current URL</translation>
 <translation id="164269334534774161">You are viewing an offline copy of this page from <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1657932388559784161">Page insights bottom sheet is closed</translation>
@@ -705,7 +704,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4738836084190194332">Last synced: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">You’ll get improved suggestions in the address bar</translation>
 <translation id="4742970037960872810">Remove highlight</translation>
-<translation id="4743664893327841597">What you type in the address bar or search box is sent to your default search engine</translation>
 <translation id="4749960740855309258">Open a new tab</translation>
 <translation id="4750356170202299988">Content for young minds</translation>
 <translation id="4758061975920522644">Share image only</translation>
@@ -739,6 +737,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4864369630010738180">Signing in...</translation>
 <translation id="4866368707455379617">Unable to install <ph name="MODULE" /> for Chrome</translation>
 <translation id="4871568871368204250">Turn off sync</translation>
+<translation id="4874961007154620743">When off, you’ll still see suggestions that Chrome provides locally</translation>
 <translation id="4875775213178255010">Content Suggestions</translation>
 <translation id="4877678010818027629">Enter Incognito mode</translation>
 <translation id="4878404682131129617">Establishing a tunnel via proxy server failed</translation>
@@ -1210,6 +1209,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="727288900855680735">Submit <ph name="ONE_TIME_CODE" /> to <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blocked site</translation>
 <translation id="7276100255011548441">Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics that you don't want Chrome to share with sites. Learn more about <ph name="BEGIN_LINK" />managing your ad privacy in Chrome.<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">As you type, Chrome sends the content of the address bar or search box to your default search engine</translation>
 <translation id="7286703216224610554">Share reaction only</translation>
 <translation id="7289303553784750393">If you're online but this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Rename unavailable</translation>
@@ -1557,6 +1557,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is ready</translation>
 <translation id="8937772741022875483">Remove your Chrome activity from Digital Wellbeing?</translation>
+<translation id="893938492099608175">Depending on your settings, Chrome may also send cookies, your current URL and your location</translation>
 <translation id="8942627711005830162">Open in other window</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – This language couldn't be downloaded. Try again later.</translation>
 <translation id="8955719471735800169">Back to top</translation>

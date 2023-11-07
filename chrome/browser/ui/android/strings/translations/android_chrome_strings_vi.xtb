@@ -126,7 +126,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Xóa 1 mục đã chọn}other{Xóa # mục đã chọn}}</translation>
 <translation id="1633659023549081553">Khám phá nội dung mới trên trang chủ của Chrome</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
-<translation id="1642309806724967937">Tuỳ vào chế độ cài đặt của bạn, Chrome cũng có thể gửi cookie và URL hiện tại của bạn</translation>
 <translation id="164269334534774161">Bạn đang xem bản sao ngoại tuyến của trang này từ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Nhật ký</translation>
 <translation id="1657932388559784161">Đã đóng bảng thông tin chi tiết về trang ở dưới cùng</translation>
@@ -705,7 +704,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4738836084190194332">Đồng bộ hóa lần gần đây nhất: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Bạn sẽ nhận được nội dung đề xuất cải tiến trên thanh địa chỉ</translation>
 <translation id="4742970037960872810">Xóa nội dung được làm nổi bật</translation>
-<translation id="4743664893327841597">Nội dung bạn nhập vào thanh địa chỉ hoặc hộp tìm kiếm sẽ được gửi đến công cụ tìm kiếm mặc định của bạn</translation>
 <translation id="4749960740855309258">Mở thẻ mới</translation>
 <translation id="4750356170202299988">Nội dung dành cho người trẻ</translation>
 <translation id="4758061975920522644">Chỉ chia sẻ hình ảnh</translation>
@@ -757,6 +755,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4925120120285606924">Ảnh chụp màn hình <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Mật khẩu của bạn sẽ được xuất và tải xuống dưới dạng tệp văn bản. Mật khẩu sẽ hiển thị với bất kỳ ai và bất kỳ ứng dụng nào có quyền truy cập vào thư mục đích.</translation>
 <translation id="4926901776383726965">Bạn có thể lưu hình ảnh và tệp để xem khi không có mạng hoặc chia sẻ trong các ứng dụng khác</translation>
+<translation id="4928144016283278047">Chống công cụ theo dõi (cookie của bên thứ ba, tính năng theo dõi IP, tập lệnh xâm phạm, v.v.)</translation>
 <translation id="4932247056774066048">Vì bạn đang đăng xuất khỏi một tài khoản thuộc quản lý của <ph name="DOMAIN_NAME" /> nên dữ liệu của bạn trên Chrome sẽ bị xóa khỏi thiết bị này. Tuy nhiên, dữ liệu đó sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
 <translation id="4943703118917034429">Thực tế ảo</translation>
 <translation id="4943872375798546930">Không tìm thấy kết quả nào</translation>
@@ -1209,6 +1208,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="727288900855680735">Gửi <ph name="ONE_TIME_CODE" /> tới <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Trang web bị chặn</translation>
 <translation id="7276100255011548441">Chrome tự động xoá những chủ đề đã tồn tại hơn 4 tuần. Khi bạn tiếp tục duyệt web, chủ đề đã bị xoá có thể xuất hiện lại trong danh sách. Bạn cũng có thể chặn những chủ đề mà bạn không muốn Chrome chia sẻ với các trang web. Tìm hiểu thêm về <ph name="BEGIN_LINK" />quản lý quyền riêng tư trong quảng cáo trên Chrome.<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">Khi bạn nhập, Chrome sẽ gửi nội dung trong thanh địa chỉ hoặc hộp tìm kiếm đến công cụ tìm kiếm mặc định</translation>
 <translation id="7286703216224610554">Chỉ chia sẻ phản ứng</translation>
 <translation id="7289303553784750393">Nếu bạn đang trực tuyến nhưng sự cố này vẫn tiếp diễn, bạn có thể thử những cách khác để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Không đổi tên được</translation>

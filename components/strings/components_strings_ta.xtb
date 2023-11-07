@@ -349,6 +349,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />தளத்தின் முகப்புப் பக்கத்திற்குச் செல்லவும்<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">அவுட்புட்டை இவ்வளவு நேரம் வரை தாமதப்படுத்து</translation>
 <translation id="164212631332220697">செக்-அவுட்டின்போது <ph name="CARD_DETAIL" /> கார்டு மூலம் பணம் செலுத்தலாம்.</translation>
+<translation id="1643651787397909318">Chromeமின் பாதுகாப்புச் சரிபார்ப்பு பட்டனுக்குச் சென்று, அமைப்புகளில் Chrome பாதுகாப்புச் சரிபார்ப்புப் பக்கத்தைப் பார்க்க அதை இயக்கவும்</translation>
 <translation id="1644574205037202324">இதுவரை பார்த்தவை</translation>
 <translation id="1645368109819982629">ஆதரிக்கப்படாத நெறிமுறை</translation>
 <translation id="1650602712345345441">Chrome அமைப்புகளை நிர்வகிக்கலாம்</translation>
@@ -2045,6 +2046,8 @@
 <translation id="5137761395480718572">வைஃபை அனுமதிச் சான்றுகளை நிறுவ இந்த ஆப்ஸ் அனுமதி கோருகிறது. அமைத்த பிறகு, பங்கேற்கும் வைஃபை நெட்வொர்க்குகளில் உங்கள் <ph name="DEVICE_TYPE" /> தானாகவே இணையும். இந்த அனுமதிச் சான்றுகளை அகற்ற ஆப்ஸை நிறுவல் நீக்கவும். <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">விர்ச்சுவல் கார்டு தற்போது கிடைக்கவில்லை, உங்கள் பேங்கைத் தொடர்புகொள்ளவும்</translation>
 <translation id="5138227688689900538">குறைவாகக் காட்டு</translation>
+<translation id="5143309888746105072">நீங்கள் உலாவும்போது உங்களைக் கண்காணிப்பதற்காக மூன்றாம் தரப்புக் குக்கீகளைத் தளங்கள் பயன்படுத்துவதை Chromium தடுக்கும்.
+            <ph name="NEW_LINE" />தள அம்சங்கள் இயங்கவில்லை என்றால் <ph name="START_LINK" />மூன்றாம் தரப்புக் குக்கீகளைத் தற்காலிகமாக அனுமதித்துப் பாருங்கள்<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">கொள்கைப் பதிலில் பிழைக் குறியீடு உள்ளது</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> இணையதளத்திற்கான அறிவிப்புகள் தடுக்கப்பட்டுள்ளன</translation>
 <translation id="514704532284964975">உங்கள் ஃபோன் மூலம் தட்டும் NFC சாதனங்களின் தகவல்களைப் பார்க்கவும் மாற்றவும் <ph name="URL" /> அனுமதி கோருகிறது</translation>
@@ -2391,6 +2394,7 @@
 <translation id="5873297634595728366">டீசல் வாகனங்கள்</translation>
 <translation id="5877831137320480913">அழகு &amp; உடற்பயிற்சி</translation>
 <translation id="5879989559903563723">கெஸ்ட் பயன்முறையில் அனுமதிக்கப்படாது</translation>
+<translation id="5880050725127890683">Chromeமின் பாதுகாப்புச் சரிபார்ப்பு அம்சத்திற்குச் செல்</translation>
 <translation id="5883861433316751031">MIDI சாதனங்களைக் கட்டுப்படுத்தி மீண்டும் புரோகிராம் செய்ய வேண்டுமா?</translation>
 <translation id="5884465125445718607">என்வெலப் சைனீஸ் #6</translation>
 <translation id="5887400589839399685">கார்டு சேமிக்கப்பட்டது</translation>
@@ -2571,6 +2575,7 @@
 <translation id="6251906504834538140">{0,plural, =1{ஃபைலை நகர்த்துவது தடுக்கப்பட்டது}other{<ph name="FILE_COUNT" /> ஃபைல்களை நகர்த்துவது தடுக்கப்பட்டது}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeமில் நீங்கள் பதிவிறக்கிய ஃபைல்களை நிர்வகிக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="6254436959401408446">பக்கத்தைத் திறப்பதற்குப் போதுமான நினைவகம் இல்லை</translation>
+<translation id="625463612687472648">அனுமதியை நிறுத்து</translation>
 <translation id="6259156558325130047">&amp;மறுவரிசைப்படுத்தலை மீண்டும் செய்</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> புக்மார்க்குகள்</translation>
 <translation id="6264376385120300461">பரவாயில்லை, பதிவிறக்கு</translation>
@@ -2746,6 +2751,8 @@
 <translation id="6596325263575161958">என்க்ரிப்ஷன் விருப்பங்கள்</translation>
 <translation id="6597665340361269064">90 டிகிரி</translation>
 <translation id="6599642189720630047">கண்காணிக்கப்படும் தயாரிப்புகள்</translation>
+<translation id="6606309334576464871">நீங்கள் உலாவும்போது உங்களைக் கண்காணிப்பதற்காக மூன்றாம் தரப்புக் குக்கீகளைத் தளங்கள் பயன்படுத்துவதை Chrome தடுக்கும்.
+            <ph name="NEW_LINE" />தள அம்சங்கள் இயங்கவில்லை என்றால் <ph name="START_LINK" />மூன்றாம் தரப்புக் குக்கீகளைத் தற்காலிகமாக அனுமதித்துப் பாருங்கள்<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">பொருளாதாரச் செய்திகள்</translation>
 <translation id="6612010098632894193">ஆன்லைன் வீடியோ</translation>
 <translation id="6613866251791999074">Chromeமில் உள்ள உங்கள் தேடல் இன்ஜின் குறித்து மேலும் அறிக</translation>
@@ -3420,6 +3427,7 @@
 <translation id="7888575728750733395">அச்சு ரென்டரிங் இன்டென்ட்</translation>
 <translation id="7894280532028510793">எழுத்துப்பிழை இல்லையெனில் <ph name="BEGIN_LINK" />நெட்வொர்க் சரிபார்ப்பை இயக்கிப் பார்க்கவும்<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">என்வெலப் 7 x 9 இன்ச்</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, அமைப்புகளில் உள்ள Chrome பாதுகாப்புச் சரிபார்ப்பு பக்கத்திற்குச் செல்ல, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்தவும்</translation>
 <translation id="7916162853251942238">ஃபிளெக்ஸோ பேஸ்</translation>
 <translation id="7927971017714848357">பகுதியளவு நிலங்கள் &amp; நிலம்</translation>
 <translation id="793209273132572360">முகவரியை மாற்றவா?</translation>
@@ -3715,6 +3723,7 @@
 <translation id="8460854335417802511">இயக்கு</translation>
 <translation id="8461694314515752532">ஒத்திசைக்கப்பட்ட தரவை எனது ஒத்திசைவுக் கடவுச்சொற்றொடர் மூலம் என்கிரிப்ட் செய்</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 கிரெடிட் கார்டு}other{# கிரெடிட் கார்டுகள்}}</translation>
+<translation id="8467494337615822642">அமைப்புகளில் Chrome பாதுகாப்புச் சரிபார்ப்பு பக்கத்திற்குச் செல்லும்</translation>
 <translation id="8468358362970107653">என்வெலப் C3</translation>
 <translation id="8473626140772740486">300 x 450 மிமீ</translation>
 <translation id="8473863474539038330">முகவரிகள் மற்றும் பல</translation>

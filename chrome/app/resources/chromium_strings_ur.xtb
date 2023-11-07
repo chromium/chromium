@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1001716830750249114">‏Chromium ورژن کی ترتیبات پر جائیں</translation>
 <translation id="1026101648481255140">انسٹالیشن دوبارہ شروع کریں</translation>
 <translation id="1029669172902658969">‏ChromiumOS&amp; کو اپ ڈیٹ کرنے کیلئے بند کر کے دوبارہ چلائیں</translation>
 <translation id="1040916596585577953">‏Chromium تجویز کرتا ہے کہ آپ اس ایکسٹینشن کا جائزہ لیں</translation>
@@ -23,6 +24,7 @@
 <translation id="1342274909142618978">‏Chromium (<ph name="URL" />) سے ڈیٹا بھی حذف کریں</translation>
 <translation id="1414495520565016063">‏آپ Chromium میں سائن ان ہیں!</translation>
 <translation id="1478370723027452770">‏Chrome for Testing کے سلسلے میں مدد حاصل کریں</translation>
+<translation id="1497802159252041924">انسٹال کی خرابی: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">‏ایک Chromium ٹیب کا اشتراک کریں</translation>
 <translation id="1553461853655228091">‏پنے اطراف کا 3D نقشہ تخلیق کرنے کی خاطر Chromium کو آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
 <translation id="1574377791422810894">‏Chromium کے سیفٹی ٹولز</translation>
@@ -33,6 +35,7 @@
 ویب سائٹس اور ایپس کو پہلے سے آپ کی دی گئی اجازتیں اس اکاؤنٹ پر لاگو ہو سکتی ہیں۔ آپ <ph name="SETTINGS_LINK_BEGIN" />ترتیبات<ph name="SETTINGS_LINK_END" /> میں اپنے Google اکاؤنٹس کا نظم کر سکتے ہیں۔</translation>
 <translation id="1640672724030957280">ڈاؤن لوڈ ہو رہی ہے…</translation>
 <translation id="1708666629004767631">‏Chromium کا ایک نیا، محفوظ تر ورژن دستیاب ہے۔</translation>
+<translation id="1715127912119967311">‏ان خصوصیات کو بہتر بنانے میں مدد کے لیے، Chromium ان کے ساتھ آپ کے تعاملات Google کو بھیجتا ہے۔ اس ڈیٹا کو انسان جائزہ کار پڑھ سکتے ہیں، اس پر کارروائی کر سکتے ہیں اور تشریح کر سکتے ہیں۔</translation>
 <translation id="17264556997921157">‏آپ دلچسپی کے ان موضوعات کو دیکھ اور ہٹا سکتے ہیں جنہیں سائٹس آپ کو اشتہارات دکھانے کے لیے استعمال کرتی ہیں۔ Chromium آپ کی حالیہ براؤزنگ کی سرگزشت کی بنیاد پر آپ کی دلچسپیوں کا تخمینہ لگاتا ہے۔</translation>
 <translation id="1733725117201708356">‏Chromium جلد ہی براؤزنگ ڈیٹا کو حذف کر دے گا</translation>
 <translation id="1745121272106313518">‏Chromium <ph name="REMAINING_TIME" /> میں ری سٹارٹ ہو جائے گا</translation>
@@ -157,11 +160,13 @@
 <translation id="390528597099634151">‏<ph name="EXISTING_USER" /> اس Chromium پروفائل میں پہلے سے سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کیلئے، Chromium آپ کیلئے آپ کی ذاتی پروفائل تخلیق کر سکتا ہے۔</translation>
 <translation id="3909353120217047026">‏یہ ایکسٹینشن Chrome ویب اسٹور کی پالیسی کی خلاف ورزی کرتی ہے اور غیر محفوظ ہو سکتی ہے۔ اسے Chromium سے ہٹا دیں تاکہ یہ آپ کی ذاتی معلومات سمیت آپ کی ملاحظہ کردہ سائٹس پر آپ کا ڈیٹا مزید دیکھ اور تبدیل نہ کر سکے۔</translation>
 <translation id="391789666908693569">‏<ph name="MANAGER_NAME" /> آپ کے اکاؤنٹ کا نظم کرتا ہے۔ آپ کا منتظم اس Chromium براؤزر کی پروفائل اور اس کا ڈیٹا جیسے بُک مارکس، سرگزشت اور پاس ورڈز دیکھ اور ان میں ترمیم کر سکتا ہے۔</translation>
+<translation id="3922825997980843979">‏جیسے ہی آپ ٹائپ کرتے ہیں Chromium ایڈریس بار یا تلاش باکس کا مواد آپ کے ڈیفالٹ سرچ انجن کو بھیجتا ہے</translation>
 <translation id="3945058413678539331">‏Chromium پاس ورڈز کاپی کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="3962647064319009959">‏جانیں کہ Chromium آپ کو کیسے محفوظ رکھتا ہے</translation>
 <translation id="3975724895399328945">‏&amp;Google Chrome for Testing کے بارے میں</translation>
 <translation id="3997429360543082038">‏ChromiumOS کے بارے میں</translation>
 <translation id="4019629340646866719">‏ChromiumOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
+<translation id="4028143804911941282">‏آف ہونے پر بھی آپ کو وہ تجاویز نظر آئیں گی جو Chromium مقامی طور پر فراہم کرتا ہے</translation>
 <translation id="4036079820698952681">‏<ph name="BEGIN_LINK" />موجودہ ترتیبات<ph name="END_LINK" /> کی اطلاع دے کر Chromium کو بہتر بنانے میں مدد کریں</translation>
 <translation id="4050175100176540509">اہم سیکیورٹی اصلاحات اور نئی خصوصیات تازہ ترین ورژن میں دستیاب ہیں۔</translation>
 <translation id="4055805654398742145">پاس ورڈ مینیجر</translation>
@@ -253,6 +258,7 @@
 <translation id="6003112304606738118">ڈاؤن لوڈ ہو رہی ہے… <ph name="HOURS" /> گھنٹہ(گھنٹے) باقی ہے</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6055895534982063517">‏Chromium کا ایک نیا ورژن دستیاب ہے اور وہ پہلے سے کہیں زیادہ تیز ہے۔</translation>
+<translation id="6058380562449900225">‏اپنے ڈیٹا کی تحفظ کے لیے، Chromium کو ان سائٹس سے اجازتیں ہٹانے کی اجازت دیں جن پر آپ حال ہی میں نہیں گئے ہیں۔ اس سے اطلاعات بند نہیں ہوتی ہیں۔</translation>
 <translation id="6063093106622310249">‏Chromium میں &amp;کھولیں</translation>
 <translation id="6072279588547424923">‏<ph name="EXTENSION_NAME" /> کو Chromium میں شامل کر دیا گیا ہے</translation>
 <translation id="6072463441809498330">‏Chromium کو تیز تر بنائیں</translation>

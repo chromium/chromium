@@ -32,6 +32,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1142732900304639782">Jangan tawarkan penerjemahan situs ini</translation>
 <translation id="1145536944570833626">Hapus data yang sudah ada.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> akan dibuka di Chrome. Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Gunakan sandi <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1174479719160874822">Chrome akan meminta situs seluler jika layarnya sempit</translation>
 <translation id="1177863135347784049">Sesuaikan</translation>
@@ -125,7 +126,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hapus 1 item yang dipilih}other{Hapus # item yang dipilih}}</translation>
 <translation id="1633659023549081553">Temukan konten baru di halaman beranda Chrome</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">Bergantung pada setelan Anda, Chrome juga dapat mengirim cookie dan URL Anda saat ini</translation>
 <translation id="164269334534774161">Anda melihat salinan offline halaman ini dari <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="1657932388559784161">Sheet bawah analisis halaman ditutup</translation>
@@ -149,6 +149,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1779766957982586368">Tutup jendela</translation>
 <translation id="1791662854739702043">Terinstal</translation>
 <translation id="1792959175193046959">Ubah lokasi download default kapan saja</translation>
+<translation id="1796666869097395659">Perkecil tab untuk membukanya kembali pada lain waktu</translation>
 <translation id="1807246157184219062">Terang</translation>
 <translation id="1810845389119482123">Penyiapan sinkronisasi awal belum selesai</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> tidak dapat melanjutkan dengan menggunakan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4738836084190194332">Terakhir disinkronkan: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Anda akan mendapatkan saran yang lebih baik di kolom URL</translation>
 <translation id="4742970037960872810">Hapus sorotan</translation>
-<translation id="4743664893327841597">Kata yang Anda ketik di kolom URL atau kotak penelusuran akan dikirim ke mesin telusur default Anda</translation>
 <translation id="4749960740855309258">Membuka tab baru</translation>
 <translation id="4750356170202299988">Konten untuk anak-anak</translation>
 <translation id="4758061975920522644">Hanya bagikan gambar</translation>
@@ -737,6 +737,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="4864369630010738180">Login...</translation>
 <translation id="4866368707455379617">Tidak dapat menginstal <ph name="MODULE" /> untuk Chrome</translation>
 <translation id="4871568871368204250">Nonaktifkan sinkronisasi</translation>
+<translation id="4874961007154620743">Jika dinonaktifkan, Anda akan tetap melihat saran yang disediakan Chrome secara lokal</translation>
 <translation id="4875775213178255010">Saran Konten</translation>
 <translation id="4877678010818027629">Masuk mode Samaran</translation>
 <translation id="4878404682131129617">Gagal membentuk saluran melalui server proxy</translation>
@@ -755,6 +756,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Sandi Anda akan diekspor dan didownload sebagai file teks. Sandi akan dapat dilihat oleh semua orang dan semua aplikasi yang memiliki akses ke folder tujuan.</translation>
 <translation id="4926901776383726965">Anda dapat menyimpan gambar dan file untuk dilihat secara offline atau membagikannya di aplikasi lain</translation>
+<translation id="4928144016283278047">Perlindungan dari pelacak (cookie pihak ketiga, pelacakan IP, skrip invasif, dan lainnya)</translation>
 <translation id="4932247056774066048">Karena Anda logout dari akun yang dikelola oleh <ph name="DOMAIN_NAME" />, data Chrome Anda akan dihapus dari perangkat ini. Data akan tetap berada dalam Akun Google Anda.</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">Tidak ada hasil</translation>
@@ -1207,6 +1209,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="727288900855680735">Kirim <ph name="ONE_TIME_CODE" /> ke <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Situs yang diblokir</translation>
 <translation id="7276100255011548441">Chrome akan otomatis menghapus topik yang tersimpan lebih dari 4 minggu. Saat Anda menjelajah, suatu topik mungkin muncul kembali di daftar. Atau, Anda dapat memblokir topik yang tidak ingin Anda bagikan dari Chrome ke situs. Pelajari lebih lanjut <ph name="BEGIN_LINK" />cara mengelola privasi iklan Anda di Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">Saat Anda mengetik, Chrome akan mengirimkan konten kolom URL atau kotak penelusuran ke mesin telusur default Anda</translation>
 <translation id="7286703216224610554">Hanya bagikan reaksi</translation>
 <translation id="7289303553784750393">Jika Anda sudah online tetapi masalah ini terus terjadi, Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Ganti nama tidak tersedia</translation>
@@ -1554,6 +1557,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> sudah siap</translation>
 <translation id="8937772741022875483">Hapus aktivitas Chrome Anda dari Kesehatan Digital?</translation>
+<translation id="893938492099608175">Bergantung pada setelan Anda, Chrome juga dapat mengirim cookie, URL saat ini, dan lokasi Anda</translation>
 <translation id="8942627711005830162">Buka di jendela lain</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Bahasa ini tidak dapat didownload. Coba lagi nanti.</translation>
 <translation id="8955719471735800169">Kembali ke atas</translation>

@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />ની મંજૂરી આપી}}</translation>
 <translation id="2410940059315936967">તમે મુલાકાત લેતા હો એવી કોઈ સાઇટ અન્ય સાઇટમાંનું કન્ટેન્ટ શામેલ કરી શકે છે, ઉદાહરણ તરીકે છબીઓ, જાહેરાતો અને ટેક્સ્ટ. આવી અન્ય સાઇટ દ્વારા સેટ કરવામાં આવતી કુકીને ત્રીજા પક્ષની કુકી તરીકે ઓળખવામાં આવે છે.</translation>
 <translation id="2434158240863470628">ડાઉનલોડ પૂર્ણ <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">તમે આ સાઇટને હંગામી રીતે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાની મંજૂરી આપી છે, જેનો અર્થ એ થાય છે કે સાઇટને બ્રાઉઝિંગ સંબંધિત સુરક્ષા ઓછી મળે છે, પરંતુ સાઇટની સુવિધાઓ અપેક્ષા મુજબ કામ કરે એવી સંભાવના વધુ છે. <ph name="BEGIN_LINK" />પ્રતિસાદ મોકલો<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">છૂપા મોડમાં અમુક સાઇટ પર અમુક સુવિધાઓ કદાચ કામ કરી શકશે નહીં</translation>
 <translation id="2442870161001914531">હંમેશાં ડેસ્કટૉપ સાઇટની વિનંતી કરો</translation>
 <translation id="2469312991797799607">આ ક્રિયાના પરિણામે <ph name="ORIGIN" /> માટેની અને તેની હેઠળ આવતી બધી સાઇટ માટેનો બધો ડેટા અને કુકી ડિલીટ થઈ જશે</translation>
@@ -208,6 +209,7 @@
 <translation id="4644713492825682049">ડિલીટ કરીને રીસેટ કરો</translation>
 <translation id="4645575059429386691">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="4670064810192446073">વર્ચ્યુઅલ રિયાલિટી</translation>
+<translation id="4673958474310291465">ત્રીજા પક્ષની કુકીને હંગામી રીતે મંજૂરી આપવાનો પ્રયાસ કરવાનો અર્થ છે ઓછું સંરક્ષણ પરંતુ સાઇટની સુવિધાઓ અપેક્ષા મુજબ કામ કરે એવી સંભાવના વધુ છે</translation>
 <translation id="4751476147751820511">મોશન અથવા લાઇટ સેન્સર</translation>
 <translation id="4779083564647765204">ઝૂમ કરો</translation>
 <translation id="4811450222531576619">તેના સૉર્સ અને વિષય વિશે જાણો</translation>

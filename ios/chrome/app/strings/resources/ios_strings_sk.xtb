@@ -48,6 +48,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="1219674500290482172">Nepodarilo sa pripojiť k internetu.</translation>
 <translation id="1226238226094914652">Heslá vo všetkých zariadeniach</translation>
 <translation id="122699739164161391">Zavrieť všetky karty</translation>
+<translation id="1227866575467023566">{count,plural, =1{Stránka bola pridaná do čitateľského zoznamu vo vašom účte {email}}few{Do čitateľského zoznamu vo vašom účte {email} boli pridané {count} stránky}many{{count} Pages added to your reading list in your account, {email}}other{Do čitateľského zoznamu vo vašom účte {email} bolo pridaných {count} stránok}}</translation>
 <translation id="1229222343402087523">Hľadať ${searchPhrase} v Chrome</translation>
 <translation id="1242044645101871359">Prihláste sa znova</translation>
 <translation id="1248276223555153952">Spravovať účty v tomto zariadení…</translation>
@@ -123,6 +124,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="1580715474678097352">Chráňte sa pred nebezpečenými webmi</translation>
 <translation id="1580783302095112590">E-mail bol odoslaný.</translation>
 <translation id="1582732959743469162">Tým zastavíte ďalší postup aktuálneho sťahovania.</translation>
+<translation id="158591023028013564">{count,plural, =1{Stránka bola pridaná do vášho čitateľského zoznamu}few{Do vášho čitateľského zoznamu boli pridané {count} stránky}many{{count} Pages added to your reading list}other{Do vášho čitateľského zoznamu bolo pridaných {count} stránok}}</translation>
 <translation id="1594034544529347967">Začína sa</translation>
 <translation id="160275202205869636">Keď je toto nastavenie zapnuté, údaje používate a ukladáte vo svojom účte Google. Keď je vypnuté, údaje sa ukladajú iba do tohto zariadenia.</translation>
 <translation id="1605405588277479165">Vypnuté – neodporúča sa</translation>
@@ -422,6 +424,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3157387275655328056">Pridať do čitateľského zoznamu</translation>
 <translation id="3157684681743766797">Označiť všetko…</translation>
 <translation id="315778507796115851">História</translation>
+<translation id="31652791196570636">Zavrieť</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Uložené heslá môžete používať aj v iných zariadeniach.</translation>
 <translation id="3175081911749765310">Web. služ.</translation>
@@ -521,6 +524,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="371230970611282515">Predpovedá nebezpečné udalosti a upozorní vás, než k nim dôjde.</translation>
 <translation id="371398631992790800">Skryť Záložky</translation>
 <translation id="37207012422556617">Populárne vyhľadávania</translation>
+<translation id="3725081662140949903">Ak nechcete, aby ostatní používali vaše heslo, otvorte aplikáciu <ph name="APP" /> a zmeňte si ho</translation>
 <translation id="3740397331642243698">Otvorí zadané webové adresy v prehliadači Google Chrome v režime inkognito.</translation>
 <translation id="374357899112510277">Skryť Stiahnuté</translation>
 <translation id="3745190878148784130">Skryť položku Textová lupa</translation>
@@ -585,6 +589,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4112644173421521737">Hľadať</translation>
 <translation id="4113030288477039509">Spravované vaším správcom</translation>
 <translation id="4113957097611235433">Zmeňte heslá</translation>
+<translation id="4120936477286528673">Tento web sa opakovane pokúša otvoriť ďalšiu aplikáciu.</translation>
 <translation id="4121993058175073134">Ak chcete odoslať údaje čistého exportu, v aplikácii Nastavenia nakonfigurujte svoj e-mailový účet.</translation>
 <translation id="4124987746317609294">Obdobie</translation>
 <translation id="4133265950310064865">Rozšírená ochrana</translation>
@@ -637,6 +642,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4389019817280890563">Klepnutím zmeníte jazyk.</translation>
 <translation id="4405320213589929829">Pomocou adries na webových stránkach môžete získať miestne informácie a trasy.</translation>
 <translation id="4420409367264901497">Upraviť záložku</translation>
+<translation id="4431224949908513835">Vyberte spôsob platby, ktorý chcete vyplniť.</translation>
 <translation id="4442550905108052454">Otvorte <ph name="BEGIN_BOLD" />Nastavenia<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Pridanie jazyka</translation>
 <translation id="4461286950227634995">Ponúkať ukladanie hesiel</translation>
@@ -779,6 +785,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} slabé heslo}few{{COUNT} slabé heslá}many{{COUNT} Weak Passwords}other{{COUNT} slabých hesiel}}</translation>
 <translation id="5149188072385105201">Pridať heslo…</translation>
 <translation id="5150492518600715772">Odoslať do vášho zariadenia</translation>
+<translation id="5157638238828697074">Niečo sa pokazilo. Aplikáciu sa nepodarilo otvoriť.</translation>
 <translation id="5168414296986405587">Vytvorené pre iPadOS</translation>
 <translation id="5173088371991956744">Synchronizácia potrebuje overiť vašu totožnosť</translation>
 <translation id="5173493422621051500">Použiť klávesnicu</translation>
@@ -805,6 +812,8 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5235389474593199952">Skryť položku História</translation>
 <translation id="5238301240406177137">Uložiť do účtu</translation>
 <translation id="5245322853195994030">Zrušiť synchronizáciu</translation>
+<translation id="5248640482715684545">Tento web sa pokúša otvoriť inú aplikáciu.</translation>
+<translation id="5256661381001734217">Tento web sa pokúša otvoriť aplikáciu.  Opustíte tým režim inkognito.</translation>
 <translation id="5256908199795498284">Chrome zistí sledovacie čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuálne informácie o zásielke na stránke na novej karte. Vaše údaje sa budú zdieľať s Googlom na účely poskytovania tejto funkcie a zlepšovania Nákupov pre všetkých.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Povinné pole je prázdne. Pred uložením ho vyplňte.}few{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}many{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}other{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}}</translation>
 <translation id="5271549068863921519">Uložiť heslo</translation>
@@ -904,6 +913,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5834415013958049700">Obrázok Lens, ktorý ste skopírovali</translation>
 <translation id="5844284118433003733">Keď sa prihlásite, tieto údaje sú pripojené k vášmu účtu Google, aby vás chránili v službách Googlu (napríklad zvýšenie ochrany v Gmaile po bezpečnostnom incidente).</translation>
 <translation id="5846482154967366008">Vyhľadávací nástroj</translation>
+<translation id="5850913622988109693">Možnosti sledovania zásielok</translation>
 <translation id="5854790677617711513">Staršie ako 30 dní</translation>
 <translation id="5857090052475505287">Nový priečinok</translation>
 <translation id="5857770089550859117">Spustenie synchronizácie vyžaduje prístupovú frázu.</translation>
@@ -1190,6 +1200,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7221173315674413369">Preskúmajte nové funkcie a tipy v sekcii Novinky</translation>
 <translation id="7223102419539744003">Zavretie karty</translation>
 <translation id="722454870747268814">Nová karta inkognito</translation>
+<translation id="7233006041370588369">Vyberte heslo, ktoré chcete doplniť.</translation>
 <translation id="7265758999917665941">Nikdy pre tento web</translation>
 <translation id="7272437679830969316">Vašu totožnosť nie je možné overiť. Heslo sa neskopírovalo.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nová zásielka je sledovaná}few{Nové zásielky sú sledované}many{New Packages Tracked}other{Nové zásielky sú sledované}}</translation>

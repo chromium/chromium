@@ -116,6 +116,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1391102559483454063">Zapnuto</translation>
 <translation id="1407069428457324124">Tmavý motiv</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Mezi daty se můžete pohybovat pomocí kláves se šipkami.</translation>
+<translation id="141170878022560212">Prostřední tlačítko</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, nainstalovaná aplikace</translation>
 <translation id="1414919006379339073">Zavřít aktuální okno</translation>
 <translation id="1415846719612499304">Zobrazit seznam sítí. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2086334242442703436">Otevřít výběr smajlíků</translation>
 <translation id="2088116547584365419">hry</translation>
 <translation id="209965399369889474">Nejste připojeni k síti</translation>
+<translation id="2107581415810719320">Jiné tlačítko <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Váš kabel USB-C nepodporuje rozhraní Thunderbolt. Výkon zařízení může být omezen.</translation>
 <translation id="2108303511227308752">Klávesová zkratka Alt + Backspace se změnila. Pokud chcete použít klávesu Delete, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Nová plocha</translation>
@@ -563,6 +565,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3340978935015468852">nastavení</translation>
 <translation id="3341303451326249809">Snímek obrazovky byl pořízen</translation>
 <translation id="334252345105450327">Pořídit snímek obrazovky</translation>
+<translation id="3346728094401457853">Zadejte heslo zařízení pro <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Vybrat text od kurzoru po konec řádku</translation>
 <translation id="3349345708646875009">Otevřít správce úloh</translation>
 <translation id="3364721542077212959">Nástroje pro dotykové pero</translation>
@@ -1588,6 +1591,7 @@ Nová instalace</translation>
 <translation id="7489261257412536105">Zapnout nebo vypnout režim celé obrazovky</translation>
 <translation id="7490360161041035804">Důležité soubory, včetně souborů z Disku Google, můžete připnout. Pokud chcete položku připnout, buď na ni umístěte kurzor, nebo otevřete aplikaci Soubory a klikněte na ni pravým tlačítkem.</translation>
 <translation id="7497767806359279797">Vybrat jazyk a klávesnici</translation>
+<translation id="7507162824403726948">Dokončete ověření identity</translation>
 <translation id="7508690557411636492">Otevřeno v uplynulém měsíci</translation>
 <translation id="7509246181739783082">Ověření identity</translation>
 <translation id="7512509370370076552">Zkratka ke kliknutí pravým tlačítkem byla aktualizována z Alt + kliknutí na klávesu <ph name="LAUNCHER_KEY_NAME" /> + kliknutí</translation>

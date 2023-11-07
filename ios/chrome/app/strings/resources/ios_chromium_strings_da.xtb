@@ -96,6 +96,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chromium-da
 <translation id="4654936625574199632">Chromium sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktivér Chromium-scanner</translation>
 <translation id="4736424910885271643">Da din konto administreres af <ph name="HOSTED_DOMAIN" />, bliver dine Chromium-data ryddet fra denne enhed</translation>
+<translation id="4773487571745795781">Du har deaktiveret login via Chromium.</translation>
 <translation id="4790638144988730920">Fortsæt med at bruge Chromium-dataene på din Google-konto.</translation>
 <translation id="4828317641996116749">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
 <translation id="4985291216379576555">Offline – Chromium kan ikke søge efter opdateringer</translation>

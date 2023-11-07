@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}}</translation>
 <translation id="2410940059315936967">Сиз кирген сайт башка сайттардан алынган материалдарды, мисалы, сүрөттөрдү, жарнамаларды жана текстти жалгаштыра алат. Мындай сайттар орноткон cookie файлдары үчүнчү тараптын cookie файлдары деп аталат.</translation>
 <translation id="2434158240863470628">Жүктөлүп алынды: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Бул сайтка үчүнчү тараптын cookie файлдарын колдонууга убактылуу уруксат бердиңиз. Муну менен серептөө учурунда коргоо төмөндөйт, бирок сайттын функциялары ойдогудай иштей берет. <ph name="BEGIN_LINK" />Пикир билдирүү<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Айрым сайттардагы функциялар Жашыруун режимде иштебеши мүмкүн</translation>
 <translation id="2442870161001914531">Иш такта сайты ар дайым суралсын</translation>
 <translation id="2469312991797799607"><ph name="ORIGIN" /> жана ага байланышкан сайттар сактаган бардык маалымат жана cookie файлдары өчүрүлөт</translation>
@@ -208,6 +209,7 @@
 <translation id="4644713492825682049">Өчүрүп, баштапкы абалга келтирүү</translation>
 <translation id="4645575059429386691">Ата-энеңиз башкарат</translation>
 <translation id="4670064810192446073">Виртуалдык дүйнө</translation>
+<translation id="4673958474310291465">Үчүнчү тараптын cookie файлдарына убактылуу уруксат берип көрүңүз. Мында Интернетте коопсуздугуңуз азаят, бирок сайттын функциялары ойдогудай иштеши мүмкүн</translation>
 <translation id="4751476147751820511">Кыймыл же жарык сенсорлору</translation>
 <translation id="4779083564647765204">Ченөлчөм</translation>
 <translation id="4811450222531576619">Булагы жана темасы тууралуу кеңири маалымат</translation>

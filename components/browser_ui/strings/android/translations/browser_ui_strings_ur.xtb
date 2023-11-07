@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}}</translation>
 <translation id="2410940059315936967">آپ کی ملاحظہ کی جانے والی سائٹ دوسری سائٹس سے مواد کو سرایت کر سکتی ہے، مثال کے طور پر تصاویر، اشتہارات اور ٹیکسٹ۔ ان دیگر سائٹس کے ذریعے سیٹ کردہ کوکیز کو فریق ثالث کوکیز کہا جاتا ہے۔</translation>
 <translation id="2434158240863470628">ڈاؤن لوڈ مکمل ہو گیا <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">آپ نے عارضی طور پر اس سائٹ کو فریق ثالث کوکیز استعمال کرنے کی اجازت دی ہے، جس کا مطلب ہے کہ براؤزنگ کا تحفظ کم ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔ <ph name="BEGIN_LINK" />تاثرات بھیجیں<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات پوشیدگی وضع میں کام نہ کریں</translation>
 <translation id="2442870161001914531">ہمیشہ ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
 <translation id="2469312991797799607">اس کارروائی سے <ph name="ORIGIN" /> کے سبھی ڈیٹا اور کوکیز اور اس کے تحت سبھی سائٹس حذف ہو جائیں گی</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">سائٹس کو محفوظ مواد چلانے کی اجازت دینے سے پہلے پوچھیں</translation>
 <translation id="2932883381142163287">بیجا استعمال کی اطلاع دیں</translation>
 <translation id="2968755619301702150">سرٹیفیکیٹ ناظر</translation>
+<translation id="2979365474350987274">فریق ثالث کوکیز محدود ہیں</translation>
 <translation id="3008272652534848354">اجازتیں دوبارہ ترتیب دیں</translation>
 <translation id="301521992641321250">خود کار طور پر مسدود ہو گيا</translation>
 <translation id="3069226013421428034">کسی مخصوص سائٹ کیلئے فریق ثالث سائن ان کی اجازت دیں۔</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">حذف اور ری سیٹ کریں</translation>
 <translation id="4645575059429386691">آپ کے والدین کے زیر انتظام</translation>
 <translation id="4670064810192446073">ورچوئل رئیلٹی</translation>
+<translation id="4673958474310291465">فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر آزمائیں، جس کا مطلب کم تحفظ ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے</translation>
 <translation id="4751476147751820511">موشن یا لائٹ سینسرز</translation>
 <translation id="4779083564647765204">زوم</translation>
 <translation id="4811450222531576619">اس کے ماخذ اور موضوع کے بارے میں جانیں</translation>

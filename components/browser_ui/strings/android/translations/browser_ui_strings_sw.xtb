@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Umeruhusu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine<ph name="NUM_MORE" />}other{Umeruhusu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine<ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Tovuti unayoitembelea inaweza kupachika maudhui kutoka kwenye tovuti zingine, kwa mfano, picha, matangazo na maandishi. Vidakuzi vinavyowekwa na tovuti hizi zingine vinaitwa vidakuzi vya washirika wengine.</translation>
 <translation id="2434158240863470628">Upakuaji umekamilika <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Uliruhusu kwa muda tovuti hii itumie vidakuzi vya washirika wengine. Hatua hii inamaanisha kuwa ulinzi wa kuvinjari utapungua lakini vipengele vya tovuti vina uwezekano mkubwa wa kufanya kazi inavyotarajiwa. <ph name="BEGIN_LINK" />Tuma maoni<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Huenda vipengele kwenye baadhi ya tovuti visifanye kazi katika Hali fiche</translation>
 <translation id="2442870161001914531">Omba tovuti katika mwonekano wa kompyuta kila wakati</translation>
 <translation id="2469312991797799607">Kitendo hiki kitafuta data na vidakuzi vyote vya <ph name="ORIGIN" /> na tovuti zote ambazo inasimamia</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Iulize kabla ya kuruhusu tovuti kucheza maudhui yanayolindwa</translation>
 <translation id="2932883381142163287">Ripoti matumizi mabaya</translation>
 <translation id="2968755619301702150">Kitazamaji vyeti</translation>
+<translation id="2979365474350987274">Vidakuzi vya wahusika wengine vimedhibitiwa</translation>
 <translation id="3008272652534848354">Badilisha ruhusa</translation>
 <translation id="301521992641321250">Imezuiwa kiotomatiki</translation>
 <translation id="3069226013421428034">Ruhusu uingiaji wa wahusika wengine katika akaunti kwenye tovuti mahususi.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Futa na uweke upya</translation>
 <translation id="4645575059429386691">Inadhibitiwa na wazazi wako</translation>
 <translation id="4670064810192446073">Uhalisia pepe</translation>
+<translation id="4673958474310291465">Jaribu kuruhusu kwa muda vidakuzi vya washirika wengine. Hatua hii inaamaanisha kuwa ulinzi utapungua lakini vipengele vya tovuti vina uwezekano mkubwa wa kufanya kazi inavyotarajiwa</translation>
 <translation id="4751476147751820511">Vitambuzi vya mwendo au mwangaza</translation>
 <translation id="4779083564647765204">Kuza</translation>
 <translation id="4811450222531576619">Fahamu kuhusu mada na chanzo chake</translation>

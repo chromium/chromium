@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1001716830750249114">Siirry Chromiumin versioasetuksiin</translation>
 <translation id="1026101648481255140">Jatka asennusta</translation>
 <translation id="1029669172902658969">Päivitä &amp;Chromium-käyttöjärjestelmä käynnistämällä se uudelleen</translation>
 <translation id="1040916596585577953">Chromium suosittelee tämän laajennuksen tarkistamista</translation>
@@ -21,6 +22,7 @@
 <translation id="1342274909142618978">Poista data myös Chromiumista (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Olet kirjautunut Chromiumiin!</translation>
 <translation id="1478370723027452770">Ohjeita Chrome for Testingin käyttöön</translation>
+<translation id="1497802159252041924">Asennusvirhe: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Jaa Chromium-välilehti</translation>
 <translation id="1553461853655228091">Chromium tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
 <translation id="1574377791422810894">Chromiumin turvallisuustyökalut</translation>
@@ -31,6 +33,7 @@
 Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit ylläpitää Google-tilejä <ph name="SETTINGS_LINK_BEGIN" />asetuksissa<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Ladataan...</translation>
 <translation id="1708666629004767631">Chromiumista on saatavilla uusi, turvallisempi versio.</translation>
+<translation id="1715127912119967311">Chromium lähettää toimintasi Googlelle näiden ominaisuuksien parantamiseksi. Tarkastajat voivat lukea, käsitellä ja tehdä merkintöjä dataan.</translation>
 <translation id="17264556997921157">Voit tarkistaa ja poistaa kiinnostuksen kohteita, joita sivustot käyttävät mainosten näyttämiseen. Chromium arvioi viimeaikaisen selaushistoriasi perusteella, mikä saattaisi kiinnostaa sinua.</translation>
 <translation id="1733725117201708356">Selausdata poistetaan pian Chromiumista</translation>
 <translation id="1745121272106313518">Chromium käynnistyy uudelleen, kun <ph name="REMAINING_TIME" /> on kulunut</translation>
@@ -155,11 +158,13 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> on jo kirjautunut tähän Chromium-profiiliin. Chromium voi luoda sinulle oman profiilin, jotta selaamisesi pysyy erillään.</translation>
 <translation id="3909353120217047026">Tämä laajennus rikkoo Chrome Web Storen käytäntöä ja saattaa olla vaarallinen. Poista se Chromiumista, jotta se ei enää voi nähdä tai muuttaa dataasi avaamillasi sivustoilla, mukaan lukien henkilökohtaisia tietojasi.</translation>
 <translation id="391789666908693569"><ph name="MANAGER_NAME" /> ylläpitää tiliäsi. Järjestelmänvalvoja voi nähdä tämän Chromium-selainprofiilin ja sen datan (esim. kirjanmerkit, historian ja salasanat) sekä muokata niitä.</translation>
+<translation id="3922825997980843979">Chromium lähettää kirjoittaessasi osoitepalkin tai hakukentän sisällön oletushakukoneellesi</translation>
 <translation id="3945058413678539331">Chromium yrittää kopioida salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="3962647064319009959">Lue, miten Chromium pitää sinut turvassa</translation>
 <translation id="3975724895399328945">Tietoa &amp;Google Chrome for Testingistä</translation>
 <translation id="3997429360543082038">Tietoa Chromium-käyttöjärjestelmästä</translation>
 <translation id="4019629340646866719">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chromium-käyttöjärjestelmää, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="4028143804911941282">Jos tämä on pois päältä, näet edelleen Chromiumin paikallisesti tarjoamia ehdotuksia</translation>
 <translation id="4036079820698952681">Auta parantamaan Chromiumia ilmoittamalla <ph name="BEGIN_LINK" />nykyiset asetukset<ph name="END_LINK" />.</translation>
 <translation id="4050175100176540509">Uusimmassa versiossa on käytettävissä tärkeitä turvallisuusparannuksia ja uusia ominaisuuksia.</translation>
 <translation id="4055805654398742145">S&amp;alasanat</translation>
@@ -251,6 +256,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="6003112304606738118">Ladataan… <ph name="HOURS" /> tuntia jäljellä</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6055895534982063517">Chromiumista on saatavilla uusi versio, joka on entistäkin nopeampi.</translation>
+<translation id="6058380562449900225">Datasi suojaamiseksi salli Chromiumin poistaa luvat sivustoilta, joilla et ole käynyt viime aikoina. Tämä ei estä ilmoituksia.</translation>
 <translation id="6063093106622310249">&amp;Avaa Chromiumissa</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> on lisätty Chromiumiin</translation>
 <translation id="6072463441809498330">Chromiumin nopeuttaminen</translation>

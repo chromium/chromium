@@ -116,6 +116,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1391102559483454063">Aktif</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gunakan tombol panah untuk berpindah-pindah antar-tanggal.</translation>
+<translation id="141170878022560212">Tombol Tengah</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Aplikasi yang Diinstal</translation>
 <translation id="1414919006379339073">Tutup jendela saat ini</translation>
 <translation id="1415846719612499304">Tampilkan daftar jaringan. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2086334242442703436">Buka Alat Pilih Emoji</translation>
 <translation id="2088116547584365419">game</translation>
 <translation id="209965399369889474">Tidak terhubung ke jaringan</translation>
+<translation id="2107581415810719320">Tombol Lainnya <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kabel USB-C Anda tidak mendukung Thunderbolt. Performa perangkat mungkin dibatasi.</translation>
 <translation id="2108303511227308752">Pintasan keyboard Alt + Backspace telah diubah. Untuk menggunakan tombol Delete, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="2126242104232412123">Desktop baru</translation>
@@ -563,6 +565,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3340978935015468852">setelan</translation>
 <translation id="3341303451326249809">Screenshot diambil</translation>
 <translation id="334252345105450327">Ambil screenshot</translation>
+<translation id="3346728094401457853">Masukkan sandi perangkat untuk <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Pilih teks dari kursor ke akhir baris</translation>
 <translation id="3349345708646875009">Buka pengelola tugas</translation>
 <translation id="3364721542077212959">Alat stilus</translation>
@@ -1589,6 +1592,7 @@ Baru diinstal</translation>
 <translation id="7489261257412536105">Masuk atau keluar dari layar penuh</translation>
 <translation id="7490360161041035804">Anda dapat menyematkan file penting, termasuk file Google Drive. Untuk menyematkan, arahkan kursor ke item atau buka File lalu klik kanan item.</translation>
 <translation id="7497767806359279797">Pilih bahasa dan keyboard</translation>
+<translation id="7507162824403726948">Selesaikan verifikasi identitas Anda</translation>
 <translation id="7508690557411636492">Dibuka dalam sebulan terakhir</translation>
 <translation id="7509246181739783082">Verifikasi identitas Anda</translation>
 <translation id="7512509370370076552">Pintasan klik kanan diperbarui dari alt + klik menjadi tombol <ph name="LAUNCHER_KEY_NAME" /> + klik</translation>

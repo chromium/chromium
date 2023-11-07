@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">अन</translation>
 <translation id="1407069428457324124">अँध्यारो थिम</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />। एउटा मितिबाट अर्को मितिमा जान एरो कीहरू प्रयोग गर्नुहोस्।</translation>
+<translation id="141170878022560212">बिचको बटन</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, स्थापना गरिएको एप</translation>
 <translation id="1414919006379339073">हालको विन्डो बन्द गर्नुहोस्</translation>
 <translation id="1415846719612499304">नेटवर्कको सूची देखाउनुहोस्। <ph name="STATE_TEXT" />।</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">इमोजी पिकर खोल्नुहोस्</translation>
 <translation id="2088116547584365419">गेमहरू</translation>
 <translation id="209965399369889474">नेटवर्कमा जोडिएको छैन</translation>
+<translation id="2107581415810719320">अन्य बटन <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">तपाईंको USB-C केबल Thunderbolt मा जोड्न मिल्दैन। डिभाइस राम्ररी नचल्न सक्छ।</translation>
 <translation id="2108303511227308752">Alt + Backspace किबोर्ड सर्टकट परिवर्तन गरिएको छ। Delete की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + Backspace थिच्नुहोस्।</translation>
 <translation id="2126242104232412123">नयाँ डेस्क</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">सेटिङहरू</translation>
 <translation id="3341303451326249809">स्क्रिनसट खिचियो</translation>
 <translation id="334252345105450327">स्क्रिनसट खिच्नुहोस्</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> को डिभाइस पासवर्ड हाल्नुहोस्</translation>
 <translation id="334927402682780278">कर्सरबाट लाइनको अन्तिमसम्मको टेक्स्ट चयन गर्नुहोस्</translation>
 <translation id="3349345708646875009">टास्क म्यानेजर खोल्नुहोस्</translation>
 <translation id="3364721542077212959">स्टाइलस सम्बन्धी उपकरणहरू</translation>
@@ -1589,6 +1592,7 @@
 <translation id="7489261257412536105">फुल स्क्रिन मोड अन वा अफ गर्नुहोस्</translation>
 <translation id="7490360161041035804">तपाईं Google Drive का फाइललगायतका महत्त्वपूर्ण फाइलहरू पिन गर्न सक्नुहुन्छ। पिन गर्न कुनै फाइलमाथि होभर गर्नुहोस् वा "फाइलहरू" खोल्नुहोस् र कुनै फाइलमा दायाँ क्लिक गर्नुहोस्।</translation>
 <translation id="7497767806359279797">भाषा तथा किबोर्ड छनौट गर्नुहोस्</translation>
+<translation id="7507162824403726948">आफ्नो पहिचान पुष्टि गर्ने प्रक्रिया पूरा गर्नुहोस्</translation>
 <translation id="7508690557411636492">गत महिना खोलिएको</translation>
 <translation id="7509246181739783082">आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="7512509370370076552">राइट क्लिक सर्टकट "alt + क्लिक" बाट बदलेर "<ph name="LAUNCHER_KEY_NAME" /> की + क्लिक" बनाइएको छ</translation>

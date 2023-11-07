@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">या साइटचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="1145536944570833626">विद्यमान डेटा हटवा.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व ChromeOS च्या अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता.</translation>
+<translation id="115483310321669804">पासवर्ड वापरा <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">नाव बदला</translation>
 <translation id="1174479719160874822">स्क्रीन अरुंद असल्यास, Chrome मोबाइल साइटला विनंती करेल</translation>
 <translation id="1177863135347784049">कस्टम</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 निवडलेला आयटम काढून टाका}other{# निवडलेले आयटम काढून टाका}}</translation>
 <translation id="1633659023549081553">Chrome च्या होम पेजवर नवीन आशय पहा</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउझिंग</translation>
-<translation id="1642309806724967937">तुमच्या सेटिंग्जनुसार, Chrome हे कुकी आणि तुमची सध्याची URL देखील पाठवू शकते</translation>
 <translation id="164269334534774161">तुम्ही <ph name="CREATION_TIME" /> पासून या पेजची ऑफलाइन प्रत पाहत आहात</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1657932388559784161">तळाशी असलेल्या शीटमध्ये पेज इनसाइट बंद केल्या आहेत</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">विंडो बंद करा</translation>
 <translation id="1791662854739702043">इंस्टॉल केले</translation>
 <translation id="1792959175193046959">डीफॉल्ट डाउनलोडचे स्थान केव्हाही बदला</translation>
+<translation id="1796666869097395659">त्यावर नंतर परत येण्यासाठी टॅब मिनिमाइझ करा</translation>
 <translation id="1807246157184219062">फिकट</translation>
 <translation id="1810845389119482123">सुरुवातीचे सिंक सेट करणे पूर्ण झाले नाही</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ला <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरत राहता येणार नाही</translation>
@@ -703,7 +704,6 @@
 <translation id="4738836084190194332">अखेरचे संकालित: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">तुम्हाला अ‍ॅड्रेस बारमध्ये सुधारित सूचना मिळतील</translation>
 <translation id="4742970037960872810">हायलाइट काढून टाका</translation>
-<translation id="4743664893327841597">तुम्ही अ‍ॅड्रेस बार किंवा सर्च बॉक्समध्ये टाइप केलेल्या गोष्टी तुमच्या डीफॉल्ट शोध इंजीनला पाठवल्या जातात</translation>
 <translation id="4749960740855309258">एक नवीन टॅब उघडा</translation>
 <translation id="4750356170202299988">लहान मुलांसाठीचा आशय</translation>
 <translation id="4758061975920522644">फक्त इमेज शेअर करा</translation>
@@ -755,6 +755,7 @@
 <translation id="4925120120285606924">स्क्रीनशॉट <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">तुमचे पासवर्ड एखादी मजकूर फाइल म्हणून एक्सपोर्ट आणि डाउनलोड केले जातील. गंतव्य फोल्डरचा अ‍ॅक्सेस असलेल्या कोणालाही आणि कोणत्याही अ‍ॅपसाठी ते दृश्यमान असतील.</translation>
 <translation id="4926901776383726965">ऑफलाइन पाहण्यासाठी किंवा इतर अ‍ॅप्समध्ये शेअर करण्यासाठी तुम्ही इमेज आणि फाइल सेव्ह करू शकता</translation>
+<translation id="4928144016283278047">ट्रॅकरपासून संरक्षण (तृतीय पक्ष कुकी, आयपी ट्रॅकिंग, उल्लंघन करणाऱ्या स्क्रिप्ट आणि आणखी बरेच काही)</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" /> द्वारे व्यवस्थापित केलेल्या खात्यामधून तुम्ही साइन आउट करत असल्यामुळे, या डिव्हाइसवरून Chrome डेटा हटवला जाईल. तो तुमच्या Google खात्यामध्ये तसाच राहिल.</translation>
 <translation id="4943703118917034429">आभासी वास्तविकता</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
@@ -1207,6 +1208,7 @@
 <translation id="727288900855680735"><ph name="ORIGIN" /> ला <ph name="ONE_TIME_CODE" /> सबमिट करायचा आहे का?</translation>
 <translation id="7274013316676448362">ब्लॉक केलेली साइट</translation>
 <translation id="7276100255011548441">Chrome ४ आठवड्यांपेक्षा जुने विषय ऑटो-डिलीट करते. तुम्ही ब्राउझ करत असताना, विषय सूचीमध्ये पुन्हा दिसू शकतो किंवा Chrome ने साइटसोबत शेअर करू नये असे तुम्हाला वाटत असलेले विषय तुम्ही ब्लॉक करू शकता. <ph name="BEGIN_LINK" />Chrome मध्ये तुमची जाहिरातीसंबंधित गोपनीयता व्यवस्थापित करणे<ph name="END_LINK" /> याविषयी अधिक जाणून घ्या.</translation>
+<translation id="7284878711178835966">तुम्ही टाइप करत असताना, ॲड्रेस बार किंवा सर्च बॉक्समधील आशय Chrome तुमच्या डीफॉल्ट शोध इंजीनकडे पाठवते</translation>
 <translation id="7286703216224610554">फक्त प्रतिक्रिया शेअर करा</translation>
 <translation id="7289303553784750393">तुम्ही ऑनलाइन असून ही समस्या येत राहिल्यास, <ph name="SITE_ETLD_PLUS_ONE" /> वर पुढे सुरू ठेवण्यासाठीचे इतर मार्ग तुम्ही वापरून पाहू शकता.</translation>
 <translation id="7290209999329137901">नाव बदलणे उपलब्ध नाही</translation>

@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Асаалттай</translation>
 <translation id="1407069428457324124">Бараан загвар</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Огноо хооронд шилжихийн тулд суман товчнуудыг дарна уу.</translation>
+<translation id="141170878022560212">Голын товч</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, суулгасан апп</translation>
 <translation id="1414919006379339073">Одоогийн цонхыг хаах</translation>
 <translation id="1415846719612499304">Сүлжээний жагсаалтыг харуулна уу. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">Эможи сонгогчийг нээх</translation>
 <translation id="2088116547584365419">тоглоом</translation>
 <translation id="209965399369889474">Сүлжээнд холбогдоогүй байна</translation>
+<translation id="2107581415810719320">Бусад <ph name="BUTTON_NUMBER" /> товч</translation>
 <translation id="2107914222138020205">Таны USB-C кабель Thunderbolt-г дэмждэггүй. Төхөөрөмжийн гүйцэтгэл хязгаарлагдмал байж магадгүй.</translation>
 <translation id="2108303511227308752">Alt + Ухраах товчлуурын шууд холбоосыг өөрчилсөн байна. Устгах товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + ухраахыг дарна уу.</translation>
 <translation id="2126242104232412123">Шинэ ширээ</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">тохиргоо</translation>
 <translation id="3341303451326249809">Дэлгэцийн агшныг авсан</translation>
 <translation id="334252345105450327">Дэлгэцийн агшин авах</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" />-д төхөөрөмжийн нууц үг оруулна уу</translation>
 <translation id="334927402682780278">Курсороос мөрийн төгсгөл хүртэлх текстийг сонгох</translation>
 <translation id="3349345708646875009">Ажлын менежерийг нээх</translation>
 <translation id="3364721542077212959">Мэдрэгч үзэгний хэрэгсэл</translation>
@@ -1590,6 +1593,7 @@
 <translation id="7489261257412536105">Бүтэн дэлгэцэд орох эсвэл гарах</translation>
 <translation id="7490360161041035804">Та Google Драйвын файлыг оруулаад чухал файлуудыг бэхлэх боломжтой. Бэхлэхийн тулд зүйл дээгүүр курсорыг зөөх эсвэл Файлсыг нээж, зүйл дээр баруун талыг товшино уу.</translation>
 <translation id="7497767806359279797">Хэл болон гарыг сонгох</translation>
+<translation id="7507162824403726948">Таниулбараа баталгаажуулж дуусгах</translation>
 <translation id="7508690557411636492">Өнгөрсөн сард зассан</translation>
 <translation id="7509246181739783082">Өөрийгөө баталгаажуулах</translation>
 <translation id="7512509370370076552">Баруун талыг товших товчлолыг alt + товшилтоос <ph name="LAUNCHER_KEY_NAME" /> товчлуур болгож шинэчилсэн</translation>

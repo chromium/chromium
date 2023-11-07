@@ -524,6 +524,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="371230970611282515">Təhlükəli hadisələr baş vermədən əvvəl onları proqnozlaşdırır və sizə xəbərdarlıq edir.</translation>
 <translation id="371398631992790800">Əlfəcinləri gizlədin</translation>
 <translation id="37207012422556617">Aktual Axtarışlar</translation>
+<translation id="3725081662140949903">Digərlərinin paroldan istifadə etməməsi üçün <ph name="APP" /> tətbiqini açın</translation>
 <translation id="3740397331642243698">Daxil edilən keçidləri Google Chrome'da Anonim rejimdə açır.</translation>
 <translation id="374357899112510277">Endirmələri gizlədin</translation>
 <translation id="3745190878148784130">"Mətn ölçüsünü dəyişin" seçimini gizlədin</translation>
@@ -641,6 +642,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4389019817280890563">Dili dəyişmək üçün toxunun.</translation>
 <translation id="4405320213589929829">Lokal məlumat və istiqamətlər üçün veb-səhifələrdəki ünvanlardan istifadə edin.</translation>
 <translation id="4420409367264901497">Əlfəcinə düzəliş edin</translation>
+<translation id="4431224949908513835">Daxil etmək üçün ödəniş metodu seçin.</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Ayarları<ph name="END_BOLD" /> açın</translation>
 <translation id="4454246407045105932">Dil Əlavə Edin</translation>
 <translation id="4461286950227634995">Parolların yadda saxlanılması təklif edilsin</translation>
@@ -1198,6 +1200,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7221173315674413369">Yeniliklər bölməsində yeni funksiyaları və məsləhətləri araşdırın</translation>
 <translation id="7223102419539744003">Tabı bağlayın</translation>
 <translation id="722454870747268814">Yeni Incognito tabı</translation>
+<translation id="7233006041370588369">Daxil etmək üçün parol seçin.</translation>
 <translation id="7265758999917665941">Bu sayt üçün heç vaxt yadda saxlamayın</translation>
 <translation id="7272437679830969316">Kimliyinizi doğrulamaq mümkün deyil. Parol kopyalanmayıb.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Yeni paket izləndi}other{Yeni paketlər izləndi}}</translation>

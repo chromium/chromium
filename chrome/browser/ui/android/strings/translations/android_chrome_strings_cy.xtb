@@ -32,6 +32,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1142732900304639782">Peidiwch â chynnig cyfieithu'r gwefannau hyn</translation>
 <translation id="1145536944570833626">Dileu'r data presennol.</translation>
 <translation id="1150263420752757504">Bydd <ph name="APP_NAME" /> yn agor yn Chrome. Drwy barhau, rydych yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, a <ph name="BEGIN_LINK2" />Thelerau Gwasanaeth Ychwanegol Google Chrome a ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Defnyddio'r cyfrinair <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Ailenwi</translation>
 <translation id="1174479719160874822">Bydd Chrome yn gofyn am y wefan symudol pan fydd y sgrîn yn gul</translation>
 <translation id="1177863135347784049">Personol</translation>
@@ -125,7 +126,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Tynnu'r 1 eitem a ddewisir}zero{Tynnu'r # eitem a ddewisir}two{Tynnu'r # eitem a ddewisir}few{Tynnu'r # eitem a ddewisir}many{Tynnu'r # eitem a ddewisir}other{Tynnu'r # eitem a ddewisir}}</translation>
 <translation id="1633659023549081553">Gallwch ddod o hyd i gynnwys newydd ar hafan Chrome</translation>
 <translation id="1641113438599504367">Pori'n Ddiogel</translation>
-<translation id="1642309806724967937">Yn dibynnu ar eich gosodiadau, mae'n bosib y bydd Chrome hefyd yn anfon cwcis a'ch URL presennol</translation>
 <translation id="164269334534774161">Rydych yn edrych ar gopi all-lein o'r dudalen hon o <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Hanes</translation>
 <translation id="1657932388559784161">Mae'r ddalen waelod mewnwelediadau tudalen ar gau</translation>
@@ -149,6 +149,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1779766957982586368">Cau'r ffenestr</translation>
 <translation id="1791662854739702043">Wedi gosod</translation>
 <translation id="1792959175193046959">Gallwch newid y lleoliad lawrlwytho diofyn ar unrhyw adeg</translation>
+<translation id="1796666869097395659">Lleihau'r tab i ddychwelyd ato'n hwyrach ymlaen</translation>
 <translation id="1807246157184219062">Golau</translation>
 <translation id="1810845389119482123">Mae'r gosodiad cysoni cychwynnol heb ei orffen</translation>
 <translation id="1812027881030482584">Ni all <ph name="SITE_ETLD_PLUS_ONE" /> barhau trwy ddefnyddio <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4738836084190194332">Cysonwyd ddiwethaf: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Byddwch yn cael awgrymiadau gwell yn y bar cyfeiriadau</translation>
 <translation id="4742970037960872810">Tynnu'r amlygu</translation>
-<translation id="4743664893327841597">Mae'r hyn rydych yn ei deipio yn y bar cyfeiriad neu'r blwch chwilio yn cael ei anfon i'ch peiriant chwilio diofyn</translation>
 <translation id="4749960740855309258">Agor tab newydd</translation>
 <translation id="4750356170202299988">Cynnwys ar gyfer meddyliau ifanc</translation>
 <translation id="4758061975920522644">Rhannu llun yn unig</translation>
@@ -737,6 +737,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="4864369630010738180">Wrthi'n mewngofnodi...</translation>
 <translation id="4866368707455379617">Methu â gosod <ph name="MODULE" /> ar gyfer Chrome</translation>
 <translation id="4871568871368204250">Diffodd cysoni</translation>
+<translation id="4874961007154620743">Pan fydd wedi'i ddiffodd byddwch yn gweld awgrymiadau y mae Chrome yn eu darparu'n lleol o hyd</translation>
 <translation id="4875775213178255010">Awgrymiadau Cynnwys</translation>
 <translation id="4877678010818027629">Dechrau'r modd Anhysbys</translation>
 <translation id="4878404682131129617">Wedi methu â sefydlu twnnel drwy weinydd dirprwyol</translation>
@@ -755,6 +756,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="4925120120285606924">Sgrinlun <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Bydd eich cyfrineiriau'n cael eu hallforio a'u lawrlwytho fel ffeil testun. Byddant yn weladwy i unrhyw un ac unrhyw ap sydd â mynediad at y ffolder cyrchfan.</translation>
 <translation id="4926901776383726965">Gallwch gadw lluniau a ffeiliau i'w gweld all-lein neu eu rhannu mewn apiau eraill</translation>
+<translation id="4928144016283278047">Diogelu rhag tracwyr (cwcis trydydd parti, tracio IP, sgriptiau ymledol, a mwy)</translation>
 <translation id="4932247056774066048">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="DOMAIN_NAME" />, bydd eich data Chrome yn cael eu dileu o'r ddyfais hon. Bydd yn aros yn eich Cyfrif Google.</translation>
 <translation id="4943703118917034429">Rhithwirionedd</translation>
 <translation id="4943872375798546930">Dim canlyniadau</translation>
@@ -1207,6 +1209,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="727288900855680735">Cyflwyno <ph name="ONE_TIME_CODE" /> i <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Mae gwefan wedi'i hatal</translation>
 <translation id="7276100255011548441">Mae Chrome yn dileu gwefannau sy'n hŷn na 4 wythnos yn awtomatig. Wrth i chi barhau i bori, mae'n bosib y gall pwnc ailymddangos ar y rhestr. Neu gallwch rwystro pynciau nad ydych am i Chrome eu rhannu â gwefannau. Dysgu rhagor am <ph name="BEGIN_LINK" />reoli eich preifatrwydd hysbysebion yn Chrome.<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">Wrth i chi deipio, mae Chrome yn anfon cynnwys y bar cyfeiriad neu'r blwch chwilio i'ch peiriant chwilio diofyn</translation>
 <translation id="7286703216224610554">Rhannu ymateb yn unig</translation>
 <translation id="7289303553784750393">Os ydych chi ar-lein ond bod y mater hwn yn dal i ddigwydd, gallwch roi cynnig ar ffyrdd eraill o barhau ar <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Nid yw ailenwi ar gael</translation>
@@ -1215,6 +1218,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="729975465115245577">Nid oes gan eich dyfais ap i storio'r ffeil cyfrineiriau.</translation>
 <translation id="7304072650267745798">Gall eich dyfais Android gynnwys gosodiad tebyg. Os yw'r gosodiad hwn wedi'i droi ymlaen yn Chrome ac ar eich dyfais Android, mae'n bosib y bydd cwmni'n gallu mesur effeithlonrwydd hysbyseb ar draws gwefannau rydych yn ymweld â nhw ac apiau rydych yn eu defnyddio.</translation>
 <translation id="7304873321153398381">All-lein. Ni all Chrome wirio'ch cyfrineiriau.</translation>
+<translation id="7313094438430838513">Diogelwch tracio</translation>
 <translation id="7313188324932846546">Tapiwch i osod cysoni</translation>
 <translation id="7324354302972299151">Anfon cais "Do Not Track"</translation>
 <translation id="7332075081379534664">Wedi mewngofnodi'n llwyddiannus</translation>
@@ -1553,6 +1557,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Mae <ph name="LANG" /> yn barod</translation>
 <translation id="8937772741022875483">Ydych chi am ddileu'ch gweithgarwch Chrome o Digital Wellbeing?</translation>
+<translation id="893938492099608175">Yn dibynnu ar eich gosodiadau, mae'n bosib y bydd Chrome hefyd yn anfon cwcis, eich URL presennol, a'ch lleoliad</translation>
 <translation id="8942627711005830162">Agor mewn ffenestr arall</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Ni fu modd lawrlwytho'r iaith hon. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="8955719471735800169">Yn ôl i'r brig</translation>

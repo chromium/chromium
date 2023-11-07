@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Қосулы</translation>
 <translation id="1407069428457324124">Қараңғы режим</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Күндер арасында жылжу үшін бағыттауыш пернелерді пайдаланыңыз.</translation>
+<translation id="141170878022560212">Ортаңғы түйме</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, орнатылған қолданба</translation>
 <translation id="1414919006379339073">Ағымдағы терезені жабу</translation>
 <translation id="1415846719612499304">Желі тізімін көрсету. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">Эмоджи таңдағышты ашу</translation>
 <translation id="2088116547584365419">ойындар</translation>
 <translation id="209965399369889474">Желіге жалғанбаған.</translation>
+<translation id="2107581415810719320">Басқа <ph name="BUTTON_NUMBER" />-түйме</translation>
 <translation id="2107914222138020205">USB-C кабелі Thunderbolt стандартын қолдамайды. Құрылғының өнімділігі шектелуі мүмкін.</translation>
 <translation id="2108303511227308752">Alt + Backspace пернелер тіркесімінің функциясы өзгерді. Delete пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + Backspace пернесі тіркесімін басыңыз.</translation>
 <translation id="2126242104232412123">Жаңа жұмыс үстелі</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">параметрлер</translation>
 <translation id="3341303451326249809">Скриншот түсірілді.</translation>
 <translation id="334252345105450327">Скриншот түсіру</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> үшін құрылғы құпия сөзін енгізіңіз.</translation>
 <translation id="334927402682780278">Курсордан жолдың соңына дейінгі мәтінді таңдау</translation>
 <translation id="3349345708646875009">Тапсырмалар реттегішін ашу</translation>
 <translation id="3364721542077212959">Стилус құралдары</translation>
@@ -1589,6 +1592,7 @@
 <translation id="7489261257412536105">Толық экранға кіру немесе шығу</translation>
 <translation id="7490360161041035804">Маңызды файлдарды, соның ішінде Google Drive файлдарын бекітуге болады. Бекіту үшін элементке курсорды апарыңыз немесе Files қолданбасын ашыңыз және элементті тінтуірдің оң жақ түймесімен басыңыз.</translation>
 <translation id="7497767806359279797">Тілді және пернетақтаны таңдау</translation>
+<translation id="7507162824403726948">Жеке басыңызды растауды аяқтаңыз</translation>
 <translation id="7508690557411636492">Өткен айда ашылды.</translation>
 <translation id="7509246181739783082">Жеке басыңызды растаңыз</translation>
 <translation id="7512509370370076552">Тінтуірдің оң жақ түймесін басу жылдам пәрмені alt + басу орнына "<ph name="LAUNCHER_KEY_NAME" /> пернесі + басу" пәрменіне жаңартылды.</translation>

@@ -126,7 +126,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Alih keluar 1 item yang dipilih}other{Alih keluar # item yang dipilih}}</translation>
 <translation id="1633659023549081553">Temukan kandungan baharu pada halaman utama Chrome</translation>
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
-<translation id="1642309806724967937">Bergantung pada tetapan anda, Chrome juga mungkin menghantar kuki dan URL semasa anda</translation>
 <translation id="164269334534774161">Anda sedang melihat salinan luar talian halaman ini dari <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1657932388559784161">Helaian bawah cerapan halaman ditutup</translation>
@@ -705,7 +704,6 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4738836084190194332">Kali terakhir disegerakkan: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Anda akan mendapat cadangan yang dipertingkatkan dalam bar alamat</translation>
 <translation id="4742970037960872810">Alih keluar serlahan</translation>
-<translation id="4743664893327841597">Apa-apa sahaja yang anda taip dalam bar alamat atau kotak carian akan dihantar kepada enjin carian lalai anda</translation>
 <translation id="4749960740855309258">Buka tab baharu</translation>
 <translation id="4750356170202299988">Kandungan untuk minda muda</translation>
 <translation id="4758061975920522644">Kongsi imej sahaja</translation>
@@ -739,6 +737,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="4864369630010738180">Sedang log masuk...</translation>
 <translation id="4866368707455379617">Tidak dapat memasang <ph name="MODULE" /> untuk Chrome</translation>
 <translation id="4871568871368204250">Matikan penyegerakan</translation>
+<translation id="4874961007154620743">Apabila dimatikan, anda masih dapat melihat cadangan yang diberikan oleh Chrome secara setempat</translation>
 <translation id="4875775213178255010">Cadangan Kandungan</translation>
 <translation id="4877678010818027629">Masuk ke mod Inkognito</translation>
 <translation id="4878404682131129617">Gagal mewujudkan terowong melalui pelayan proksi</translation>
@@ -757,6 +756,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="4925120120285606924">Tangkapan skrin <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Kata laluan anda akan dieksport dan dimuat turun sebagai fail teks. Kata laluan itu akan dapat dilihat oleh sesiapa dan sebarang apl yang mempunyai akses kepada folder destinasi.</translation>
 <translation id="4926901776383726965">Anda boleh menyimpan imej dan fail untuk dilihat di luar talian atau dikongsi pada apl yang lain</translation>
+<translation id="4928144016283278047">Perlindungan daripada penjejak (kuki pihak ketiga, penjejakan IP, skrip invasif dan pelbagai lagi)</translation>
 <translation id="4932247056774066048">Oleh sebab anda log keluar daripada akaun yang diurus oleh <ph name="DOMAIN_NAME" />, data Chrome anda akan dipadamkan daripada peranti ini. Data tersebut akan kekal dalam Akaun Google anda.</translation>
 <translation id="4943703118917034429">Realiti Maya</translation>
 <translation id="4943872375798546930">Tiada hasil carian</translation>
@@ -1209,6 +1209,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="727288900855680735">Serahkan <ph name="ONE_TIME_CODE" /> ke <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Tapak yang disekat</translation>
 <translation id="7276100255011548441">Chrome memadamkan laman yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, topik mungkin dipaparkan semula dalam senarai. Anda juga boleh menyekat topik yang tidak mahu dikongsi oleh Chrome dengan laman. Ketahui lebih lanjut tentang <ph name="BEGIN_LINK" />pengurusan privasi iklan anda dalam Chrome.<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">Ketika anda menaip, Chrome menghantar kandungan daripada bar alamat atau kotak carian ke enjin carian lalai anda</translation>
 <translation id="7286703216224610554">Kongsi reaksi sahaja</translation>
 <translation id="7289303553784750393">Jika anda dalam talian tetapi masalah ini tetap berlaku, anda boleh mencuba cara lain untuk meneruskan pada <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Penamaan semula tidak tersedia</translation>
@@ -1556,6 +1557,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> sudah sedia</translation>
 <translation id="8937772741022875483">Alih keluar aktiviti Chrome anda daripada Kesejahteraan Digital?</translation>
+<translation id="893938492099608175">Chrome juga mungkin menghantar kuki, URL semasa anda dan lokasi anda bergantung pada tetapan anda</translation>
 <translation id="8942627711005830162">Buka dalam tetingkap lain</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Bahasa ini tidak dapat dimuat turun. Cuba lagi nanti.</translation>
 <translation id="8955719471735800169">Kembali ke atas</translation>

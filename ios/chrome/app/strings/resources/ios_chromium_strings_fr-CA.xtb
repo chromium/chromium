@@ -96,6 +96,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 <translation id="4654936625574199632">Aux fins d'amélioration de l'application, Chromium envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activer le lecteur de Chromium</translation>
 <translation id="4736424910885271643">Votre compte est géré par <ph name="HOSTED_DOMAIN" />, donc vos données Chromium seront effacées de cet appareil</translation>
+<translation id="4773487571745795781">Vous avez désactivé la connexion à Chromium.</translation>
 <translation id="4790638144988730920">Continuez à utiliser les données Chromium dans votre compte Google.</translation>
 <translation id="4828317641996116749">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
 <translation id="4985291216379576555">Hors ligne, Chromium ne peut pas vérifier s'il y a des mises à jour</translation>

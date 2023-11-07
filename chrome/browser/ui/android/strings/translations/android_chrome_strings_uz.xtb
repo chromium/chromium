@@ -126,7 +126,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Tanlangan 1 ta elementni olib tashlash}other{Tanlangan # ta elementni olib tashlash}}</translation>
 <translation id="1633659023549081553">Chrome bosh sahifasida yangi kontent bilan tanishing</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
-<translation id="1642309806724967937">Sozlamalar asosida Chrome cookie fayllar va joriy URL manzilni tekshiruvga yuborishi mumkin</translation>
 <translation id="164269334534774161">Ushbu sahifaning <ph name="CREATION_TIME" /> sanasida saqlangan oflayn nusxasini ko‘ryapsiz.</translation>
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="1657932388559784161">Quyi ekrandagi sahifa statistikasi yopildi</translation>
@@ -705,7 +704,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4738836084190194332">Oxirgi sinxronizatsiya: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Manzillar qatorida yanada yaxshi takliflar olasiz</translation>
 <translation id="4742970037960872810">Belgilovni olib tashlash</translation>
-<translation id="4743664893327841597">Manzillar qatori yoki qidiruv oynasiga kiritilgan matn asosiy qidiruv tizimiga yuboriladi</translation>
 <translation id="4749960740855309258">Yangi varaq ochish</translation>
 <translation id="4750356170202299988">Yoshlar uchun kontent</translation>
 <translation id="4758061975920522644">Faqat rasm ulashish</translation>
@@ -757,6 +755,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="4925120120285606924">Skrinshot: <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Parolingiz eksport qilinadi va matn fayli sifatida yuklab olinadi. Ularni hamma koʻra oladi va har qanday ilova u joylashgan jildga kira oladi.</translation>
 <translation id="4926901776383726965">Rasm va fayllarni oflayn ochish uchun saqlash yoki boshqa ilovalarda ulashish mumkin</translation>
+<translation id="4928144016283278047">Trekerlardan (tashqi cookie fayllar, IP orqali kuzatuv, zararli skriptlar) himoya</translation>
 <translation id="4932247056774066048">Chunki siz <ph name="DOMAIN_NAME" /> tomonidan boshqariladigan hisobingizdan chiqish arafasidasiz. Barcha axborotlar Google Chrome brauzeridan tozalab tashlanadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="4943703118917034429">Virtual reallik</translation>
 <translation id="4943872375798546930">Hech narsa topilmadi</translation>
@@ -1209,6 +1208,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> kodi <ph name="ORIGIN" /> saytiga joylansinmi?</translation>
 <translation id="7274013316676448362">Bloklangan sayt</translation>
 <translation id="7276100255011548441">Chrome 4 haftadan eskirgan mavzularni avtomatik oʻchiradi. Takroriy tashriflar asosida mavzu roʻyxatga qayta kiritilishi mumkin. Yoki Chrome saytlarga ulashmasligi uchun istalgan mavzularni bloklash mumkin. <ph name="BEGIN_LINK" />Chrome brauzerida reklamada maxfiylikni boshqarish<ph name="END_LINK" /> haqida batafsil.</translation>
+<translation id="7284878711178835966">Matn kiritishni boshlashingiz bilan Chrome manzil qatori yoki qidiruv maydonchasi kontentini asosiy qidiruv vositasiga yuboradi</translation>
 <translation id="7286703216224610554">Faqat munosabatni ulashish</translation>
 <translation id="7289303553784750393">Onlayn boʻlsangiz, lekin muammo qayta takrorlansa, <ph name="SITE_ETLD_PLUS_ONE" /> orqali boshqa usulda davom eting.</translation>
 <translation id="7290209999329137901">Qayta nomlash imkonsiz</translation>

@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> word toegelaat}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> word toegelaat}}</translation>
 <translation id="2410940059315936967">’n Werf wat jy besoek, kan inhoud van ander werwe af inbed, byvoorbeeld prente, advertensies en teks. Webkoekies wat deur hierdie ander werwe gestel word, word derdepartywebkoekies genoem.</translation>
 <translation id="2434158240863470628">Aflaai is voltooi <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Jy het hierdie werf tydelik toegelaat om derdepartywebkoekies te gebruik, wat minder blaaibeskerming beteken, maar werfkenmerke is meer geneig om te werk soos verwag. <ph name="BEGIN_LINK" />Stuur terugvoer<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Kenmerke op sommige werwe sal dalk nie in Incognitomodus werk nie</translation>
 <translation id="2442870161001914531">Versoek altyd rekenaarwerf</translation>
 <translation id="2469312991797799607">Hierdie handeling sal alle data en webkoekies vir <ph name="ORIGIN" /> en alle werwe onder dit uitvee</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Vra voordat werwe toegelaat word om beskermde inhoud te speel</translation>
 <translation id="2932883381142163287">Gee misbruik aan</translation>
 <translation id="2968755619301702150">Sertifikaatbekyker</translation>
+<translation id="2979365474350987274">Derdepartywebkoekies is beperk</translation>
 <translation id="3008272652534848354">Stel toestemmings terug</translation>
 <translation id="301521992641321250">Outomaties geblokkeer</translation>
 <translation id="3069226013421428034">Laat aanmelding deur derde partye vir ’n spesifieke werf toe.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Vee uit en stel terug</translation>
 <translation id="4645575059429386691">Deur jou ouer bestuur</translation>
 <translation id="4670064810192446073">Virtuele realiteit</translation>
+<translation id="4673958474310291465">Probeer om derdepartywebkoekies tydelik toe te laat, wat minder beskerming beteken, maar werfkenmerke is meer geneig om te werk soos verwag word.</translation>
 <translation id="4751476147751820511">Beweging- of ligsensors</translation>
 <translation id="4779083564647765204">Zoem</translation>
 <translation id="4811450222531576619">Kom meer te wete oor bron en onderwerp</translation>

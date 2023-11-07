@@ -32,6 +32,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1142732900304639782">Erbjud inte att översätta dessa webbplatser</translation>
 <translation id="1145536944570833626">Radera befintlig data.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Använd lösenordet <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Ändra namn</translation>
 <translation id="1174479719160874822">Chrome begär den mobila webbplatsen när skärmen är smal</translation>
 <translation id="1177863135347784049">Anpassat</translation>
@@ -125,7 +126,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ta bort 1 markerat objekt}other{Ta bort # markerade objekt}}</translation>
 <translation id="1633659023549081553">Upptäck nytt innehåll på startsidan i Chrome</translation>
 <translation id="1641113438599504367">Säker webbsökning</translation>
-<translation id="1642309806724967937">Beroende på dina inställningar kan Chrome även skicka cookies och din nuvarande webbadress</translation>
 <translation id="164269334534774161">Det som visas är en offlinekopia av den här sidan från <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1657932388559784161">Arket för sidinsikter på nedre delen av skärmen har stängts</translation>
@@ -149,6 +149,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1779766957982586368">Stäng fönstret</translation>
 <translation id="1791662854739702043">Installerat</translation>
 <translation id="1792959175193046959">Ändra standardplats för nedladdningar när som helst</translation>
+<translation id="1796666869097395659">Minimera fliken om du vill återvända till den senare</translation>
 <translation id="1807246157184219062">Ljus</translation>
 <translation id="1810845389119482123">Konfigurationen av synkronisering har inte slutförts</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan inte fortsätta använda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -704,7 +705,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4738836084190194332">Synkroniserades senast: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Du får bättre förslag i adressfältet</translation>
 <translation id="4742970037960872810">Ta bort markering</translation>
-<translation id="4743664893327841597">Det du skriver i adressfältet eller sökrutan skickas till din standardsökmotor</translation>
 <translation id="4749960740855309258">Öppna en ny flik</translation>
 <translation id="4750356170202299988">Innehåll för unga</translation>
 <translation id="4758061975920522644">Dela endast bild</translation>
@@ -756,6 +756,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4925120120285606924">Skärmbild <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Dina lösenord exporteras och laddas ned som en textfil. De blir synliga för alla personer och appar som har åtkomst till målmappen.</translation>
 <translation id="4926901776383726965">Du kan spara bilder och filer för att se dem offline eller dela dem i andra appar</translation>
+<translation id="4928144016283278047">Skydd mot spårare (tredjepartscookies, IP-spårning, invasiva skript m.m.)</translation>
 <translation id="4932247056774066048">Eftersom du loggar ut från ett konto som hanteras av <ph name="DOMAIN_NAME" /> raderas din Chrome-data från den här enheten. Den finns kvar på ditt Google-konto.</translation>
 <translation id="4943703118917034429">Virtuell verklighet</translation>
 <translation id="4943872375798546930">Inga resultat</translation>
@@ -1208,6 +1209,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="727288900855680735">Vill du skicka <ph name="ONE_TIME_CODE" /> till <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blockerad webbplats</translation>
 <translation id="7276100255011548441">Chrome raderar automatiskt ämnen som är äldre än fyra veckor. Medan du surfar kan ett ämne dyka upp på listan igen. Du kan också blockera ämnen som du inte vill att Chrome ska dela med webbplatser. Läs mer om hur du <ph name="BEGIN_LINK" />hanterar annonsintegritet i Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">När du skriver skickar Chrome innehållet i adressfältet eller sökrutan till standardsökmotorn</translation>
 <translation id="7286703216224610554">Dela endast reaktion</translation>
 <translation id="7289303553784750393">Om du är online men problemet kvarstår kan du testa andra sätt att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Det går inte att byta namn</translation>

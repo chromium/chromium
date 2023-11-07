@@ -32,6 +32,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1142732900304639782">Ne nudi prevod ovih sajtova</translation>
 <translation id="1145536944570833626">Izbrišite postojeće podatke</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> će se otvoriti u Chrome-u. Ako nastavite, prihvatate <ph name="BEGIN_LINK1" />Google uslove korišćenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uslove korišćenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Koristite lozinku <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1174479719160874822">Chrome će zahtevati mobilni sajt kada je ekran uzak</translation>
 <translation id="1177863135347784049">Prilagođeno</translation>
@@ -125,7 +126,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Ukloni 1 izabranu stavku}one{Ukloni # izabranu stavku}few{Ukloni # izabrane stavke}other{Ukloni # izabranih stavki}}</translation>
 <translation id="1633659023549081553">Otkrijte nov sadržaj na početnoj stranici Chrome-a</translation>
 <translation id="1641113438599504367">Bezbedno pregledanje</translation>
-<translation id="1642309806724967937">U zavisnosti od podešavanja, Chrome može da šalje i kolačiće i aktuelni URL</translation>
 <translation id="164269334534774161">Prikazuje se oflajn kopija ove stranice od <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1657932388559784161">Donja tabela uvida u stranicu je zatvorena</translation>
@@ -149,6 +149,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1779766957982586368">Zatvaranje prozora</translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792959175193046959">Promenite podrazumevanu lokaciju za preuzimanje u bilo kom trenutku</translation>
+<translation id="1796666869097395659">Umanjite karticu da biste se kasnije vratili na nju</translation>
 <translation id="1807246157184219062">Svetla</translation>
 <translation id="1810845389119482123">Početno podešavanje sinhronizacije nije završeno</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne može da nastavi da koristi uslugu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4738836084190194332">Poslednja sinhronizacija: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Dobijaćete poboljšane predloge na traci za adresu</translation>
 <translation id="4742970037960872810">Ukloni isticanje</translation>
-<translation id="4743664893327841597">Ono što unosite u traku za adresu ili okvir za pretragu šalje se podrazumevanom pretraživaču</translation>
 <translation id="4749960740855309258">Otvorite novu karticu</translation>
 <translation id="4750356170202299988">Sadržaj za mlade umove</translation>
 <translation id="4758061975920522644">Delite samo sliku</translation>
@@ -737,6 +737,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="4864369630010738180">Prijavljivanje...</translation>
 <translation id="4866368707455379617">Instaliranje modula <ph name="MODULE" /> za Chrome nije uspelo</translation>
 <translation id="4871568871368204250">Isključite sinhronizaciju</translation>
+<translation id="4874961007154620743">Kada je ovo isključeno, i dalje ćete videti predloge koje Chrome pruža lokalno</translation>
 <translation id="4875775213178255010">Predlozi za sadržaj</translation>
 <translation id="4877678010818027629">Otvori režim bez arhiviranja</translation>
 <translation id="4878404682131129617">Uspostavljanje tunela preko proksi servera nije uspelo</translation>
@@ -755,6 +756,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="4925120120285606924">Snimak ekrana <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Lozinke se izvoze i preuzimaju kao tekstualne datoteke. Vidljive su svim korisnicima i aplikacijama sa pristupom odredišnom direktorijumu.</translation>
 <translation id="4926901776383726965">Možete da čuvate slike i fajlove da biste ih pregledali oflajn ili delili u drugim aplikacijama</translation>
+<translation id="4928144016283278047">Zaštita od alatki za praćenje (kolačići treće strane, praćenje IP adresa, invazivne skripte i drugo)</translation>
 <translation id="4932247056774066048">Pošto se odjavljujete sa naloga kojim upravlja <ph name="DOMAIN_NAME" />, Chrome podaci biće izbrisani sa ovog uređaja. Ostaće na vašem Google nalogu.</translation>
 <translation id="4943703118917034429">Virtuelna realnost</translation>
 <translation id="4943872375798546930">Nema rezultata</translation>
@@ -1207,6 +1209,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="727288900855680735">Želite da pošaljete <ph name="ONE_TIME_CODE" /> na <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sajt je blokiran</translation>
 <translation id="7276100255011548441">Chrome automatski briše teme starije od 4 nedelje. Kada nastavite da pregledate, tema će se možda ponovo pojaviti na listi. Možete i da blokirate teme koje ne želite da Chrome deli sa sajtovima. Saznajte više o <ph name="BEGIN_LINK" />upravljanju privatnošću sa oglasima u Chrome-u.<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">Dok unosite tekst, Chrome šalje sadržaj trake za adresu ili okvira za pretragu podrazumevanom pretraživaču</translation>
 <translation id="7286703216224610554">Delite samo reakciju</translation>
 <translation id="7289303553784750393">Ako ste onlajn, ali ovaj problem nastavi da se javlja, možete da probate druge načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Promena naziva nije moguća</translation>
@@ -1554,6 +1557,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Jezik <ph name="LANG" /> je spreman</translation>
 <translation id="8937772741022875483">Želite li da uklonite Chrome aktivnosti iz Digitalnog blagostanja?</translation>
+<translation id="893938492099608175">U zavisnosti od podešavanja, Chrome može da šalje i kolačiće, aktuelni URL i lokaciju</translation>
 <translation id="8942627711005830162">Otvori u drugom prozoru</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Preuzimanje ovog jezika nije uspelo. Probajte ponovo kasnije.</translation>
 <translation id="8955719471735800169">Nazad na vrh</translation>

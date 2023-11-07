@@ -349,6 +349,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Saytın əsas səhifəsini ziyarət etməyə<ph name="END_LINK" /> calışın.</translation>
 <translation id="1641976391427233992">Çıxışı bu vaxta qədər gecikdirin:</translation>
 <translation id="164212631332220697">Ödəniş zamanı <ph name="CARD_DETAIL" /> ilə ödəyin.</translation>
+<translation id="1643651787397909318">Chrome təhlükəsizlik yoxlanışına keçin düyməsi. Aktivləşdirərək ayarlarda Chrome təhlükəsizlik yoxlanışı səhifəsinə daxil olun</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1645368109819982629">Dəstəklənməyən protokol</translation>
 <translation id="1650602712345345441">Chrome ayarlarınızı idarə edin</translation>
@@ -2045,6 +2046,8 @@
 <translation id="5137761395480718572">Bu tətbiq Wi-Fi giriş məlumatlarını quraşdırmaq icazəsi tələb edir. Ayarlamadan sonra <ph name="DEVICE_TYPE" /> əlçatan Wi-Fi şəbəkələrinə avtomatik qoşulacaq. Bu giriş məlumatlarını silmək üçün tətbiqi sistemdən silin. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtual kart hazırda əlçatan deyil, bankınızla əlaqə saxlayın</translation>
 <translation id="5138227688689900538">Daha azına baxın</translation>
+<translation id="5143309888746105072">Chromium saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini bloklayır.
+            <ph name="NEW_LINE" />Sayt funksiyaları işləməsə, <ph name="START_LINK" />üçüncü tərəf kukilərinə müvəqqəti icazə verin<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">Xəta kodu siyasət cavabında mövcuddur</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> üçün bildirişlər blok edilib</translation>
 <translation id="514704532284964975"><ph name="URL" /> telefonunuzla toxunduğunuz NFC cihazlarında məlumatları görmək və dəyişmək istəyir</translation>
@@ -2391,6 +2394,7 @@
 <translation id="5873297634595728366">Dizel nəqliyyat vasitələri</translation>
 <translation id="5877831137320480913">Gözəllik və fitnes</translation>
 <translation id="5879989559903563723">Qonaq rejimində icazə verilmir</translation>
+<translation id="5880050725127890683">Chrome təhlükəsizlik yoxlanışına keçin</translation>
 <translation id="5883861433316751031">MIDI cihazları idarə edilib, yenidən proqramlaşdırılsın?</translation>
 <translation id="5884465125445718607">Zərf Çin #6</translation>
 <translation id="5887400589839399685">Kart yadda saxlanıldı</translation>
@@ -2572,6 +2576,7 @@
 <translation id="6251906504834538140">{0,plural, =1{Faylın köçürülməsi bloklandı}other{<ph name="FILE_COUNT" /> faylın köçürülməsi bloklandı}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome'da endirdiyiniz faylları idarə edin</translation>
 <translation id="6254436959401408446">Bu səhifəni açmaq üçün kifayət qədər yaddaş yoxdur</translation>
+<translation id="625463612687472648">İcazəni dayandırın</translation>
 <translation id="6259156558325130047">&amp;Təkrar sıralamanı yenidən edin</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> əlfəcinləri</translation>
 <translation id="6264376385120300461">Hər bir halda endirin</translation>
@@ -2747,6 +2752,8 @@
 <translation id="6596325263575161958">Şifrələmə variantları</translation>
 <translation id="6597665340361269064">90 dərəcə</translation>
 <translation id="6599642189720630047">İzlənilən Məhsullar</translation>
+<translation id="6606309334576464871">Chrome saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini bloklayır.
+            <ph name="NEW_LINE" />Sayt funksiyaları işləməsə, <ph name="START_LINK" />üçüncü tərəf kukilərinə müvəqqəti icazə verin<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">İqtisadiyyat xəbərləri</translation>
 <translation id="6612010098632894193">Onlayn video</translation>
 <translation id="6613866251791999074">Chrome-da axtarış mexanizmi haqqında ətraflı</translation>
@@ -3421,6 +3428,7 @@
 <translation id="7888575728750733395">Çapın göstərilmə məqsədi</translation>
 <translation id="7894280532028510793">Yazılış doğrudursa, <ph name="BEGIN_LINK" />Şəbəkə Diaqnostikasını icra edin<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Zərf 7 x 9 düym</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab, sonra Enter düyməsinə basaraq ayarlarda Chrome təhlükəsizlik yoxlanışı səhifəsinə keçin</translation>
 <translation id="7916162853251942238">Fleksoqrafiya bazası</translation>
 <translation id="7927971017714848357">Torpaq sahəsi</translation>
 <translation id="793209273132572360">Ünvan yenilənsin?</translation>
@@ -3716,6 +3724,7 @@
 <translation id="8460854335417802511">Aktiv edin</translation>
 <translation id="8461694314515752532">Sinxronizasiya parolunuz ilə sinxronizasiya edilmiş datanı şifrələyin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredit kartı}other{# kredit kartı}}</translation>
+<translation id="8467494337615822642">Ayarlarda Chrome təhlükəsizlik yoxlanışı səhifəsinə keçin</translation>
 <translation id="8468358362970107653">Zərf C3</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Ünvanlar və s.</translation>

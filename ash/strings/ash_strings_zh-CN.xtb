@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">已开启</translation>
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。使用箭头键可浏览日期。</translation>
+<translation id="141170878022560212">鼠标中键</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />，已安装的应用</translation>
 <translation id="1414919006379339073">关闭当前窗口</translation>
 <translation id="1415846719612499304">显示网络列表。<ph name="STATE_TEXT" />。</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">打开表情符号选择器</translation>
 <translation id="2088116547584365419">游戏</translation>
 <translation id="209965399369889474">未连接到网络</translation>
+<translation id="2107581415810719320">其他按钮 <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">您的 USB-C 数据线不支持 Thunderbolt。设备性能可能会受到限制。</translation>
 <translation id="2108303511227308752">键盘快捷键“Alt + 退格键”已更改。若要使用 Delete 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 退格键。</translation>
 <translation id="2126242104232412123">新建桌面</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">设置</translation>
 <translation id="3341303451326249809">已截取屏幕</translation>
 <translation id="334252345105450327">截屏</translation>
+<translation id="3346728094401457853">输入 <ph name="EMAIL" /> 用于登录设备的密码</translation>
 <translation id="334927402682780278">选中从光标处到行尾的文字</translation>
 <translation id="3349345708646875009">打开任务管理器</translation>
 <translation id="3364721542077212959">触控笔工具</translation>
@@ -1587,6 +1590,7 @@
 <translation id="7489261257412536105">进入或退出全屏模式</translation>
 <translation id="7490360161041035804">您可以固定重要文件，包括 Google 云端硬盘文件。如需固定某个文件，请将鼠标指针悬停在该文件上，或者打开“文件”应用并从中右键点击相应文件。</translation>
 <translation id="7497767806359279797">选择语言和键盘布局</translation>
+<translation id="7507162824403726948">完成身份验证</translation>
 <translation id="7508690557411636492">过去一个月内打开过</translation>
 <translation id="7509246181739783082">验证您的身份</translation>
 <translation id="7512509370370076552">“右键点击”对应的快捷键原为 alt + 点击，现已更新为<ph name="LAUNCHER_KEY_NAME" />键 + 点击</translation>

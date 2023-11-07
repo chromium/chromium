@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Сајт који посећујете може да угради садржај са других сајтова, на пример, слике, огласе и текст. Колачићи које постављају ови други сајтови називају се колачићи треће стране.</translation>
 <translation id="2434158240863470628">Преузимање је завршено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Привремено сте дозволили овом сајту да користи колачиће треће стране, што значи мање заштите при прегледању, али је већа вероватноћа да ће функције сајта радити према очекивањима. <ph name="BEGIN_LINK" />Пошаљите повратне информације<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Функције на неким сајтовима можда неће радити у режиму без архивирања</translation>
 <translation id="2442870161001914531">Увек се захтева сајт за рачунар</translation>
 <translation id="2469312991797799607">Ова радња ће обрисати све податке и колачиће за домен <ph name="ORIGIN" /> и све сајтове у оквиру њега</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Питај пре него што дозволиш сајтовима да пуштају заштићени садржај</translation>
 <translation id="2932883381142163287">Пријави злоупотребу</translation>
 <translation id="2968755619301702150">Приказивач сертификата</translation>
+<translation id="2979365474350987274">Колачићи треће стране су ограничени</translation>
 <translation id="3008272652534848354">Ресетуј дозволе</translation>
 <translation id="301521992641321250">Аутоматски је блокирано</translation>
 <translation id="3069226013421428034">Дозволите пријављивање трећих страна за одређени сајт.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Избриши и ресетуј</translation>
 <translation id="4645575059429386691">Овим управља твој родитељ</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
+<translation id="4673958474310291465">Пробајте привремено да дозволите колачиће треће стране, што значи слабију заштиту, али већу вероватноћу да ће функције сајта радити на очекивани начин</translation>
 <translation id="4751476147751820511">Сензори за покрет или светло</translation>
 <translation id="4779083564647765204">Зумирање</translation>
 <translation id="4811450222531576619">Сазнајте више о њеном извору и теми</translation>

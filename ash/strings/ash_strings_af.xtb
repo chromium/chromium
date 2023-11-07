@@ -116,6 +116,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1391102559483454063">Aan</translation>
 <translation id="1407069428457324124">Donkertema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gebruik pylsleutels om tussen datums te navigeer.</translation>
+<translation id="141170878022560212">Middelste knoppie</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, geïnstalleerde program</translation>
 <translation id="1414919006379339073">Maak huidige venster toe</translation>
 <translation id="1415846719612499304">Wys netwerklys. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2086334242442703436">Maak emosiekoon-kieser oop</translation>
 <translation id="2088116547584365419">speletjies</translation>
 <translation id="209965399369889474">Nie aan 'n netwerk gekoppel nie</translation>
+<translation id="2107581415810719320">Ander knoppie <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Jou USB-C-kabel steun nie Thunderbolt nie. Toestelwerkverrigting kan beperk wees.</translation>
 <translation id="2108303511227308752">Die kortpadsleutel Alt + Backspace het verander. Om die Delete-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + Backspace druk.</translation>
 <translation id="2126242104232412123">Nuwe lessenaar</translation>
@@ -563,6 +565,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3340978935015468852">instellings</translation>
 <translation id="3341303451326249809">Skermkiekie is geneem</translation>
 <translation id="334252345105450327">Neem 'n skermkiekie</translation>
+<translation id="3346728094401457853">Voer toestelwagwoord vir <ph name="EMAIL" /> in</translation>
 <translation id="334927402682780278">Kies teks van skermpyltjie af tot by einde van reël</translation>
 <translation id="3349345708646875009">Maak taakbestuurder oop</translation>
 <translation id="3364721542077212959">Stilusnutsgoed</translation>
@@ -1590,6 +1593,7 @@ Nuwe installasie</translation>
 <translation id="7489261257412536105">Gaan na volskerm of verlaat dit</translation>
 <translation id="7490360161041035804">Jy kan belangrike lêers vasspeld, insluitend Google Drive-lêers. Hou oor ’n item of maak Lêers oop en regsklik ’n item om dit vas te speld.</translation>
 <translation id="7497767806359279797">Kies taal en sleutelbord</translation>
+<translation id="7507162824403726948">Voltooi die verifikasie van jou identiteit</translation>
 <translation id="7508690557411636492">In die afgelope maand oopgemaak</translation>
 <translation id="7509246181739783082">Verifieer jou identiteit</translation>
 <translation id="7512509370370076552">Die regsklikkortpad is opgedateer na <ph name="LAUNCHER_KEY_NAME" />-sleutel + klik vanaf alt + klik</translation>

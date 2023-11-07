@@ -126,7 +126,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}other{Remover # itens selecionados}}</translation>
 <translation id="1633659023549081553">Descubra novo conteúdo na página inicial do Chrome</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
-<translation id="1642309806724967937">Consoante as suas definições, o Chrome também pode enviar cookies e o URL atual.</translation>
 <translation id="164269334534774161">Está a visualizar uma cópia offline desta página de <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1657932388559784161">A secção inferior das estatísticas da página está fechada</translation>
@@ -705,7 +704,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4738836084190194332">Última sincronização: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Receberá sugestões melhoradas na barra de endereço</translation>
 <translation id="4742970037960872810">Remover realce</translation>
-<translation id="4743664893327841597">O que escreve na barra de endereço ou na caixa de pesquisa é enviado para o motor de pesquisa predefinido</translation>
 <translation id="4749960740855309258">Abrir um novo separador</translation>
 <translation id="4750356170202299988">Conteúdo para mentes jovens</translation>
 <translation id="4758061975920522644">Apenas partilhar imagem</translation>
@@ -739,6 +737,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="4864369630010738180">A iniciar sessão...</translation>
 <translation id="4866368707455379617">Não é possível instalar o módulo <ph name="MODULE" /> para o Chrome.</translation>
 <translation id="4871568871368204250">Desativar a sincronização</translation>
+<translation id="4874961007154620743">Quando esta opção está desativada, continua a ver sugestões que o Chrome faculta localmente</translation>
 <translation id="4875775213178255010">Sugestões de conteúdo</translation>
 <translation id="4877678010818027629">Entre no Modo de navegação anónima</translation>
 <translation id="4878404682131129617">Falha ao estabelecer um túnel através do servidor proxy.</translation>
@@ -1210,6 +1209,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="727288900855680735">Quer enviar <ph name="ONE_TIME_CODE" /> para <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Site bloqueado</translation>
 <translation id="7276100255011548441">O Chrome elimina automaticamente os tópicos com mais de 4 semanas. Enquanto navega, um tópico pode voltar a ser apresentado na lista. Em alternativa, pode bloquear os tópicos que não quer que o Chrome partilhe com sites. Saiba mais sobre a <ph name="BEGIN_LINK" />gestão da privacidade dos anúncios no Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">À medida que escreve, o Chrome envia o conteúdo da barra de endereço ou da caixa de pesquisa para o motor de pesquisa predefinido</translation>
 <translation id="7286703216224610554">Apenas partilhar reação</translation>
 <translation id="7289303553784750393">Se estiver online, mas este problema continuar a ocorrer, pode experimentar outras formas de continuar em <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Opção de mudar o nome não disponível</translation>
@@ -1557,6 +1557,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">O idioma <ph name="LANG" /> está pronto</translation>
 <translation id="8937772741022875483">Remover a sua atividade do Chrome do Bem-estar digital?</translation>
+<translation id="893938492099608175">Consoante as suas definições, o Chrome também pode enviar cookies, o URL atual e a localização</translation>
 <translation id="8942627711005830162">Abrir noutra janela</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Não foi possível transferir este idioma. Tente mais tarde.</translation>
 <translation id="8955719471735800169">Voltar ao início</translation>

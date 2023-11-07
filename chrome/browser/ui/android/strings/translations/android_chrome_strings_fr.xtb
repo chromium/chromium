@@ -32,6 +32,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1142732900304639782">Ne pas proposer de traduire ces sites</translation>
 <translation id="1145536944570833626">Supprimez les données existantes</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> va s'ouvrir dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Utiliser le mot de passe <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1174479719160874822">Chrome demandera la version pour mobile lorsque l'écran sera étroit</translation>
 <translation id="1177863135347784049">Personnalisé</translation>
@@ -125,7 +126,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Supprimer 1 élément sélectionné}one{Supprimer # élément sélectionné}other{Supprimer # éléments sélectionnés}}</translation>
 <translation id="1633659023549081553">Découvrez de nouveaux contenus sur la page d'accueil de Chrome</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
-<translation id="1642309806724967937">Selon vos paramètres, Chrome peut aussi envoyer des cookies et votre URL actuelle</translation>
 <translation id="164269334534774161">Vous regardez une copie hors connexion de cette page depuis le <ph name="CREATION_TIME" />.</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1657932388559784161">La bottom sheet des insights sur la page est fermée</translation>
@@ -149,6 +149,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1779766957982586368">Fermer la fenêtre</translation>
 <translation id="1791662854739702043">Installé dans</translation>
 <translation id="1792959175193046959">Modifier à tout moment l'emplacement de téléchargement par défaut</translation>
+<translation id="1796666869097395659">Réduire l'onglet pour y revenir plus tard</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1810845389119482123">Configuration de la synchronisation initiale non terminée</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne peut pas poursuivre avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4738836084190194332">Dernière synchronisation : <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Vous obtiendrez des suggestions améliorées dans la barre d'adresse</translation>
 <translation id="4742970037960872810">Supprimer la surbrillance</translation>
-<translation id="4743664893327841597">Ce que vous saisissez dans la barre d'adresse ou le champ de recherche est envoyé à votre moteur de recherche par défaut.</translation>
 <translation id="4749960740855309258">Ouvrir un nouvel onglet</translation>
 <translation id="4750356170202299988">Contenu pour les plus jeunes</translation>
 <translation id="4758061975920522644">Partager uniquement l'image</translation>
@@ -755,6 +755,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4925120120285606924">Capture d'écran <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Vos mots de passe seront exportés et téléchargés sous forme de fichier texte. Toute personne ou application ayant accès au dossier de destination pourra les voir.</translation>
 <translation id="4926901776383726965">Vous pouvez enregistrer des images et des fichiers pour les consulter hors connexion ou les partager avec d'autres applis</translation>
+<translation id="4928144016283278047">Protection contre les outils de suivi (cookies tiers, suivi de l'adresse IP, scripts invasifs, etc.)</translation>
 <translation id="4932247056774066048">Vous vous déconnectez d'un compte géré par <ph name="DOMAIN_NAME" />. Vos données Chrome seront donc supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="4943703118917034429">Réalité virtuelle</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
@@ -1207,6 +1208,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="727288900855680735">Envoyer <ph name="ONE_TIME_CODE" /> à <ph name="ORIGIN" /> ?</translation>
 <translation id="7274013316676448362">Site bloqué</translation>
 <translation id="7276100255011548441">Chrome supprime automatiquement les thèmes datant de plus de quatre semaines. Au fil de votre navigation, un thème peut réapparaître dans la liste. Vous pouvez aussi bloquer les thèmes que vous ne souhaitez pas que Chrome partage avec des sites. Découvrez comment <ph name="BEGIN_LINK" />gérer la confidentialité de vos annonces dans Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">À mesure que vous saisissez du texte, Chrome envoie le contenu de la barre d'adresse ou du champ de recherche à votre moteur de recherche par défaut</translation>
 <translation id="7286703216224610554">Partager uniquement la réaction</translation>
 <translation id="7289303553784750393">Si vous êtes en ligne, mais que le problème persiste, vous pouvez essayer d'autres méthodes pour poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Option de changement de nom indisponible</translation>

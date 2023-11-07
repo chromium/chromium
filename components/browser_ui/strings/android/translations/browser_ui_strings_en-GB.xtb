@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}}</translation>
 <translation id="2410940059315936967">A site that you visit can embed content from other sites, for example, images, ads and text. Cookies set by these other sites are called third-party cookies.</translation>
 <translation id="2434158240863470628">Download complete <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Features on some sites may not work in Incognito mode</translation>
 <translation id="2442870161001914531">Always request desktop site</translation>
 <translation id="2469312991797799607">This action will clear all data and cookies for <ph name="ORIGIN" /> and all sites under it</translation>
@@ -208,6 +209,7 @@
 <translation id="4644713492825682049">Delete and reset</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
+<translation id="4673958474310291465">Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work as expected</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Learn about its source and topic</translation>

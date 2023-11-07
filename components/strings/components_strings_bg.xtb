@@ -98,6 +98,7 @@
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1178821169867863726">12 x 16 инча</translation>
 <translation id="1181037720776840403">Премахване</translation>
+<translation id="1181381397492575884">Chrome блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате. Отворете настройките, за да <ph name="LINK" />.</translation>
 <translation id="1186201132766001848">Проверка на паролите</translation>
 <translation id="1190491977647722791">Хартия (тежка)</translation>
 <translation id="1195073053842921378">Адресът ще бъде изтрит от това устройство</translation>
@@ -118,6 +119,7 @@
 <translation id="1225570101506606926">Билярд</translation>
 <translation id="1225607422885279949">Google ще намира отстъпки вместо вас</translation>
 <translation id="1227224963052638717">Неизвестно правило.</translation>
+<translation id="1227677022489889280">Посочете причина за преместването (задължително)</translation>
 <translation id="1228893227497259893">Грешен идентификатор на обект</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (автоматично установено)</translation>
 <translation id="1232569758102978740">Неозаглавен</translation>
@@ -347,6 +349,7 @@
 <translation id="1640244768702815859">Опитайте да <ph name="BEGIN_LINK" />отворите началната страница на сайта<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Отлагане на отпечатването до</translation>
 <translation id="164212631332220697">Плащане с <ph name="CARD_DETAIL" />.</translation>
+<translation id="1643651787397909318">Бутон „Проверка на безопасността в Chrome“. Натиснете го, за да отворите страницата за проверка на безопасността в Chrome от настройките</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1645368109819982629">Неподдържан протокол</translation>
 <translation id="1650602712345345441">Управление на настройките ви за Chrome</translation>
@@ -1041,6 +1044,7 @@
 <translation id="3140646734028448730">Бизнес услуги</translation>
 <translation id="3141093262818886744">Отваряне въпреки това</translation>
 <translation id="3141641372357166056">Няма решение относно съгласието</translation>
+<translation id="3142736425087361223">Chrome се нуждае от разрешение за достъп до <ph name="PERMISSION" /> за <ph name="ORIGIN" /></translation>
 <translation id="3144458715650412431">Приложени са тестови правила. Можете да ги прегледате и нулирате на адрес chrome://policy/test. Администраторските правила няма да бъдат приложени.</translation>
 <translation id="3145945101586104090">Декодирането на отговора не бе успешно</translation>
 <translation id="3150653042067488994">Временна грешка в сървъра</translation>
@@ -1204,6 +1208,7 @@
 <translation id="3447644283769633681">Блокиране на всички „бисквитки“ на трети страни</translation>
 <translation id="3447661539832366887">Собственикът на това устройство е изключил играта с динозавъра.</translation>
 <translation id="3447884698081792621">Показване на сертификата (издаден от <ph name="ISSUER" />)</translation>
+<translation id="3450323514459570273">Може да поиска разрешение да управлява и препрограмира MIDI устройствата ви</translation>
 <translation id="3452404311384756672">Интервал на извличане:</translation>
 <translation id="3453962258458347894">Брой повторни опити</translation>
 <translation id="3461266716147554923"><ph name="URL" /> иска да преглежда текста и изображенията, копирани в буферната памет</translation>
@@ -2000,6 +2005,7 @@
 <translation id="5045550434625856497">Грешна парола</translation>
 <translation id="5051305769747448211">Комедия на живо</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{За да изпратите този файл чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}other{За да изпратите тези файлове чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}}</translation>
+<translation id="505757197798929356">Посочете причина за отварянето (задължително)</translation>
 <translation id="5060419232449737386">Настройки за надписите</translation>
 <translation id="5060483733937416656">Избрахте опцията за потвърждаване чрез Windows Hello в уебсайтовете, които използват <ph name="PROVIDER_ORIGIN" />. Възможно е този доставчик да е съхранил информация за начина ви на плащане. Можете обаче да <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Може би имахте предвид <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2044,6 +2050,8 @@
 <translation id="5137761395480718572">Това приложение иска разрешение да инсталира идентификационните данни за Wi-Fi. След настройването устройството ви <ph name="DEVICE_TYPE" /> ще се свързва автоматично с участващите Wi-Fi мрежи. За да премахнете тези идентификационни данни, деинсталирайте приложението. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">В момента няма достъп до виртуалната карта. Свържете се с банката си</translation>
 <translation id="5138227688689900538">Показване на по-малко</translation>
+<translation id="5143309888746105072">Chromium блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.
+            <ph name="NEW_LINE" />Ако функциите на сайта не работят, <ph name="START_LINK" />временно разрешете „бисквитките“ на трети страни<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">В отговора за правилото присъства код на грешка</translation>
 <translation id="5146995429444047494">Известията за <ph name="ORIGIN" /> са блокирани</translation>
 <translation id="514704532284964975"><ph name="URL" /> иска да чете и променя информацията на устройствата с NFC, които докосвате с телефона си</translation>
@@ -2117,6 +2125,7 @@
 <translation id="5288393065350884210">Счетоводство и одит</translation>
 <translation id="5289384342738547352">Обработване на няколко документа</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Изисква се актуализация днес}=2{Изисква се актуализация до утре}other{Изисква се актуализация в рамките на # дни}}</translation>
+<translation id="5292714443869769806">Към настройките на <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Купета</translation>
 <translation id="5296589789433599000">Готварство и рецепти</translation>
 <translation id="5299298092464848405">Грешка при синтактичния анализ на правилото</translation>
@@ -2389,6 +2398,7 @@
 <translation id="5873297634595728366">Дизелови превозни средства</translation>
 <translation id="5877831137320480913">Козметика и фитнес</translation>
 <translation id="5879989559903563723">Не е разрешено в режим на гост</translation>
+<translation id="5880050725127890683">Проверка на безопасността в Chrome</translation>
 <translation id="5883861433316751031">Да се контролират и препрограмират ли MIDI устройствата?</translation>
 <translation id="5884465125445718607">Плик, китайски №6</translation>
 <translation id="5887400589839399685">Картата бе запазена</translation>
@@ -2425,6 +2435,7 @@
 <translation id="5951495562196540101">Не е възможно регистриране с профил на потребител (налице е лиценз в пакет).</translation>
 <translation id="5953516610448771166">Функцията „Надписи на живо“ не е налице за този медиен формат. За да получите надписи, блокирайте <ph name="CONTENT_SETTINGS" /> за този сайт.</translation>
 <translation id="5955063559762970069">Хотели и настаняване</translation>
+<translation id="595873925609605681">Ако функциите на сайта не работят, <ph name="BEGIN_LINK" />временно разрешете „бисквитките“ на трети страни<ph name="END_LINK" />.</translation>
 <translation id="5963413905009737549">Секция</translation>
 <translation id="5964247741333118902">Вградено съдържание</translation>
 <translation id="5967260682280773804">36 x 48 инча</translation>
@@ -2569,6 +2580,7 @@
 <translation id="6251906504834538140">{0,plural, =1{Преместването на файла е блокирано}other{Преместването на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате файловете, които сте изтеглили с Chrome</translation>
 <translation id="6254436959401408446">Няма достатъчно памет за отваряне на тази страница</translation>
+<translation id="625463612687472648">Оттегляне на разрешението</translation>
 <translation id="6259156558325130047">&amp;Възстановяване на пренареждането</translation>
 <translation id="6263376278284652872">Отметки от <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Изтегляне въпреки това</translation>
@@ -2728,6 +2740,7 @@
 <translation id="6556866813142980365">Възстановяване</translation>
 <translation id="6557715786897013164">14 x 17 инча</translation>
 <translation id="6560786330438719938">Инсталираните и деинсталираните приложения и колко често са използвани</translation>
+<translation id="6567084950885568327">Управление и препрограмиране на MIDI устройства</translation>
 <translation id="6568793038316600992">Бутон „Управление на начините на плащане“. Активирайте, за да управлявате информацията си за плащане и данните за кредитните си карти в настройките на Chrome</translation>
 <translation id="6569060085658103619">Преглеждате страница на разширение</translation>
 <translation id="6569366777234823130">Драматични филми</translation>
@@ -2743,6 +2756,8 @@
 <translation id="6596325263575161958">Опции за шифроване</translation>
 <translation id="6597665340361269064">90 градуса</translation>
 <translation id="6599642189720630047">Проследявани продукти</translation>
+<translation id="6606309334576464871">Chrome блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.
+            <ph name="NEW_LINE" />Ако функциите на сайта не работят, <ph name="START_LINK" />временно разрешете „бисквитките“ на трети страни<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">Икономически новини</translation>
 <translation id="6612010098632894193">Онлайн видео</translation>
 <translation id="6613866251791999074">Научете повече за търсещата си машина в Chrome</translation>
@@ -2894,6 +2909,7 @@
 <ph name="END_LIST" /></translation>
 <translation id="691024665142758461">Изтегляне на няколко файла</translation>
 <translation id="6915804003454593391">Потребител:</translation>
+<translation id="6916193791494646625">Посочете причина за изтеглянето (задължително)</translation>
 <translation id="6916954549222464607">Финансово планиране и управление</translation>
 <translation id="6917795328362592458">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите ви препоръчва да проверите запазените си пароли.</translation>
 <translation id="6925267999184670015">North American B+</translation>
@@ -3095,6 +3111,7 @@
 <translation id="7308436126008021607">синхронизиране на заден план</translation>
 <translation id="7310392214323165548">Устройството ще се рестартира много скоро</translation>
 <translation id="7311244614769792472">Няма намерени резултати</translation>
+<translation id="7311837626618954149">Chromium блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помощ при проблеми с връзката</translation>
 <translation id="7323804146520582233">Скриване на секцията „<ph name="SECTION" />“</translation>
@@ -3186,6 +3203,8 @@
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> ще знае, че сте посетили <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 инча</translation>
 <translation id="7469935732330206581">Формулярът не е защитен</translation>
+<translation id="7470854469646445678">Посочете причина за копирането (задължително)</translation>
+<translation id="7471007961486718967">Посочете причина за прехвърлянето (задължително)</translation>
 <translation id="7473891865547856676">Не, благодаря</translation>
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7481603210197454575">Плик, италиански</translation>
@@ -3232,6 +3251,7 @@
 <translation id="7550637293666041147">Потребителското име на устройството ви и в Chrome</translation>
 <translation id="7551484245293639699">Застраховка при пътуване</translation>
 <translation id="7552846755917812628">Изпробвайте следните съвети:</translation>
+<translation id="7554242657529665960">От администратора ви: „<ph name="ADMIN_MESSAGE" />“</translation>
 <translation id="7554475479213504905">Презареждане и показване въпреки това</translation>
 <translation id="7554791636758816595">Нов раздел</translation>
 <translation id="7555777498260651025">Семейни телевизионни предавания</translation>
@@ -3348,6 +3368,7 @@
 <translation id="7744505202669469867">Таблица със запазени адреси</translation>
 <translation id="774634243536837715">Блокирахме опасно съдържание.</translation>
 <translation id="7748758200357401411">Автомобилни части с високи характеристики и части от следпродажбен пазар</translation>
+<translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Персонализиране на шрифтовете в Chrome и размера им</translation>
 <translation id="7752995774971033316">Не се управлява</translation>
 <translation id="7754587126786572336">Разделите и приложенията ви за Chrome ще се затворят, когато актуализацията започне</translation>
@@ -3411,6 +3432,7 @@
 <translation id="7888575728750733395">Режим на изобразяване на цветовете при отпечатване</translation>
 <translation id="7894280532028510793">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте мрежова диагностика<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Плик 7 x 9 инча</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да отворите страницата за проверка на безопасността в Chrome от настройките</translation>
 <translation id="7916162853251942238">Флексопечат</translation>
 <translation id="7927971017714848357">Парцели и земя</translation>
 <translation id="793209273132572360">Да се актуализира ли адресът?</translation>
@@ -3428,6 +3450,7 @@
 <translation id="7942349550061667556">червено</translation>
 <translation id="7943397946612013052">Изтеглянето е блокирано</translation>
 <translation id="7943893128817522649">Може да поиска разрешение да изтегли автоматично няколко файла</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7946724693008564269">Установен език</translation>
 <translation id="7947285636476623132">Проверете годината на валидност и опитайте отново</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да научите повече за функциите на Chrome</translation>
@@ -3686,6 +3709,7 @@
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">Разбрах</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате предпочитанията си за „бисквитките“ от настройките на Chrome</translation>
+<translation id="8432419784006585012">Може да извежда запитвания за използване на MIDI устройствата ви</translation>
 <translation id="8433057134996913067">Ще излезете от повечето уебсайтове.</translation>
 <translation id="8434014327286137412">За да платите по-бързо следващия път, запазете IBAN номера в профила си в Google</translation>
 <translation id="8434840396568290395">Домашни любимци</translation>
@@ -3704,6 +3728,7 @@
 <translation id="8460854335417802511">Включване</translation>
 <translation id="8461694314515752532">Шифроване на синхронизираните данни със собствения ви пропуск за синхронизиране</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна карта}other{# кредитни карти}}</translation>
+<translation id="8467494337615822642">Отваряне на страницата за проверка на безопасността в Chrome от настройките</translation>
 <translation id="8468358362970107653">Плик C3</translation>
 <translation id="8473626140772740486">300 x 450 мм</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>
@@ -3733,6 +3758,7 @@
 <translation id="853246364274116957">Бродуей и мюзикъли</translation>
 <translation id="853332391023689529">Товарни пикапи</translation>
 <translation id="8533619373899488139">Посетете &lt;strong&gt;chrome://policy&lt;/strong&gt;, за да видите блокираните URL адреси и другите правила, наложени от системния ви администратор.</translation>
+<translation id="8534934518812659742">Изключихте разрешението за достъп до <ph name="PERMISSION" /> за Chrome.</translation>
 <translation id="8536234749087605613">Плик (с прозорец)</translation>
 <translation id="8539500321752640291">Да се предоставят ли две разрешения?</translation>
 <translation id="8541158209346794904">Bluetooth устройства</translation>
@@ -3743,6 +3769,7 @@
 <translation id="8543181531796978784">Можете да <ph name="BEGIN_ERROR_LINK" />подадете сигнал за проблем при откриването<ph name="END_ERROR_LINK" /> или, ако разбирате рисковете за сигурността си, да <ph name="BEGIN_LINK" />посетите този небезопасен сайт<ph name="END_LINK" />.</translation>
 <translation id="8544303911974837265">Полиестер</translation>
 <translation id="854548366864113872">Опция с висока цена</translation>
+<translation id="8546254312340305428">Въведете причина за качването (задължително)</translation>
 <translation id="8546350655047701518">Експортиране на регистрационните файлове във формат JSON</translation>
 <translation id="8546667245446052521">Хартия (архивна)</translation>
 <translation id="854892890027593466">Плик C6/C5</translation>
@@ -4071,6 +4098,7 @@
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="940053046584497293">Пътувания и транспорт</translation>
 <translation id="944540589955480312">Използване на паролите и ключовете за достъп, запазени в профила ви в Google</translation>
+<translation id="945646848072568856">Chrome блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.</translation>
 <translation id="945855313015696284">Проверете информацията по-долу и изтрийте невалидните карти</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо сайт в Google Сайтове</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome ще ограничи „бисквитките“ отново днес}=1{Chrome ще ограничи „бисквитките“ отново утре}other{# дни, докато Chrome ограничи „бисквитките“ отново}}</translation>

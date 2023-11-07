@@ -32,6 +32,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1142732900304639782">Älä ehdota näiden sivustojen kääntämistä</translation>
 <translation id="1145536944570833626">Poistaa olemassa olevat tiedot.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> avautuu Chromessa. Jatkamalla hyväksyt <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Google Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Käytä salasanaa <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Muuta nimeä</translation>
 <translation id="1174479719160874822">Chrome pyytää mobiilisivustoa, kun näyttö on kapea</translation>
 <translation id="1177863135347784049">Muokattu</translation>
@@ -125,7 +126,6 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Poista 1 valittu kohde}other{Poista # valittua kohdetta}}</translation>
 <translation id="1633659023549081553">Löydä uutta sisältöä Chromen etusivulta</translation>
 <translation id="1641113438599504367">Selaussuoja</translation>
-<translation id="1642309806724967937">Asetuksista riippuen Chrome voi myös lähettää evästeitä ja nykyisen URL-osoitteesi</translation>
 <translation id="164269334534774161">Katselet sivun offline-kopiota, joka luotiin <ph name="CREATION_TIME" />.</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1657932388559784161">Sivun tietojen alapaneeli on suljettu</translation>
@@ -149,6 +149,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1779766957982586368">Sulje ikkuna</translation>
 <translation id="1791662854739702043">Asennettu</translation>
 <translation id="1792959175193046959">Muuta oletuslataussijaintia milloin tahansa</translation>
+<translation id="1796666869097395659">Pienennä välilehti ja palaa siihen myöhemmin</translation>
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1810845389119482123">Synkronoinnin alkumääritys ei valmis</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ei voi jatkaa tämän käyttöä: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4738836084190194332">Viimeisin synkronointi: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Näet parempia ehdotuksia osoitepalkissa</translation>
 <translation id="4742970037960872810">Poista korostus</translation>
-<translation id="4743664893327841597">Kun kirjoitat osoitepalkkiin tai hakukenttään, teksti lähetetään oletushakukoneelle</translation>
 <translation id="4749960740855309258">Uuden välilehden avaaminen</translation>
 <translation id="4750356170202299988">Sisältöä lapsille</translation>
 <translation id="4758061975920522644">Jaa vain kuva</translation>
@@ -755,6 +755,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4925120120285606924">Kuvakaappaus <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Salasanasi viedään ja ladataan tekstitiedostona. Ne näkyvät kaikille käyttäjille ja sovelluksille, joilla on pääsy kohdekansioon.</translation>
 <translation id="4926901776383726965">Voit tallentaa kuvia ja tiedostoja, jotta voit katsella niitä ilman verkkoyhteyttä ja jakaa niitä muissa sovelluksissa</translation>
+<translation id="4928144016283278047">Suojaus seurannalta (esim. kolmannen osapuolen evästeet, IP-seuranta ja häiritsevät skriptit)</translation>
 <translation id="4932247056774066048">Koska olet kirjautumassa ulos tililtä, jota <ph name="DOMAIN_NAME" /> ylläpitää, Chrome-datasi poistetaan tältä laitteelta. Se pysyy Google-tililläsi.</translation>
 <translation id="4943703118917034429">Virtuaalitodellisuus</translation>
 <translation id="4943872375798546930">Ei tuloksia</translation>
@@ -1207,6 +1208,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="727288900855680735">Lähetetäänkö <ph name="ONE_TIME_CODE" /> tänne: <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Estetty sivusto</translation>
 <translation id="7276100255011548441">Chrome poistaa automaattisesti yli neljä viikkoa vanhat aiheet. Kun jatkat selaamista, aihe voi näkyä listalla uudelleen. Voit myös estää aiheet, joita et halua Chromen jakavan sivustoille. Lue lisää <ph name="BEGIN_LINK" />mainosyksityisyyden ylläpidosta Chromessa<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">Chrome lähettää kirjoittaessasi osoitepalkin tai hakukentän sisällön oletushakukoneellesi</translation>
 <translation id="7286703216224610554">Jaa vain reaktio</translation>
 <translation id="7289303553784750393">Jos olet yhteydessä verkkoon, mutta ongelma toistuu, voit kokeilla muita tapoja jatkaa tämän käyttöä: <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Uudelleennimeäminen ei saatavilla</translation>

@@ -32,6 +32,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1142732900304639782">No ofrecer que se traduzcan estos sitios</translation>
 <translation id="1145536944570833626">Elimina los datos actuales.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> se abrirá en Chrome. Al continuar, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Usar contraseña <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1174479719160874822">Chrome solicitará el sitio web móvil cuando la pantalla sea estrecha</translation>
 <translation id="1177863135347784049">Personalizado</translation>
@@ -125,7 +126,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1633659023549081553">Descubre contenido nuevo en la página principal de Chrome</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
-<translation id="1642309806724967937">En función de tu configuración, es posible que Chrome también envíe cookies y tu URL actual</translation>
 <translation id="164269334534774161">Estás viendo una copia sin conexión de esta página del <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1657932388559784161">La hoja inferior de métricas de la página está cerrada</translation>
@@ -149,6 +149,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1779766957982586368">Cerrar ventana</translation>
 <translation id="1791662854739702043">Ubicación</translation>
 <translation id="1792959175193046959">Cambia la ubicación predeterminada de las descargas en cualquier momento</translation>
+<translation id="1796666869097395659">Minimizar la pestaña para volver a ella más tarde</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1810845389119482123">La configuración de sincronización inicial no ha terminado</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no puede seguir usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4738836084190194332">Última sincronización: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Recibirás sugerencias mejoradas en la barra de direcciones.</translation>
 <translation id="4742970037960872810">Eliminar resaltado</translation>
-<translation id="4743664893327841597">Lo que escribes en la barra de direcciones o en el cuadro de búsqueda se envía a tu buscador predeterminado</translation>
 <translation id="4749960740855309258">Abre una pestaña nueva</translation>
 <translation id="4750356170202299988">Contenido para mentes jóvenes</translation>
 <translation id="4758061975920522644">Compartir solo la imagen</translation>
@@ -755,6 +755,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="4925120120285606924">Captura de pantalla <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Tus contraseñas se exportarán y descargarán como un archivo de texto. Todos los usuarios y aplicaciones que tengan acceso a la carpeta de destino podrán ver tus contraseñas.</translation>
 <translation id="4926901776383726965">Puedes guardar imágenes y archivos para verlos sin conexión o compartirlos en otras aplicaciones</translation>
+<translation id="4928144016283278047">Protección frente a mecanismos de seguimiento (cookies de terceros, sistemas de seguimiento de IPs, secuencias de comandos invasivas y más)</translation>
 <translation id="4932247056774066048">Estás cerrando sesión de una cuenta gestionada por <ph name="DOMAIN_NAME" />, por lo que tus datos de Chrome se eliminarán de este dispositivo. Sin embargo, permanecerán en tu cuenta de Google.</translation>
 <translation id="4943703118917034429">Realidad virtual</translation>
 <translation id="4943872375798546930">Sin resultados</translation>
@@ -1207,6 +1208,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="727288900855680735">¿Enviar <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sitio web bloqueado</translation>
 <translation id="7276100255011548441">Chrome elimina automáticamente los temas con una antigüedad superior a 4 semanas. Cuando continúes navegando, es posible que vuelva a aparecer un tema en la lista. También puedes bloquear los temas que no quieras que Chrome comparta con los sitios. Consulta más información sobre cómo <ph name="BEGIN_LINK" />gestionar la privacidad en la publicidad en Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">A medida que escribes, Chrome envía el contenido de la barra de direcciones o del cuadro de búsqueda a tu buscador predeterminado</translation>
 <translation id="7286703216224610554">Compartir solo la reacción</translation>
 <translation id="7289303553784750393">Si tienes conexión a Internet, pero el problema persiste, puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">El cambio de nombre no está disponible</translation>

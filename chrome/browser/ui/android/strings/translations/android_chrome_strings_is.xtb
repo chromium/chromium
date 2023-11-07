@@ -32,6 +32,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1142732900304639782">Ekki bjóða upp á að þýða þessi vefsvæði</translation>
 <translation id="1145536944570833626">Eyða fyrirliggjandi gögnum.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> opnast í Chrome. Með því að halda áfram samþykkirðu <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />viðbótarþjónustuskilmála Google Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Nota aðgangsorð <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Endurnefna</translation>
 <translation id="1174479719160874822">Chrome biður um snjallvefinn þegar skjárinn er þröngur</translation>
 <translation id="1177863135347784049">Sérsniðið</translation>
@@ -125,7 +126,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjarlægja 1 valið atriði}one{Fjarlægja # valið atriði}other{Fjarlægja # valin atriði}}</translation>
 <translation id="1633659023549081553">Uppgötvaðu nýtt efni á heimasíðu Chrome</translation>
 <translation id="1641113438599504367">Örugg vefnotkun</translation>
-<translation id="1642309806724967937">Chrome kann einnig að senda fótspor og opna vefslóð, allt eftir því hvaða stillingar eru valdar</translation>
 <translation id="164269334534774161">Þú ert að skoða ónettengt afrit af þessari síðu frá <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="1657932388559784161">Blaði neðst með síðuinnsýn lokað</translation>
@@ -149,6 +149,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1779766957982586368">Loka glugga</translation>
 <translation id="1791662854739702043">Uppsett</translation>
 <translation id="1792959175193046959">Þú getur breytt staðsetningu niðurhals hvenær sem er</translation>
+<translation id="1796666869097395659">Minnkaðu flipann til að fara aftur í hann síðar</translation>
 <translation id="1807246157184219062">Ljóst</translation>
 <translation id="1810845389119482123">Fyrstu uppsetningu samstillingar ekki lokið</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> getur ekki haldið áfram að nota <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4738836084190194332">Síðast samstillt: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Þú færð betri tillögur í veffangastikunni</translation>
 <translation id="4742970037960872810">Fjarlægja áherslumerkingu</translation>
-<translation id="4743664893327841597">Það sem þú skrifar í veffangastikuna eða leitarreitinn er sent til sjálfgefnu leitarvélarinnar</translation>
 <translation id="4749960740855309258">Opna nýjan flipa</translation>
 <translation id="4750356170202299988">Efni fyrir yngri notendur</translation>
 <translation id="4758061975920522644">Aðeins deila mynd</translation>
@@ -737,6 +737,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4864369630010738180">Skráir inn...</translation>
 <translation id="4866368707455379617">Ekki tókst að setja upp <ph name="MODULE" /> fyrir Chrome</translation>
 <translation id="4871568871368204250">Slökkva á samstillingu</translation>
+<translation id="4874961007154620743">Þegar slökkt er á þessu sérðu áfram staðbundnar tillögur frá Chrome</translation>
 <translation id="4875775213178255010">Tillögur að efni</translation>
 <translation id="4877678010818027629">Kveikja á huliðsstillingu</translation>
 <translation id="4878404682131129617">Ekki tókst að koma á göngum um staðgengilsþjón</translation>
@@ -755,6 +756,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4925120120285606924">Skjámynd <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Aðgangsorðin þín verða flutt út og þeim hlaðið niður í textaskrá. Þau verða sýnileg öllum, þar á meðal öllum forritum, sem hafa aðgang að möppunni sem hún er vistuð í.</translation>
 <translation id="4926901776383726965">Þú getur vistað myndir og skrár til að skoða án nettengingar eða deila í öðrum forritum</translation>
+<translation id="4928144016283278047">Vörn gegn rakningu (fótsporum þriðju aðila, rakningu IP-tölu, ágengum skriftum og fleira)</translation>
 <translation id="4932247056774066048">Þar sem þú ert að skrá þig út af reikningi sem er stjórnað af <ph name="DOMAIN_NAME" /> verður Chrome gögnum þínum eytt úr þessu tæki. Þau verða áfram á Google reikningnum þínum.</translation>
 <translation id="4943703118917034429">Sýndarveruleiki</translation>
 <translation id="4943872375798546930">Engar niðurstöður</translation>
@@ -1207,6 +1209,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="727288900855680735">Senda <ph name="ONE_TIME_CODE" /> til <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Vefsvæði á bannlista</translation>
 <translation id="7276100255011548441">Chrome eyðir umfjöllunarefnum sem eru eldri en 4 vikna sjálfkrafa. Þegar þú heldur áfram að vafra gæti umfjöllunarefni birst aftur á listanum. Þú getur einnig lokað á umfjöllunarefni sem þú vilt ekki að Chrome deili með vefsvæðum. Nánar um <ph name="BEGIN_LINK" />umsjón með persónuvernd auglýsinga í Chrome.<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">Um leið og þú slærð inn sendir Chrome innihald veffangastikunnar eða leitarreitsins á sjálfgefna leitarvél</translation>
 <translation id="7286703216224610554">Aðeins deila viðbrögðum</translation>
 <translation id="7289303553784750393">Ef þú ert nettengd(ur) en þetta vandamál heldur áfram að koma upp geturðu prófað aðrar leiðir til að halda áfram í <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Ekki er hægt að endurnefna</translation>
@@ -1554,6 +1557,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> er til reiðu</translation>
 <translation id="8937772741022875483">Viltu fjarlægja það sem þú gerir í Chrome úr stafrænni vellíðan?</translation>
+<translation id="893938492099608175">Chrome kann einnig að senda fótspor, núverandi vefslóð þína og staðsetningu þína, allt eftir því hvaða stillingar eru valdar</translation>
 <translation id="8942627711005830162">Opna í öðrum glugga</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Ekki tókst að hlaða þessu tungumáli niður. Reyndu aftur síðar.</translation>
 <translation id="8955719471735800169">Efst á síðu</translation>

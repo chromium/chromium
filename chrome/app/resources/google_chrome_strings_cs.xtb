@@ -27,6 +27,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1425903838053942728">{COUNT,plural, =0{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou.}=1{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. Anonymní okno se znovu neotevře.}few{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymní okna se znovu neotevřou.}many{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymního okna se znovu neotevře.}other{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymních oken se znovu neotevře.}}</translation>
 <translation id="1434626383986940139">Aplikace Chrome Canary</translation>
 <translation id="1492280395845991349">Aktualizaci Chromu dokončíte opětovným spuštěním</translation>
+<translation id="1497802159252041924">Chyba instalace: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Přizpůsobte si svůj nový profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome potřebuje přístup k Bluetooth, aby bylo možné
  pokračovat v párování. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -91,6 +92,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2467438592969358367">Google Chrome chce exportovat vaše hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="2472092250898121027">Toto rozšíření obsahuje malware a není bezpečné. Odstraňte ho z prohlížeče Chrome, aby již nemohlo číst a měnit data (včetně osobních údajů) na webech, které navštěvujete.</translation>
 <translation id="2485422356828889247">Odinstalovat</translation>
+<translation id="2534365042754120737">Chraňte svá data tím, že prohlížeči Chrome povolíte odebírat oprávnění webům, které jste v poslední době nenavštívili. Nevypne oznámení.</translation>
 <translation id="2534507159460261402">Google Pay (zkopírováno do Chromu)</translation>
 <translation id="2556847002339236023">Když prohlížeč Chrome <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře. Údaje o prohlížení byly smazány. To může zahrnovat historii, automatické vyplňování a stažené soubory.</translation>
 <translation id="2559253115192232574">Později může navštívený web požádat Chrome o sdělení vašich zájmů, aby vám mohl přizpůsobit zobrazované reklamy. Chrome může sdílet až 3 zájmy.</translation>
@@ -263,15 +265,18 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="5334487786912937552">Ke stahování souborů potřebuje Chrome přístup k úložišti</translation>
 <translation id="5337648990166757586">Volitelné: Pomozte se zlepšováním funkcí a výkonu systému ChromeOS tím, že budete do Googlu automaticky odesílat diagnostické údaje a údaje o využití.</translation>
 <translation id="5357889879764279201">Nápověda k systému ChromeOS Flex</translation>
+<translation id="5386118856456530849">Přejít do nastavení verze Chromu</translation>
 <translation id="5386244825306882791">Také řídí, která stránka se zobrazí, když spustíte Chrome nebo budete vyhledávat v omniboxu.</translation>
 <translation id="5394833366792865639">Sdílet kartu prohlížeče Chrome</translation>
 <translation id="5412485296464121825">Weby mohou v prohlížeči Chrome ukládat informace o vašich zájmech. Např. když navštívíte web, kde se prodávají boty na maraton, web může definovat váš zájem jako běhání maratonů. Když později navštívíte jiný web s registrací na závod, může se vám na něm na základě vašich zájmů zobrazit reklama na boty na běhání.</translation>
 <translation id="5430073640787465221">Soubor nastavení je poškozený nebo neplatný.
 
 Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
+<translation id="5468572406162360320">Za účelem zlepšení těchto funkcí odesílá Chrome vaše interakce do Googlu. Tato data mohou číst, zpracovávat a opatřovat poznámkami kontroloři.</translation>
 <translation id="5524761631371622910">Když jsou zapnuté zkušební verze a Chrome vás do nějaké náhodně umístí, vaše historie prohlížení bude mít vliv na zobrazované reklamy a zájmy, jak je odhadnuto níže. Aby Chrome chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže.</translation>
 <translation id="5530733413481476019">Zrychlete si Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5572786658631721382">Místně poskytované návrhy se v Chromu zobrazují, i když je tato možnost vypnutá</translation>
 <translation id="565744775970812598">Soubor <ph name="FILE_NAME" /> může být nebezpečný, proto jej Chrome zablokoval.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali}=1{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="5686916850681061684">Přizpůsobte si Google Chrome a ovládejte jej. Něco vyžaduje vaši pozornost – podrobnosti zobrazíte kliknutím.</translation>
@@ -365,6 +370,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7177959540995930968">Další informace o těchto funkcích najdete v nastavení Chromu.</translation>
 <translation id="7193885263065350793">Když prohlížeč Chrome <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře.</translation>
 <translation id="7242029209006116544">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem Google Chrome. Vaše údaje prohlížeče Chrome, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu v Účtech Google, ale nebudete je moci přidružit k jinému účtu. Pokud chcete uchovat existující údaje Chrome odděleně, můžete vytvořit nový profil. <ph name="LEARN_MORE" /></translation>
+<translation id="7284878711178835966">Během psaní odesílá Chrome obsah adresního řádku nebo vyhledávacího pole do vašeho výchozího vyhledávače</translation>
 <translation id="7295052994004373688">V tomto jazyce se zobrazuje uživatelské rozhraní prohlížeče Google Chrome</translation>
 <translation id="7296210096911315575">Důležité informace o použití a bezpečnosti</translation>
 <translation id="7308322188646931570">Aby bylo možné stahovat soubory, potřebuje Chrome přístup k úložišti</translation>

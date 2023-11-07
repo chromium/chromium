@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}}</translation>
 <translation id="2410940059315936967">Baxdığınız sayt şəkillər, reklamlar və mətn kimi digər saytlardan məzmunu daxil edə bilər. Digər saytlar tərəfindən təyin olunan kukilərə üçüncü tərəf kukiləri deyilir.</translation>
 <translation id="2434158240863470628">Endirmə tamamlandı <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Bu sayta üçüncü tərəf kukilərindən müvəqqəti istifadə icazəsi verdiniz. Baxış zamanı qoruma səviyyəsi aşağı olsa da, sayt funksiyaları düzgün işləyəcək. <ph name="BEGIN_LINK" />Rəy göndərin<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Bəzi saytlardakı funksiyalar Anonim rejimdə işləməyə bilər</translation>
 <translation id="2442870161001914531">Həmişə masaüstü saytını tələb edin</translation>
 <translation id="2469312991797799607">Bu əməliyyat ilə <ph name="ORIGIN" /> və ona aid saytların data və kukiləri silinəcək</translation>
@@ -208,6 +209,7 @@
 <translation id="4644713492825682049">Silin və sıfırlayın</translation>
 <translation id="4645575059429386691">Valideyniniz tərəfindən idarə olunur</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
+<translation id="4673958474310291465">Üçüncü tərəf kukilərinə müvəqqəti icazə verin. Qoruma az olsa da, sayt funksiyaları düzgün işləyəcək</translation>
 <translation id="4751476147751820511">Hərəkət və ışıq sensorları</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Onun mənbəyi və mövzusu haqqında məlumat əldə edin</translation>

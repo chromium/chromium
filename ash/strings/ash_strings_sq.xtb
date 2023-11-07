@@ -116,6 +116,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1391102559483454063">Aktiv</translation>
 <translation id="1407069428457324124">Tema e errët</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Përdor tastet e shigjetave për të naviguar ndërmjet datave.</translation>
+<translation id="141170878022560212">Butoni i mesit</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplikacion i instaluar</translation>
 <translation id="1414919006379339073">Mbyll dritaren aktuale</translation>
 <translation id="1415846719612499304">Shfaq listën e rrjeteve. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2086334242442703436">Hap zgjedhësin e emoji</translation>
 <translation id="2088116547584365419">lojërat</translation>
 <translation id="209965399369889474">Nuk është lidhur në rrjet</translation>
+<translation id="2107581415810719320">Butoni tjetër <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kablloja jote USB-C nuk mbështet Thunderbolt. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
 <translation id="2108303511227308752">Shkurtorja për Alt + Backspace është ndryshuar. Për të përdorur tastin Delete, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> key + Backspace.</translation>
 <translation id="2126242104232412123">Tavolinë e re</translation>
@@ -563,6 +565,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3340978935015468852">cilësimet</translation>
 <translation id="3341303451326249809">Pamja e ekranit u regjistrua</translation>
 <translation id="334252345105450327">Nxirr një pamje të ekranit</translation>
+<translation id="3346728094401457853">Fut fjalëkalimin e pajisjes për <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Zgjidh tekstin nga kursori deri në fund të rreshtit</translation>
 <translation id="3349345708646875009">Hap menaxherin e detyrave</translation>
 <translation id="3364721542077212959">Veglat e stilolapsit</translation>
@@ -1589,6 +1592,7 @@ Instalim i ri</translation>
 <translation id="7489261257412536105">Hyr ose dil nga ekrani i plotë</translation>
 <translation id="7490360161041035804">Mund t'i gozhdosh skedarët e rëndësishëm, duke përfshirë skedarët e "Diskut të Google". Për ta gozhduar një artikull, mbaje kursorin mbi artikull ose hap Files dhe kliko me butonin djathtas tek artikulli.</translation>
 <translation id="7497767806359279797">Zgjidh gjuhën dhe tastierën</translation>
+<translation id="7507162824403726948">Përfundo verifikimin e identitetit tënd</translation>
 <translation id="7508690557411636492">Hapur muajin e kaluar</translation>
 <translation id="7509246181739783082">Verifiko identitetin</translation>
 <translation id="7512509370370076552">Shkurtorja e klikimit me butonin djathtas përditësohet në tastin <ph name="LAUNCHER_KEY_NAME" /> + klikim nga Alt + klikim</translation>

@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Autorisations <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre accordées}one{Autorisations <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre accordées}other{Autorisations <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autres accordées}}</translation>
 <translation id="2410940059315936967">Un site que vous visitez peut intégrer du contenu provenant d'autres sites, par exemple des images, des annonces et du texte. Les témoins installés par ces autres sites sont appelés témoins tiers.</translation>
 <translation id="2434158240863470628">Téléchargement terminé <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Vous avez temporairement autorisé ce site à utiliser des témoins tiers, ce qui signifie que le niveau de protection de la navigation est moins élevé, mais que les fonctionnalités du site sont plus susceptibles de fonctionner comme prévu. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Les fonctionnalités de certains sites peuvent ne pas fonctionner en mode de navigation privée</translation>
 <translation id="2442870161001914531">Toujours demander le site pour ordinateurs de bureau</translation>
 <translation id="2469312991797799607">Cette action supprimera l'ensemble des données et des témoins de connexion pour <ph name="ORIGIN" /> et tous les sites qui lui sont subordonnés</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Demander avant d'autoriser les sites à lire du contenu protégé</translation>
 <translation id="2932883381142163287">Signaler un abus</translation>
 <translation id="2968755619301702150">Lecteur de certificats</translation>
+<translation id="2979365474350987274">Les témoins tiers sont limités</translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3069226013421428034">Autorisez la connexion de tiers pour un site particulier.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
+<translation id="4673958474310291465">Essayez d'autoriser temporairement les témoins tiers, ce qui signifie que le niveau de protection est moins élevé, mais que les fonctionnalités du site sont plus susceptibles de fonctionner comme prévu</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de luminosité</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">En savoir plus sur sa source et son sujet</translation>

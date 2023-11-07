@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Un sito visitato può incorporare contenuti di altri siti, ad esempio immagini, annunci e testo. I cookie impostati da questi altri siti vengono chiamati cookie di terze parti.</translation>
 <translation id="2434158240863470628">Download completato: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Hai consentito temporaneamente a questo sito di utilizzare i cookie di terze parti, il che comporta una minore protezione della navigazione, ma è più probabile che le funzionalità del sito funzionino come previsto. <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Le funzionalità su alcuni siti potrebbero non essere disponibili in modalità di navigazione in incognito</translation>
 <translation id="2442870161001914531">Richiedi sempre sito desktop</translation>
 <translation id="2469312991797799607">Questa azione eliminerà tutti i dati e i cookie di <ph name="ORIGIN" /> e di tutti i siti secondari</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Chiedi prima di consentire ai siti di riprodurre contenuti protetti</translation>
 <translation id="2932883381142163287">Segnala abuso</translation>
 <translation id="2968755619301702150">Visualizzatore certificati</translation>
+<translation id="2979365474350987274">I cookie di terze parti sono limitati</translation>
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
 <translation id="301521992641321250">Bloccata automaticamente</translation>
 <translation id="3069226013421428034">Consenti l'accesso di terze parti per un sito specifico.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Elimina e reimposta</translation>
 <translation id="4645575059429386691">Gestito da un genitore</translation>
 <translation id="4670064810192446073">Realtà virtuale</translation>
+<translation id="4673958474310291465">Prova a consentire temporaneamente i cookie di terze parti, il che significa meno protezione, ma è più probabile che le funzionalità del sito funzionino come previsto</translation>
 <translation id="4751476147751820511">Sensori di movimento o della luce</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Scopri la fonte e l'argomento</translation>

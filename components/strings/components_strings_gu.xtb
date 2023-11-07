@@ -349,6 +349,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />સાઇટના હોમપેજની મુલાકાત લેવાનો<ph name="END_LINK" /> પ્રયાસ કરો.</translation>
 <translation id="1641976391427233992">આટલા સમય સુધી આઉટપુટ વિલંબિત કરો</translation>
 <translation id="164212631332220697">ચેકઆઉટ કરતી વખતે <ph name="CARD_DETAIL" /> વડે ચુકવણી કરો.</translation>
+<translation id="1643651787397909318">Chromeની 'સલામતી માટે તપાસ' બટન પર જાઓ, સેટિંગમાં Chromeની 'સલામતી માટે તપાસ' પેજ સક્રિય કરો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
 <translation id="1645368109819982629">અસમર્થિત પ્રોટોકોલ</translation>
 <translation id="1650602712345345441">તમારા Chrome સેટિંગ મેનેજ કરો</translation>
@@ -2049,6 +2050,8 @@
 <translation id="5137761395480718572">આ ઍપ વાઇ-ફાઇની લૉગ ઇન વિગતો ઇન્સ્ટૉલ કરવાની પરવાનગી માટે વિનંતી કરી રહી છે. સેટઅપ પછી, તમારું <ph name="DEVICE_TYPE" /> સહભાગી વાઇ-ફાઇ નેટવર્ક સાથે ઑટોમૅટિક રીતે કનેક્ટ થઈ જશે. લૉગ ઇનની આ વિગતો કાઢી નાખવા માટે, ઍપને અનઇન્સ્ટૉલ કરો. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">હમણાં વર્ચ્યુઅલ કાર્ડ ઉપલબ્ધ નથી, કૃપા કરીને તમારી બેંકનો સંપર્ક કરો</translation>
 <translation id="5138227688689900538">ઓછું બતાવો</translation>
+<translation id="5143309888746105072">Chromium વિવિધ સાઇટને તમે બ્રાઉઝ કરો ત્યારે તમને ટ્રૅક કરવા માટે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાથી બ્લૉક કરે છે.
+            <ph name="NEW_LINE" />જો સાઇટની સુવિધાઓ કામ ન કરે, તો <ph name="START_LINK" />ત્રીજા પક્ષની કુકીને હંગામી રીતે મંજૂરી આપી જુઓ<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">પૉલિસી પ્રતિક્રિયામાં ભૂલ કોડ હાજર</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> માટેના નોટિફિકેશન બ્લૉક કર્યા છે</translation>
 <translation id="514704532284964975">તમે તમારા ફોન વડે NFC ડિવાઇસ પર જે માહિતી ટૅપ કરો છો તેને <ph name="URL" /> જોવા અને બદલવા માગે છે</translation>
@@ -2395,6 +2398,7 @@
 <translation id="5873297634595728366">ડીઝલથી ચાલતા વાહનો</translation>
 <translation id="5877831137320480913">બ્યુટી અને ફિટનેસ</translation>
 <translation id="5879989559903563723">અતિથિ મોડમાં મંજૂરી નથી</translation>
+<translation id="5880050725127890683">Chromeની સલામતી માટે તપાસ પર જાઓ</translation>
 <translation id="5883861433316751031">શું MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરીએ?</translation>
 <translation id="5884465125445718607">એન્વલપ ચાઇનીઝ #6</translation>
 <translation id="5887400589839399685">કાર્ડ સાચવ્યું</translation>
@@ -2576,6 +2580,7 @@
 <translation id="6251906504834538140">{0,plural, =1{ફાઇલને ખસેડવાથી બ્લૉક કરી છે}one{<ph name="FILE_COUNT" /> ફાઇલને ખસેડવાથી બ્લૉક કરી છે}other{<ph name="FILE_COUNT" /> ફાઇલને ખસેડવાથી બ્લૉક કરી છે}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeમાં તમે ડાઉનલોડ કરેલી ફાઇલો મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="6254436959401408446">આ પેજ ખોલવા માટે પૂરતી મેમરી નથી</translation>
+<translation id="625463612687472648">મંજૂરી આપવાનું રોકો</translation>
 <translation id="6259156558325130047">&amp;પુનઃક્રમાંકિત કરવું ફરી કરો</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> બુકમાર્ક</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
@@ -2751,6 +2756,8 @@
 <translation id="6596325263575161958">એન્ક્રિપ્શન વિકલ્પો</translation>
 <translation id="6597665340361269064">90 ડિગ્રી</translation>
 <translation id="6599642189720630047">ટ્રૅક કરેલી પ્રોડક્ટ</translation>
+<translation id="6606309334576464871">Chrome વિવિધ સાઇટને તમે બ્રાઉઝ કરો ત્યારે તમને ટ્રૅક કરવા માટે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાથી બ્લૉક કરે છે.
+            <ph name="NEW_LINE" />જો સાઇટની સુવિધાઓ કામ ન કરે, તો <ph name="START_LINK" />ત્રીજા પક્ષની કુકીને હંગામી રીતે મંજૂરી આપી જુઓ<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">અર્થતંત્રના સમાચાર</translation>
 <translation id="6612010098632894193">ઑનલાઇન વીડિયો</translation>
 <translation id="6613866251791999074">Chromeમાં તમારા શોધ એન્જિન વિશે વધુ જાણો</translation>
@@ -3425,6 +3432,7 @@
 <translation id="7888575728750733395">પ્રિન્ટ રેન્ડર કરવાનું ઇન્ટેન્ટ</translation>
 <translation id="7894280532028510793">જો જોડણી સાચી હોય, તો <ph name="BEGIN_LINK" />નેટવર્ક નિદાન ચલાવવાનો પ્રયાસ કરી જુઓ<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">એન્વલપ 7 x 9 ઇંચ</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, સેટિંગમાં Chromeની 'સલામતી માટે તપાસ' પેજ પર જવા માટે Tab અને પછી Enter કી દબાવો</translation>
 <translation id="7916162853251942238">ફ્લેક્સો બેઝ</translation>
 <translation id="7927971017714848357">પ્લૉટ અને જમીન</translation>
 <translation id="793209273132572360">સરનામું અપડેટ કરીએ?</translation>
@@ -3720,6 +3728,7 @@
 <translation id="8460854335417802511">તેને ચાલુ કરો</translation>
 <translation id="8461694314515752532">તમારા પોતાના સિંક પાસફ્રેઝ સાથે સિંક કરેલા ડેટાને એન્ક્રિપ્ટ કરો</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ક્રેડિટ કાર્ડ}one{# ક્રેડિટ કાર્ડ}other{# ક્રેડિટ કાર્ડ}}</translation>
+<translation id="8467494337615822642">સેટિંગમાં Chromeની 'સલામતી માટે તપાસ' પેજ સક્રિય કરો</translation>
 <translation id="8468358362970107653">એન્વલપ C3</translation>
 <translation id="8473626140772740486">300 x 450 મિમી</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>

@@ -524,6 +524,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="371230970611282515">Forutser og advarer deg om farlige hendelser før de inntreffer.</translation>
 <translation id="371398631992790800">Skjul bokmerker</translation>
 <translation id="37207012422556617">Søk på vei opp</translation>
+<translation id="3725081662140949903">For å forhindre andre fra å bruke passordet ditt, åpne appen <ph name="APP" /> og endre passordet</translation>
 <translation id="3740397331642243698">Åpner de oppgitte nettadressene i Google Chrome i inkognitomodus.</translation>
 <translation id="374357899112510277">Skjul nedlastinger</translation>
 <translation id="3745190878148784130">Skjul Zoom inn på teksten</translation>
@@ -641,6 +642,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4389019817280890563">Trykk for å bytte språk.</translation>
 <translation id="4405320213589929829">Bruk adresser på nettsider for å få lokal informasjon og veibeskrivelser.</translation>
 <translation id="4420409367264901497">Rediger bokmerke</translation>
+<translation id="4431224949908513835">Velg betalingsmåten du vil fylle ut.</translation>
 <translation id="4442550905108052454">Åpne <ph name="BEGIN_BOLD" />Innstillinger<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Legg til språk</translation>
 <translation id="4461286950227634995">Tilby å lagre passord</translation>
@@ -1198,6 +1200,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7221173315674413369">Utforsk nye funksjoner og tips i Nyheter</translation>
 <translation id="7223102419539744003">Lukk fane</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>
+<translation id="7233006041370588369">Velg passordet du vil fylle ut.</translation>
 <translation id="7265758999917665941">Aldri for dette nettstedet</translation>
 <translation id="7272437679830969316">Kan ikke bekrefte identiteten din. Passordet er ikke kopiert.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{En ny pakke spores}other{Nye pakker spores}}</translation>

@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">不要詢問是否翻譯這些網站</translation>
 <translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1150263420752757504">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。</translation>
+<translation id="115483310321669804">使用密碼：<ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1174479719160874822">Chrome 會在螢幕較窄時要求使用流動網站</translation>
 <translation id="1177863135347784049">自訂</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個已選取的項目}other{移除 # 個已選取的項目}}</translation>
 <translation id="1633659023549081553">透過 Chrome 首頁探索新內容</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
-<translation id="1642309806724967937">視乎你的設定，Chrome 亦可能會傳送 Cookie 和你目前的網址</translation>
 <translation id="164269334534774161">您正在查看此網頁的離線版本 (建立時間：<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="1657932388559784161">閂咗頁面分析資料頁底面板</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">關閉視窗</translation>
 <translation id="1791662854739702043">已安裝</translation>
 <translation id="1792959175193046959">隨時變更預設的下載位置</translation>
+<translation id="1796666869097395659">將分頁縮到最小，稍後再返回查看</translation>
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1810845389119482123">未完成初始同步處理設定</translation>
 <translation id="1812027881030482584">無法在「<ph name="SITE_ETLD_PLUS_ONE" />」上繼續使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」</translation>
@@ -703,7 +704,6 @@
 <translation id="4738836084190194332">最後同步處理時間：<ph name="WHEN" /></translation>
 <translation id="4741753828624614066">您會在網址列取得更貼近需求的建議</translation>
 <translation id="4742970037960872810">移除焦點內容</translation>
-<translation id="4743664893327841597">你在網址列或搜尋框中輸入的內容，會傳送至預設的搜尋引擎</translation>
 <translation id="4749960740855309258">開啟新分頁</translation>
 <translation id="4750356170202299988">為兒童提供的內容</translation>
 <translation id="4758061975920522644">只分享圖片</translation>
@@ -737,6 +737,7 @@
 <translation id="4864369630010738180">正在登入…</translation>
 <translation id="4866368707455379617">無法為 Chrome 安裝 <ph name="MODULE" /></translation>
 <translation id="4871568871368204250">關閉同步處理功能</translation>
+<translation id="4874961007154620743">關閉後，你仍會看到 Chrome 在本機提供的建議</translation>
 <translation id="4875775213178255010">內容建議</translation>
 <translation id="4877678010818027629">進入無痕模式</translation>
 <translation id="4878404682131129617">透過 Proxy 伺服器建立通道失敗</translation>
@@ -755,7 +756,7 @@
 <translation id="4925120120285606924">螢幕截圖 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">系統會匯出您的密碼並下載為文字檔案。任何能存取目的地資料夾的使用者和應用程式都可看到您的密碼。</translation>
 <translation id="4926901776383726965">您可儲存圖片和檔案，方便離線查看或分享到其他應用程式</translation>
-<translation id="4928144016283278047">防範追蹤工具 (第三方 Cookie、IP 追蹤、侵入式指令碼等)</translation>
+<translation id="4928144016283278047">防範追蹤工具 (第三方 Cookie、IP 追蹤、攻擊性指令碼等)</translation>
 <translation id="4932247056774066048">您即將登出由 <ph name="DOMAIN_NAME" /> 管理的帳戶，因此您的 Chrome 資料亦會從此裝置上刪除，但仍會保留在您的 Google 帳戶中。</translation>
 <translation id="4943703118917034429">虛擬實境</translation>
 <translation id="4943872375798546930">搵唔到結果</translation>
@@ -1208,6 +1209,7 @@
 <translation id="727288900855680735">要將 <ph name="ONE_TIME_CODE" /> 提交至 <ph name="ORIGIN" /> 嗎？</translation>
 <translation id="7274013316676448362">已封鎖的網站</translation>
 <translation id="7276100255011548441">Chrome 會自動刪除超過 4 星期的主題。在您瀏覽同時，清單中可能會再次出現特定主題。您亦可封鎖不希望 Chrome 與網站分享的主題。進一步瞭解如何<ph name="BEGIN_LINK" />在 Chrome 中管理廣告私隱權。<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">當你輸入文字時，Chrome 會將網址列或搜尋框的內容傳送至預設搜尋引擎</translation>
 <translation id="7286703216224610554">只分享反應</translation>
 <translation id="7289303553784750393">如果已連接網絡，但此問題持續發生，你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
 <translation id="7290209999329137901">無法重新命名</translation>
@@ -1555,6 +1557,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" />套件已下載完成</translation>
 <translation id="8937772741022875483">要從「健康數碼生活」移除您的 Chrome 活動記錄嗎？</translation>
+<translation id="893938492099608175">視乎你的設定，Chrome 亦可能會傳送 Cookie、你目前的網址和位置</translation>
 <translation id="8942627711005830162">在其他視窗中開啟</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - 無法下載此語言套件，請稍後再試。</translation>
 <translation id="8955719471735800169">返回頁首</translation>

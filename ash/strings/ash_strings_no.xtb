@@ -565,6 +565,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3340978935015468852">innstillinger</translation>
 <translation id="3341303451326249809">Skjermdumpen er lagret</translation>
 <translation id="334252345105450327">Ta en skjermdump</translation>
+<translation id="3346728094401457853">Skriv inn enhetspassordet for <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Merk tekst fra markøren til slutten av linjen</translation>
 <translation id="3349345708646875009">Åpne oppgavebehandling.</translation>
 <translation id="3364721542077212959">Pekepennverktøy</translation>
@@ -1591,6 +1592,7 @@ Nylig installert</translation>
 <translation id="7489261257412536105">Start eller avslutt fullskjerm</translation>
 <translation id="7490360161041035804">Du kan feste viktige filer, inkludert Google Disk-filer. For å feste et element, hold markøren over det eller åpne Filer og høyreklikk på det.</translation>
 <translation id="7497767806359279797">Velg språk og tastatur</translation>
+<translation id="7507162824403726948">Fullfør bekreftelsen av identiteten din</translation>
 <translation id="7508690557411636492">Åpnet den siste måneden</translation>
 <translation id="7509246181739783082">Bekreft identiteten din</translation>
 <translation id="7512509370370076552">Høyreklikk-hurtigtasten er endret til <ph name="LAUNCHER_KEY_NAME" />-tasten + klikk fra Alt + klikk</translation>

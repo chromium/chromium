@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">यी साइटहरू अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>
 <translation id="1145536944570833626">विद्यमान डेटा मेट्नुहोस्।</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
+<translation id="115483310321669804">पासवर्ड <ph name="PASSWORD" /> प्रयोग गर्नुहोस्</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1174479719160874822">स्क्रिन सानो भएका खण्डमा Chrome ले मोबाइल साइट प्रयोग गर्न अनुरोध गर्ने छ</translation>
 <translation id="1177863135347784049">अनुकूल</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{चयन गरिएको १ वस्तु हटाउनुहोस्}other{चयन गरिएका # वस्तुहरू हटाउनुहोस्}}</translation>
 <translation id="1633659023549081553">Chrome को होमपेजमा नयाँ नयाँ सामग्री भेट्टाउनुहोस्</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउजिङ</translation>
-<translation id="1642309806724967937">तपाईंले तय गरेका सेटिङका आधारमा Chrome ले कुकी र हालको URL पनि पठाउन सक्छ</translation>
 <translation id="164269334534774161">तपाईं यस पृष्ठको <ph name="CREATION_TIME" /> को अफलाइन प्रतिलिपि हेर्दै हुनुहुन्छ</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1657932388559784161">पेजसम्बन्धी विश्लेषणात्मक डेटाको पुछारको पाना बन्द गरिएको छ</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">सन्झ्याल बन्द गर्नुहोस्</translation>
 <translation id="1791662854739702043">स्थापना गरियो</translation>
 <translation id="1792959175193046959">डिफल्ट डाउनलोड स्थान जुनसुकै बेला परिवर्तन गर्नुहोस्</translation>
+<translation id="1796666869097395659">पछि फेरि फर्कन ट्याब मिनिमाइज गर्नुहोस्</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1810845389119482123">सिंक गर्ने कार्यको प्रारम्भिक सेटअप पूरा भएको छैन</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मा <ph name="SITE_ETLD_PLUS_ONE" /> प्रयोग गरिराख्न मिल्दैन</translation>
@@ -702,7 +703,6 @@
 <translation id="4738836084190194332">अन्तिम पटक सिंक गरिएको: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">तपाईं एड्रेस बारमा अझ राम्रा सुझावहरू प्राप्त गर्नु हुने छ</translation>
 <translation id="4742970037960872810">हाइलाइट हटाउनुहोस्</translation>
-<translation id="4743664893327841597">तपाईंले एड्रेस बार वा खोज बाकसमा टाइप गरेका कुराहरू तपाईंको डिफल्ट सर्च इन्जिनमा पठाइन्छन्</translation>
 <translation id="4749960740855309258">एउटा नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="4750356170202299988">साना बालबालिकाका लागि तयार पारिएको सामग्री</translation>
 <translation id="4758061975920522644">फोटो मात्र सेयर गरियोस्</translation>
@@ -736,6 +736,7 @@
 <translation id="4864369630010738180">साइन इन गरिँदै...</translation>
 <translation id="4866368707455379617">Chrome को <ph name="MODULE" /> स्थापना गर्न सकिएन</translation>
 <translation id="4871568871368204250">सिंक गर्ने सुविधा निष्क्रिय पार्नुहोस्</translation>
+<translation id="4874961007154620743">यो सुविधा अफ गरिएका बेलामा पनि तपाईं Chrome ले स्थानीय रूपमा उपलब्ध गराउने सुझावहरू भने देखिरहनु हुने छ</translation>
 <translation id="4875775213178255010">सामग्रीसम्बन्धी सुझावहरू</translation>
 <translation id="4877678010818027629">इन्कोग्निटो मोडमा जानुहोस्</translation>
 <translation id="4878404682131129617">प्रोक्सी सर्भरमार्फत कुनै टनेल स्थापना गर्न सकिएन</translation>
@@ -754,6 +755,7 @@
 <translation id="4925120120285606924">स्क्रिनसट <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">तपाईंका पासवर्डहरू एक्स्पोर्ट गरी एउटा पाठ फाइलका रूपमा डाउनलोड गरिने छ। गन्तव्य फोल्डर हेर्ने अनुमति भएका जोसुकै व्यक्ति वा जुनसुकै एप यी पासवर्डहरू हेर्न सक्ने छन्।</translation>
 <translation id="4926901776383726965">तपाईं इन्टरनेटविनै हेर्न वा अन्य एपमार्फत सेयर गर्नका निम्ति फोटो तथा फाइलहरू सेभ गर्न सक्नुहुन्छ</translation>
+<translation id="4928144016283278047">ट्र्याकरहरूबाट सुरक्षा (तेस्रो पक्षीय कुकी, IP ट्र्याकिङ, हानिकारक स्क्रिप्ट र अन्य ट्र्याकरहरू)</translation>
 <translation id="4932247056774066048">तपाईं <ph name="DOMAIN_NAME" /> ले व्यवस्थापन गरेको खाताबाट साइन आउट गरिरहनुभएको हुनाले तपाईंको Chrome को डेटा यस डिभाइसबाट मेटाइने छ। यो डेटा तपाईंको Google खातामै रहिरहने छ।</translation>
 <translation id="4943703118917034429">भर्चुअल रियालिटी</translation>
 <translation id="4943872375798546930">कुनै नतिजा छैन</translation>
@@ -1206,6 +1208,7 @@
 <translation id="727288900855680735"><ph name="ORIGIN" /> मा <ph name="ONE_TIME_CODE" /> पेस गर्ने हो?</translation>
 <translation id="7274013316676448362">रोक लगाइएका साइटहरू</translation>
 <translation id="7276100255011548441">Chrome ले ४ हप्ताभन्दा पुराना विषयहरू स्वतः मेटाउँछ। तपाईंले विभिन्न साइटहरू ब्राउज गरिराख्ने क्रममा कुनै विषय यो सूचीमा फेरि देखिन सक्छ। अथवा तपाईं Chrome ले कुनै विषय साइटहरूसँग सेयर नगरोस् भन्ने चाहनुहुन्छ भने तपाईं उक्त विषय ब्लक गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />Chrome मा विज्ञापनको गोपनीयता व्यवस्थापन गर्ने<ph name="END_LINK" /> सम्बन्धमा थप जान्नुहोस्।</translation>
+<translation id="7284878711178835966">Chrome ले तपाईंले टाइप गरिरहेका बेला एड्रेस बार वा खोज बाकसमा भएको सामग्री तपाईंको डिफल्ट सर्च इन्जिनमा पठाउँछ</translation>
 <translation id="7286703216224610554">प्रतिक्रिया मात्र सेयर गरियोस्</translation>
 <translation id="7289303553784750393">तपाईं अनलाइन भए तापनि यो समस्या अझै पनि देखिएको खण्डमा तपाईं <ph name="SITE_ETLD_PLUS_ONE" /> मा जाने अन्य तरिका अपनाई हेर्न सक्नुहुन्छ।</translation>
 <translation id="7290209999329137901">नाम बदल्ने सुविधा उपलब्ध छैन</translation>
@@ -1553,6 +1556,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> डाउनलोड गरिएको छ</translation>
 <translation id="8937772741022875483">तपाईंले Chrome मा गर्नुभएका क्रियाकलाप डिजिटल वेलबिइङबाट हटाउने हो?</translation>
+<translation id="893938492099608175">तपाईंले तय गरेका सेटिङका आधारमा Chrome ले कुकी, तपाईंको हालको URL र तपाईंको लोकेसन पनि पठाउन सक्छ</translation>
 <translation id="8942627711005830162">अर्को विन्डोमा खोल्नुहोस्</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - यो भाषा डाउनलोड गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8955719471735800169">सबैभन्दा माथि फर्कनुहोस्</translation>

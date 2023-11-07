@@ -524,6 +524,7 @@
 <translation id="371230970611282515">જોખમકારક ઇવેન્ટ થાય તે પહેલાં તેનું અનુમાન લગાવીને તેના વિશે તમને ચેતવણી આપે છે.</translation>
 <translation id="371398631992790800">બુકમાર્ક છુપાવો</translation>
 <translation id="37207012422556617">વલણમાં છે એવી શોધો</translation>
+<translation id="3725081662140949903">અન્ય લોકોને તમારા પાસવર્ડનો ઉપયોગ કરતા રોકવા માટે, તમારો પાસવર્ડ બદલવા માટે <ph name="APP" /> ઍપ ખોલો</translation>
 <translation id="3740397331642243698">ઇનપુટ કરેલા URLsને Google Chrome છૂપા મોડમાં ખોલે છે.</translation>
 <translation id="374357899112510277">ડાઉનલોડ છુપાવો</translation>
 <translation id="3745190878148784130">'ટેક્સ્ટ નાની-મોટી કરો' છુપાવો</translation>
@@ -641,6 +642,7 @@
 <translation id="4389019817280890563">ભાષા બદલવા માટે ટૅપ કરો.</translation>
 <translation id="4405320213589929829">સ્થાનિક માહિતી અને દિશાનિર્દેશો મેળવવા માટે, વેબપેજ પરના ઍડ્રેસનો ઉપયોગ કરો.</translation>
 <translation id="4420409367264901497">બુકમાર્કમાં ફેરફાર કરો</translation>
+<translation id="4431224949908513835">ભરવા માટે ચુકવણી પદ્ધતિ પસંદ કરો.</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />સેટિંગ <ph name="END_BOLD" />ખોલો</translation>
 <translation id="4454246407045105932">ભાષા ઉમેરો</translation>
 <translation id="4461286950227634995">પાસવર્ડ સાચવવાની સુવિધા ઑફર કરો</translation>
@@ -1198,6 +1200,7 @@
 <translation id="7221173315674413369">"નવું શું છે" સુવિધામાં નવી સુવિધાઓ અને ટિપ વિશે જાણો</translation>
 <translation id="7223102419539744003">ટૅબ બંધ કરો</translation>
 <translation id="722454870747268814">નવું છૂપું ટૅબ</translation>
+<translation id="7233006041370588369">ભરવા માટે પાસવર્ડ પસંદ કરો.</translation>
 <translation id="7265758999917665941">આ સાઇટ માટે ક્યારેય નહીં</translation>
 <translation id="7272437679830969316">તમારી ઓળખની ચકાસણી કરી શકાતી નથી. પાસવર્ડ કૉપિ કરેલો નથી.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{નવા પૅકેજને ટ્રૅક કરવામાં આવ્યું}one{નવા પૅકેજને ટ્રૅક કરવામાં આવ્યું}other{નવા પૅકેજને ટ્રૅક કરવામાં આવ્યાં}}</translation>

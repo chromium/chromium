@@ -27,6 +27,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau.}=1{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. Votre fenêtre de navigation privée ne s'ouvrira pas à nouveau.}one{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. # fenêtre de navigation privée ne sera pas rouverte.}other{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="1434626383986940139">Applications Google Chrome Canary</translation>
 <translation id="1492280395845991349">Relancer pour terminer la mise à jour de Chrome</translation>
+<translation id="1497802159252041924">Erreur d'installation : <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personnaliser votre nouveau profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome nécessite l'accès au Bluetooth pour continuer l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels libres<ph name="END_LINK_CROS_OSS" />.</translation>
@@ -90,6 +91,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2467438592969358367">Google Chrome veut exporter vos mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="2472092250898121027">Cette extension contient des logiciels malveillants et est dangereuse. Retirez-la de Chrome afin qu'elle ne puisse plus voir ni modifier vos données sur les sites que vous visitez, y compris vos renseignements personnels.</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
+<translation id="2534365042754120737">Pour protéger vos données, laissez Chrome retirer les autorisations des sites que vous n'avez pas visités récemment. Cela n'arrêtera pas les notifications.</translation>
 <translation id="2534507159460261402">Google Pay (copiée dans Chrome)</translation>
 <translation id="2556847002339236023">Votre organisation ferme Chrome lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />. Les données de navigation ont été supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.</translation>
 <translation id="2559253115192232574">Ultérieurement, un site que vous visitez peut demander à Chrome de voir vos centres d'intérêt afin de personnaliser les annonces que vous voyez. Chrome peut partager jusqu'à trois centres d'intérêt.</translation>
@@ -262,15 +264,18 @@ Certaines fonctionnalités peuvent être inaccessibles. Veuillez spécifier un r
 <translation id="5334487786912937552">Chrome requiert l'autorisation d'accéder à l'espace de stockage pour télécharger des fichiers</translation>
 <translation id="5337648990166757586">Facultatif : aidez-nous à améliorer les fonctionnalités ainsi que la performance de Chrome OS en envoyant automatiquement des données d'utilisation et de diagnostic à Google.</translation>
 <translation id="5357889879764279201">Obtenir de l'aide avec Chrome OS Flex</translation>
+<translation id="5386118856456530849">Accéder aux paramètres de la version de Chrome</translation>
 <translation id="5386244825306882791">Elle règle également la page qui s'affiche lorsque vous démarrez Chrome ou faites une recherche dans l'omnibox.</translation>
 <translation id="5394833366792865639">Partager un onglet de Chrome</translation>
 <translation id="5412485296464121825">Les sites peuvent stocker des renseignements sur vos centres d'intérêt dans Chrome. Par exemple, si vous visitez un site pour acheter des chaussures pour un marathon, le site pourrait définir votre centre d'intérêt comme la course de marathons. Ultérieurement, si vous visitez un autre site pour vous inscrire à une course, celui-ci peut vous montrer une annonce pour des chaussures de course en fonction de vos centres d'intérêt.</translation>
 <translation id="5430073640787465221">Votre fichier des préférences est endommagé ou n'est pas valide. 
 
 Google Chrome ne peut pas récupérer vos paramètres.</translation>
+<translation id="5468572406162360320">Pour contribuer à améliorer ces fonctionnalités, Chrome envoie vos interactions avec celles-ci à Google. Ces données peuvent être lues, traitées et annotées par des réviseurs humains.</translation>
 <translation id="5524761631371622910">Pendant les essais, si Chrome vous ajoute au hasard dans un essai en cours, votre historique de navigation a une incidence sur les annonces que vous voyez ainsi que sur les centres d'intérêt tels qu'ils sont estimés ci-dessous. Afin de protéger votre confidentialité, Chrome supprime vos centres d'intérêt de façon continue chaque mois.</translation>
 <translation id="5530733413481476019">Rendre Chrome plus rapide</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5572786658631721382">Si l'option est désactivée, vous verrez toujours les suggestions fournies par Chrome localement</translation>
 <translation id="565744775970812598">Chrome a bloqué le fichier <ph name="FILE_NAME" />, car il peut être dangereux.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour}=1{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}one{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}other{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="5686916850681061684">Personnaliser et gérer Google Chrome. Votre attention est requise – cliquez pour plus de détails.</translation>
@@ -364,6 +369,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7177959540995930968">Vous pouvez en apprendre plus sur ces fonctionnalités dans les paramètres de Chrome.</translation>
 <translation id="7193885263065350793">Votre organisation ferme Chrome lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Vous vous connectez avec un compte géré et rendez son administrateur maître de votre profil Google Chrome. Vos données de Google Chrome, comme vos applications, vos favoris, votre historique, vos mots de passe et vos autres paramètres, vont être associées de manière permanente à <ph name="USER_NAME" />. Vous pourrez supprimer ces données à l'aide du tableau de bord des comptes Google, mais vous ne pourrez pas les associer à un autre compte. Vous avez la possibilité de créer un nouveau profil pour maintenir vos données Chrome actuelles séparées. <ph name="LEARN_MORE" /></translation>
+<translation id="7284878711178835966">Au fur et à mesure que vous tapez, Chrome envoie le contenu de la barre d'adresse ou du champ de recherche à votre moteur de recherche par défaut</translation>
 <translation id="7295052994004373688">Cette langue est utilisée pour afficher l'IU de Google Chrome</translation>
 <translation id="7296210096911315575">Renseignements importants sur l'utilisation et la sécurité</translation>
 <translation id="7308322188646931570">Chrome a besoin d'accéder au stockage pour télécharger des fichiers</translation>

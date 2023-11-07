@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Permitidas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}one{Permitidas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}other{Permitidas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">O site que você acessou pode incorporar conteúdo de outros, como imagens, anúncios e texto. Os cookies definidos por esses outros sites são chamados de cookies de terceiros.</translation>
 <translation id="2434158240863470628">Download concluído <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Você permitiu temporariamente que este site use cookies de terceiros, o que diminui a proteção da navegação, mas dá aos recursos do site mais chances de funcionar conforme o esperado. <ph name="BEGIN_LINK" />Enviar feedback<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Os recursos de alguns sites podem não funcionar no modo de navegação anônima</translation>
 <translation id="2442870161001914531">Sempre ver a versão para computador</translation>
 <translation id="2469312991797799607">Essa ação vai excluir todos os dados e cookies de <ph name="ORIGIN" /> e de todos os sites relacionados</translation>
@@ -208,6 +209,7 @@
 <translation id="4644713492825682049">Excluir e redefinir</translation>
 <translation id="4645575059429386691">Gerenciado pelos seus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
+<translation id="4673958474310291465">Permita o uso de cookies de terceiros temporariamente, o que diminui a proteção da navegação, mas dá aos recursos do site mais chances de funcionar conforme o esperado</translation>
 <translation id="4751476147751820511">Sensores de luz ou movimento</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Saiba mais sobre a fonte e o tema</translation>

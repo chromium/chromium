@@ -349,6 +349,7 @@
 <translation id="1640244768702815859">Δοκιμάστε να <ph name="BEGIN_LINK" />επισκεφτείτε την αρχική σελίδα του ιστότοπου<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Καθυστέρηση εξόδου έως</translation>
 <translation id="164212631332220697">Πληρωμή με την κάρτα <ph name="CARD_DETAIL" /> κατά την ολοκλήρωση της αγοράς.</translation>
+<translation id="1643651787397909318">Κουμπί Μετάβαση στον έλεγχο ασφαλείας Chrome, ενεργοποιήστε το για να επισκεφτείτε τη σελίδα ελέγχου ασφαλείας του Chrome στις ρυθμίσεις</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
 <translation id="1645368109819982629">Μη υποστηριζόμενο πρωτόκολλο</translation>
 <translation id="1650602712345345441">Διαχείριση των ρυθμίσεων του Chrome</translation>
@@ -2050,6 +2051,8 @@
 <translation id="5137761395480718572">Αυτή η εφαρμογή ζητά άδεια για εγκατάσταση διαπιστευτηρίων Wi-Fi. Μετά τη ρύθμιση, η συσκευή <ph name="DEVICE_TYPE" /> θα συνδεθεί αυτόματα στα δίκτυα Wi-Fi που συμμετέχουν. Για να καταργήσετε αυτά τα διαπιστευτήρια, απεγκαταστήστε την εφαρμογή. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Η εικονική κάρτα δεν είναι διαθέσιμη αυτήν τη στιγμή. Επικοινωνήστε με την τράπεζά σας.</translation>
 <translation id="5138227688689900538">Εμφάνιση λιγότερων</translation>
+<translation id="5143309888746105072">Το Chromium δεν επιτρέπει στους ιστοτόπους να χρησιμοποιούν cookie τρίτου μέρους που σας παρακολουθούν καθώς περιηγείστε.
+            <ph name="NEW_LINE" />Εάν οι λειτουργίες ιστοτόπου δεν λειτουργούν, <ph name="START_LINK" />δοκιμάστε να επιτρέψετε προσωρινά τα cookie τρίτου μέρους<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">Βρέθηκε κωδικός σφάλματος στην απόκριση πολιτικής</translation>
 <translation id="5146995429444047494">Οι ειδοποιήσεις για την προέλευση <ph name="ORIGIN" /> έχουν αποκλειστεί</translation>
 <translation id="514704532284964975">Η διεύθυνση <ph name="URL" /> θέλει να βλέπει και να αλλάζει πληροφορίες για συσκευές NFC που πατάτε με το τηλέφωνό σας</translation>
@@ -2396,6 +2399,7 @@
 <translation id="5873297634595728366">Ντιζελοκίνητα οχήματα</translation>
 <translation id="5877831137320480913">Ομορφιά και φυσική κατάσταση</translation>
 <translation id="5879989559903563723">Δεν επιτρέπεται σε λειτουργία επισκέπτη</translation>
+<translation id="5880050725127890683">Μετάβαση στον έλεγχο ασφαλείας του Chrome</translation>
 <translation id="5883861433316751031">Έλεγχος και επαναπρογραμματισμός συσκευών MIDI;</translation>
 <translation id="5884465125445718607">Κινεζικός φάκελος #6</translation>
 <translation id="5887400589839399685">Η κάρτα αποθηκεύτηκε</translation>
@@ -2577,6 +2581,7 @@
 <translation id="6251906504834538140">{0,plural, =1{Η μετακίνηση του αρχείου αποκλείστηκε}other{Αποκλείστηκε η μετακίνηση <ph name="FILE_COUNT" /> αρχείων}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε αρχεία που έχετε κατεβάσει στο Chrome.</translation>
 <translation id="6254436959401408446">Δεν υπάρχει αρκετή μνήμη για το άνοιγμα αυτής της σελίδας</translation>
+<translation id="625463612687472648">Να μην επιτρέπεται πλέον</translation>
 <translation id="6259156558325130047">&amp;Επανάληψη αναδιάταξης</translation>
 <translation id="6263376278284652872">Σελιδοδείκτες <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Να γίνει η λήψη ούτως ή άλλως</translation>
@@ -2752,6 +2757,8 @@
 <translation id="6596325263575161958">Επιλογές κρυπτογράφησης</translation>
 <translation id="6597665340361269064">90 μοίρες</translation>
 <translation id="6599642189720630047">Προϊόντα υπό παρακολούθηση</translation>
+<translation id="6606309334576464871">Το Chrome δεν επιτρέπει στους ιστοτόπους να χρησιμοποιούν cookie τρίτου μέρους που σας παρακολουθούν καθώς περιηγείστε.
+            <ph name="NEW_LINE" />Εάν οι λειτουργίες ιστοτόπου δεν λειτουργούν, <ph name="START_LINK" />δοκιμάστε να επιτρέψετε προσωρινά τα cookie τρίτου μέρους<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">Οικονομικές ειδήσεις</translation>
 <translation id="6612010098632894193">Βίντεο στο διαδίκτυο</translation>
 <translation id="6613866251791999074">Μάθετε περισσότερα σχετικά με τη μηχανή αναζήτησης στο Chrome</translation>
@@ -3426,6 +3433,7 @@
 <translation id="7888575728750733395">Εκτύπωση intent απόδοσης</translation>
 <translation id="7894280532028510793">Εάν δεν υπάρχει ορθογραφικό λάθος, <ph name="BEGIN_LINK" />δοκιμάστε να εκτελέσετε έναν έλεγχο Διαγνωστικών δικτύου<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Φάκελος 7 x 9 ίντσες</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και μετά το Enter για να μεταβείτε στη σελίδα του ελέγχου ασφαλείας του Chrome στις ρυθμίσεις</translation>
 <translation id="7916162853251942238">Βάση Flexo</translation>
 <translation id="7927971017714848357">Οικόπεδα και γη</translation>
 <translation id="793209273132572360">Ενημέρωση διεύθυνσης;</translation>
@@ -3721,6 +3729,7 @@
 <translation id="8460854335417802511">Ενεργοποίηση</translation>
 <translation id="8461694314515752532">Κρυπτογράφηση συγχρονισμένων δεδομένων με τη δική σας φράση πρόσβασης συγχρονισμού</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 πιστωτική κάρτα}other{# πιστωτικές κάρτες}}</translation>
+<translation id="8467494337615822642">Μετάβαση στη σελίδα ελέγχου ασφαλείας του Chrome στις ρυθμίσεις</translation>
 <translation id="8468358362970107653">Φάκελος C3</translation>
 <translation id="8473626140772740486">300 x 450 χιλ.</translation>
 <translation id="8473863474539038330">Διευθύνσεις και άλλα</translation>

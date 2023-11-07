@@ -48,6 +48,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="1219674500290482172">Ekki er hægt að tengjast internetinu.</translation>
 <translation id="1226238226094914652">Aðgangsorð í öllum tækjum</translation>
 <translation id="122699739164161391">Loka öllum flipum</translation>
+<translation id="1227866575467023566">{count,plural, =1{Síðu bætt við leslistann á reikningnum þínum, {email}}one{{count} síðu bætt við leslistann á reikningnum þínum, {email}}other{{count} síðum bætt við leslistann á reikningnum þínum, {email}}}</translation>
 <translation id="1229222343402087523">Leita að ${searchPhrase} í Chrome</translation>
 <translation id="1242044645101871359">Skrá inn aftur</translation>
 <translation id="1248276223555153952">Stjórna reikningum í þessu tæki...</translation>
@@ -123,6 +124,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="1580715474678097352">Verðu þig fyrir hættulegum vefsvæðum</translation>
 <translation id="1580783302095112590">Póstur sendur.</translation>
 <translation id="1582732959743469162">Allt niðurhal sem er í gangi verður stöðvað.</translation>
+<translation id="158591023028013564">{count,plural, =1{Síðu bætt við leslistann þinn}one{{count} síðu bætt við leslistann þinn}other{{count} síðum bætt við leslistann þinn}}</translation>
 <translation id="1594034544529347967">Hefst</translation>
 <translation id="160275202205869636">Ef kveikt er á þessu verða gögn notuð og vistuð á Google-reikningnum þínum. Ef slökkt er á þessu verða gögn eingöngu vistuð í þessu tæki.</translation>
 <translation id="1605405588277479165">Slökkt – Ekki mælt með</translation>
@@ -422,6 +424,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3157387275655328056">Bæta við leslista</translation>
 <translation id="3157684681743766797">Merkja allt…</translation>
 <translation id="315778507796115851">Ferill</translation>
+<translation id="31652791196570636">Hunsa</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Þú getur einnig notað vistuð aðgangsorð í öðrum tækjum.</translation>
 <translation id="3175081911749765310">Vefþjónusta</translation>
@@ -521,6 +524,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="371230970611282515">Spáir fyrir um og varar þig við hættulegum viðburðum áður en þeir gerast.</translation>
 <translation id="371398631992790800">Fela bókamerki</translation>
 <translation id="37207012422556617">Vinsælar leitir</translation>
+<translation id="3725081662140949903">Til að koma í veg fyrir að aðrir noti aðgangsorðið þitt skaltu opna <ph name="APP" />-forritið til að breyta aðgangsorðinu</translation>
 <translation id="3740397331642243698">Opnar innslegnar vefslóðir í Google Chrome í huliðsstillingu.</translation>
 <translation id="374357899112510277">Fela niðurhal</translation>
 <translation id="3745190878148784130">Fela „Stækka/minnka texta“</translation>
@@ -585,6 +589,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4112644173421521737">Leita</translation>
 <translation id="4113030288477039509">Stjórnað af kerfisstjóra</translation>
 <translation id="4113957097611235433">Skiptu um aðgangsorð</translation>
+<translation id="4120936477286528673">Þetta vefsvæði reynir ítrekað að opna annað forrit.</translation>
 <translation id="4121993058175073134">Stilltu tölvupóstreikning í forritinu Stillingar til að senda netútflutningsgögn.</translation>
 <translation id="4124987746317609294">Tímabil</translation>
 <translation id="4133265950310064865">Aukin vörn</translation>
@@ -637,6 +642,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4389019817280890563">Ýttu til að skipta um tungumál.</translation>
 <translation id="4405320213589929829">Notaðu heimilisföng á vefsíðum til að fá staðbundnar upplýsingar og leiðarlýsingar.</translation>
 <translation id="4420409367264901497">Breyta bókamerki</translation>
+<translation id="4431224949908513835">Veldu greiðslumáta til að fylla inn.</translation>
 <translation id="4442550905108052454">Opnaðu <ph name="BEGIN_BOLD" />stillingar<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Bæta við tungumáli</translation>
 <translation id="4461286950227634995">Bjóðast til að vista aðgangsorð</translation>
@@ -779,6 +785,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} lélegt aðgangsorð}one{{COUNT} lélegt aðgangsorð}other{{COUNT} léleg aðgangsorð}}</translation>
 <translation id="5149188072385105201">Bæta aðgangsorði við...</translation>
 <translation id="5150492518600715772">Senda í tækið þitt</translation>
+<translation id="5157638238828697074">Eitthvað fór úrskeiðis. Ekki tókst að opna forritið.</translation>
 <translation id="5168414296986405587">Hannað fyrir iPadOS</translation>
 <translation id="5173088371991956744">Samstilling verður að staðfesta að þetta sért þú</translation>
 <translation id="5173493422621051500">Nota lyklaborð</translation>
@@ -805,6 +812,8 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5235389474593199952">Fela „Ferill“</translation>
 <translation id="5238301240406177137">Vista á reikningi</translation>
 <translation id="5245322853195994030">Hætta við samstillingu</translation>
+<translation id="5248640482715684545">Þetta vefsvæði er að reyna að opna annað forrit.</translation>
+<translation id="5256661381001734217">Þetta vefsvæði er að reyna að opna forrit.  Þetta lokar huliðsstillingu hjá þér.</translation>
 <translation id="5256908199795498284">Chrome mun greina pakkarakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Gögnunum verður deilt með Google til að veita þennan eiginleika og til að bæta Shopping hjá öllum.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Áskilinn reitur er auður. Fylltu út í hann áður en þú vistar.}one{Einhverjir áskildir reitir eru auðir. Fylltu út í þá áður en þú vistar.}other{Einhverjir áskildir reitir eru auðir. Fylltu út í þá áður en þú vistar.}}</translation>
 <translation id="5271549068863921519">Vista aðgangsorð</translation>
@@ -904,6 +913,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5834415013958049700">Linsumynd sem þú afritaðir</translation>
 <translation id="5844284118433003733">Þegar þú ert innskráð(ur) eru þessi gögn tengd við Google-reikninginn þinn til að vernda þig í Google-þjónustum, t.d. með því að auka vernd í Gmail eftir öryggistilvik.</translation>
 <translation id="5846482154967366008">Leitarvél</translation>
+<translation id="5850913622988109693">Valkostir til að rekja pakka</translation>
 <translation id="5854790677617711513">Eldra en 30 dagar</translation>
 <translation id="5857090052475505287">Ný mappa</translation>
 <translation id="5857770089550859117">Aðgangsorð er nauðsynlegt til að hefja samstillingu.</translation>
@@ -1190,6 +1200,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7221173315674413369">Kannaðu nýja eiginleika og ábendingar í „Nýjungar“</translation>
 <translation id="7223102419539744003">Loka flipa</translation>
 <translation id="722454870747268814">Nýr huliðsflipi</translation>
+<translation id="7233006041370588369">Veldu aðgangsorð til að fylla inn.</translation>
 <translation id="7265758999917665941">Aldrei fyrir þetta vefsvæði</translation>
 <translation id="7272437679830969316">Ekki tókst að staðfesta hver þú ert. Aðgangsorð var ekki afritað.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nýr pakki rakinn}one{Nýir pakkar raktir}other{Nýir pakkar raktir}}</translation>

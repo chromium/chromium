@@ -126,7 +126,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjern 1 valgt element}other{Fjern # valgte elementer}}</translation>
 <translation id="1633659023549081553">Oppdag nytt innhold på startsiden for Chrome</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">Avhengig av innstillingene dine kan det også hende at Chrome sender informasjonskapsler og den nåværende nettadressen din</translation>
 <translation id="164269334534774161">Du ser en lokal kopi av denne siden fra <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Logg</translation>
 <translation id="1657932388559784161">Sidestatistikkfeltet nederst er lukket</translation>
@@ -705,7 +704,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4738836084190194332">Sist synkronisert: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Du får bedre forslag i adressefeltet</translation>
 <translation id="4742970037960872810">Fjern markering</translation>
-<translation id="4743664893327841597">Det du skriver i adressefeltet eller søkefeltet, sendes til standardsøkemotoren</translation>
 <translation id="4749960740855309258">Åpne en ny fane</translation>
 <translation id="4750356170202299988">Innhold for unge hoder</translation>
 <translation id="4758061975920522644">Del kun bilde</translation>
@@ -739,6 +737,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4864369630010738180">Logger på ...</translation>
 <translation id="4866368707455379617">Kan ikke installere <ph name="MODULE" /> for Chrome</translation>
 <translation id="4871568871368204250">Slå av synkronisering</translation>
+<translation id="4874961007154620743">Når denne innstillingen er av, ser du fremdeles lokale forslag fra Chrome</translation>
 <translation id="4875775213178255010">Innholdsforslag</translation>
 <translation id="4877678010818027629">Slå på Inkognitomodus</translation>
 <translation id="4878404682131129617">Kunne ikke opprette tunnel via proxy-tjener.</translation>
@@ -757,6 +756,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4925120120285606924">Skjermdump <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Passordene dine blir eksportert og lastet ned som en tekstfil. De blir synlige for alle personer og apper som har tilgang til målmappen.</translation>
 <translation id="4926901776383726965">Du kan lagre bilder og filer for å se dem uten nett eller dele dem i andre apper</translation>
+<translation id="4928144016283278047">Beskyttelse mot sporing (informasjonskapsler fra tredjeparter, IP-sporing, inngripende skript med mer)</translation>
 <translation id="4932247056774066048">Fordi du logger av en konto som administreres av <ph name="DOMAIN_NAME" />, slettes Chrome-dataene dine fra denne enheten. De blir værende i Google-kontoen din.</translation>
 <translation id="4943703118917034429">Virtuell virkelighet</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
@@ -1209,6 +1209,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="727288900855680735">Vil du sende inn <ph name="ONE_TIME_CODE" /> til <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blokkert nettsted</translation>
 <translation id="7276100255011548441">Chrome sletter automatisk emner som er eldre enn fire uker. Når du fortsetter å bla gjennom, kan det hende at emner dukker opp på listen igjen. Alternativt kan du blokkere emner som du ikke vil at Chrome skal dele med nettsteder. Finn ut hvordan du <ph name="BEGIN_LINK" />administrerer annonsepersonvernet ditt i Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">Når du skriver, sender Chrome innholdet i adressefeltet eller søkefeltet til standardsøkemotoren din</translation>
 <translation id="7286703216224610554">Del kun reaksjon</translation>
 <translation id="7289303553784750393">Hvis du er på nett, men problemet vedvarer, kan du prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
 <translation id="7290209999329137901">Du kan ikke endre navn</translation>
@@ -1556,6 +1557,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> er klart</translation>
 <translation id="8937772741022875483">Vil du fjerne Chrome-aktiviteten din fra Digital balanse?</translation>
+<translation id="893938492099608175">Avhengig av innstillingene dine kan det også hende at Chrome sender informasjonskapsler, den nåværende nettadressen din og posisjonen din</translation>
 <translation id="8942627711005830162">Åpne i et annet vindu</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Kunne ikke laste ned dette språket. Prøv på nytt senere.</translation>
 <translation id="8955719471735800169">Tilbake til toppen</translation>

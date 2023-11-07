@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Вклучено</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Користете ги копчињата со стрелки за движење помеѓу датумите.</translation>
+<translation id="141170878022560212">Средно копче</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, инсталирана апликација</translation>
 <translation id="1414919006379339073">Затворете го тековниот прозорец</translation>
 <translation id="1415846719612499304">Прикажете го списокот со мрежи. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">Отвори го избирачот на емоџија</translation>
 <translation id="2088116547584365419">игри</translation>
 <translation id="209965399369889474">Не е поврзан на мрежа</translation>
+<translation id="2107581415810719320">Друго копче <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Вашиот USB-C не поддржува Thunderbolt. Изведбата на уредот може да биде ограничена.</translation>
 <translation id="2108303511227308752">Кратенката од тастатура Alt + Backspace се промени. За да го користите копчето Delete, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Нов работен простор</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">поставки</translation>
 <translation id="3341303451326249809">Направена е слика од екранот</translation>
 <translation id="334252345105450327">Направи слика од екранот</translation>
+<translation id="3346728094401457853">Внесете ја лозинката за уредот за <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Го избира текстот од курсорот до крајот на линијата</translation>
 <translation id="3349345708646875009">Отворете „Управник со задачи“</translation>
 <translation id="3364721542077212959">Алатки за пенкало</translation>
@@ -1590,6 +1593,7 @@
 <translation id="7489261257412536105">Влезете во или излезете од цел екран</translation>
 <translation id="7490360161041035804">Може да закачувате важни датотеки, вклучително и датотеки на Google Drive. За да закачите, наместете го курсорот врз ставка или отворете ја Files и кликнете со десното копче на ставка.</translation>
 <translation id="7497767806359279797">Изберете јазик и тастатура</translation>
+<translation id="7507162824403726948">Довршете го потврдувањето на вашиот идентитет</translation>
 <translation id="7508690557411636492">Отворено во изминатиот месец</translation>
 <translation id="7509246181739783082">Потврдете го вашиот идентитет</translation>
 <translation id="7512509370370076552">Кратенката со кликнување со десно копче е променето во копчето <ph name="LAUNCHER_KEY_NAME" /> + клик од Alt + клик</translation>

@@ -27,6 +27,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다.}=1{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. 시크릿 창은 다시 열리지 않습니다.}other{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. 시크릿 창 #개는 다시 열리지 않습니다.}}</translation>
 <translation id="1434626383986940139">Chrome Canary 앱</translation>
 <translation id="1492280395845991349">다시 실행하여 Chrome 업데이트 완료</translation>
+<translation id="1497802159252041924">설치 오류: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">새로운 Chrome 프로필 맞춤설정</translation>
 <translation id="1516530951338665275">페어링을 계속하려면 Chrome에서 블루투스 액세스 권한이
 필요합니다. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -91,6 +92,7 @@
 <translation id="2467438592969358367">Chrome에서 비밀번호를 내보내려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="2472092250898121027">이 확장 프로그램에는 멀웨어가 포함되어 있으며, 안전하지 않습니다. 더 이상 개인 정보를 비롯한 방문 사이트의 데이터를 확인하고 변경할 수 없도록 Chrome에서 이 확장 프로그램을 삭제하세요.</translation>
 <translation id="2485422356828889247">제거</translation>
+<translation id="2534365042754120737">데이터를 보호하려면 최근에 방문하지 않은 사이트의 권한을 Chrome에서 삭제하도록 허용하세요. 알림은 중지되지 않습니다.</translation>
 <translation id="2534507159460261402">Google Pay(Chrome에 복사됨)</translation>
 <translation id="2556847002339236023"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chrome을 종료합니다. 인터넷 사용 기록이 삭제되었습니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.</translation>
 <translation id="2559253115192232574">이후 방문한 사이트에서 광고 개인 최적화를 위해 내 관심분야를 알려달라고 Chrome에 요청할 수 있습니다. Chrome은 최대 3개의 관심분야를 공유할 수 있습니다.</translation>
@@ -263,15 +265,18 @@
 <translation id="5334487786912937552">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 필요합니다.</translation>
 <translation id="5337648990166757586">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 ChromeOS의 기능 및 성능 개선에 참여합니다.</translation>
 <translation id="5357889879764279201">ChromeOS Flex 도움말 확인</translation>
+<translation id="5386118856456530849">Chrome 버전 설정으로 이동</translation>
 <translation id="5386244825306882791">또한 Chrome을 시작하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="5394833366792865639">Chrome 탭 공유</translation>
 <translation id="5412485296464121825">사이트에서는 Chrome에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
 <translation id="5430073640787465221">환경설정 파일이 손상되었거나 잘못되었습니다.
 
 Chrome에서 설정을 복구할 수 없습니다.</translation>
+<translation id="5468572406162360320">이러한 기능을 개선할 수 있도록 Chrome은 사용자와의 상호작용을 Google에 전송합니다. 검토자가 이 데이터를 읽고 처리하고 이 데이터에 주석을 달 수 있습니다.</translation>
 <translation id="5524761631371622910">무료 체험이 사용 설정되어 있으며 Chrome에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다.</translation>
 <translation id="5530733413481476019">Chrome의 속도를 높여보세요</translation>
 <translation id="5566025111015594046">Chrome(mDNS-In)</translation>
+<translation id="5572786658631721382">사용 중지해도 Chrome에서 로컬로 제공하는 추천이 계속 표시됩니다.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 Chrome에서 차단했습니다.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="5686916850681061684">Chrome을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
@@ -365,6 +370,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7177959540995930968">Chrome 설정에서 이러한 기능에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chrome을 종료합니다.</translation>
 <translation id="7242029209006116544">관리 계정으로 로그인하고 관리자에게 Chrome 프로필에 대한 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정과 같은 Chrome 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. 기존 Chrome 데이터를 유지하려면 새 프로필을 만드는 방법이 있습니다. <ph name="LEARN_MORE" /></translation>
+<translation id="7284878711178835966">사용자가 입력하면 Chrome은 주소 표시줄 또는 검색창의 내용을 사용자의 기본 검색엔진으로 전송합니다.</translation>
 <translation id="7295052994004373688">Chrome UI가 이 언어로 표시됩니다.</translation>
 <translation id="7296210096911315575">사용 및 안전 관련 주요 정보</translation>
 <translation id="7308322188646931570">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 있어야 합니다</translation>

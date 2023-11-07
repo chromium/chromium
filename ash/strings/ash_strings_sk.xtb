@@ -116,6 +116,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1391102559483454063">Zapnuté</translation>
 <translation id="1407069428457324124">Tmavý motív</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Klávesmi so šípkami prechádzajte medzi dátumami.</translation>
+<translation id="141170878022560212">Stredné tlačidlo</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, nainštalovaná aplikácia</translation>
 <translation id="1414919006379339073">Zavretie aktuálneho okna</translation>
 <translation id="1415846719612499304">Zobraziť zoznam sietí. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2086334242442703436">Otvoriť výber emodži</translation>
 <translation id="2088116547584365419">hry</translation>
 <translation id="209965399369889474">Nemáte pripojenie k sieti</translation>
+<translation id="2107581415810719320">Iné tlačidlo <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kábel USB-C nepodporuje Thunderbolt. Výkonnosť zariadenia môže byť obmedzená.</translation>
 <translation id="2108303511227308752">Klávesová skratka Alt + Backspace bola zmenená. Ak chcete použiť kláves Delete, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="2126242104232412123">Nová plocha</translation>
@@ -563,6 +565,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3340978935015468852">nastavenia</translation>
 <translation id="3341303451326249809">Snímka obrazovky bola zaznamenaná</translation>
 <translation id="334252345105450327">Vytvoriť snímku obrazovky</translation>
+<translation id="3346728094401457853">Zadajte heslo zariadenia pre účet <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Výber textu od kurzora po koniec riadka</translation>
 <translation id="3349345708646875009">Otvorenie správcu úloh</translation>
 <translation id="3364721542077212959">Nástroje pre dotykové pero</translation>
@@ -1589,6 +1592,7 @@ Nová inštalácia</translation>
 <translation id="7489261257412536105">Spustenie alebo ukončenie režimu celej obrazovky</translation>
 <translation id="7490360161041035804">Dôležité súbory vrátane súborov z Disku Google si môžete pripnúť. Ak chcete položku pripnúť, umiestnite na ňu kurzor alebo otvorte Súbory a na príslušnú položku kliknite pravým tlačidlom.</translation>
 <translation id="7497767806359279797">Vybrať jazyk a klávesnicu</translation>
+<translation id="7507162824403726948">Dokončite overenie totožnosti</translation>
 <translation id="7508690557411636492">Otvorené v poslednom mesiaci</translation>
 <translation id="7509246181739783082">Overenie totožnosti</translation>
 <translation id="7512509370370076552">Skratka kliknutia pravým tlačidlom bola aktualizovaná z kombinácie Alt + kliknutie na kombináciu <ph name="LAUNCHER_KEY_NAME" /> + kliknutie</translation>

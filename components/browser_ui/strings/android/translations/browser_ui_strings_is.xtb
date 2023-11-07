@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót leyft}one{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót leyft}other{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót leyft}}</translation>
 <translation id="2410940059315936967">Vefsvæði sem þú skoðar getur fellt inn efni frá öðrum vefsvæðum, til dæmis myndir, auglýsingar og texta. Fótspor sem viðkomandi önnur vefsvæði nota kallast fótspor þriðju aðila.</translation>
 <translation id="2434158240863470628">Niðurhali lokið <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Þú leyfðir þessu vefsvæði að nota fótspor þriðju aðila tímabundið. Þetta þýðir minni vernd við vefskoðun en líklegra er að eiginleikar vefsvæðisins virki sem skyldi. <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Eiginleikar sumra vefsvæða virka e.t.v. ekki í huliðsstillingu</translation>
 <translation id="2442870161001914531">Biðja alltaf um tölvuútgáfu vefsvæða</translation>
 <translation id="2469312991797799607">Þessi aðgerð eyðir öllum gögnum og fótsporum fyrir <ph name="ORIGIN" /> og öll undirvefsvæði þess</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Spyrja áður en vefsvæðum er veitt heimild til að spila varið efni</translation>
 <translation id="2932883381142163287">Tilkynna misnotkun</translation>
 <translation id="2968755619301702150">Vottorðaskoðari</translation>
+<translation id="2979365474350987274">Fótspor þriðju aðila eru takmörkuð</translation>
 <translation id="3008272652534848354">Endurstilla heimildir</translation>
 <translation id="301521992641321250">Sjálfkrafa lokað á</translation>
 <translation id="3069226013421428034">Leyfa innskráningu þriðja aðila á tilteknu vefsvæði.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Eyða og endurstilla</translation>
 <translation id="4645575059429386691">Stjórnað af foreldri þínu</translation>
 <translation id="4670064810192446073">Sýndarveruleiki</translation>
+<translation id="4673958474310291465">Prófaðu að leyfa fótspor þriðju aðila tímabundið, það þýðir minni vernd en líklegra er að eiginleikar vefsvæðisins virki sem skyldi</translation>
 <translation id="4751476147751820511">Hreyfi- eða birtuskynjarar</translation>
 <translation id="4779083564647765204">Aðdráttur</translation>
 <translation id="4811450222531576619">Kynntu þér uppruna og umfjöllunarefni síðunnar</translation>

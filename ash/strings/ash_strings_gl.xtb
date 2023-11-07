@@ -116,6 +116,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1391102559483454063">Activada</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Usa as teclas das frechas para desprazarte polas datas.</translation>
+<translation id="141170878022560212">Botón central</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplicación instalada</translation>
 <translation id="1414919006379339073">Pechar ventá actual</translation>
 <translation id="1415846719612499304">Mostrar a lista de redes. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2086334242442703436">Abre o selector de emojis</translation>
 <translation id="2088116547584365419">xogos</translation>
 <translation id="209965399369889474">Non hai conexión á rede</translation>
+<translation id="2107581415810719320">Outro botón <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">O teu cable USB-C non é compatible con Thunderbolt. O rendemento do dispositivo podería verse limitado.</translation>
 <translation id="2108303511227308752">O atallo de teclado Alt + Retroceso cambiou. Para usar a tecla Suprimir, preme <ph name="LAUNCHER_KEY_NAME" /> + Retroceso.</translation>
 <translation id="2126242104232412123">Novo escritorio</translation>
@@ -563,6 +565,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3341303451326249809">Realizouse a captura de pantalla</translation>
 <translation id="334252345105450327">Fai unha captura de pantalla</translation>
+<translation id="3346728094401457853">Introduce o contrasinal do dispositivo de <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Selecciona o texto desde cursor ata o final da liña</translation>
 <translation id="3349345708646875009">Abre o xestor de tarefas</translation>
 <translation id="3364721542077212959">Ferramentas de lapis óptico</translation>
@@ -1590,6 +1593,7 @@ Nova instalación</translation>
 <translation id="7489261257412536105">Entrar na pantalla completa ou saír dela</translation>
 <translation id="7490360161041035804">Podes fixar os ficheiros importantes, incluídos os de Google Drive. Para facelo, pasa por enriba dun elemento ou abre Ficheiros e fai clic co botón dereito sobre un elemento.</translation>
 <translation id="7497767806359279797">Escoller idioma e teclado</translation>
+<translation id="7507162824403726948">Acaba de verificar a túa identidade</translation>
 <translation id="7508690557411636492">Abriuse durante o último mes</translation>
 <translation id="7509246181739783082">Verifica a túa identidade</translation>
 <translation id="7512509370370076552">O atallo para facer clic co botón dereito actualizouse de Alt + clic a tecla do <ph name="LAUNCHER_KEY_NAME" /> + clic</translation>

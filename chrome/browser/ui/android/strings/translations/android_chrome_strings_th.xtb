@@ -126,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{นำ 1 รายการที่เลือกออก}other{นำ # รายการที่เลือกออก}}</translation>
 <translation id="1633659023549081553">ค้นพบเนื้อหาใหม่ในหน้าแรกของ Chrome</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">Chrome อาจส่งคุกกี้และ URL ปัจจุบันด้วย ซึ่งขึ้นอยู่กับการตั้งค่าของคุณ</translation>
 <translation id="164269334534774161">คุณกำลังดูสำเนาออฟไลน์ของหน้านี้จากวันที่ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
 <translation id="1657932388559784161">Bottom Sheet ข้อมูลเชิงลึกของหน้าปิดอยู่</translation>
@@ -705,7 +704,6 @@
 <translation id="4738836084190194332">ซิงค์ครั้งล่าสุด: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">คุณจะได้รับคำแนะนำที่ดีขึ้นในแถบที่อยู่</translation>
 <translation id="4742970037960872810">นำไฮไลต์ออก</translation>
-<translation id="4743664893327841597">ระบบจะส่งสิ่งที่คุณพิมพ์ในแถบที่อยู่หรือช่องค้นหาไปยังเครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="4749960740855309258">เปิดแท็บใหม่</translation>
 <translation id="4750356170202299988">เนื้อหาสำหรับเด็ก</translation>
 <translation id="4758061975920522644">แชร์รูปภาพเท่านั้น</translation>
@@ -739,6 +737,7 @@
 <translation id="4864369630010738180">กำลังลงชื่อเข้าใช้...</translation>
 <translation id="4866368707455379617">ติดตั้ง <ph name="MODULE" /> สำหรับ Chrome ไม่ได้</translation>
 <translation id="4871568871368204250">ปิดการซิงค์</translation>
+<translation id="4874961007154620743">เมื่อปิดไว้ คุณจะยังคงเห็นคำแนะนำที่ Chrome มีให้ในเครื่อง</translation>
 <translation id="4875775213178255010">การแนะนำเนื้อหา</translation>
 <translation id="4877678010818027629">เข้าสู่โหมดไม่ระบุตัวตน</translation>
 <translation id="4878404682131129617">สร้างช่องทางผ่านพร็อกซีเซิร์ฟเวอร์ไม่ได้</translation>
@@ -1210,6 +1209,7 @@
 <translation id="727288900855680735">ส่ง <ph name="ONE_TIME_CODE" /> ไปยัง <ph name="ORIGIN" /> ไหม</translation>
 <translation id="7274013316676448362">บล็อกเว็บไซต์แล้ว</translation>
 <translation id="7276100255011548441">Chrome จะลบหัวข้อที่นานเกิน 4 สัปดาห์โดยอัตโนมัติ เมื่อคุณท่องเว็บไปเรื่อยๆ บางหัวข้อก็อาจกลับมาอยู่ในรายการอีกครั้ง หรือคุณจะบล็อกหัวข้อที่ไม่ต้องการให้ Chrome แชร์กับเว็บไซต์ต่างๆ ก็ได้ ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />การจัดการความเป็นส่วนตัวเกี่ยวกับโฆษณาใน Chrome<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">ขณะที่คุณพิมพ์ Chrome จะส่งเนื้อหาของแถบที่อยู่หรือช่องค้นหาไปยังเครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="7286703216224610554">แชร์ความรู้สึกเท่านั้น</translation>
 <translation id="7289303553784750393">หากคุณออนไลน์แล้วแต่ปัญหานี้ยังเกิดขึ้นอยู่ คุณสามารถลองดำเนินการต่อใน <ph name="SITE_ETLD_PLUS_ONE" /> ด้วยวิธีอื่นๆ ได้</translation>
 <translation id="7290209999329137901">เปลี่ยนชื่อไม่ได้</translation>
@@ -1466,7 +1466,7 @@
 <translation id="8446884382197647889">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="8453310803815879010">เริ่มเกมไดโนเสาร์</translation>
 <translation id="8460448946170646641">ตรวจสอบการควบคุมที่สำคัญด้านความเป็นส่วนตัวและความปลอดภัย</translation>
-<translation id="8461694314515752532">เข้ารหัสลับข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
+<translation id="8461694314515752532">เข้ารหัสข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
 <translation id="8466613982764129868">ตรวจสอบว่า <ph name="TARGET_DEVICE_NAME" /> เชื่อมต่ออินเทอร์เน็ตอยู่</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
 <translation id="847433688444405067">ท่องเว็บในอุปกรณ์ต่างๆ</translation>
@@ -1557,6 +1557,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">ภาษา<ph name="LANG" />พร้อมใช้งานแล้ว</translation>
 <translation id="8937772741022875483">ต้องการนำกิจกรรม Chrome ออกจากไลฟ์สไตล์ดิจิทัลไหม</translation>
+<translation id="893938492099608175">Chrome อาจส่งคุกกี้, URL ปัจจุบัน และตำแหน่งด้วย ซึ่งขึ้นอยู่กับการตั้งค่าของคุณ</translation>
 <translation id="8942627711005830162">เปิดในหน้าต่างอื่น</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ดาวน์โหลดภาษานี้ไม่ได้ ลองอีกครั้งในภายหลัง</translation>
 <translation id="8955719471735800169">กลับไปด้านบน</translation>

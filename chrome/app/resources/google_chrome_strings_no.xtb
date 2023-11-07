@@ -25,6 +25,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt.}=1{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt. Dine # inkognitovinduer åpnes ikke på nytt.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-apper</translation>
 <translation id="1492280395845991349">Start på nytt for å fullføre Chrome-oppdateringen</translation>
+<translation id="1497802159252041924">Installasjonsfeil: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Tilpass den nye Chrome-profilen din</translation>
 <translation id="1516530951338665275">Google Chrome trenger Bluetooth-tilgang for å fortsette tilkoblingen. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />.</translation>
@@ -86,6 +87,7 @@
 <translation id="2467438592969358367">Google Chrome forsøker å eksportere passordene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="2472092250898121027">Denne utvidelsen inneholder skadelig programvare og er utrygg. Fjern den fra Chrome, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysningene dine.</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
+<translation id="2534365042754120737">Du kan beskytte dataene dine ved å la Chrome fjerne tillatelser fra nettsteder du ikke har besøkt nylig. Dette stopper ikke varsler.</translation>
 <translation id="2534507159460261402">Google Pay (kopiert til Chrome)</translation>
 <translation id="2556847002339236023">Organisasjonen din lukker Chrome når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />. Nettlesingsdataene ble slettet. Dette kan omfatte loggen, autofyll og nedlastinger.</translation>
 <translation id="2559253115192232574">Senere kan nettsteder du besøker, spørre Chrome om interessene dine for å kunne sette personlig preg på annonsene du ser. Chrome kan dele opptil tre interesser.</translation>
@@ -265,6 +267,7 @@
 <translation id="5524761631371622910">Når prøveprosjekter er påslått, og hvis Chrome har plassert deg tilfeldig i et aktivt prøveprosjekt, påvirker nettleserloggen din annonsene du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine på rullerende basis hver måned.</translation>
 <translation id="5530733413481476019">Gjør Chrome raskere</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-Inn)</translation>
+<translation id="5572786658631721382">Når denne innstillingen er av, ser du fortsatt lokale forslag fra Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være farlig, så Chrome har blokkert den.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen}=1{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="5686916850681061684">Tilpass og kontroller Google Chrome. Det er noe du må se på – klikk for mer informasjon.</translation>
@@ -358,6 +361,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7177959540995930968">Du kan finne ut mer om disse funksjonene i Chrome-innstillingene.</translation>
 <translation id="7193885263065350793">Organisasjonen din lukker Chrome når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Du er i ferd med å logge deg på med en administrert konto og gir administratoren kontroll over Chrome-profilen din. Chrome-dataene dine, som apper, bokmerker, loggen, passord og andre innstillinger, blir permanent knyttet til <ph name="USER_NAME" />. Du kan slette disse dataene via kontooversikten for Google, men du kan ikke knytte disse dataene til en annen konto. Du kan velge om du vil opprette en ny profil for å holde de eksisterende Chrome-dataene dine atskilte. <ph name="LEARN_MORE" /></translation>
+<translation id="7284878711178835966">Når du skriver, sender Chrome innholdet i adressefeltet eller søkefeltet til standardsøkemotoren din</translation>
 <translation id="7295052994004373688">Dette språket brukes for UI-et i Google Chrome</translation>
 <translation id="7296210096911315575">Viktig informasjon om bruk og sikkerhet</translation>
 <translation id="7308322188646931570">Chrome må ha lagringstilgang for å laste ned filer</translation>

@@ -126,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{પસંદ કરેલ 1 આઇટમ દૂર કરો}one{પસંદ કરેલ # આઇટમ દૂર કરો}other{પસંદ કરેલ # આઇટમ દૂર કરો}}</translation>
 <translation id="1633659023549081553">Chromeના હોમપેજ પર જઈને નવું કન્ટેન્ટ શોધો</translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
-<translation id="1642309806724967937">તમારા સેટિંગને આધારે, Chrome તમને કુકી અને તમારા વર્તમાન URL પણ મોકલી શકે છે</translation>
 <translation id="164269334534774161">તમે <ph name="CREATION_TIME" />માંથી આ પેજની ઑફલાઇન કૉપિ જોઈ રહ્યા છો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
 <translation id="1657932388559784161">પેજ જાણકારીઓની બોટમ શીટ બંધ કરવામાં આવી છે</translation>
@@ -705,7 +704,6 @@
 <translation id="4738836084190194332">છેલ્લે સમન્વયિત: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">તમને ઍડ્રેસ બારમાં બહેતર સૂચનો મળશે</translation>
 <translation id="4742970037960872810">હાઇલાઇટ કાઢી નાખો</translation>
-<translation id="4743664893327841597">તમે ઍડ્રેસ બાર અથવા શોધ બૉક્સમાં જે ટાઇપ કરો છો, તે તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલવામાં આવે છે</translation>
 <translation id="4749960740855309258">એક નવું ટૅબ ખોલો</translation>
 <translation id="4750356170202299988">બાળકો માટે કન્ટેન્ટ</translation>
 <translation id="4758061975920522644">માત્ર છબી શેર કરો</translation>
@@ -739,6 +737,7 @@
 <translation id="4864369630010738180">સાઇન ઇન થઈ રહ્યું છે...</translation>
 <translation id="4866368707455379617">Chrome માટે <ph name="MODULE" /> ઇન્સ્ટૉલ કરવામાં અસમર્થ</translation>
 <translation id="4871568871368204250">સિંક બંધ કરો</translation>
+<translation id="4874961007154620743">બંધ હોય ત્યારે પણ તમને એ સૂચનો દેખાય છે જે Chrome સ્થાનિક રીતે પ્રદાન કરે છે</translation>
 <translation id="4875775213178255010">કન્ટેન્ટ માટે સૂચનો</translation>
 <translation id="4877678010818027629">છૂપો મોડમાં દાખલ થાઓ</translation>
 <translation id="4878404682131129617">પ્રૉક્સી સર્વર મારફતે એક ટનલને સ્થાપિત કરવું નિષ્ફળ થયું</translation>
@@ -757,6 +756,7 @@
 <translation id="4925120120285606924">સ્ક્રીનશૉટ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">તમારા પાસવર્ડની નિકાસ કરવામાં આવશે અને તેને ટેક્સ્ટ ફાઇલ તરીકે સાચવવામાં આવશે. નિર્ધારિત ફોલ્ડરનો ઍક્સેસ ધરાવતી કોઈપણ વ્યક્તિ અને ઍપ તમારા પાસવર્ડ જોઈ શકશે.</translation>
 <translation id="4926901776383726965">તમે ઑફલાઇન જોવા અથવા અન્ય ઍપમાં શેર કરવા માટે છબીઓ અને ફાઇલોને સાચવી શકો છો</translation>
+<translation id="4928144016283278047">ટ્રૅકરથી સુરક્ષા, (ત્રીજા પક્ષની કુકી, IP ટ્રૅકિંગ, આક્રમણ કરનારી સ્ક્રિપ્ટ અને બીજું ઘણું)</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" /> દ્વારા મેનેજ કરવામાં આવતા એકાઉન્ટમાંથી તમે સાઇન આઉટ કરી રહ્યાં હોવાને કારણે આ ડિવાઇસમાંથી તમારો Chrome ડેટા ડિલીટ કરવામાં આવશે. તે તમારા Google એકાઉન્ટમાં રહેશે.</translation>
 <translation id="4943703118917034429">વર્ચ્યુઅલ રિયાલિટી</translation>
 <translation id="4943872375798546930">પરિણામો નથી</translation>
@@ -1209,6 +1209,7 @@
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" />ને <ph name="ORIGIN" /> પર સબમિટ કરીએ?</translation>
 <translation id="7274013316676448362">અવરોધિત સાઇટ</translation>
 <translation id="7276100255011548441">Chrome 4 અઠવાડિયાથી વધુ જૂના વિષયોને ઑટોમૅટિક રીતે ડિલીટ કરે છે. જેમ-જેમ તમે બ્રાઉઝ કરતા જશો, તેમ-તેમ સૂચિમાં કોઈ વિષય ફરીથી દેખાઈ શકે છે. અથવા અન્ય સાઇટ સાથે Chrome શેર ન કરે એવું જો તમે ઇચ્છતા હો, તો તમે તેવા વિષયોને બ્લૉક કરી શકો છો. <ph name="BEGIN_LINK" />Chromeમાં તમારી જાહેરાત સંબંધિત પ્રાઇવસી મેનેજ કરવા<ph name="END_LINK" /> વિશે વધુ જાણો.</translation>
+<translation id="7284878711178835966">જેમ-જેમ તમે ટાઇપ કરો, તેમ-તેમ Chrome ઍડ્રેસ બાર અથવા શોધ બૉક્સનું કન્ટેન્ટ તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલે છે</translation>
 <translation id="7286703216224610554">માત્ર પ્રતિક્રિયા શેર કરો</translation>
 <translation id="7289303553784750393">જો તમે ઑનલાઇન હો પરંતુ આ સમસ્યા આવવાનું ચાલુ રહે, તો તમે <ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
 <translation id="7290209999329137901">નામ બદલવું ઉપલબ્ધ નથી</translation>
@@ -1556,6 +1557,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ભાષા તૈયાર છે</translation>
 <translation id="8937772741022875483">તમારી Chromeની પ્રવૃત્તિને ડિજિટલ લાઇફસ્ટાઇલમાંથી કાઢી નાખીએ?</translation>
+<translation id="893938492099608175">તમારા સેટિંગને આધારે, Chrome તમને કુકી, તમારા વર્તમાન URL અને તમારા લોકેશન પણ મોકલી શકે છે</translation>
 <translation id="8942627711005830162">અન્ય વિંડોમાં ખોલો</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - આ ભાષા ડાઉનલોડ કરી શકાઈ નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="8955719471735800169">સૌથી ઉપર પાછા જાઓ</translation>

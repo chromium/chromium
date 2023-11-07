@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">অন আছে</translation>
 <translation id="1407069428457324124">গাঢ় ৰঙৰ থীম</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. তাৰিখসমূহৰ মাজত নেভিগে’ট কৰিবলৈ এৰ’ কীসমূহ ব্যৱহাৰ কৰক।</translation>
+<translation id="141170878022560212">মাজৰ বুটাম</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ইনষ্টল হৈ থকা এপ্‌</translation>
 <translation id="1414919006379339073">বৰ্তমানৰ ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="1415846719612499304">নেটৱৰ্কৰ সূচী দেখুৱাওক। <ph name="STATE_TEXT" />।</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">ইম’জি বাছনি কৰোঁতা খোলক</translation>
 <translation id="2088116547584365419">গে’ম</translation>
 <translation id="209965399369889474">নেটৱৰ্কৰ সৈতে সংযুক্ত হৈ নাই</translation>
+<translation id="2107581415810719320">অন্য বুটাম <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">আপোনাৰ USB-C কে’বলে Thunderbolt সমৰ্থন নকৰে। ডিভাইচৰ কাৰ্যক্ষমতা সীমিত হ’ব পাৰে।</translation>
 <translation id="2108303511227308752">কীব’ৰ্ডৰ শ্বৰ্টকাট অল্ট + বেকস্পেচটো সলনি হৈছে। ডিলিট কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + বেকস্পেচ টিপক।</translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">ছেটিংসমূহ</translation>
 <translation id="3341303451326249809">স্ক্ৰীনশ্বট কেপচাৰ কৰা হ'ল</translation>
 <translation id="334252345105450327">এটা স্ক্ৰীনশ্বট লওক</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" />ৰ বাবে ডিভাইচৰ পাছৱৰ্ড দিয়ক</translation>
 <translation id="334927402682780278">কাৰ্ছৰৰ পৰা শাৰীৰ শেষলৈকে পাঠ বাছনি কৰক</translation>
 <translation id="3349345708646875009">কাৰ্য পৰিচালক খোলক</translation>
 <translation id="3364721542077212959">ষ্টাইলাছ সঁজুলি</translation>
@@ -1589,6 +1592,7 @@
 <translation id="7489261257412536105">পূৰ্ণ স্ক্ৰীনত প্ৰৱেশ কৰক অথবা ইয়াৰ বাহিৰ হওক</translation>
 <translation id="7490360161041035804">আপুনি Google Driveৰ ফাইলকে ধৰি গুৰুত্বপূৰ্ণ ফাইলসমূহ পিন কৰিব পাৰে। পিন কৰিবলৈ, কোনো ফাইলৰ ওপৰত কাৰ্ছৰডাল ৰাখক অথবা Files খোলক আৰু কোনো বস্তুত ৰাইট-ক্লিক কৰক।</translation>
 <translation id="7497767806359279797">ভাষা আৰু কীব'র্ড বাছনি কৰক</translation>
+<translation id="7507162824403726948">আপোনাৰ পৰিচয় সত্যাপন কৰাটো সম্পূৰ্ণ কৰক</translation>
 <translation id="7508690557411636492">যোৱা মাহত খুলিছিল</translation>
 <translation id="7509246181739783082">আপোনাৰ পৰিচয় সত্যাপন কৰক</translation>
 <translation id="7512509370370076552">ৰাইট-ক্লিক শ্বৰ্টকাটটো alt + ক্লিকৰ পৰা<ph name="LAUNCHER_KEY_NAME" /> কী + ক্লিকলৈ আপডে’ট কৰা হৈছে</translation>

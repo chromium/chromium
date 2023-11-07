@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">אין להציג את ההצעה לתרגם את האתרים האלה</translation>
 <translation id="1145536944570833626">מחיקת נתונים קיימים.</translation>
 <translation id="1150263420752757504">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">שימוש בסיסמה <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">שינוי שם</translation>
 <translation id="1174479719160874822">‏אם המסך צר, Chrome יבקש את האתר לנייד</translation>
 <translation id="1177863135347784049">מותאם אישית</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{הסרת פריט אחד שנבחר}one{הסרת # פריטים שנבחרו}two{הסרת # פריטים שנבחרו}other{הסרת # פריטים שנבחרו}}</translation>
 <translation id="1633659023549081553">‏מגלים תוכן חדש בדף הבית של Chrome</translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
-<translation id="1642309806724967937">‏בהתאם להגדרות שלך, Chrome עשוי גם לשלוח קובצי cookie ואת כתובת ה-URL הנוכחית שלך</translation>
 <translation id="164269334534774161">זהו עותק אופליין של הדף הזה מ-<ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1657932388559784161">הגיליון התחתון של התובנות לגבי הדף סגור</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">סגירת חלון</translation>
 <translation id="1791662854739702043">מותקן</translation>
 <translation id="1792959175193046959">אפשר תמיד לשנות את מיקום ההורדות</translation>
+<translation id="1796666869097395659">מזעור הכרטיסייה כדי לחזור אליה מאוחר יותר</translation>
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1810845389119482123">ההגדרה הראשונית של הסנכרון לא הושלמה</translation>
 <translation id="1812027881030482584">ל-<ph name="SITE_ETLD_PLUS_ONE" /> אין אפשרות להמשיך להשתמש ב-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@
 <translation id="4738836084190194332">סונכרן לאחרונה: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">בסרגל הכתובות יוצגו הצעות משופרות</translation>
 <translation id="4742970037960872810">הסרת ההדגשה</translation>
-<translation id="4743664893327841597">הטקסט שמקלידים בסרגל הכתובות או בתיבת החיפוש יישלח למנוע החיפוש שמוגדר כברירת מחדל</translation>
 <translation id="4749960740855309258">פתיחת כרטיסייה חדשה</translation>
 <translation id="4750356170202299988">תוכן לילדים</translation>
 <translation id="4758061975920522644">שיתוף התמונה בלבד</translation>
@@ -737,6 +737,7 @@
 <translation id="4864369630010738180">מתבצעת כניסה...</translation>
 <translation id="4866368707455379617">‏לא ניתן להתקין את <ph name="MODULE" /> ל-Chrome</translation>
 <translation id="4871568871368204250">כיבוי הסינכרון</translation>
+<translation id="4874961007154620743">‏גם אם משביתים את ההגדרה, דפדפן Chrome יכול להציג הצעות באופן מקומי</translation>
 <translation id="4875775213178255010">תוכן מוצע</translation>
 <translation id="4877678010818027629">מעבר למצב אנונימי</translation>
 <translation id="4878404682131129617">‏יצירת מנהרה בעזרת שרת proxy נכשלה</translation>
@@ -755,6 +756,7 @@
 <translation id="4925120120285606924">צילום מסך <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">המערכת תייצא את הסיסמאות ותוריד אותן כקובץ טקסט. הן יהיו גלויות לכל המשתמשים והאפליקציות שיש להם גישה לתיקיית היעד.</translation>
 <translation id="4926901776383726965">אפשר לשמור תמונות וקבצים לצפייה במצב אופליין או לשיתוף באפליקציות אחרות</translation>
+<translation id="4928144016283278047">‏הגנה מפני כלי מעקב (קובצי cookie של צד שלישי, מעקב אחר כתובות IP, סקריפטים פולשניים ועוד)</translation>
 <translation id="4932247056774066048">‏מכיוון שבחרת לצאת מחשבון שמנוהל על ידי <ph name="DOMAIN_NAME" />, נתוני Chrome שלך יימחקו מהמכשיר הזה. הם יישמרו בחשבון Google שלך.</translation>
 <translation id="4943703118917034429">מציאות מדומה</translation>
 <translation id="4943872375798546930">אין תוצאות</translation>
@@ -1207,6 +1209,7 @@
 <translation id="727288900855680735">לשלוח את <ph name="ONE_TIME_CODE" /> אל <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">אתר חסום</translation>
 <translation id="7276100255011548441">‏נושאים שנוספו לפני יותר מ-4 שבועות נמחקים מ-Chrome באופן אוטומטי. ככל שממשיכים לגלוש, נושא מסוים עשוי להופיע שוב ברשימה. אפשר גם לחסום נושאים כדי ש-Chrome לא ישתף אותם עם אתרים. <ph name="BEGIN_LINK" />מידע נוסף על ניהול הפרטיות בפרסום ב-Chrome<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">‏תוך כדי הקלדה, Chrome שולח את התוכן של סרגל הכתובות או תיבת החיפוש למנוע החיפוש שמוגדר כברירת מחדל</translation>
 <translation id="7286703216224610554">שיתוף התגובה בלבד</translation>
 <translation id="7289303553784750393">אם יש חיבור לאינטרנט אבל הבעיה נמשכת, אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">לא ניתן היה לשנת את השם מפני שהפריט לא זמין</translation>
@@ -1554,6 +1557,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> מוכנה לשימוש</translation>
 <translation id="8937772741022875483">‏האם להסיר את הפעילות שלך ב-Chrome מ'שימוש חכם בדיגיטל'?</translation>
+<translation id="893938492099608175">‏בהתאם להגדרות שקבעת, Chrome עשוי גם לשלוח קובצי Cookie, את כתובת ה-URL הנוכחית ואת המיקום שלך</translation>
 <translation id="8942627711005830162">פתיחה בחלון האחר</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - לא ניתן היה להוריד את השפה הזו. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="8955719471735800169">חזרה למעלה</translation>

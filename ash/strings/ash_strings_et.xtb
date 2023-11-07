@@ -116,6 +116,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1391102559483454063">Sees</translation>
 <translation id="1407069428457324124">Tume teema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Kasutage kuupäevade vahel liikumiseks nooleklahve.</translation>
+<translation id="141170878022560212">Keskmine hiirenupp</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installitud rakendus</translation>
 <translation id="1414919006379339073">Sulgege aktiivne aken</translation>
 <translation id="1415846719612499304">Võrkude loendi kuvamine. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2086334242442703436">Emotikonide valija avamine</translation>
 <translation id="2088116547584365419">mänge</translation>
 <translation id="209965399369889474">Pole võrguga ühendatud</translation>
+<translation id="2107581415810719320">Teine nupp <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Teie USB-C-kaabel ei toeta Thunderbolti. Seadme toimivus võib olla piiratud.</translation>
 <translation id="2108303511227308752">Klaviatuuri otseteed Alt + tagasilükkeklahv on muudetud. Kustutusklahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + tagasilükkeklahvi.</translation>
 <translation id="2126242104232412123">Uus töölaud</translation>
@@ -563,6 +565,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3340978935015468852">seaded</translation>
 <translation id="3341303451326249809">Ekraanipilt on jäädvustatud</translation>
 <translation id="334252345105450327">Jäädvusta ekraanipilt</translation>
+<translation id="3346728094401457853">Sisestage seadme kasutaja <ph name="EMAIL" /> parool</translation>
 <translation id="334927402682780278">Teksti valimine kursorist rea lõpuni</translation>
 <translation id="3349345708646875009">Ava tegumihaldur</translation>
 <translation id="3364721542077212959">Elektronpliiatsi tööriistad</translation>
@@ -1590,6 +1593,7 @@ Uus installimine</translation>
 <translation id="7489261257412536105">Lülitage täisekraanile või väljuge sealt</translation>
 <translation id="7490360161041035804">Võite kinnitada olulised failid, sealhulgas Google Drive'i failid. Kinnitamiseks hõljutage kursorit üksuse kohal või avage rakendus Failid ning paremklõpsake üksusel.</translation>
 <translation id="7497767806359279797">Valige keel ja klaviatuur</translation>
+<translation id="7507162824403726948">Identiteedi kinnitamise lõpuleviimine</translation>
 <translation id="7508690557411636492">Avatud viimase kuu jooksul</translation>
 <translation id="7509246181739783082">Kinnitage oma isik</translation>
 <translation id="7512509370370076552">Paremkliki otsetee klahvikombinatsioon alt + klikk asendatakse klahvikombinatsiooniga klahv <ph name="LAUNCHER_KEY_NAME" /> + klikk</translation>

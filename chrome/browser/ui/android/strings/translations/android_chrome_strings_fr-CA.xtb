@@ -32,6 +32,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1142732900304639782">Ne pas proposer de traduire ces sites</translation>
 <translation id="1145536944570833626">Supprimer toutes les données existantes.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> s'ouvrira dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Utiliser le mot de passe <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1174479719160874822">Chrome demandera le site pour appareils mobiles lorsque l'écran est étroit</translation>
 <translation id="1177863135347784049">Personnalisé</translation>
@@ -125,7 +126,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Supprimer 1 élément sélectionné}one{Supprimer # élément sélectionné}other{Supprimer # éléments sélectionnés}}</translation>
 <translation id="1633659023549081553">Découvrez de nouveaux contenus sur la page d'accueil de Chrome</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
-<translation id="1642309806724967937">Selon vos paramètres, Chrome peut également envoyer des témoins et votre URL actuelle</translation>
 <translation id="164269334534774161">Vous consultez une copie hors ligne de cette page qui a été créée le <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1657932388559784161">La zone de contenu au bas de l'écran des statistiques de la page est fermée</translation>
@@ -149,6 +149,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1779766957982586368">Fermer la fenêtre</translation>
 <translation id="1791662854739702043">Module installé</translation>
 <translation id="1792959175193046959">Changer le dossier de téléchargement par défaut en tout temps</translation>
+<translation id="1796666869097395659">Réduire l'onglet pour y revenir plus tard</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1810845389119482123">La configuration de la synchro. initiale n'est pas terminée</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne peut pas continuer à utiliser <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4738836084190194332">Dernière synchronisation : <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Vous recevrez des suggestions améliorées dans la barre d'adresse</translation>
 <translation id="4742970037960872810">Retirer la surbrillance</translation>
-<translation id="4743664893327841597">Ce que vous tapez dans la barre d'adresse ou le champ de recherche est envoyé à votre moteur de recherche par défaut</translation>
 <translation id="4749960740855309258">Ouvrir un nouvel onglet</translation>
 <translation id="4750356170202299988">Contenu pour les jeunes esprits</translation>
 <translation id="4758061975920522644">Partager l'image uniquement</translation>
@@ -737,6 +737,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4864369630010738180">Connexion en cours…</translation>
 <translation id="4866368707455379617">Impossible d'installer <ph name="MODULE" /> dans Chrome</translation>
 <translation id="4871568871368204250">Désactiver la synchronisation</translation>
+<translation id="4874961007154620743">Si l'option est désactivée, vous verrez toujours les suggestions fournies par Chrome localement</translation>
 <translation id="4875775213178255010">Suggestions de contenu</translation>
 <translation id="4877678010818027629">Activer le mode de navigation privée</translation>
 <translation id="4878404682131129617">Échec de l'établissement d'un tunnel par l'intermédiaire d'un serveur mandataire</translation>
@@ -755,6 +756,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4925120120285606924">Capture d'écran <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Vos mots de passe seront exportés et téléchargés comme un fichier texte. Ils seront visibles à tous les utilisateurs et toutes les applications qui possèdent l'accès au dossier de destination.</translation>
 <translation id="4926901776383726965">Vous pouvez enregistrer des images et des fichiers pour les afficher hors ligne ou les partager dans d'autres applications</translation>
+<translation id="4928144016283278047">Protection contre les dispositifs de suivi (témoins tiers, suivi par le biais de l'adresse IP, scripts invasifs, etc.)</translation>
 <translation id="4932247056774066048">Comme vous vous déconnectez d'un compte géré par <ph name="DOMAIN_NAME" />, vos données Chrome seront supprimées de cet appareil. Elles resteront toutefois dans votre compte Google.</translation>
 <translation id="4943703118917034429">Réalité virtuelle</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
@@ -1207,6 +1209,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="727288900855680735">Envoyer un <ph name="ONE_TIME_CODE" /> à <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Site bloqué</translation>
 <translation id="7276100255011548441">Chrome supprime automatiquement les sujets datant de plus de quatre semaines. Au fil de votre navigation sur le Web, un sujet peut réapparaître dans la liste. Vous pouvez également bloquer les sujets que vous ne souhaitez pas que Chrome partage avec des sites. Apprenez-en plus sur comment <ph name="BEGIN_LINK" />gérer la confidentialité des annonces dans Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">Au fur et à mesure que vous tapez, Chrome envoie le contenu de la barre d'adresse ou du champ de recherche à votre moteur de recherche par défaut</translation>
 <translation id="7286703216224610554">Partager la réaction uniquement</translation>
 <translation id="7289303553784750393">Si vous êtes en ligne, mais que ce problème persiste, vous pouvez essayer d'autres solutions pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Impossible de renommer l'élément</translation>
@@ -1554,6 +1557,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> est prêt</translation>
 <translation id="8937772741022875483">Supprimer votre activité Chrome de Bien-être numérique?</translation>
+<translation id="893938492099608175">Selon vos paramètres, Chrome peut également envoyer des témoins, votre URL actuelle et votre position</translation>
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
 <translation id="8945143127965743188">Impossible de télécharger cette langue : <ph name="LANG" />. Réessayez plus tard.</translation>
 <translation id="8955719471735800169">Retour en haut de la page</translation>

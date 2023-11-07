@@ -348,6 +348,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />ಸೈಟ್‌ನ ಮುಖಪುಟಕ್ಕೆ ಭೇಟಿ ನೀಡಲು<ph name="END_LINK" /> ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1641976391427233992">ಇಷ್ಟು ಸಮಯದವರೆಗೆ ಫಲಿತಾಂಶವನ್ನು ವಿಳಂಬಗೊಳಿಸಿ</translation>
 <translation id="164212631332220697">ಚೆಕ್ಔಟ್‌ನಲ್ಲಿ <ph name="CARD_DETAIL" /> ಮೂಲಕ ಪಾವತಿಸಿ.</translation>
+<translation id="1643651787397909318">Chrome ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ಬಟನ್‌ಗೆ ಹೋಗಿ, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಭದ್ರತಾ ಪರಿಶೀಲನೆ ಪುಟವನ್ನು ತೆರೆಯಲು ಅದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1644574205037202324">ಇತಿಹಾಸ</translation>
 <translation id="1645368109819982629">ಬೆಂಬಲವಿಲ್ಲದ ಪ್ರೊಟೋಕಾಲ್</translation>
 <translation id="1650602712345345441">ನಿಮ್ಮ Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -2046,6 +2047,8 @@
 <translation id="5137761395480718572">ಈ ಆ್ಯಪ್, ವೈಫೈ ರುಜುವಾತುಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸುತ್ತಿದೆ. ಸೆಟಪ್ ಮಾಡಿದ ನಂತರ, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಭಾಗವಹಿಸುತ್ತಿರುವ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕನೆಕ್ಟ್ ಆಗುತ್ತದೆ. ಈ ರುಜುವಾತುಗಳನ್ನು ತೆಗೆದುಹಾಕಲು, ಆ್ಯಪ್ ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಇದೀಗ ಲಭ್ಯವಿಲ್ಲ, ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="5138227688689900538">ಕಡಿಮೆ ತೋರಿಸಿ</translation>
+<translation id="5143309888746105072">ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದಕ್ಕೆ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸದಂತೆ Chromium ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತದೆ.
+            <ph name="NEW_LINE" />ಸೈಟ್ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸದಿದ್ದರೆ <ph name="START_LINK" />ತಾತ್ಕಾಲಿಕವಾಗಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಲು ಪ್ರಯತ್ನಿಸಿ<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">ನೀತಿ ಪ್ರತಿಕ್ರಿಯೆಯಲ್ಲಿ ದೋಷದ ಕೋಡ್ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> ಗಾಗಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="514704532284964975">ನಿಮ್ಮ ಫೋನ್‌ನ ಮೂಲಕ ನೀವು ಟ್ಯಾಪ್ ಮಾಡುವ NFC ಸಾಧನಗಳಲ್ಲಿನ ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ಬದಲಾಯಿಸಲು <ph name="URL" /> ಬಯಸುತ್ತದೆ</translation>
@@ -2392,6 +2395,7 @@
 <translation id="5873297634595728366">ಡೀಸೆಲ್ ವಾಹನಗಳು</translation>
 <translation id="5877831137320480913">ಸೌಂದರ್ಯ ಮತ್ತು ಫಿಟ್‌ನೆಸ್</translation>
 <translation id="5879989559903563723">ಅತಿಥಿ ಮೋಡ್‌ನಲ್ಲಿ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="5880050725127890683">Chrome ಸುರಕ್ಷತೆ ಪರಿಶೀಲನೆಗೆ ಹೋಗಿ</translation>
 <translation id="5883861433316751031">MIDI ಸಾಧನಗಳನ್ನು ನಿಯಂತ್ರಿಸಬೇಕೆ ಮತ್ತು ಮರು ಪ್ರೋಗ್ರಾಂ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5884465125445718607">ಎನ್ವಲಪ್ ಚೈನೀಸ್ #6</translation>
 <translation id="5887400589839399685">ಕಾರ್ಡ್ ಉಳಿಸಲಾಗಿದೆ</translation>
@@ -2572,6 +2576,7 @@
 <translation id="6251906504834538140">{0,plural, =1{ಫೈಲ್ ಸರಿಸದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{<ph name="FILE_COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{<ph name="FILE_COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನೀವು Chrome ನಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="6254436959401408446">ಈ ಪುಟವನ್ನು ತೆರೆಯಲು ಸಾಕಷ್ಟು ಮೆಮೊರಿ ಇಲ್ಲ</translation>
+<translation id="625463612687472648">ಅನುಮತಿಯನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="6259156558325130047">&amp;ಮರುಕ್ರಮಗೊಳಿಸುವುದನ್ನು ಮತ್ತೆಮಾಡು</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="6264376385120300461">ಹೇಗಿದ್ದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
@@ -2747,6 +2752,8 @@
 <translation id="6596325263575161958">ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ ಆಯ್ಕೆಗಳು</translation>
 <translation id="6597665340361269064">90 ಡಿಗ್ರಿಗಳು</translation>
 <translation id="6599642189720630047">ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾದ ಉತ್ಪನ್ನಗಳು</translation>
+<translation id="6606309334576464871">ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದಕ್ಕೆ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸದಂತೆ Chrome ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತದೆ.
+            <ph name="NEW_LINE" />ಸೈಟ್ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸದಿದ್ದರೆ <ph name="START_LINK" />ತಾತ್ಕಾಲಿಕವಾಗಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಲು ಪ್ರಯತ್ನಿಸಿ<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">ಆರ್ಥಿಕತೆ ಕುರಿತಾದ ಸುದ್ದಿ</translation>
 <translation id="6612010098632894193">ಆನ್‌ಲೈನ್ ವೀಡಿಯೊ</translation>
 <translation id="6613866251791999074">Chrome ನಲ್ಲಿನ ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
@@ -3421,6 +3428,7 @@
 <translation id="7888575728750733395">ಪ್ರಿಂಟ್ ಸಲ್ಲಿಕೆ ಉದ್ದೇಶ</translation>
 <translation id="7894280532028510793">ಕಾಗುಣಿತ ಸರಿಯಾಗಿದ್ದರೆ, <ph name="BEGIN_LINK" />ನೆಟ್‌ವರ್ಕ್ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್‌‌ ರನ್ ಮಾಡಿ ನೋಡಿ<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">ಎನ್ವಲಪ್ 7 x 9 ಇಂಚು</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಸುರಕ್ಷತೆ ಪರಿಶೀಲನೆ ಪುಟಕ್ಕೆ ಹೋಗಲು Tab ಒತ್ತಿರಿ ನಂತರ Enter ಬಟನ್ ಒತ್ತಿರಿ</translation>
 <translation id="7916162853251942238">ಫ್ಲೆಕ್ಸೊ ಬೇಸ್</translation>
 <translation id="7927971017714848357">ಲಾಟ್‌ಗಳು ಮತ್ತು ಭೂಮಿ</translation>
 <translation id="793209273132572360">ವಿಳಾಸವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆ?</translation>
@@ -3716,6 +3724,7 @@
 <translation id="8460854335417802511">ಅದನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="8461694314515752532">ನಿಮ್ಮ ಸ್ವಂತ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್‌ ಬಳಸಿಕೊಂಡು ಸಿಂಕ್ ಮಾಡಿದ ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿ</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್}one{# ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು}other{# ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು}}</translation>
+<translation id="8467494337615822642">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಸುರಕ್ಷತೆ ಪರಿಶೀಲನೆ ಪುಟಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="8468358362970107653">ಎನ್ವಲಪ್ C3</translation>
 <translation id="8473626140772740486">300 x 450 ಮಿಮೀ</translation>
 <translation id="8473863474539038330">ವಿಳಾಸಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು</translation>

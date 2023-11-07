@@ -49,7 +49,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1182225749592316782">Permet l'accés a totes les aplicacions i tots els llocs web amb permisos per accedir a la càmera i al micròfon.</translation>
 <translation id="1182876754474670069">Inici</translation>
 <translation id="1183863904939664422">No m'interessa aquest suggeriment</translation>
-<translation id="1184126796192815024">Aquesta xarxa no admet les aplicacions de reproducció en continu del telèfon. Prova d'utilitzar el punt d'accés Wi-Fi del telèfon. <ph name="LEARN_MORE" /></translation>
+<translation id="1184126796192815024">Aquesta xarxa no admet les aplicacions de reproducció en línia del telèfon. Prova d'utilitzar el punt d'accés Wi-Fi del telèfon. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Introdueix la contrasenya o el PIN per augmentar la seguretat</translation>
 <translation id="118532027333893379">Toca en qualsevol lloc per capturar la pantalla completa</translation>
 <translation id="1190609913194133056">Centre de notificacions</translation>
@@ -116,6 +116,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1391102559483454063">Activada</translation>
 <translation id="1407069428457324124">Tema fosc</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Fes servir les tecles de fletxa per navegar entre dates.</translation>
+<translation id="141170878022560212">Botó central</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplicació instal·lada</translation>
 <translation id="1414919006379339073">Tanca la finestra actual</translation>
 <translation id="1415846719612499304">Mostra la llista de xarxes. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2086334242442703436">Obre el selector d'emojis</translation>
 <translation id="2088116547584365419">jocs</translation>
 <translation id="209965399369889474">No hi ha connexió a la xarxa</translation>
+<translation id="2107581415810719320">Un altre botó <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">El teu cable USB-C no admet Thunderbolt. És possible que el rendiment del dispositiu es vegi limitat.</translation>
 <translation id="2108303511227308752">La tecla de drecera Alt+Retrocés ha canviat. Per fer servir la tecla de suprimir, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+Retrocés.</translation>
 <translation id="2126242104232412123">Escriptori nou</translation>
@@ -563,6 +565,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3340978935015468852">configuració</translation>
 <translation id="3341303451326249809">La pantalla s'ha capturat</translation>
 <translation id="334252345105450327">Fes una captura de pantalla</translation>
+<translation id="3346728094401457853">Introdueix la contrasenya del dispositiu per a <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Selecciona text del cursor al final de la línia</translation>
 <translation id="3349345708646875009">Obre el gestor de tasques</translation>
 <translation id="3364721542077212959">Eines del llapis òptic</translation>
@@ -1589,6 +1592,7 @@ Instal·lació nova</translation>
 <translation id="7489261257412536105">Entra a la pantalla completa o surt-ne</translation>
 <translation id="7490360161041035804">Pots fixar fitxers importants, inclosos els de Google Drive. Per fixar-ne un, passa el cursor per sobre d'un element o bé obre Fitxers i fes clic amb el botó dret en un element.</translation>
 <translation id="7497767806359279797">Tria l'idioma i el teclat</translation>
+<translation id="7507162824403726948">Acaba de verificar la teva identitat</translation>
 <translation id="7508690557411636492">Obert durant el darrer mes</translation>
 <translation id="7509246181739783082">Verifica la teva identitat</translation>
 <translation id="7512509370370076552">La drecera per fer clic amb el botó dret s'ha actualitzat d'Alt+clic a la tecla <ph name="LAUNCHER_KEY_NAME" />+clic</translation>

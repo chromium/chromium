@@ -27,6 +27,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli.}=1{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. Anonimno okno se ne bo znova odprlo.}one{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimno okno se ne bo znova odprlo.}two{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimni okni se ne bosta znova odprli.}few{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimna okna se ne bodo znova odprla.}other{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="1434626383986940139">Delovne različice aplikacij za Chrome</translation>
 <translation id="1492280395845991349">Znova zaženite, če želite dokončati posodobitev Chroma</translation>
+<translation id="1497802159252041924">Napaka pri namestitvi: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Prilagajanje novega profila v Chromu</translation>
 <translation id="1516530951338665275">Google Chrome potrebuje dostop do Bluetootha za nadaljevanje 
  seznanjanja. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -91,6 +92,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2467438592969358367">Google Chrome želi izvoziti gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="2472092250898121027">Ta razširitev vsebuje zlonamerno programsko opremo in ni varna. Odstranite jo iz Chroma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
 <translation id="2485422356828889247">Odmeščanje</translation>
+<translation id="2534365042754120737">Zaradi zaščite podatkov dovolite Chromu, da odstrani dovoljenja za spletna mesta, ki jih nedavno niste obiskali. Prikazovanje obvestil se ne ustavi.</translation>
 <translation id="2534507159460261402">Google Pay (kopirano v Chrome)</translation>
 <translation id="2556847002339236023">Vaša organizacija zapre Chrome, če se ne uporablja <ph name="TIMEOUT_DURATION" />. Podatki brskanja so bili izbrisani. To lahko vključuje zgodovino, samodejno izpolnjene podatke in prenose.</translation>
 <translation id="2559253115192232574">Pozneje lahko stran, ki jo obiščete, od Chroma zahteva ogled vaših zanimanj zaradi osebnega prilagajanj oglasov, ki so vam prikazani. Chrome lahko deli do 3 zanimanja.</translation>
@@ -263,15 +265,18 @@ Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali upora
 <translation id="5334487786912937552">Chrome potrebuje dovoljenje za dostop do shrambe za prenos datotek.</translation>
 <translation id="5337648990166757586">Izbirno: Pomagajte izboljšati funkcije sistema Chrome OS in njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
 <translation id="5357889879764279201">Pomoč za ChromeOS Flex</translation>
+<translation id="5386118856456530849">Odprite nastavitve različice Chroma</translation>
 <translation id="5386244825306882791">Določa tudi, katera stran je prikazana, ko zaženete Chrome ali iščete v naslovni vrstici.</translation>
 <translation id="5394833366792865639">Deljenje zavihka v Chromu</translation>
 <translation id="5412485296464121825">Spletna mesta lahko v Chromu shranjujejo podatke o vaših zanimanjih. Če na primer obiščete spletno mesto zaradi nakupa športnih copatov za maraton, bo spletno mesto morda določilo vaše zanimanje kot udeleževanje maratonov. Če pozneje obiščete drugo spletno mesto za registriranje za tek, vam lahko to spletno mesto glede na vaša zanimanja prikaže oglas za tekaško obutev.</translation>
 <translation id="5430073640787465221">Datoteka z nastavitvami je poškodovana ali neveljavna.
 
 Google Chrome ne more obnoviti vaših nastavitev.</translation>
+<translation id="5468572406162360320">Zaradi izboljšanja teh funkcij Chrome vaše interakcije z njimi pošilja Googlu. Pregledovalci lahko te podatke pregledajo, obdelajo in označijo.</translation>
 <translation id="5524761631371622910">Če so preizkusi vklopljeni in vas je Chrome naključno prijavil za aktivni preizkus, zgodovina brskanja vpliva na oglase, ki so prikazani, in zanimanja, kot je ocenjeno spodaj. Chrome zaradi varovanja vaše zasebnosti vsak mesec sproti izbriše vaša zanimanja.</translation>
 <translation id="5530733413481476019">Pospešite Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5572786658631721382">Če je to izklopljeno, bodo še vedno prikazani predlogi, ki jih Chrome zagotavlja lokalno</translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je morda nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome.}=1{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. Anonimno okno se ne bo znova odprlo.}one{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimno okno se ne bo znova odprlo.}two{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimni okni se ne bosta znova odprli.}few{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimna okna se ne bodo znova odprla.}other{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="5686916850681061684">Prilagajanje in nadziranje Google Chroma. Nekaj morate preveriti – kliknite za podrobnosti.</translation>
@@ -365,6 +370,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7177959540995930968">Več o teh funkcijah lahko izveste v nastavitvah za Chrome.</translation>
 <translation id="7193885263065350793">Vaša organizacija zapre Chrome, če se ne uporablja <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Google Chromu. Vaši podatki v Chromu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali z nadzorno ploščo za Google Račune, vendar jih ne boste mogli povezati z drugim računom. Če želite, lahko ustvarite nov profil, da bodo obstoječi podatki v Chromu ostali ločeni. <ph name="LEARN_MORE" /></translation>
+<translation id="7284878711178835966">Med vnašanjem Chrome pošlje vsebino naslovne vrstice ali iskalnega polja privzetemu iskalniku</translation>
 <translation id="7295052994004373688">Ta jezik se uporablja za prikaz uporabniškega vmesnika za Google Chrome</translation>
 <translation id="7296210096911315575">Pomembne informacije glede uporabe in varnosti</translation>
 <translation id="7308322188646931570">Chrome za prenos datotek potrebuje dostop do shrambe</translation>

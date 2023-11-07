@@ -32,6 +32,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1142732900304639782">Nu oferi traducerea acestor site-uri</translation>
 <translation id="1145536944570833626">Șterge datele existente.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> se va deschide în Chrome. Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Folosește parola <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Redenumește</translation>
 <translation id="1174479719160874822">Chrome va solicita site-ul mobil când ecranul este îngust</translation>
 <translation id="1177863135347784049">Personalizează</translation>
@@ -125,7 +126,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Elimină un element selectat}few{Elimină # elemente selectate}other{Elimină # de elemente selectate}}</translation>
 <translation id="1633659023549081553">Descoperă conținut nou în pagina de pornire Chrome</translation>
 <translation id="1641113438599504367">Navigare sigură</translation>
-<translation id="1642309806724967937">În funcție de setări, Chrome poate și să trimită cookie-uri și adresa URL actuală</translation>
 <translation id="164269334534774161">Se afișează o versiune offline a acestei pagini de pe <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1657932388559784161">Foaia paginii Statistici din partea de jos este închisă</translation>
@@ -149,6 +149,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1779766957982586368">Închide fereastra</translation>
 <translation id="1791662854739702043">Instalat</translation>
 <translation id="1792959175193046959">Schimbă oricând locația de descărcare prestabilită</translation>
+<translation id="1796666869097395659">Minimizează fila pentru a reveni la ea mai târziu</translation>
 <translation id="1807246157184219062">Luminos</translation>
 <translation id="1810845389119482123">Configurarea inițială a sincronizării nu este finalizată</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> nu poate folosi <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -703,7 +704,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4738836084190194332">Ultima sincronizare: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Vei primi sugestii îmbunătățite în bara de adrese</translation>
 <translation id="4742970037960872810">Elimină evidențierea</translation>
-<translation id="4743664893327841597">Textul pe care îl introduci în bara de adrese sau în caseta de căutare este trimis la motorul de căutare prestabilit</translation>
 <translation id="4749960740855309258">Deschide o filă nouă</translation>
 <translation id="4750356170202299988">Conținut pentru tineri</translation>
 <translation id="4758061975920522644">Trimite numai imaginea</translation>
@@ -755,6 +755,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4925120120285606924">Captură de ecran <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Parolele vor fi exportate și descărcate ca fișier text. Acestea vor fi vizibile pentru oricine și pentru orice aplicație care are acces la dosarul de destinație.</translation>
 <translation id="4926901776383726965">Poți să salvezi imagini și fișiere ca să le vezi offline sau să le trimiți în alte aplicații</translation>
+<translation id="4928144016283278047">Protecție împotriva trackerelor (cookie-uri terță parte, urmărirea adresei IP, scripturi invazive și altele)</translation>
 <translation id="4932247056774066048">Întrucât te deconectezi de la un cont gestionat de <ph name="DOMAIN_NAME" />, datele Chrome vor fi șterse de pe dispozitiv. Acestea vor fi păstrate în Contul tău Google.</translation>
 <translation id="4943703118917034429">Realitate virtuală</translation>
 <translation id="4943872375798546930">Nu există rezultate</translation>
@@ -1207,6 +1208,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="727288900855680735">Trimiți <ph name="ONE_TIME_CODE" /> către <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Site blocat</translation>
 <translation id="7276100255011548441">Chrome șterge automat subiectele mai vechi de patru săptămâni. Pe măsură ce navighezi, un subiect poate să reapară în listă. Sau poți bloca subiectele pe care nu vrei să le trimită Chrome la site-uri. Află mai multe despre <ph name="BEGIN_LINK" />gestionarea confidențialității anunțurilor în Chrome<ph name="END_LINK" />.</translation>
+<translation id="7284878711178835966">Pe măsură ce introduci text, Chrome trimite conținutul barei de adrese sau al casetei de căutare la motorul de căutare prestabilit</translation>
 <translation id="7286703216224610554">Trimite numai reacția</translation>
 <translation id="7289303553784750393">Dacă ești online, dar problema persistă, poți încerca alte metode pentru a accesa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7290209999329137901">Nu se poate redenumi</translation>

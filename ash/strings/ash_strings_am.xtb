@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">አብራ</translation>
 <translation id="1407069428457324124">ጠቆር ያለ ገጽታ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />። በቀኖች መካከል ለማሰስ የቀስት ቁልፎችን ይጠቀሙ።</translation>
+<translation id="141170878022560212">የመሃል አዝራር</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />፣ የተጫነ መተግበሪያ</translation>
 <translation id="1414919006379339073">የአሁኑን መስኮት ዝጋ</translation>
 <translation id="1415846719612499304">የአውታረ መረብ ዝርዝርን አሳይ። <ph name="STATE_TEXT" />።</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">ስሜት ገላጭ ምስል መራጭን ይክፈቱ</translation>
 <translation id="2088116547584365419">ጨዋታዎች</translation>
 <translation id="209965399369889474">ከአውታረ መረብ ጋር አልተገናኘም</translation>
+<translation id="2107581415810719320">ሌላ አዝራር <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">የእርስዎ USB-C ገመድ Thunderboltን አይደግፍም። የመሳሪያ አፈጻጸም የተገደበ ሊሆን ይችላል።</translation>
 <translation id="2108303511227308752">የAlt + የኋሊት መደምሰሻ የቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የሰርዝ ቁልፍን ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የኋሊት መደምሰሻን ይጫኑ።</translation>
 <translation id="2126242104232412123">አዲስ ዴስክ</translation>
@@ -563,6 +565,7 @@
 <translation id="3340978935015468852">ቅንብሮች</translation>
 <translation id="3341303451326249809">ቅጽበታዊ ገፅ ዕይታ ተቀርጿል</translation>
 <translation id="334252345105450327">ቅጽበታዊ ገፅ ዕይታ ያንሱ</translation>
+<translation id="3346728094401457853">ለ<ph name="EMAIL" /> የመሣሪያ የይለፍ ቃል ያስገቡ</translation>
 <translation id="334927402682780278">ጽሁፍን ከጠቋሚ ጀምሮ እስከ መስመሩ መጨረሻ ድረስ ይምረጡ</translation>
 <translation id="3349345708646875009">ተግባር መሪን ክፈት</translation>
 <translation id="3364721542077212959">የስቲለስ መሣሪያዎች</translation>
@@ -1590,6 +1593,7 @@
 <translation id="7489261257412536105">ወደ ሙሉ ገፅ ዕይታ ይግቡ ወይም ከእሱ ይውጡ</translation>
 <translation id="7490360161041035804">የGoogle Drive ፋይሎችን ጨምሮ አስፈላጊ ፋይሎችን ፒን ማድረግ ይችላሉ። ፒን ለማድረግ፣ አንድ ንጥል ላይ ያንዣብቡ ወይም ፋይሎችን ይክፈቱ እና አንድ ንጥል ላይ የቀኝ ጠቅታ ያድርጉ።</translation>
 <translation id="7497767806359279797">ቋንቋ እና ቁልፍ ሰሌዳን ይምረጡ</translation>
+<translation id="7507162824403726948">ማንነትዎን ማረጋገጥ ይጨርሱ</translation>
 <translation id="7508690557411636492">ባለፈው ወር ተከፍቷል</translation>
 <translation id="7509246181739783082">ማንነትዎን ያረጋግጡ</translation>
 <translation id="7512509370370076552">የቀኝ ጠቅታ አቋራጭ ከ<ph name="LAUNCHER_KEY_NAME" /> alt + ጠቅታ ወደ ቁልፍ + ጠቅታ ዘምኗል</translation>

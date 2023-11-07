@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1001716830750249114">Одете во поставките за верзијата на Chromium</translation>
 <translation id="1026101648481255140">Продолжи со инсталирање</translation>
 <translation id="1029669172902658969">Рестартирајте за да се ажурира &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium препорачува да ја прегледате екстензијава</translation>
@@ -23,6 +24,7 @@
 <translation id="1342274909142618978">Избриши ги и податоците од Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Најавени сте на Chromium!</translation>
 <translation id="1478370723027452770">Добијте помош со „Chrome за тестирање“</translation>
+<translation id="1497802159252041924">Грешка при инсталирање: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Споделете картичка на Chromium</translation>
 <translation id="1553461853655228091">На Chromium му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
 <translation id="1574377791422810894">Алатки за безбедност на Chromium</translation>
@@ -33,6 +35,7 @@
 Дозволите што веќе сте им ги дале на веб-сајтовите и апликациите можеби ќе важат за оваа сметка. Можете да управувате со сметките на Google во <ph name="SETTINGS_LINK_BEGIN" />Поставки<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Се презема…</translation>
 <translation id="1708666629004767631">Достапна е нова, побезбедна верзија на Chromium.</translation>
+<translation id="1715127912119967311">За да помогне да се подобрат функцииве, Chromium ги испраќа вашите интеракции со нив до Google. Можно е податоциве да ги читаат, да ги обработуваат и да додаваат прибелешки во нив човечки рецензенти.</translation>
 <translation id="17264556997921157">Може да ги гледате и отстранувате темите од интерес што сајтовите ги користат за да ви прикажуваат реклами. Chromium ги проценува вашите интереси според вашата неодамнешна историја на прелистувањето.</translation>
 <translation id="1733725117201708356">Chromium ќе ги избрише податоците од прелистување наскоро</translation>
 <translation id="1745121272106313518">Chromium ќе се рестартира за <ph name="REMAINING_TIME" /></translation>
@@ -157,11 +160,13 @@
 <translation id="390528597099634151">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chromium. За да прелистувате одделно, Chromium може да создаде одделен профил за вас.</translation>
 <translation id="3909353120217047026">Екстензијава ги прекршува правилата на „Веб-продавницата на Chrome“, па можеби не е безбедна. Отстранете ја од Chromium за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и вашите лични податоци.</translation>
 <translation id="391789666908693569">Со сметката управува <ph name="MANAGER_NAME" />. Администраторот може да го види и изменува овој профил на прелистувач Chromium и податоците за него, како обележувачи, историја и лозинки.</translation>
+<translation id="3922825997980843979">Додека пишувате, Chromium ги испраќа содржините од лентата за адреси или полето за пребарување до вашиот стандарден пребарувач</translation>
 <translation id="3945058413678539331">Chromium се обидува да копира лозинки. Внесете ја својата лозинка за Windows за да го овозможите тоа.</translation>
 <translation id="3962647064319009959">Дознајте како Chromium ве штити</translation>
 <translation id="3975724895399328945">За Google Chrome for Testing</translation>
 <translation id="3997429360543082038">За Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />средината за развој на Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="4028143804911941282">Кога се исклучени, сѐ уште ќе ги гледате предлозите што ги дава Chromium локално</translation>
 <translation id="4036079820698952681">Помогнете да го подобриме Chromium со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Во најновата верзија се достапни значајни безбедносни подобрувања и нови карактеристики.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
@@ -253,6 +258,7 @@
 <translation id="6003112304606738118">Се презема… Уште <ph name="HOURS" /> ч.</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6055895534982063517">Достапна е нова верзија на Chromium и побрза е од кога било.</translation>
+<translation id="6058380562449900225">За да ги заштитите вашите податоци, дозволете Chromium да ги отстрани дозволите од сајтовите што не сте ги отвориле одамна. Ова нема да ги сопре известувањата.</translation>
 <translation id="6063093106622310249">&amp;Отвори во Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> беше додадена на Chromium</translation>
 <translation id="6072463441809498330">Имајте побрз Chromium</translation>

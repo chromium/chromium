@@ -98,6 +98,7 @@
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1178821169867863726">१२ x १६ इन्च</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
+<translation id="1181381397492575884">Chrome ले साइटहरूलाई तपाईंले ब्राउज गरिरहेका बेला तपाईंलाई ट्र्याक गर्ने प्रयोजनका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिँदैन। <ph name="LINK" /> गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="1186201132766001848">पासवर्डहरूको जाँच गर्नुहोस्</translation>
 <translation id="1190491977647722791">पेपर (हेभीवेट)</translation>
 <translation id="1195073053842921378">यो डिभाइसबाट यो ठेगाना मेटाइने छ</translation>
@@ -118,6 +119,7 @@
 <translation id="1225570101506606926">बिलियार्ड</translation>
 <translation id="1225607422885279949">Google ले तपाईंका निम्ति छुटहरू भेट्टाइदिने छ</translation>
 <translation id="1227224963052638717">अज्ञात नीति।</translation>
+<translation id="1227677022489889280">सार्नुको कारण उपलब्ध उल्लेख गर्नुहोस् (अनिवार्य)</translation>
 <translation id="1228893227497259893">गलत एकाइ परिचयकर्ता</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (स्वतः पत्ता लगाइएको छ)</translation>
 <translation id="1232569758102978740">शीर्षक नभएको</translation>
@@ -347,6 +349,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />साइटको गृहपृष्ठमा गई हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="1641976391427233992">आउटपुट यति समयसम्म विलम्बित गर्नुहोस्:</translation>
 <translation id="164212631332220697">चेकआउटका बेला <ph name="CARD_DETAIL" /> प्रयोग गरी भुक्तानी गर्नुहोस्।</translation>
+<translation id="1643651787397909318">"Chrome को सुरक्षा जाँचमा जानुहोस्" बटन, सेटिङमा रहेको Chrome को सुरक्षा जाँच पेजमा जान एक्टिभेट गर्नुहोस्</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1645368109819982629">असमर्थित प्रोटोकल</translation>
 <translation id="1650602712345345441">Chrome मा आफूले तय गरेका सेटिङ मिलाउनुहोस्</translation>
@@ -1041,6 +1044,7 @@
 <translation id="3140646734028448730">व्यावसायिक सेवाहरू</translation>
 <translation id="3141093262818886744">जे भए पनि खोल्नुहोस्</translation>
 <translation id="3141641372357166056">सहमति जनाउने कि नजनाउने भनेर निर्णय गरिएको छैन</translation>
+<translation id="3142736425087361223"><ph name="ORIGIN" /> मा Chrome प्रयोग गर्नका निम्ति तपाईंले यसलाई <ph name="PERMISSION" /> दिनु पर्ने हुन्छ</translation>
 <translation id="3144458715650412431">परीक्षणसम्बन्धी नीतिहरू लागू गरिएका छन्। chrome://policy/test मा गई ती नीतिहरूको समीक्षा गरी रिसेट गर्नुहोस्। एड्मिनसम्बन्धी नीतिहरू लागू गरिने छैनन्।</translation>
 <translation id="3145945101586104090">प्रतिक्रिया डिकोड गर्न असफल भयो</translation>
 <translation id="3150653042067488994">अस्थायी सर्भर त्रुटि</translation>
@@ -1201,6 +1205,7 @@
 <translation id="3447644283769633681">तेस्रो पक्षीय सबै कुकीहरू ब्लक गर्नुहोस्</translation>
 <translation id="3447661539832366887">यस यन्त्रको मालिकले डायनासोर खेल बन्द गर्‍यो।</translation>
 <translation id="3447884698081792621">प्रमाणपत्र देखाउनुहोस् (<ph name="ISSUER" /> द्वारा जारी गरिएको)</translation>
+<translation id="3450323514459570273">यसले तपाईंका MIDI डिभाइसहरू नियन्त्रण तथा रिप्रोग्राम गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="3452404311384756672">अन्तराल तान्नुहोस्:</translation>
 <translation id="3453962258458347894">कति पटक पुन: प्रयास गरियो</translation>
 <translation id="3461266716147554923"><ph name="URL" /> क्लिपबोर्डमा प्रतिलिपि गरिएको पाठ र छवि हेर्न चाहन्छ</translation>
@@ -1998,6 +2003,7 @@
 <translation id="5045550434625856497">गलत पासवर्ड</translation>
 <translation id="5051305769747448211">लाइभ कमेडी</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{नजिकैका डिभाइससँग सेयर गर्ने सुविधा प्रयोग गरी यो फाइल पठाउन आफ्नो डिभाइसको भण्डारणमा ठाउँ (<ph name="DISK_SPACE_SIZE" />) खाली गर्नुहोस्}other{नजिकैका डिभाइससँग सेयर गर्ने सुविधा प्रयोग गरी यी फाइलहरू पठाउन आफ्नो डिभाइसको भण्डारणमा ठाउँ (<ph name="DISK_SPACE_SIZE" />) खाली गर्नुहोस्}}</translation>
+<translation id="505757197798929356">खोल्नुको कारण उल्लेख गर्नुहोस् (अनिवार्य)</translation>
 <translation id="5060419232449737386">क्याप्सनसम्बन्धी सेटिङ</translation>
 <translation id="5060483733937416656">तपाईंले <ph name="PROVIDER_ORIGIN" /> प्रयोग गर्ने वेबसाइटमा Windows Hello मार्फत पुष्टि गर्ने विकल्प छनौट गर्नुभएको छ। यो प्रदायकले तपाईंको भुक्तानी विधिसम्बन्धी जानकारी भण्डारण गरेको हुन सक्छ, तपाईं सो जानकारी <ph name="LINK_TEXT" /> गर्न सक्नुहुन्छ।</translation>
 <translation id="5061227663725596739">तपाईंले <ph name="LOOKALIKE_DOMAIN" /> भन्न चाहनुभएको हो?</translation>
@@ -2042,6 +2048,8 @@
 <translation id="5137761395480718572">यो एपले Wi-Fi क्रिडेन्सियलहरू इन्स्टल गर्ने अनुमति माग्दै छ। सेटअप गर्ने प्रक्रिया पूरा भएपछि तपाईंको <ph name="DEVICE_TYPE" /> उपलब्ध Wi-Fi नेटवर्कहरूमा स्वतः कनेक्ट हुने छ। यी क्रिडेन्सियलहरू हटाउन यो एप अनइन्स्टल गर्नुहोस्। <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">भर्चुअल कार्ड हाल उपलब्ध छैन। कृपया आफ्नो बैंकमा सम्पर्क गर्नुहोस्</translation>
 <translation id="5138227688689900538">कम देखाउनुहोस्</translation>
+<translation id="5143309888746105072">Chromium ले साइटहरूलाई तपाईंले ब्राउज गरिरहेका बेला तपाईंलाई ट्र्याक गर्ने प्रयोजनका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिँदैन।
+            <ph name="NEW_LINE" />साइटका सुविधाहरूले काम गरिरहेका छैनन् भने <ph name="START_LINK" />केही समयका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिई हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="5145883236150621069">नीति प्रतिक्रियामा त्रुटि कोड समावेश छ</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> का सूचनाहरूलाई रोक लगाइएको छ</translation>
 <translation id="514704532284964975"><ph name="URL" /> ले तपाईंले आफ्नो फोनमार्फत ट्याप गर्ने NFC डिभाइसमा भएका जानकारी हेर्ने तथा परिवर्तन गर्ने अनुमति माग्दै छ</translation>
@@ -2115,6 +2123,7 @@
 <translation id="5288393065350884210">लेखा तथा लेखापरीक्षण</translation>
 <translation id="5289384342738547352">एकभन्दा बढी कागजातहरूको व्यवस्थापन</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{आजै अपडेट गर्नु पर्ने हुन्छ}=2{भोलिसम्ममा अपडेट गर्नु पर्ने हुन्छ}other{# दिनभित्र अपडेट गर्नु पर्ने हुन्छ}}</translation>
+<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> सम्बन्धी सेटिङमा जानुहोस्</translation>
 <translation id="5293919335876685914">कुप कारहरू</translation>
 <translation id="5296589789433599000">पकवान तथा पाकविधिहरू</translation>
 <translation id="5299298092464848405">त्रुटि पार्सिङ नीति</translation>
@@ -2387,6 +2396,7 @@
 <translation id="5873297634595728366">डिजेलबाट चल्ने गाडी</translation>
 <translation id="5877831137320480913">सौन्दर्य तथा तन्दुरुस्ती</translation>
 <translation id="5879989559903563723">गेस्ट मोडमा अनुमति दिइएको छैन</translation>
+<translation id="5880050725127890683">Chrome को सुरक्षा जाँचमा जानुहोस्</translation>
 <translation id="5883861433316751031">MIDI डिभाइसहरू नियन्त्रण र रिप्रोग्राम गर्ने हो?</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">कार्ड सेभ गरियो</translation>
@@ -2423,6 +2433,7 @@
 <translation id="5951495562196540101">उपभोक्ताको खातामार्फत दर्ता गर्न सकिँदैन (प्याकेजसहितको इजाजतपत्र उपलब्ध छ)।</translation>
 <translation id="5953516610448771166">यो मिडियामा लाइभ क्याप्सन उपलब्ध छैन। क्याप्सनहरू प्राप्त गर्न यो साइटमा <ph name="CONTENT_SETTINGS" /> ब्लक गर्नुहोस्।</translation>
 <translation id="5955063559762970069">होटेल तथा आवासहरू</translation>
+<translation id="595873925609605681">साइटका सुविधाहरूले काम गरिरहेका छैनन् भने <ph name="BEGIN_LINK" />केही समयका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिई हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="5963413905009737549">खण्ड</translation>
 <translation id="5964247741333118902">इम्बेड गरिएको सामग्री</translation>
 <translation id="5967260682280773804">३६ x ४८ इन्च</translation>
@@ -2567,6 +2578,7 @@
 <translation id="6251906504834538140">{0,plural, =1{फाइल सार्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल सार्न रोक लगाइएको छ}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफूले Chrome मा डाउनलोड गरेका फाइल व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="6254436959401408446">यो पृष्ठ खोल्नका लागि पर्याप्त मेमोरी छैन</translation>
+<translation id="625463612687472648">अनुमति रद्द गर्नुहोस्</translation>
 <translation id="6259156558325130047">क्रम परिवर्तन गर्ने कार्य &amp;पुन: गर्नुहोस्</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्कहरू</translation>
 <translation id="6264376385120300461">जे भए पनि डाउनलोड गर्नुहोस्</translation>
@@ -2726,6 +2738,7 @@
 <translation id="6556866813142980365">फेरि गर्नुहोस्</translation>
 <translation id="6557715786897013164">१४ x १७ इन्च</translation>
 <translation id="6560786330438719938">इन्स्टल वा अनइन्स्टल गरिएका एप र ती एप कत्तिको प्रयोग गरिन्छन् भन्ने कुराका बारेमा जानकारी</translation>
+<translation id="6567084950885568327">MIDI डिभाइस कन्ट्रोल र रिप्रोग्रामिङ</translation>
 <translation id="6568793038316600992">भुक्तानी विधिहरू व्यवस्थापन गर्ने बटन, Chrome का सेटिङमा गई आफ्ना भुक्तानीसम्बन्धी जानकारी तथा क्रेडिट कार्डसम्बन्धी जानकारी व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="6569060085658103619">तपाईं एउटा विस्तार सम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
 <translation id="6569366777234823130">नाट्य चलचित्रहरू</translation>
@@ -2741,6 +2754,8 @@
 <translation id="6596325263575161958">गुप्तीकरण विकल्पहरू</translation>
 <translation id="6597665340361269064">९० डिग्री</translation>
 <translation id="6599642189720630047">ट्र्याक गरिएका उत्पादनहरू</translation>
+<translation id="6606309334576464871">Chrome ले साइटहरूलाई तपाईंले ब्राउज गरिरहेका बेला तपाईंलाई ट्र्याक गर्ने प्रयोजनका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिँदैन।
+            <ph name="NEW_LINE" />साइटका सुविधाहरूले काम गरिरहेका छैनन् भने <ph name="START_LINK" />केही समयका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिई हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="6611723696964473273">आर्थिक समाचार</translation>
 <translation id="6612010098632894193">अनलाइन भिडियो</translation>
 <translation id="6613866251791999074">Chrome मा प्रयोग गरिने सर्च इन्जिनका बारेमा थप जान्नुहोस्</translation>
@@ -2892,6 +2907,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="691024665142758461">बहुविध फाइलहरू डाउनलोड गर्नुहोस्।</translation>
 <translation id="6915804003454593391">प्रयोगकर्ता:</translation>
+<translation id="6916193791494646625">डाउनलोड गर्नुको कारण उल्लेख गर्नुहोस् (अनिवार्य)</translation>
 <translation id="6916954549222464607">वित्तीय योजना तथा व्यवस्थापन</translation>
 <translation id="6917795328362592458">तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ। तपाईंका खाताको सुरक्षार्थ पासवर्ड म्यानेजर तपाईंले सेभ गरेका पासवर्डहरू सुरक्षित छन् कि छैनन् जाँच्न सिफारिस गर्छ।</translation>
 <translation id="6925267999184670015">North American B+</translation>
@@ -3093,6 +3109,7 @@
 <translation id="7308436126008021607">ब्याकग्राउन्डमा सिंक गर्ने सुविधा</translation>
 <translation id="7310392214323165548">डिभाइस चाँडै रिस्टार्ट हुने छ</translation>
 <translation id="7311244614769792472">कुनै पनि परिणाम भेटिएन</translation>
+<translation id="7311837626618954149">Chromium ले साइटहरूलाई तपाईंले ब्राउज गरिरहेका बेला तपाईंलाई ट्र्याक गर्ने प्रयोजनका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिँदैन।</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">जडानसम्बन्धी मद्दत</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" खण्ड लुकाइयोस्</translation>
@@ -3184,6 +3201,8 @@
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> लाई तपाईं <ph name="TOP_LEVEL_URL" /> मा जानुभएको कुरा थाहा हुने छ</translation>
 <translation id="7465963048299965912">१० x १३ इन्च</translation>
 <translation id="7469935732330206581">यो फारम सुरक्षित छैन</translation>
+<translation id="7470854469646445678">कपी गर्नुको कारण उल्लेख गर्नुहोस् (अनिवार्य)</translation>
+<translation id="7471007961486718967">ट्रान्स्फर गर्नुको कारण उल्लेख गर्नुहोस् (अनिवार्य)</translation>
 <translation id="7473891865547856676">पर्दैन, धन्यवाद</translation>
 <translation id="7481312909269577407">अगाडि</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
@@ -3230,6 +3249,7 @@
 <translation id="7550637293666041147">तपाईंको डिभाइसको युजरनेम र Chrome को युजरनेम</translation>
 <translation id="7551484245293639699">यात्रा बिमा</translation>
 <translation id="7552846755917812628">निम्न सुझावहरूको पालना गरी हेर्नुहोस्:</translation>
+<translation id="7554242657529665960">तपाईंका एड्मिनबाट प्राप्त म्यासेज: "<ph name="ADMIN_MESSAGE" />"</translation>
 <translation id="7554475479213504905">जे भए पनि पुनः लोड गर्नुहोस् र देखाउनुहोस्</translation>
 <translation id="7554791636758816595">नयाँ ट्याब</translation>
 <translation id="7555777498260651025">परिवार लक्षित टिभी सोहरू</translation>
@@ -3346,6 +3366,7 @@
 <translation id="7744505202669469867">सेभ गरिएका ठेगानाहरूको तालिका</translation>
 <translation id="774634243536837715">खतरनाक सामग्रीमाथि रोक लगाइयो।</translation>
 <translation id="7748758200357401411">हाई पर्फर्मेन्स तथा आफ्टरमार्केट अटो पार्ट</translation>
+<translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome मा फन्टका आकार तथा टाइपफेसहरू कस्टमाइज गर्नुहोस्</translation>
 <translation id="7752995774971033316">अव्यवस्थित</translation>
 <translation id="7754587126786572336">अपडेट सुरु भएपछि तपाईंका Chrome ट्याब तथा एपहरू बन्द हुने छन्</translation>
@@ -3409,6 +3430,7 @@
 <translation id="7888575728750733395">प्रिन्टिङ रेन्डर गर्ने प्रक्रियाको उद्देश्य</translation>
 <translation id="7894280532028510793">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'नेटवर्कका डाइगोन्स्टिक्स' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 in</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, सेटिङमा रहेको Chrome को सुरक्षा जाँच पेजमा जान ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="7916162853251942238">फ्लेक्सो बेस</translation>
 <translation id="7927971017714848357">प्लट तथा जग्गा</translation>
 <translation id="793209273132572360">ठेगाना बदल्ने हो?</translation>
@@ -3426,6 +3448,7 @@
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7943397946612013052">फाइल डाउनलोड गर्न पाइँदैन</translation>
 <translation id="7943893128817522649">एकभन्दा बढी फाइल स्वतः डाउनलोड गर्ने अनुमति माग्न सक्छ</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7946724693008564269">पत्ता लागेको भाषा</translation>
 <translation id="7947285636476623132">आफ्नो म्याद सकिने वर्षको जाँच गरी फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सुविधाहरूका बारेमा जान्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -3684,6 +3707,7 @@
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8428634594422941299">बुझेँ</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई कुकीसम्बन्धी आफ्ना प्राथमिकताहरू व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
+<translation id="8432419784006585012">यसले तपाईंका MIDI डिभाइसहरू प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="8433057134996913067">यसले तपाईँलाई अधिकांश साइटहरूबाट साइन आउट गराउनेछ।</translation>
 <translation id="8434014327286137412">अर्को पटक अझ छिटो भुक्तानी गर्न आफ्नो Google खातामा IBAN सेभ गर्नुहोस्</translation>
 <translation id="8434840396568290395">पाल्तु जनावरहरू</translation>
@@ -3702,6 +3726,7 @@
 <translation id="8460854335417802511">यो सुविधा अन गर्नुहोस्</translation>
 <translation id="8461694314515752532">सिंक गरिएको डेटालाई तपाईंको आफ्नै सिंक पासफ्रेजमार्फत इन्क्रिप्ट गर्नुहोस्</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{१ क्रेडिट कार्ड}other{# क्रेडिट कार्डहरू}}</translation>
+<translation id="8467494337615822642">सेटिङमा रहेको Chrome को सुरक्षा जाँच पेजमा जानुहोस्</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
 <translation id="8473626140772740486">३०० x ४५० मिलिमिटर</translation>
 <translation id="8473863474539038330">ठेगाना र थप कुराहरू</translation>
@@ -3731,6 +3756,7 @@
 <translation id="853246364274116957">ब्रोडवे तथा म्युजिकल थिएटर</translation>
 <translation id="853332391023689529">पिकअप ट्रकहरू</translation>
 <translation id="8533619373899488139">ब्लक गरिएका URL र तपाईंको प्रणालीका एड्मिनले लागू गर्नुभएका अन्य नीतिहरूको सूची हेर्न &lt;strong&gt;chrome://policy&lt;/strong&gt; मा जानुहोस्।</translation>
+<translation id="8534934518812659742">तपाईंले Chrome मा <ph name="PERMISSION" /> अफ गर्नुभएको छ।</translation>
 <translation id="8536234749087605613">इन्भलप (विन्डो)</translation>
 <translation id="8539500321752640291">२ वटै अनुमति दिने हो?</translation>
 <translation id="8541158209346794904">ब्लुटुथ यन्त्र</translation>
@@ -3741,6 +3767,7 @@
 <translation id="8543181531796978784">तपाईं <ph name="BEGIN_ERROR_LINK" />एक पत्ता लगाउने समस्या रिपोर्ट गर्न<ph name="END_ERROR_LINK" /> सक्नुहुन्छ, यदि तपाईं आफ्नो सुरक्षाको जोखिम बुझ्नुहुन्छ भने, <ph name="BEGIN_LINK" />असुरक्षित साइटको भ्रमण गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="8544303911974837265">पोलिस्टर</translation>
 <translation id="854548366864113872">उच्च मूल्यको विकल्प</translation>
+<translation id="8546254312340305428">अपलोड गर्नुको कारण उल्लेख गर्नुहोस् (अनिवार्य)</translation>
 <translation id="8546350655047701518">लगहरू JSON फाइलका रूपमा एक्स्पोर्ट गर्नुहोस्</translation>
 <translation id="8546667245446052521">पेपर (अर्काइभल)</translation>
 <translation id="854892890027593466">Envelope C6/C5</translation>
@@ -4069,6 +4096,7 @@
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
 <translation id="940053046584497293">यात्रा तथा यातायात</translation>
 <translation id="944540589955480312">आफ्नो Google खातामा सेभ गरिएका पासवर्ड तथा पासकीहरू प्रयोग गर्नुहोस्</translation>
+<translation id="945646848072568856">Chrome ले साइटहरूलाई तपाईंले ब्राउज गरिरहेका बेला तपाईंलाई ट्र्याक गर्ने प्रयोजनका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिँदैन।</translation>
 <translation id="945855313015696284">तल दिइएको जानकारीको जाँच गर्नुहोस् र सबै अमान्य कार्ड मेट्नुहोस्</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome ले आज फेरि कुकीहरू सीमित पार्ने छ}=1{Chrome ले भोलि फेरि कुकीहरू सीमित पार्ने छ}other{Chrome ले अबको # दिनमा फेरि कुकीहरू सीमित पार्ने छ}}</translation>

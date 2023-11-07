@@ -524,6 +524,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="371230970611282515">Dự đoán và cảnh báo cho bạn các sự kiện nguy hiểm trước khi các sự kiện đó xảy ra.</translation>
 <translation id="371398631992790800">Ẩn tuỳ chọn Dấu trang</translation>
 <translation id="37207012422556617">Nội dung tìm kiếm thịnh hành</translation>
+<translation id="3725081662140949903">Để ngăn người khác sử dụng mật khẩu của bạn, hãy mở ứng dụng <ph name="APP" /> để đổi mật khẩu</translation>
 <translation id="3740397331642243698">Mở các URL đã nhập trong Google Chrome ở chế độ Ẩn danh.</translation>
 <translation id="374357899112510277">Ẩn tuỳ chọn Tệp đã tải xuống</translation>
 <translation id="3745190878148784130">Ẩn tuỳ chọn Thu phóng văn bản</translation>
@@ -641,6 +642,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4389019817280890563">Nhấn để thay đổi ngôn ngữ.</translation>
 <translation id="4405320213589929829">Sử dụng địa chỉ trên các trang web để xem thông tin địa phương và đường đi.</translation>
 <translation id="4420409367264901497">Chỉnh sửa dấu trang</translation>
+<translation id="4431224949908513835">Chọn phương thức thanh toán cần điền.</translation>
 <translation id="4442550905108052454">Mở phần <ph name="BEGIN_BOLD" />Cài đặt<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Thêm ngôn ngữ</translation>
 <translation id="4461286950227634995">Đề xuất lưu mật khẩu</translation>
@@ -1198,6 +1200,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7221173315674413369">Khám phá các mẹo và tính năng mới trong phần Tính năng mới</translation>
 <translation id="7223102419539744003">Đóng thẻ</translation>
 <translation id="722454870747268814">Thẻ ẩn danh mới</translation>
+<translation id="7233006041370588369">Chọn mật khẩu cần điền.</translation>
 <translation id="7265758999917665941">Không bao giờ đối với trang web này</translation>
 <translation id="7272437679830969316">Không thể xác minh danh tính của bạn. Chưa sao chép mật khẩu.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Đã theo dõi gói hàng mới}other{Đã theo dõi các gói hàng mới}}</translation>

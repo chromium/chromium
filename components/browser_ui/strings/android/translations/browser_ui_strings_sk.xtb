@@ -81,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Sú udelené povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie}few{Sú udelené povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more allowed}other{Sú udelené povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalších}}</translation>
 <translation id="2410940059315936967">Na webe, ktorý navštívite, môže byť vložený obsah z iných webov, napríklad obrázky, reklamy a text. Súbory cookie nastavené týmito ďalšími webmi sa nazývajú súbory cookie tretích strán.</translation>
 <translation id="2434158240863470628">Sťahovanie bolo dokončené <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Tomuto webu ste dočasne povolili používať súbory cookie tretích strán, čo znamená nižšiu ochranu, ale funkcie webu budú s väčšou pravdepodobnosťou fungovať podľa očakávaní. <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Funkcie na niektorých weboch nemusia byť v režime inkognito k dispozícii</translation>
 <translation id="2442870161001914531">Vždy požadovať web pre počítače</translation>
 <translation id="2469312991797799607">Touto akciou odstránite všetky údaje a súbory cookie domény <ph name="ORIGIN" /> a všetkých jej webov</translation>
@@ -115,6 +116,7 @@
 <translation id="2910701580606108292">Pýtať sa, či chcete povoliť webu prehrávať chránený obsah</translation>
 <translation id="2932883381142163287">Nahlásiť zneužitie</translation>
 <translation id="2968755619301702150">Zobrazovač certifikátov</translation>
+<translation id="2979365474350987274">Súbory cookie tretích strán sú obmedzené</translation>
 <translation id="3008272652534848354">Obnoviť povolenia</translation>
 <translation id="301521992641321250">Automaticky blokované</translation>
 <translation id="3069226013421428034">Na konkrétnom webe môžete povoliť prihlasovanie tretích strán.</translation>
@@ -207,6 +209,7 @@
 <translation id="4644713492825682049">Odstrániť a resetovať</translation>
 <translation id="4645575059429386691">Spravované vaším rodičom</translation>
 <translation id="4670064810192446073">Virtuálna realita</translation>
+<translation id="4673958474310291465">Vyskúšajte dočasne povoliť súbory cookie tretích strán, čo znamená nižšiu ochranu, ale funkcie webu budú s väčšou pravdepodobnosťou fungovať podľa očakávaní</translation>
 <translation id="4751476147751820511">Senzory pohybu alebo svetla</translation>
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4811450222531576619">Ďalšie informácie o príslušnom zdroji a téme</translation>
