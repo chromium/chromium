@@ -2651,7 +2651,6 @@ test("content_unittests") {
     "../browser/renderer_host/render_widget_host_view_aura_unittest.cc",
     "../browser/renderer_host/render_widget_host_view_base_unittest.cc",
     "../browser/renderer_host/render_widget_host_view_child_frame_unittest.cc",
-    "../browser/renderer_host/renderer_sandboxed_process_launcher_delegate_unittest.cc",
     "../browser/renderer_host/transient_allow_popup_unittest.cc",
     "../browser/renderer_host/view_transition_commit_deferring_condition_unittest.cc",
     "../browser/renderer_host/visible_time_request_trigger_unittest.cc",
@@ -2893,6 +2892,7 @@ test("content_unittests") {
   if (is_win) {
     sources += [
       "../browser/media/web_app_system_media_controls_manager_unittest.cc",
+      "../browser/renderer_host/renderer_sandboxed_process_launcher_delegate_unittest.cc",
       "../renderer/media/win/overlay_state_observer_impl_unittest.cc",
     ]
   }
@@ -3127,7 +3127,6 @@ test("content_unittests") {
 
   if (enable_ppapi) {
     sources += [
-      "../browser/ppapi_plugin_sandboxed_process_launcher_delegate_unittest.cc",
       "../browser/renderer_host/pepper/browser_ppapi_host_test.cc",
       "../browser/renderer_host/pepper/browser_ppapi_host_test.h",
       "../browser/renderer_host/pepper/pepper_file_system_browser_host_unittest.cc",
@@ -3140,6 +3139,9 @@ test("content_unittests") {
       "../renderer/pepper/mock_resource.h",
       "../renderer/pepper/v8_var_converter_unittest.cc",
     ]
+    if (is_win) {
+      sources += [ "../browser/ppapi_plugin_sandboxed_process_launcher_delegate_unittest.cc" ]
+    }
     deps += [
       "//ppapi/c",
       "//ppapi/host",
