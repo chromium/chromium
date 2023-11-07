@@ -8,10 +8,12 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -123,6 +125,15 @@ class PasswordSettingsCoordinatorTest : public PlatformTest {
         isKindOfClass:[PasswordSettingsViewController class]];
   }
 
+  // Verifies that a given number of password settings visits have been
+  // recorded.
+  void CheckPasswordSettingsVisitMetricsCount(int count) {
+    histogram_tester_.ExpectUniqueSample(
+        /*name=*/password_manager::kPasswordManagerSurfaceVisitHistogramName,
+        /*sample=*/password_manager::PasswordManagerSurface::kPasswordSettings,
+        /*count=*/count);
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
@@ -133,28 +144,70 @@ class PasswordSettingsCoordinatorTest : public PlatformTest {
   std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
       scoped_reauth_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
   PasswordSettingsCoordinator* coordinator_ = nil;
   ProtocolFake* fake_command_endpoint_ = nil;
 };
 
 // Tests that Password Settings is presented without authentication required.
 TEST_F(PasswordSettingsCoordinatorTest, PasswordSettingsPresentedWithoutAuth) {
+  CheckPasswordSettingsVisitMetricsCount(0);
+
   StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/YES);
 
   ASSERT_TRUE(IsPasswordSettingsPresented());
+  CheckPasswordSettingsVisitMetricsCount(1);
 }
 
 // Tests that Password Settings is presented only after passing authentication
 TEST_F(PasswordSettingsCoordinatorTest, PasswordSettingsPresentedWithAuth) {
+  CheckPasswordSettingsVisitMetricsCount(0);
+
   StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/NO);
 
   // Password Settings should be covered until auth is passed.
   ASSERT_FALSE(IsPasswordSettingsPresented());
 
+  // No visits logged until auth is passed and the surface is uncovered.
+  CheckPasswordSettingsVisitMetricsCount(0);
+
   [mock_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Password Settings visible.
   ASSERT_TRUE(IsPasswordSettingsPresented());
+  CheckPasswordSettingsVisitMetricsCount(1);
+}
+
+// Tests that Password Settings visits are only logged once after the first
+// successful authentication.
+TEST_F(PasswordSettingsCoordinatorTest, PasswordSettingsVisitRecordedOnlyOnce) {
+  CheckPasswordSettingsVisitMetricsCount(0);
+
+  StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/NO);
+
+  // Password Settings should be covered until auth is passed.
+  ASSERT_FALSE(IsPasswordSettingsPresented());
+
+  // No visits logged until auth is passed and the surface is uncovered.
+  CheckPasswordSettingsVisitMetricsCount(0);
+
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+
+  // Successful auth should leave Password Settings visible.
+  ASSERT_TRUE(IsPasswordSettingsPresented());
+  CheckPasswordSettingsVisitMetricsCount(1);
+
+  // Simulate scene transitioning to the background and back to foreground.
+  // This should trigger an auth request.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+
+  // Validate no new visits were recorded.
+  CheckPasswordSettingsVisitMetricsCount(1);
 }
 
 }  // namespace password_manager
