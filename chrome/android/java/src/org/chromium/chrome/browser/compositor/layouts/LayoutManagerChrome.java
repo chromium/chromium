@@ -663,9 +663,8 @@ public class LayoutManagerChrome
     }
 
     /**
-     * @return The {@link StripLayoutHelperManager} managed by this class.
+     * Returns the {@link StripLayoutHelperManager} managed by this class.
      */
-    @VisibleForTesting
     public StripLayoutHelperManager getStripLayoutHelperManager() {
         return null;
     }

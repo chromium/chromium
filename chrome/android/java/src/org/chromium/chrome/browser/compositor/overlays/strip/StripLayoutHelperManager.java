@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnDragListener;
 import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
@@ -710,6 +711,14 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             mIncognitoHelper.setRightFadeWidth(mTabStripFadeShortWidth);
         }
         return rightFadeDrawable;
+    }
+
+    /**
+     * Returns drag listener for tab strip.
+     */
+    public OnDragListener getDragListener() {
+        if (mTabDragSource == null) return null;
+        return mTabDragSource.getDragListener();
     }
 
     void setModelSelectorButtonVisibleForTesting(boolean isVisible) {

@@ -83,10 +83,12 @@ public class TabDragSource {
                         .getDimension(R.dimen.tab_strip_height);
 
         mOnDragListenerImpl = new OnDragListenerImpl();
-        toolbarContainerView.setOnDragListener(mOnDragListenerImpl);
     }
 
-    public OnDragListenerImpl getDragListenerForTesting() {
+    /**
+     * Returns Drag listener for tab strip.
+     */
+    public OnDragListenerImpl getDragListener() {
         return mOnDragListenerImpl;
     }
 

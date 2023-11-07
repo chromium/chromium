@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.Invalidator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
@@ -1547,6 +1548,15 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (layoutManager != null) {
             mLayoutManager = layoutManager;
             mLayoutManager.getOverlayPanelManager().addObserver(mOverlayPanelManagerObserver);
+            // Set drag listener for toolbar container.
+            if (mLayoutManager instanceof LayoutManagerChrome
+                    && ((LayoutManagerChrome) mLayoutManager).getStripLayoutHelperManager()
+                            != null) {
+                mControlContainer.setToolbarContainerDragListener(
+                        ((LayoutManagerChrome) mLayoutManager)
+                                .getStripLayoutHelperManager()
+                                .getDragListener());
+            }
         }
 
         if (mMenuStateObserver != null) {

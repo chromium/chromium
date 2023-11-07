@@ -247,6 +247,15 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
     }
 
     /**
+     * Sets drag listener for toolbar container.
+     *
+     * @param toolbarContainerDragListener Listener to set.
+     */
+    public void setToolbarContainerDragListener(OnDragListener toolbarContainerDragListener) {
+        mToolbarContainer.setOnDragListener(toolbarContainerDragListener);
+    }
+
+    /**
      * The layout that handles generating the toolbar view resource.
      */
     // Only publicly visible due to lint warnings.

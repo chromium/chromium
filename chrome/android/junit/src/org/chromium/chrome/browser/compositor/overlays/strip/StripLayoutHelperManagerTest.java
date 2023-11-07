@@ -673,6 +673,15 @@ public class StripLayoutHelperManagerTest {
                 mStripLayoutHelperManager.getTabDropTargetForTesting());
     }
 
+    @Test
+    @Config(sdk = VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
+    public void testGetDragListener() throws NameNotFoundException {
+        enableMultiInstance();
+        initializeTest();
+        assertNotNull("DragListener should be set.", mStripLayoutHelperManager.getDragListener());
+    }
+
     private void enableMultiInstance() throws NameNotFoundException {
         Context mApplicationContext = Mockito.spy(ContextUtils.getApplicationContext());
         PackageManager packageManager = mock(PackageManager.class);

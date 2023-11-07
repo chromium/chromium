@@ -293,7 +293,7 @@ public class TabDragSourceTest {
         // Mock same source
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(CURR_INSTANCE_ID);
 
-        OnDragListener dragListener = mTabDragSource.getDragListenerForTesting();
+        OnDragListener dragListener = mTabDragSource.getDragListener();
         if (withinStripLayout) {
             eventsWithinStripLayout(dragListener);
         } else {
@@ -433,7 +433,7 @@ public class TabDragSourceTest {
         // Drop event on another Chrome window in the in top half.
         DragDropGlobalState.getInstance().dragSourceInstanceId = CURR_INSTANCE_ID;
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(ANOTHER_INSTANCE_ID);
-        TabDragSource.OnDragListenerImpl dragListener = mTabDragSource.getDragListenerForTesting();
+        TabDragSource.OnDragListenerImpl dragListener = mTabDragSource.getDragListener();
         boolean res =
                 dragListener.canAcceptTabDrop(createDragEvent(DragEvent.ACTION_DROP, 150f, 10f, 0));
         assertTrue("Tab drop should be accepted in another tabs toolbar view.", res);
