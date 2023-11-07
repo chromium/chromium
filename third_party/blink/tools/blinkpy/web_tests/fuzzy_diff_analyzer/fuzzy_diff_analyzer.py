@@ -16,10 +16,19 @@ third_party/blink/tools/run_fuzzy_diff_analyzer.py \
 
 import argparse
 import re
+import urllib.parse
 
+from blinkpy.common.host import Host
+from blinkpy.common.net.luci_auth import LuciAuth
+from blinkpy.w3c.monorail import MonorailAPI
 from blinkpy.web_tests.fuzzy_diff_analyzer import analyzer
 from blinkpy.web_tests.fuzzy_diff_analyzer import queries
 from blinkpy.web_tests.fuzzy_diff_analyzer import results
+
+
+DASHBOARD_BASE_URL = 'https://dashboards.corp.google.com/image_comparison'\
+                     '_web_test_status_dashboard_history_data_per_test'
+RESULT_TITLE = 'Fuzzy Diff Analyzer result:'
 
 
 def ParseArgs() -> argparse.Namespace:
@@ -58,6 +67,12 @@ def ParseArgs() -> argparse.Namespace:
         default=False,
         help='Only checks the image diff tests result on existing bugs in the'
         ' LUCI analysis database.')
+    parser.add_argument(
+        '--attach-analysis-result',
+        action='store_true',
+        default=False,
+        help='Attach the fuzzy diff analysis result to the corresponding bug.'
+        ' Only used with --check-bugs-only flag.')
     args = parser.parse_args()
     return args
 
@@ -80,7 +95,13 @@ def main() -> int:
                 re.sub('ninja://:blink_w(eb|pt)_tests/', '', test_id)
                 for test_id in bug['test_ids']
             ]
-            bugs[bug['bug_id']] = test_path_list
+            bug_id = ''
+            if bug['bug_id'] and '/' in bug['bug_id']:
+                bug_id = bug['bug_id'].split('/')[1]
+            bugs[bug_id] = test_path_list
+        if args.attach_analysis_result:
+            token = LuciAuth(Host()).get_access_token()
+            monorail_api = MonorailAPI(access_token=token)
     else:
         bugs = {'': [args.test_path]}
 
@@ -95,12 +116,23 @@ def main() -> int:
                 test_analysis_result = matching_analyzer.run_analyzer(
                     test_data)
                 if test_analysis_result.is_analyzed:
-                    print('')
+                    result_string = RESULT_TITLE
                     if bug_id:
-                        print('bug number: %s' % bug_id)
-                    print('test_name: %s' % test_name)
-                    print('test_result: %s' %
-                          test_analysis_result.analysis_result)
-                    print('')
+                        result_string += '\nbug number: %s' % bug_id
+                    result_string += '\ntest_name: %s' % test_name
+                    result_string += '\ntest_result: %s' % \
+                                     test_analysis_result.analysis_result
+                    result_string += '\ndashboard_link: %s\n' % \
+                                     (DASHBOARD_BASE_URL +
+                                      '?f=test_name_cgk78f:re:' +
+                                      urllib.parse.quote(test_name, safe=''))
+                    if args.attach_analysis_result:
+                        if RESULT_TITLE not in str(
+                                monorail_api.get_comment_list(
+                                    'chromium', bug_id)):
+                            monorail_api.insert_comment(
+                                'chromium', bug_id, result_string)
+                    else:
+                        print(result_string)
 
     return 0
