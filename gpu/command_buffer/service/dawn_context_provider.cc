@@ -296,20 +296,21 @@ bool DawnContextProvider::Initialize(
       adapter_options.backendType == wgpu::BackendType::D3D11 &&
       features::kSkiaGraphiteDawnShareDevice.Get();
   if (share_d3d11_device) {
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device =
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
         gl::QueryD3D11DeviceObjectFromANGLE();
-    CHECK(d3d11Device) << "Query d3d11 device from ANGLE failed.";
+    CHECK(d3d11_device) << "Query d3d11 device from ANGLE failed.";
 
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11DeviceContext;
-    d3d11Device->GetImmediateContext(&d3d11DeviceContext);
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context;
+    d3d11_device->GetImmediateContext(&d3d11_device_context);
 
-    Microsoft::WRL::ComPtr<ID3D11Multithread> d3d11Multithread;
-    CHECK(SUCCEEDED(d3d11DeviceContext.As(&d3d11Multithread)))
-        << "Query ID3D11Multithread interface failed.";
+    Microsoft::WRL::ComPtr<ID3D11Multithread> d3d11_multithread;
+    HRESULT hr = d3d11_device_context.As(&d3d11_multithread);
+    CHECK(SUCCEEDED(hr)) << "Query ID3D11Multithread interface failed: 0x"
+                         << std::hex << hr;
 
     // Dawn requires enable multithread protection for d3d11 device.
-    d3d11Multithread->SetMultithreadProtected(TRUE);
-    adapter_options_d3d11_device.device = std::move(d3d11Device);
+    d3d11_multithread->SetMultithreadProtected(TRUE);
+    adapter_options_d3d11_device.device = std::move(d3d11_device);
     adapter_options_d3d11_device.nextInChain = adapter_options.nextInChain;
     adapter_options.nextInChain = &adapter_options_d3d11_device;
   }
