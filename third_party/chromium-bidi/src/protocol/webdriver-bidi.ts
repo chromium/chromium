@@ -1083,6 +1083,9 @@ export namespace Script {
   export type Handle = string;
 }
 export namespace Script {
+  export type InternalId = string;
+}
+export namespace Script {
   export type ListLocalValue = [...Script.LocalValue[]];
 }
 export namespace Script {
@@ -1267,6 +1270,14 @@ export namespace Script {
     | 'worklet';
 }
 export namespace Script {
+  export type ListRemoteValue = [...Script.RemoteValue[]];
+}
+export namespace Script {
+  export type MappingRemoteValue = [
+    ...[Script.RemoteValue | string, Script.RemoteValue][],
+  ];
+}
+export namespace Script {
   export type RemoteValue =
     | Script.PrimitiveProtocolValue
     | Script.SymbolRemoteValue
@@ -1307,17 +1318,6 @@ export namespace Script {
     handle: Script.Handle;
     sharedId?: Script.SharedId;
   } & Extensible;
-}
-export namespace Script {
-  export type InternalId = JsUint;
-}
-export namespace Script {
-  export type ListRemoteValue = [...Script.RemoteValue[]];
-}
-export namespace Script {
-  export type MappingRemoteValue = [
-    ...[Script.RemoteValue | string, Script.RemoteValue][],
-  ];
 }
 export namespace Script {
   export type SymbolRemoteValue = {

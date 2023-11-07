@@ -1347,6 +1347,9 @@ export namespace Script {
   export const HandleSchema = z.lazy(() => z.string());
 }
 export namespace Script {
+  export const InternalIdSchema = z.lazy(() => z.string());
+}
+export namespace Script {
   export const ListLocalValueSchema = z.lazy(() =>
     z.array(Script.LocalValueSchema)
   );
@@ -1612,6 +1615,21 @@ export namespace Script {
   );
 }
 export namespace Script {
+  export const ListRemoteValueSchema = z.lazy(() =>
+    z.array(Script.RemoteValueSchema)
+  );
+}
+export namespace Script {
+  export const MappingRemoteValueSchema = z.lazy(() =>
+    z.array(
+      z.tuple([
+        z.union([Script.RemoteValueSchema, z.string()]),
+        Script.RemoteValueSchema,
+      ])
+    )
+  );
+}
+export namespace Script {
   export const RemoteValueSchema = z.lazy(() =>
     z.union([
       Script.PrimitiveProtocolValueSchema,
@@ -1662,24 +1680,6 @@ export namespace Script {
         sharedId: Script.SharedIdSchema.optional(),
       })
       .and(ExtensibleSchema)
-  );
-}
-export namespace Script {
-  export const InternalIdSchema = z.lazy(() => JsUintSchema);
-}
-export namespace Script {
-  export const ListRemoteValueSchema = z.lazy(() =>
-    z.array(Script.RemoteValueSchema)
-  );
-}
-export namespace Script {
-  export const MappingRemoteValueSchema = z.lazy(() =>
-    z.array(
-      z.tuple([
-        z.union([Script.RemoteValueSchema, z.string()]),
-        Script.RemoteValueSchema,
-      ])
-    )
   );
 }
 export namespace Script {
