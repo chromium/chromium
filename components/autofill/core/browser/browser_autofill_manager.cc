@@ -3563,7 +3563,8 @@ void BrowserAutofillManager::GetAvailableSuggestions(
       absl::optional<Suggestion> maybe_plus_address_suggestion =
           MaybeGetPlusAddressSuggestion();
       if (maybe_plus_address_suggestion.has_value()) {
-        suggestions->push_back(maybe_plus_address_suggestion.value());
+        suggestions->insert(suggestions->cbegin(),
+                            maybe_plus_address_suggestion.value());
       }
     }
   }
