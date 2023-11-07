@@ -3248,9 +3248,11 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <summary>
     Records the new value of the WiFi/Mobile toggle button in system tray.
     Metric emitted each time a user clicks on the enable/disable WiFi or Mobile
-    toggle.
+    toggle. Note that the Mobile NetworkType is to be deprecated and replaced by
+    Cellular.
   </summary>
   <token key="NetworkType">
+    <variant name="Cellular"/>
     <variant name="Mobile"/>
     <variant name="WiFi"/>
   </token>

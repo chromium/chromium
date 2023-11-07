@@ -521,6 +521,8 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
   if (!HasSyncedTetherHosts())
     return NO_AVAILABLE_HOSTS;
 
+  // TODO(b/309128386): Don't treat Tether as a subset of Cellular if the
+  // Instant Hotspot Rebrand feature flag is enabled.
   // If Cellular technology is available, then Tether technology is treated
   // as a subset of Cellular, and it should only be enabled when Cellular
   // technology is enabled.
