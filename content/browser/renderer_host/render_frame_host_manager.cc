@@ -4487,9 +4487,8 @@ void RenderFrameHostManager::CommitPending(
       }
     }
 
-    StoredPage::StoredPage::RenderViewHostImplSafeRefSet
-        render_view_hosts_to_restore =
-            pending_stored_page->TakeRenderViewHosts();
+    StoredPage::RenderViewHostImplSafeRefSet render_view_hosts_to_restore =
+        pending_stored_page->TakeRenderViewHosts();
     if (prev_state ==
         RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache) {
       for (const auto& rvh : render_view_hosts_to_restore) {
