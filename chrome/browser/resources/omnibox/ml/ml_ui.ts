@@ -59,7 +59,10 @@ export class MlUiElement extends CustomElement {
                     this.getRequiredElement('#copied-notification');
                 notification.textContent = text;
                 notification.classList.remove('fade-out');
-                setTimeout(() => notification.classList.add('fade-out'), 0);
+                // Querying `offsetHeight` forces a page reflow; otherwise,
+                // the classList changes above and below would be deduped.
+                notification.offsetHeight;
+                notification.classList.add('fade-out');
               });
         }));
     mlCalculator.addEventListener(

@@ -19,11 +19,13 @@ interface TextLine {
   fontSize: number;
   bold: boolean;
 }
+
 // Represents a single point when drawing a line plot onto the canvas.
 interface PlotPoint {
   position: Vector;
   label: TextLine[];
 }
+
 // Represents a line plot to be drawn onto the canvas.
 interface Plot {
   points: PlotPoint[];
@@ -110,7 +112,6 @@ export class MlChartElement extends CustomElement {
   private mlBrowserProxy_: MlBrowserProxy;
   private signals_: Signals;
   private plots: Plot[] = [];
-  private readonly nPoints = 29;  // Max number of points per plot.
 
   private context: CanvasRenderingContext2D;
 
@@ -153,25 +154,30 @@ export class MlChartElement extends CustomElement {
   }
 
   set signals(signals: Signals) {
-    this.setSignals(signals);
-  }
-
-  private async setSignals(signals: Signals) {
+    this.plots = [];
     this.clear();
 
-    // Debounce 1s. E.g., if the user is using the up arrow key to increase a
-    // signal from x to x+100, there's no need to redraw the plot 100 times
-    // which will be laggy; wait until the user's done and draw the final plots.
     this.signals_ = signals;
-    await new Promise(r => setTimeout(r, 1000));
-    if (this.signals_ !== signals) {
+
+    // Set grid [-15, 0] and [15, 1] to line up with the axes' starts and ends.
+    this.gridSize = new Vector(30, 1)
+                        .pointwiseMultiply(this.canvasSize)
+                        .pointwiseDivide(this.canvasSize.subtract(
+                            this.axisPadding.scale(2)));
+    // Subtract half the gridSize from the grid center.
+    this.gridMin = new Vector(0, .5).subtract(this.gridSize.scale(.5));
+
+    this.createPlots();
+  }
+
+  private async createPlots() {
+    if (!this.signals_ || !this.mlBrowserProxy_) {
       return;
     }
 
-    // Set grid [0, 0] and [1, 1] to line up with the axes' starts and ends.
-    this.gridSize = this.canvasSize.pointwiseDivide(
-        this.canvasSize.subtract(this.axisPadding.scale(2)));
-    this.gridMin = this.gridSize.subtract(new Vector(1)).scale(-.5);
+    // Only graph the 1st 4 signals, since those happen to be the one's we're
+    // interested in most often.
+    const chartSignalNames = signalNames.slice(0, 4);
 
     // If there are more than `colors.length` plots, colors will be repeated.
     const colors = [
@@ -180,84 +186,63 @@ export class MlChartElement extends CustomElement {
       this.getColor(240),  // blue
       this.getColor(300),  // pink
     ];
-    // To draw a plot, all except 1 signal is held constant constant, while that
-    // 1 signal is tweaked from it's initial value by -/+nPoints. Modification
-    // represents a tweak and its score.
-    interface Modification {
-      i: number;
-      newValue: number;
+
+    const minX = Math.floor(this.gridMin.x);
+    const maxX = Math.ceil(this.gridMin.add(this.gridSize).x);
+    const xValues = [...Array(maxX - minX + 1)].map((_, j) => minX + j);
+
+    interface MlRequest {
+      x: number;
+      modifiedSignals: Signals;
       score: number;
     }
-    const modificationSets: Array<{
-      signalName: keyof Signals,
-      modifications: Modification[],
-    }> =
-        (await Promise.all(signalNames.map(
-             async signalName => ({
-               signalName,
-               modifications:
-                   (await Promise.all([
-                     ...Array(this.nPoints),
-                   ].map(async (_, i) => {
-                     const newValue = Number(signals[signalName]) + i -
-                         (this.nPoints - 1) / 2;
-                     if (newValue < 0) {
-                       return;
-                     }
-                     const modifiedSignals = {
-                       ...signals,
-                       [signalName]: String(newValue),
-                     };
-                     const score = await this.mlBrowserProxy_.makeMlRequest(
-                         modifiedSignals);
-                     return {
-                       i,
-                       newValue,
-                       score,
-                     };
-                   }))).filter(modification => modification) as Modification[],
-             }))))
-            .filter(modificationSet => {
-              return modificationSet.modifications.length &&
-                  // Filter out signals that did not affect the score.
-                  modificationSet.modifications.some(
-                      m =>
-                          m!.score !== modificationSet.modifications[0]!.score);
-            });
+    const mlRequestPromises: Array<Array<Promise<MlRequest>>> =
+        chartSignalNames.map(signalName => {
+          return xValues.filter(x => Number(this.signals_[signalName]) + x > 0)
+              .map(async(x): Promise<MlRequest> => {
+                const modifiedSignals = {
+                  ...this.signals_,
+                  [signalName]: String(Number(this.signals_[signalName]) + x),
+                };
+                const score =
+                    await this.mlBrowserProxy_.makeMlRequest(modifiedSignals);
+                return {x, modifiedSignals, score};
+              });
+        });
+    const mlRequests: MlRequest[][] = await Promise.all(
+        mlRequestPromises.map(arrayOfPromises => Promise.all(arrayOfPromises)));
 
-    this.plots = modificationSets.map(
-        (modificationSet, i) => ({
-          points: modificationSet.modifications.map(
-              modification => ({
-                position: new Vector(
-                    modification.i / (this.nPoints - 1), modification.score),
-                label: [
-                  ...modificationSets
-                      .map(modificationSet => modificationSet.signalName)
-                      .map((signalName, j) => ({
-                             text: [
-                               signalName,
-                               signalName === modificationSet.signalName ?
-                                   modification.newValue :
-                                   signals[signalName],
-                             ].join(': '),
-                             color: colors[j % colors.length]!,
-                             fontSize: 12,
-                             bold: signalName === modificationSet.signalName,
-                           })),
-                  {
-                    text: `Score: ${modification.score.toFixed(3)}`,
-                    color: this.primaryColor,
-                    fontSize: 12,
-                    bold: true,
-                  },
-                ],
-              })),
-          label: modificationSet.signalName,
-          color: colors[i % colors.length]!,
-          xAxisLabel: modificationSet.signalName,
-          xAxisOffset: Number(signals[modificationSet.signalName]),
-        }));
+    this.plots = chartSignalNames.map((signalName, i): Plot => {
+      return {
+        points: mlRequests[i]!.map(
+            (mlRequest):
+                PlotPoint => {
+                  return {
+                    position: new Vector(mlRequest.x, mlRequest.score),
+                    label: [
+                      ...chartSignalNames.map(
+                          (signalName2, k): TextLine => ({
+                            text: `${signalName2}: ${
+                                mlRequest.modifiedSignals[signalName2]}`,
+                            color: colors[k % colors.length]!,
+                            fontSize: 12,
+                            bold: signalName2 === signalName,
+                          })),
+                      {
+                        text: `Score: ${mlRequest.score.toFixed(3)}`,
+                        color: this.primaryColor,
+                        fontSize: 12,
+                        bold: true,
+                      },
+                    ],
+                  };
+                }),
+        label: signalName,
+        color: colors[i % colors.length]!,
+        xAxisLabel: signalName,
+        xAxisOffset: Number(this.signals_[signalName]),
+      };
+    });
 
     this.draw();
   }
@@ -270,6 +255,7 @@ export class MlChartElement extends CustomElement {
     if (this.mouseDown && mouseDown) {
       this.gridMin = this.gridMin.subtract(
           this.invWh(position.subtract(this.mousePosition)));
+      this.createPlots();
     }
     this.mouseDown = mouseDown;
     this.mousePosition = position;
@@ -289,22 +275,22 @@ export class MlChartElement extends CustomElement {
     this.gridSize = this.gridSize.scale(1 + .15 * zoom);
     this.gridMin = newGridCenter.subtract(this.gridSize.scale(.5));
     this.draw(position);
+    this.createPlots();
   }
 
-  private async draw(mouse: Vector|null = null) {
+  private draw(mouse: Vector|null = null) {
     this.clear();
     if (!this.plots.length) {
       return;
     }
 
     // Find which plot, if any, the mouse is hovering nearest.
-    let closestDistance = 0.003;
+    let closestDistance = 900;  // If the mouse is within 30px.
     let closestPlot: Plot|null = null;
     let closestPoint: PlotPoint|null = null;
     if (mouse) {
-      const gridMouse = this.invXy(mouse);
       this.plots.forEach(plot => plot.points.forEach(point => {
-        const distance = point.position.subtract(gridMouse).magnitudeSqr();
+        const distance = this.xy(point.position).subtract(mouse).magnitudeSqr();
         if (distance < closestDistance) {
           closestDistance = distance;
           closestPlot = plot;
@@ -334,8 +320,7 @@ export class MlChartElement extends CustomElement {
           tickLength.setX(0), 1, xAxisColor);
       if (closestPlot) {
         this.drawText(
-            (closestPlot!.xAxisOffset + (tickGrid.x - .5) * (this.nPoints - 1))
-                .toFixed(2),
+            (tickGrid.x + closestPlot!.xAxisOffset).toFixed(2),
             tick.setY(axisOrigin.add(labelOffset).y), xAxisColor, 12, false,
             'center', 'middle');
       }
@@ -375,12 +360,11 @@ export class MlChartElement extends CustomElement {
     }));
 
     // Draw the original signal.
-    if ((this.plots[0]?.points?.length || 0) - 1 > (this.nPoints - 1) / 2) {
-      const centerPoint =
-          this.plots[0]!
-              .points[this.plots[0]!.points.length - (this.nPoints - 1) / 2 - 1]!
-          ;
-      this.drawPoint(this.xy(centerPoint.position), 7, this.primaryColor);
+    const centerPosition = this.plots.flatMap(plot => plot.points)
+                               .map(point => point.position)
+                               .find(position => !position.x);
+    if (centerPosition) {
+      this.drawPoint(this.xy(centerPosition), 7, this.primaryColor);
     }
 
     // Draw the legend.
@@ -498,7 +482,7 @@ export class MlChartElement extends CustomElement {
   private xy(v: Vector) {
     return v.transform(
         this.gridMin, this.gridSize, this.canvasSize.setX(0),
-        this.canvasSize.invertY(-1));
+        this.canvasSize.invertY(0));
   }
 
   // Converts grid distances to canvas distances. E.g. [1, 1] -> [600, 600].
@@ -509,7 +493,7 @@ export class MlChartElement extends CustomElement {
   // Converts canvas coordinates to grid coordinates. E.g. [600, 600] -> [1, 0].
   private invXy(v: Vector): Vector {
     return v.transform(
-        this.canvasSize.setX(0), this.canvasSize.invertY(-1), this.gridMin,
+        this.canvasSize.setX(0), this.canvasSize.invertY(0), this.gridMin,
         this.gridSize);
   }
 

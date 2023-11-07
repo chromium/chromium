@@ -521,7 +521,8 @@ void OmniboxPageHandler::StartMl(mojom::SignalsPtr mojom_signals,
         mojo::ConvertTo<AutocompleteMatch::ScoringSignals>(mojom_signals);
     std::vector<AutocompleteScoringModelService::Result> result =
         service->BatchScoreAutocompleteUrlMatchesSync({&signals}, {""});
-    std::move(callback).Run(result.size() ? *std::get<0>(result[0]) : -1);
+    std::move(callback).Run(result.size() ? std::get<0>(result[0]).value_or(-1)
+                                          : -1);
   } else {
     std::move(callback).Run(-1);
   }
