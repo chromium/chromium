@@ -50,6 +50,7 @@ namespace {
 constexpr int kFinalStatusActivated = 0;
 constexpr int kFinalStatusInvalidSchemeNavigation = 6;
 constexpr int kFinalStatusTriggerDestroyed = 16;
+constexpr int kFinalStatusTabClosedWithoutUserGesture = 55;
 constexpr int kFinalStatusCrossSiteNavigationInMainFrameNavigation = 64;
 
 }  // namespace
@@ -618,6 +619,44 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
       kFinalStatusCrossSiteNavigationInMainFrameNavigation, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderWebContentsDelegate_CloseContents) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/prerender/simple_links.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
+  content::TestNavigationObserver nav_observer(prerender_url);
+  nav_observer.StartWatchingNewWebContents();
+  prerender_helper().AddPrerendersAsync({prerender_url},
+                                        /*eagerness=*/absl::nullopt, "_blank");
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(nav_observer.last_navigation_url(), prerender_url);
+  int host_id = prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Navigate a prerendered page to another page.
+  GURL navigation_url =
+      embedded_test_server()->GetURL("/prerender/empty.html?navigated");
+  prerender_helper().NavigatePrerenderedPage(host_id, navigation_url);
+
+  // WebContents::Close() should eventually call
+  // PrerenderWebContentsDelegate::CloseContents() that cancels prerendering.
+  auto* prerender_web_contents =
+      content::WebContents::FromFrameTreeNodeId(host_id);
+  ASSERT_TRUE(prerender_web_contents);
+  prerender_web_contents->Close();
+  EXPECT_EQ(prerender_helper().GetHostForUrl(prerender_url),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      kFinalStatusTabClosedWithoutUserGesture, 1);
 }
 
 class PrerenderNewTabPageBrowserTest
