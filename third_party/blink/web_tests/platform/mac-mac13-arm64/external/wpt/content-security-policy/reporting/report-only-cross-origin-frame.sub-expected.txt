@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Expecting logs: ["PASS IFrame #1 generated a load event.", "blocked-uri=http://www1.web-platform.test:8001"]
-  assert_unreached: unexpected log: blocked-uri=http://www1.web-platform.test:8001 Reached unreachable code
-[PASS] Expecting alerts: ["PASS"]
-[PASS] Violation report status OK.
-Harness: the test ran to completion.
-
