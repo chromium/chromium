@@ -1748,6 +1748,9 @@ copy("cronet_package_copy_test_support_apks") {
 copy("cronet_package_copy_test_files") {
   testonly = true
   sources = [
+    "//net/data/ssl/certificates/cronet-quic-chain.pem",
+    "//net/data/ssl/certificates/cronet-quic-leaf-cert.key",
+    "//net/data/ssl/certificates/cronet-quic-leaf-cert.key.pkcs8.pem",
     "//net/data/ssl/certificates/expired_cert.pem",
     "//net/data/ssl/certificates/quic-chain.pem",
     "//net/data/ssl/certificates/quic-leaf-cert.key",
