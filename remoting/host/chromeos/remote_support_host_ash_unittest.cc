@@ -45,7 +45,7 @@ auto IsError() {
 
 // Matcher that checks if the result of a `StartSupportSession` request
 // indicates we could start the session.
-auto IsSuccessfull() {
+auto IsSuccessful() {
   return testing::Pointee(testing::Property(
       &mojom::StartSupportSessionResponse::is_support_session_error,
       testing::Eq(false)));
@@ -466,7 +466,7 @@ TEST_F(RemoteSupportHostAshTest,
 
   ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams()));
 
-  EXPECT_THAT(ReconnectToSession(kEnterpriseSessionId), IsSuccessfull());
+  EXPECT_THAT(ReconnectToSession(kEnterpriseSessionId), IsSuccessful());
 }
 
 TEST_F(RemoteSupportHostAshTest,
