@@ -398,10 +398,7 @@ source_set("password_store_impl") {
     sources += [
       "password_store/android_backend_error.cc",
       "password_store/android_backend_error.h",
-      "password_store/unified_password_manager_proto_utils.cc",
-      "password_store/unified_password_manager_proto_utils.h",
     ]
-    deps += [ ":unified_password_manager_proto" ]
   }
 
   if ((is_posix && !is_apple) || is_fuchsia) {
@@ -608,7 +605,6 @@ source_set("unit_tests") {
     sources += [
       "password_credential_filler_impl_unittest.cc",
       "password_store/password_store_backend_metrics_recorder_unittest.cc",
-      "unified_password_manager_proto_utils_unittest.cc",
     ]
   }
   if (is_ios) {
@@ -704,35 +700,6 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    deps += [
-      "//components/password_manager/core/browser:unified_password_manager_proto",
-      "//components/webauthn/android",
-    ]
-  }
-}
-
-if (is_android) {
-  import("//build/config/android/rules.gni")
-
-  fuzzable_proto_library("unified_password_manager_proto") {
-    sources = [
-      "protos/list_affiliated_passwords_result.proto",
-      "protos/list_passwords_result.proto",
-      "protos/password_info.proto",
-      "protos/password_with_local_data.proto",
-    ]
-    deps = [ "//components/sync/protocol" ]
-    proto_in_dir = "//"
-  }
-
-  proto_java_library("unified_password_manager_proto_java") {
-    proto_path = "//"
-    sources = [
-      "protos/list_affiliated_passwords_result.proto",
-      "protos/list_passwords_result.proto",
-      "protos/password_info.proto",
-      "protos/password_with_local_data.proto",
-    ]
-    deps = [ "//components/sync/protocol:protocol_java" ]
+    deps += [ "//components/webauthn/android" ]
   }
 }

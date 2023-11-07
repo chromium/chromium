@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_store/unified_password_manager_proto_utils.h"
+#include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 
 #include "base/feature_list.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
-#include "components/password_manager/core/browser/protos/password_info.pb.h"
-#include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
+#include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
+#include "chrome/browser/password_manager/android/protos/password_info.pb.h"
+#include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
 #include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

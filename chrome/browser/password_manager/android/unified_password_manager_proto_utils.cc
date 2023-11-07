@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_store/unified_password_manager_proto_utils.h"
+#include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 
 #include <string>
 
@@ -10,9 +10,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
-#include "components/password_manager/core/browser/protos/list_affiliated_passwords_result.pb.h"
-#include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
-#include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
+#include "chrome/browser/password_manager/android/protos/list_affiliated_passwords_result.pb.h"
+#include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
+#include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 
 using autofill::FormData;

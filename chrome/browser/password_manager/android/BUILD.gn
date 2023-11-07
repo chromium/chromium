@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 java_cpp_enum("android_backend_java_enums_srcjar") {
   sources = [
@@ -85,17 +87,19 @@ source_set("backend") {
     "password_sync_controller_delegate_bridge.h",
     "password_sync_controller_delegate_bridge_impl.cc",
     "password_sync_controller_delegate_bridge_impl.h",
+    "unified_password_manager_proto_utils.cc",
+    "unified_password_manager_proto_utils.h",
   ]
 
   public_deps = [ "//base" ]
 
   deps = [
     ":jni_headers",
+    ":unified_password_manager_proto",
     "//components/autofill/core/browser:browser",
     "//components/browser_ui/device_lock/android:android",
     "//components/password_manager/core/browser:browser",
     "//components/password_manager/core/browser:password_form",
-    "//components/password_manager/core/browser:unified_password_manager_proto",
     "//components/password_manager/core/browser/affiliation",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/password_manager/core/browser/features:password_features",
@@ -233,6 +237,7 @@ robolectric_binary("password_manager_junit_tests") {
     ":public_impl_java",
     ":settings_interface_java",
     ":test_support_java",
+    ":unified_password_manager_proto_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "add_username_dialog:junit",
@@ -251,7 +256,6 @@ robolectric_binary("password_manager_junit_tests") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/password_manager/core/browser:password_manager_java_enums",
-    "//components/password_manager/core/browser:unified_password_manager_proto_java",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
@@ -380,11 +384,11 @@ android_library("test_support_java") {
   deps = [
     ":backend_interface_java",
     ":settings_interface_java",
+    ":unified_password_manager_proto_java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
-    "//components/password_manager/core/browser:unified_password_manager_proto_java",
     "//components/sync/protocol:protocol_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
@@ -477,12 +481,14 @@ source_set("unit_tests") {
     "password_store_proxy_backend_unittest.cc",
     "password_sync_controller_delegate_android_unittest.cc",
     "save_update_password_message_delegate_unittest.cc",
+    "unified_password_manager_proto_utils_unittest.cc",
   ]
 
   deps = [
     ":backend",
     ":backend_public",
     ":password_generation_utils",
+    ":unified_password_manager_proto",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",
@@ -516,4 +522,26 @@ source_set("unit_tests") {
     "//ui/android:android",
     "//ui/base:base",
   ]
+}
+
+fuzzable_proto_library("unified_password_manager_proto") {
+  sources = [
+    "protos/list_affiliated_passwords_result.proto",
+    "protos/list_passwords_result.proto",
+    "protos/password_info.proto",
+    "protos/password_with_local_data.proto",
+  ]
+  deps = [ "//components/sync/protocol" ]
+  proto_in_dir = "//"
+}
+
+proto_java_library("unified_password_manager_proto_java") {
+  proto_path = "//"
+  sources = [
+    "protos/list_affiliated_passwords_result.proto",
+    "protos/list_passwords_result.proto",
+    "protos/password_info.proto",
+    "protos/password_with_local_data.proto",
+  ]
+  deps = [ "//components/sync/protocol:protocol_java" ]
 }
