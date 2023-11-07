@@ -11,9 +11,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
@@ -61,6 +64,22 @@ int GetBubbleFixedWidthForInterceptionType(
                  WebSigninInterceptor::SigninInterceptionType::kChromeSignin
              ? kInterceptionChromeSigninBubbleWidth
              : kInterceptionBubbleWidth;
+}
+
+void RecordMetricsChromeSigninInterceptStarted() {
+  auto access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE;
+  RecordSigninImpressionUserActionForAccessPoint(access_point);
+  signin_metrics::LogSignInOffered(access_point);
+}
+
+void RecordMetricsChromeSigninInterceptAccepted(base::TimeTicks start_time) {
+  CHECK_NE(start_time, base::TimeTicks());
+  base::UmaHistogramMediumTimes(
+      "Signin.Intercept.ChromeSignin.AcceptedResponseTime",
+      base::TimeTicks::Now() - start_time);
+  RecordSigninUserActionForAccessPoint(
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
 }
 
 }  // namespace
@@ -198,6 +217,12 @@ void DiceWebSigninInterceptionBubbleView::SetHeightAndShowWidget(int height) {
                 height));
   GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
   GetWidget()->Show();
+
+  if (bubble_parameters_.interception_type ==
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+    chrome_signin_bubble_shown_time_ = base::TimeTicks::Now();
+    RecordMetricsChromeSigninInterceptStarted();
+  }
 }
 
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
@@ -217,6 +242,13 @@ void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(
       result = SigninInterceptionResult::kDeclined;
       accepted_ = false;
       break;
+  }
+
+  if (bubble_parameters_.interception_type ==
+          WebSigninInterceptor::SigninInterceptionType::kChromeSignin &&
+      result == SigninInterceptionResult::kAccepted) {
+    RecordMetricsChromeSigninInterceptAccepted(
+        chrome_signin_bubble_shown_time_);
   }
 
   RecordInterceptionResult(bubble_parameters_, profile_, result);

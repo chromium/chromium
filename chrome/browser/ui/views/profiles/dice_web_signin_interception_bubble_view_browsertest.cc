@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -290,6 +291,16 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
   }
 
   WebSigninInterceptor::Delegate::BubbleParameters
+  GetTestChromeSigninBubbleParameters() {
+    AccountInfo account;
+    account.account_id = CoreAccountId::FromGaiaId("ID1");
+
+    return WebSigninInterceptor::Delegate::BubbleParameters(
+        WebSigninInterceptor::SigninInterceptionType::kChromeSignin, account,
+        AccountInfo());
+  }
+
+  WebSigninInterceptor::Delegate::BubbleParameters
   GetTestBubbleParametersForManagedProfile() {
     WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters =
         GetTestBubbleParameters();
@@ -501,4 +512,97 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   EXPECT_NE(new_tab_web_contents, bubble_web_contents);
   EXPECT_EQ(new_tab_web_contents->GetVisibleURL(), learn_more_url);
   EXPECT_FALSE(widget->IsClosed());
+}
+
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       ChromeSigninAccepted) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  // `bubble` is owned by the view hierarchy.
+  DiceWebSigninInterceptionBubbleView* bubble =
+      new DiceWebSigninInterceptionBubbleView(
+          browser(), GetAvatarButton(), GetTestChromeSigninBubbleParameters(),
+          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
+                             OnInterceptionComplete,
+                         base::Unretained(this)));
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
+  // Equivalent to `kInterceptionBubbleBaseHeight` default.
+  bubble->SetHeightAndShowWidget(/*height=*/500);
+  EXPECT_FALSE(callback_result_.has_value());
+
+  // Take a handle on the bubble, to close it later.
+  bubble_handle_ = bubble->GetHandle();
+
+  views::test::WidgetDestroyedWaiter closing_observer(widget);
+  EXPECT_FALSE(bubble->GetAccepted());
+  // Simulate clicking Accept in the WebUI.
+  bubble->OnWebUIUserChoice(SigninInterceptionUserChoice::kAccept);
+  ASSERT_TRUE(callback_result_.has_value());
+  EXPECT_EQ(callback_result_, SigninInterceptionResult::kAccepted);
+  EXPECT_TRUE(bubble->GetAccepted());
+
+  // Widget was not closed yet - the delegate then takes care of it through the
+  // handle.
+  ASSERT_FALSE(widget->IsClosed());
+  // Simulate completion of the interception process.
+  bubble_handle_.reset();
+  // Widget will close now.
+  closing_observer.Wait();
+
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
+                                      SigninInterceptionResult::kAccepted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.AcceptedResponseTime", 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Signin_Impression_FromChromeSigninInterceptBubble"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Signin_Signin_FromChromeSigninInterceptBubble"));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       ChromeSigninDeclined) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  // `bubble` is owned by the view hierarchy.
+  DiceWebSigninInterceptionBubbleView* bubble =
+      new DiceWebSigninInterceptionBubbleView(
+          browser(), GetAvatarButton(), GetTestChromeSigninBubbleParameters(),
+          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
+                             OnInterceptionComplete,
+                         base::Unretained(this)));
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
+  // Equivalent to `kInterceptionBubbleBaseHeight` default.
+  bubble->SetHeightAndShowWidget(/*height=*/500);
+  EXPECT_FALSE(callback_result_.has_value());
+
+  views::test::WidgetDestroyedWaiter closing_observer(widget);
+  EXPECT_FALSE(bubble->GetAccepted());
+  // Simulate clicking Decline in the WebUI.
+  bubble->OnWebUIUserChoice(SigninInterceptionUserChoice::kDecline);
+  ASSERT_TRUE(callback_result_.has_value());
+  EXPECT_EQ(callback_result_, SigninInterceptionResult::kDeclined);
+  EXPECT_FALSE(bubble->GetAccepted());
+
+  EXPECT_TRUE(widget->IsClosed());
+  // Widget will close now.
+  closing_observer.Wait();
+
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
+                                      SigninInterceptionResult::kDeclined, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.AcceptedResponseTime", 0);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Signin_Impression_FromChromeSigninInterceptBubble"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Signin_Signin_FromChromeSigninInterceptBubble"));
 }

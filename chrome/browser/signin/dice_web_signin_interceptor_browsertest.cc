@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -609,6 +611,7 @@ class DiceWebSigninInterceptorWithUnoEnabledBrowserTest
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
                        ChromeSigninInterceptAccepted) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   // Setup account for interception.
   AccountInfo account_info =
@@ -639,11 +642,19 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.ChromeSignin.AttemptsBeforeAccept",
       /*sample=*/0, /*expected_bucket_count=*/1);
+  auto access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE;
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Started", access_point, 1);
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed", access_point,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.ChromeSignin.AttemptsBeforeAccept", 0, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
                        ChromeSigninInterceptDeclined) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   // Setup account for interception.
   AccountInfo account_info =
@@ -667,6 +678,11 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
+  auto access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE;
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Started", access_point, 0);
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed", access_point,
+                                      0);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,

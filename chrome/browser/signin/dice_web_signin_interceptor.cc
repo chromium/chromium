@@ -850,10 +850,12 @@ void DiceWebSigninInterceptor::OnChromeSigninChoice(
     case SigninInterceptionResult::kAccepted:
       RecordAndResetChromeSigninNumberOfAttemptsBeforeAccept(
           account_info.email);
+
+      auto access_point = signin_metrics::AccessPoint::
+          ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE;
+      signin_metrics::LogSignInStarted(access_point);
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account_info.account_id, signin::ConsentLevel::kSignin,
-          signin_metrics::AccessPoint::
-              ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+          account_info.account_id, signin::ConsentLevel::kSignin, access_point);
 
       // As part of the Signin Intercept bubble, the passwords account storage
       // gets enabled by default.

@@ -33202,6 +33202,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromChromeSigninInterceptBubble">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when showing the Chrome sign in intercept bubble.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromCloudPrint">
   <obsolete>Deprecated 10/2017. No longer needed.</obsolete>
   <owner>gogerald@chromium.org</owner>
@@ -33856,6 +33864,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromChromeSigninInterceptBubble">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded on signin in to chrome from the Chrome Signin Intercept Bubble.
   </description>
 </action>
 
