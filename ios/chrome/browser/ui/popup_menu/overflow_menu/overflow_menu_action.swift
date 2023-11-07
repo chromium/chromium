@@ -10,8 +10,8 @@ import Combine
   /// into account.
   @Published public var enabled = true
 
-  /// If true, do not override the color of the row's text with a custom color.
-  @Published public var useSystemRowColoring = false
+  /// If true, style the row as a button instead of a row option.
+  @Published public var useButtonStyling = false
 
   /// Whether the action should be highlighted in the UI.
   @Published public var highlighted = false

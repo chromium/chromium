@@ -636,7 +636,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                  handler:^{
                                    [weakSelf beginCustomization];
                                  }];
-  self.editActionsAction.useSystemRowColoring = YES;
+  self.editActionsAction.useButtonStyling = YES;
 
   // The app actions vary based on page state, so they are set in
   // `-updateModel`.

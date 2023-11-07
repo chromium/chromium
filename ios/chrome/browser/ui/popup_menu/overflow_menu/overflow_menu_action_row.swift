@@ -85,7 +85,7 @@ struct OverflowMenuActionRow: View {
           }
         }
       }
-      .if(!action.useSystemRowColoring) { view in
+      .if(!action.useButtonStyling) { view in
         view.accentColor(.textPrimary)
       }
       .listRowSeparatorTint(.overflowMenuSeparator)
@@ -154,6 +154,9 @@ struct OverflowMenuActionRow: View {
             .contentShape(Rectangle())
         }
       )
+      .if(action.useButtonStyling) { view in
+        view.buttonStyle(.borderless)
+      }
     }
   }
 
