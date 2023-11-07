@@ -10,10 +10,6 @@
 #ifndef BASE_STRINGS_STRING_PIECE_H_
 #define BASE_STRINGS_STRING_PIECE_H_
 
-// Many files including this header rely on these being included due to IWYU
-// violations. Preserve the includes for now. As code is migrated away from this
-// header, we can incrementally fix the IWYU violations.
-#include "base/check.h"
 #include "base/strings/string_piece_forward.h"
 
 #endif  // BASE_STRINGS_STRING_PIECE_H_
