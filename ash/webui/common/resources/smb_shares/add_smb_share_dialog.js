@@ -170,9 +170,6 @@ Polymer({
   /** @override */
   created() {
     this.browserProxy_ = SmbBrowserProxyImpl.getInstance();
-
-    const theme = this.isJellyEnabled_() ? 'refresh23' : 'legacy';
-    document.documentElement.setAttribute('theme', theme);
   },
 
   /** @override */
