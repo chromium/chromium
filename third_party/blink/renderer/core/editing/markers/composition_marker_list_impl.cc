@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/markers/composition_marker_list_impl.h"
 
+#include "third_party/blink/renderer/core/editing/markers/sorted_document_marker_list_editor.h"
 #include "third_party/blink/renderer/core/editing/markers/unsorted_document_marker_list_editor.h"
 
 namespace blink {
@@ -18,7 +19,7 @@ bool CompositionMarkerListImpl::IsEmpty() const {
 
 void CompositionMarkerListImpl::Add(DocumentMarker* marker) {
   DCHECK_EQ(DocumentMarker::kComposition, marker->GetType());
-  markers_.push_back(marker);
+  UnsortedDocumentMarkerListEditor::AddMarker(&markers_, marker);
 }
 
 void CompositionMarkerListImpl::Clear() {
@@ -33,7 +34,7 @@ CompositionMarkerListImpl::GetMarkers() const {
 DocumentMarker* CompositionMarkerListImpl::FirstMarkerIntersectingRange(
     unsigned start_offset,
     unsigned end_offset) const {
-  return UnsortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
+  return SortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
@@ -60,8 +61,8 @@ bool CompositionMarkerListImpl::ShiftMarkers(const String&,
                                              unsigned offset,
                                              unsigned old_length,
                                              unsigned new_length) {
-  return UnsortedDocumentMarkerListEditor::ShiftMarkersContentIndependent(
-      &markers_, offset, old_length, new_length);
+  return UnsortedDocumentMarkerListEditor::ShiftMarkers(&markers_, offset,
+                                                        old_length, new_length);
 }
 
 void CompositionMarkerListImpl::Trace(Visitor* visitor) const {

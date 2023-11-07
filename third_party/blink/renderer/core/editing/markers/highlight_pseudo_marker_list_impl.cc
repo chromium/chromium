@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker_list_impl.h"
 
+#include "third_party/blink/renderer/core/editing/markers/sorted_document_marker_list_editor.h"
 #include "third_party/blink/renderer/core/editing/markers/unsorted_document_marker_list_editor.h"
 
 namespace blink {
@@ -15,7 +16,7 @@ bool HighlightPseudoMarkerListImpl::IsEmpty() const {
 void HighlightPseudoMarkerListImpl::Add(DocumentMarker* marker) {
   DCHECK(marker->GetType() == DocumentMarker::kCustomHighlight ||
          marker->GetType() == DocumentMarker::kTextFragment);
-  markers_.push_back(marker);
+  UnsortedDocumentMarkerListEditor::AddMarker(&markers_, marker);
 }
 
 void HighlightPseudoMarkerListImpl::Clear() {
@@ -30,7 +31,7 @@ HighlightPseudoMarkerListImpl::GetMarkers() const {
 DocumentMarker* HighlightPseudoMarkerListImpl::FirstMarkerIntersectingRange(
     unsigned start_offset,
     unsigned end_offset) const {
-  return UnsortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
+  return SortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
@@ -59,8 +60,8 @@ bool HighlightPseudoMarkerListImpl::ShiftMarkers(const String&,
                                                  unsigned offset,
                                                  unsigned old_length,
                                                  unsigned new_length) {
-  return UnsortedDocumentMarkerListEditor::ShiftMarkersContentIndependent(
-      &markers_, offset, old_length, new_length);
+  return UnsortedDocumentMarkerListEditor::ShiftMarkers(&markers_, offset,
+                                                        old_length, new_length);
 }
 
 void HighlightPseudoMarkerListImpl::Trace(blink::Visitor* visitor) const {

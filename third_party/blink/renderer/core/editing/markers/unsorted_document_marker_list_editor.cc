@@ -9,6 +9,23 @@
 
 namespace blink {
 
+void UnsortedDocumentMarkerListEditor::AddMarker(MarkerList* list,
+                                                 DocumentMarker* marker) {
+  if (list->empty() || list->back()->StartOffset() <= marker->StartOffset()) {
+    list->push_back(marker);
+    return;
+  }
+
+  auto* const pos = std::lower_bound(
+      list->begin(), list->end(), marker,
+      [](const Member<DocumentMarker>& marker_in_list,
+         const DocumentMarker* marker_to_insert) {
+        return marker_in_list->StartOffset() <= marker_to_insert->StartOffset();
+      });
+
+  list->insert(base::checked_cast<wtf_size_t>(pos - list->begin()), marker);
+}
+
 bool UnsortedDocumentMarkerListEditor::MoveMarkers(
     MarkerList* src_list,
     int length,
@@ -24,8 +41,7 @@ bool UnsortedDocumentMarkerListEditor::MoveMarkers(
       continue;
     }
 
-    // If we're splitting a text node in the middle of a suggestion marker,
-    // remove the marker
+    // Remove the marker if it is split by the edit.
     if (marker->EndOffset() > end_offset)
       continue;
 
@@ -40,8 +56,12 @@ bool UnsortedDocumentMarkerListEditor::MoveMarkers(
 bool UnsortedDocumentMarkerListEditor::RemoveMarkers(MarkerList* list,
                                                      unsigned start_offset,
                                                      int length) {
-  // For an unsorted marker list, the quickest way to perform this operation is
-  // to build a new list with the markers that aren't being removed.
+  // For overlapping markers, even if sorted, the quickest way to perform
+  // this operation is to build a new list with the markers that aren't
+  // being removed. Exploiting the sort is difficult because markers
+  // may be nested. See
+  // UnsortedDocumentMarkerListEditorTest.RemoveMarkersNestedOverlap
+  // for an example.
   const unsigned end_offset = start_offset + length;
   HeapVector<Member<DocumentMarker>> unremoved_markers;
   for (const Member<DocumentMarker>& marker : *list) {
@@ -57,13 +77,14 @@ bool UnsortedDocumentMarkerListEditor::RemoveMarkers(MarkerList* list,
   return did_remove_marker;
 }
 
-bool UnsortedDocumentMarkerListEditor::ShiftMarkersContentIndependent(
-    MarkerList* list,
-    unsigned offset,
-    unsigned old_length,
-    unsigned new_length) {
-  // For an unsorted marker list, the quickest way to perform this operation is
-  // to build a new list with the markers not removed by the shift.
+bool UnsortedDocumentMarkerListEditor::ShiftMarkers(MarkerList* list,
+                                                    unsigned offset,
+                                                    unsigned old_length,
+                                                    unsigned new_length) {
+  // For an overlapping marker list, the quickest way to perform this operation
+  // is to build a new list with the markers not removed by the shift. Note that
+  // ComputeOffsetsAfterShift will move markers in such a way that they remain
+  // sorted in StartOffset through this operation.
   bool did_shift_marker = false;
   HeapVector<Member<DocumentMarker>> unremoved_markers;
   for (const Member<DocumentMarker>& marker : *list) {
@@ -88,23 +109,6 @@ bool UnsortedDocumentMarkerListEditor::ShiftMarkersContentIndependent(
   return did_shift_marker;
 }
 
-DocumentMarker* UnsortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
-    const MarkerList& list,
-    unsigned start_offset,
-    unsigned end_offset) {
-  DCHECK_LE(start_offset, end_offset);
-
-  auto* const it = base::ranges::find_if(
-      list, [start_offset, end_offset](const DocumentMarker* marker) {
-        return marker->StartOffset() < end_offset &&
-               marker->EndOffset() > start_offset;
-      });
-
-  if (it == list.end())
-    return nullptr;
-  return it->Get();
-}
-
 HeapVector<Member<DocumentMarker>>
 UnsortedDocumentMarkerListEditor::MarkersIntersectingRange(
     const MarkerList& list,
@@ -112,9 +116,18 @@ UnsortedDocumentMarkerListEditor::MarkersIntersectingRange(
     unsigned end_offset) {
   DCHECK_LE(start_offset, end_offset);
 
+  // Optimize finding the last possible overlapping marker, then iterate
+  // only to there. We can't do better because overlaps may be nested, and
+  // sorted on start does not imply sorted on end.
+  auto* const end_it =
+      std::upper_bound(list.begin(), list.end(), end_offset,
+                       [](unsigned end_offset, const DocumentMarker* marker) {
+                         return end_offset <= marker->StartOffset();
+                       });
+
   HeapVector<Member<DocumentMarker>> results;
   base::ranges::copy_if(
-      list, std::back_inserter(results),
+      list.begin(), end_it, std::back_inserter(results),
       [start_offset, end_offset](const DocumentMarker* marker) {
         return marker->StartOffset() < end_offset &&
                marker->EndOffset() > start_offset;

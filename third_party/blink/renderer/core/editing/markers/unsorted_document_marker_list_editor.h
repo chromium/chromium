@@ -14,10 +14,15 @@ namespace blink {
 class DocumentMarker;
 
 // This class holds static utility methods to be used in DocumentMarkerList
-// implementations that store potentially overlapping markers in unsorted order.
+// implementations that store potentially overlapping markers sorted by
+// StartOffset. The sort order for markers with the same StartOffset is
+// undefined. It will initially match the order in which markers are
+// added, but calling ShiftMarkers may change that.
 class CORE_EXPORT UnsortedDocumentMarkerListEditor final {
  public:
   using MarkerList = HeapVector<Member<DocumentMarker>>;
+
+  static void AddMarker(MarkerList*, DocumentMarker*);
 
   // Returns true if a marker was moved, false otherwise.
   static bool MoveMarkers(MarkerList* src_list,
@@ -31,20 +36,10 @@ class CORE_EXPORT UnsortedDocumentMarkerListEditor final {
   // If the text marked by a marker is changed by the edit, this method attempts
   // to keep the marker tracking the marked region rather than removing the
   // marker.
-  static bool ShiftMarkersContentIndependent(MarkerList*,
-                                             unsigned offset,
-                                             unsigned old_length,
-                                             unsigned new_length);
-
-  // Returns the first marker in the specified MarkerList whose interior
-  // overlaps overlap with the range [start_offset, end_offset], or null if
-  // there is no such marker.
-  // Note: since the markers aren't stored in order in an unsorted marker list,
-  // the first marker found isn't necessarily going to be the first marker
-  // ordered by start or end offset.
-  static DocumentMarker* FirstMarkerIntersectingRange(const MarkerList&,
-                                                      unsigned start_offset,
-                                                      unsigned end_offset);
+  static bool ShiftMarkers(MarkerList*,
+                           unsigned offset,
+                           unsigned old_length,
+                           unsigned new_length);
 
   // Returns all markers in the specified MarkerList whose interior overlaps
   // with the range [start_offset, end_offset].

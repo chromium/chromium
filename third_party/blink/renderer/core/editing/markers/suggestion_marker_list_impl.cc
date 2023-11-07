@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker_list_impl.h"
 
+#include "third_party/blink/renderer/core/editing/markers/sorted_document_marker_list_editor.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker_replacement_scope.h"
 #include "third_party/blink/renderer/core/editing/markers/unsorted_document_marker_list_editor.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -64,7 +65,7 @@ bool SuggestionMarkerListImpl::IsEmpty() const {
 
 void SuggestionMarkerListImpl::Add(DocumentMarker* marker) {
   DCHECK_EQ(DocumentMarker::kSuggestion, marker->GetType());
-  markers_.push_back(marker);
+  UnsortedDocumentMarkerListEditor::AddMarker(&markers_, marker);
 }
 
 void SuggestionMarkerListImpl::Clear() {
@@ -79,7 +80,7 @@ const HeapVector<Member<DocumentMarker>>& SuggestionMarkerListImpl::GetMarkers()
 DocumentMarker* SuggestionMarkerListImpl::FirstMarkerIntersectingRange(
     unsigned start_offset,
     unsigned end_offset) const {
-  return UnsortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
+  return SortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
@@ -117,7 +118,7 @@ bool SuggestionMarkerListImpl::ShiftMarkersForSuggestionReplacement(
     unsigned offset,
     unsigned old_length,
     unsigned new_length) {
-  // Since suggestion markers are stored unsorted, the quickest way to perform
+  // Since suggestion markers may overlap, the quickest way to perform
   // this operation is to build a new list with the markers not removed by the
   // shift.
   bool did_shift_marker = false;
@@ -163,7 +164,7 @@ bool SuggestionMarkerListImpl::ShiftMarkersForNonSuggestionEditingOperation(
     unsigned offset,
     unsigned old_length,
     unsigned new_length) {
-  // Since suggestion markers are stored unsorted, the quickest way to perform
+  // Since suggestion markers may overlap, the quickest way to perform
   // this operation is to build a new list with the markers not removed by the
   // shift.
   bool did_shift_marker = false;
