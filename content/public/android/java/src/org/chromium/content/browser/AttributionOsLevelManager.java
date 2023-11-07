@@ -112,7 +112,12 @@ public class AttributionOsLevelManager {
         if (!supportsAttribution()) {
             return null;
         }
-        mManager = MeasurementManagerFutures.from(ContextUtils.getApplicationContext());
+        try {
+            mManager = MeasurementManagerFutures.from(ContextUtils.getApplicationContext());
+        } catch (Throwable t) {
+            // An error may be thrown if android.ext.adservices is not loaded.
+            Log.i(TAG, "Failed to get measurement manager", t);
+        }
         return mManager;
     }
 
@@ -394,8 +399,14 @@ public class AttributionOsLevelManager {
             AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
             return;
         }
-        MeasurementManagerFutures mm =
-                MeasurementManagerFutures.from(ContextUtils.getApplicationContext());
+        MeasurementManagerFutures mm = null;
+        try {
+            mm = MeasurementManagerFutures.from(ContextUtils.getApplicationContext());
+        } catch (Throwable t) {
+            // An error may be thrown if android.ext.adservices is not loaded.
+            Log.i(TAG, "Failed to get measurement manager", t);
+        }
+
         if (mm == null) {
             AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
             return;
