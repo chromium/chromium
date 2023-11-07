@@ -386,9 +386,16 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     prerender_helper_->AddPrefetchAsync(prefetch_url);
   }
 
-  void AddMultiplePrerenderAsync(const std::vector<GURL>& prerendering_urls) {
+  void AddPrerendersAsync(const std::vector<GURL>& prerendering_urls) {
     prerender_helper_->AddPrerendersAsync(prerendering_urls, absl::nullopt,
                                           std::string());
+  }
+
+  void AddPrerendersAsync(const std::vector<GURL>& prerendering_urls,
+                          blink::mojom::SpeculationEagerness eagerness,
+                          const std::string& target_hint) {
+    prerender_helper_->AddPrerendersAsync(prerendering_urls, eagerness,
+                                          target_hint);
   }
 
   void AddPrerenderWithTargetHintAsync(const GURL& prerendering_url,
@@ -5368,7 +5375,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   SequentialPrerenderObserver observer(*web_contents(), prerender_urls[2]);
 
   // Insert 3 URLs into the speculation rules at the same time.
-  AddMultiplePrerenderAsync(prerender_urls);
+  AddPrerendersAsync(prerender_urls);
 
   // Wait for DidFinishNavigation on the last URL.
   observer.WaitForTargetNavigationFinished();
@@ -5429,7 +5436,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
   // Insert 3 URLs into the speculation rules at the same time. The first
   // prerender should start immediately, and the other two requests enqueued.
-  AddMultiplePrerenderAsync({kPrerender1, kPrerender2, kPrerender3});
+  AddPrerendersAsync({kPrerender1, kPrerender2, kPrerender3});
 
   registry_observer.WaitForTrigger(kPrerender3);
   test::PrerenderHostObserver prerender3_observer(*web_contents(),
@@ -5494,7 +5501,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Insert 3 URLs into the speculation rules at the same time. The first
   // prerender should start immediately.
-  AddMultiplePrerenderAsync({kPrerender1, kPrerender2, kPrerender3});
+  AddPrerendersAsync({kPrerender1, kPrerender2, kPrerender3});
 
   // Stop the second prerendering initial navigation.
   response2.WaitForRequest();
@@ -5539,7 +5546,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
   // Insert 2 URLs into the speculation rules at the same time.
-  AddMultiplePrerenderAsync({kPrerender1, kPrerender2});
+  AddPrerendersAsync({kPrerender1, kPrerender2});
 
   registry_observer.WaitForTrigger(kPrerender2);
   test::PrerenderHostObserver prerender2_observer(*web_contents(),
@@ -5607,7 +5614,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
   // Insert 5 URLs into the speculation rules at the same time.
-  AddMultiplePrerenderAsync(prerender_urls);
+  AddPrerendersAsync(prerender_urls);
 
   // Stop the first prerendering initial navigation.
   response.WaitForRequest();
@@ -5640,7 +5647,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Insert 2 URLs into the speculation rules at the same time.
-  AddMultiplePrerenderAsync({kPrerender1, kPrerender2});
+  AddPrerendersAsync({kPrerender1, kPrerender2});
 
   // Stop the first prerender's initial navigation.
   prerender1_response.WaitForRequest();
@@ -5725,7 +5732,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
   // Insert 2 URLs into the speculation rules at the same time.
-  AddMultiplePrerenderAsync({kPrerender1, kPrerender2});
+  AddPrerendersAsync({kPrerender1, kPrerender2});
 
   registry_observer.WaitForTrigger(kPrerender2);
   test::PrerenderHostObserver prerender2_observer(*web_contents(),
@@ -5840,7 +5847,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
   // Insert 2 URLs into the speculation rules at the same time.
-  AddMultiplePrerenderAsync({kPrerender1, kPrerender2});
+  AddPrerendersAsync({kPrerender1, kPrerender2});
   registry_observer.WaitForTrigger(kPrerender2);
 
   // Stop the first prerendering initial navigation.
@@ -5933,7 +5940,7 @@ IN_PROC_BROWSER_TEST_F(
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
   // Insert 3 URLs into the speculation rules at the same time.
-  AddMultiplePrerenderAsync({kPrerender1, kPrerender2, kPrerender3});
+  AddPrerendersAsync({kPrerender1, kPrerender2, kPrerender3});
   registry_observer.WaitForTrigger(kPrerender3);
   test::PrerenderHostObserver prerender1_observer(*web_contents(),
                                                   GetHostForUrl(kPrerender1));
@@ -6001,7 +6008,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
   // Insert 4 URLs into the speculation rules at the same time.
-  AddMultiplePrerenderAsync(prerender_urls);
+  AddPrerendersAsync(prerender_urls);
   registry_observer.WaitForTrigger(prerender_urls[3]);
 
   // Stop the third prerendering initial navigation.
@@ -6190,7 +6197,7 @@ void PrerenderSequentialPrerenderingBrowserTest::
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
   // Insert 2 URLs into the speculation rules at the same time.
-  AddMultiplePrerenderAsync({kPrerender1, kPrerender2});
+  AddPrerendersAsync({kPrerender1, kPrerender2});
   registry_observer.WaitForTrigger(kPrerender2);
 
   test::PrerenderHostObserver prerender2_observer(*web_contents(),
