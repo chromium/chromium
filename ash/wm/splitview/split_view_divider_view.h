@@ -56,6 +56,8 @@ class SplitViewDividerView : public views::View,
   }
 
  private:
+  void SwapWindows();
+
   void OnResizeStatusChanged();
 
   // Called when the `kebab_button_` is pressed which toggles between showing or

@@ -189,8 +189,7 @@ void SplitViewDividerView::OnMouseReleased(const ui::MouseEvent& event) {
   divider_->EndResizeWithDivider(location);
   OnResizeStatusChanged();
   if (event.GetClickCount() == 2) {
-    split_view_controller_->SwapWindows(
-        SplitViewController::SwapWindowsSource::kDoubleTap);
+    SwapWindows();
   }
 }
 
@@ -200,8 +199,7 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::ET_GESTURE_TAP:
       if (event->details().tap_count() == 2) {
-        split_view_controller_->SwapWindows(
-            SplitViewController::SwapWindowsSource::kDoubleTap);
+        SwapWindows();
       }
       break;
     case ui::ET_GESTURE_TAP_DOWN:
@@ -226,6 +224,23 @@ bool SplitViewDividerView::DoesIntersectRect(const views::View* target,
                                              const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);
   return true;
+}
+
+void SplitViewDividerView::SwapWindows() {
+  if (IsSnapGroupEnabledInClamshellMode()) {
+    // TODO(sophiewen): Consider adding a reference to `snap_group_` in
+    // `SplitViewDivider` when multiple groups are added.
+    // The divider would only be created between two windows.
+    CHECK_EQ(2u, divider_->observed_windows().size());
+    aura::Window* window = divider_->observed_windows().front();
+    if (SnapGroup* snap_group =
+            SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
+      snap_group->SwapWindows();
+    }
+    return;
+  }
+  split_view_controller_->SwapWindows(
+      SplitViewController::SwapWindowsSource::kDoubleTap);
 }
 
 void SplitViewDividerView::OnResizeStatusChanged() {

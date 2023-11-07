@@ -3277,7 +3277,7 @@ TEST_F(SplitViewControllerTest, SplitViewDividerObserveSnappedWindow) {
 
   // The left and right windows are observed by split view divider.
   aura::Window::Windows observed_windows =
-      split_view_divider()->observed_windows_for_testing();
+      split_view_divider()->observed_windows();
   EXPECT_TRUE(base::Contains(observed_windows, left_window.get()));
   EXPECT_TRUE(base::Contains(observed_windows, right_window.get()));
 }

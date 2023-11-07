@@ -905,7 +905,7 @@ void SplitViewController::AttachSnappingWindow(
         ->OnOverviewItemDragEnded(/*snap=*/true);
   }
 
-  if (split_view_type_ == SplitViewType::kTabletType) {
+  if (split_view_divider_) {
     divider_position_ = GetClosestFixedDividerPosition();
     split_view_divider_->UpdateDividerBounds();
   }

@@ -1378,6 +1378,40 @@ TEST_F(SnapGroupEntryPointArm1Test, AutoSnapNewWindow) {
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
 }
 
+TEST_F(SnapGroupEntryPointArm1Test, DoubleTapDivider) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+  auto* snap_group = SnapGroupController::Get()->GetTopmostSnapGroup();
+  EXPECT_TRUE(snap_group);
+  const auto* cached_primary_window = snap_group->window1();
+  const auto* cached_secondary_window = snap_group->window2();
+
+  // Test that double click on the divider swaps the windows.
+  const gfx::Point divider_center =
+      split_view_divider()
+          ->GetDividerBoundsInScreen(/*is_dragging=*/false)
+          .CenterPoint();
+  GetEventGenerator()->set_current_screen_location(divider_center);
+  GetEventGenerator()->DoubleClickLeftButton();
+  auto* new_primary_window = snap_group->window1();
+  auto* new_secondary_window = snap_group->window2();
+  EXPECT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(
+      new_primary_window, new_secondary_window));
+  EXPECT_EQ(new_primary_window, cached_secondary_window);
+  EXPECT_EQ(new_secondary_window, cached_primary_window);
+
+  // Switch to tablet mode. Test that double tap on the divider swaps the
+  // windows.
+  SwitchToTabletMode();
+  EXPECT_EQ(new_primary_window, split_view_controller()->primary_window());
+  EXPECT_EQ(new_secondary_window, split_view_controller()->secondary_window());
+  GetEventGenerator()->GestureTapAt(divider_center);
+  GetEventGenerator()->GestureTapAt(divider_center);
+  EXPECT_EQ(new_secondary_window, split_view_controller()->primary_window());
+  EXPECT_EQ(new_primary_window, split_view_controller()->secondary_window());
+}
+
 // Tests that removing a display during split view overview session doesn't
 // crash.
 TEST_F(SnapGroupEntryPointArm1Test, RemoveDisplay) {
@@ -3284,8 +3318,12 @@ TEST_F(SnapGroupHistogramTest, SwapWindowsSourceHistogramTest) {
           w2.get(), SplitViewController::SnapPosition::kSecondary);
       ASSERT_EQ(split_view_controller()->primary_window(), w1.get());
       ASSERT_EQ(split_view_controller()->secondary_window(), w2.get());
-      split_view_controller()->SwapWindows(
-          SplitViewController::SwapWindowsSource::kDoubleTap);
+      const gfx::Point divider_center =
+          split_view_divider()
+              ->GetDividerBoundsInScreen(/*is_dragging=*/false)
+              .CenterPoint();
+      GetEventGenerator()->GestureTapAt(divider_center);
+      GetEventGenerator()->GestureTapAt(divider_center);
       histogram_tester.ExpectBucketCount(
           kHistogramName, SplitViewController::SwapWindowsSource::kDoubleTap,
           1);
