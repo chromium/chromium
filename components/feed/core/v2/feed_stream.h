@@ -534,6 +534,10 @@ class FeedStream : public FeedApi,
 
   bool chained_web_feed_refresh_enabled_ = true;
 
+  // True if the stream with any stream type has been loaded at least once since
+  // the start.
+  bool loaded_after_start_ = false;
+
   base::WeakPtrFactory<FeedStream> weak_ptr_factory_{this};
 };
 

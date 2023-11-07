@@ -45209,6 +45209,7 @@ from previous Chrome versions.
   <int value="-371321069" label="SyncPromoAfterSigninIntercept:enabled"/>
   <int value="-371103035" label="OmniboxTouchDownTriggerForPrefetch:enabled"/>
   <int value="-370876369" label="ContextualSearchLiteralTapSearch:enabled"/>
+  <int value="-370229772" label="RefreshFeedOnRestart:enabled"/>
   <int value="-369565225" label="SkipServiceWorkerCheckInstallOnly:disabled"/>
   <int value="-369150124" label="SendTabToSelfV2:enabled"/>
   <int value="-368106169"
@@ -49188,6 +49189,7 @@ from previous Chrome versions.
   <int value="1552753678" label="DnsHttpssvc:disabled"/>
   <int value="1553017633" label="OmniboxHeaderPaddingUpdate:disabled"/>
   <int value="1553310752" label="AccessibilityCursorColor:enabled"/>
+  <int value="1553417445" label="RefreshFeedOnRestart:disabled"/>
   <int value="1553422694" label="EnablePalmOnMaxTouchMajor:enabled"/>
   <int value="1553430984" label="Projector:enabled"/>
   <int value="1553667664" label="CoralFeature:enabled"/>

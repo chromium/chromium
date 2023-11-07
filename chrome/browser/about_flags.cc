@@ -5568,6 +5568,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"feed-sports-card", flag_descriptions::kFeedSportsCardName,
      flag_descriptions::kFeedSportsCardDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kFeedSportsCard)},
+    {"refresh-feed-on-start", flag_descriptions::kRefreshFeedOnRestartName,
+     flag_descriptions::kRefreshFeedOnRestartDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(feed::kRefreshFeedOnRestart)},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)

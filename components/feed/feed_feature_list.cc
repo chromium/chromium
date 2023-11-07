@@ -165,4 +165,8 @@ BASE_FEATURE(kFeedSportsCard,
              "FeedSportsCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRefreshFeedOnRestart,
+             "RefreshFeedOnRestart",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace feed

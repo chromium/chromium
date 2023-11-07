@@ -4069,6 +4069,10 @@ const char kFeedDynamicColorsName[] = "Enable dynamic colors in the feed";
 const char kFeedDynamicColorsDescription[] =
     "Allows feed to fully respect dynamic colors if supported by the client.";
 
+const char kRefreshFeedOnRestartName[] = "Enable refreshing feed on restart";
+const char kRefreshFeedOnRestartDescription[] =
+    "Refresh feed when Chrome restarts.";
+
 const char kInfoCardAcknowledgementTrackingName[] =
     "Info card acknowledgement tracking";
 const char kInfoCardAcknowledgementTrackingDescription[] =

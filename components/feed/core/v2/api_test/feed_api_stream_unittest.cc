@@ -4192,6 +4192,33 @@ TEST_F(FeedApiTest, ClearAllOnSigninAllowedPrefChange) {
   EXPECT_FALSE(on_clear_all.called());
 }
 
+TEST_F(FeedApiTest, RefreshFeedOnStartWithFlag) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kRefreshFeedOnRestart);
+
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
+  store_->OverwriteStream(StreamType(StreamKind::kForYou),
+                          MakeTypicalInitialModelState(), base::DoNothing());
+
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_TRUE(network_.query_request_sent);
+  EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
+}
+
+TEST_F(FeedApiTest, DoNotRefreshFeedOnStartWithoutFlag) {
+  stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
+  store_->OverwriteStream(StreamType(StreamKind::kForYou),
+                          MakeTypicalInitialModelState(), base::DoNothing());
+
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_FALSE(network_.query_request_sent);
+  EXPECT_FALSE(response_translator_.InjectedResponseConsumed());
+}
+
 class SignedOutViewDemotionTest : public FeedApiTest {
  public:
   void SetUp() override {
