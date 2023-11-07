@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/pointers/raw_ptr.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr.h"
 
 #include <climits>
 #include <cstddef>
@@ -15,6 +15,20 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/chromeos_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc-inl.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/checked_math.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_hooks.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_counting_impl_for_test.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_test_support.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ref.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "base/cpu.h"
 #include "base/cxx20_to_address.h"
 #include "base/logging.h"
@@ -27,20 +41,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "partition_alloc/chromeos_buildflags.h"
-#include "partition_alloc/dangling_raw_ptr_checks.h"
-#include "partition_alloc/partition_alloc-inl.h"
-#include "partition_alloc/partition_alloc.h"
-#include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
-#include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_alloc_constants.h"
-#include "partition_alloc/partition_alloc_hooks.h"
-#include "partition_alloc/partition_root.h"
-#include "partition_alloc/pointers/raw_ptr_counting_impl_for_test.h"
-#include "partition_alloc/pointers/raw_ptr_test_support.h"
-#include "partition_alloc/pointers/raw_ref.h"
-#include "partition_alloc/tagging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

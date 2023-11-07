@@ -9,15 +9,15 @@
 #include <cstddef>
 #include <memory>
 
-#include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/no_destructor.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "partition_alloc/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/starscan/metadata_allocator.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/starscan/metadata_allocator.h"
 #endif
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

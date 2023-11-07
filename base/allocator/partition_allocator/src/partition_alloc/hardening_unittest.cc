@@ -6,11 +6,11 @@
 #include <string>
 #include <vector>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_freelist_entry.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_freelist_entry.h"
-#include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_root.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // With *SAN, PartitionAlloc is rerouted to malloc().

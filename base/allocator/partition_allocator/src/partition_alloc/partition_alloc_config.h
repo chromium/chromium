@@ -5,9 +5,9 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_CONFIG_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_CONFIG_H_
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 
 // PA_CONFIG() uses a similar trick as BUILDFLAG() to allow the compiler catch
 // typos or a missing #include.

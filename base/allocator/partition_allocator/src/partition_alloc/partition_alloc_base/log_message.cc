@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_base/log_message.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/log_message.h"
 
 // TODO(1151236): After finishing copying //base files to PA library, remove
 // defined(BASE_CHECK_H_) from here.
@@ -14,15 +14,15 @@
 #error "log_message.h should not include check.h"
 #endif
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/stack_trace.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/string_util.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/alias.h"
-#include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
-#include "partition_alloc/partition_alloc_base/immediate_crash.h"
-#include "partition_alloc/partition_alloc_base/logging.h"
-#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
-#include "partition_alloc/partition_alloc_base/strings/string_util.h"
-#include "partition_alloc/partition_alloc_base/strings/stringprintf.h"
 
 #if BUILDFLAG(IS_WIN)
 
@@ -40,7 +40,7 @@
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include "partition_alloc/partition_alloc_base/posix/safe_strerror.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/posix/safe_strerror.h"
 #endif
 
 namespace partition_alloc::internal::logging {

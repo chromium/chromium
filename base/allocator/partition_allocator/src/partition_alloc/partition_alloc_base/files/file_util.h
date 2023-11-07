@@ -12,8 +12,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_base/component_export.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <sys/stat.h>

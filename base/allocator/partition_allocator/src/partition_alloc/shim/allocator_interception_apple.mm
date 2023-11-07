@@ -15,7 +15,7 @@
 // only reason to intercept these calls is to re-label OOM crashes with slightly
 // more details.
 
-#include "partition_alloc/shim/allocator_interception_apple.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
@@ -27,20 +27,20 @@
 #include <algorithm>
 #include <new>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/apple/mach_logging.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/third_party/apple_apsl/CFBase.h"
 #include "build/build_config.h"
-#include "partition_alloc/oom.h"
-#include "partition_alloc/partition_alloc_base/apple/mach_logging.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
-#include "partition_alloc/partition_alloc_base/logging.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
-#include "partition_alloc/partition_alloc_check.h"
-#include "partition_alloc/shim/malloc_zone_functions_apple.h"
-#include "partition_alloc/third_party/apple_apsl/CFBase.h"
 
 #if BUILDFLAG(IS_IOS)
-#include "partition_alloc/partition_alloc_base/ios/ios_util.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/ios/ios_util.h"
 #else
-#include "partition_alloc/partition_alloc_base/mac/mac_util.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/mac/mac_util.h"
 #endif
 
 // The patching of Objective-C runtime bits must be done without any

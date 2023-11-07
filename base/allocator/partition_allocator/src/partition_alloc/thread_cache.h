@@ -10,21 +10,21 @@
 #include <limits>
 #include <memory>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc-inl.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_bucket_lookup.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_freelist_entry.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_tls.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc-inl.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "partition_alloc/partition_alloc_base/time/time.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
-#include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_alloc_forward.h"
-#include "partition_alloc/partition_bucket_lookup.h"
-#include "partition_alloc/partition_freelist_entry.h"
-#include "partition_alloc/partition_lock.h"
-#include "partition_alloc/partition_stats.h"
-#include "partition_alloc/partition_tls.h"
 
 #if defined(ARCH_CPU_X86_64) && BUILDFLAG(HAS_64_BIT_POINTERS)
 #include <algorithm>

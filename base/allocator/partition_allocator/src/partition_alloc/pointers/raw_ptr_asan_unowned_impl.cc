@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/pointers/raw_ptr_asan_unowned_impl.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_asan_unowned_impl.h"
 
 #include <sanitizer/asan_interface.h>
 #include <cstdint>
 
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
 
 namespace base::internal {
 

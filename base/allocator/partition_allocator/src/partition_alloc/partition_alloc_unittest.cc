@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_for_testing.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -17,40 +17,40 @@
 #include <tuple>
 #include <vector>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/address_space_randomization.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/chromecast_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/freeslot_bitmap.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/lightweight_quarantine.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_constants.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cpu.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/checked_math.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_bucket.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_cookie.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_freelist_entry.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_ref_count.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/thread_isolation.h"
 #include "base/system/sys_info.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
-#include "partition_alloc/address_space_randomization.h"
-#include "partition_alloc/chromecast_buildflags.h"
-#include "partition_alloc/dangling_raw_ptr_checks.h"
-#include "partition_alloc/freeslot_bitmap.h"
-#include "partition_alloc/lightweight_quarantine.h"
-#include "partition_alloc/memory_reclaimer.h"
-#include "partition_alloc/page_allocator_constants.h"
-#include "partition_alloc/partition_address_space.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/cpu.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_base/logging.h"
-#include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
-#include "partition_alloc/partition_alloc_base/rand_util.h"
-#include "partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
-#include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_alloc_constants.h"
-#include "partition_alloc/partition_alloc_forward.h"
-#include "partition_alloc/partition_bucket.h"
-#include "partition_alloc/partition_cookie.h"
-#include "partition_alloc/partition_freelist_entry.h"
-#include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_ref_count.h"
-#include "partition_alloc/partition_root.h"
-#include "partition_alloc/partition_stats.h"
-#include "partition_alloc/reservation_offset_table.h"
-#include "partition_alloc/tagging.h"
-#include "partition_alloc/thread_isolation/thread_isolation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(__ARM_FEATURE_MEMORY_TAGGING)
@@ -74,7 +74,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "partition_alloc/partition_alloc_base/mac/mac_util.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/mac/mac_util.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PKEYS)

@@ -5,13 +5,13 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/atomic_ref_count.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "partition_alloc/partition_alloc_base/atomic_ref_count.h"
-#include "partition_alloc/partition_alloc_base/check.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_base/memory/scoped_refptr.h"
 
 namespace partition_alloc::internal::base {
 namespace subtle {

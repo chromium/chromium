@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
 #include <atomic>
 #include <cstddef>
@@ -10,23 +10,23 @@
 #include <string>
 #include <tuple>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/allocation_guard.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/chromecast_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/checked_math.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_internals.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/nonscannable_allocator.h"
 #include "build/build_config.h"
-#include "partition_alloc/allocation_guard.h"
-#include "partition_alloc/chromecast_buildflags.h"
-#include "partition_alloc/memory_reclaimer.h"
-#include "partition_alloc/partition_alloc.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/no_destructor.h"
-#include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
-#include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
-#include "partition_alloc/partition_alloc_check.h"
-#include "partition_alloc/partition_alloc_constants.h"
-#include "partition_alloc/partition_root.h"
-#include "partition_alloc/partition_stats.h"
-#include "partition_alloc/shim/allocator_shim_internals.h"
-#include "partition_alloc/shim/nonscannable_allocator.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>

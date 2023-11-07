@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_base/rand_util.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util.h"
 
 #include <limits.h>
 #include <math.h>
@@ -10,7 +10,7 @@
 
 #include <limits>
 
-#include "partition_alloc/partition_alloc_base/check.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
 
 namespace partition_alloc::internal::base {
 

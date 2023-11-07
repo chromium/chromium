@@ -4,10 +4,10 @@
 
 #include <limits>
 
-#include "partition_alloc/oom.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
-#include "partition_alloc/shim/allocator_shim.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/checked_math.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 
 #include <dlfcn.h>
 #include <malloc.h>

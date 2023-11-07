@@ -25,11 +25,11 @@
 #include <numeric>
 #include <type_traits>
 
-#include "partition_alloc/partition_alloc_base/bits.h"
-#include "partition_alloc/partition_alloc_base/export_template.h"
-#include "partition_alloc/partition_alloc_base/rand_util.h"
-#include "partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "partition_alloc/partition_lock.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/export_template.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
 
 namespace partition_alloc {
 
