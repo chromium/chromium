@@ -51,13 +51,8 @@ gfx::SwapResult PassThroughImageTransportSurface::SwapBuffers(
     PresentationCallback callback,
     gfx::FrameData data) {
   StartSwapBuffers();
-  gfx::SwapResult result = gl::GLSurfaceAdapter::SwapBuffers(
-      base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     local_swap_id_),
-      data);
-  FinishSwapBuffers(local_swap_id_,
-                    /*release_fence=*/gfx::GpuFenceHandle());
+  gfx::SwapResult result =
+      gl::GLSurfaceAdapter::SwapBuffers(std::move(callback), data);
   return result;
 }
 
@@ -67,18 +62,8 @@ void PassThroughImageTransportSurface::SwapBuffersAsync(
     gfx::FrameData data) {
   StartSwapBuffers();
 
-  // We use WeakPtr here to avoid manual management of life time of an instance
-  // of this class. Callback will not be called once the instance of this class
-  // is destroyed. However, this also means that the callback can be run on
-  // the calling thread only.
   gl::GLSurfaceAdapter::SwapBuffersAsync(
-      base::BindOnce(&PassThroughImageTransportSurface::FinishSwapBuffersAsync,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(completion_callback), local_swap_id_),
-      base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(presentation_callback), local_swap_id_),
-      data);
+      std::move(completion_callback), std::move(presentation_callback), data);
 }
 
 gfx::SwapResult PassThroughImageTransportSurface::SwapBuffersWithBounds(
@@ -87,13 +72,7 @@ gfx::SwapResult PassThroughImageTransportSurface::SwapBuffersWithBounds(
     gfx::FrameData data) {
   StartSwapBuffers();
   gfx::SwapResult result = gl::GLSurfaceAdapter::SwapBuffersWithBounds(
-      rects,
-      base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     local_swap_id_),
-      data);
-  FinishSwapBuffers(local_swap_id_,
-                    /*release_fence=*/gfx::GpuFenceHandle());
+      rects, std::move(callback), data);
   return result;
 }
 
@@ -106,13 +85,7 @@ gfx::SwapResult PassThroughImageTransportSurface::PostSubBuffer(
     gfx::FrameData data) {
   StartSwapBuffers();
   gfx::SwapResult result = gl::GLSurfaceAdapter::PostSubBuffer(
-      x, y, width, height,
-      base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     local_swap_id_),
-      data);
-  FinishSwapBuffers(local_swap_id_,
-                    /*release_fence=*/gfx::GpuFenceHandle());
+      x, y, width, height, std::move(callback), data);
 
   return result;
 }
@@ -126,15 +99,12 @@ void PassThroughImageTransportSurface::PostSubBufferAsync(
     PresentationCallback presentation_callback,
     gfx::FrameData data) {
   StartSwapBuffers();
-  gl::GLSurfaceAdapter::PostSubBufferAsync(
-      x, y, width, height,
-      base::BindOnce(&PassThroughImageTransportSurface::FinishSwapBuffersAsync,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(completion_callback), local_swap_id_),
-      base::BindOnce(&PassThroughImageTransportSurface::BufferPresented,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(presentation_callback), local_swap_id_),
-      data);
+  gl::GLSurfaceAdapter::PostSubBufferAsync(x, y, width, height,
+
+                                           std::move(completion_callback),
+
+                                           std::move(presentation_callback),
+                                           data);
 }
 
 void PassThroughImageTransportSurface::SetVSyncEnabled(bool enabled) {
@@ -183,51 +153,6 @@ void PassThroughImageTransportSurface::UpdateVSyncEnabled() {
 void PassThroughImageTransportSurface::StartSwapBuffers() {
   TrackMultiSurfaceSwap();
   UpdateVSyncEnabled();
-
-#if DCHECK_IS_ON()
-  // Store the local swap id to ensure the presentation callback is not called
-  // before this swap is completed.
-  pending_local_swap_ids_.push(++local_swap_id_);
-#endif
-}
-
-void PassThroughImageTransportSurface::FinishSwapBuffers(
-    uint64_t local_swap_id,
-    gfx::GpuFenceHandle release_fence) {
-
-#if DCHECK_IS_ON()
-  // After the swap is completed, the local swap id is removed from the queue,
-  // and the presentation callback for this swap can be run at any time later.
-  DCHECK_EQ(pending_local_swap_ids_.front(), local_swap_id);
-  pending_local_swap_ids_.pop();
-#endif
-}
-
-void PassThroughImageTransportSurface::FinishSwapBuffersAsync(
-    SwapCompletionCallback callback,
-    uint64_t local_swap_id,
-    gfx::SwapCompletionResult result) {
-  FinishSwapBuffers(local_swap_id, result.release_fence.Clone());
-  std::move(callback).Run(std::move(result));
-}
-
-void PassThroughImageTransportSurface::BufferPresented(
-    GLSurface::PresentationCallback callback,
-    uint64_t local_swap_id,
-    const gfx::PresentationFeedback& feedback) {
-#if DCHECK_IS_ON()
-  // The swaps are handled in queue. Thus, to allow the presentation feedback to
-  // be called after the first swap ack later, disregarding any of the following
-  // swap requests with own presentation feedbacks, and disallow calling the
-  // presentation callback before the same swap request, make sure the queue is
-  // either empty or the pending swap id is greater than the current. This means
-  // that the requested swap is completed and it's safe to call the presentation
-  // callback.
-  DCHECK(pending_local_swap_ids_.empty() ||
-         pending_local_swap_ids_.front() > local_swap_id);
-#endif
-
-  std::move(callback).Run(feedback);
 }
 
 }  // namespace gpu
