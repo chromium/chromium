@@ -226,6 +226,7 @@ try_.compilator_builder(
     name = "lacros-amd64-generic-rel-compilator",
     description_html = """\
 Temporary compilator setup for lacros-amd-generic-rel""",
+    cores = 8,
     contact_team_email = "chrome-browser-infra-team@google.com",
     main_list_view = "try",
 )
