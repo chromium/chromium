@@ -63,9 +63,7 @@ export class VolumeManager {
    * @return {chrome.fileManagerPrivate.DriveConnectionState} Connection state.
    */
   getDriveConnectionState() {
-    // @ts-ignore: error TS2322: Type 'string' is not assignable to type
-    // 'DriveConnectionState'.
-    return chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE;
+    return {type: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE};
   }
 
   /**

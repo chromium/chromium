@@ -4,7 +4,7 @@
 
 /**
  * Asserts that promise gets rejected.
- * @param {Promise<void>} promise
+ * @param {Promise<*>} promise
  */
 export async function assertRejected(promise) {
   let triggeredError = false;

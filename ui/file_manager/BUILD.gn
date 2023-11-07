@@ -196,13 +196,7 @@ ts_library("build_ts") {
 
   manifest_excludes = [ "file_manager/externs/file_manager_private.js" ]
 
-  definitions = [
-    "//tools/typescript/definitions/chrome_event.d.ts",
-    "//tools/typescript/definitions/chrome_test.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/runtime.d.ts",
-    "//tools/typescript/definitions/tabs.d.ts",
-  ]
+  definitions = other_dts_files
   foreach(_file, generate_definitions_js_files) {
     definitions +=
         [ "$target_gen_dir/" + string_replace(_file, ".js", ".d.ts") ]
@@ -255,7 +249,7 @@ ts_library("test_build_ts") {
                     target_gen_dir),
   ]
 
-  definitions = []
+  definitions = other_dts_files
   foreach(_file, generate_definitions_js_files) {
     definitions +=
         [ "$target_gen_dir/" + string_replace(_file, ".js", ".d.ts") ]

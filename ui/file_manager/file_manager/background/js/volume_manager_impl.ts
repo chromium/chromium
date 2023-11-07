@@ -8,17 +8,151 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {promisify} from '../../common/js/api.js';
 import {getRootType, isComputersRoot, isFakeEntry, isSameEntry, isSameFileSystem, isTeamDriveRoot} from '../../common/js/entry_utils.js';
+import {str} from '../../common/js/translations.js';
+import {timeoutPromise} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {removeVolume} from '../../state/ducks/volumes.js';
+import {addVolume, removeVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
 import {EntryLocationImpl} from './entry_location_impl.js';
+import {VolumeInfoImpl} from './volume_info_impl.js';
 import {VolumeInfoListImpl} from './volume_info_list_impl.js';
-import {volumeManagerUtil} from './volume_manager_util.js';
+
+
+/**
+ * Time in milliseconds that we wait a response for general volume operations
+ * such as mount, unmount, and requestFileSystem. If no response on
+ * mount/unmount received the request supposed failed.
+ */
+const TIMEOUT = 15 * 60 * 1000;
+
+const TIMEOUT_STR_REQUEST_FILE_SYSTEM = 'timeout(requestFileSystem)';
+
+/**
+ * Logs a warning message if the given error is not in
+ * VolumeManagerCommon.VolumeError.
+ *
+ * @param error Status string usually received from APIs.
+ */
+function validateError(error: string) {
+  const found = Object.values(VolumeManagerCommon.VolumeError)
+                    .find(value => value === error);
+  if (found) {
+    return;
+  }
+
+  console.warn(`Invalid mount error: ${error}`);
+}
+
+/**
+ * Builds the VolumeInfo data from chrome.fileManagerPrivate.VolumeMetadata.
+ * @param volumeMetadata Metadata instance for the volume.
+ * @return Promise settled with the VolumeInfo instance.
+ */
+export async function createVolumeInfo(
+    volumeMetadata: chrome.fileManagerPrivate.VolumeMetadata):
+    Promise<VolumeInfo> {
+  let localizedLabel: string;
+  switch (volumeMetadata.volumeType) {
+    case VolumeManagerCommon.VolumeType.DOWNLOADS:
+      localizedLabel = str('MY_FILES_ROOT_LABEL');
+      break;
+    case VolumeManagerCommon.VolumeType.DRIVE:
+      localizedLabel = str('DRIVE_DIRECTORY_LABEL');
+      break;
+    case VolumeManagerCommon.VolumeType.MEDIA_VIEW:
+      switch (VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(
+          volumeMetadata.volumeId)) {
+        case VolumeManagerCommon.MediaViewRootType.IMAGES:
+          localizedLabel = str('MEDIA_VIEW_IMAGES_ROOT_LABEL');
+          break;
+        case VolumeManagerCommon.MediaViewRootType.VIDEOS:
+          localizedLabel = str('MEDIA_VIEW_VIDEOS_ROOT_LABEL');
+          break;
+        case VolumeManagerCommon.MediaViewRootType.AUDIO:
+          localizedLabel = str('MEDIA_VIEW_AUDIO_ROOT_LABEL');
+          break;
+      }
+      break;
+    case VolumeManagerCommon.VolumeType.CROSTINI:
+      localizedLabel = str('LINUX_FILES_ROOT_LABEL');
+      break;
+    case VolumeManagerCommon.VolumeType.ANDROID_FILES:
+      localizedLabel = str('ANDROID_FILES_ROOT_LABEL');
+      break;
+    default:
+      // TODO(mtomasz): Calculate volumeLabel for all types of volumes in the
+      // C++ layer.
+      localizedLabel = volumeMetadata.volumeLabel ||
+          volumeMetadata.volumeId.split(':', 2)[1]!;
+      break;
+  }
+
+  console.debug(`Getting file system '${volumeMetadata.volumeId}'`);
+  return timeoutPromise(
+             new Promise<DirectoryEntry>((resolve, reject) => {
+               chrome.fileManagerPrivate.getVolumeRoot(
+                   {
+                     volumeId: volumeMetadata.volumeId,
+                     writable: !volumeMetadata.isReadOnly,
+                   },
+                   (rootDirectoryEntry: DirectoryEntry) => {
+                     if (chrome.runtime.lastError) {
+                       reject(chrome.runtime.lastError.message);
+                     } else {
+                       resolve(rootDirectoryEntry);
+                     }
+                   });
+             }),
+             TIMEOUT,
+             TIMEOUT_STR_REQUEST_FILE_SYSTEM + ': ' + volumeMetadata.volumeId)
+      .then(rootDirectoryEntry => {
+        console.debug(`Got file system '${volumeMetadata.volumeId}'`);
+        return new VolumeInfoImpl(
+            volumeMetadata.volumeType, volumeMetadata.volumeId,
+            rootDirectoryEntry.filesystem, volumeMetadata.mountCondition,
+            volumeMetadata.deviceType, volumeMetadata.devicePath,
+            volumeMetadata.isReadOnly, volumeMetadata.isReadOnlyRemovableDevice,
+            volumeMetadata.profile, localizedLabel, volumeMetadata.providerId,
+            volumeMetadata.hasMedia, volumeMetadata.configurable,
+            volumeMetadata.watchable, volumeMetadata.source,
+            volumeMetadata.diskFileSystemType || '', volumeMetadata.iconSet,
+            volumeMetadata.driveLabel, volumeMetadata.remoteMountPath,
+            volumeMetadata.vmType);
+      })
+      .then(async (volumeInfo) => {
+        // resolveDisplayRoot() is a promise, but instead of using await here,
+        // we just pass a onSuccess function to it, because we don't want to it
+        // to interfere the startup time.
+        volumeInfo.resolveDisplayRoot(() => {
+          getStore().dispatch(addVolume({volumeMetadata, volumeInfo}));
+        });
+        return volumeInfo;
+      })
+      .catch(error => {
+        console.warn(`Cannot mount file system '${volumeMetadata.volumeId}': ${
+            error.stack || error}`);
+
+        // TODO(crbug/847729): Report a mount error via UMA.
+
+        return new VolumeInfoImpl(
+            volumeMetadata.volumeType, volumeMetadata.volumeId,
+            null,  // File system is not found.
+            volumeMetadata.mountCondition, volumeMetadata.deviceType,
+            volumeMetadata.devicePath, volumeMetadata.isReadOnly,
+            volumeMetadata.isReadOnlyRemovableDevice, volumeMetadata.profile,
+            localizedLabel, volumeMetadata.providerId, volumeMetadata.hasMedia,
+            volumeMetadata.configurable, volumeMetadata.watchable,
+            volumeMetadata.source, volumeMetadata.diskFileSystemType || '',
+            volumeMetadata.iconSet, volumeMetadata.driveLabel,
+            volumeMetadata.remoteMountPath, volumeMetadata.vmType);
+      });
+}
+
 
 type VolumeAlreadyMountedEvent = Event&{
   volumeId: string,
@@ -67,7 +201,8 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
   private waitForInitialization_: Promise<void> =
       new Promise(resolve => this.finishInitialization_ = resolve);
 
-  constructor() {
+  constructor(
+      private createVolumeInfo_: typeof createVolumeInfo = createVolumeInfo) {
     super();
 
     chrome.fileManagerPrivate.onDriveConnectionStatusChanged.addListener(
@@ -191,7 +326,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
           console.debug(`Initializing volume #${idx} '${volumeId}'`);
           // createVolumeInfo() requests the filesystem and resolve its root,
           // after that it only creates a VolumeInfo.
-          volumeInfo = await volumeManagerUtil.createVolumeInfo(volumeMetadata);
+          volumeInfo = await this.createVolumeInfo_(volumeMetadata);
           // Add addVolumeInfo_() changes the VolumeInfoList which propagates
           // to the foreground.
           this.addVolumeInfo_(volumeInfo);
@@ -257,8 +392,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
 
             let volumeInfo;
             try {
-              volumeInfo =
-                  await volumeManagerUtil.createVolumeInfo(volumeMetadata);
+              volumeInfo = await this.createVolumeInfo_(volumeMetadata);
             } catch (error: any) {
               console.warn(
                   'Unable to create volumeInfo for ' +
@@ -579,8 +713,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
           successCallbacks: [successCallback as RequestSuccessCallback],
           errorCallbacks: [errorCallback],
 
-          timeout: setTimeout(
-              this.onTimeout_.bind(this, key), volumeManagerUtil.TIMEOUT),
+          timeout: setTimeout(this.onTimeout_.bind(this, key), TIMEOUT),
         };
       }
     });
@@ -626,7 +759,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
       request.successCallbacks.map(cb => cb(volumeInfo));
 
     } else {
-      volumeManagerUtil.validateError(status);
+      validateError(status);
       request.errorCallbacks.map(cb => cb(status));
     }
   }

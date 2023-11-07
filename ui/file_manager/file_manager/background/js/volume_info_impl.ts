@@ -62,7 +62,7 @@ export class VolumeInfoImpl implements VolumeInfo {
    */
   constructor(
       private volumeType_: VolumeManagerCommon.VolumeType,
-      private volumeId_: string, private fileSystem_: FileSystem,
+      private volumeId_: string, private fileSystem_: FileSystem|null,
       // Note: This represents if the mounting of the volume is successfully
       // done or not. (If error is empty string, the mount is successfully
       // done).
@@ -114,7 +114,8 @@ export class VolumeInfoImpl implements VolumeInfo {
   }
 
   get fileSystem(): FileSystem {
-    return this.fileSystem_;
+    // TODO(b/309054429): fileSystem could be null, handle it gracefully.
+    return this.fileSystem_!;
   }
 
   /** Display root path. It is null before finishing to resolve the entry. */
@@ -267,6 +268,10 @@ export class VolumeInfoImpl implements VolumeInfo {
    * The return value will resolve once this operation is complete.
    */
   private resolveSharedDrivesRoot_(): Promise<void> {
+    if (!this.fileSystem_) {
+      return Promise.reject(this.error);
+    }
+
     return VolumeInfoImpl
         .resolveFileSystemUrl_(
             this.fileSystem_.root.toURL() +
@@ -292,6 +297,10 @@ export class VolumeInfoImpl implements VolumeInfo {
    * The return value will resolve once this operation is complete.
    */
   private resolveComputersRoot_(): Promise<void> {
+    if (!this.fileSystem_) {
+      return Promise.reject(this.error);
+    }
+
     return VolumeInfoImpl
         .resolveFileSystemUrl_(
             this.fileSystem_.root.toURL() +
