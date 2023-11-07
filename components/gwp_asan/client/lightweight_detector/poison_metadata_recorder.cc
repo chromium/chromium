@@ -112,6 +112,6 @@ bool PoisonMetadataRecorder::HasAllocationForTesting(uintptr_t address) {
 }
 
 template class EXPORT_TEMPLATE_DEFINE(GWP_ASAN_EXPORT)
-    SharedState<PoisonMetadataRecorder>;
+    SharedStateHolder<PoisonMetadataRecorder>;
 
 }  // namespace gwp_asan::internal

@@ -16,10 +16,6 @@
 
 namespace gwp_asan::internal {
 
-class PoisonMetadataRecorder;
-extern template class EXPORT_TEMPLATE_DECLARE(GWP_ASAN_EXPORT)
-    SharedState<PoisonMetadataRecorder>;
-
 // Responsible for both poisoning memory allocations and tracking metadata
 // associated with these poisoned allocations.
 class GWP_ASAN_EXPORT PoisonMetadataRecorder
@@ -62,6 +58,9 @@ class GWP_ASAN_EXPORT PoisonMetadataRecorder
   FRIEND_TEST_ALL_PREFIXES(PoisonMetadataRecorderTest, SlotReuse);
   FRIEND_TEST_ALL_PREFIXES(LightweightDetectorAnalyzerTest, InternalError);
 };
+
+extern template class EXPORT_TEMPLATE_DECLARE(GWP_ASAN_EXPORT)
+    SharedStateHolder<PoisonMetadataRecorder>;
 
 }  // namespace gwp_asan::internal
 
