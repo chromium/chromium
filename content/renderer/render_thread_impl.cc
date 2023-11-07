@@ -779,7 +779,6 @@ void RenderThreadImpl::AttachTaskRunnerToRoute(
 void RenderThreadImpl::RemoveRoute(int32_t routing_id) {
   ChildThreadImpl::GetRouter()->RemoveRoute(routing_id);
   GetChannel()->RemoveListenerTaskRunner(routing_id);
-  pending_frames_.erase(routing_id);
 }
 
 mojom::RendererHost* RenderThreadImpl::GetRendererHost() {

@@ -357,10 +357,6 @@ class CONTENT_EXPORT RenderThreadImpl
     return &histogram_customizer_;
   }
 
-  void RegisterPendingFrameCreate(
-      int routing_id,
-      mojo::PendingReceiver<mojom::Frame> frame);
-
   mojom::RendererHost* GetRendererHost();
 
   // Sets the current pipeline rendering color space.
@@ -557,10 +553,6 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // Target rendering ColorSpace.
   gfx::ColorSpace rendering_color_space_;
-
-  // Used when AddRoute() is called and the RenderFrameImpl hasn't been created
-  // yet.
-  std::map<int, mojo::PendingReceiver<mojom::Frame>> pending_frames_;
 
   mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
 
