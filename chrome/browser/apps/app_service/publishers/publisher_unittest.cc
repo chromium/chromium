@@ -52,12 +52,14 @@
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/branded_strings.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -812,9 +814,11 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
 };
 
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserAppsOnApps) {
-  VerifyApp(AppType::kStandaloneBrowser, app_constants::kLacrosAppId, "Chrome",
-            Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem,
-            {}, base::Time(), base::Time(), apps::Permissions(),
+  std::string lacros_app_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
+  VerifyApp(AppType::kStandaloneBrowser, app_constants::kLacrosAppId,
+            lacros_app_name, Readiness::kReady, InstallReason::kSystem,
+            InstallSource::kSystem, {}, base::Time(), base::Time(),
+            apps::Permissions(),
             /*is_platform_app=*/false,
             /*recommendable=*/true, /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,

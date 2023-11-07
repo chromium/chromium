@@ -143,6 +143,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
@@ -196,6 +197,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -1946,7 +1948,8 @@ TEST_F(ChromeShelfControllerTest, PreinstalledApps) {
 
 TEST_F(ChromeShelfControllerLacrosTest, LacrosPinnedByDefault) {
   InitShelfController();
-  EXPECT_EQ("Chrome", GetPinnedAppStatus());
+  std::string lacros_app_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
+  EXPECT_EQ(lacros_app_name, GetPinnedAppStatus());
 }
 
 // Checks that AppService instance is updated appropriately for one Chrome app
