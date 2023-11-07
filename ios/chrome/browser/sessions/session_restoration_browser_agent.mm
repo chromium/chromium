@@ -237,9 +237,15 @@ SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
 }
 
 SessionRestorationBrowserAgent::~SessionRestorationBrowserAgent() {
-  // Disconnect the session factory object as it's not granteed that it will be
-  // released before it's referenced by the session service.
+  // Disconnect the session factory object as it's not garanteed that it will
+  // be released before it's referenced by the session service.
   [session_window_ios_factory_ disconnect];
+
+  // If the object is destroyed before the Browser, unregister it from the
+  // ObserverList explicitly.
+  if (browser_) {
+    BrowserDestroyed(browser_);
+  }
 }
 
 void SessionRestorationBrowserAgent::SetSessionID(

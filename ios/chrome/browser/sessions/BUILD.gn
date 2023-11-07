@@ -200,6 +200,25 @@ source_set("session_restoration_service_impl") {
   ]
 }
 
+source_set("legacy_session_restoration_service") {
+  sources = [
+    "legacy_session_restoration_service.h",
+    "legacy_session_restoration_service.mm",
+  ]
+  deps = [
+    ":restoration_agent",
+    ":restoration_observer",
+    ":session_migration",
+    ":session_restoration_service",
+    ":session_service",
+    "//base",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/web/public",
+    "//ios/web/public/session",
+    "//ios/web/public/session/proto",
+  ]
+}
+
 source_set("session_restoration_service_factory") {
   sources = [
     "session_restoration_service_factory.h",
@@ -304,6 +323,7 @@ source_set("fake") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "legacy_session_restoration_service_unittest.mm",
     "proto_util_unittest.cc",
     "session_internal_util_unittest.mm",
     "session_io_request_unittest.mm",
@@ -322,6 +342,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":fake",
+    ":legacy_session_restoration_service",
     ":resources_unit_tests",
     ":restoration_agent",
     ":restoration_observer",
@@ -352,7 +373,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/tabs/model:features",
+    "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/session_state",
     "//ios/chrome/test:test_support",
     "//ios/web/common:features",
     "//ios/web/common:user_agent",
