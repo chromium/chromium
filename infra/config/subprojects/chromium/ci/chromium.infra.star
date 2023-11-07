@@ -183,17 +183,7 @@ packager_builder(
         short_name = "sdk",
     ),
     properties = {
-        # We still package part of build-tools;25.0.2 to support
-        # http://bit.ly/2KNUygZ
         "packages": [
-            {
-                "sdk_package_name": "build-tools;25.0.2",
-                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/25.0.2.yaml",
-            },
-            {
-                "sdk_package_name": "build-tools;33.0.0",
-                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/33.0.0.yaml",
-            },
             {
                 "sdk_package_name": "build-tools;34.0.0",
                 "cipd_yaml": "third_party/android_sdk/cipd/build-tools/34.0.0.yaml",
@@ -207,28 +197,12 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
             },
             {
-                "sdk_package_name": "patcher;v4",
-                "cipd_yaml": "third_party/android_sdk/cipd/patcher/v4.yaml",
-            },
-            {
-                "sdk_package_name": "platforms;android-33",
-                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-33.yaml",
-            },
-            {
                 "sdk_package_name": "platforms;android-34",
                 "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-34.yaml",
             },
             {
-                "sdk_package_name": "platforms;android-TiramisuPrivacySandbox",
-                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-TiramisuPrivacySandbox.yaml",
-            },
-            {
                 "sdk_package_name": "platform-tools",
                 "cipd_yaml": "third_party/android_sdk/cipd/platform-tools.yaml",
-            },
-            {
-                "sdk_package_name": "sources;android-31",
-                "cipd_yaml": "third_party/android_sdk/cipd/sources/android-31.yaml",
             },
             {
                 "sdk_package_name": "system-images;android-19;google_apis;x86",

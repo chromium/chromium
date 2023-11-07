@@ -414,29 +414,13 @@ vars = {
   # and whatever else without interference from each other.
   'android_sdk_emulator_version': '9lGp8nTUCRRWGMnI_96HcKfzjnxEJKUcfvfwmA3wXNkC',
   # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling android_sdk_extras_version
-  # and whatever else without interference from each other.
-  'android_sdk_extras_version': 'ppQ4TnqDvBHQ3lXx5KPq97egzF5X2FFyOrVHkGmiTMQC',
-  # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling android_sdk_patcher_version
-  # and whatever else without interference from each other.
-  'android_sdk_patcher_version': 'I6FNMhrXlpB-E1lOhMlvld7xt9lBVNOO83KIluXDyA0C',
-  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling android_sdk_platform-tools_version
   # and whatever else without interference from each other.
   'android_sdk_platform-tools_version': 'HWVsGs2HCKgSVv41FsOcsfJbNcB0UFiNrF6Tc4yRArYC',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling android_sdk_platforms_version
   # and whatever else without interference from each other.
-  'android_sdk_platforms_preview_version': 'YWMYkzyxGBgVsty0GhXL1oxbY0pGXQIgFc0Rh7ZMRPYC',
-  # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling android_sdk_platforms_version
-  # and whatever else without interference from each other.
   'android_sdk_platforms_version': 'u-bhWbTME6u-DjypTgr3ZikCyeAeU6txkR9ET6Uudc8C',
-  # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling android_sdk_sources_version
-  # and whatever else without interference from each other.
-  'android_sdk_sources_version': '_a_BcnANjPYw5mSKlNHa7GFY8yc1kdqj2rmQgac7yUcC',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1091,24 +1075,12 @@ deps = {
               'version': Var('android_sdk_emulator_version'),
           },
           {
-              'package': 'chromium/third_party/android_sdk/public/patcher',
-              'version': Var('android_sdk_patcher_version'),
-          },
-          {
               'package': 'chromium/third_party/android_sdk/public/platform-tools',
               'version': Var('android_sdk_platform-tools_version'),
           },
           {
               'package': 'chromium/third_party/android_sdk/public/platforms/android-34',
               'version': Var('android_sdk_platforms_version'),
-          },
-          {
-              'package': 'chromium/third_party/android_sdk/public/platforms/android-tiramisuprivacysandbox',
-              'version': Var('android_sdk_platforms_preview_version'),
-          },
-          {
-              'package': 'chromium/third_party/android_sdk/public/sources/android-31',
-              'version': Var('android_sdk_sources_version'),
           },
           {
               'package': 'chromium/third_party/android_sdk/public/cmdline-tools',
