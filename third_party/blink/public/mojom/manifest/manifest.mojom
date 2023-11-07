@@ -32,6 +32,9 @@ struct Manifest {
   // This is empty if the start_url is empty.
   url.mojom.Url id;
 
+  // Set to true if the json specified a specific value for the id.
+  bool has_custom_id;
+
   // TODO(crbug.com/1466730): Investigate if this should return the
   // document_url_ if ManifestParser fails to parse the start_url as per
   // the spec. This can sometimes be an empty KURL, which can be

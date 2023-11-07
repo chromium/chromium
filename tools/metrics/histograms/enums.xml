@@ -32218,6 +32218,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4719" label="AdClickMainFrameNavigation"/>
   <int value="4720" label="LinkRelPrivacyPolicy"/>
   <int value="4721" label="LinkRelTermsOfService"/>
+  <int value="4722" label="WebAppManifestIdField"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

@@ -16,8 +16,6 @@ blink_modules_sources("manifest") {
     "manifest_manager.h",
     "manifest_parser.cc",
     "manifest_parser.h",
-    "manifest_uma_util.cc",
-    "manifest_uma_util.h",
   ]
 
   deps = [
