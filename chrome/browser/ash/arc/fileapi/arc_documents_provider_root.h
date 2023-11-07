@@ -261,8 +261,14 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
                                           const NameToDocumentMap& mapping);
 
   void DeleteFileWithDocumentId(StatusCallback callback,
+                                const base::FilePath& path,
                                 const std::string& document_id);
-  void OnFileDeleted(StatusCallback callback, bool success);
+  void DeleteFileWithParentDocumentId(StatusCallback callback,
+                                      const std::string& document_id,
+                                      const std::string& parent_document_id);
+  void OnFileDeleted(StatusCallback callback,
+                     const std::string& parent_document_id,
+                     bool success);
 
   void CreateFileAfterConflictCheck(StatusCallback callback,
                                     const base::FilePath& path,
@@ -286,9 +292,16 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
                           const std::string& display_name,
                           StatusCallback callback);
   void RenameFileWithDocumentId(StatusCallback callback,
+                                const base::FilePath& path,
                                 const std::string& display_name,
-                                const std::string& documentId);
-  void OnFileRenamed(StatusCallback callback, mojom::DocumentPtr document);
+                                const std::string& document_id);
+  void RenameFileWithParentDocumentId(StatusCallback callback,
+                                      const std::string& display_name,
+                                      const std::string& document_id,
+                                      const std::string& parent_document_id);
+  void OnFileRenamed(StatusCallback callback,
+                     const std::string& parent_document_id,
+                     mojom::DocumentPtr document);
 
   void CopyFileWithSourceDocumentId(StatusCallback callback,
                                     const base::FilePath& target_path,
@@ -301,6 +314,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
       const std::string& target_parent_document_id);
   void OnFileCopied(StatusCallback callback,
                     const std::string& target_display_name_to_rename,
+                    const std::string& target_parent_document_id,
                     mojom::DocumentPtr document);
 
   void MoveFileInternal(const base::FilePath& source_path,
@@ -325,6 +339,8 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
       const std::string& target_parent_document_id);
   void OnFileMoved(StatusCallback callback,
                    const std::string& target_display_name_to_rename,
+                   const std::string& source_parent_document_id,
+                   const std::string& target_parent_document_id,
                    mojom::DocumentPtr document);
 
   void AddWatcherWithDocumentId(const base::FilePath& path,
