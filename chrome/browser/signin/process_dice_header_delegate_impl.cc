@@ -140,8 +140,8 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
   // sync signin, but it is not always the case: the user may abandon the sync
   // signin and do a simple web signin in the same tab instead.
   DiceWebSigninInterceptorFactory::GetForProfile(&profile_.get())
-      ->MaybeInterceptWebSignin(web_contents_.get(), account_id, is_new_account,
-                                is_sync_signin_tab_);
+      ->MaybeInterceptWebSignin(web_contents_.get(), account_id, access_point_,
+                                is_new_account, is_sync_signin_tab_);
 }
 
 void ProcessDiceHeaderDelegateImpl::EnableSync(

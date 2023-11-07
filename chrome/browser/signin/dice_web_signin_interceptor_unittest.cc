@@ -22,6 +22,7 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -32,6 +33,7 @@
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -163,9 +165,11 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
   // Helper function that calls MaybeInterceptWebSignin with parameters
   // compatible with interception.
   void MaybeIntercept(CoreAccountId account_id) {
-    interceptor()->MaybeInterceptWebSignin(web_contents(), account_id,
-                                           /*is_new_account=*/true,
-                                           /*is_sync_signin=*/false);
+    interceptor()->MaybeInterceptWebSignin(
+        web_contents(), account_id,
+        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+        /*is_new_account=*/true,
+        /*is_sync_signin=*/false);
   }
 
   // Calls MaybeInterceptWebSignin and verifies the heuristic outcome, the
@@ -182,9 +186,10 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
                                                  /*entry=*/nullptr),
               expected_outcome);
     base::HistogramTester histogram_tester;
-    interceptor()->MaybeInterceptWebSignin(web_contents(),
-                                           account_info.account_id,
-                                           is_new_account, is_sync_signin);
+    interceptor()->MaybeInterceptWebSignin(
+        web_contents(), account_info.account_id,
+        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, is_new_account,
+        is_sync_signin);
     testing::Mock::VerifyAndClearExpectations(mock_delegate());
     histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                         expected_outcome, 1);
@@ -209,9 +214,10 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
                                                  /*entry=*/nullptr),
               absl::nullopt);
     base::HistogramTester histogram_tester;
-    interceptor()->MaybeInterceptWebSignin(web_contents(),
-                                           account_info.account_id,
-                                           is_new_account, is_sync_signin);
+    interceptor()->MaybeInterceptWebSignin(
+        web_contents(), account_info.account_id,
+        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, is_new_account,
+        is_sync_signin);
     testing::Mock::VerifyAndClearExpectations(mock_delegate());
     histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                         expected_outcome, 1);
@@ -1066,6 +1072,7 @@ TEST_F(DiceWebSigninInterceptorTest, TabClosed) {
   base::HistogramTester histogram_tester;
   interceptor()->MaybeInterceptWebSignin(
       /*web_contents=*/nullptr, CoreAccountId(),
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
       /*is_new_account=*/true, /*is_sync_signin=*/false);
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
@@ -1624,7 +1631,67 @@ TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestSynchronousInterception(
-      account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
-      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
+
+  auto expected_outcome =
+      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
+  base::HistogramTester histogram_tester;
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info.account_id,
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      /*is_new_account=*/true, /*is_sync_signin=*/false);
+  EXPECT_EQ(interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
+                                               /*is_sync_signin=*/false,
+                                               account_info.email,
+                                               /*entry=*/nullptr),
+            expected_outcome);
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+  histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
+                                      expected_outcome, 1);
+  histogram_tester.ExpectUniqueTimeSample("Signin.Intercept.HeuristicLatency",
+                                          base::Milliseconds(0), 1);
+
+  EXPECT_EQ(interceptor()->is_interception_in_progress(),
+            SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
+}
+
+TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
+       InterceptShouldNotShowChromeSigninBubbleOnAccessPointUnkown) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Account is valid.
+  ASSERT_TRUE(account_info.IsValid());
+  // Primary account is not set, Chrome is not signed in.
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  // Unknown access point is treated as information not complete/compatible and
+  // should not show the bubble even if the rest of the information are valid.
+  auto access_point = signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+  EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
+                                    web_contents(), testing::_, testing::_))
+      .Times(0);
+
+  base::HistogramTester histogram_tester;
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info.account_id, access_point,
+      /*is_new_account=*/true, /*is_sync_signin=*/false);
+
+  auto expected_outcome =
+      SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible;
+  EXPECT_EQ(interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
+                                               /*is_sync_signin=*/false,
+                                               account_info.email,
+                                               /*entry=*/nullptr),
+            absl::nullopt);
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+  histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
+                                      expected_outcome, 1);
+  histogram_tester.ExpectUniqueTimeSample("Signin.Intercept.HeuristicLatency",
+                                          base::Milliseconds(0), 1);
+
+  EXPECT_EQ(interceptor()->is_interception_in_progress(),
+            SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
 }

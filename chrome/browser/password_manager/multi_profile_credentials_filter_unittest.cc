@@ -256,7 +256,9 @@ TEST_F(MultiProfileCredentialsFilterTest, InterceptInProgress) {
   AccountInfo account_info = SetupInterception();
   dice_web_signin_interceptor_->MaybeInterceptWebSignin(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      account_info.account_id, /*is_new_account=*/true,
+      account_info.account_id,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      /*is_new_account=*/true,
       /*is_sync_signin=*/false);
   ASSERT_TRUE(dice_web_signin_interceptor_->is_interception_in_progress());
 

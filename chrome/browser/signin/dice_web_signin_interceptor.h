@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -79,16 +80,17 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   // Called when an account has been added in Chrome from the web (using the
   // DICE protocol).
-  // |web_contents| is the tab where the signin event happened. It must belong
+  // `web_contents` is the tab where the signin event happened. It must belong
   // to the profile associated with this service. It may be nullptr if the tab
   // was closed.
-  // |is_new_account| is true if the account was not already in Chrome (i.e.
+  // `is_new_account` is true if the account was not already in Chrome (i.e.
   // this is not a reauth).
-  // |is_sync_signin| is true if the user is signing in with the intent of
+  // `is_sync_signin` is true if the user is signing in with the intent of
   // enabling sync for that account.
   // Virtual for testing.
   virtual void MaybeInterceptWebSignin(content::WebContents* web_contents,
                                        CoreAccountId account_id,
+                                       signin_metrics::AccessPoint access_point,
                                        bool is_new_account,
                                        bool is_sync_signin);
 
@@ -315,6 +317,8 @@ class DiceWebSigninInterceptor : public KeyedService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       account_info_update_observation_{this};
+  signin_metrics::AccessPoint access_point_ =
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
 
   // Timeout for waiting for full information to be available (see
   // `ProcessInterceptionOrWait()`).

@@ -4101,9 +4101,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   base::HistogramTester histogram_tester;
   DiceWebSigninInterceptor* signin_interceptor =
       helper_.GetSigninInterceptor(profile);
-  signin_interceptor->MaybeInterceptWebSignin(WebContents(), account_id,
-                                              /*is_new_account=*/true,
-                                              /*is_sync_signin=*/false);
+  signin_interceptor->MaybeInterceptWebSignin(
+      WebContents(), account_id,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
   EXPECT_FALSE(signin_interceptor->is_interception_in_progress());
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
@@ -4130,9 +4132,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   base::HistogramTester histogram_tester;
   DiceWebSigninInterceptor* signin_interceptor =
       helper_.GetSigninInterceptor(profile);
-  signin_interceptor->MaybeInterceptWebSignin(WebContents(), account_id,
-                                              /*is_new_account=*/true,
-                                              /*is_sync_signin=*/false);
+  signin_interceptor->MaybeInterceptWebSignin(
+      WebContents(), account_id,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
   EXPECT_FALSE(signin_interceptor->is_interception_in_progress());
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
@@ -4161,9 +4165,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   base::HistogramTester histogram_tester;
   DiceWebSigninInterceptor* signin_interceptor =
       helper_.GetSigninInterceptor(profile);
-  signin_interceptor->MaybeInterceptWebSignin(WebContents(), account_id,
-                                              /*is_new_account=*/true,
-                                              /*is_sync_signin=*/false);
+  signin_interceptor->MaybeInterceptWebSignin(
+      WebContents(), account_id,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
   EXPECT_TRUE(signin_interceptor->is_interception_in_progress());
 }
 
@@ -4184,9 +4190,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   base::HistogramTester histogram_tester;
   DiceWebSigninInterceptor* signin_interceptor =
       helper_.GetSigninInterceptor(profile);
-  signin_interceptor->MaybeInterceptWebSignin(WebContents(), account_id,
-                                              /*is_new_account=*/true,
-                                              /*is_sync_signin=*/false);
+  signin_interceptor->MaybeInterceptWebSignin(
+      WebContents(), account_id,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false);
   EXPECT_TRUE(signin_interceptor->is_interception_in_progress());
 
   // Add the new password, password bubble not triggered.

@@ -69,6 +69,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/common/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -122,24 +123,51 @@ bool IsFirstAccount(signin::IdentityManager* manager,
           gaia::AreEmailsSame(email, accounts_in_chrome[0].email));
 }
 
-bool ShouldShowChromeSigninBubble(signin::IdentityManager* manager,
-                                  const std::string& email) {
+// If the access_point is not set, this function may return
+// `signin::Tribool::kUnknown`.
+signin::Tribool MaybeShouldShowChromeSigninBubble(
+    signin::IdentityManager* manager,
+    const std::string& email,
+    signin_metrics::AccessPoint access_point) {
   // The Chrome Signin Bubble is part of the Uno Desktop project.
   if (!base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
-    return false;
+    return signin::Tribool::kFalse;
   }
 
   // Check if an account is already signed in to Chrome.
   if (manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return false;
+    return signin::Tribool::kFalse;
   }
 
   // Only show the Chrome Sign in bubble for the first account being signed in.
   if (!IsFirstAccount(manager, email)) {
-    return false;
+    return signin::Tribool::kFalse;
   }
 
-  return true;
+  // If the access point is not set, we cannot accurately know if we have to
+  // show the bubble or not.
+  if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
+    return signin::Tribool::kUnknown;
+  }
+
+  // Only show the Chrome Signin Bubble when the signin event occurred through
+  // a regular web signin in (not triggered through a chrome feature).
+  if (access_point != signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+    return signin::Tribool::kFalse;
+  }
+
+  return signin::Tribool::kTrue;
+}
+
+// Assumes that if it is unsure to show the bubble or not, then we shouldn't
+// display it.
+bool ShouldShowChromeSigninBubble(signin::IdentityManager* manager,
+                                  const std::string& email,
+                                  signin_metrics::AccessPoint access_point) {
+  signin::Tribool should_show =
+      MaybeShouldShowChromeSigninBubble(manager, email, access_point);
+  return should_show != signin::Tribool::kUnknown &&
+         signin::TriboolToBoolOrDie(should_show);
 }
 
 }  // namespace
@@ -238,9 +266,15 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
 
   DCHECK(signin_interception_enabled && !enforce_enterprise_separation.value());
 
-  bool is_first_account = IsFirstAccount(identity_manager_, email);
-  if (is_first_account &&
-      ShouldShowChromeSigninBubble(identity_manager_, email)) {
+  signin::Tribool should_show_chrome_signin_bubble =
+      MaybeShouldShowChromeSigninBubble(identity_manager_, email,
+                                        access_point_);
+  // If the access point is not set, it is unclear if we have to show the bubble
+  // or not, so we must return nullopt.
+  if (should_show_chrome_signin_bubble == signin::Tribool::kUnknown) {
+    return absl::nullopt;
+  }
+  if (TriboolToBoolOrDie(should_show_chrome_signin_bubble)) {
     return SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
   }
 
@@ -250,7 +284,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     return SigninInterceptionHeuristicOutcome::kAbortProfileCreationDisallowed;
   }
 
-  if (is_first_account) {
+  if (IsFirstAccount(identity_manager_, email)) {
     // Enterprise and multi-user bubbles are only shown if there are multiple
     // accounts. The intercepted account may not be added to chrome yet.
     return SigninInterceptionHeuristicOutcome::kAbortSingleAccount;
@@ -267,6 +301,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
 void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     content::WebContents* web_contents,
     CoreAccountId account_id,
+    signin_metrics::AccessPoint access_point,
     bool is_new_account,
     bool is_sync_signin) {
   if (is_interception_in_progress_) {
@@ -278,6 +313,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
 
   DCHECK_EQ(interception_start_time_, base::TimeTicks());
   interception_start_time_ = base::TimeTicks::Now();
+  access_point_ = access_point;
 
   if (!web_contents) {
     // The tab has been closed (typically during the token exchange, which may
@@ -682,7 +718,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
         WebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
-  } else if (ShouldShowChromeSigninBubble(identity_manager_, info.email)) {
+  } else if (ShouldShowChromeSigninBubble(identity_manager_, info.email,
+                                          access_point_)) {
     interception_type =
         WebSigninInterceptor::SigninInterceptionType::kChromeSignin;
     RecordSigninInterceptionHeuristicOutcome(
