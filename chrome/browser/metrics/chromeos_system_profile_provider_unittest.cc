@@ -260,6 +260,8 @@ TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
   const std::string expected_country = "CA";
   const std::string expected_retailer_id = "ABC";
   const std::string expected_store_id = "12345";
+  const std::string app_expected_version = "0.0.0.0";
+  const std::string resources_expected_version = "0.0.0.1";
   scoped_feature_list_.InitWithFeatures(
       {chromeos::features::kCloudGamingDevice,
        ash::features::kFeatureManagementFeatureAwareDeviceDemoMode},
@@ -270,6 +272,10 @@ TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
                                               expected_retailer_id);
   g_browser_process->local_state()->SetString("demo_mode.store_id",
                                               expected_store_id);
+  g_browser_process->local_state()->SetString("demo_mode.app_version",
+                                              app_expected_version);
+  g_browser_process->local_state()->SetString("demo_mode.resources_version",
+                                              resources_expected_version);
 
   TestChromeOSSystemProfileProvider provider;
   provider.OnDidCreateMetricsLog();
@@ -297,10 +303,15 @@ TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
       system_profile.demo_mode_dimensions().retailer().retailer_id();
   std::string store_id =
       system_profile.demo_mode_dimensions().retailer().store_id();
+  std::string app_version = system_profile.demo_mode_dimensions().app_version();
+  std::string resources_version =
+      system_profile.demo_mode_dimensions().resources_version();
 
   EXPECT_EQ(country, expected_country);
   EXPECT_EQ(retailer_id, expected_retailer_id);
   EXPECT_EQ(store_id, expected_store_id);
+  EXPECT_EQ(app_version, app_expected_version);
+  EXPECT_EQ(resources_version, resources_expected_version);
 }
 
 TEST_F(ChromeOSSystemProfileProviderTest, TpmRwFirmwareVersion) {

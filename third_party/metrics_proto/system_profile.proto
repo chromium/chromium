@@ -1228,7 +1228,7 @@ message SystemProfileProto {
   optional LinkedAndroidPhoneData linked_android_phone_data = 29;
 
   // Demo mode related dimension information.
-  // Next Tag: 4
+  // Next Tag: 6
   message DemoModeDimensions {
     optional string country = 1;
 
@@ -1246,6 +1246,16 @@ message SystemProfileProto {
       FEATURE_AWARE_DEVICE = 2;
     }
     repeated CustomizationFacet customization_facet = 3 [packed = true];
+
+    // The Demo Mode highlights app version. The version number is used to
+    // identify the Omaha Chrome Component - Demo Mode App package that was
+    // downloaded onto the device.
+    optional string app_version = 4;
+
+    // The Demo Mode resources version. The version number is used to identify
+    // the Omaha Chrome Component - Demo Mode Resources bundle that was
+    // downloaded onto the device.
+    optional string resources_version = 5;
   }
   optional DemoModeDimensions demo_mode_dimensions = 41;
 
