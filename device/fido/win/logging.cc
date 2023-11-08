@@ -5,6 +5,7 @@
 #include "device/fido/win/logging.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -24,7 +25,7 @@ std::string Quoted(base::StringPiece in) {
   return "\"" + result + "\"";
 }
 
-std::wstring Quoted(base::WStringPiece in) {
+std::wstring Quoted(std::wstring_view in) {
   std::wstring result;
   base::ReplaceChars(in, L"\\", L"\\\\", &result);
   base::ReplaceChars(result, L"\"", L"\\\"", &result);
@@ -32,7 +33,7 @@ std::wstring Quoted(base::WStringPiece in) {
 }
 
 std::wstring Quoted(const wchar_t* in) {
-  return Quoted(base::WStringPiece(in ? in : L""));
+  return Quoted(std::wstring_view(in ? in : L""));
 }
 
 }  // namespace

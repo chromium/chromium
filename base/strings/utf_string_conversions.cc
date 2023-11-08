@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <ostream>
+#include <string_view>
 #include <type_traits>
 
 #include "base/strings/string_piece.h"
@@ -254,7 +255,7 @@ bool WideToUTF16(const wchar_t* src, size_t src_len, std::u16string* output) {
   return true;
 }
 
-std::u16string WideToUTF16(WStringPiece wide) {
+std::u16string WideToUTF16(std::wstring_view wide) {
   return std::u16string(wide.begin(), wide.end());
 }
 
@@ -270,10 +271,10 @@ std::wstring UTF16ToWide(StringPiece16 utf16) {
 #elif defined(WCHAR_T_IS_32_BIT)
 
 bool WideToUTF16(const wchar_t* src, size_t src_len, std::u16string* output) {
-  return UTFConversion(base::WStringPiece(src, src_len), output);
+  return UTFConversion(std::wstring_view(src, src_len), output);
 }
 
-std::u16string WideToUTF16(WStringPiece wide) {
+std::u16string WideToUTF16(std::wstring_view wide) {
   std::u16string ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
@@ -318,17 +319,17 @@ bool WideToUTF8(const wchar_t* src, size_t src_len, std::string* output) {
   return UTF16ToUTF8(as_u16cstr(src), src_len, output);
 }
 
-std::string WideToUTF8(WStringPiece wide) {
+std::string WideToUTF8(std::wstring_view wide) {
   return UTF16ToUTF8(StringPiece16(as_u16cstr(wide), wide.size()));
 }
 
 #elif defined(WCHAR_T_IS_32_BIT)
 
 bool WideToUTF8(const wchar_t* src, size_t src_len, std::string* output) {
-  return UTFConversion(WStringPiece(src, src_len), output);
+  return UTFConversion(std::wstring_view(src, src_len), output);
 }
 
-std::string WideToUTF8(WStringPiece wide) {
+std::string WideToUTF8(std::wstring_view wide) {
   std::string ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
@@ -354,7 +355,7 @@ std::wstring ASCIIToWide(StringPiece ascii) {
   return std::wstring(ascii.begin(), ascii.end());
 }
 
-std::string WideToASCII(WStringPiece wide) {
+std::string WideToASCII(std::wstring_view wide) {
   DCHECK(IsStringASCII(wide)) << wide;
   return std::string(wide.begin(), wide.end());
 }

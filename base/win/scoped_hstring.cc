@@ -8,6 +8,7 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -32,7 +33,7 @@ namespace win {
 ScopedHString::ScopedHString(HSTRING hstr) : ScopedGeneric(hstr) {}
 
 // static
-ScopedHString ScopedHString::Create(WStringPiece str) {
+ScopedHString ScopedHString::Create(std::wstring_view str) {
   HSTRING hstr;
   HRESULT hr = ::WindowsCreateString(str.data(),
                                      checked_cast<UINT32>(str.length()), &hstr);
@@ -57,10 +58,10 @@ ScopedHString ScopedHString::Create(StringPiece str) {
 }
 
 // static
-WStringPiece ScopedHString::Get() const {
+std::wstring_view ScopedHString::Get() const {
   UINT32 length = 0;
   const wchar_t* buffer = ::WindowsGetStringRawBuffer(get(), &length);
-  return WStringPiece(buffer, length);
+  return std::wstring_view(buffer, length);
 }
 
 std::string ScopedHString::GetAsUTF8() const {

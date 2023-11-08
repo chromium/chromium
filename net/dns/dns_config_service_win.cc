@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -352,7 +353,7 @@ bool CheckAndRecordCompatibility(bool have_name_resolution_policy,
 
 }  // namespace
 
-std::string ParseDomainASCII(base::WStringPiece widestr) {
+std::string ParseDomainASCII(std::wstring_view widestr) {
   if (widestr.empty())
     return "";
 
@@ -379,7 +380,7 @@ std::string ParseDomainASCII(base::WStringPiece widestr) {
   return converted;
 }
 
-std::vector<std::string> ParseSearchList(base::WStringPiece value) {
+std::vector<std::string> ParseSearchList(std::wstring_view value) {
   if (value.empty())
     return {};
 
@@ -389,7 +390,7 @@ std::vector<std::string> ParseSearchList(base::WStringPiece value) {
   // Although nslookup and network connection property tab ignore such
   // fragments ("a,b,,c" becomes ["a", "b", "c"]), our reference is getaddrinfo
   // (which sees ["a", "b"]). WMI queries also return a matching search list.
-  for (base::WStringPiece t : base::SplitStringPiece(
+  for (std::wstring_view t : base::SplitStringPiece(
            value, L",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     // Convert non-ASCII to punycode, although getaddrinfo does not properly
     // handle such suffixes.

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/strings/string_piece.h"
@@ -24,7 +25,7 @@ namespace base {
 // possible.
 BASE_EXPORT bool WideToUTF8(const wchar_t* src, size_t src_len,
                             std::string* output);
-[[nodiscard]] BASE_EXPORT std::string WideToUTF8(WStringPiece wide);
+[[nodiscard]] BASE_EXPORT std::string WideToUTF8(std::wstring_view wide);
 BASE_EXPORT bool UTF8ToWide(const char* src, size_t src_len,
                             std::wstring* output);
 [[nodiscard]] BASE_EXPORT std::wstring UTF8ToWide(StringPiece utf8);
@@ -32,7 +33,7 @@ BASE_EXPORT bool UTF8ToWide(const char* src, size_t src_len,
 BASE_EXPORT bool WideToUTF16(const wchar_t* src,
                              size_t src_len,
                              std::u16string* output);
-[[nodiscard]] BASE_EXPORT std::u16string WideToUTF16(WStringPiece wide);
+[[nodiscard]] BASE_EXPORT std::u16string WideToUTF16(std::wstring_view wide);
 BASE_EXPORT bool UTF16ToWide(const char16_t* src,
                              size_t src_len,
                              std::wstring* output);
@@ -62,7 +63,7 @@ BASE_EXPORT bool UTF16ToUTF8(const char16_t* src,
 
 // Converts to 7-bit ASCII by truncating. The result must be known to be ASCII
 // beforehand.
-[[nodiscard]] BASE_EXPORT std::string WideToASCII(WStringPiece wide);
+[[nodiscard]] BASE_EXPORT std::string WideToASCII(std::wstring_view wide);
 #endif  // defined(WCHAR_T_IS_16_BIT)
 
 // The conversion functions in this file should not be used to convert string

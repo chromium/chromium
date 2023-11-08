@@ -875,8 +875,9 @@ bool HWNDMessageHandler::SetTitle(const std::u16string& title) {
   if (len_with_null - 1 == title.length() &&
       GetWindowText(hwnd(), base::WriteInto(&current_title, len_with_null),
                     len_with_null) &&
-      current_title == base::AsWStringPiece(title))
+      current_title == base::AsWStringView(title)) {
     return false;
+  }
   SetWindowText(hwnd(), base::as_wcstr(title));
   return true;
 }

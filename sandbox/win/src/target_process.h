@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
@@ -100,7 +101,7 @@ class TargetProcess {
   // `to_keep`.
   static std::wstring FilterEnvironment(
       const wchar_t* env,
-      const base::span<const base::WStringPiece> to_keep);
+      const base::span<const std::wstring_view> to_keep);
 
   // Details of the target process.
   base::win::ScopedProcessInformation sandbox_process_info_;

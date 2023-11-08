@@ -5,6 +5,7 @@
 #include "base/strings/string_split_win.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/strings/string_piece.h"
@@ -15,42 +16,42 @@ namespace base {
 namespace internal {
 
 template <>
-inline WStringPiece WhitespaceForType<wchar_t>() {
+inline std::wstring_view WhitespaceForType<wchar_t>() {
   return kWhitespaceWide;
 }
 
 }  // namespace internal
 
-std::vector<std::wstring> SplitString(WStringPiece input,
-                                      WStringPiece separators,
+std::vector<std::wstring> SplitString(std::wstring_view input,
+                                      std::wstring_view separators,
                                       WhitespaceHandling whitespace,
                                       SplitResult result_type) {
   return internal::SplitStringT<std::wstring>(input, separators, whitespace,
                                               result_type);
 }
 
-std::vector<WStringPiece> SplitStringPiece(WStringPiece input,
-                                           WStringPiece separators,
-                                           WhitespaceHandling whitespace,
-                                           SplitResult result_type) {
-  return internal::SplitStringT<WStringPiece>(input, separators, whitespace,
-                                              result_type);
+std::vector<std::wstring_view> SplitStringPiece(std::wstring_view input,
+                                                std::wstring_view separators,
+                                                WhitespaceHandling whitespace,
+                                                SplitResult result_type) {
+  return internal::SplitStringT<std::wstring_view>(input, separators,
+                                                   whitespace, result_type);
 }
 
-std::vector<std::wstring> SplitStringUsingSubstr(WStringPiece input,
-                                                 WStringPiece delimiter,
+std::vector<std::wstring> SplitStringUsingSubstr(std::wstring_view input,
+                                                 std::wstring_view delimiter,
                                                  WhitespaceHandling whitespace,
                                                  SplitResult result_type) {
   return internal::SplitStringUsingSubstrT<std::wstring>(
       input, delimiter, whitespace, result_type);
 }
 
-std::vector<WStringPiece> SplitStringPieceUsingSubstr(
-    WStringPiece input,
-    WStringPiece delimiter,
+std::vector<std::wstring_view> SplitStringPieceUsingSubstr(
+    std::wstring_view input,
+    std::wstring_view delimiter,
     WhitespaceHandling whitespace,
     SplitResult result_type) {
-  return internal::SplitStringUsingSubstrT<WStringPiece>(
+  return internal::SplitStringUsingSubstrT<std::wstring_view>(
       input, delimiter, whitespace, result_type);
 }
 

@@ -5,9 +5,9 @@
 #include "base/strings/string_number_conversions_win.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_number_conversions_internal.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -39,27 +39,27 @@ std::wstring NumberToWString(double value) {
   return internal::DoubleToStringT<std::wstring>(value);
 }
 
-bool StringToInt(WStringPiece input, int* output) {
+bool StringToInt(std::wstring_view input, int* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToUint(WStringPiece input, unsigned* output) {
+bool StringToUint(std::wstring_view input, unsigned* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToInt64(WStringPiece input, int64_t* output) {
+bool StringToInt64(std::wstring_view input, int64_t* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToUint64(WStringPiece input, uint64_t* output) {
+bool StringToUint64(std::wstring_view input, uint64_t* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToSizeT(WStringPiece input, size_t* output) {
+bool StringToSizeT(std::wstring_view input, size_t* output) {
   return internal::StringToIntImpl(input, *output);
 }
 
-bool StringToDouble(WStringPiece input, double* output) {
+bool StringToDouble(std::wstring_view input, double* output) {
   return internal::StringToDoubleImpl(
       input, reinterpret_cast<const uint16_t*>(input.data()), *output);
 }

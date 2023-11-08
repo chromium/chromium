@@ -122,7 +122,7 @@ void CredentialProviderBrokerWin::OpenDevice(
 
       DCHECK(base::IsStringASCII(device_path.value()));
       if (!base::EqualsCaseInsensitiveASCII(
-              device_path.value(), base::AsWStringPiece(input_device_path))) {
+              device_path.value(), base::AsWStringView(input_device_path))) {
         continue;
       }
 

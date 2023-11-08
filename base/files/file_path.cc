@@ -664,7 +664,7 @@ FilePath FilePath::FromUTF8Unsafe(StringPiece utf8) {
 
 // static
 FilePath FilePath::FromUTF16Unsafe(StringPiece16 utf16) {
-  return FilePath(AsWStringPiece(utf16));
+  return FilePath(AsWStringView(utf16));
 }
 
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

@@ -5,6 +5,7 @@
 #include "content/common/content_switches_internal.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
@@ -46,7 +47,7 @@ std::wstring ToNativeString(base::StringPiece string) {
   return base::ASCIIToWide(string);
 }
 
-std::string FromNativeString(base::WStringPiece string) {
+std::string FromNativeString(std::wstring_view string) {
   return base::WideToASCII(string);
 }
 

@@ -5,8 +5,9 @@
 #ifndef BASE_WIN_DEFAULT_APPS_UTIL_H_
 #define BASE_WIN_DEFAULT_APPS_UTIL_H_
 
+#include <string_view>
+
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 
 namespace base::win {
 
@@ -15,7 +16,7 @@ namespace base::win {
 // the dialog. Returns true if the default apps dialog was successfully opened,
 // and the `protocol`, if not empty, was highlighted.
 BASE_EXPORT bool LaunchDefaultAppsSettingsModernDialog(
-    base::WStringPiece protocol);
+    std::wstring_view protocol);
 
 }  // namespace base::win
 

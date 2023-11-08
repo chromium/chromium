@@ -4,95 +4,99 @@
 
 #include "base/strings/string_util_win.h"
 
+#include <string_view>
+
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util_impl_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
-bool IsStringASCII(WStringPiece str) {
+bool IsStringASCII(std::wstring_view str) {
   return internal::DoIsStringASCII(str.data(), str.length());
 }
 
-std::wstring ToLowerASCII(WStringPiece str) {
+std::wstring ToLowerASCII(std::wstring_view str) {
   return internal::ToLowerASCIIImpl(str);
 }
 
-std::wstring ToUpperASCII(WStringPiece str) {
+std::wstring ToUpperASCII(std::wstring_view str) {
   return internal::ToUpperASCIIImpl(str);
 }
 
-int CompareCaseInsensitiveASCII(WStringPiece a, WStringPiece b) {
+int CompareCaseInsensitiveASCII(std::wstring_view a, std::wstring_view b) {
   return internal::CompareCaseInsensitiveASCIIT(a, b);
 }
 
-bool RemoveChars(WStringPiece input,
-                 WStringPiece remove_chars,
+bool RemoveChars(std::wstring_view input,
+                 std::wstring_view remove_chars,
                  std::wstring* output) {
-  return internal::ReplaceCharsT(input, remove_chars, WStringPiece(), output);
+  return internal::ReplaceCharsT(input, remove_chars, std::wstring_view(),
+                                 output);
 }
 
-bool ReplaceChars(WStringPiece input,
-                  WStringPiece replace_chars,
-                  WStringPiece replace_with,
+bool ReplaceChars(std::wstring_view input,
+                  std::wstring_view replace_chars,
+                  std::wstring_view replace_with,
                   std::wstring* output) {
   return internal::ReplaceCharsT(input, replace_chars, replace_with, output);
 }
 
-bool TrimString(WStringPiece input,
-                WStringPiece trim_chars,
+bool TrimString(std::wstring_view input,
+                std::wstring_view trim_chars,
                 std::wstring* output) {
   return internal::TrimStringT(input, trim_chars, TRIM_ALL, output) !=
          TRIM_NONE;
 }
 
-WStringPiece TrimString(WStringPiece input,
-                        WStringPiece trim_chars,
-                        TrimPositions positions) {
+std::wstring_view TrimString(std::wstring_view input,
+                             std::wstring_view trim_chars,
+                             TrimPositions positions) {
   return internal::TrimStringPieceT(input, trim_chars, positions);
 }
 
-TrimPositions TrimWhitespace(WStringPiece input,
+TrimPositions TrimWhitespace(std::wstring_view input,
                              TrimPositions positions,
                              std::wstring* output) {
-  return internal::TrimStringT(input, WStringPiece(kWhitespaceWide), positions,
-                               output);
+  return internal::TrimStringT(input, std::wstring_view(kWhitespaceWide),
+                               positions, output);
 }
 
-WStringPiece TrimWhitespace(WStringPiece input, TrimPositions positions) {
-  return internal::TrimStringPieceT(input, WStringPiece(kWhitespaceWide),
+std::wstring_view TrimWhitespace(std::wstring_view input,
+                                 TrimPositions positions) {
+  return internal::TrimStringPieceT(input, std::wstring_view(kWhitespaceWide),
                                     positions);
 }
 
-std::wstring CollapseWhitespace(WStringPiece text,
+std::wstring CollapseWhitespace(std::wstring_view text,
                                 bool trim_sequences_with_line_breaks) {
   return internal::CollapseWhitespaceT(text, trim_sequences_with_line_breaks);
 }
 
-bool ContainsOnlyChars(WStringPiece input, WStringPiece characters) {
+bool ContainsOnlyChars(std::wstring_view input, std::wstring_view characters) {
   return input.find_first_not_of(characters) == StringPiece::npos;
 }
 
-bool EqualsASCII(WStringPiece str, StringPiece ascii) {
+bool EqualsASCII(std::wstring_view str, StringPiece ascii) {
   return ranges::equal(ascii, str);
 }
 
-bool StartsWith(WStringPiece str,
-                WStringPiece search_for,
+bool StartsWith(std::wstring_view str,
+                std::wstring_view search_for,
                 CompareCase case_sensitivity) {
   return internal::StartsWithT(str, search_for, case_sensitivity);
 }
 
-bool EndsWith(WStringPiece str,
-              WStringPiece search_for,
+bool EndsWith(std::wstring_view str,
+              std::wstring_view search_for,
               CompareCase case_sensitivity) {
   return internal::EndsWithT(str, search_for, case_sensitivity);
 }
 
 void ReplaceFirstSubstringAfterOffset(std::wstring* str,
                                       size_t start_offset,
-                                      WStringPiece find_this,
-                                      WStringPiece replace_with) {
+                                      std::wstring_view find_this,
+                                      std::wstring_view replace_with) {
   internal::DoReplaceMatchesAfterOffset(
       str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_FIRST);
@@ -100,8 +104,8 @@ void ReplaceFirstSubstringAfterOffset(std::wstring* str,
 
 void ReplaceSubstringsAfterOffset(std::wstring* str,
                                   size_t start_offset,
-                                  WStringPiece find_this,
-                                  WStringPiece replace_with) {
+                                  std::wstring_view find_this,
+                                  std::wstring_view replace_with) {
   internal::DoReplaceMatchesAfterOffset(
       str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_ALL);
@@ -112,21 +116,21 @@ wchar_t* WriteInto(std::wstring* str, size_t length_with_null) {
 }
 
 std::wstring JoinString(span<const std::wstring> parts,
-                        WStringPiece separator) {
+                        std::wstring_view separator) {
   return internal::JoinStringT(parts, separator);
 }
 
-std::wstring JoinString(span<const WStringPiece> parts,
-                        WStringPiece separator) {
+std::wstring JoinString(span<const std::wstring_view> parts,
+                        std::wstring_view separator) {
   return internal::JoinStringT(parts, separator);
 }
 
-std::wstring JoinString(std::initializer_list<WStringPiece> parts,
-                        WStringPiece separator) {
+std::wstring JoinString(std::initializer_list<std::wstring_view> parts,
+                        std::wstring_view separator) {
   return internal::JoinStringT(parts, separator);
 }
 
-std::wstring ReplaceStringPlaceholders(WStringPiece format_string,
+std::wstring ReplaceStringPlaceholders(std::wstring_view format_string,
                                        const std::vector<std::wstring>& subst,
                                        std::vector<size_t>* offsets) {
   absl::optional<std::wstring> replacement =

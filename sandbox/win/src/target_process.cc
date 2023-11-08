@@ -12,6 +12,7 @@
 
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -163,7 +164,7 @@ ResultCode TargetProcess::Create(
     //    operation and tests.
     //  * "LOCALAPPDATA": Needed for App Container processes.
     //  * "CHROME_CRASHPAD_PIPE_NAME": Needed for crashpad.
-    static constexpr base::WStringPiece to_keep[] = {
+    static constexpr std::wstring_view to_keep[] = {
         L"Path",
         L"SystemDrive",
         L"SystemRoot",
@@ -424,7 +425,7 @@ std::unique_ptr<TargetProcess> TargetProcess::MakeTargetProcessForTesting(
 // static
 std::wstring TargetProcess::FilterEnvironment(
     const wchar_t* env,
-    const base::span<const base::WStringPiece> to_keep) {
+    const base::span<const std::wstring_view> to_keep) {
   std::wstring result;
 
   // Iterate all of the environment strings.

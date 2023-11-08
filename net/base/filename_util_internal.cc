@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/base/filename_util.h"
+#include "net/base/filename_util_internal.h"
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "net/base/filename_util_internal.h"
+#include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_string_util.h"
 #include "net/http/http_content_disposition.h"
@@ -319,7 +319,7 @@ base::FilePath GenerateFileNameImpl(
       replace_illegal_characters_function);
 
 #if BUILDFLAG(IS_WIN)
-  base::FilePath generated_name(base::AsWStringPiece(file_name));
+  base::FilePath generated_name(base::AsWStringView(file_name));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::FilePath generated_name(
       base::SysWideToNativeMB(base::UTF16ToWide(file_name)));
