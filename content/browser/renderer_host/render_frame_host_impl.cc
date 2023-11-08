@@ -6786,49 +6786,23 @@ bool RenderFrameHostImpl::CanUseWindowingControls(
 }
 
 void RenderFrameHostImpl::Maximize() {
-  const std::string js_api_name = "window.maximize";
-#if !defined(USE_AURA)
-  // TODO(laurila, crbug.com/1466851): Enable on Mac, when it's supported.
-  mojo::ReportBadMessage(
-      base::StrCat({js_api_name, " API is not supported on MacOS yet."}));
-#endif
-
-  if (!CanUseWindowingControls(js_api_name)) {
+  if (!CanUseWindowingControls("window.maximize")) {
     return;
   }
-
   delegate_->Maximize();
 }
 
 void RenderFrameHostImpl::Minimize() {
-  const std::string js_api_name = "window.minimize";
-
-#if !defined(USE_AURA)
-  // TODO(laurila, crbug.com/1466851): Enable on Mac, when it's supported.
-  mojo::ReportBadMessage(
-      base::StrCat({js_api_name, " API is not supported on MacOS yet."}));
-#endif
-
-  if (!CanUseWindowingControls(js_api_name)) {
+  if (!CanUseWindowingControls("window.minimize")) {
     return;
   }
-
   delegate_->Minimize();
 }
 
 void RenderFrameHostImpl::Restore() {
-  const std::string js_api_name = "window.restore";
-
-#if !defined(USE_AURA)
-  // TODO(laurila, crbug.com/1466851): Enable on Mac, when it's supported.
-  mojo::ReportBadMessage(
-      base::StrCat({js_api_name, " API is not supported on MacOS yet."}));
-#endif
-
   if (!CanUseWindowingControls("window.restore")) {
     return;
   }
-
   delegate_->Restore();
 }
 

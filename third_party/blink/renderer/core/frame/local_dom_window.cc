@@ -2513,26 +2513,8 @@ bool LocalDOMWindow::CanUseWindowingControls(ExceptionState& exception_state) {
 #endif
 }
 
-bool LocalDOMWindow::CanUseMinMaxRestoreWindowingControls(
-    ExceptionState& exception_state) {
-  if (!CanUseWindowingControls(exception_state)) {
-    return false;
-  }
-
-#if !defined(USE_AURA)
-  // TODO(crbug.com/1466851): Make the APIs also work on Mac.
-  exception_state.ThrowDOMException(
-      DOMExceptionCode::kNotSupportedError,
-      "API is only supported on Aura platforms (Win/Lin/CrOS/Fuchsia). This "
-      "excludes Mac and mobile platforms.");
-  return false;
-#else
-  return true;
-#endif
-}
-
 void LocalDOMWindow::maximize(ExceptionState& exception_state) {
-  if (!CanUseMinMaxRestoreWindowingControls(exception_state)) {
+  if (!CanUseWindowingControls(exception_state)) {
     return;
   }
 
@@ -2543,13 +2525,13 @@ void LocalDOMWindow::maximize(ExceptionState& exception_state) {
     return;
   }
 
-#if defined(USE_AURA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   GetFrame()->GetLocalFrameHostRemote().Maximize();
 #endif
 }
 
 void LocalDOMWindow::minimize(ExceptionState& exception_state) {
-  if (!CanUseMinMaxRestoreWindowingControls(exception_state)) {
+  if (!CanUseWindowingControls(exception_state)) {
     return;
   }
 
@@ -2560,13 +2542,13 @@ void LocalDOMWindow::minimize(ExceptionState& exception_state) {
     return;
   }
 
-#if defined(USE_AURA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   GetFrame()->GetLocalFrameHostRemote().Minimize();
 #endif
 }
 
 void LocalDOMWindow::restore(ExceptionState& exception_state) {
-  if (!CanUseMinMaxRestoreWindowingControls(exception_state)) {
+  if (!CanUseWindowingControls(exception_state)) {
     return;
   }
 
@@ -2574,7 +2556,7 @@ void LocalDOMWindow::restore(ExceptionState& exception_state) {
   // This one is a bit more involved compared to minimize/maximize since it
   // requires capability delegation.
 
-#if defined(USE_AURA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   GetFrame()->GetLocalFrameHostRemote().Restore();
 #endif
 }
