@@ -1138,7 +1138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.NumberOfRegisteredFetchHandlers"
-    units="handlers" expires_after="2023-12-04">
+    units="handlers" expires_after="2024-02-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
