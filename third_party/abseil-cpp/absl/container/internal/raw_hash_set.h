@@ -1746,9 +1746,6 @@ class raw_hash_set {
       if (ABSL_PREDICT_FALSE(*ctrl_ == ctrl_t::kSentinel)) ctrl_ = nullptr;
     }
 
-    ctrl_t* control() const { return ctrl_; }
-    slot_type* slot() const { return slot_; }
-
     // We use EmptyGroup() for default-constructed iterators so that they can
     // be distinguished from end iterators, which have nullptr ctrl_.
     ctrl_t* ctrl_ = EmptyGroup();
@@ -1761,9 +1758,6 @@ class raw_hash_set {
 
   class const_iterator {
     friend class raw_hash_set;
-    template <class Container, typename Enabler>
-    friend struct absl::container_internal::hashtable_debug_internal::
-        HashtableDebugAccess;
 
    public:
     using iterator_category = typename iterator::iterator_category;
@@ -1797,8 +1791,6 @@ class raw_hash_set {
                    const GenerationType* gen)
         : inner_(const_cast<ctrl_t*>(ctrl), const_cast<slot_type*>(slot), gen) {
     }
-    ctrl_t* control() const { return inner_.control(); }
-    slot_type* slot() const { return inner_.slot(); }
 
     iterator inner_;
   };
@@ -2265,8 +2257,8 @@ class raw_hash_set {
   // This overload is necessary because otherwise erase<K>(const K&) would be
   // a better match if non-const iterator is passed as an argument.
   void erase(iterator it) {
-    AssertIsFull(it.control(), it.generation(), it.generation_ptr(), "erase()");
-    destroy(it.slot());
+    AssertIsFull(it.ctrl_, it.generation(), it.generation_ptr(), "erase()");
+    destroy(it.slot_);
     erase_meta_only(it);
   }
 
@@ -2297,8 +2289,8 @@ class raw_hash_set {
     assert(this != &src);
     for (auto it = src.begin(), e = src.end(); it != e;) {
       auto next = std::next(it);
-      if (PolicyTraits::apply(InsertSlot<false>{*this, std::move(*it.slot())},
-                              PolicyTraits::element(it.slot()))
+      if (PolicyTraits::apply(InsertSlot<false>{*this, std::move(*it.slot_)},
+                              PolicyTraits::element(it.slot_))
               .second) {
         src.erase_meta_only(it);
       }
@@ -2312,9 +2304,10 @@ class raw_hash_set {
   }
 
   node_type extract(const_iterator position) {
-    AssertIsFull(position.control(), position.inner_.generation(),
+    AssertIsFull(position.inner_.ctrl_, position.inner_.generation(),
                  position.inner_.generation_ptr(), "extract()");
-    auto node = CommonAccess::Transfer<node_type>(alloc_ref(), position.slot());
+    auto node =
+        CommonAccess::Transfer<node_type>(alloc_ref(), position.inner_.slot_);
     erase_meta_only(position);
     return node;
   }
@@ -2619,7 +2612,7 @@ class raw_hash_set {
   // This merely updates the pertinent control byte. This can be used in
   // conjunction with Policy::transfer to move the object to another place.
   void erase_meta_only(const_iterator it) {
-    EraseMetaOnly(common(), it.control(), sizeof(slot_type));
+    EraseMetaOnly(common(), it.inner_.ctrl_, sizeof(slot_type));
   }
 
   // Allocates a backing array for `self` and initializes its control bytes.
@@ -2765,8 +2758,8 @@ class raw_hash_set {
     if (size == 0) return *this;
     reserve(size);
     for (iterator it = that.begin(); it != that.end(); ++it) {
-      insert(std::move(PolicyTraits::element(it.slot())));
-      that.destroy(it.slot());
+      insert(std::move(PolicyTraits::element(it.slot_)));
+      that.destroy(it.slot_);
     }
     that.dealloc();
     that.common() = CommonFields{};
@@ -3013,8 +3006,11 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
     if (per_slot != ~size_t{}) {
       m += per_slot * c.size();
     } else {
-      for (auto it = c.begin(); it != c.end(); ++it) {
-        m += Traits::space_used(it.slot());
+      const ctrl_t* ctrl = c.control();
+      for (size_t i = 0; i != capacity; ++i) {
+        if (container_internal::IsFull(ctrl[i])) {
+          m += Traits::space_used(c.slot_array() + i);
+        }
       }
     }
     return m;
