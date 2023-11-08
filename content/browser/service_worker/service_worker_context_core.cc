@@ -579,7 +579,7 @@ void ServiceWorkerContextCore::UnregisterServiceWorker(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   BrowserContext* browser_context = wrapper_->browser_context();
-  DCHECK(browser_context);
+  CHECK(browser_context);
   if (!GetContentClient()->browser()->MayDeleteServiceWorkerRegistration(
           scope, browser_context)) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorDisallowed);
