@@ -1222,7 +1222,7 @@
       # asan tests is slower.
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
-          'shards': 20,
+          'shards': 30,
         },
         # TODO(crbug.com/1324240): Enable tests.
         'args': [
