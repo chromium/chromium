@@ -454,7 +454,6 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   // is determined elsewhere in the Extension Search Engine Data Updater.
   const bool enableLensInWidget =
       ios::provider::IsLensSupported() &&
-      base::FeatureList::IsEnabled(kEnableLensInHomeScreenWidget) &&
       GetApplicationContext()->GetLocalState()->GetBoolean(
           prefs::kLensCameraAssistedSearchPolicyAllowed) &&
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;

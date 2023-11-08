@@ -1014,32 +1014,6 @@ const char kIOSLargeFakeboxDescription[] =
     "When enabled, the Fakebox on Home appears larger and has an updated "
     "design.";
 
-const char kIOSLensUseDirectUploadName[] =
-    "Use direct upload for Lens searches";
-const char kIOSLensUseDirectUploadDescription[] =
-    "When enabled, use the direct upload Lens endpoint when searching images "
-    "with Lens.";
-
-const char kEnableLensInHomeScreenWidgetName[] =
-    "Enable Google Lens in the Home Screen Widget";
-const char kEnableLensInHomeScreenWidgetDescription[] =
-    "When enabled, use Lens to search for images from your device camera "
-    "menu when Google is the selected search engine, accessible from the"
-    "home screen widget.";
-
-const char kEnableLensInKeyboardName[] =
-    "Enable Google Lens in the Omnibox Keyboard";
-const char kEnableLensInKeyboardDescription[] =
-    "When enabled, use Lens to search for images from your device camera "
-    "menu when Google is the selected search engine, accessible from the"
-    "omnibox keyboard.";
-
-const char kEnableLensInNTPName[] = "Enable Google Lens in the NTP";
-const char kEnableLensInNTPDescription[] =
-    "When enabled, use Lens to search for images from your device camera "
-    "menu when Google is the selected search engine, accessible from the"
-    "new tab page.";
-
 const char kEnableLensInOmniboxCopiedImageName[] =
     "Enable Google Lens in the Omnibox for Copied Images";
 const char kEnableLensInOmniboxCopiedImageDescription[] =

@@ -114,25 +114,12 @@ std::optional<LensEntrypoint> LensBrowserAgent::CurrentResultsEntrypoint()
   // experience.
   switch (entry_point.value()) {
     case LensEntrypoint::Keyboard:
-      if (!base::FeatureList::IsEnabled(kEnableLensInKeyboard)) {
-        return std::nullopt;
-      }
-      break;
     case LensEntrypoint::NewTabPage:
-      if (!base::FeatureList::IsEnabled(kEnableLensInNTP)) {
-        return std::nullopt;
-      }
-      break;
     case LensEntrypoint::HomeScreenWidget:
-      if (!base::FeatureList::IsEnabled(kEnableLensInHomeScreenWidget)) {
-        return std::nullopt;
-      }
-      break;
+      return entry_point;
     default:
       return std::nullopt;
   }
-
-  return entry_point;
 }
 
 #pragma mark - BrowserObserver

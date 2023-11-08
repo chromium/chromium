@@ -880,11 +880,6 @@ extern const char kTFLiteLanguageDetectionIgnoreDescription[];
 extern const char kThemeColorInTopToolbarName[];
 extern const char kThemeColorInTopToolbarDescription[];
 
-// Title and description for the flag to enable using Lens to search using
-// the device camera from the home screen widget.
-extern const char kEnableLensInHomeScreenWidgetName[];
-extern const char kEnableLensInHomeScreenWidgetDescription[];
-
 // Title and description for the flag to enable the iOS Hide Feed with Search
 // Choice feature.
 extern const char kIOSHideFeedWithSearchChoiceName[];
@@ -893,21 +888,6 @@ extern const char kIOSHideFeedWithSearchChoiceDescription[];
 // Title and description for the flag to enable the iOS Large Fakebox feature
 extern const char kIOSLargeFakeboxName[];
 extern const char kIOSLargeFakeboxDescription[];
-
-// Title and description for the flag to enable using direct upload for
-// Lens searches in iOS.
-extern const char kIOSLensUseDirectUploadName[];
-extern const char kIOSLensUseDirectUploadDescription[];
-
-// Title and description for the flag to enable using Lens to search using
-// the device camera from the keyboard.
-extern const char kEnableLensInKeyboardName[];
-extern const char kEnableLensInKeyboardDescription[];
-
-// Title and description for the flag to enable using Lens to search using
-// the device camera from the ntp.
-extern const char kEnableLensInNTPName[];
-extern const char kEnableLensInNTPDescription[];
 
 // Title and description for the flag to enable using Lens to search using
 // copied images in the omnibox.
