@@ -589,7 +589,7 @@
         Try allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TRACKING_PROTECTION" desc="Descriptive text in the Page Info UI explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
-        Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work as expected
+        Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_BLOCK" desc="Label for a toggle to allow or block third-party cookies for a site.">
         Block third-party cookies
