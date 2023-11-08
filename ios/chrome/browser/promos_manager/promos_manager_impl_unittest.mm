@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/promos_manager/promos_manager_impl.h"
+
 #import <Foundation/Foundation.h>
+
+#import <optional>
 #import <set>
 #import <vector>
 
@@ -20,10 +24,8 @@
 #import "ios/chrome/browser/promos_manager/promo.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
-#import "ios/chrome/browser/promos_manager/promos_manager_impl.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "testing/platform_test.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 using PromoContext = PromosManagerImpl::PromoContext;
 
@@ -195,7 +197,7 @@ TEST_F(PromosManagerImplTest, ReturnsTestPromoForName) {
             promos_manager::Promo::Test);
 }
 
-// Tests promos_manager::PromoForName correctly returns absl::nullopt for bad
+// Tests promos_manager::PromoForName correctly returns std::nullopt for bad
 // input.
 TEST_F(PromosManagerImplTest, ReturnsNulloptForBadName) {
   EXPECT_FALSE(promos_manager::PromoForName("promos_manager::Promo::FOOBAR")
@@ -1154,7 +1156,7 @@ TEST_F(PromosManagerImplTest,
       promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
 
   // Pending promo in Pref is updated with the correct time.
-  absl::optional<base::Time> actual_becomes_active_time = ValueToTime(
+  std::optional<base::Time> actual_becomes_active_time = ValueToTime(
       local_state_->GetDict(prefs::kIosPromosManagerSingleDisplayPendingPromos)
           .Find(promos_manager::NameForPromo(
               promos_manager::Promo::CredentialProviderExtension)));
@@ -1329,7 +1331,7 @@ TEST_F(PromosManagerImplTest,
       local_state_->GetDict(prefs::kIosPromosManagerSingleDisplayPendingPromos)
           .size(),
       (size_t)1);
-  absl::optional<base::Time> actual_becomes_active_time = ValueToTime(
+  std::optional<base::Time> actual_becomes_active_time = ValueToTime(
       local_state_->GetDict(prefs::kIosPromosManagerSingleDisplayPendingPromos)
           .Find(promos_manager::NameForPromo(
               promos_manager::Promo::CredentialProviderExtension)));
@@ -1622,7 +1624,7 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
 
-  absl::optional<promos_manager::Promo> promo =
+  std::optional<promos_manager::Promo> promo =
       promos_manager_->NextPromoForDisplay();
   EXPECT_TRUE(promo.has_value());
   EXPECT_EQ(promo.value(), promos_manager::Promo::CredentialProviderExtension);
@@ -1649,7 +1651,7 @@ TEST_F(PromosManagerImplTest,
   // Advance to so that the CredentialProviderExtension becomes active.
   test_clock_.Advance(kTimeDelta1Day + kTimeDelta1Hour);
 
-  absl::optional<promos_manager::Promo> promo =
+  std::optional<promos_manager::Promo> promo =
       promos_manager_->NextPromoForDisplay();
 
   EXPECT_TRUE(promo.has_value());
@@ -1671,7 +1673,7 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsEmpty) {
   // Advance to so that the none of the pending promo can become active.
   test_clock_.Advance(kTimeDelta1Hour);
 
-  absl::optional<promos_manager::Promo> promo =
+  std::optional<promos_manager::Promo> promo =
       promos_manager_->NextPromoForDisplay();
 
   EXPECT_FALSE(promo.has_value());
@@ -1701,7 +1703,7 @@ TEST_F(PromosManagerImplTest,
   // fall into the two-day window since the last impression.
   test_clock_.Advance(kTimeDelta1Day);
 
-  absl::optional<promos_manager::Promo> promo =
+  std::optional<promos_manager::Promo> promo =
       promos_manager_->NextPromoForDisplay();
 
   EXPECT_FALSE(promo.has_value());

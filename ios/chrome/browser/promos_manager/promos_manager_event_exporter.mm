@@ -28,7 +28,7 @@ void PromosManagerEventExporter::ExportEvents(ExportEventsCallback callback) {
   ScopedListPrefUpdate update(local_state_,
                               prefs::kIosPromosManagerImpressions);
   for (auto& single_impression : update.Get()) {
-    absl::optional<promos_manager::Impression> impression =
+    std::optional<promos_manager::Impression> impression =
         promos_manager::ImpressionFromDict(single_impression.GetDict());
     if (!impression || impression->feature_engagement_migration_completed) {
       continue;
@@ -40,7 +40,7 @@ void PromosManagerEventExporter::ExportEvents(ExportEventsCallback callback) {
 
     // Get the feature engagement tracker config for this feature to find the
     // correct event name to export.
-    absl::optional<feature_engagement::FeatureConfig> feature_config =
+    std::optional<feature_engagement::FeatureConfig> feature_config =
         feature_engagement::GetClientSideFeatureConfig(
             it->feature_engagement_feature);
     if (!feature_config) {

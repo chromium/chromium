@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 
 #import <map>
+#import <optional>
 #import <set>
 
 #import "base/containers/small_map.h"
@@ -18,7 +19,6 @@
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "testing/gmock/include/gmock/gmock.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 // Mock version of PromosManager.
 class MockPromosManager : public PromosManager {
@@ -36,7 +36,7 @@ class MockPromosManager : public PromosManager {
               RecordImpression,
               (promos_manager::Promo promo),
               (override));
-  MOCK_METHOD(absl::optional<promos_manager::Promo>,
+  MOCK_METHOD(std::optional<promos_manager::Promo>,
               NextPromoForDisplay,
               (),
               (override));

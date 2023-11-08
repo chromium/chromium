@@ -10,6 +10,7 @@
 #import <iterator>
 #import <map>
 #import <numeric>
+#import <optional>
 #import <set>
 #import <vector>
 
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_event_exporter.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 using promos_manager::Promo;
 
@@ -222,7 +222,7 @@ void PromosManagerImpl::InitializePromoConfigs(PromoConfigsSet promo_configs) {
 // Candidates are from active promos and the pending promos that can become
 // active at the time this function is called. Coordinate with other internal
 // functions to rank and validate the candidates.
-absl::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
+std::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
   // Construct a map with the promo from (1) single-display and
   // (2) continuous-display promo campaigns. (3) single-display pending promos
   // that has become active, as keys. The value is the context that will be used
@@ -258,7 +258,7 @@ absl::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
       SortPromos(active_promos_with_context);
 
   if (sorted_promos.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   for (promos_manager::Promo promo : sorted_promos) {
@@ -266,7 +266,7 @@ absl::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
       return promo;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<promos_manager::Impression> PromosManagerImpl::ImpressionHistory(
@@ -276,7 +276,7 @@ std::vector<promos_manager::Impression> PromosManagerImpl::ImpressionHistory(
   for (size_t i = 0; i < stored_impression_history.size(); ++i) {
     const base::Value::Dict& stored_impression =
         stored_impression_history[i].GetDict();
-    absl::optional<promos_manager::Impression> impression =
+    std::optional<promos_manager::Impression> impression =
         promos_manager::ImpressionFromDict(stored_impression);
     if (!impression) {
       continue;
@@ -293,7 +293,7 @@ std::set<promos_manager::Promo> PromosManagerImpl::ActivePromos(
   std::set<promos_manager::Promo> active_promos;
 
   for (size_t i = 0; i < stored_active_promos.size(); ++i) {
-    absl::optional<promos_manager::Promo> promo =
+    std::optional<promos_manager::Promo> promo =
         promos_manager::PromoForName(stored_active_promos[i].GetString());
 
     // Skip malformed active promos data. (This should almost never happen.)
@@ -316,13 +316,13 @@ void PromosManagerImpl::InitializePendingPromos() {
       local_state_->GetDict(prefs::kIosPromosManagerSingleDisplayPendingPromos);
 
   for (const auto [name, value] : stored_pending_promos) {
-    absl::optional<promos_manager::Promo> promo =
+    std::optional<promos_manager::Promo> promo =
         promos_manager::PromoForName(name);
     // Skip malformed promo data.
     if (!promo.has_value()) {
       continue;
     }
-    absl::optional<base::Time> becomes_active_time = ValueToTime(value);
+    std::optional<base::Time> becomes_active_time = ValueToTime(value);
     // Skip malformed time data.
     if (!becomes_active_time.has_value()) {
       continue;

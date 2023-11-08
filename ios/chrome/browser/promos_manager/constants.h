@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_CONSTANTS_H_
 
+#include <optional>
+
 #include "base/strings/string_piece.h"
 #import "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace promos_manager {
 
@@ -83,9 +84,9 @@ std::string NameForPromo(Promo promo);
 base::StringPiece ShortNameForPromo(Promo promo);
 
 // Returns promos_manager::Promo for string `promo`.
-absl::optional<Promo> PromoForName(base::StringPiece promo);
+std::optional<Promo> PromoForName(base::StringPiece promo);
 
-absl::optional<Impression> ImpressionFromDict(const base::Value::Dict& dict);
+std::optional<Impression> ImpressionFromDict(const base::Value::Dict& dict);
 
 }  // namespace promos_manager
 

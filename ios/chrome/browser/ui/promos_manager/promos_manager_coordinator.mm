@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
 
 #import <Foundation/Foundation.h>
+
 #import <map>
+#import <optional>
 
 #import "base/check.h"
 #import "base/containers/small_map.h"
@@ -53,7 +55,6 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface PromosManagerCoordinator () <
@@ -81,7 +82,7 @@
       _alertProviderPromos;
 
   // The currently displayed promo data, if any.
-  absl::optional<PromoDisplayData> _currentPromoData;
+  std::optional<PromoDisplayData> _currentPromoData;
 
   // The handler for the CredentialProviderPromoCommands.
   id<CredentialProviderPromoCommands> _credentialProviderPromoCommandHandler;
@@ -180,7 +181,7 @@
     return;
   }
 
-  absl::optional<PromoDisplayData> nextPromoForDisplay =
+  std::optional<PromoDisplayData> nextPromoForDisplay =
       [self.mediator nextPromoForDisplay:isFirstShownPromo];
 
   if (nextPromoForDisplay.has_value()) {
@@ -220,7 +221,7 @@
             self.browser->GetBrowserState());
     tracker->Dismissed(*it->feature_engagement_feature);
   }
-  _currentPromoData = absl::nullopt;
+  _currentPromoData = std::nullopt;
 }
 
 - (void)displayPromo:(PromoDisplayData)promoData {
@@ -389,7 +390,7 @@
     //
     // These are niche edge cases that almost exclusively occur during local,
     // manual testing.
-    absl::optional<promos_manager::Promo> maybeForcedPromo =
+    std::optional<promos_manager::Promo> maybeForcedPromo =
         promos_manager::PromoForName(base::SysNSStringToUTF8(
             experimental_flags::GetForcedPromoToDisplay()));
 

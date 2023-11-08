@@ -60,7 +60,6 @@ source_set("promos_manager") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/sync/model",
     "//ios/public/provider/chrome/browser/signin:choice_api",
-    "//third_party/abseil-cpp:absl",
   ]
   deps = [
     ":promos_manager_scene_agent",

@@ -10,10 +10,7 @@ source_set("promos_manager") {
     "promos_manager_event_exporter.mm",
   ]
   frameworks = [ "Foundation.framework" ]
-  public_deps = [
-    "//base",
-    "//third_party/abseil-cpp:absl",
-  ]
+  public_deps = [ "//base" ]
   deps = [
     ":constants",
     ":features",
@@ -72,7 +69,6 @@ source_set("internal") {
     ":types",
     "//base",
     "//components/prefs",
-    "//third_party/abseil-cpp:absl",
   ]
   deps = [
     ":features",
@@ -102,7 +98,6 @@ source_set("constants") {
     "constants.cc",
     "constants.h",
   ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
   deps = [ "//base" ]
 }
 
@@ -129,7 +124,6 @@ source_set("test_support") {
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -152,6 +146,5 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/abseil-cpp:absl",
   ]
 }
