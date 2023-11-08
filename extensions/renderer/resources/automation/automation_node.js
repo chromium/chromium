@@ -832,7 +832,7 @@ AutomationNodeImpl.prototype = {
       }
 
       if (child) {
-        $Array.push(children, child);
+        Array.prototype.push.call(children, child);
       }
     }
     return children;
@@ -1202,7 +1202,7 @@ AutomationNodeImpl.prototype = {
     // type/listener gets enqueued.
     EventListenerAdded(this.treeID, this.id, eventType);
 
-    $Array.push(this.listeners[eventType], {
+    Array.prototype.push.call(this.listeners[eventType], {
       __proto__: null,
       callback: callback,
       capture: !!capture,
@@ -1215,7 +1215,7 @@ AutomationNodeImpl.prototype = {
       const listeners = this.listeners[eventType];
       for (let i = 0; i < listeners.length; i++) {
         if (callback === listeners[i].callback) {
-          $Array.splice(listeners, i, 1);
+          Array.prototype.splice.call(listeners, i, 1);
         }
       }
 
@@ -1237,7 +1237,7 @@ AutomationNodeImpl.prototype = {
     const path = [];
     let parent = this.parent;
     while (parent) {
-      $Array.push(path, parent);
+      Array.prototype.push.call(path, parent);
       parent = parent.parent;
     }
 
@@ -1266,13 +1266,13 @@ AutomationNodeImpl.prototype = {
     const childIDs = [];
     for (let i = 0; i < count; ++i) {
       const childID = GetChildIDAtIndex(this.treeID, this.id, i).nodeId;
-      $Array.push(childIDs, childID);
+      Array.prototype.push.call(childIDs, childID);
     }
     const name = GetName(this.treeID, this.id);
 
     let result = 'node id=' + this.id + ' role=' + this.role +
-        ' state=' + $JSON.stringify(this.state) + ' parentID=' + parentID +
-        ' childIds=' + $JSON.stringify(childIDs);
+        ' state=' + JSON.stringify(this.state) + ' parentID=' + parentID +
+        ' childIds=' + JSON.stringify(childIDs);
     if (childTreeID) {
       result += ' childTreeID=' + childTreeID;
     }
@@ -1387,7 +1387,7 @@ AutomationNodeImpl.prototype = {
     this.forAllDescendants_(function(node) {
       if (privates(node).impl.matchInternal_(params)) {
         if (opt_results) {
-          $Array.push(opt_results, node);
+          Array.prototype.push.call(opt_results, node);
         } else {
           result = node;
         }
@@ -1407,22 +1407,22 @@ AutomationNodeImpl.prototype = {
    *     for each node. Return true to early-out the traversal.
    */
   forAllDescendants_: function(closure) {
-    const stack = $Array.reverse(this.wrapper.children);
+    const stack = this.wrapper.children.reverse();
     while (stack.length > 0) {
-      const node = $Array.pop(stack);
+      const node = stack.pop();
       if (closure(node)) {
         return;
       }
 
       const children = node.children;
       for (let i = children.length - 1; i >= 0; i--) {
-        $Array.push(stack, children[i]);
+        stack.push(children[i]);
       }
     }
   },
 
   matchInternal_: function(params) {
-    if ($Object.keys(params).length === 0) {
+    if (Object.keys(params).length === 0) {
       return false;
     }
 
@@ -1556,9 +1556,9 @@ const htmlAttributes = [['type', 'inputType']];
 
 const publicAttributes = [];
 
-$Array.forEach(stringAttributes, function(attributeName) {
-  $Array.push(publicAttributes, attributeName);
-  $Object.defineProperty(AutomationNodeImpl.prototype, attributeName, {
+Array.prototype.forEach.call(stringAttributes, function(attributeName) {
+  Array.prototype.push.call(publicAttributes, attributeName);
+  Object.defineProperty(AutomationNodeImpl.prototype, attributeName, {
     __proto__: null,
     get: function() {
       return GetStringAttribute(this.treeID, this.id, attributeName);
@@ -1566,9 +1566,9 @@ $Array.forEach(stringAttributes, function(attributeName) {
   });
 });
 
-$Array.forEach(boolAttributes, function(attributeName) {
-  $Array.push(publicAttributes, attributeName);
-  $Object.defineProperty(AutomationNodeImpl.prototype, attributeName, {
+Array.prototype.forEach.call(boolAttributes, function(attributeName) {
+  Array.prototype.push.call(publicAttributes, attributeName);
+  Object.defineProperty(AutomationNodeImpl.prototype, attributeName, {
     __proto__: null,
     get: function() {
       return GetBoolAttribute(this.treeID, this.id, attributeName);
@@ -1576,9 +1576,9 @@ $Array.forEach(boolAttributes, function(attributeName) {
   });
 });
 
-$Array.forEach(intAttributes, function(attributeName) {
-  $Array.push(publicAttributes, attributeName);
-  $Object.defineProperty(AutomationNodeImpl.prototype, attributeName, {
+Array.prototype.forEach.call(intAttributes, function(attributeName) {
+  Array.prototype.push.call(publicAttributes, attributeName);
+  Object.defineProperty(AutomationNodeImpl.prototype, attributeName, {
     __proto__: null,
     get: function() {
       return GetIntAttribute(this.treeID, this.id, attributeName);
@@ -1586,12 +1586,12 @@ $Array.forEach(intAttributes, function(attributeName) {
   });
 });
 
-$Array.forEach(nodeRefAttributes, function(params) {
+Array.prototype.forEach.call(nodeRefAttributes, function(params) {
   const srcAttributeName = params[0];
   const dstAttributeName = params[1];
   const dstReverseAttributeName = params[2];
-  $Array.push(publicAttributes, dstAttributeName);
-  $Object.defineProperty(AutomationNodeImpl.prototype, dstAttributeName, {
+  Array.prototype.push.call(publicAttributes, dstAttributeName);
+  Object.defineProperty(AutomationNodeImpl.prototype, dstAttributeName, {
     __proto__: null,
     get: function() {
       const id = GetIntAttribute(this.treeID, this.id, srcAttributeName);
@@ -1603,8 +1603,8 @@ $Array.forEach(nodeRefAttributes, function(params) {
     },
   });
   if (dstReverseAttributeName) {
-    $Array.push(publicAttributes, dstReverseAttributeName);
-    $Object.defineProperty(
+    Array.prototype.push.call(publicAttributes, dstReverseAttributeName);
+    Object.defineProperty(
         AutomationNodeImpl.prototype, dstReverseAttributeName, {
           __proto__: null,
           get: function() {
@@ -1617,7 +1617,7 @@ $Array.forEach(nodeRefAttributes, function(params) {
             for (let i = 0; i < ids.length; ++i) {
               const node = this.rootImpl.get(ids[i]);
               if (node) {
-                $Array.push(result, node);
+                Array.prototype.push.call(result, node);
               }
             }
             return result;
@@ -1626,9 +1626,9 @@ $Array.forEach(nodeRefAttributes, function(params) {
   }
 });
 
-$Array.forEach(intListAttributes, function(attributeName) {
-  $Array.push(publicAttributes, attributeName);
-  $Object.defineProperty(AutomationNodeImpl.prototype, attributeName, {
+Array.prototype.forEach.call(intListAttributes, function(attributeName) {
+  Array.prototype.push.call(publicAttributes, attributeName);
+  Object.defineProperty(AutomationNodeImpl.prototype, attributeName, {
     __proto__: null,
     get: function() {
       return GetIntListAttribute(this.treeID, this.id, attributeName);
@@ -1636,12 +1636,12 @@ $Array.forEach(intListAttributes, function(attributeName) {
   });
 });
 
-$Array.forEach(nodeRefListAttributes, function(params) {
+Array.prototype.forEach.call(nodeRefListAttributes, function(params) {
   const srcAttributeName = params[0];
   const dstAttributeName = params[1];
   const dstReverseAttributeName = params[2];
-  $Array.push(publicAttributes, dstAttributeName);
-  $Object.defineProperty(AutomationNodeImpl.prototype, dstAttributeName, {
+  Array.prototype.push.call(publicAttributes, dstAttributeName);
+  Object.defineProperty(AutomationNodeImpl.prototype, dstAttributeName, {
     __proto__: null,
     get: function() {
       const ids = GetIntListAttribute(this.treeID, this.id, srcAttributeName);
@@ -1652,15 +1652,15 @@ $Array.forEach(nodeRefListAttributes, function(params) {
       for (let i = 0; i < ids.length; ++i) {
         const node = this.rootImpl.get(ids[i]);
         if (node) {
-          $Array.push(result, node);
+          Array.prototype.push.call(result, node);
         }
       }
       return result;
     },
   });
   if (dstReverseAttributeName) {
-    $Array.push(publicAttributes, dstReverseAttributeName);
-    $Object.defineProperty(
+    Array.prototype.push.call(publicAttributes, dstReverseAttributeName);
+    Object.defineProperty(
         AutomationNodeImpl.prototype, dstReverseAttributeName, {
           __proto__: null,
           get: function() {
@@ -1673,7 +1673,7 @@ $Array.forEach(nodeRefListAttributes, function(params) {
             for (let i = 0; i < ids.length; ++i) {
               const node = this.rootImpl.get(ids[i]);
               if (node) {
-                $Array.push(result, node);
+                Array.prototype.push.call(result, node);
               }
             }
             return result;
@@ -1682,9 +1682,9 @@ $Array.forEach(nodeRefListAttributes, function(params) {
   }
 });
 
-$Array.forEach(floatAttributes, function(attributeName) {
-  $Array.push(publicAttributes, attributeName);
-  $Object.defineProperty(AutomationNodeImpl.prototype, attributeName, {
+Array.prototype.forEach.call(floatAttributes, function(attributeName) {
+  Array.prototype.push.call(publicAttributes, attributeName);
+  Object.defineProperty(AutomationNodeImpl.prototype, attributeName, {
     __proto__: null,
     get: function() {
       return GetFloatAttribute(this.treeID, this.id, attributeName);
@@ -1692,11 +1692,11 @@ $Array.forEach(floatAttributes, function(attributeName) {
   });
 });
 
-$Array.forEach(htmlAttributes, function(params) {
+Array.prototype.forEach.call(htmlAttributes, function(params) {
   const srcAttributeName = params[0];
   const dstAttributeName = params[1];
-  $Array.push(publicAttributes, dstAttributeName);
-  $Object.defineProperty(AutomationNodeImpl.prototype, dstAttributeName, {
+  Array.prototype.push.call(publicAttributes, dstAttributeName);
+  Object.defineProperty(AutomationNodeImpl.prototype, dstAttributeName, {
     __proto__: null,
     get: function() {
       return GetHtmlAttribute(this.treeID, this.id, srcAttributeName);
@@ -2135,7 +2135,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
     'toString',
     'unclippedBoundsForRange',
   ],
-  readonly: $Array.concat(
+  readonly: Array.prototype.concat.call(
       publicAttributes,
       [
         'ariaCurrentState',
