@@ -688,6 +688,19 @@ void BluetoothAdapterFloss::AdapterPresent(int adapter, bool present) {
   // If default adapter isn't present, we need to clean up the dbus manager
   if (!present) {
     RemoveAdapter();
+    return;
+  }
+
+  if (FlossDBusManager::Get()->GetManagerClient()->GetAdapterEnabled(adapter) &&
+      adapter != FlossDBusManager::Get()->GetActiveAdapter()) {
+    // If the adapter is already enabled in platform layer, defer the present
+    // changed until the clients are ready, so the observers could get the
+    // correct power state right after present.
+    FlossDBusManager::Get()->SwitchAdapter(
+        adapter,
+        base::BindOnce(&BluetoothAdapterFloss::OnAdapterClientsReady,
+                       weak_ptr_factory_.GetWeakPtr(), /* enabled = */ true,
+                       /* is_newly_present = */ true));
   } else {
     // Notify observers
     PresentChanged(present);
@@ -703,19 +716,22 @@ void BluetoothAdapterFloss::AdapterEnabledChanged(int adapter, bool enabled) {
     return;
   }
 
-  if (enabled && !FlossDBusManager::Get()->HasActiveAdapter()) {
+  if (enabled && adapter != FlossDBusManager::Get()->GetActiveAdapter()) {
     FlossDBusManager::Get()->SwitchAdapter(
         adapter, base::BindOnce(&BluetoothAdapterFloss::OnAdapterClientsReady,
-                                weak_ptr_factory_.GetWeakPtr(), enabled));
+                                weak_ptr_factory_.GetWeakPtr(), enabled,
+                                /* is_newly_present = */ false));
   } else if (!enabled && FlossDBusManager::Get()->HasActiveAdapter()) {
     FlossDBusManager::Get()->SwitchAdapter(
         FlossDBusManager::kInvalidAdapter,
         base::BindOnce(&BluetoothAdapterFloss::OnAdapterClientsReady,
-                       weak_ptr_factory_.GetWeakPtr(), enabled));
+                       weak_ptr_factory_.GetWeakPtr(), enabled,
+                       /* is_newly_present = */ false));
   }
 }
 
-void BluetoothAdapterFloss::OnAdapterClientsReady(bool enabled) {
+void BluetoothAdapterFloss::OnAdapterClientsReady(bool enabled,
+                                                  bool is_newly_present) {
   if (enabled) {
     AddAdapterObservers();
     PopulateInitialDevices();
@@ -732,6 +748,10 @@ void BluetoothAdapterFloss::OnAdapterClientsReady(bool enabled) {
   } else {
     ClearAllDevices();
     RemoveAdapterObservers();
+  }
+
+  if (is_newly_present) {
+    PresentChanged(true);
   }
 
   NotifyAdapterPoweredChanged(enabled);
