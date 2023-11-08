@@ -23,6 +23,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
@@ -736,6 +737,24 @@ TEST_P(PipWindowResizerTest, PipStartAndFinishFreeResizeUmaMetrics) {
   resizer->Drag(CalculateDragPoint(*resizer, 100, 0), 0);
   resizer->CompleteDrag();
 
+  histograms().ExpectTotalCount(kAshPipEventsHistogramName, 1);
+}
+
+TEST_P(PipWindowResizerTest, PipPinchResizeTriggersResizeUmaMetrics) {
+  PreparePipWindow(gfx::Rect(200, 200, 100, 100));
+
+  // Send pinch event. This also creates a `WindowResizer`.
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  ui::GestureEventDetails details(ui::ET_GESTURE_PINCH_BEGIN);
+  ui::GestureEvent event(window()->bounds().origin().x(),
+                         window()->bounds().origin().y(), ui::EF_NONE,
+                         timestamp, details);
+  ui::Event::DispatcherApi(&event).set_target(window());
+  ui::Event::DispatcherApi(&event).set_phase(ui::EP_PRETARGET);
+  Shell::Get()->toplevel_window_event_handler()->OnGestureEvent(&event);
+
+  EXPECT_EQ(1, histograms().GetBucketCount(kAshPipEventsHistogramName,
+                                           Sample(AshPipEvents::FREE_RESIZE)));
   histograms().ExpectTotalCount(kAshPipEventsHistogramName, 1);
 }
 

@@ -14,6 +14,7 @@
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/metrics/histogram_functions.h"
@@ -85,7 +86,10 @@ PipWindowResizer::PipWindowResizer(WindowState* window_state)
     : WindowResizer(window_state) {
   window_state->OnDragStarted(details().window_component);
 
-  bool is_resize = details().bounds_change & kBoundsChange_Resizes;
+  // TODO(b/301232629): `DragDetails::bounds_change` should be
+  // `kBoundsChange_Resizes` during pinch resizing.
+  bool is_resize = (details().bounds_change & kBoundsChange_Resizes) ||
+                   Shell::Get()->toplevel_window_event_handler()->in_pinch();
   if (is_resize) {
     UMA_HISTOGRAM_ENUMERATION(kAshPipEventsHistogramName,
                               AshPipEvents::FREE_RESIZE);
@@ -346,8 +350,6 @@ gfx::Transform PipWindowResizer::CalculateTransformForPinch() const {
 }
 
 void PipWindowResizer::CompleteDrag() {
-  const bool is_resize = details().bounds_change & kBoundsChange_Resizes;
-
   window_state()->OnCompleteDrag(
       last_location_in_screen_.value_or(gfx::PointF()));
 
@@ -383,7 +385,10 @@ void PipWindowResizer::CompleteDrag() {
   } else {
     // Animate the PIP window to its resting position.
     gfx::Rect intended_bounds;
-    if (!is_resize && fling_amount > kPipMovementFlingThresholdSquared) {
+
+    // The window should be flung when the gesture is not an edge resize.
+    const bool is_edge_resize = details().bounds_change & kBoundsChange_Resizes;
+    if (!is_edge_resize && fling_amount > kPipMovementFlingThresholdSquared) {
       intended_bounds = ComputeFlungPosition();
     } else {
       if (last_location_in_screen_.has_value()) {
