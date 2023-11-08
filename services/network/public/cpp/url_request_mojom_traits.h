@@ -396,6 +396,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   attribution_reporting_src_token(const network::ResourceRequest& request) {
     return request.attribution_reporting_src_token;
   }
+  static bool is_ad_tagged(const network::ResourceRequest& request) {
+    return request.is_ad_tagged;
+  }
   static bool shared_dictionary_writer_enabled(
       const network::ResourceRequest& request) {
     return request.shared_dictionary_writer_enabled;

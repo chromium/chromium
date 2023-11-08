@@ -420,6 +420,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->attribution_reporting_src_token = src.GetAttributionSrcToken();
 
   dest->shared_dictionary_writer_enabled = src.SharedDictionaryWriterEnabled();
+
+  dest->is_ad_tagged = src.IsAdResource();
 }
 
 }  // namespace blink

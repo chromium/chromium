@@ -1296,6 +1296,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment"
+    enum="Boolean" expires_after="2024-07-01">
+  <owner>johnidel@chromium.org</owner>
+  <owner>victortan@chromium.org</owner>
+  <owner>src/chrome/browser/tpcd/OWNERS</owner>
+  <summary>
+    Record when a third party ad request reads cookies. True means the third
+    party cookie deprecation experiment is trying to block third party cookies
+    access, while False means experiment is not trying to block.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd"
+    enum="Boolean" expires_after="2024-07-01">
+  <owner>johnidel@chromium.org</owner>
+  <owner>victortan@chromium.org</owner>
+  <owner>src/chrome/browser/tpcd/OWNERS</owner>
+  <summary>
+    Records whether a cookie read that would be blocked by the TPCD experiment
+    is for advertising purposes. Recorded only on third party cookie reads.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.UseCounter.Experimental.MetricsReplayAtActivationDuration"
     units="ms" expires_after="2023-09-03">

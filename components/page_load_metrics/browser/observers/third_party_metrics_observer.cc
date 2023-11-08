@@ -112,10 +112,10 @@ void ThirdPartyMetricsObserver::OnLoadedResource(
       GetDelegate().GetUrl(), extra_request_complete_info.final_url.GetURL());
 }
 
-void ThirdPartyMetricsObserver::OnCookiesRead(
-    const GURL& url,
-    const GURL& first_party_url,
-    bool blocked_by_policy) {
+void ThirdPartyMetricsObserver::OnCookiesRead(const GURL& url,
+                                              const GURL& first_party_url,
+                                              bool blocked_by_policy,
+                                              bool is_ad_tagged) {
   OnCookieOrStorageAccess(url, first_party_url, blocked_by_policy,
                           AccessType::kCookieRead);
 }
@@ -124,7 +124,8 @@ void ThirdPartyMetricsObserver::OnCookieChange(
     const GURL& url,
     const GURL& first_party_url,
     const net::CanonicalCookie& cookie,
-    bool blocked_by_policy) {
+    bool blocked_by_policy,
+    bool is_ad_tagged) {
   OnCookieOrStorageAccess(url, first_party_url, blocked_by_policy,
                           AccessType::kCookieWrite);
 }

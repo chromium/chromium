@@ -38,18 +38,25 @@ class ThirdPartyCookieDeprecationMetricsObserver
 
   void OnCookiesRead(const GURL& url,
                      const GURL& first_party_url,
-                     bool blocked_by_policy) override;
+                     bool blocked_by_policy,
+                     bool is_ad_tagged) override;
 
   void OnCookieChange(const GURL& url,
                       const GURL& first_party_url,
                       const net::CanonicalCookie& cookie,
-                      bool blocked_by_policy) override;
+                      bool blocked_by_policy,
+                      bool is_ad_tagged) override;
 
  private:
   // Records feature cookie access metric.
   void RecordCookieUseCounters(const GURL& url,
                                const GURL& first_party_url,
                                bool blocked_by_policy);
+
+  void RecordCookieReadUseCounters(const GURL& url,
+                                   const GURL& first_party_url,
+                                   bool blocked_by_policy,
+                                   bool is_ad_tagged);
 
   // Returns whether the two inputs |url| and |first_party_url| are third party
   // one another.
