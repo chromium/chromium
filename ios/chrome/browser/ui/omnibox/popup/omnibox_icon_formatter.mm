@@ -14,9 +14,9 @@
 namespace {
 
 OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
-  absl::optional<int> answerType =
+  std::optional<int> answerType =
       match.answer.has_value() ? absl::make_optional<int>(match.answer->type())
-                               : absl::nullopt;
+                               : std::nullopt;
 
   // Some suggestions have custom icons. Others fallback to the icon from the
   // overall match type.
