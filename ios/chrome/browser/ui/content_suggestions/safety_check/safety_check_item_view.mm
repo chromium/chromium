@@ -23,10 +23,10 @@
 namespace {
 
 // The spacing between the title and description.
-constexpr CGFloat kTitleDescriptionSpacing = 5;
+constexpr CGFloat kTitleDescriptionSpacing = 2;
 
 // The spacing between elements within the item.
-constexpr CGFloat kContentStackSpacing = 16;
+constexpr CGFloat kContentStackSpacing = 14;
 
 // Constants related to the icon container view.
 constexpr CGFloat kIconContainerSize = 56;
