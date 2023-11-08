@@ -467,10 +467,6 @@ void AppListAssistantMainStage::OnUiVisibilityChanged(
   }
 
   query_view_->SetQuery(AssistantNullQuery());
-
-  footer_->SetVisible(true);
-  footer_->layer()->SetOpacity(1.f);
-  footer_->SetCanProcessEventsWithinSubtree(true);
 }
 
 void AppListAssistantMainStage::InitializeUIForBubbleView() {
