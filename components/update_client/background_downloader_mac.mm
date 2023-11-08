@@ -16,6 +16,7 @@
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -37,7 +38,6 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
@@ -62,6 +62,9 @@ base::FilePath URLToFilename(const GURL& url) {
   return base::FilePath::FromASCII(
       base::HexEncode(reinterpret_cast<uint8_t*>(&hash), sizeof(hash)));
 }
+
+// The age at which unclaimed downloads should be evicted from the cache.
+constexpr base::TimeDelta kMaxCachedDownloadAge = base::Days(2);
 
 // These methods have been copied from //net/base/mac/url_conversions.h to
 // avoid introducing a dependancy on //net.
@@ -102,6 +105,18 @@ GURL GURLWithNSURL(NSURL* url) {
     return GURL(url.absoluteString.UTF8String);
   }
   return GURL();
+}
+
+// Detects and removes old files from the download cache.
+void CleanDownloadCache(const base::FilePath& download_cache) {
+  base::FileEnumerator(download_cache, false, base::FileEnumerator::FILES)
+      .ForEach([](const base::FilePath& download) {
+        base::File::Info info;
+        if (base::GetFileInfo(download, &info) &&
+            base::Time::Now() - info.creation_time > kMaxCachedDownloadAge) {
+          base::DeleteFile(download);
+        }
+      });
 }
 
 }  // namespace
@@ -254,6 +269,10 @@ class BackgroundDownloaderSharedSessionImpl {
 
   void DoStartDownload(const GURL& url, OnDownloadCompleteCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindRepeating(&CleanDownloadCache, download_cache_),
+        base::Minutes(10));
 
     if (!session_) {
       CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
