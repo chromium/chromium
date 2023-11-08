@@ -120,11 +120,11 @@ void ClearPreRestoreIdentity(PrefService* local_state) {
   local_state->ClearPref(prefs::kIosPreRestoreAccountInfo);
 }
 
-absl::optional<AccountInfo> GetPreRestoreIdentity(PrefService* local_state) {
+std::optional<AccountInfo> GetPreRestoreIdentity(PrefService* local_state) {
   const base::Value::Dict& dict =
       local_state->GetDict(prefs::kIosPreRestoreAccountInfo);
   if (dict.empty()) {
-    return absl::optional<AccountInfo>();
+    return std::optional<AccountInfo>();
   }
   return DictToAccountInfo(dict);
 }
@@ -135,7 +135,6 @@ bool GetPreRestoreHistorySyncEnabled(PrefService* local_state) {
   if (dict.empty()) {
     return false;
   }
-  absl::optional<bool> history_sync_enabled =
-      dict.FindBool(kHistorySyncEnabled);
+  std::optional<bool> history_sync_enabled = dict.FindBool(kHistorySyncEnabled);
   return history_sync_enabled.value_or(false);
 }

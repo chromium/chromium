@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -18,7 +19,6 @@
 #include "base/types/expected.h"
 #include "ios/chrome/browser/signin/capabilities_types.h"
 #include "ios/chrome/browser/signin/system_identity_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @protocol RefreshAccessTokenError;
 @protocol SystemIdentity;
@@ -62,7 +62,7 @@ class SystemIdentityManager {
 
   // Callback invoked when the `GetAccessToken()` operation completes.
   using AccessTokenCallback =
-      base::OnceCallback<void(absl::optional<AccessTokenInfo>, NSError*)>;
+      base::OnceCallback<void(std::optional<AccessTokenInfo>, NSError*)>;
 
   // Callback invoked when the `GetHostedDomain()` operation completes.
   using HostedDomainCallback = base::OnceCallback<void(NSString*, NSError*)>;

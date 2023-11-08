@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -47,7 +48,7 @@ void ClearPreRestoreIdentity(PrefService* local_state);
 
 // Returns the identity that was signed-in before the restore, but is now
 // not signed-in.
-absl::optional<AccountInfo> GetPreRestoreIdentity(PrefService* local_state);
+std::optional<AccountInfo> GetPreRestoreIdentity(PrefService* local_state);
 
 // Returns whether history sync was enabled before the restore.
 bool GetPreRestoreHistorySyncEnabled(PrefService* local_state);

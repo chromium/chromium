@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/signin/account_capabilities_fetcher_ios.h"
 
+#import <optional>
+
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -28,7 +30,7 @@ const char kTestEmail[] = "janedoe@chromium.org";
 void CheckHaveEmailAddressDisplayed(
     signin::Tribool capability_expected,
     const CoreAccountId& account_id,
-    const absl::optional<AccountCapabilities>& capabilities) {
+    const std::optional<AccountCapabilities>& capabilities) {
   ASSERT_TRUE(capabilities.has_value());
   ASSERT_EQ(capabilities->can_have_email_address_displayed(),
             capability_expected);
@@ -52,7 +54,7 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
   // Ensure that callback gets `capability_enabled` on
   // `kCanHaveEmailAddressDisplayedCapabilityName`.
   void TestCapabilityValueFetchedIsReceived(
-      absl::optional<SystemIdentityCapabilityResult> capability_fetched,
+      std::optional<SystemIdentityCapabilityResult> capability_fetched,
       signin::Tribool capability_expected) {
     FakeSystemIdentityManager* system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
@@ -117,6 +119,5 @@ TEST_F(AccountCapabilitiesFetcherIOSTest, CheckUnknownCapability) {
 
 // Check that an unset capability is received as Unknown.
 TEST_F(AccountCapabilitiesFetcherIOSTest, CheckUnsetCapability) {
-  TestCapabilityValueFetchedIsReceived(absl::nullopt,
-                                       signin::Tribool::kUnknown);
+  TestCapabilityValueFetchedIsReceived(std::nullopt, signin::Tribool::kUnknown);
 }

@@ -346,7 +346,7 @@ void FakeSystemIdentityManager::GetAccessTokenAsync(
                                      userInfo:nil];
 
     FireIdentityAccessTokenRefreshFailed(identity, details.error);
-    std::move(callback).Run(absl::nullopt, error);
+    std::move(callback).Run(std::nullopt, error);
   } else {
     const base::Time valid_until = base::Time::Now() + kAccessTokenExpiration;
     AccessTokenInfo info{TimeFormatHTTP(valid_until), valid_until};

@@ -62,7 +62,7 @@ AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
 // AccessTokenCallback.
 AccessTokenResult AccessTokenResultFrom(
     id<SystemIdentity> identity,
-    absl::optional<SystemIdentityManager::AccessTokenInfo> access_token,
+    std::optional<SystemIdentityManager::AccessTokenInfo> access_token,
     NSError* error) {
   if (error) {
     return base::unexpected(

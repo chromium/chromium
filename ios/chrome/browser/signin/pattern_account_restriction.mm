@@ -88,7 +88,7 @@ bool ArePatternsValid(const base::Value* value) {
   return true;
 }
 
-absl::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
+std::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
     const base::Value::List& list) {
   std::vector<Pattern> patterns;
   patterns.reserve(list.size());
@@ -103,7 +103,7 @@ absl::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
   return PatternAccountRestriction(std::move(patterns));
 }
 
-absl::optional<Pattern> PatternFromString(base::StringPiece chunk) {
+std::optional<Pattern> PatternFromString(base::StringPiece chunk) {
   std::vector<std::string> chunks;
   std::string current_chunk;
   bool escape = false;
@@ -127,7 +127,7 @@ absl::optional<Pattern> PatternFromString(base::StringPiece chunk) {
     escape = false;
   }
   if (escape)
-    return absl::nullopt;
+    return std::nullopt;
   chunks.push_back(current_chunk);
   return Pattern(std::move(chunks));
 }

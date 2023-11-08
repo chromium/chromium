@@ -5,12 +5,12 @@
 #import "ios/chrome/browser/signin/account_capabilities_fetcher_ios.h"
 
 #import <map>
+#import <optional>
 
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ios {
 namespace {
@@ -22,7 +22,7 @@ std::set<std::string> SetFromVector(const std::vector<std::string>& strings) {
 
 // Converts the value returned by SystemIdentityManager::FetchCapabilities()
 // to the format expected from CompleteFetchAndMaybeDestroySelf().
-absl::optional<AccountCapabilities> AccountCapabilitiesFromCapabilitiesMap(
+std::optional<AccountCapabilities> AccountCapabilitiesFromCapabilitiesMap(
     std::map<std::string, SystemIdentityCapabilityResult> capabilities_map) {
   base::flat_map<std::string, bool> capabilities;
   for (const auto& pair : capabilities_map) {

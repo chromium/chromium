@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_PATTERN_ACCOUNT_RESTRICTION_H_
 #define IOS_CHROME_BROWSER_SIGNIN_PATTERN_ACCOUNT_RESTRICTION_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 // This code is adapted from
 // //components/signin/public/android/java/src/org/
@@ -62,13 +62,13 @@ bool ArePatternsValid(const base::Value* value);
 
 // Creates a PatternAccountRestriction from `list` which needs to
 // be a list of strings.
-absl::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
+std::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
     const base::Value::List& list);
 
 // The given chunk is split by wildcards and a Pattern (list of chunks) is
 // returned. The first chunk contains pattern characters from the beginning to
 // the first wildcard, the second chunk contains characters from the first
 // wildcard to the second one, etc.
-absl::optional<Pattern> PatternFromString(base::StringPiece chunk);
+std::optional<Pattern> PatternFromString(base::StringPiece chunk);
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_PATTERN_ACCOUNT_RESTRICTION_H_

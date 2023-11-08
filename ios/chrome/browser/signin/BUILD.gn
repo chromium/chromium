@@ -108,7 +108,6 @@ source_set("signin") {
     "//ios/web/common",
     "//ios/web/common:web_view_creation_util",
     "//net",
-    "//third_party/abseil-cpp:absl",
     "//url",
   ]
   public_deps = [
@@ -183,10 +182,7 @@ source_set("system_identity_manager") {
     "system_identity_manager_observer.h",
   ]
   frameworks = [ "Foundation.framework" ]
-  public_deps = [
-    "//base",
-    "//third_party/abseil-cpp:absl",
-  ]
+  public_deps = [ "//base" ]
   deps = [
     ":capabilities_types",
     ":system_identity",
