@@ -13,13 +13,13 @@ namespace policy {
 // policies for the browser.
 // Intentionally not using base::FilePath to minimize dependencies.
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || \
-    BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kPolicyPath[] = "/etc/opt/chrome/policies";
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+const char kPolicyPath[] = "/etc/opt/chrome_for_testing/policies";
 #else
 const char kPolicyPath[] = "/etc/chromium/policies";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) || \
-        // BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
 }  // namespace policy

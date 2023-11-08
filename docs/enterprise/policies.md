@@ -23,8 +23,12 @@ to propagate policies for all users (including non-managed ones):
 
 **Linux** Policies can be set via files in specific directories:
 
-The base directory is `/etc/chromium/policies` for Chromium builds,
- `/etc/opt/chrome/policies/` for official Chrome and Chrome for Testing builds.
+The base directory is:
+
+- `/etc/chromium/policies` for Chromium builds,
+- `/etc/opt/chrome/policies/` for official Chrome builds,
+- `/etc/opt/chrome_for_testing/policies/` for official Chrome for Testing builds.
+
 The base directory contains two subdirectories: `managed/` for mandatory
 policies and `recommended/` for recommended policies. All files inside these
 directories are treated as JSON files containing policies.
