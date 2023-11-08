@@ -51,6 +51,12 @@ export class HistoryClustersHeaderElementV2 extends ElementBase {
         'show-all-button-click', {bubbles: true, composed: true}));
   }
 
+  private onDoneClick_(e: Event) {
+    e.stopPropagation();
+    this.dispatchEvent(
+        new CustomEvent('done-button-click', {bubbles: true, composed: true}));
+  }
+
   private onSuggestClick_(e: Event) {
     e.stopPropagation();
     this.dispatchEvent(
@@ -69,7 +75,7 @@ export class HistoryClustersHeaderElementV2 extends ElementBase {
         {
           action: 'done',
           icon: 'modules:done',
-          text: this.i18n('modulesJourneysDoneButton'),
+          text: this.i18n('modulesHistoryDoneButton'),
         },
         {
           action: 'dismiss',
