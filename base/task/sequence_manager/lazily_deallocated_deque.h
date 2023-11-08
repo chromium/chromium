@@ -246,11 +246,7 @@ class LazilyDeallocatedDeque {
       while (!empty()) {
         pop_front();
       }
-      // Stop referencing the memory with the raw_ptr first, before releasing
-      // memory. This avoids the raw_ptr to be temporarily dangling.
-      char* memory = reinterpret_cast<char*>(data_.get());
-      data_ = nullptr;
-      delete[] memory;
+      delete[] reinterpret_cast<char*>(data_.ExtractAsDangling().get());
     }
 
     bool empty() const { return back_index_ == front_index_; }
