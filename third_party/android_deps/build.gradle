@@ -189,7 +189,7 @@ dependencies {
     androidTestCompile "org.mockito:mockito-subclass:${mockitoVersion}"
 
     // Use testCompile to have is_robolectric = true set on targets.
-    testCompile "org.robolectric:robolectric:4.11-beta-2"
+    testCompile "org.robolectric:robolectric:4.11.1"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
