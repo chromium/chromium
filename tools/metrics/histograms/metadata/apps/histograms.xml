@@ -274,6 +274,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppInstallService.AppInstallResult{AppInstallSurface}"
+    enum="AppInstallResult" expires_after="2024-02-11">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records the result of a request to install an app via AppInstallService for
+    a given install surface.
+  </summary>
+  <token key="AppInstallSurface">
+    <variant name="" summary="All surfaces"/>
+    <variant name=".AppInstallNavigationThrottle" summary="URI navigation"/>
+  </token>
+</histogram>
+
 <histogram name="Apps.AppLaunch" enum="AppLaunch" expires_after="2024-04-28">
   <owner>tapted@chromium.org</owner>
   <owner>benwells@chromium.org</owner>

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_almanac_connector.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
@@ -25,7 +26,19 @@ namespace apps {
 
 namespace {
 
-void InstallWebApp(Profile& profile, const GURL& install_url) {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AppInstallResult {
+  kUnknown = 0,
+  kSuccess = 1,
+  kAlmanacFetchFailed = 2,
+  kAppDataCorrupted = 3,
+  kAppProviderNotAvailable = 4,
+  kAppTypeNotSupported = 5,
+  kMaxValue = kAppTypeNotSupported,
+};
+
+AppInstallResult InstallWebApp(Profile& profile, const GURL& install_url) {
   const GURL& origin_url = install_url;
   constexpr bool is_renderer_initiated = false;
 
@@ -34,7 +47,7 @@ void InstallWebApp(Profile& profile, const GURL& install_url) {
   if (provider) {
     provider->scheduler().ScheduleNavigateAndTriggerInstallDialog(
         install_url, origin_url, is_renderer_initiated, base::DoNothing());
-    return;
+    return AppInstallResult::kUnknown;
   }
 
   // No WebAppProvider means web apps are hosted in Lacros (because this code
@@ -45,11 +58,11 @@ void InstallWebApp(Profile& profile, const GURL& install_url) {
           ->web_app_service_ash()
           ->GetWebAppProviderBridge();
   if (!web_app_provider_bridge) {
-    // Bridge not ready.
-    return;
+    return AppInstallResult::kAppProviderNotAvailable;
   }
   web_app_provider_bridge->ScheduleNavigateAndTriggerInstallDialog(
       install_url, origin_url, is_renderer_initiated);
+  return AppInstallResult::kUnknown;
 }
 
 }  // namespace
@@ -78,17 +91,52 @@ void AppInstallService::InstallAppWithDeviceInfo(PackageId package_id,
 void AppInstallService::InstallFromFetchedData(
     const PackageId& expected_package_id,
     absl::optional<AppInstallData> data) {
-  if (!data || data->package_id != expected_package_id) {
-    return;
-  }
+  AppInstallResult result = [&] {
+    if (!data) {
+      return AppInstallResult::kAlmanacFetchFailed;
+    }
 
-  if (const auto* web_app_data =
-          absl::get_if<WebAppInstallData>(&data->app_type_data)) {
-    // TODO(crbug.com/1488697): Show an install dialog.
-    // TODO(b/303350800): Delegate to a generic AppPublisher method instead of
-    // harboring app type specific logic here.
-    InstallWebApp(*profile_, web_app_data->document_url);
-  }
+    if (data->package_id != expected_package_id) {
+      return AppInstallResult::kAppDataCorrupted;
+    }
+
+    switch (expected_package_id.app_type()) {
+      case AppType::kWeb:
+        if (const auto* web_app_data =
+                absl::get_if<WebAppInstallData>(&data->app_type_data)) {
+          // TODO(crbug.com/1488697): Show an install dialog.
+          // TODO(b/303350800): Delegate to a generic AppPublisher method
+          // instead of harboring app type specific logic here.
+          return InstallWebApp(*profile_, web_app_data->document_url);
+        }
+        return AppInstallResult::kAppDataCorrupted;
+      case AppType::kArc:
+      case AppType::kBorealis:
+      case AppType::kBruschetta:
+      case AppType::kBuiltIn:
+      case AppType::kChromeApp:
+      case AppType::kCrostini:
+      case AppType::kExtension:
+      case AppType::kMacOs:
+      case AppType::kPluginVm:
+      case AppType::kRemote:
+      case AppType::kStandaloneBrowser:
+      case AppType::kStandaloneBrowserChromeApp:
+      case AppType::kStandaloneBrowserExtension:
+      case AppType::kSystemWeb:
+      case AppType::kUnknown:
+        return AppInstallResult::kAppTypeNotSupported;
+    }
+  }();
+
+  base::UmaHistogramEnumeration("Apps.AppInstallService.AppInstallResult",
+                                result);
+
+  // New uses must add an install surface parameter to be used as a variant of
+  // this histogram.
+  base::UmaHistogramEnumeration(
+      "Apps.AppInstallService.AppInstallResult.AppInstallNavigationThrottle",
+      result);
 }
 
 }  // namespace apps

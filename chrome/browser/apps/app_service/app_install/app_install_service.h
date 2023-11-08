@@ -25,7 +25,8 @@ class AppInstallService {
   ~AppInstallService();
 
   // TODO(b/304680287): Add completion callback with error reporting.
-  // TODO(b/304681468): Record metrics for invocations and success/errors.
+  // New uses must add an install surface parameter to be used as a variant of
+  // the Apps.AppInstallService.AppInstallResult histogram.
   void InstallApp(PackageId package_id);
 
  private:
