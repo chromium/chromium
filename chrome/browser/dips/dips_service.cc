@@ -441,9 +441,8 @@ void DIPSService::HandleRedirect(
     const DIPSRedirectChainInfo& chain,
     RecordBounceCallback record_bounce,
     base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
-  const std::string site = GetSiteForDIPS(redirect.url);
-  bool initial_site_same = (site == chain.initial_site);
-  bool final_site_same = (site == chain.final_site);
+  bool initial_site_same = (redirect.site == chain.initial_site);
+  bool final_site_same = (redirect.site == chain.final_site);
   DCHECK_LT(redirect.chain_index, chain.length);
 
   if (base::FeatureList::IsEnabled(kDipsUkm)) {
