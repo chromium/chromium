@@ -9990,6 +9990,7 @@ test("unit_tests") {
   }
   if (enable_supervised_users) {
     sources += [
+      "../browser/metrics/family_link_user_metrics_provider_unittest.cc",
       "../browser/supervised_user/supervised_user_browser_utils_unittest.cc",
       "../browser/supervised_user/supervised_user_google_auth_navigation_throttle_unittest.cc",
       "../browser/supervised_user/supervised_user_navigation_throttle_unittest.cc",
@@ -10028,11 +10029,6 @@ test("unit_tests") {
       "//components/supervised_user/core/common",
       "//components/supervised_user/core/common:buildflags",
     ]
-
-    if (is_android || is_win || is_mac || is_linux || is_chromeos_lacros) {
-      sources +=
-          [ "../browser/metrics/family_link_user_metrics_provider_unittest.cc" ]
-    }
   }
   if (safe_browsing_mode == 1 && enable_extensions) {
     sources += [ "../browser/extensions/blocklist_unittest.cc" ]

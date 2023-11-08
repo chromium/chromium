@@ -2710,13 +2710,6 @@ static_library("browser") {
       "performance_monitor/metric_evaluator_helper_posix.h",
     ]
   }
-  if (enable_supervised_users &&
-      (is_android || is_win || is_linux || is_mac || is_chromeos_lacros)) {
-    sources += [
-      "metrics/family_link_user_metrics_provider.cc",
-      "metrics/family_link_user_metrics_provider.h",
-    ]
-  }
 
   if (!is_chromeos_ash) {
     sources += [
@@ -7801,6 +7794,8 @@ static_library("browser") {
 
   if (enable_supervised_users) {
     sources += [
+      "metrics/family_link_user_metrics_provider.cc",
+      "metrics/family_link_user_metrics_provider.h",
       "supervised_user/child_accounts/child_account_service_factory.cc",
       "supervised_user/child_accounts/child_account_service_factory.h",
       "supervised_user/child_accounts/list_family_members_service_factory.cc",
