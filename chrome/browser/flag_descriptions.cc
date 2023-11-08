@@ -7222,6 +7222,12 @@ const char kSmdsDbusMigrationDescription[] =
     "Feature to enable the usage of DBus APIs that improve the stability"
     "around performing SM-DS scans.";
 
+const char kTetheringExperimentalFunctionalityName[] =
+    "Tethering Allow Experimental Functionality";
+const char kTetheringExperimentalFunctionalityDescription[] =
+    "Feature to enable Chromebook hotspot functionality for experimental "
+    "carriers, modem and modem FW.";
+
 const char kOobeJellyName[] = "Jelly design for OOBE";
 const char kOobeJellyDescription[] =
     "Feature to enable the Jelly design in out of box experience.";

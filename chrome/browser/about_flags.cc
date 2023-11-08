@@ -8674,6 +8674,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSmdsDbusMigrationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSmdsDbusMigration)},
 
+    {"tethering-experimental-functionality",
+     flag_descriptions::kTetheringExperimentalFunctionalityName,
+     flag_descriptions::kTetheringExperimentalFunctionalityDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kTetheringExperimentalFunctionality)},
+
     {"dynamic-search-update-animation",
      flag_descriptions::kDynamicSearchUpdateAnimationName,
      flag_descriptions::kDynamicSearchUpdateAnimationDescription, kOsCrOS,

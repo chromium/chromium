@@ -7608,6 +7608,13 @@
     "expiry_milestone": 125
   },
   {
+    "name": "tethering-experimental-functionality",
+    "owners": [ "jiajunz@google.com" , "cros-connectivity@google.com" ],
+    // This flag is used for developing and testing tethering on experimental
+    // carriers, modem and modem FW.
+    "expiry_milestone": -1
+  },
+  {
     "name": "text-based-audio-descriptions",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130

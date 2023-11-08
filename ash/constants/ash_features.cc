@@ -2605,6 +2605,12 @@ BASE_FEATURE(kSystemProxyForSystemServices,
 // Enables the UI to show tab cluster info.
 BASE_FEATURE(kTabClusterUI, "TabClusterUI", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the UI to allow Chromebook hotspot functionality for experimental
+// carriers, modem and modem FW.
+BASE_FEATURE(kTetheringExperimentalFunctionality,
+             "TetheringExperimentalFunctionality",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables ChromeOS Telemetry Extension.
 BASE_FEATURE(kTelemetryExtension,
              "TelemetryExtension",
@@ -4198,6 +4204,10 @@ bool IsSystemTrayShadowEnabled() {
 
 bool IsStylusBatteryStatusEnabled() {
   return base::FeatureList::IsEnabled(kStylusBatteryStatus);
+}
+
+bool IsTetheringExperimentalFunctionalityEnabled() {
+  return base::FeatureList::IsEnabled(kTetheringExperimentalFunctionality);
 }
 
 bool IsTimeOfDayScreenSaverEnabled() {

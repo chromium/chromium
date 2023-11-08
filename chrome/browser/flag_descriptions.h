@@ -4143,6 +4143,9 @@ extern const char kSmdsSupportEuiccUploadDescription[];
 extern const char kSmdsDbusMigrationName[];
 extern const char kSmdsDbusMigrationDescription[];
 
+extern const char kTetheringExperimentalFunctionalityName[];
+extern const char kTetheringExperimentalFunctionalityDescription[];
+
 extern const char kOobeJellyName[];
 extern const char kOobeJellyDescription[];
 

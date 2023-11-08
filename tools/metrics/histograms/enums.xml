@@ -42518,6 +42518,7 @@ from previous Chrome versions.
   <int value="-1405349891" label="PictureInPictureAPI:enabled"/>
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
   <int value="-1404469375" label="RemoteCopyProgressNotification:enabled"/>
+  <int value="-1404088616" label="TetheringExperimentalFunctionality:enabled"/>
   <int value="-1400745093" label="SystemEmojiPickerSearchExtension:enabled"/>
   <int value="-1400693146" label="LauncherImageSearchIca:enabled"/>
   <int value="-1399753480" label="disable-harfbuzz-rendertext"/>
@@ -48506,6 +48507,7 @@ from previous Chrome versions.
   <int value="1491212579" label="ChromeTipsInMainMenuNewBadge:enabled"/>
   <int value="1491593531"
       label="EnableExtensionsPermissionsForSupervisedUsersOnDesktop:disabled"/>
+  <int value="1491996914" label="TetheringExperimentalFunctionality:disabled"/>
   <int value="1492079800" label="AutofillUpstreamAllowAllEmailDomains:enabled"/>
   <int value="1492255992" label="OnDeviceGrammarCheck:enabled"/>
   <int value="1492541927" label="QuickAnswersTranslationCloudAPI:enabled"/>
