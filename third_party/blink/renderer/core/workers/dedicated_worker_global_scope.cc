@@ -529,9 +529,12 @@ void DedicatedWorkerGlobalScope::EvictFromBackForwardCache(
 }
 
 void DedicatedWorkerGlobalScope::DidBufferLoadWhileInBackForwardCache(
+    bool update_process_wide_count,
     size_t num_bytes) {
   total_bytes_buffered_while_in_back_forward_cache_ += num_bytes;
-  BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
+  if (update_process_wide_count) {
+    BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
+  }
 }
 
 void DedicatedWorkerGlobalScope::SetIsInBackForwardCache(

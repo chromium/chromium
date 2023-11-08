@@ -263,7 +263,8 @@ class CORE_EXPORT LocalFrame final
   // BackForwardCacheLoaderHelperImpl::Delegate:
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override;
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
+  void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
+                                            size_t num_bytes) override;
 
   void DidChangeThemeColor(bool update_theme_color_cache);
   void DidChangeBackgroundColor(SkColor4f background_color, bool color_adjust);

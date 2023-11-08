@@ -25,7 +25,9 @@ class PLATFORM_EXPORT BackForwardCacheLoaderHelper
 
   // Called when a network request buffered an additional `num_bytes` while the
   // in back-forward cache. May be called multiple times.
-  virtual void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) = 0;
+  virtual void DidBufferLoadWhileInBackForwardCache(
+      bool update_process_wide_count,
+      size_t num_bytes) = 0;
 
   virtual void Detach() = 0;
 

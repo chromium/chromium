@@ -506,7 +506,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Called when a network request buffered an additional `num_bytes` while this
   // frame is in back-forward cache.
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
+  void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
+                                            size_t num_bytes);
 
   // Whether the window is credentialless or not.
   bool credentialless() const;

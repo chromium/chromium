@@ -3538,7 +3538,8 @@ RenderFrameImpl::CreatePrescientNetworking() {
 std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
 RenderFrameImpl::CreateResourceLoadInfoNotifierWrapper() {
   return std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
-      weak_wrapper_resource_load_info_notifier_->AsWeakPtr());
+      weak_wrapper_resource_load_info_notifier_->AsWeakPtr(),
+      GetTaskRunner(blink::TaskType::kNetworking));
 }
 
 std::unique_ptr<blink::WebServiceWorkerProvider>

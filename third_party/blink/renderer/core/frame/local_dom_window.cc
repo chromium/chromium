@@ -2431,9 +2431,13 @@ void LocalDOMWindow::SetIsInBackForwardCache(bool is_in_back_forward_cache) {
   }
 }
 
-void LocalDOMWindow::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
+void LocalDOMWindow::DidBufferLoadWhileInBackForwardCache(
+    bool update_process_wide_count,
+    size_t num_bytes) {
   total_bytes_buffered_while_in_back_forward_cache_ += num_bytes;
-  BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
+  if (update_process_wide_count) {
+    BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
+  }
 }
 
 bool LocalDOMWindow::credentialless() const {

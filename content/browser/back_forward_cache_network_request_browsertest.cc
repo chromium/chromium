@@ -250,8 +250,14 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
+enum class BackgroundResourceFetchTestCase {
+  kBackgroundResourceFetchEnabled,
+  kBackgroundResourceFetchDisabled,
+};
+
 class BackForwardCacheNetworkLimitBrowserTest
-    : public BackForwardCacheBrowserTest {
+    : public BackForwardCacheBrowserTest,
+      public testing::WithParamInterface<BackgroundResourceFetchTestCase> {
  public:
   const int kMaxBufferedBytesPerProcess = 10000;
   const base::TimeDelta kGracePeriodToFinishLoading = base::Seconds(5);
@@ -265,13 +271,39 @@ class BackForwardCacheNetworkLimitBrowserTest
            {"grace_period_to_finish_loading_in_seconds",
             base::NumberToString(kGracePeriodToFinishLoading.InSeconds())}}}},
         {});
+    if (IsBackgroundResourceFetchEnabled()) {
+      feature_background_resource_fetch_.InitAndEnableFeature(
+          blink::features::kBackgroundResourceFetch);
+    }
   }
 
  private:
+  bool IsBackgroundResourceFetchEnabled() const {
+    return GetParam() ==
+           BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled;
+  }
+
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_background_resource_fetch_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheNetworkLimitBrowserTest,
+    testing::ValuesIn(
+        {BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled,
+         BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled}),
+    [](const testing::TestParamInfo<BackgroundResourceFetchTestCase>& info) {
+      switch (info.param) {
+        case (BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled):
+          return "BackgroundResourceFetchEnabled";
+        case (
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled):
+          return "BackgroundResourceFetchDisabled";
+      }
+    });
+
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
@@ -321,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(
                     {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
+IN_PROC_BROWSER_TEST_P(BackForwardCacheNetworkLimitBrowserTest,
                        ImageStillLoading_ResponseStartedWhileFrozen) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -354,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
   EXPECT_EQ("error", EvalJs(rfh_1.get(), "image_load_status"));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction) {
   net::test_server::ControllableHttpResponse image_response(
@@ -411,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit \
   ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     MAYBE_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit) {
   net::test_server::ControllableHttpResponse image1_response(
@@ -485,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_SameSiteSubframe \
   ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_SameSiteSubframe
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     MAYBE_ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_SameSiteSubframe) {
   net::test_server::ControllableHttpResponse image1_response(
@@ -565,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(
                     {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_ResetOnRestore) {
   net::test_server::ControllableHttpResponse image1_response(
@@ -639,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_ResetOnDetach) {
   net::test_server::ControllableHttpResponse image1_response(
@@ -716,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("error", EvalJs(rfh_2.get(), "image2_load_status"));
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
+IN_PROC_BROWSER_TEST_P(BackForwardCacheNetworkLimitBrowserTest,
                        ImageStillLoading_ResponseStartedWhileFrozen_Timeout) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -756,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
 #define MAYBE_ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerProcessBytesLimit \
   ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerProcessBytesLimit
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     MAYBE_ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerProcessBytesLimit) {
   net::test_server::ControllableHttpResponse image1_response(
@@ -829,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(
                     {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
+IN_PROC_BROWSER_TEST_P(BackForwardCacheNetworkLimitBrowserTest,
                        TimeoutNotTriggeredAfterDone) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -872,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheNetworkLimitBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     BackForwardCacheNetworkLimitBrowserTest,
     TimeoutNotTriggeredAfterDone_ResponseStartedBeforeFreezing) {
   net::test_server::ControllableHttpResponse image_response(

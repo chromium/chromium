@@ -299,7 +299,8 @@ void URLLoader::Context::Start(
                      back_forward_cache_loader_helper_),
       base::BindRepeating(
           &BackForwardCacheLoaderHelper::DidBufferLoadWhileInBackForwardCache,
-          back_forward_cache_loader_helper_));
+          back_forward_cache_loader_helper_,
+          /*update_process_wide_count=*/true));
 
   if (freeze_mode_ != LoaderFreezeMode::kNone) {
     resource_request_sender_->Freeze(LoaderFreezeMode::kStrict);

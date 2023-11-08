@@ -3093,8 +3093,11 @@ void LocalFrame::EvictFromBackForwardCache(
   GetBackForwardCacheControllerHostRemote().EvictFromBackForwardCache(reason);
 }
 
-void LocalFrame::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
-  DomWindow()->DidBufferLoadWhileInBackForwardCache(num_bytes);
+void LocalFrame::DidBufferLoadWhileInBackForwardCache(
+    bool update_process_wide_count,
+    size_t num_bytes) {
+  DomWindow()->DidBufferLoadWhileInBackForwardCache(update_process_wide_count,
+                                                    num_bytes);
 }
 
 void LocalFrame::SetScaleFactor(float scale_factor) {
