@@ -393,6 +393,8 @@ public class WebsitePermissionsFetcher {
                 String embedder = exception.getSecondaryPattern();
 
                 if (isEmbeddedPermission
+                        && embedder != null
+                        && !embedder.equals(SITE_WILDCARD)
                         && mSiteSettingsCategory != null
                         && mSiteSettingsCategory.getType() == SiteSettingsCategory.Type.ALL_SITES) {
                     // AllSites should group embedded permissions by embedder.

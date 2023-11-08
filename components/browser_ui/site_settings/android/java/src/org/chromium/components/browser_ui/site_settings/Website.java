@@ -176,7 +176,10 @@ public final class Website implements WebsiteEntry {
     }
 
     public void addEmbeddedPermission(ContentSettingException info) {
-        assert !info.getSecondaryPattern().equals("*");
+        assert (info.getSecondaryPattern() == null && info.isEmbargoed())
+                || (info.getSecondaryPattern() != null
+                        && !info.getSecondaryPattern().equals("*")
+                        && !info.isEmbargoed());
         var list = mEmbeddedPermissionInfos.computeIfAbsent(
                 info.getContentSettingType(), k -> new ArrayList<>());
         list.add(info);
