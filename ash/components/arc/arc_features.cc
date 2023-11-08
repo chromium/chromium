@@ -409,5 +409,5 @@ const base::FeatureParam<std::string> kPriorityAppLmkDelayList{
 // top Android apps from being killed that result in bad user experience.
 BASE_FEATURE(kLmkPerceptibleMinStateUpdate,
              "ArcLmkPerceptibleMinStateUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace arc
