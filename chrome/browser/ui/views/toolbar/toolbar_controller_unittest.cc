@@ -374,3 +374,12 @@ TEST_F(ToolbarControllerUnitTest, MenuItemUsability) {
               menu->IsEnabledAt(i));
   }
 }
+
+TEST_F(ToolbarControllerUnitTest, EveryActivateElementIdentifierHasActionName) {
+  for (auto& it : ToolbarController::GetDefaultElementInfoMap()) {
+    EXPECT_NE(ToolbarController::GetActionNameFromElementIdentifier(
+                  it.second.activate_identifier),
+              "")
+        << it.second.activate_identifier;
+  }
+}

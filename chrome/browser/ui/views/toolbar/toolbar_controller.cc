@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "base/no_destructor.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -140,6 +145,31 @@ ToolbarController::GetDefaultElementInfoMap() {
          kToolbarAvatarBubbleElementId}},
        {kToolbarNewTabButtonElementId,
         {IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB, kToolbarNewTabButtonElementId}}});
+}
+
+// Every activate identifier should have an action name in order to emit
+// metrics. Please update action names in actions.xml to match this map.
+std::string ToolbarController::GetActionNameFromElementIdentifier(
+    ui::ElementIdentifier identifier) {
+  static const base::NoDestructor<
+      base::flat_map<ui::ElementIdentifier, base::StringPiece>>
+      identifier_to_action_name_map({
+          {kToolbarAvatarButtonElementId, "AvatarButton"},
+          {kToolbarChromeLabsButtonElementId, "ChromeLabsButton"},
+          {kToolbarDownloadButtonElementId, "DownloadButton"},
+          {kExtensionsMenuButtonElementId, "ExtensionsMenuButton"},
+          {kToolbarForwardButtonElementId, "ForwardButton"},
+          {kToolbarHomeButtonElementId, "HomeButton"},
+          {kToolbarMediaButtonElementId, "MediaButton"},
+          {kToolbarNewTabButtonElementId, "NewTabButton"},
+          {kToolbarSidePanelButtonElementId, "SidePanelButton"},
+      });
+
+  const auto it = identifier_to_action_name_map->find(identifier);
+  return it == identifier_to_action_name_map->end()
+             ? std::string()
+             : base::StrCat({"ResponsiveToolbar.OverflowMenuItemActivated.",
+                             it->second});
 }
 
 bool ToolbarController::PopOut(ui::ElementIdentifier identifier) {
@@ -283,4 +313,10 @@ void ToolbarController::ExecuteCommand(int command_id, int event_flags) {
   CHECK(element);
   const auto* button = AsViewClass<views::Button>(element);
   button->button_controller()->NotifyClick();
+
+  std::string action_name =
+      GetActionNameFromElementIdentifier(activate_identifier);
+  if (!action_name.empty()) {
+    base::RecordAction(base::UserMetricsAction(action_name.c_str()));
+  }
 }

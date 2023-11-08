@@ -29447,6 +29447,35 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ResponsiveToolbar.OverflowButtonActivated">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>pengchaocai@chromium.org</owner>
+  <description>
+    Emitted when the oveflow button is activated in responsive toolbar mode.
+  </description>
+</action>
+
+<action name="ResponsiveToolbar.OverflowButtonHidden" not_user_triggered="true">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>pengchaocai@chromium.org</owner>
+  <description>Emitted when the oveflow button is hidden.</description>
+</action>
+
+<action name="ResponsiveToolbar.OverflowButtonShown" not_user_triggered="true">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>pengchaocai@chromium.org</owner>
+  <description>Emitted when the oveflow button is shown.</description>
+</action>
+
+<action name="ResponsiveToolbar.OverflowMenuItemActivated">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>pengchaocai@chromium.org</owner>
+  <description>
+    Emitted when the overflow menu item of the described suffix name is
+    activated in responsive toolbar mode.
+  </description>
+</action>
+
 <action name="RestoreTab">
   <owner>mpearson@chromium.org</owner>
   <owner>chrisha@chromium.org</owner>
@@ -40520,6 +40549,19 @@ should be able to be added at any place in this file.
       label="The user dismissed the History Sync Opt-In screen by swiping
              down"/>
   <affected-action name="Signin_HistorySync"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="AvatarButton" label="Avatar(profile) button"/>
+  <suffix name="ChromeLabsButton" label="Chrome Labs button"/>
+  <suffix name="DownloadButton" label="Download button"/>
+  <suffix name="ExtensionsMenuButton" label="Extensions button"/>
+  <suffix name="ForwardButton" label="Forward button"/>
+  <suffix name="HomeButton" label="Home button"/>
+  <suffix name="MediaButton" label="Media button"/>
+  <suffix name="NewTabButton" label="New tab button for thumbnail tab strip"/>
+  <suffix name="SidePanelButton" label="Side Panel button"/>
+  <affected-action name="ResponsiveToolbar.OverflowMenuItemActivated"/>
 </action-suffix>
 
 </actions>
