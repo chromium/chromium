@@ -102,6 +102,11 @@ class KeyboardShortcutResult : public ChromeSearchResult {
       const ash::mojom::AcceleratorInfoPtr& accelerator_1,
       const ash::mojom::AcceleratorInfoPtr& accelerator_2);
 
+  // Populate text vector for 'No shortcut assigned' case.
+  void PopulateTextVectorForNoShortcut(
+      TextVector* text_vector,
+      std::vector<std::u16string>& accessible_strings);
+
   void UpdateIcon();
 
   // The following info will be passed to the shortcuts app when a result is

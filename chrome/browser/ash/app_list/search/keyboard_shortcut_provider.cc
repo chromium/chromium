@@ -160,9 +160,6 @@ void KeyboardShortcutProvider::OnShortcutsSearchComplete(
   for (auto& search_result : search_results) {
     // Only enabled shortcuts should be displayed.
     RemoveDisabledShortcuts(search_result);
-    if (search_result->accelerator_infos.empty()) {
-      break;
-    }
     // The search results are sorted by relevance score in descending order
     // already.
     if (search_result->relevance_score < kRelevanceScoreThreshold) {
