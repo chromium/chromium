@@ -76,14 +76,14 @@ fn main() -> Result<()> {
                         .value_parser(clap::value_parser!(semver::Version)),
                 )
                 .arg(
-                    arg!(--"security-critical" <YESNO> "Whether the crate is considered to be \
+                    arg!(--"security-critical" <yesno> "Whether the crate is considered to be \
                         security critical."
                     )
                     .value_parser(["yes", "no"])
                     .required(true),
                 )
                 .arg(
-                    arg!(--"shipped" <YESNO> "Whether the crate contributes to code shipped to \
+                    arg!(--"shipped" <yesno> "Whether the crate contributes to code shipped to \
                         users."
                     )
                     .value_parser(["yes", "no"])
