@@ -2082,7 +2082,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                                 cacheHit);
         }
       }
-      ssl_info = absl::make_optional<net::SSLInfo>(info);
+      ssl_info = info;
     }
   }
   NSString* failingURLString =

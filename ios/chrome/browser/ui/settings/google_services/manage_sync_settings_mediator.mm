@@ -1504,28 +1504,23 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 // is not an error.
 - (std::optional<SyncSettingsItemType>)syncErrorItemType {
   if (self.isSyncDisabledByAdministrator) {
-    return absl::make_optional<SyncSettingsItemType>(
-        SyncDisabledByAdministratorErrorItemType);
+    return SyncDisabledByAdministratorErrorItemType;
   }
   switch (_syncService->GetUserActionableError()) {
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      return absl::make_optional<SyncSettingsItemType>(
-          PrimaryAccountReauthErrorItemType);
+      return PrimaryAccountReauthErrorItemType;
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-      return absl::make_optional<SyncSettingsItemType>(
-          ShowPassphraseDialogErrorItemType);
+      return ShowPassphraseDialogErrorItemType;
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForPasswords:
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:
-      return absl::make_optional<SyncSettingsItemType>(
-          SyncNeedsTrustedVaultKeyErrorItemType);
+      return SyncNeedsTrustedVaultKeyErrorItemType;
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForPasswords:
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
-      return absl::make_optional<SyncSettingsItemType>(
-          SyncTrustedVaultRecoverabilityDegradedErrorItemType);
+      return SyncTrustedVaultRecoverabilityDegradedErrorItemType;
     case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
     case syncer::SyncService::UserActionableError::kNone:
       return std::nullopt;

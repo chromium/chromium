@@ -249,8 +249,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
   info.is_fatal_cert_error = false;
   info.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
-  std::optional<net::SSLInfo> ssl_info =
-      absl::make_optional<net::SSLInfo>(info);
+  std::optional<net::SSLInfo> ssl_info = info;
   ChromeWebClient web_client;
   NSError* error =
       [NSError errorWithDomain:NSURLErrorDomain

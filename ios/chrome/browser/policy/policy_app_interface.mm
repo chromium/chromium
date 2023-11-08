@@ -9,7 +9,8 @@
 
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
-#import "base/json/json_string_value_serializer.h"
+#import "base/json/json_reader.h"
+#import "base/json/json_writer.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -55,35 +56,27 @@ const base::FilePath::CharType kPolicyDir[] = FILE_PATH_LITERAL("Policy");
 // `value` is nullptr, returns a string representing a `base::Value` of type
 // NONE.
 NSString* SerializeValue(const base::Value* value) {
-  base::Value none_value(base::Value::Type::NONE);
-
   if (!value) {
-    value = &none_value;
+    // The representation for base::Value::Type::NONE, according to the
+    // JSON spec at https://www.json.org/json-en.html
+    return @"null";
   }
-  DCHECK(value);
 
-  std::string serialized_value;
-  JSONStringValueSerializer serializer(&serialized_value);
-  serializer.Serialize(*value);
-  return base::SysUTF8ToNSString(serialized_value);
+  const std::optional<std::string> json_string = base::WriteJson(*value);
+  return base::SysUTF8ToNSString(json_string.value_or(std::string()));
 }
 
 // Takes a JSON-encoded string representing a `base::Value`, and deserializes
 // into a `base::Value` pointer. If nullptr is given, returns a pointer to a
 // `base::Value` of type NONE.
 std::optional<base::Value> DeserializeValue(NSString* json_value) {
-  if (!json_value) {
-    return base::Value(base::Value::Type::NONE);
+  if (!json_value.length) {
+    return base::Value();
   }
 
-  std::string json = base::SysNSStringToUTF8(json_value);
-  JSONStringValueDeserializer deserializer(json);
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(/*error_code=*/nullptr,
-                               /*error_message=*/nullptr);
-  return value ? absl::make_optional<base::Value>(std::move(*value))
-               : std::nullopt;
+  return base::JSONReader::Read(base::SysNSStringToUTF8(json_value));
 }
+
 }  // namespace
 
 @implementation PolicyAppInterface
