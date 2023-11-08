@@ -36,7 +36,7 @@ void PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved(
     absl::optional<api::printing_metrics::PrintJobInfo> print_job_info =
         api::printing_metrics::PrintJobInfo::FromValue(print_job);
     DCHECK(print_job_info);
-    print_job_infos.emplace_back(std::move(*print_job_info));
+    print_job_infos.emplace_back(std::move(print_job_info).value());
   }
   Respond(ArgumentList(
       api::printing_metrics::GetPrintJobs::Results::Create(print_job_infos)));
