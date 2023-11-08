@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_PASSWORD_SELECTION_SCREEN_H_
-#define CHROME_BROWSER_ASH_LOGIN_SCREENS_PASSWORD_SELECTION_SCREEN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_PASSWORD_SELECTION_SCREEN_H_
+#define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_PASSWORD_SELECTION_SCREEN_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chromeos/ash/components/login/auth/public/auth_types.h"
+#include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
 
 namespace ash {
@@ -19,7 +20,7 @@ class PasswordSelectionScreenView;
 
 // Controller for the Password Selection Screen, which allows the user to choose
 // between the local password or Gaia password setup.
-class PasswordSelectionScreen : public BaseScreen {
+class PasswordSelectionScreen : public BaseOSAuthSetupScreen {
  public:
   using TView = PasswordSelectionScreenView;
   enum class Result {
@@ -28,6 +29,7 @@ class PasswordSelectionScreen : public BaseScreen {
     LOCAL_PASSWORD,
     GAIA_PASSWORD,
   };
+
   static std::string GetResultString(Result result);
   using ScreenExitCallback = base::RepeatingCallback<void(Result)>;
 
@@ -51,14 +53,17 @@ class PasswordSelectionScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
 
  private:
-  void SetGaiaPassword();
-  void OnOnlinePasswordSet(auth::mojom::ConfigureResult result);
-  void CheckPasswordPresence();
-  void CheckPasswordPresenceWithContext(
-      std::unique_ptr<UserContext> user_context);
-  std::string GetToken() const;
+  void InspectContext(UserContext* user_context);
+  void ProcessOptions();
+  void ShowPasswordChoice();
 
+  void SetOnlinePassword();
+  void OnOnlinePasswordSet(auth::mojom::ConfigureResult result);
+
+  // Values obtained from UserContext in `InspectContext`
   absl::optional<OnlinePassword> online_password_;
+  AuthFactorsConfiguration auth_factors_config_;
+
   base::WeakPtr<PasswordSelectionScreenView> view_ = nullptr;
   ScreenExitCallback exit_callback_;
   base::WeakPtrFactory<PasswordSelectionScreen> weak_ptr_factory_{this};
@@ -66,4 +71,4 @@ class PasswordSelectionScreen : public BaseScreen {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_PASSWORD_SELECTION_SCREEN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_PASSWORD_SELECTION_SCREEN_H_
