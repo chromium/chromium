@@ -32,7 +32,13 @@ class WebExtractorImplTest : public web::WebTestWithWebState {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
-TEST_F(WebExtractorImplTest, TestValidMetaExtraction) {
+#if BUILDFLAG(USE_BLINK)
+// TODO(crbug.com/1500456): breaks a threading assumption with use_blink.
+#define MAYBE_TestValidMetaExtraction DISABLED_TestValidMetaExtraction
+#else
+#define MAYBE_TestValidMetaExtraction TestValidMetaExtraction
+#endif  // BUILDFLAG(USE_BLINK)
+TEST_F(WebExtractorImplTest, MAYBE_TestValidMetaExtraction) {
   ASSERT_TRUE(LoadHtml("<html>"
                        "<head>"
                        "<meta content=\"product\" property=\"og:type\">"
@@ -61,7 +67,13 @@ TEST_F(WebExtractorImplTest, TestValidMetaExtraction) {
   }));
 }
 
-TEST_F(WebExtractorImplTest, TestInvalidMetaExtraction) {
+#if BUILDFLAG(USE_BLINK)
+// TODO(crbug.com/1500456): breaks a threading assumption with use_blink.
+#define MAYBE_TestInvalidMetaExtraction DISABLED_TestInvalidMetaExtraction
+#else
+#define MAYBE_TestInvalidMetaExtraction TestInvalidMetaExtraction
+#endif  // BUILDFLAG(USE_BLINK)
+TEST_F(WebExtractorImplTest, MAYBE_TestInvalidMetaExtraction) {
   ASSERT_TRUE(LoadHtml("<html>"
                        "<head>"
                        "<meta content=\"product\" property=\"type\">"
