@@ -1562,11 +1562,18 @@ public class RootUiCoordinator
         }
     }
 
+    /**
+     * @returns whether the Android Edge To Edge Feature is supported for the current activity.
+     */
+    protected boolean supportsEdgeToEdge() {
+        return false;
+    }
+
     /** Setup drawing using Android Edge-to-Edge. */
     @VisibleForTesting
     void initializeEdgeToEdgeController(
             Activity activity, ActivityTabProvider activityTabProvider) {
-        if (EdgeToEdgeControllerFactory.isEnabled()) {
+        if (supportsEdgeToEdge() && EdgeToEdgeControllerFactory.isEnabled()) {
             mE2eController = EdgeToEdgeControllerFactory.create(activity, activityTabProvider);
         }
     }

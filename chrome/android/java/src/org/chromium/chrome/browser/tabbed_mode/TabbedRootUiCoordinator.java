@@ -896,6 +896,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
+    @Override
+    protected boolean supportsEdgeToEdge() {
+        return true;
+    }
+
     /**
      * @return {@link ComposedBrowserControlsVisibilityDelegate} object for tabbed activity.
      */
