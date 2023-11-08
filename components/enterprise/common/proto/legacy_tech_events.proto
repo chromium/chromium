@@ -11,7 +11,7 @@ package enterprise_reporting;
 // LegacyTechEvent is sent whenever a chrome deprecated feature is encountered
 // on the client side chrome browser.
 //
-// Next ID: 8.
+// Next ID: 9.
 message LegacyTechEvent {
   // ID of the deprecated feature.
   optional string feature_id = 1;
@@ -34,4 +34,42 @@ message LegacyTechEvent {
   optional uint64 column = 6;
   // The line where the legacy tech was encountered.
   optional uint64 line = 7;
+
+  // Details of a Cookie Issue.
+  optional CookieIssueDetails cookie_issue_details = 8;
+
+  // The URL of the frame that raised the event.
+  optional string frame_url = 9;
+}
+
+// Operation of the cookie access.
+// Next ID: 3
+enum CookieAccessOperation {
+  // Unspecified operation.
+  COOKIE_ACCESS_OPERATION_UNSPECIFIED = 0;
+  // The cookie was read.
+  COOKIE_ACCESS_OPERATION_READ = 1;
+  // The cookie was written.
+  COOKIE_ACCESS_OPERATION_WRITE = 2;
+}
+
+// Details of the Cookie Issue of an event.
+// Next ID: 6
+message CookieIssueDetails {
+  // If the cookie is accessed by a network transfer, this is the URL being
+  // loaded; if it is read by a script, it's the URL of the window or service
+  // worker script looking them up.
+  optional string transfer_or_script_url = 1;
+
+  // Name of the cookie.
+  optional string name = 2;
+
+  // Domain of the cookie.
+  optional string domain = 3;
+
+  // Path of the cookie.
+  optional string path = 4;
+
+  // The operation performed on the cookie.
+  optional CookieAccessOperation access_operation = 5;
 }
