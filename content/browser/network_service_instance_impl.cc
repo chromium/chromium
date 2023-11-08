@@ -325,8 +325,10 @@ void CreateNetworkContextInternal(
   // down anyway.
   if (!GetContentClient()->browser()->IsShuttingDown() &&
       GetContentClient()->browser()->ShouldSandboxNetworkService() &&
-      !params->socket_broker) {
-    params->socket_broker = g_client->BindSocketBroker();
+      !params->socket_brokers) {
+    params->socket_brokers = network::mojom::SocketBrokerRemotes::New();
+    params->socket_brokers->client = g_client->BindSocketBroker();
+    params->socket_brokers->server = g_client->BindSocketBroker();
   }
 #endif  // BUILDFLAG(IS_WIN)
 

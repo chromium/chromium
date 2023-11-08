@@ -302,6 +302,15 @@ struct NetworkContextFilePaths {
   bool trigger_migration = false;
 };
 
+// Socket brokers used by the ClientSocketFactory for client sockets and
+// SocketFactory for server sockets.
+[EnableIf=is_win]
+struct SocketBrokerRemotes {
+  pending_remote<SocketBroker> client;
+  pending_remote<SocketBroker> server;
+};
+
+
 // Parameters for constructing a network context.
 struct NetworkContextParams {
   // The user agent string.
@@ -432,7 +441,7 @@ struct NetworkContextParams {
   // Broker used by the network service sandbox to create sockets in
   // the browser. Set when the sandbox is enabled on Windows.
   [EnableIf=is_win]
-  pending_remote<SocketBroker>? socket_broker;
+  SocketBrokerRemotes? socket_brokers;
 
   // A service to fetch blind-signed auth tokens for IP protection. If this
   // is not set, then no tokens are available.

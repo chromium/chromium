@@ -210,7 +210,12 @@ IN_PROC_BROWSER_TEST_F(SandboxedSocketBrokerBrowserTest,
   CountingSocketBrokerImpl socket_broker;
   network::mojom::NetworkContextParamsPtr network_context_params =
       network::mojom::NetworkContextParams::New();
-  network_context_params->socket_broker = socket_broker.BindNewRemote();
+  network_context_params->socket_brokers =
+      network::mojom::SocketBrokerRemotes::New();
+  network_context_params->socket_brokers->client =
+      socket_broker.BindNewRemote();
+  network_context_params->socket_brokers->server =
+      socket_broker.BindNewRemote();
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
   base::FilePath context_path =
       shell()->web_contents()->GetBrowserContext()->GetPath().Append(

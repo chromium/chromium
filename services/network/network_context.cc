@@ -608,6 +608,12 @@ NetworkContext::NetworkContext(
 
   socket_factory_ = std::make_unique<SocketFactory>(
       url_request_context_->net_log(), url_request_context_);
+#if BUILDFLAG(IS_WIN)
+  if (params_->socket_brokers) {
+    socket_factory_->BindSocketBroker(
+        std::move(params_->socket_brokers->server));
+  }
+#endif
   resource_scheduler_ = std::make_unique<ResourceScheduler>();
 
   if (base::FeatureList::IsEnabled(features::kNetworkServiceMemoryCache))
@@ -2754,10 +2760,10 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       command_line->GetSwitchValueASCII(switches::kHostResolverRules));
 
 #if BUILDFLAG(IS_WIN)
-  if (params_->socket_broker) {
+  if (params_->socket_brokers) {
     builder.set_client_socket_factory(
         std::make_unique<BrokeredClientSocketFactory>(
-            std::move(params_->socket_broker)));
+            std::move(params_->socket_brokers->client)));
   }
 #endif
 

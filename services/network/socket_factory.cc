@@ -18,6 +18,7 @@
 #include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
+#include "net/socket/tcp_server_socket.h"
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/url_request/url_request_context.h"
@@ -93,8 +94,62 @@ void SocketFactory::CreateTCPServerSocket(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
     mojom::NetworkContext::CreateTCPServerSocketCallback callback) {
+#if BUILDFLAG(IS_WIN)
+  if (socket_broker_) {
+    socket_broker_->CreateTcpSocket(
+        local_addr.GetFamily(),
+        base::BindOnce(&SocketFactory::DidCompleteCreate,
+                       weak_ptr_factory_.GetWeakPtr(), local_addr,
+                       std::move(options), traffic_annotation,
+                       std::move(receiver), std::move(callback)));
+    return;
+  }
+#endif
   auto socket =
       std::make_unique<TCPServerSocket>(this, net_log_, traffic_annotation);
+  CreateTCPServerSocketHelper(std::move(socket), local_addr, std::move(options),
+                              traffic_annotation, std::move(receiver),
+                              std::move(callback));
+}
+
+#if BUILDFLAG(IS_WIN)
+void SocketFactory::DidCompleteCreate(
+    const net::IPEndPoint& local_addr,
+    mojom::TCPServerSocketOptionsPtr options,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
+    mojom::NetworkContext::CreateTCPServerSocketCallback callback,
+    network::TransferableSocket socket,
+    int result) {
+  if (result != net::OK) {
+    std::move(callback).Run(result, absl::nullopt);
+    return;
+  }
+  auto tcp_socket =
+      std::make_unique<net::TCPServerSocket>(net_log_, net::NetLogSource());
+  tcp_socket->AdoptSocket(socket.TakeSocket());
+
+  auto tcp_server_socket = std::make_unique<TCPServerSocket>(
+      std::move(tcp_socket), 0, this, traffic_annotation);
+
+  CreateTCPServerSocketHelper(std::move(tcp_server_socket), local_addr,
+                              std::move(options), traffic_annotation,
+                              std::move(receiver), std::move(callback));
+}
+
+void SocketFactory::BindSocketBroker(
+    mojo::PendingRemote<mojom::SocketBroker> pending_remote) {
+  socket_broker_.Bind(std::move(pending_remote));
+}
+#endif
+
+void SocketFactory::CreateTCPServerSocketHelper(
+    std::unique_ptr<TCPServerSocket> socket,
+    const net::IPEndPoint& local_addr,
+    mojom::TCPServerSocketOptionsPtr options,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
+    mojom::NetworkContext::CreateTCPServerSocketCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (options->connection_tracker) {
     socket->AttachConnectionTracker(std::move(options->connection_tracker));
