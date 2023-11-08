@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 @RequiresApi(api = 34)
 @SuppressWarnings("Override")
@@ -15,6 +16,7 @@ class UploadDataProviderWrapper extends android.net.http.UploadDataProvider {
     private final org.chromium.net.UploadDataProvider mBackend;
 
     public UploadDataProviderWrapper(org.chromium.net.UploadDataProvider backend) {
+        Objects.requireNonNull(backend, "Invalid UploadDataProvider.");
         this.mBackend = backend;
     }
 
