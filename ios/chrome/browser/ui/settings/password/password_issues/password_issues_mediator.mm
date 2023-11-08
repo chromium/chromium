@@ -164,7 +164,7 @@ NSInteger GetDismissedWarningsCount(
   // credential was detected but the consumer is displaying weak credentials).
   // A value of nullopt means the consumer hasn't been provided with credentials
   // yet.
-  absl::optional<std::vector<CredentialUIEntry>> _insecureCredentials;
+  std::optional<std::vector<CredentialUIEntry>> _insecureCredentials;
 
   // Last number of dismissed warnings passed to the consumer.
   // Used to only update the consumer when the data it displays changed.
@@ -334,7 +334,7 @@ NSInteger GetDismissedWarningsCount(
 
 - (void)setConsumerHeader {
   int headerTextID;
-  absl::optional<GURL> headerURL;
+  std::optional<GURL> headerURL;
 
   if (IsPasswordCheckupEnabled()) {
     switch (_warningType) {
@@ -352,7 +352,7 @@ NSInteger GetDismissedWarningsCount(
         break;
       case WarningType::kReusedPasswordsWarning:
         headerTextID = IDS_IOS_REUSED_PASSWORD_ISSUES_DESCRIPTION;
-        headerURL = absl::nullopt;
+        headerURL = std::nullopt;
         break;
       // Dismissed Warnings Page doesn't have a header.
       case WarningType::kDismissedWarningsWarning:
@@ -363,7 +363,7 @@ NSInteger GetDismissedWarningsCount(
 
   } else {
     headerTextID = IDS_IOS_PASSWORD_ISSUES_DESCRIPTION;
-    headerURL = absl::nullopt;
+    headerURL = std::nullopt;
   }
 
   NSString* headerText = l10n_util::GetNSString(headerTextID);

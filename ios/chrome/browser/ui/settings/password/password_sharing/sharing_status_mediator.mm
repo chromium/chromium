@@ -46,7 +46,7 @@ const CGFloat kProfileImageSize = 60.0;
 
   // Url which allows to change the password that is being shared. Can be null
   // for Android app credentials.
-  absl::optional<GURL> _changePasswordURL;
+  std::optional<GURL> _changePasswordURL;
 }
 
 - (instancetype)
@@ -56,7 +56,7 @@ const CGFloat kProfileImageSize = 60.0;
                recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
                   website:(NSString*)website
                       URL:(const GURL&)URL
-        changePasswordURL:(const absl::optional<GURL>&)changePasswordURL {
+        changePasswordURL:(const std::optional<GURL>&)changePasswordURL {
   self = [super init];
   if (self) {
     _authService = authService;

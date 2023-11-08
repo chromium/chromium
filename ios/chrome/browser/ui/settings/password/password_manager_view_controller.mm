@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
 #import <utility>
 #import <vector>
 
@@ -79,7 +80,6 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -214,11 +214,11 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 @property(assign) NSInteger insecurePasswordsCount;
 
 // Stores the most recently created or updated Affiliated Group.
-@property(nonatomic, assign) absl::optional<password_manager::AffiliatedGroup>
+@property(nonatomic, assign) std::optional<password_manager::AffiliatedGroup>
     mostRecentlyUpdatedAffiliatedGroup;
 
 // Stores the most recently created or updated password form.
-@property(nonatomic, assign) absl::optional<password_manager::CredentialUIEntry>
+@property(nonatomic, assign) std::optional<password_manager::CredentialUIEntry>
     mostRecentlyUpdatedPassword;
 
 // Stores the item which has form attribute's username and site equivalent to
@@ -790,7 +790,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     if (self.mostRecentlyUpdatedAffiliatedGroup->GetDisplayName() ==
         affiliatedGroup.GetDisplayName()) {
       self.mostRecentlyUpdatedItem = passwordItem;
-      self.mostRecentlyUpdatedAffiliatedGroup = absl::nullopt;
+      self.mostRecentlyUpdatedAffiliatedGroup = std::nullopt;
     }
   }
   return passwordItem;

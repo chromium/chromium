@@ -275,7 +275,7 @@ bool ShouldDisplayCredentialAsMuted(
       _credentials, [password](const CredentialUIEntry& credential) {
         return MatchesRealmUsernameAndPassword(password, credential);
       });
-  absl::optional<CredentialUIEntry> accountCredential =
+  std::optional<CredentialUIEntry> accountCredential =
       [self conflictingAccountPassword:password];
   DCHECK(localCredential != _credentials.end());
   DCHECK(accountCredential.has_value());
@@ -536,7 +536,7 @@ bool ShouldDisplayCredentialAsMuted(
 
 // Returns a credential that a) is saved in the user account, and b) has the
 // same website/username as `password`, but a different password value.
-- (absl::optional<CredentialUIEntry>)conflictingAccountPassword:
+- (std::optional<CredentialUIEntry>)conflictingAccountPassword:
     (PasswordDetails*)password {
   // All credentials for the same website are in `_credentials` due to password
   // grouping. So it's enough to search that reduced list and not all saved
@@ -553,7 +553,7 @@ bool ShouldDisplayCredentialAsMuted(
                    credential.password;
       });
   if (it == _credentials.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *it;
 }

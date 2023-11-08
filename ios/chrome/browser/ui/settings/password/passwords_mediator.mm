@@ -163,7 +163,7 @@ using password_manager::features::IsPasswordCheckupEnabled;
 }
 
 - (NSString*)formattedElapsedTimeSinceLastCheck {
-  absl::optional<base::Time> lastCompletedCheck =
+  std::optional<base::Time> lastCompletedCheck =
       _passwordCheckManager->GetLastPasswordCheckTime();
   return password_manager::FormatElapsedTimeSinceLastCheck(lastCompletedCheck);
 }

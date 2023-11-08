@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "third_party/abseil-cpp/absl/types/optional.h"
+#import <optional>
 
 namespace password_manager {
 struct CredentialUIEntry;
@@ -31,7 +31,7 @@ struct CredentialUIEntry;
 @property(nonatomic, readonly) password_manager::CredentialUIEntry credential;
 // URL which allows to change the password of compromised credential.
 // Can be null for Android credentials not affiliated to a web realm.
-@property(nonatomic, readonly) absl::optional<CrURL*> changePasswordURL;
+@property(nonatomic, readonly) std::optional<CrURL*> changePasswordURL;
 
 // Initializes a PasswordIssue from a CredentialUIEntry.
 // Pass `enableCompromisedDescription` as YES when the description of

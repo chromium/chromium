@@ -5,8 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_COORDINATOR_H_
 
+#import <optional>
+
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 @class RecipientInfoForIOSDisplay;
 @protocol SharingStatusCoordinatorDelegate;
@@ -32,7 +33,7 @@ class GURL;
                     recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
                        website:(NSString*)website
                            URL:(const GURL&)URL
-             changePasswordURL:(const absl::optional<GURL>&)changePasswordURL
+             changePasswordURL:(const std::optional<GURL>&)changePasswordURL
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

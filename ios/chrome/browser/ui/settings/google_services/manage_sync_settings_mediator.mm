@@ -1414,7 +1414,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 - (void)updateSyncErrorsSection:(BOOL)notifyConsumer {
   // Checks if the sync setup service state has changed from the saved state in
   // the table view model.
-  absl::optional<SyncSettingsItemType> type = [self syncErrorItemType];
+  std::optional<SyncSettingsItemType> type = [self syncErrorItemType];
   if (![self needsErrorSectionUpdate:type]) {
     return;
   }
@@ -1500,9 +1500,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   }
 }
 
-// Returns the sync error item type or absl::nullopt if the item
+// Returns the sync error item type or std::nullopt if the item
 // is not an error.
-- (absl::optional<SyncSettingsItemType>)syncErrorItemType {
+- (std::optional<SyncSettingsItemType>)syncErrorItemType {
   if (self.isSyncDisabledByAdministrator) {
     return absl::make_optional<SyncSettingsItemType>(
         SyncDisabledByAdministratorErrorItemType);
@@ -1528,14 +1528,14 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
           SyncTrustedVaultRecoverabilityDegradedErrorItemType);
     case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
     case syncer::SyncService::UserActionableError::kNone:
-      return absl::nullopt;
+      return std::nullopt;
   }
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns whether the error state has changed since the last update.
-- (BOOL)needsErrorSectionUpdate:(absl::optional<SyncSettingsItemType>)type {
+- (BOOL)needsErrorSectionUpdate:(std::optional<SyncSettingsItemType>)type {
   BOOL hasError = type.has_value();
   return (hasError && !self.syncErrorItem) ||
          (!hasError && self.syncErrorItem) ||
