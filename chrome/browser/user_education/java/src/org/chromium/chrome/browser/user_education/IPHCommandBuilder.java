@@ -244,11 +244,25 @@ public class IPHCommandBuilder {
                 mOnBlockedCallback = NO_OP_RUNNABLE;
             }
 
-            return new IPHCommand(mResources, mFeatureName, mStringId, mStringArgs,
-                    mAccessibilityStringId, mAccessibilityStringArgs, mDismissOnTouch, mAnchorView,
-                    mOnDismissCallback, mOnShowCallback, mOnBlockedCallback, mAutoDismissTimeout,
-                    mViewRectProvider, mHighlightParams, mAnchorRect, mRemoveArrow,
-                    mPreferredVerticalOrientation);
+            return new IPHCommand(
+                    mResources,
+                    mFeatureName,
+                    mStringId,
+                    mStringArgs,
+                    mAccessibilityStringId,
+                    mAccessibilityStringArgs,
+                    mDismissOnTouch,
+                    mAnchorView,
+                    mOnDismissCallback,
+                    mOnShowCallback,
+                    mOnBlockedCallback,
+                    mAutoDismissTimeout,
+                    mViewRectProvider,
+                    mHighlightParams,
+                    mAnchorRect,
+                    mRemoveArrow,
+                    mPreferredVerticalOrientation,
+                    mInsetRect);
         }
     }
 }

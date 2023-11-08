@@ -71,12 +71,25 @@ public class IPHCommand {
         }
     }
 
-    IPHCommand(Resources resources, String featureName, int stringId, Object[] stringArgs,
-            int accessibilityStringId, Object[] accessibilityStringArgs, boolean dismissOnTouch,
-            View anchorView, Runnable onDismissCallback, Runnable onShowCallback,
-            Runnable onBlockedCallback, long autoDismissTimeout, ViewRectProvider viewRectProvider,
-            HighlightParams params, Rect anchorRect, boolean removeArrow,
-            @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation) {
+    IPHCommand(
+            Resources resources,
+            String featureName,
+            int stringId,
+            Object[] stringArgs,
+            int accessibilityStringId,
+            Object[] accessibilityStringArgs,
+            boolean dismissOnTouch,
+            View anchorView,
+            Runnable onDismissCallback,
+            Runnable onShowCallback,
+            Runnable onBlockedCallback,
+            long autoDismissTimeout,
+            ViewRectProvider viewRectProvider,
+            HighlightParams params,
+            Rect anchorRect,
+            boolean removeArrow,
+            @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation,
+            Rect insetRect) {
         this.mResources = resources;
         this.featureName = featureName;
         this.stringId = stringId;
@@ -94,5 +107,6 @@ public class IPHCommand {
         this.anchorRect = anchorRect;
         this.removeArrow = removeArrow;
         this.preferredVerticalOrientation = preferredVerticalOrientation;
+        this.insetRect = insetRect;
     }
 }
