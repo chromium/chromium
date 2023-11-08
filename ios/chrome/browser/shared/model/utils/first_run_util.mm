@@ -17,7 +17,7 @@ BOOL IsFirstRunRecent(const base::TimeDelta& timeDelta) {
   if (IsFirstRun()) {
     return YES;
   }
-  absl::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
+  std::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
   if (!info.has_value()) {
     return NO;
   }

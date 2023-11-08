@@ -32,7 +32,6 @@ source_set("web_state_list") {
     "//ios/web/public/navigation",
     "//url",
   ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
   frameworks = [ "Foundation.framework" ]
 }
 
