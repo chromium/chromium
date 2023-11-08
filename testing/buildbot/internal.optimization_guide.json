@@ -268,7 +268,115 @@
       }
     ]
   },
-  "optimization_guide-mac": {
+  "optimization_guide-mac-arm64": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_browser_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
+          "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_components_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "optimization_guide_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "optimization_guide_unittests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "model_validation_tests MODEL_VALIDATION_BASE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "model_validation_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
+        "variant_id": "MODEL_VALIDATION_BASE"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "Chromium.app/Contents/MacOS/Chromium"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "model_validation_tests MODEL_VALIDATION_TRUNK",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "model_validation_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
+        "variant_id": "MODEL_VALIDATION_TRUNK"
+      }
+    ]
+  },
+  "optimization_guide-mac-x64": {
     "gtest_tests": [
       {
         "args": [
@@ -281,7 +389,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Mac-10.15",
+            "os": "Mac-13",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -300,7 +408,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Mac-10.15",
+            "os": "Mac-13",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -316,7 +424,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Mac-10.15",
+            "os": "Mac-13",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -338,7 +446,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Mac-10.15",
+            "os": "Mac-13",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -365,7 +473,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Mac-10.15",
+            "os": "Mac-13",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"

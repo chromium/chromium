@@ -6869,10 +6869,21 @@
         },
         'os_type': 'linux',
       },
-      'optimization_guide-mac': {
+      'optimization_guide-mac-arm64': {
         'mixins': [
           'chrome-swarming-pool',
-          'mac_10.15',
+          'mac_default_arm64',
+        ],
+        'test_suites': {
+           'gtest_tests': 'optimization_guide_gtests',
+           'isolated_scripts': 'model_validation_tests_full',
+        },
+        'os_type': 'mac',
+      },
+      'optimization_guide-mac-x64': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'mac_default_x64',
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_gtests',
