@@ -59,6 +59,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApk.Database.WriteResult" units="boolean"
+    expires_after="2024-06-01">
+  <owner>hartmanng@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>Records the write result (boolean) in WebApkDatabase.</summary>
+</histogram>
+
 <histogram name="WebApk.Install.AvailableSpace.Fail" units="MB"
     expires_after="2023-12-01">
   <owner>hartmanng@chromium.org</owner>

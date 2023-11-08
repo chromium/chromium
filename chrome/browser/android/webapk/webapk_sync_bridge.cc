@@ -7,7 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_registry_update.h"
+#include "chrome/browser/android/webapk/webapk_specifics_fetcher.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -96,15 +99,18 @@ WebApkSyncBridge::WebApkSyncBridge(
               syncer::WEB_APPS,
               base::BindRepeating(&syncer::ReportUnrecoverableError,
                                   chrome::GetChannel())),
-          std::make_unique<base::DefaultClock>()) {}
+          std::make_unique<base::DefaultClock>(),
+          std::make_unique<WebApkSpecificsFetcher>()) {}
 
 WebApkSyncBridge::WebApkSyncBridge(
     AbstractWebApkDatabaseFactory* database_factory,
     base::OnceClosure on_initialized,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-    std::unique_ptr<base::Clock> clock)
+    std::unique_ptr<base::Clock> clock,
+    std::unique_ptr<AbstractWebApkSpecificsFetcher> specifics_fetcher)
     : syncer::ModelTypeSyncBridge(std::move(change_processor)),
-      clock_(std::move(clock)) {
+      clock_(std::move(clock)),
+      webapk_specifics_fetcher_(std::move(specifics_fetcher)) {
   CHECK(database_factory);
   database_ = std::make_unique<WebApkDatabase>(
       database_factory,
@@ -227,10 +233,108 @@ void WebApkSyncBridge::PrepareRegistryUpdateFromInstalledAndSyncApps(
   }
 }
 
+void WebApkSyncBridge::SendInstalledAndRegistryAppsToSync(
+    const std::vector<const sync_pb::WebApkSpecifics*>&
+        sync_update_from_installed,
+    const std::unique_ptr<RegistryUpdateData>&
+        registry_update_from_installed_and_sync,
+    syncer::MetadataChangeList* metadata_change_list) {
+  for (const sync_pb::WebApkSpecifics* sync_update :
+       sync_update_from_installed) {
+    webapps::AppId app_id = ManifestIdStrToAppId(sync_update->manifest_id());
+    change_processor()->Put(app_id,
+                            CreateSyncEntityDataFromSpecifics(*sync_update),
+                            metadata_change_list);
+  }
+
+  std::set<webapps::AppId> registry_update_from_installed_and_sync_set;
+  for (const auto& registry_update :
+       registry_update_from_installed_and_sync->apps_to_create) {
+    webapps::AppId app_id =
+        ManifestIdStrToAppId(registry_update->sync_data().manifest_id());
+    registry_update_from_installed_and_sync_set.insert(app_id);
+  }
+  for (const webapps::AppId& registry_update :
+       registry_update_from_installed_and_sync->apps_to_delete) {
+    registry_update_from_installed_and_sync_set.insert(registry_update);
+  }
+
+  for (const auto& registry_entry : registry_) {
+    const webapps::AppId& app_id = registry_entry.first;
+    const std::unique_ptr<WebApkProto>& app = registry_entry.second;
+
+    if (registry_update_from_installed_and_sync_set.count(app_id) != 0) {
+      continue;
+    }
+
+    change_processor()->Put(app_id,
+                            CreateSyncEntityDataFromSpecifics(app->sync_data()),
+                            metadata_change_list);
+  }
+}
+
+void WebApkSyncBridge::OnDataWritten(CommitCallback callback, bool success) {
+  if (!success) {
+    DLOG(ERROR) << "WebApkSyncBridge commit failed";
+  }
+
+  base::UmaHistogramBoolean("WebApk.Database.WriteResult", success);
+  std::move(callback).Run(success);
+}
+
+void WebApkSyncBridge::ApplyIncrementalSyncChangesToRegistry(
+    std::unique_ptr<RegistryUpdateData> update_data) {
+  if (update_data->isEmpty()) {
+    return;
+  }
+
+  for (auto& app : update_data->apps_to_create) {
+    webapps::AppId app_id =
+        ManifestIdStrToAppId(app->sync_data().manifest_id());
+    auto it = registry_.find(app_id);
+    if (it != registry_.end()) {
+      registry_.erase(it);
+    }
+    registry_.emplace(std::move(app_id), std::move(app));
+  }
+
+  for (const webapps::AppId& app_id : update_data->apps_to_delete) {
+    auto it = registry_.find(app_id);
+    CHECK(it != registry_.end());
+    registry_.erase(it);
+  }
+}
+
 absl::optional<syncer::ModelError> WebApkSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  // TODO(hartmanng): implement
+  CHECK(change_processor()->IsTrackingMetadata());
+
+  std::vector<std::unique_ptr<sync_pb::WebApkSpecifics>> installed_apps =
+      webapk_specifics_fetcher_->GetWebApkSpecifics();
+
+  std::vector<const sync_pb::WebApkSpecifics*> sync_update_from_installed;
+  PrepareSyncUpdateFromInstalledApps(installed_apps, entity_changes,
+                                     &sync_update_from_installed);
+
+  std::unique_ptr<RegistryUpdateData> registry_update_from_installed_and_sync =
+      std::make_unique<RegistryUpdateData>();
+  PrepareRegistryUpdateFromInstalledAndSyncApps(
+      sync_update_from_installed, entity_changes,
+      registry_update_from_installed_and_sync.get());
+
+  SendInstalledAndRegistryAppsToSync(sync_update_from_installed,
+                                     registry_update_from_installed_and_sync,
+                                     metadata_change_list.get());
+
+  database_->Write(
+      *registry_update_from_installed_and_sync, std::move(metadata_change_list),
+      base::BindOnce(&WebApkSyncBridge::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
+
+  ApplyIncrementalSyncChangesToRegistry(
+      std::move(registry_update_from_installed_and_sync));
+
   return absl::nullopt;
 }
 
@@ -282,6 +386,10 @@ std::string WebApkSyncBridge::GetClientTag(
 std::string WebApkSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
   return GetClientTag(entity_data);
+}
+
+const Registry& WebApkSyncBridge::GetRegistryForTesting() const {
+  return registry_;
 }
 
 }  // namespace webapk
