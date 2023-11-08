@@ -7,8 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#include <optional>
+
 #include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -33,7 +34,7 @@ class ApplicationBreadcrumbsLogger
   id<NSObject> orientation_observer_;
 
   // Used to avoid logging the same orientation twice.
-  absl::optional<UIDeviceOrientation> last_orientation_;
+  std::optional<UIDeviceOrientation> last_orientation_;
 };
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_BREADCRUMBS_APPLICATION_BREADCRUMBS_LOGGER_H_

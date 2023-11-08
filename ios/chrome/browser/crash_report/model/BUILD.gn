@@ -42,7 +42,6 @@ source_set("model") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/crash_report",
     "//ios/web",
-    "//third_party/abseil-cpp:absl",
   ]
 }
 
