@@ -366,6 +366,19 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     // See comments on the ResetFDOwnership() declaration in
     // base/files/scoped_file.h regarding why this is called early here.
     subtle::ResetFDOwnership();
+
+    // The parent process might set FD_CLOEXEC flag on certain file
+    // descriptors to prevent them leaking into child processes of the
+    // embedder application. Remove the flag from the file descriptors
+    // which meant to be inherited by the child process.
+    //
+    // Cannot use STL iterators here, since debug iterators use locks.
+    // NOLINTNEXTLINE(modernize-loop-convert)
+    for (size_t i = 0; i < options.fds_to_remove_cloexec.size(); ++i) {
+      if (!RemoveCloseOnExec(options.fds_to_remove_cloexec[i])) {
+        RAW_LOG(WARNING, "Failed to remove FD_CLOEXEC flag");
+      }
+    }
 #endif
 
     {

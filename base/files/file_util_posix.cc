@@ -468,6 +468,20 @@ bool SetCloseOnExec(int fd) {
   return true;
 }
 
+bool RemoveCloseOnExec(int fd) {
+  const int flags = fcntl(fd, F_GETFD);
+  if (flags == -1) {
+    return false;
+  }
+  if ((flags & FD_CLOEXEC) == 0) {
+    return true;
+  }
+  if (fcntl(fd, F_SETFD, flags & ~FD_CLOEXEC) == -1) {
+    return false;
+  }
+  return true;
+}
+
 bool PathExists(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 #if BUILDFLAG(IS_ANDROID)
