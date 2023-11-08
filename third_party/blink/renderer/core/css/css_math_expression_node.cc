@@ -575,8 +575,17 @@ CSSMathExpressionNode* MaybeDistributeArithmeticOperation(
     auto* new_right_side =
         CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
             left_operation->GetOperands().back(), right_side, op);
-    return CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
-        new_left_side, new_right_side, left_operation->OperatorType());
+    CSSMathExpressionNode* operation =
+        CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+            new_left_side, new_right_side, left_operation->OperatorType());
+    // Note: setting SetIsNestedCalc is needed, as we can be in this situation:
+    // A - B * (C + D)
+    //     /\/\/\/\/\ - we are B * (C + D)
+    // and we don't know about the -, as it's another operation,
+    // so make the simplified operation nested to end up with:
+    // A - (B * C + B * D).
+    operation->SetIsNestedCalc();
+    return operation;
   }
   // Case Num * (Op1 + Op2). But don't do num / (Op1 + Op2), as it can invert
   // the type.
@@ -592,8 +601,17 @@ CSSMathExpressionNode* MaybeDistributeArithmeticOperation(
     auto* new_left_side =
         CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
             left_side, right_operation->GetOperands().back(), op);
-    return CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
-        new_right_side, new_left_side, right_operation->OperatorType());
+    CSSMathExpressionNode* operation =
+        CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+            new_right_side, new_left_side, right_operation->OperatorType());
+    // Note: setting SetIsNestedCalc is needed, as we can be in this situation:
+    // A - (C + D) * B
+    //     /\/\/\/\/\ - we are (C + D) * B
+    // and we don't know about the -, as it's another operation,
+    // so make the simplified operation nested to end up with:
+    // A - (B * C + B * D).
+    operation->SetIsNestedCalc();
+    return operation;
   }
   return nullptr;
 }
