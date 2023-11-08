@@ -123,10 +123,8 @@ class DevToolsEmbedderMessageDispatcher {
                             const std::string& trigger) = 0;
     virtual void CanShowSurvey(DispatchCallback callback,
                                const std::string& trigger) = 0;
-#if defined(AIDA_SCOPE)
     virtual void DoAidaConversation(DispatchCallback callback,
                                     const std::string& request) = 0;
-#endif
   };
 
   using DispatchCallback = Delegate::DispatchCallback;

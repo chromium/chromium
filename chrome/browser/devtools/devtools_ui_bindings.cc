@@ -360,11 +360,11 @@ std::string SanitizeFrontendQueryParam(
     return value;
   }
 
-#if defined(AIDA_SCOPE)
-  if (key == "enableAida" && value == "true") {
-    return value;
+  if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
+    if (key == "enableAida" && value == "true") {
+      return value;
+    }
   }
-#endif
 
   return std::string();
 }
@@ -803,8 +803,7 @@ void DevToolsUIBindings::SetIsDocked(DispatchCallback callback,
   std::move(callback).Run(nullptr);
 }
 
-#if defined(AIDA_SCOPE)
-void DevToolsUIBindings::OnAidaConverstaionResponse(
+void DevToolsUIBindings::OnAidaConversationResponse(
     DispatchCallback callback,
     const std::string& response) {
   base::Value::Dict response_dict;
@@ -812,7 +811,6 @@ void DevToolsUIBindings::OnAidaConverstaionResponse(
   auto response_value = base::Value(std::move(response_dict));
   std::move(callback).Run(&response_value);
 }
-#endif
 
 void DevToolsUIBindings::InspectElementCompleted() {
   delegate_->InspectElementCompleted();
@@ -1748,9 +1746,11 @@ void DevToolsUIBindings::CanShowSurvey(DispatchCallback callback,
   std::move(callback).Run(&response);
 }
 
-#if defined(AIDA_SCOPE)
 void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
                                             const std::string& request) {
+  if (!base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
+    return;
+  }
   if (!aida_client_) {
     aida_client_ = std::make_unique<AidaClient>(
         profile_, DevToolsWindow::AsDevToolsWindow(web_contents_)
@@ -1760,10 +1760,9 @@ void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
                       ->GetURLLoaderFactoryForBrowserProcess());
   }
   aida_client_->DoConversation(
-      request, base::BindOnce(&DevToolsUIBindings::OnAidaConverstaionResponse,
+      request, base::BindOnce(&DevToolsUIBindings::OnAidaConversationResponse,
                               base::Unretained(this), std::move(callback)));
 }
-#endif
 
 void DevToolsUIBindings::SetDelegate(Delegate* delegate) {
   delegate_.reset(delegate);

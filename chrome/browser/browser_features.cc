@@ -52,6 +52,16 @@ BASE_FEATURE(kDevToolsVeLogging,
              "DevToolsVeLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Let the DevTools front-end query an AIDA endpoint for explanations and
+// insights regarding console (error) messages.
+BASE_FEATURE(kDevToolsConsoleInsights,
+             "DevToolsConsoleInsights",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope{
+    &kDevToolsConsoleInsights, "aida_scope", /*default*/ ""};
+const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaEndpoint{
+    &kDevToolsConsoleInsights, "aida_endpoint", /*default*/ ""};
+
 // Nukes profile directory before creating a new profile using
 // ProfileManager::CreateMultiProfileAsync().
 BASE_FEATURE(kNukeProfileBeforeCreateMultiAsync,

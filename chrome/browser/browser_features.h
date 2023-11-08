@@ -25,6 +25,10 @@ BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
 BASE_DECLARE_FEATURE(kDevToolsTabTarget);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);
+BASE_DECLARE_FEATURE(kDevToolsConsoleInsights);
+extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope;
+extern const base::FeatureParam<std::string>
+    kDevToolsConsoleInsightsAidaEndpoint;
 
 BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
 

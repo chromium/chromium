@@ -1226,8 +1226,10 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       if (base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
         url += "&veLogging=true";
       }
-#if defined(AIDA_SCOPE)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
         url += "&enableAida=true";
+      }
 #endif
       break;
     case kFrontendWorker:

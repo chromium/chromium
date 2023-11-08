@@ -13,6 +13,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/devtools/aida_client.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/devtools/devtools_embedder_message_dispatcher.h"
 #include "chrome/browser/devtools/devtools_file_helper.h"
@@ -25,10 +26,6 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
 #include "ui/gfx/geometry/size.h"
-
-#if defined(AIDA_SCOPE)
-#include "chrome/browser/devtools/aida_client.h"
-#endif
 
 class DevToolsAndroidBridge;
 class PortForwardingStatusSerializer;
@@ -209,10 +206,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                   const std::string& trigger) override;
   void CanShowSurvey(DispatchCallback callback,
                      const std::string& trigger) override;
-#if defined(AIDA_SCOPE)
   void DoAidaConversation(DispatchCallback callback,
                           const std::string& request) override;
-#endif
 
   void EnableRemoteDeviceCounter(bool enable);
 
@@ -270,10 +265,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   static DevToolsUIBindingsList& GetDevToolsUIBindings();
 
-#if defined(AIDA_SCOPE)
-  void OnAidaConverstaionResponse(DispatchCallback callback,
+  void OnAidaConversationResponse(DispatchCallback callback,
                                   const std::string& response);
-#endif
   class FrontendWebContentsObserver;
   std::unique_ptr<FrontendWebContentsObserver> frontend_contents_observer_;
 
@@ -311,9 +304,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   DevToolsSettings settings_;
   base::TimeTicks last_action_time_;
 
-#if defined(AIDA_SCOPE)
   std::unique_ptr<AidaClient> aida_client_;
-#endif
   base::WeakPtrFactory<DevToolsUIBindings> weak_factory_{this};
 };
 

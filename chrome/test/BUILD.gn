@@ -12,7 +12,6 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/toolchain.gni")
 import("//chrome/browser/buildflags.gni")
-import("//chrome/browser/devtools/buildflags.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/jsdeps.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/sources.gni")
@@ -7517,6 +7516,7 @@ test("unit_tests") {
       "../browser/device_notifications/device_system_tray_icon_unittest.h",
       "../browser/device_notifications/device_test_utils.cc",
       "../browser/device_notifications/device_test_utils.h",
+      "../browser/devtools/aida_client_unittest.cc",
       "../browser/devtools/devtools_file_system_indexer_unittest.cc",
       "../browser/devtools/devtools_file_watcher_unittest.cc",
       "../browser/devtools/devtools_settings_unittest.cc",
@@ -8078,10 +8078,6 @@ test("unit_tests") {
     }
     if (is_posix) {
       sources += [ "../browser/process_singleton_posix_unittest.cc" ]
-    }
-
-    if (enable_aida) {
-      sources += [ "../browser/devtools/aida_client_unittest.cc" ]
     }
 
     if (is_linux) {

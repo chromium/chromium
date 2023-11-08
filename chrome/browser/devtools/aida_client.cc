@@ -7,6 +7,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/string_escape.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/load_flags.h"
@@ -16,21 +17,13 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if !defined(AIDA_ENDPOINT)
-#define AIDA_ENDPOINT ""
-#endif
-
-#if !defined(AIDA_SCOPE)
-#define AIDA_SCOPE ""
-#endif
-
 AidaClient::AidaClient(
     Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : profile_(*profile),
       url_loader_factory_(url_loader_factory),
-      aida_endpoint_(AIDA_ENDPOINT),
-      aida_scope_(AIDA_SCOPE) {}
+      aida_endpoint_(features::kDevToolsConsoleInsightsAidaEndpoint.Get()),
+      aida_scope_(features::kDevToolsConsoleInsightsAidaScope.Get()) {}
 
 AidaClient::~AidaClient() = default;
 
