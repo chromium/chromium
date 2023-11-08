@@ -32,7 +32,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Unit tests for {@link ExpandedPlayerCoordinator}. */
+/** Unit tests for {@link ExpandedPlayerCoordinator} and ExpandedPlayerViewBinder. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ExpandedPlayerCoordinatorUnitTest {
@@ -121,6 +121,20 @@ public class ExpandedPlayerCoordinatorUnitTest {
         mModel.set(PlayerProperties.PUBLISHER, "publisher");
         verify(mSheetContent).setPublisher("publisher");
         assertTrue(mModel.get(PlayerProperties.PUBLISHER).equals("publisher"));
+    }
+
+    @Test
+    public void testBindElapsed() {
+        mModel.set(PlayerProperties.ELAPSED_NANOS, 20L);
+        verify(mSheetContent).setElapsed(20L);
+        assertTrue(mModel.get(PlayerProperties.ELAPSED_NANOS).equals(20L));
+    }
+
+    @Test
+    public void testBindDuration() {
+        mModel.set(PlayerProperties.DURATION_NANOS, 30L);
+        verify(mSheetContent).setDuration(30L);
+        assertTrue(mModel.get(PlayerProperties.DURATION_NANOS).equals(30L));
     }
 
     @Test

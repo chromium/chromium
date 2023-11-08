@@ -37,6 +37,10 @@ public class ExpandedPlayerViewBinder {
                     model.get(PlayerProperties.PLAYBACK_STATE) == PlaybackListener.State.PLAYING);
         } else if (key == PlayerProperties.SPEED) {
             content.setSpeed(model.get(PlayerProperties.SPEED));
+        } else if (key == PlayerProperties.ELAPSED_NANOS) {
+            content.setElapsed(model.get(PlayerProperties.ELAPSED_NANOS));
+        } else if (key == PlayerProperties.DURATION_NANOS) {
+            content.setDuration(model.get(PlayerProperties.DURATION_NANOS));
         } else if (key == PlayerProperties.INTERACTION_HANDLER) {
             content.setInteractionHandler(model.get(PlayerProperties.INTERACTION_HANDLER));
         }

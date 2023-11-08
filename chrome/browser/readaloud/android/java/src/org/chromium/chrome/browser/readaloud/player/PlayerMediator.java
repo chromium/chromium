@@ -30,6 +30,8 @@ class PlayerMediator implements InteractionHandler {
                 @Override
                 public void onPlaybackDataChanged(PlaybackData data) {
                     setPlaybackState(data.state());
+                    mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
+                    mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
                     float percent =
                             (float) data.absolutePositionNanos()
                                     / (float) data.totalDurationNanos();

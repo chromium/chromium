@@ -118,6 +118,39 @@ public class ExpandedPlayerSheetContentUnitTest {
     }
 
     @Test
+    public void testSetElapsed() {
+        mContent.setElapsed(1_000_000_000L * 20);
+        assertEquals(
+                "00:20",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_time)).getText());
+        mContent.setElapsed(1_000_000_000L * 123);
+        assertEquals(
+                "02:03",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_time)).getText());
+
+        mContent.setElapsed(1_000_000_000L * -30);
+        assertEquals(
+                "00:00",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_time)).getText());
+    }
+
+    @Test
+    public void testSetDuration() {
+        mContent.setDuration(1_000_000_000L * 20);
+        assertEquals(
+                "00:20",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_duration)).getText());
+        mContent.setDuration(1_000_000_000L * 12345);
+        assertEquals(
+                "3:25:45",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_duration)).getText());
+        mContent.setDuration(1_000_000_000L * -100);
+        assertEquals(
+                "00:00",
+                ((TextView) mContentView.findViewById(R.id.readaloud_player_duration)).getText());
+    }
+
+    @Test
     public void testSetSpeed() {
         mContent.setSpeed(0.5f);
         assertEquals("0.5x", mSpeedView.getText());

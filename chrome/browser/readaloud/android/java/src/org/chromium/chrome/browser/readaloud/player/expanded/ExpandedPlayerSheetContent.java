@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -84,6 +85,25 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     void setPublisher(String publisher) {
         ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher))
                 .setText(publisher);
+    }
+
+    void setElapsed(Long nanos) {
+        ((TextView) mContentView.findViewById(R.id.readaloud_player_time))
+                .setText(formatTimeNanos(nanos));
+    }
+
+    void setDuration(Long nanos) {
+        ((TextView) mContentView.findViewById(R.id.readaloud_player_duration))
+                .setText(formatTimeNanos(nanos));
+    }
+
+    private static String formatTimeNanos(long nanos) {
+        if (nanos <= 0) {
+            return DateUtils.formatElapsedTime(0);
+        }
+        final long nanosPerSecond = 1_000_000_000L;
+        long seconds = nanos / nanosPerSecond;
+        return DateUtils.formatElapsedTime(seconds);
     }
 
     void setInteractionHandler(InteractionHandler handler) {
