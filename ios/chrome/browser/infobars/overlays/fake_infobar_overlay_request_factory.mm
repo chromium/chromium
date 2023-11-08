@@ -6,8 +6,8 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 
 std::unique_ptr<OverlayRequest> FakeInfobarOverlayRequestFactory(
     InfoBarIOS* infobar_ios,

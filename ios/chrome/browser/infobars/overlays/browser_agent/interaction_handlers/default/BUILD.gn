@@ -12,6 +12,6 @@ source_set("default") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common",
-    "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/overlays/model/public/default",
   ]
 }

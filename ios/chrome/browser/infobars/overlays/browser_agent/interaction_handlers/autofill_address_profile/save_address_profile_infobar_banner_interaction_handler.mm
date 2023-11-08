@@ -6,7 +6,7 @@
 
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileBannerRequestConfig;

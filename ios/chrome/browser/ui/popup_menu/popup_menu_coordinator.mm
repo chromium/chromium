@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"

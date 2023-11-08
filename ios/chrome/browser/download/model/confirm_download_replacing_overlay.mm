@@ -6,7 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response_util.h"
+#import "ios/chrome/browser/overlays/model/public/common/confirmation/confirmation_overlay_response_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

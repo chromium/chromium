@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/overlays/test_modality/test_resizing_presented_overlay_coordinator.h"
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/test_modality/test_resizing_presented_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/test_modality/test_resizing_presented_overlay_request_config.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/overlays/test/fake_overlay_request_coordinator_delegate.h"

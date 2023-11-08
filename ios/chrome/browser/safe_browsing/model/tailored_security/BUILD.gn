@@ -22,7 +22,7 @@ source_set("tailored_security") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync/model",

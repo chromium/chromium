@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_COMMON_INFOBAR_MODAL_OVERLAY_REQUEST_CALLBACK_INSTALLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_callback_installer.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_request_callback_installer.h"
 
 class InfobarModalInteractionHandler;
 

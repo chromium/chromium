@@ -9,9 +9,9 @@
 
 #import "base/functional/bind.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 
 @interface OverlayRequestMediator ()
 // Redefine property as readwrite.

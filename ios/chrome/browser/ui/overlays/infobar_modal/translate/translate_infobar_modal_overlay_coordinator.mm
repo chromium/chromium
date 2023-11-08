@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_translate_language_selection_delegate.h"

@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 

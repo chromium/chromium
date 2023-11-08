@@ -6,9 +6,9 @@
 
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/chrome/browser/overlays/test/fake_overlay_request_cancel_handler.h"
+#import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/test/fake_overlay_request_cancel_handler.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"

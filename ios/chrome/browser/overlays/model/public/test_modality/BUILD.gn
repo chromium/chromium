@@ -1,0 +1,20 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_modality") {
+  testonly = true
+  sources = [
+    "test_contained_overlay_request_config.h",
+    "test_contained_overlay_request_config.mm",
+    "test_presented_overlay_request_config.h",
+    "test_presented_overlay_request_config.mm",
+    "test_resizing_presented_overlay_request_config.h",
+    "test_resizing_presented_overlay_request_config.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/overlays/model",
+  ]
+}

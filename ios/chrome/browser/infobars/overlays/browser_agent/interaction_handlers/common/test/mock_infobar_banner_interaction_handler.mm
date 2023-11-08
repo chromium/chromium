@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/test/mock_infobar_banner_interaction_handler.h"
 
-#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 
 MockInfobarBannerInteractionHandler::MockInfobarBannerInteractionHandler()
     : InfobarBannerInteractionHandler(OverlayRequestSupport::All()) {}

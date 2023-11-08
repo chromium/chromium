@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/scoped_observation.h"
-#import "ios/chrome/browser/overlays/public/overlay_modality.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer.h"
 
 class Browser;
 class AnimatedScopedFullscreenDisabler;

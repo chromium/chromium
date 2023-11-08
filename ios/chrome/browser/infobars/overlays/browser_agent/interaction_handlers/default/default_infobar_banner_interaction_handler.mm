@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/default/default_infobar_banner_interaction_handler.h"
 
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 
 DefaultInfobarBannerInteractionHandler::DefaultInfobarBannerInteractionHandler(
     InfobarType infobar_type)

@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_callback_installer.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_request_callback_installer.h"
 
 class InfoBarIOS;
 class OverlayRequestQueueCallbackInstaller;

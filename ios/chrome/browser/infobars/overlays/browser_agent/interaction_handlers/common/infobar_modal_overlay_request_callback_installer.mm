@@ -9,10 +9,10 @@
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_modal_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
-#import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
-#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#import "ios/chrome/browser/overlays/public/overlay_dispatch_callback.h"
+#import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_modal/infobar_modal_overlay_responses.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_dispatch_callback.h"
 
 InfobarModalOverlayRequestCallbackInstaller::
     InfobarModalOverlayRequestCallbackInstaller(

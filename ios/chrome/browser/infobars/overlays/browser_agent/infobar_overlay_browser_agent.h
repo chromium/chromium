@@ -10,9 +10,9 @@
 
 #import "base/scoped_multi_source_observation.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/overlays/public/overlay_browser_agent_base.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_browser_agent_base.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
 class InfobarInteractionHandler;

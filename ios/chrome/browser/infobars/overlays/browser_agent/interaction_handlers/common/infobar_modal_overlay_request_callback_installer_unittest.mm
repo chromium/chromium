@@ -6,12 +6,12 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/test/mock_infobar_modal_interaction_handler.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
-#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_modal/infobar_modal_overlay_responses.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 

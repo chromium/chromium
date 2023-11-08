@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/parcel_tracking/parcel_tracking_infobar_banner_overlay_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

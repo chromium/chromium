@@ -12,11 +12,11 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_modal_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_factory.h"
-#import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_modality.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_placeholder_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 
 WEB_STATE_USER_DATA_KEY_IMPL(InfobarOverlayRequestInserter)
 

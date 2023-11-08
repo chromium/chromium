@@ -12,6 +12,6 @@ source_set("interaction_handlers") {
   deps = [
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/overlays:overlay_type",
-    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/model",
   ]
 }

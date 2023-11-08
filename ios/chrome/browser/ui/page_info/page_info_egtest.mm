@@ -8,7 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_branded_strings.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/permissions/permissions_app_interface.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"

@@ -7,7 +7,7 @@
 #import "base/notreached.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
 
 using confirm_infobar_overlays::ConfirmBannerRequestConfig;
 

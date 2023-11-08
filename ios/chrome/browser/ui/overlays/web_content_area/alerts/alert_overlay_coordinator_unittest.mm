@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_coordinator.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
-#import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
+#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/alert_view/alert_action.h"

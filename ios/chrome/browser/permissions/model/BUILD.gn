@@ -21,10 +21,10 @@ source_set("tab_helper") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/overlays",
     "//ios/chrome/browser/infobars/overlays:util",
-    "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/overlays/public/common/infobars",
-    "//ios/chrome/browser/overlays/public/infobar_banner",
-    "//ios/chrome/browser/overlays/public/web_content_area",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/web/public",
   ]
 }

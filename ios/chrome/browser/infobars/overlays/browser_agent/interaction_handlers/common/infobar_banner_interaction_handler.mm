@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_banner_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 
 namespace {
 infobars::InfoBarDelegate* GetInfobarDelegate(InfoBarIOS* infobar) {

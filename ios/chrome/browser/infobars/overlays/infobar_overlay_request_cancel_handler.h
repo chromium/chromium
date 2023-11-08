@@ -7,7 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_cancel_handler.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_cancel_handler.h"
 
 class InfoBarIOS;
 

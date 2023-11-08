@@ -43,7 +43,7 @@ source_set("toolbar") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:util",
-    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/reading_list/model",

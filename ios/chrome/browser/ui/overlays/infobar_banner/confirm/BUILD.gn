@@ -10,8 +10,8 @@ source_set("confirm") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_banner:mediators",
@@ -29,9 +29,9 @@ source_set("unit_tests") {
     "//components/infobars/core",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",
-    "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/overlays/public/infobar_banner",
-    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/model/test",
     "//ios/chrome/browser/ui/infobars/banners/test",
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/browser/ui/overlays/test",
