@@ -206,6 +206,11 @@ PageSchedulerImpl::~PageSchedulerImpl() {
   main_thread_scheduler_->RemovePageScheduler(this);
 }
 
+void
+PageSchedulerImpl::BreakLinkages() {
+  delegate_ = nullptr;
+}
+
 // static
 // kRecentAudioDelay is defined in the header for use in unit tests and requires
 // storage for linking to succeed with some compiler toolchains.

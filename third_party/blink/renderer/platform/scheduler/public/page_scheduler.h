@@ -42,6 +42,8 @@ class PLATFORM_EXPORT PageScheduler {
 
   virtual ~PageScheduler() = default;
 
+  virtual void BreakLinkages() = 0;
+
   // Signals that communications with the user took place via either a title
   // updates or a change to the favicon.
   virtual void OnTitleOrFaviconUpdated() = 0;

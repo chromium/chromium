@@ -59,6 +59,8 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   ~PageSchedulerImpl() override;
 
   // PageScheduler implementation:
+  void BreakLinkages() override;
+
   void OnTitleOrFaviconUpdated() override;
   void SetPageVisible(bool page_visible) override;
   void SetPageFrozen(bool) override;

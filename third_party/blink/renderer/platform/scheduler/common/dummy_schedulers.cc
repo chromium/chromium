@@ -166,6 +166,7 @@ class DummyPageScheduler : public PageScheduler {
     return CreateDummyFrameScheduler();
   }
 
+  void BreakLinkages() override {}
   void OnTitleOrFaviconUpdated() override {}
   void SetPageVisible(bool) override {}
   void SetPageFrozen(bool) override {}

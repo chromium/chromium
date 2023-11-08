@@ -1027,7 +1027,12 @@ void Page::WillBeDestroyed() {
     // we leak the scheduler, so the finalizer does not touch the recording
     // stream.
     // https://linear.app/replay/issue/RUN-1347#comment-bc4e3f9d
-    page_scheduler_.release();
+    PageScheduler* s = page_scheduler_.release();
+
+    // We're about to destroy this page, which acts as the page scheduler's
+    // delegate.  Make sure we break that linkage before we go away.
+    // https://linear.app/replay/issue/RUN-2733
+    s->BreakLinkages();
   }
 
   page_scheduler_ = nullptr;
