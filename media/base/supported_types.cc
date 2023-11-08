@@ -293,8 +293,8 @@ bool IsAV1Supported(const VideoType& type) {
 }
 
 bool IsMPEG4Supported() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return true;
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+  return base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats);
 #else
   return false;
 #endif
@@ -351,9 +351,10 @@ bool IsDefaultSupportedVideoType(const VideoType& type) {
 #endif
 
   switch (type.codec) {
+    case VideoCodec::kTheora:
+      return IsBuiltInVideoCodec(type.codec);
     case VideoCodec::kH264:
     case VideoCodec::kVP8:
-    case VideoCodec::kTheora:
       return true;
     case VideoCodec::kAV1:
       return IsAV1Supported(type);
@@ -423,7 +424,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
 bool IsBuiltInVideoCodec(VideoCodec codec) {
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   if (codec == VideoCodec::kTheora)
-    return true;
+    return base::FeatureList::IsEnabled(kTheoraVideoCodec);
   if (codec == VideoCodec::kVP8)
     return true;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)

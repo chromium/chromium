@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -24,11 +25,21 @@ const bool kPropCodecsEnabled = true;
 const bool kPropCodecsEnabled = false;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-const bool kMpeg4Supported = true;
+bool IsTheoraSupported() {
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  return base::FeatureList::IsEnabled(kTheoraVideoCodec);
 #else
-const bool kMpeg4Supported = false;
+  return false;
 #endif
+}
+
+bool IsMPEG4Supported() {
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+  return base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats);
+#else
+  return false;
+#endif
+}
 
 TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
   // Default to common 709.
@@ -42,7 +53,8 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, kColorSpace}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, kColorSpace}));
-  EXPECT_TRUE(
+  EXPECT_EQ(
+      IsTheoraSupported(),
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
 
@@ -62,7 +74,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
             IsSupportedVideoType(
                 {VideoCodec::kH264, H264PROFILE_BASELINE, 1, kColorSpace}));
   EXPECT_EQ(
-      kMpeg4Supported,
+      IsMPEG4Supported(),
       IsSupportedVideoType({VideoCodec::kMPEG4, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
 
@@ -292,7 +304,8 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_TRUE(
+  EXPECT_EQ(
+      IsTheoraSupported(),
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
 
@@ -304,7 +317,8 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_TRUE(
+  EXPECT_EQ(
+      IsTheoraSupported(),
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
 
@@ -314,7 +328,8 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_TRUE(
+  EXPECT_EQ(
+      IsTheoraSupported(),
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
 
@@ -341,7 +356,7 @@ TEST(SupportedTypesTest, IsBuiltInVideoCodec) {
         // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kTheora));
+  EXPECT_EQ(IsTheoraSupported(), IsBuiltInVideoCodec(VideoCodec::kTheora));
 #else
   EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kTheora));
 #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
