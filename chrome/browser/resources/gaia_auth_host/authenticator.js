@@ -1021,7 +1021,8 @@ export class Authenticator extends EventTarget {
   }
 
   /**
-   * Returns true if given HTML5 message is received from the webview element.
+   * Returns true if given HTML5 message is received from `this.idpOrigin_` -
+   * which is usually Gaia.
    * @param {Object} e Payload of the received HTML5 message.
    */
   isGaiaMessage_(e) {
@@ -1029,7 +1030,8 @@ export class Authenticator extends EventTarget {
       return false;
     }
 
-    // The event origin does not have a trailing slash.
+    // The event origin does not have a trailing slash, while `idpOrigin_` does.
+    // Strip the trailing slash from `idpOrigin_` before comparison.
     if (e.origin !== this.idpOrigin_.substring(0, this.idpOrigin_.length - 1)) {
       return false;
     }
