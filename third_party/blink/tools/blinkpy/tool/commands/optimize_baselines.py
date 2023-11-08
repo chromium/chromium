@@ -6,7 +6,7 @@ import functools
 import itertools
 import logging
 import optparse
-from typing import Collection, List, Optional, Set, Tuple
+from typing import Collection, List, Set, Tuple
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
 from blinkpy.common.net.web_test_results import BaselineSuffix
@@ -90,25 +90,9 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
             suffixes: Collection[BaselineSuffix]) -> List[OptimizationTask]:
         tasks = []
         for test_name, suffix in itertools.product(sorted(test_set), suffixes):
-            wpt_type = self._get_wpt_type(test_name)
-            if (not wpt_type or
-                    # Only legacy reftests can dump text output, not WPT
-                    # reftests.
-                    wpt_type in {'testharness', 'wdspec'} and suffix == 'txt'
-                    # Some manual tests are run as pixel tests (crbug.com/1114920),
-                    # so `png` is allowed in that case.
-                    or wpt_type == 'manual' and suffix == 'png'):
+            if self._test_can_have_suffix(test_name, suffix):
                 tasks.append((self.name, test_name, suffix))
         return tasks
-
-    def _get_wpt_type(self, test_name: str) -> Optional[str]:
-        for wpt_dir, url_base in self._host_port.WPT_DIRS.items():
-            if test_name.startswith(wpt_dir):
-                manifest = self._host_port.wpt_manifest(wpt_dir)
-                return manifest.get_test_type(
-                    manifest.file_path_for_test_url(
-                        test_name[len(f'{wpt_dir}/'):]))
-        return None  # Not a WPT.
 
     def _get_test_set(self, options, args):
         if options.all_tests:

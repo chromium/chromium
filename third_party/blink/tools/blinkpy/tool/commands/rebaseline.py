@@ -150,6 +150,30 @@ class AbstractRebaseliningCommand(Command):
         return self._host_port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_EXPECTED, '.' + suffix)
 
+    def _test_can_have_suffix(self, test_name: str,
+                              suffix: BaselineSuffix) -> bool:
+        wpt_type = self._get_wpt_type(test_name)
+        # Only legacy reftests can dump text output, not WPT reftests.
+        if wpt_type in {'testharness', 'wdspec'} and suffix == 'txt':
+            return True
+        # Some manual tests are run as pixel tests (crbug.com/1114920), so
+        # `png` is allowed in that case.
+        elif wpt_type == 'manual' and suffix == 'png':
+            return True
+        elif self._host_port.reference_files(test_name) and suffix == 'png':
+            return False
+        # No other WPT-suffix combinations are allowed.
+        return not wpt_type
+
+    def _get_wpt_type(self, test_name: str) -> Optional[str]:
+        for wpt_dir, url_base in self._host_port.WPT_DIRS.items():
+            if test_name.startswith(wpt_dir):
+                manifest = self._host_port.wpt_manifest(wpt_dir)
+                return manifest.get_test_type(
+                    manifest.file_path_for_test_url(
+                        test_name[len(f'{wpt_dir}/'):]))
+        return None  # Not a WPT.
+
 
 class ChangeSet(object):
     """A record of TestExpectation lines to remove.
@@ -376,10 +400,14 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 | set(build_steps_to_fallback_paths[False]))
 
     def _copy_baselines(self, groups: Dict[str, TestBaselineSet]) -> None:
+        commands = []
+        for base_test, group in groups.items():
+            for suffix in self._suffixes_for_group(group):
+                if self._test_can_have_suffix(base_test, suffix):
+                    commands.append(
+                        ('copy_baselines', base_test, suffix, group))
         with self._message_pool(self._worker_factory) as pool:
-            pool.run([('copy_baselines', test, suffix, group)
-                      for test, group in groups.items()
-                      for suffix in self._suffixes_for_group(group)])
+            pool.run(commands)
 
     def _group_tests_by_base(
         self,
@@ -803,7 +831,7 @@ class BaselineLoader:
         return contents
 
     def choose_valid_baseline(self, artifacts: List[Artifact], test_name: str,
-                              suffix: str) -> bytes:
+                              suffix: BaselineSuffix) -> bytes:
         """Choose a baseline that would have allowed the observed runs to pass.
 
         Usually, this means returning the contents of a non-flaky artifact
@@ -943,12 +971,14 @@ class Worker:
         else:
             self._connection.post(name)
 
-    def _copy_baselines(self, test_name: str, suffix: str,
+    def _copy_baselines(self, test_name: str, suffix: BaselineSuffix,
                         group: TestBaselineSet):
         copies = list(
             self._copier.find_baselines_to_copy(test_name, suffix, group))
         if self._dry_run:
             for source, dest in sorted(copies, key=lambda copy: copy[1]):
+                assert source or suffix == 'txt', (
+                    'non-txt baselines cannot be all-pass')
                 _log.debug('Would have copied %s -> %s', source
                            or '<all-pass>', dest)
         else:
@@ -969,8 +999,8 @@ class Worker:
                     rebaseline_failures[task] = error.reason
         return rebaseline_failures
 
-    def _write_baseline(self, task: RebaselineTask, suffix: str, source: str,
-                        contents: bytes):
+    def _write_baseline(self, task: RebaselineTask, suffix: BaselineSuffix,
+                        source: str, contents: bytes):
         port = self._host.port_factory.get(task.port_name)
         flag_spec_option = self._host.builders.flag_specific_option(
             task.build.builder_name, task.step_name)
