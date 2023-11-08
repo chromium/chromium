@@ -565,7 +565,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
         float peekHeightRatio = getPeekHeightRatio();
         if (mSheetController.getSheetState() == SheetState.SCROLLING
-                && heightFraction + 0.01f < peekHeightRatio) {
+                && heightFraction < peekHeightRatio) {
             // Set the content height to zero in advance when user drags/scrolls the sheet down
             // below the peeking state. This helps hide the white patch (blank bottom controls).
             setBottomControlsHeight(0);
@@ -581,7 +581,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     }
 
     private float getPeekHeightRatio() {
-        float fullHeight = mSheetContent.getActualFullHeightRatio() * mSheetContainer.getHeight();
+        float fullHeight = mSheetContent.getContentView().getMeasuredHeight();
         return mSheetContent.getPeekHeight() / fullHeight;
     }
 

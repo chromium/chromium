@@ -278,14 +278,6 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         mOnBackPressHandler.handle();
     }
 
-    /**
-     * Returns the actual height of the fully expanded bottom sheet, as a ratio of the screen
-     * height.
-     */
-    public float getActualFullHeightRatio() {
-        return mFullHeightRatio;
-    }
-
     void showLoadingIndicator() {
         setVisibilityById(mSheetContentView, R.id.page_insights_loading_indicator, View.VISIBLE);
         setVisibilityById(mToolbarView, R.id.page_insights_feed_header, View.VISIBLE);
