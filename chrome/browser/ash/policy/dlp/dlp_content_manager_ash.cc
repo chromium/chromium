@@ -9,15 +9,15 @@
 #include <vector>
 
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
+#include "ash/shell.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
@@ -27,11 +27,13 @@
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -276,24 +278,85 @@ void DlpContentManagerAsh::OnScreenShareStopped(
   RemoveScreenShare(label, media_id);
 }
 
+// TODO(b/308912502): migrate from mojo crosapi to wayland IPC. The current
+// implementation depends on the client keeping the connection for its whole
+// lifetime.
 void DlpContentManagerAsh::OnWindowRestrictionChanged(
-    aura::Window* window,
+    mojo::ReceiverId receiver_id,
+    const std::string& window_id,
     const DlpContentRestrictionSet& restrictions) {
-  confidential_windows_[window] = restrictions;
-  window_observers_[window] = std::make_unique<DlpWindowObserver>(window, this);
-  auto* surface = FindSurface(window);
-  if (surface) {
-    surface_observers_[window] =
-        std::make_unique<DlpWindowObserver>(surface, this);
+  aura::Window* window = crosapi::GetShellSurfaceWindow(window_id);
+  if (window) {
+    pending_restrictions_.erase(window_id);
+    confidential_windows_[window] = restrictions;
+    window_observers_[window] =
+        std::make_unique<DlpWindowObserver>(window, this);
+    aura::Window* surface = FindSurface(window);
+    if (surface) {
+      surface_observers_[window] =
+          std::make_unique<DlpWindowObserver>(surface, this);
+    }
+    MaybeChangeOnScreenRestrictions();
+  } else {
+    if (restrictions.IsEmpty()) {
+      pending_restrictions_.erase(window_id);
+      auto iter = pending_restrictions_owner_.find(receiver_id);
+      if (iter != pending_restrictions_owner_.end()) {
+        iter->second.erase(window_id);
+        if (iter->second.empty()) {
+          pending_restrictions_owner_.erase(iter);
+        }
+      }
+    } else {
+      pending_restrictions_.insert({window_id, {receiver_id, restrictions}});
+      auto [iter, is_new] =
+          pending_restrictions_owner_.try_emplace(receiver_id);
+      iter->second.insert(window_id);
+    }
   }
-  MaybeChangeOnScreenRestrictions();
+}
+
+void DlpContentManagerAsh::OnWindowActivated(
+    wm::ActivationChangeObserver::ActivationReason reason,
+    aura::Window* gained_active,
+    aura::Window* lost_active) {
+  if (!gained_active) {
+    return;
+  }
+  const std::string* application_id = exo::GetShellApplicationId(gained_active);
+  if (!application_id) {
+    return;
+  }
+  auto iter = pending_restrictions_.find(*application_id);
+  if (iter != pending_restrictions_.end()) {
+    auto [receiver_id, restrictions] =
+        pending_restrictions_.extract(iter).mapped();
+    OnWindowRestrictionChanged(receiver_id, *application_id, restrictions);
+  }
+}
+
+void DlpContentManagerAsh::CleanPendingRestrictions(
+    mojo::ReceiverId receiver_id) {
+  auto iter = pending_restrictions_owner_.find(receiver_id);
+  if (iter == pending_restrictions_owner_.end()) {
+    return;
+  }
+  for (const auto& window_id : iter->second) {
+    pending_restrictions_.erase(window_id);
+  }
+  pending_restrictions_owner_.erase(iter);
 }
 
 DlpContentManagerAsh::VideoCaptureInfo::VideoCaptureInfo(
     const ScreenshotArea& area)
     : area(area) {}
 
-DlpContentManagerAsh::DlpContentManagerAsh() = default;
+DlpContentManagerAsh::DlpContentManagerAsh() {
+  if (ash::Shell::HasInstance() && ash::Shell::Get()->activation_client()) {
+    window_activation_observation_.Observe(
+        ash::Shell::Get()->activation_client());
+  }
+}
 
 DlpContentManagerAsh::~DlpContentManagerAsh() = default;
 

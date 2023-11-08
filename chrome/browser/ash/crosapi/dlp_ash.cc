@@ -6,7 +6,7 @@
 
 #include "ash/shell.h"
 #include "base/check.h"
-#include "base/logging.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
@@ -86,7 +86,10 @@ content::DesktopMediaID AreaToDesktopMediaID(
 
 }  // namespace
 
-DlpAsh::DlpAsh() = default;
+DlpAsh::DlpAsh() {
+  receivers_.set_disconnect_handler(base::BindRepeating(
+      &DlpAsh::OnDisconnect, weak_ptr_factory_.GetWeakPtr()));
+}
 
 DlpAsh::~DlpAsh() = default;
 
@@ -97,16 +100,12 @@ void DlpAsh::BindReceiver(mojo::PendingReceiver<mojom::Dlp> receiver) {
 void DlpAsh::DlpRestrictionsUpdated(const std::string& window_id,
                                     mojom::DlpRestrictionSetPtr restrictions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  aura::Window* window = GetShellSurfaceWindow(window_id);
-  if (!window) {
-    LOG(WARNING) << "Didn't find Lacros window with id: " << window_id;
-    return;
-  }
   policy::DlpContentManagerAsh* dlp_content_manager =
       policy::DlpContentManagerAsh::Get();
   DCHECK(dlp_content_manager);
   dlp_content_manager->OnWindowRestrictionChanged(
-      window, ConvertMojoToDlpContentRestrictionSet(restrictions));
+      receivers_.current_receiver(), window_id,
+      ConvertMojoToDlpContentRestrictionSet(restrictions));
 }
 
 void DlpAsh::CheckScreenShareRestriction(
@@ -189,6 +188,15 @@ void DlpAsh::StopScreenShare(mojo::RemoteSetElementId id) {
   if (!screen_share_remote_delegates_.Contains(id))
     return;
   screen_share_remote_delegates_.Get(id)->OnStop();
+}
+
+void DlpAsh::OnDisconnect() {
+  policy::DlpContentManagerAsh* dlp_content_manager =
+      policy::DlpContentManagerAsh::Get();
+  if (!dlp_content_manager) {
+    return;
+  }
+  dlp_content_manager->CleanPendingRestrictions(receivers_.current_receiver());
 }
 
 }  // namespace crosapi

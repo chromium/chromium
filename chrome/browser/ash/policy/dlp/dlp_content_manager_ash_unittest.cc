@@ -1360,4 +1360,6 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
           kRuleId, DlpRulesManager::Level::kWarn)));
 }
 
+TEST_F(DlpContentManagerAshTest, OnWindowRestrictionChanged) {}
+
 }  // namespace policy

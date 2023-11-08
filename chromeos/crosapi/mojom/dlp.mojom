@@ -57,6 +57,10 @@ interface StateChangeDelegate {
 // Interface to communicate from Lacros DLP layer to Ash. Used to notify Ash
 // about changes in restrictions applied to web content in Lacros.
 //
+// TODO(b/308912502): Move this interface to Wayland IPC. Until than: The
+// connection by Lacros has to be kept over its whole lifetime as the closing
+// indicates that associated windows are no longer existing.
+//
 // Next MinVersion: 4
 // Next ID: 4
 [Stable, Uuid="793ee9c6-3873-4ea8-a541-894412ddfc0b"]
