@@ -297,32 +297,7 @@ class MEDIA_EXPORT Vp9Parser {
   // The parsing context that persists across frames.
   class Context {
    public:
-    class MEDIA_EXPORT Vp9FrameContextManager {
-     public:
-      Vp9FrameContextManager();
-      ~Vp9FrameContextManager();
-      bool initialized() const { return initialized_; }
-      const Vp9FrameContext& frame_context() const;
-
-      // Resets to uninitialized state.
-      void Reset();
-
-      // Updates frame context. Returns false if |frame_content| is not valid,
-      // true otherwise.
-      bool Update(const Vp9FrameContext& frame_context);
-
-     private:
-      bool initialized_ = false;
-      Vp9FrameContext frame_context_;
-    };
-
     void Reset();
-
-    // Update frame context at |frame_context_idx| with the contents of
-    // |frame_context|. Returns false if |frame_content| is not valid,
-    // true otherwise.
-    bool UpdateFrameContext(size_t frame_context_idx,
-                            const Vp9FrameContext& frame_context);
 
     // Return ReferenceSlot for frame at |ref_idx|.
     const ReferenceSlot& GetRefSlot(size_t ref_idx) const;
@@ -346,8 +321,6 @@ class MEDIA_EXPORT Vp9Parser {
 
     // Frame references.
     ReferenceSlot ref_slots_[kVp9NumRefFrames];
-
-    Vp9FrameContextManager frame_context_managers_[kVp9NumFrameContexts];
   };
 
   // See homonymous member variable for information on the parameter.

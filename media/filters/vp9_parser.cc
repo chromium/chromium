@@ -445,46 +445,10 @@ bool Vp9FrameContext::IsValid() const {
   return true;
 }
 
-Vp9Parser::Context::Vp9FrameContextManager::Vp9FrameContextManager() {}
-
-Vp9Parser::Context::Vp9FrameContextManager::~Vp9FrameContextManager() = default;
-
-const Vp9FrameContext&
-Vp9Parser::Context::Vp9FrameContextManager::frame_context() const {
-  DCHECK(initialized_);
-  return frame_context_;
-}
-
-void Vp9Parser::Context::Vp9FrameContextManager::Reset() {
-  initialized_ = false;
-}
-
-bool Vp9Parser::Context::Vp9FrameContextManager::Update(
-    const Vp9FrameContext& frame_context) {
-  if (!frame_context.IsValid()) {
-    return false;
-  }
-
-  initialized_ = true;
-  frame_context_ = frame_context;
-
-  return true;
-}
-
 void Vp9Parser::Context::Reset() {
   memset(&segmentation_, 0, sizeof(segmentation_));
   memset(&loop_filter_, 0, sizeof(loop_filter_));
   memset(&ref_slots_, 0, sizeof(ref_slots_));
-  for (auto& manager : frame_context_managers_)
-    manager.Reset();
-}
-
-bool Vp9Parser::Context::UpdateFrameContext(
-    size_t frame_context_idx,
-    const Vp9FrameContext& frame_context) {
-  DCHECK_LT(frame_context_idx, std::size(frame_context_managers_));
-
-  return frame_context_managers_[frame_context_idx].Update(frame_context);
 }
 
 const Vp9Parser::ReferenceSlot& Vp9Parser::Context::GetRefSlot(
@@ -580,19 +544,6 @@ bool Vp9Parser::ParseUncompressedHeader(const FrameInfo& frame_info,
 bool Vp9Parser::ParseCompressedHeader(const FrameInfo& frame_info,
                                       Result* result) {
   *result = kInvalidStream;
-  size_t frame_context_idx = curr_frame_header_.frame_context_idx;
-  const Context::Vp9FrameContextManager& context_to_load =
-      context_.frame_context_managers_[frame_context_idx];
-  if (!context_to_load.initialized()) {
-    // 8.2 Frame order constraints
-    // must load an initialized set of probabilities.
-    DVLOG(1) << "loading uninitialized frame context, index="
-             << frame_context_idx;
-    *result = kInvalidStream;
-    return true;
-  }
-
-  curr_frame_header_.frame_context = context_to_load.frame_context();
 
   Vp9CompressedHeaderParser compressed_parser;
   bool parse_success;
@@ -604,17 +555,6 @@ bool Vp9Parser::ParseCompressedHeader(const FrameInfo& frame_info,
     return true;
   }
 
-  if (curr_frame_header_.refresh_frame_context) {
-    // In frame parallel mode, we can refresh the context without decoding
-    // tile data.
-    if (curr_frame_header_.frame_parallel_decoding_mode) {
-      if (!context_.UpdateFrameContext(frame_context_idx,
-                                       curr_frame_header_.frame_context)) {
-        *result = kInvalidStream;
-        return true;
-      }
-    }
-  }
   return false;
 }
 
