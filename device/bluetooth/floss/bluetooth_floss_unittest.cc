@@ -786,7 +786,6 @@ TEST_F(BluetoothFlossTest, StartLowEnergyScanSessions) {
   // Initial conditions
   EXPECT_EQ(0, GetFakeLEScanClient()->scanners_registered_);
 
-  // TODO (b/217274013): Filter is currently being ignored
   auto background_scan_session = adapter_->StartLowEnergyScanSession(
       /*filter=*/nullptr, /*delegate=*/nullptr);
   base::RunLoop().RunUntilIdle();
@@ -811,7 +810,6 @@ TEST_F(BluetoothFlossTest, StartLowEnergyScanSessionWithScanResult) {
   InitializeAndEnableAdapter();
 
   FakeBluetoothLowEnergyScanSessionDelegate delegate;
-  // TODO (b/217274013): Filter is currently being ignored
   GetFakeLEScanClient()->SetNextScannerUUID(
       device::BluetoothUUID(kTestUuidStr));
   auto background_scan_session = adapter_->StartLowEnergyScanSession(

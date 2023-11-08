@@ -210,18 +210,24 @@ void FlossLEScanClient::AdvertisementLost(uint8_t scanner_id,
   }
 }
 
-// TODO(b/217274013): Update these templates when structs in place
 template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const ScanSettings& data) {
   dbus::MessageWriter array_writer(nullptr);
   writer->OpenArray("{sv}", &array_writer);
 
-  WriteDictEntry(&array_writer, "interval", static_cast<int32_t>(3));
-  WriteDictEntry(&array_writer, "window", static_cast<int32_t>(3));
-  WriteDictEntry(&array_writer, "scan_type", static_cast<uint32_t>(1));
+  WriteDictEntry(&array_writer, "interval", data.interval);
+  WriteDictEntry(&array_writer, "window", data.window);
+  WriteDictEntry(&array_writer, "scan_type", data.scan_type);
 
   writer->CloseContainer(&array_writer);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const ScanType& type) {
+  int32_t value = static_cast<uint32_t>(type);
+  WriteDBusParam(writer, value);
 }
 
 template <>
@@ -294,6 +300,12 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const ScanSettings*) {
   static DBusTypeInfo info{"a{sv}", "ScanSettings"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo(const ScanType*) {
+  static DBusTypeInfo info{"u", "ScanType"};
   return info;
 }
 
