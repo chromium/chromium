@@ -26,6 +26,13 @@
 
 namespace {
 
+bool CanUseOptimizationGuide(Profile* profile) {
+  return OptimizationGuideKeyedServiceFactory::GetForProfile(profile) &&
+         profile->IsOffTheRecord() &&
+         base::FeatureList::IsEnabled(
+             optimization_guide::features::kOptimizationGuideModelExecution);
+}
+
 void OnTabOrganizationModelExecutionResult(
     TabOrganizationRequest::BackendCompletionCallback on_completion,
     TabOrganizationRequest::BackendFailureCallback on_failure,
@@ -69,11 +76,8 @@ void PerformTabOrganizationExecution(
     const TabOrganizationRequest* request,
     TabOrganizationRequest::BackendCompletionCallback on_completion,
     TabOrganizationRequest::BackendFailureCallback on_failure) {
-  OptimizationGuideKeyedService* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!optimization_guide_keyed_service || profile->IsOffTheRecord() ||
-      !base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideModelExecution)) {
+  if (!CanUseOptimizationGuide(profile)) {
+    std::move(on_failure).Run();
     return;
   }
 
@@ -89,6 +93,8 @@ void PerformTabOrganizationExecution(
     tab->set_url(tab_data->original_url().spec());
   }
 
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   optimization_guide_keyed_service->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
@@ -103,11 +109,8 @@ TabOrganizationRequestFactory::~TabOrganizationRequestFactory() = default;
 
 // static
 std::unique_ptr<TabOrganizationRequestFactory>
-TabOrganizationRequestFactory::Get() {
-  const base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(optimization_guide::switches::
-                                  kOptimizationGuideServiceModelExecutionURL)) {
+TabOrganizationRequestFactory::GetForProfile(Profile* profile) {
+  if (CanUseOptimizationGuide(profile)) {
     return std::make_unique<OptimizationGuideTabOrganizationRequestFactory>();
   }
   return std::make_unique<TwoTabsRequestFactory>();
