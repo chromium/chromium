@@ -54,23 +54,31 @@ extern const base::FeatureParam<bool> kExcludePwaOrTwaInstalled;
 extern const char kTpcdWritePopupCurrentInteractionHeuristicsGrantsName[];
 extern const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[];
 extern const char kTpcdBackfillPopupHeuristicsGrantsName[];
+extern const char kTpcdWriteRedirectHeuristicGrantsName[];
+extern const char kTpcdRedirectHeuristicRequireABAFlowName[];
+extern const char kTpcdRedirectHeuristicRequireCurrentInteractionName[];
 
-// Whether to create a short-term grant when observing the Popup With Current
-// Interaction scenario.
+// The duration of the storage access grant created when observing the Popup
+// With Current Interaction scenario. If set to zero duration, do not create a
+// grant.
 extern const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupCurrentInteractionHeuristicsGrants;
 
-// Whether to create a short-term grant when observing the Popup With Past
-// Interaction scenario.
+// The duration of the storage access grant created when observing the Popup
+// With Past Interaction scenario. If set to zero duration, do not create a
+// grant.
 extern const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupPastInteractionHeuristicsGrants;
 
-// Whether to backfill popup heuristics grants for recent popups with a current
-// interaction, when a user is onboarded to 3PCD.
+// The lookback and duration of the storage access grants created when
+// backfilling the Popup With Current Interaction scenario on onboarding to
+// 3PCD. If set to zero duration, to not create backfill grants.
 extern const base::FeatureParam<base::TimeDelta>
     kTpcdBackfillPopupHeuristicsGrants;
 
-// Whether to create a short-term grant when observing the Redirect scenario.
+// The duration of the storage access grant created when observing the Redirect
+// With Current Interaction scenario. If set to zero duration, do not create a
+// grant.
 extern const base::FeatureParam<base::TimeDelta>
     kTpcdWriteRedirectHeuristicGrants;
 
