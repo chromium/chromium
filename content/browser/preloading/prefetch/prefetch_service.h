@@ -109,10 +109,6 @@ class CONTENT_EXPORT PrefetchService {
   void AddPrefetchContainer(
       std::unique_ptr<PrefetchContainer> prefetch_container);
 
-  // Removes the prefetch with the given |prefetch_container_key| from
-  // |all_prefetches_|.
-  void RemovePrefetch(const PrefetchContainer::Key& prefetch_container_key);
-
   void ResetPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Called by PrefetchDocumentManager when it finishes processing the latest
@@ -335,7 +331,7 @@ class CONTENT_EXPORT PrefetchService {
       PrefetchContainer& prefetch_container,
       PrefetchMatchResolver& prefetch_match_resolver);
 
-  // Checks if there is a prefetch in |all_prefetches_| with the same URL as
+  // Checks if there is a prefetch in |owned_prefetches_| with the same URL as
   // |prefetch_container| but from a different referring RenderFrameHost.
   // Records the result to a UMA histogram.
   void RecordExistingPrefetchWithMatchingURL(
@@ -355,10 +351,6 @@ class CONTENT_EXPORT PrefetchService {
 
   // The origin prober class which manages all logic for origin probing.
   std::unique_ptr<PrefetchOriginProber> origin_prober_;
-
-  // All prefetches associated with |this| regardless of ownership.
-  std::map<PrefetchContainer::Key, base::WeakPtr<PrefetchContainer>>
-      all_prefetches_;
 
   // A FIFO queue of prefetches that have been confirmed to be eligible but have
   // not started yet.
