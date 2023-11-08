@@ -27,13 +27,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
   };
 
   // Logs connection result for network with given |guid| in
-  // Network.Ash.{NetworkType}.ConnectionResult.All, it will also logs the
+  // Network.Ash.{NetworkType}.ConnectionResult.All,
+  // Network.Ash.{NetworkType}.ConnectionResult.All.Filtered and also the
   // result to Network.Ash.{NetworkType}.ConnectionResult.Auto if
-  // `is_auto_connect` is set to true. If `shill_error` has no value, a
-  // connection success is logged.
+  // `is_auto_connect` is set to true. `is_repeated_error` is true if
+  // the current shill error is the same as the previous shill error.
+  // If `shill_error` has no value, a connection success is logged.
   static void LogAllConnectionResult(
       const std::string& guid,
       bool is_auto_connect,
+      bool is_repeated_error,
       const absl::optional<std::string>& shill_error = absl::nullopt);
 
   // Logs result of a user initiated connection attempt for a network with a
