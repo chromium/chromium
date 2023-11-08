@@ -9,6 +9,7 @@
 #include "ash/app_menu/notification_overflow_view.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/ranges/algorithm.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -178,5 +179,8 @@ NotificationMenuView::NotificationIterForId(const std::string& id) {
   return base::ranges::find(notification_item_views_, id,
                             &NotificationItemView::notification_id);
 }
+
+BEGIN_METADATA(NotificationMenuView)
+END_METADATA
 
 }  // namespace ash

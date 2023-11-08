@@ -11,6 +11,7 @@
 #include "ash/app_menu/app_menu_export.h"
 #include "ash/app_menu/notification_menu_view.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/view.h"
 
@@ -35,6 +36,8 @@ namespace ash {
 
 // The view which contains the details of a notification.
 class APP_MENU_EXPORT NotificationItemView : public views::View {
+  METADATA_HEADER(NotificationItemView, views::View)
+
  public:
   NotificationItemView(
       NotificationMenuView::Delegate* delegate,
