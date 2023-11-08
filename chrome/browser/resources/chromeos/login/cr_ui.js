@@ -156,14 +156,6 @@ export class Oobe extends DisplayManager {
   }  // loginForTesting
 
   /**
-   * Shows the add user dialog. Used in browser tests.
-   */
-  static showAddUserForTesting() {
-    // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-    chrome.send('OobeTestApi.showGaiaDialog');
-  }
-
-  /**
    * Begin enterprise enrollment for telemetry.
    */
   static switchToEnterpriseEnrollmentForTesting() {
