@@ -1158,7 +1158,7 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
     // `StartDeviceAuthenticationForFilling()` will asynchronously trigger
     // the re-authentication flow, so we should avoid calling `Reset()`
     // until the re-authentication flow is complete.
-    StartDeviceAuthenticationForFilling(accessor_, card_.get(), /*cvc=*/u"");
+    StartDeviceAuthenticationForFilling(accessor_, card_.get(), card_->cvc());
   } else {
     // Fill immediately if local card or full server card, as we do not need to
     // authenticate the user.

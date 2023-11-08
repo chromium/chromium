@@ -719,6 +719,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
   base::HistogramTester histogram_tester;
   CreateLocalCard(kTestGUID, kTestNumber);
   CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
+  card->set_cvc(kTestCvc16);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();
@@ -735,7 +736,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
     EXPECT_TRUE(accessor_->number().empty());
   } else {
     EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
-    EXPECT_EQ(kTestNumber16, accessor_->number());
+    EXPECT_EQ(accessor_->number(), kTestNumber16);
+    EXPECT_EQ(accessor_->cvc(), kTestCvc16);
   }
   std::string histogram_name =
       "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.LocalCard";
