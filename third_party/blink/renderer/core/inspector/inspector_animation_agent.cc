@@ -300,8 +300,11 @@ protocol::Response InspectorAnimationAgent::setPaused(
           }
         }
       }
+
       clone->pause();
-      clone->SetCurrentTimeInternal(current_time.value());
+      if (current_time) {
+        clone->SetCurrentTimeInternal(current_time.value());
+      }
     } else if (!paused && clone->Paused()) {
       clone->Unpause();
     }
