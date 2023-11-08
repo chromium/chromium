@@ -16,7 +16,6 @@
 #import "components/password_manager/ios/password_account_storage_notice_handler.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_observer.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
@@ -70,16 +69,6 @@ void AutofillBottomSheetTabHelper::SetAutofillBottomSheetHandler(
   commands_handler_ = commands_handler;
 }
 
-void AutofillBottomSheetTabHelper::AddObserver(
-    autofill::AutofillBottomSheetObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void AutofillBottomSheetTabHelper::RemoveObserver(
-    autofill::AutofillBottomSheetObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void AutofillBottomSheetTabHelper::OnFormMessageReceived(
     const web::ScriptMessage& message) {
   autofill::FormActivityParams params;
@@ -119,9 +108,6 @@ void AutofillBottomSheetTabHelper::ShowPasswordBottomSheet(
 
 void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
     const autofill::FormActivityParams params) {
-  for (auto& observer : observers_) {
-    observer.WillShowPaymentsBottomSheet(params);
-  }
   [commands_handler_ showPaymentsBottomSheet:params];
 }
 

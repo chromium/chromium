@@ -17,8 +17,6 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/password_counter.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_observer_bridge.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
@@ -76,8 +74,7 @@ class PasswordCounterDelegateBridge
   password_manager::PasswordCounter counter_;
 };
 
-@interface FormInputAccessoryMediator () <AutofillBottomSheetObserving,
-                                          BooleanObserver,
+@interface FormInputAccessoryMediator () <BooleanObserver,
                                           FormActivityObserver,
                                           FormInputAccessoryViewDelegate,
                                           CRWWebStateObserver,
@@ -148,10 +145,6 @@ class PasswordCounterDelegateBridge
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
 
-  // Bridge for the AutofillBottomSheetObserver.
-  std::unique_ptr<autofill::AutofillBottomSheetObserverBridge>
-      _autofillBottomSheetObserverBridge;
-
   // Whether suggestions have previously been shown.
   BOOL _suggestionsHaveBeenShown;
 
@@ -200,9 +193,6 @@ class PasswordCounterDelegateBridge
         _formActivityObserverBridge =
             std::make_unique<autofill::FormActivityObserverBridge>(_webState,
                                                                    self);
-        _autofillBottomSheetObserverBridge =
-            std::make_unique<autofill::AutofillBottomSheetObserverBridge>(
-                self, AutofillBottomSheetTabHelper::FromWebState(webState));
         _webStateObserverBridge =
             std::make_unique<web::WebStateObserverBridge>(self);
         webState->AddObserver(_webStateObserverBridge.get());
@@ -261,7 +251,6 @@ class PasswordCounterDelegateBridge
 - (void)dealloc {
   // TODO(crbug.com/1454777)
   DUMP_WILL_BE_CHECK(!_formActivityObserverBridge.get());
-  DUMP_WILL_BE_CHECK(!_autofillBottomSheetObserverBridge.get());
   DUMP_WILL_BE_CHECK(!_personalDataManager);
   DUMP_WILL_BE_CHECK(!_webState);
   DUMP_WILL_BE_CHECK(!_webStateList);
@@ -269,7 +258,6 @@ class PasswordCounterDelegateBridge
 
 - (void)disconnect {
   _formActivityObserverBridge.reset();
-  _autofillBottomSheetObserverBridge.reset();
   if (_personalDataManager && _personalDataManagerObserver.get()) {
     _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
     _personalDataManagerObserver.reset();
@@ -297,7 +285,6 @@ class PasswordCounterDelegateBridge
     _webStateObserverBridge.reset();
     _webState = nullptr;
     _formActivityObserverBridge.reset();
-    _autofillBottomSheetObserverBridge.reset();
   }
 }
 
@@ -308,20 +295,6 @@ class PasswordCounterDelegateBridge
 #pragma mark - KeyboardNotification
 
 - (void)keyboardWillShow:(NSNotification*)notification {
-  [self updateSuggestionsIfNeeded];
-}
-
-#pragma mark - AutofillBottomSheetObserving
-
-- (void)willShowPaymentsBottomSheetWithParams:
-    (const autofill::FormActivityParams&)params {
-  // Update params in this mediator because -keyboardWillShow will be called
-  // before the bottom sheet is being notified to show and that will call
-  // -retrieveSuggestionsForForm with the last seen params. Depending on what
-  // the current page is auto focused on, it could be the incorrect params and
-  // we need to update it.
-  _lastSeenParams = params;
-  _hasLastSeenParams = YES;
   [self updateSuggestionsIfNeeded];
 }
 
@@ -546,10 +519,6 @@ class PasswordCounterDelegateBridge
     webState->AddObserver(_webStateObserverBridge.get());
     _formActivityObserverBridge =
         std::make_unique<autofill::FormActivityObserverBridge>(webState, self);
-    _autofillBottomSheetObserverBridge =
-        std::make_unique<autofill::AutofillBottomSheetObserverBridge>(
-            self, AutofillBottomSheetTabHelper::FromWebState(webState));
-
     FormSuggestionTabHelper* tabHelper =
         FormSuggestionTabHelper::FromWebState(webState);
     if (tabHelper) {
