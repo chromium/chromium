@@ -128,3 +128,26 @@ class ChromeScrollJankStdlib(TestSuite):
         1993,4687375224739,-81,-181
         1996,4687386343739,-66,-247
         """))
+
+  def test_scroll_jank_cause_map(self):
+    return DiffTestBlueprint(
+        trace=TextProto(''),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.event_latency_description;
+        INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_cause_map;
+
+        SELECT
+          DISTINCT event_latency_stage
+        FROM chrome_scroll_jank_cause_descriptions
+        WHERE event_latency_stage NOT IN
+          (
+            SELECT
+              DISTINCT name
+            FROM chrome_event_latency_stage_descriptions
+          );
+        """,
+        # Empty output is expected to ensure that all scroll jank causes
+        # correspond to a valid EventLatency stage.
+        out=Csv("""
+        "event_latency_stage"
+        """))
