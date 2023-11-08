@@ -8,7 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_prompt.h"
+#include "components/permissions/permission_request.h"
+#include "components/permissions/request_type.h"
 
 class Browser;
 
@@ -73,6 +76,7 @@ class EmbeddedPermissionPrompt
   void ShowSystemSettings() override;
   base::WeakPtr<permissions::PermissionPrompt::Delegate>
   GetPermissionPromptDelegate() const override;
+  const std::vector<permissions::PermissionRequest*>& Requests() const override;
 
  private:
   static Variant DeterminePromptVariant(
@@ -80,10 +84,18 @@ class EmbeddedPermissionPrompt
       const content_settings::SettingInfo& info,
       ContentSettingsType type);
 
+  void PrioritizeAndMergeNewVariant(Variant new_variant,
+                                    ContentSettingsType type);
+
+  void RebuildRequests();
+
   Variant embedded_prompt_variant_ = Variant::kUninitialized;
   raw_ptr<EmbeddedPermissionPromptBaseView> prompt_view_;
 
   raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
+
+  std::set<ContentSettingsType> prompt_types_;
+  std::vector<permissions::PermissionRequest*> requests_;
 
   base::WeakPtrFactory<EmbeddedPermissionPrompt> weak_factory_{this};
 };

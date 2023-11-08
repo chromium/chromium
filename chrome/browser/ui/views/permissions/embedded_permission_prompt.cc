@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_show_system_prompt_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_system_settings_view.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -24,10 +25,17 @@
 
 namespace {
 
-EmbeddedPermissionPrompt::Variant HigherPriorityVariant(
-    EmbeddedPermissionPrompt::Variant a,
-    EmbeddedPermissionPrompt::Variant b) {
-  return std::max(a, b);
+bool CanGroupVariants(EmbeddedPermissionPrompt::Variant a,
+                      EmbeddedPermissionPrompt::Variant b) {
+  // Ask and PreviouslyDenied are a special case and can be grouped together.
+  if ((a == EmbeddedPermissionPrompt::Variant::kPreviouslyDenied &&
+       b == EmbeddedPermissionPrompt::Variant::kAsk) ||
+      (a == EmbeddedPermissionPrompt::Variant::kAsk &&
+       b == EmbeddedPermissionPrompt::Variant::kPreviouslyDenied)) {
+    return true;
+  }
+
+  return (a == b);
 }
 
 bool IsPermissionSetByAdministator(ContentSetting setting,
@@ -94,6 +102,11 @@ EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
   return delegate_->GetWeakPtr();
 }
 
+const std::vector<permissions::PermissionRequest*>&
+EmbeddedPermissionPrompt::Requests() const {
+  return requests_;
+}
+
 // static
 EmbeddedPermissionPrompt::Variant
 EmbeddedPermissionPrompt::DeterminePromptVariant(
@@ -144,7 +157,6 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
   content_settings::SettingInfo info;
 
-  embedded_prompt_variant_ = Variant::kUninitialized;
   for (const auto* request : delegate()->Requests()) {
     ContentSettingsType type = request->GetContentSettingsType();
     ContentSetting setting =
@@ -152,8 +164,7 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
                                delegate()->GetEmbeddingOrigin(), type, &info);
     Variant current_request_variant =
         DeterminePromptVariant(setting, info, type);
-    embedded_prompt_variant_ = HigherPriorityVariant(embedded_prompt_variant_,
-                                                     current_request_variant);
+    PrioritizeAndMergeNewVariant(current_request_variant, type);
   }
 
   switch (embedded_prompt_variant_) {
@@ -197,6 +208,7 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
   }
 
   if (prompt_view_) {
+    RebuildRequests();
     prompt_view_->Show();
   }
 }
@@ -209,6 +221,10 @@ void EmbeddedPermissionPrompt::CloseView() {
   prompt_view_->PrepareToClose();
   prompt_view_->GetWidget()->Close();
   prompt_view_ = nullptr;
+
+  requests_.clear();
+  prompt_types_.clear();
+  embedded_prompt_variant_ = Variant::kUninitialized;
 }
 
 EmbeddedPermissionPrompt::TabSwitchingBehavior
@@ -266,4 +282,35 @@ void EmbeddedPermissionPrompt::ShowSystemSettings() {
     OpenMicSystemSettingsOnMacOS();
   }
 #endif
+}
+
+void EmbeddedPermissionPrompt::PrioritizeAndMergeNewVariant(
+    EmbeddedPermissionPrompt::Variant new_variant,
+    ContentSettingsType new_type) {
+  // The new variant can be grouped with the already existing one.
+  if (CanGroupVariants(embedded_prompt_variant_, new_variant)) {
+    prompt_types_.insert(new_type);
+    embedded_prompt_variant_ = std::max(embedded_prompt_variant_, new_variant);
+  }
+
+  // The existing variant is higher priority than the new one.
+  if (embedded_prompt_variant_ > new_variant) {
+    return;
+  }
+
+  // The new variant has higher priority than the existing one.
+  prompt_types_.clear();
+  prompt_types_.insert(new_type);
+  embedded_prompt_variant_ = new_variant;
+}
+
+void EmbeddedPermissionPrompt::RebuildRequests() {
+  if (requests_.size() != prompt_types_.size()) {
+    auto requests = EmbeddedPermissionPromptBaseView::Delegate::Requests();
+    for (auto* request : requests) {
+      if (prompt_types_.contains(request->GetContentSettingsType())) {
+        requests_.push_back(request);
+      }
+    }
+  }
 }

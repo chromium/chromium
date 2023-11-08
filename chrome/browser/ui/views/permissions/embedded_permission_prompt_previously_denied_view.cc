@@ -40,8 +40,7 @@ void EmbeddedPermissionPromptPreviouslyDeniedView::RunButtonCallback(
   ButtonType button = GetButtonType(button_id);
 
   if (button == ButtonType::kContinueNotAllowing) {
-    // The permission is already denied.
-    return;
+    delegate()->Acknowledge();
   }
 
   if (button == ButtonType::kAllowThisTime) {
@@ -72,9 +71,8 @@ EmbeddedPermissionPromptPreviouslyDeniedView::GetButtonsConfiguration() const {
         l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME),
         ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal);
   } else {
-    buttons.emplace_back(
-        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME),
-        ButtonType::kAllow, ui::ButtonStyle::kTonal);
+    buttons.emplace_back(l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW),
+                         ButtonType::kAllow, ui::ButtonStyle::kTonal);
   }
   return buttons;
 }

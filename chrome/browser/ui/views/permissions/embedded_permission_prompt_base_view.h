@@ -51,7 +51,8 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
     virtual void ShowSystemSettings() = 0;
     virtual base::WeakPtr<permissions::PermissionPrompt::Delegate>
     GetPermissionPromptDelegate() const = 0;
-    const std::vector<permissions::PermissionRequest*>& Requests() const;
+    virtual const std::vector<permissions::PermissionRequest*>& Requests()
+        const;
   };
 
   EmbeddedPermissionPromptBaseView(Browser* browser,
