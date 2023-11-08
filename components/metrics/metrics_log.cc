@@ -606,8 +606,6 @@ void MetricsLog::TruncateEvents() {
   }
 
   if (uma_proto_.omnibox_event_size() > internal::kOmniboxEventLimit) {
-    UMA_HISTOGRAM_COUNTS_100000("UMA.TruncatedEvents.Omnibox",
-                                uma_proto_.omnibox_event_size());
     uma_proto_.mutable_omnibox_event()->DeleteSubrange(
         internal::kOmniboxEventLimit,
         uma_proto_.omnibox_event_size() - internal::kOmniboxEventLimit);

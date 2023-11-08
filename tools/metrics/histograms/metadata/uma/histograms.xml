@@ -945,16 +945,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.TruncatedEvents.Omnibox" units="events"
-    expires_after="M85">
-  <owner>rkaplow@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    The number of omnibox events that existed in the metrics log before we
-    truncated them to save bandwidth.
-  </summary>
-</histogram>
-
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
     expires_after="2024-05-05">
   <owner>rkaplow@chromium.org</owner>
