@@ -16,6 +16,7 @@ extern const char kComposeResponseDurationOk[];
 extern const char kComposeResponseDurationError[];
 extern const char kComposeResponseStatus[];
 extern const char kComposeShowStatus[];
+extern const char kComposeDialogOpenLatency[];
 
 // Enum for calculating the CTR of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -62,6 +63,8 @@ void LogComposeRequestDuration(base::TimeDelta duration, bool is_ok);
 
 void LogComposeSessionCloseReason(ComposeSessionCloseReason reason);
 
+// Log the time taken for the dialog to be fully shown and interactable.
+void LogComposeDialogOpenLatency(base::TimeDelta duration);
 }  // namespace compose
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_

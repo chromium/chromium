@@ -45,6 +45,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.Dialog.OpenLatency" units="ms"
+    expires_after="2024-03-31">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Time in milliseconds between triggering the Compose dialog to open and it
+    being shown and interactable. Logged each time the dialog is shown.
+  </summary>
+</histogram>
+
 <histogram name="Compose.Response.Duration.Error" units="ms"
     expires_after="2024-03-31">
   <owner>perrier@chromium.org</owner>

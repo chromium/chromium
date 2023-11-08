@@ -149,6 +149,9 @@ class ChromeComposeClient
   mojo::Receiver<compose::mojom::ComposeClientPageHandler>
       client_page_receiver_;
 
+  // Time that the last call to show the dialog was started.
+  base::TimeTicks show_dialog_start_;
+
   // Used to test Compose in a tab at |chrome://compose|.
   std::unique_ptr<ComposeSession> debug_session_;
 

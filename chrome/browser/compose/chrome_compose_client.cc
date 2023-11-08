@@ -108,6 +108,8 @@ void ChromeComposeClient::ShowComposeDialog(
     gfx::RectF bounds_in_screen = trigger_field.bounds;
     bounds_in_screen.Offset(
         GetWebContents().GetContainerBounds().OffsetFromOrigin());
+
+    show_dialog_start_ = base::TimeTicks::Now();
     compose_dialog_controller_ =
         chrome::ShowComposeDialog(GetWebContents(), bounds_in_screen);
   }
@@ -122,6 +124,8 @@ bool ChromeComposeClient::HasSession(
 void ChromeComposeClient::ShowUI() {
   if (compose_dialog_controller_) {
     compose_dialog_controller_->ShowUI();
+    compose::LogComposeDialogOpenLatency(base::TimeTicks::Now() -
+                                         show_dialog_start_);
   }
 }
 

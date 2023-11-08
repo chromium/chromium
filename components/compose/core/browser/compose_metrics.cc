@@ -14,6 +14,7 @@ const char kComposeResponseDurationOk[] = "Compose.Response.Duration.Ok";
 const char kComposeResponseDurationError[] = "Compose.Response.Duration.Error";
 const char kComposeResponseStatus[] = "Compose.Response.Status";
 const char kComposeShowStatus[] = "Compose.ContextMenu.ShowStatus";
+const char kComposeDialogOpenLatency[] = "Compose.Dialog.OpenLatency";
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Compose.ContextMenu.CTR", event);
@@ -31,5 +32,9 @@ void LogComposeRequestDuration(base::TimeDelta duration, bool is_valid) {
 
 void LogComposeSessionCloseReason(ComposeSessionCloseReason reason) {
   UMA_HISTOGRAM_ENUMERATION("Compose.SessionCloseReason", reason);
+}
+
+void LogComposeDialogOpenLatency(base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(kComposeDialogOpenLatency, duration);
 }
 }  // namespace compose
