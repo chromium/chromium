@@ -738,6 +738,147 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData_NoChanges) {
   EXPECT_EQ(0u, database_factory().ReadRegistry().size());
 }
 
+TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  const std::string manifest_id_1 = "https://example.com/app1";
+  const std::string manifest_id_2 = "https://example.com/app2";
+  const std::string manifest_id_3 = "https://example.com/app3";
+  const std::string manifest_id_4 = "https://example.com/app4";
+
+  Registry registry;
+
+  // left as-is
+  std::unique_ptr<WebApkProto> registry_app1 =
+      CreateWebApkProto(manifest_id_1, "app1_registry");
+  InsertAppIntoRegistry(&registry, std::move(registry_app1));
+
+  // deleted
+  std::unique_ptr<WebApkProto> registry_app2 =
+      CreateWebApkProto(manifest_id_2, "app2_registry");
+  InsertAppIntoRegistry(&registry, std::move(registry_app2));
+
+  // replaced
+  std::unique_ptr<WebApkProto> registry_app3 =
+      CreateWebApkProto(manifest_id_3, "app3_registry");
+  InsertAppIntoRegistry(&registry, std::move(registry_app3));
+
+  database_factory().WriteRegistry(registry);
+
+  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
+  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+
+  InitSyncBridge();
+
+  std::unique_ptr<syncer::EntityChange> sync_change_2 =
+      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_2));
+
+  syncer::EntityData sync_data_3;
+  sync_pb::WebApkSpecifics* sync_specifics_3 =
+      sync_data_3.specifics.mutable_web_apk();
+  sync_specifics_3->set_manifest_id(manifest_id_3);
+  sync_specifics_3->set_name("app3_sync");
+  std::unique_ptr<syncer::EntityChange> sync_change_3 =
+      syncer::EntityChange::CreateAdd(ManifestIdStrToAppId(manifest_id_3),
+                                      std::move(sync_data_3));
+
+  syncer::EntityData sync_data_4;
+  sync_pb::WebApkSpecifics* sync_specifics_4 =
+      sync_data_4.specifics.mutable_web_apk();
+  sync_specifics_4->set_manifest_id(manifest_id_4);
+  sync_specifics_4->set_name("app4_sync");
+  std::unique_ptr<syncer::EntityChange> sync_change_4 =
+      syncer::EntityChange::CreateAdd(ManifestIdStrToAppId(manifest_id_4),
+                                      std::move(sync_data_4));
+
+  syncer::EntityChangeList sync_changes;
+  sync_changes.push_back(std::move(sync_change_2));
+  sync_changes.push_back(std::move(sync_change_3));
+  sync_changes.push_back(std::move(sync_change_4));
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  absl::optional<syncer::ModelError> result =
+      sync_bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                                std::move(sync_changes));
+
+  EXPECT_EQ(absl::nullopt, result);
+
+  const Registry& final_registry = sync_bridge().GetRegistryForTesting();
+  EXPECT_EQ(3u, final_registry.size());
+
+  EXPECT_EQ(manifest_id_1,
+            final_registry.at(ManifestIdStrToAppId(manifest_id_1))
+                ->sync_data()
+                .manifest_id());
+  EXPECT_EQ("app1_registry",
+            final_registry.at(ManifestIdStrToAppId(manifest_id_1))
+                ->sync_data()
+                .name());
+
+  EXPECT_EQ(manifest_id_3,
+            final_registry.at(ManifestIdStrToAppId(manifest_id_3))
+                ->sync_data()
+                .manifest_id());
+  EXPECT_EQ("app3_sync", final_registry.at(ManifestIdStrToAppId(manifest_id_3))
+                             ->sync_data()
+                             .name());
+
+  EXPECT_EQ(manifest_id_4,
+            final_registry.at(ManifestIdStrToAppId(manifest_id_4))
+                ->sync_data()
+                .manifest_id());
+  EXPECT_EQ("app4_sync", final_registry.at(ManifestIdStrToAppId(manifest_id_4))
+                             ->sync_data()
+                             .name());
+
+  const Registry db_registry = database_factory().ReadRegistry();
+  EXPECT_EQ(3u, db_registry.size());
+
+  EXPECT_EQ(manifest_id_1, db_registry.at(ManifestIdStrToAppId(manifest_id_1))
+                               ->sync_data()
+                               .manifest_id());
+  EXPECT_EQ(
+      "app1_registry",
+      db_registry.at(ManifestIdStrToAppId(manifest_id_1))->sync_data().name());
+
+  EXPECT_EQ(manifest_id_3, db_registry.at(ManifestIdStrToAppId(manifest_id_3))
+                               ->sync_data()
+                               .manifest_id());
+  EXPECT_EQ(
+      "app3_sync",
+      db_registry.at(ManifestIdStrToAppId(manifest_id_3))->sync_data().name());
+
+  EXPECT_EQ(manifest_id_4, db_registry.at(ManifestIdStrToAppId(manifest_id_4))
+                               ->sync_data()
+                               .manifest_id());
+  EXPECT_EQ(
+      "app4_sync",
+      db_registry.at(ManifestIdStrToAppId(manifest_id_4))->sync_data().name());
+}
+
+TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges_NoChanges) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
+  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+
+  InitSyncBridge();
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  syncer::EntityChangeList sync_changes;
+  absl::optional<syncer::ModelError> result =
+      sync_bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                                std::move(sync_changes));
+
+  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(0u, sync_bridge().GetRegistryForTesting().size());
+  EXPECT_EQ(0u, database_factory().ReadRegistry().size());
+}
+
 // Tests that the WebApkSyncBridge correctly reports data from the
 // WebApkDatabase.
 TEST_F(WebApkSyncBridgeTest, GetData) {

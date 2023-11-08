@@ -152,6 +152,9 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   // https://docs.google.com/document/d/1Pce17EEuIs0dIbw-L1RZVf2HA4H8-Lu8RqVxHGmdJds.
   void ApplyIncrementalSyncChangesToRegistry(
       std::unique_ptr<RegistryUpdateData> update_data);
+  void PrepareRegistryUpdateFromSyncApps(
+      const syncer::EntityChangeList& sync_changes,
+      RegistryUpdateData* registry_update_from_sync) const;
 
   std::unique_ptr<WebApkDatabase> database_;
   Registry registry_;

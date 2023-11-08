@@ -338,11 +338,30 @@ absl::optional<syncer::ModelError> WebApkSyncBridge::MergeFullSyncData(
   return absl::nullopt;
 }
 
+void WebApkSyncBridge::PrepareRegistryUpdateFromSyncApps(
+    const syncer::EntityChangeList& sync_changes,
+    RegistryUpdateData* registry_update_from_sync) const {
+  const std::vector<const sync_pb::WebApkSpecifics*> sync_update_from_installed;
+  PrepareRegistryUpdateFromInstalledAndSyncApps(
+      sync_update_from_installed, sync_changes, registry_update_from_sync);
+}
+
 absl::optional<syncer::ModelError>
 WebApkSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  // TODO(hartmanng): implement
+  std::unique_ptr<RegistryUpdateData> registry_update_from_sync =
+      std::make_unique<RegistryUpdateData>();
+  PrepareRegistryUpdateFromSyncApps(entity_changes,
+                                    registry_update_from_sync.get());
+
+  database_->Write(
+      *registry_update_from_sync, std::move(metadata_change_list),
+      base::BindOnce(&WebApkSyncBridge::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
+
+  ApplyIncrementalSyncChangesToRegistry(std::move(registry_update_from_sync));
+
   return absl::nullopt;
 }
 
