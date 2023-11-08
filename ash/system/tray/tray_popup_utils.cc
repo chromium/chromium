@@ -242,8 +242,8 @@ std::unique_ptr<views::Painter> TrayPopupUtils::CreateFocusPainter() {
       kFocusBorderThickness, gfx::InsetsF());
 }
 
+// TODO(b/309681875): Rename this method.
 void TrayPopupUtils::ConfigureAsStickyHeader(views::View* view) {
-  view->SetID(VIEW_ID_STICKY_HEADER);
   view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(kMenuSeparatorVerticalPadding, 0)));
   view->SetPaintToLayer();
@@ -296,7 +296,6 @@ bool TrayPopupUtils::CanOpenWebUISettings() {
 }
 
 bool TrayPopupUtils::CanShowNightLightFeatureTile() {
-  CHECK(features::IsQsRevampEnabled());
   return Shell::Get()->session_controller()->ShouldEnableSettings() ||
          (Shell::Get()->session_controller()->GetSessionState() ==
           session_manager::SessionState::LOCKED);
@@ -356,36 +355,7 @@ ui::ImageModel TrayPopupUtils::CreateCheckMark(ui::ColorId color_id) {
 
 // static
 void TrayPopupUtils::SetLabelFontList(views::Label* label, FontStyle style) {
-  // See function header comment.
-  DCHECK(!features::IsQsRevampEnabled() ||
-         !chromeos::features::IsJellyEnabled());
-  label->SetAutoColorReadabilityEnabled(false);
-  const gfx::FontList google_sans_font_list({"Google Sans"}, gfx::Font::NORMAL,
-                                            16, gfx::Font::Weight::MEDIUM);
-  const gfx::FontList roboto_font_list({"Roboto"}, gfx::Font::NORMAL, 16,
-                                       gfx::Font::Weight::MEDIUM);
-
-  switch (style) {
-    case FontStyle::kTitle:
-      label->SetFontList(google_sans_font_list);
-      break;
-    case FontStyle::kPodMenuHeader:
-      label->SetFontList(roboto_font_list);
-      break;
-    case FontStyle::kSubHeader:
-      label->SetFontList(roboto_font_list.Derive(-1, gfx::Font::NORMAL,
-                                                 gfx::Font::Weight::MEDIUM));
-      break;
-    case FontStyle::kSmallTitle:
-      label->SetFontList(roboto_font_list.Derive(-3, gfx::Font::NORMAL,
-                                                 gfx::Font::Weight::MEDIUM));
-      break;
-    case FontStyle::kDetailedViewLabel:
-    case FontStyle::kSystemInfo:
-      label->SetFontList(roboto_font_list.Derive(-4, gfx::Font::NORMAL,
-                                                 gfx::Font::Weight::NORMAL));
-      break;
-  }
+  // TODO(b/309681875): Remove this method.
 }
 
 }  // namespace ash

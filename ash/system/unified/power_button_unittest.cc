@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/power_button.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/shell.h"
@@ -21,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -45,7 +43,6 @@ class PowerButtonTest : public NoSessionAshTestBase {
   ~PowerButtonTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
     NoSessionAshTestBase::SetUp();
 
     // Test with the real system tray bubble so that the power button has a real
@@ -145,7 +142,6 @@ class PowerButtonTest : public NoSessionAshTestBase {
   // Owned by view hierarchy.
   raw_ptr<PowerButton, DanglingUntriaged | ExperimentalAsh> button_ = nullptr;
 
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 

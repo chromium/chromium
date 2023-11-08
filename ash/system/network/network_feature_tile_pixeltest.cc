@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/network/network_feature_pod_controller.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -42,10 +40,7 @@ constexpr char kServicePatternWiFi[] = R"({
 // Pixel test for the quick settings network feature tile view.
 class NetworkFeatureTilePixelTest : public AshTestBase {
  public:
-  NetworkFeatureTilePixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
-  }
+  NetworkFeatureTilePixelTest() = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -130,7 +125,6 @@ class NetworkFeatureTilePixelTest : public AshTestBase {
     return network_state_helper()->ConfigureService(shill_json_string);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::string cellular_path_;
   std::string ethernet_path_;
   std::string wifi_path_;

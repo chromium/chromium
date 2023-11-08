@@ -23,7 +23,7 @@ class FocusModeFeaturePodControllerTest : public AshTestBase {
  public:
   FocusModeFeaturePodControllerTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFocusMode, features::kQsRevamp},
+        /*enabled_features=*/{features::kFocusMode},
         /*disabled_features=*/{});
   }
   ~FocusModeFeaturePodControllerTest() override = default;

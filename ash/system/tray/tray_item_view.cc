@@ -189,12 +189,10 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
     // animation is going to run, so don't hide the tray item here.
     // `StatusAreaAnimationController` will call `ImmediatelyUpdateVisibility()`
     // once the hide animation is over to ensure that all tray items are given a
-    // chance to properly update their visibilities. Only applicable when the
-    // QS revamp is enabled.
-    if (features::IsQsRevampEnabled() && !target_visible_ &&
-        shelf_->status_area_widget()
-            ->animation_controller()
-            ->is_hide_animation_scheduled()) {
+    // chance to properly update their visibilities.
+    if (!target_visible_ && shelf_->status_area_widget()
+                                ->animation_controller()
+                                ->is_hide_animation_scheduled()) {
       return;
     }
     animation_->SetSlideDuration(base::TimeDelta());

@@ -24,7 +24,6 @@ class BoxLayout;
 class Button;
 class ProgressBar;
 class ScrollView;
-class Separator;
 }  // namespace views
 
 namespace ash {
@@ -73,8 +72,7 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   void CreateScrollableList();
 
   // Adds a targetable row to `container` containing `icon` and `text`.
-  // Pre-QsRevamp the `container` should be scroll_content().
-  // Post-QsRevamp the `container` may be a RoundedContainer.
+  // The `container` should be a RoundedContainer.
   HoverHighlightView* AddScrollListItem(views::View* container,
                                         const gfx::VectorIcon& icon,
                                         const std::u16string& text);
@@ -83,8 +81,7 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // checkbox. `checked` determines whether the checkbox is checked or not.
   // `enterprise_managed` determines whether or not there will be an enterprise
   // managed icon for that item.
-  // Pre-QsRevamp the `container` should be scroll_content().
-  // Post-QsRevamp the `container` may be a RoundedContainer.
+  // The `container` should be a RoundedContainer.
   HoverHighlightView* AddScrollListCheckableItem(
       views::View* container,
       const gfx::VectorIcon& icon,
@@ -92,18 +89,12 @@ class ASH_EXPORT TrayDetailedView : public views::View,
       bool checked,
       bool enterprise_managed = false);
 
-  // Adds a sticky sub header to `container` containing `icon` and a text
-  // represented by `text_id` resource id.
-  TriView* AddScrollListSubHeader(views::View* container,
-                                  const gfx::VectorIcon& icon,
-                                  int text_id);
-
   // Removes (and destroys) all child views.
   void Reset();
 
   // Shows or hides the progress bar below the title row. It occupies the same
-  // space as the separator, so when shown the separator is hidden. If
-  // |progress_bar_| doesn't already exist it will be created.
+  // space as the created placeholder. If `progress_bar_` doesn't already exist
+  // it will be created.
   void ShowProgress(double value, bool visible);
 
   // Helper functions which create and return the settings and help buttons,
@@ -124,11 +115,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   views::ScrollView* scroller() const { return scroller_; }
   views::View* scroll_content() const { return scroll_content_; }
 
-  // Gets called in the constructor of the `CalendarView`, or any other views in
-  // the future that don't have a separator to modify the value of
-  // `has_separator` to false.
-  void IgnoreSeparator();
-
  private:
   friend class TrayDetailedViewTest;
 
@@ -142,9 +128,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // TrayDetailedView.
   std::unique_ptr<TriView> CreateTitleTriView(int string_id,
                                               bool create_back_button);
-
-  // Returns the separator used between the title row and the contents.
-  std::unique_ptr<views::Separator> CreateTitleSeparator();
 
   // Creates and adds subclass-specific buttons to the title row.
   virtual void CreateExtraTitleRowButtons();
@@ -168,10 +151,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // The back button that appears in the title row. Owned by views hierarchy.
   raw_ptr<views::Button, DanglingUntriaged | ExperimentalAsh> back_button_ =
       nullptr;
-
-  // Gets modified to false in the constructor of the view if it doesn't have a
-  // separator.
-  bool has_separator_ = true;
 
   // The accessible name for the `progress_bar_`.
   absl::optional<std::u16string> progress_bar_accessible_name_;

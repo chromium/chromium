@@ -436,10 +436,6 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kPane);
   GetViewAccessibility().OverrideName(GetClassName());
 
-  // Since there's no separator in the `CalendarView`, first sets
-  // `has_separator` in `TrayDetailedView` to false.
-  IgnoreSeparator();
-
   CreateTitleRow(IDS_ASH_CALENDAR_TITLE, /*create_back_button=*/false);
 
   // Adds the progress bar to layout when initialization to avoid changing the

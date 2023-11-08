@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/feature_tile.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/shell.h"
 #include "ash/system/tray/tray_constants.h"
@@ -15,7 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -105,8 +103,7 @@ class MockFeaturePodController : public FeaturePodControllerBase {
 
 class FeatureTileTest : public AshTestBase {
  public:
-  FeatureTileTest() { feature_list_.InitAndEnableFeature(features::kQsRevamp); }
-
+  FeatureTileTest() = default;
   FeatureTileTest(const FeatureTileTest&) = delete;
   FeatureTileTest& operator=(const FeatureTileTest&) = delete;
   ~FeatureTileTest() override = default;
@@ -129,9 +126,6 @@ class FeatureTileTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(FeatureTileTest, PrimaryTile_LaunchSurface) {

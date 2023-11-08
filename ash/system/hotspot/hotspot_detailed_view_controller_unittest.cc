@@ -32,8 +32,7 @@ class HotspotDetailedViewControllerTest : public AshTestBase {
   ~HotspotDetailedViewControllerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kHotspot, features::kQsRevamp}, {});
+    scoped_feature_list_.InitWithFeatures({features::kHotspot}, {});
     cros_hotspot_config_test_helper_ =
         std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
             /*use_fake_implementation=*/true);

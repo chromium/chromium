@@ -269,7 +269,7 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
  private:
   class TrayWidgetObserver;
   class TrayBackgroundViewSessionChangeHandler;
-  friend class StatusAreaWidgetQSRevampTest;
+  friend class StatusAreaWidgetTest;
 
   void StartVisibilityAnimation(bool visible);
 

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
@@ -131,20 +130,17 @@ std::u16string SystemTrayTestApi::GetBubbleViewTooltip(int view_id) {
 }
 
 std::u16string SystemTrayTestApi::GetShutdownButtonTooltip() {
-  // When the QS revamp is enabled the power button view that has ID
-  // `VIEW_ID_QS_POWER_BUTTON` is not the view that has the tooltip; what we're
-  // looking for is actually the child `ash::IconButton` view.
-  if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
-    auto* icon_button = GetTray()
-                            ->bubble()
-                            ->quick_settings_view()
-                            ->footer_for_testing()
-                            ->power_button_for_testing()
-                            ->button_content_for_testing();
-    return icon_button ? icon_button->GetTooltipText(gfx::Point())
-                       : std::u16string();
-  }
-  return GetBubbleViewTooltip(VIEW_ID_QS_POWER_BUTTON);
+  // The power button view that has ID `VIEW_ID_QS_POWER_BUTTON` is not the view
+  // that has the tooltip; what we're looking for is actually the child
+  // `ash::IconButton` view.
+  auto* icon_button = GetTray()
+                          ->bubble()
+                          ->quick_settings_view()
+                          ->footer_for_testing()
+                          ->power_button_for_testing()
+                          ->button_content_for_testing();
+  return icon_button ? icon_button->GetTooltipText(gfx::Point())
+                     : std::u16string();
 }
 
 std::u16string SystemTrayTestApi::GetBubbleViewText(int view_id) {

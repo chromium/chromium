@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/root_window_controller.h"
@@ -18,7 +17,6 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -35,27 +33,15 @@ AccountId GetActiveUser() {
       ->user_info.account_id;
 }
 
-class UserChooserDetailedViewControllerTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class UserChooserDetailedViewControllerTest : public AshTestBase {
  public:
-  UserChooserDetailedViewControllerTest() {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    }
-  }
-
+  UserChooserDetailedViewControllerTest() = default;
   UserChooserDetailedViewControllerTest(
       const UserChooserDetailedViewControllerTest&) = delete;
   UserChooserDetailedViewControllerTest& operator=(
       const UserChooserDetailedViewControllerTest&) = delete;
 
   ~UserChooserDetailedViewControllerTest() override = default;
-
-  // TODO(b/305075031) clean up after the flag is removed.
-  bool IsQsRevampEnabled() const { return true; }
 
   // AshTestBase
   void SetUp() override {
@@ -71,13 +57,6 @@ class UserChooserDetailedViewControllerTest
   }
 
   void ShowUserChooserView() {
-    if (!IsQsRevampEnabled()) {
-      // Click the user avatar button.
-      ASSERT_TRUE(IsBubbleViewVisible(VIEW_ID_QS_USER_AVATAR_BUTTON));
-      tray_test_api()->ClickBubbleView(VIEW_ID_QS_USER_AVATAR_BUTTON);
-      return;
-    }
-
     // Click the power button to show the menu.
     ASSERT_TRUE(IsBubbleViewVisible(VIEW_ID_QS_POWER_BUTTON));
     tray_test_api()->ClickBubbleView(VIEW_ID_QS_POWER_BUTTON);
@@ -99,16 +78,11 @@ class UserChooserDetailedViewControllerTest
   SystemTrayTestApi* tray_test_api() { return tray_test_api_.get(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animations_;
   std::unique_ptr<SystemTrayTestApi> tray_test_api_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         UserChooserDetailedViewControllerTest,
-                         testing::Bool());
-
-TEST_P(UserChooserDetailedViewControllerTest,
+TEST_F(UserChooserDetailedViewControllerTest,
        ShowMultiProfileLoginWithOverview) {
   // Enter overview mode.
   EnterOverview();
@@ -127,7 +101,7 @@ TEST_P(UserChooserDetailedViewControllerTest,
   tray_test_api()->ClickBubbleView(VIEW_ID_ADD_USER_BUTTON);
 }
 
-TEST_P(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
+TEST_F(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
   // Add a secondary user.
   const AccountId secondary_user =
       AccountId::FromUserEmail("secondary@gmail.com");
@@ -157,7 +131,7 @@ TEST_P(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
   EXPECT_EQ(GetActiveUser(), secondary_user);
 }
 
-TEST_P(UserChooserDetailedViewControllerTest,
+TEST_F(UserChooserDetailedViewControllerTest,
        MultiProfileLoginDisabledForFamilyLinkUsers) {
   EXPECT_TRUE(UserChooserDetailedViewController::IsUserChooserEnabled());
 
