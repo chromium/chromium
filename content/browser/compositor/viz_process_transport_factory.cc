@@ -63,7 +63,7 @@ namespace {
 // Controls if browser main thread context can be backed by raster decoder.
 BASE_FEATURE(kUseRasterDecoderForBrowserContext,
              "UseRasterDecoderForBrowserContext",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool UseRasterDecoderForBrowserContext() {
   // Using raster decoder is only possible if VideoResourceUpdater is using
