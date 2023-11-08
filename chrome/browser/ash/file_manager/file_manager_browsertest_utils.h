@@ -32,6 +32,10 @@ struct TestCase {
 
   TestCase& TabletMode();
 
+  TestCase& SetLocale(const std::string& locale);
+
+  TestCase& SetCountry(const std::string& country);
+
   TestCase& EnableGenericDocumentsProvider();
 
   TestCase& DisableGenericDocumentsProvider();
@@ -97,6 +101,8 @@ struct TestCase {
   TestCase& EnableOsFeedback();
 
   TestCase& EnableGoogleOneOfferFilesBanner();
+
+  TestCase& DisableGoogleOneOfferFilesBanner();
 
   TestCase& FeatureIds(const std::vector<std::string>& ids);
 
