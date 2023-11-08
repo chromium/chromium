@@ -27,4 +27,8 @@ void LogComposeRequestDuration(base::TimeDelta duration, bool is_valid) {
       is_valid ? kComposeResponseDurationOk : kComposeResponseDurationError,
       duration);
 }
+
+void LogComposeSessionCloseReason(ComposeSessionCloseReason reason) {
+  UMA_HISTOGRAM_ENUMERATION("Compose.SessionCloseReason", reason);
+}
 }  // namespace compose

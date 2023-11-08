@@ -53,6 +53,7 @@ ComposeSession::ComposeSession(
     ComposeCallback callback)
     : executor_(executor),
       handler_receiver_(this),
+      close_reason_(compose::ComposeSessionCloseReason::kEndedImplicitly),
       web_contents_(web_contents),
       weak_ptr_factory_(this) {
   callback_ = std::move(callback);
@@ -63,7 +64,9 @@ ComposeSession::ComposeSession(
                                                weak_ptr_factory_.GetWeakPtr()));
 }
 
-ComposeSession::~ComposeSession() = default;
+ComposeSession::~ComposeSession() {
+  LogComposeSessionCloseReason(close_reason_);
+}
 
 void ComposeSession::Bind(
     mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
@@ -247,4 +250,9 @@ void ComposeSession::RefreshInnerText() {
   inner_text_extractor_.Extract(web_contents_,
                                 base::BindOnce(&ComposeSession::FindInnerText,
                                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ComposeSession::SetCloseReason(
+    compose::ComposeSessionCloseReason close_reason) {
+  close_reason_ = close_reason;
 }

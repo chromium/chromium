@@ -75,6 +75,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.SessionCloseReason"
+    enum="ComposeSessionCloseReasonType" expires_after="2024-11-01">
+  <owner>petewil@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    When a session ends, record how we exited the session, whether by accepting
+    the input, canceling wiht the close button, or losing focus and not going
+    back to the session.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

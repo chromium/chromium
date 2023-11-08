@@ -25,6 +25,7 @@
 #include "chrome/common/compose/type_conversions.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
+#include "components/compose/core/browser/compose_metrics.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -127,7 +128,13 @@ void ChromeComposeClient::ShowUI() {
 void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   switch (reason) {
     case compose::mojom::CloseReason::kCloseButton:
+      SetSessionCloseReason(
+          compose::ComposeSessionCloseReason::kAcceptedSuggestion);
+      RemoveActiveSession();
+      break;
     case compose::mojom::CloseReason::kInsertButton:
+      SetSessionCloseReason(
+          compose::ComposeSessionCloseReason::kCloseButtonPressed);
       RemoveActiveSession();
       break;
   }
@@ -182,10 +189,25 @@ void ChromeComposeClient::RemoveActiveSession() {
   last_compose_field_id_.reset();
 }
 
+void ChromeComposeClient::SetSessionCloseReason(
+    compose::ComposeSessionCloseReason close_reason) {
+  if (debug_session_) {
+    return;
+  }
+
+  if (last_compose_field_id_.has_value()) {
+    auto it = sessions_.find(last_compose_field_id_.value());
+    if (it != sessions_.end()) {
+      it->second->SetCloseReason(close_reason);
+    }
+  }
+}
+
 void ChromeComposeClient::RemoveAllSessions() {
   if (debug_session_) {
     debug_session_.reset();
   }
+
   sessions_.erase(sessions_.begin(), sessions_.end());
   last_compose_field_id_.reset();
 }

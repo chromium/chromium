@@ -229,6 +229,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     return any;
   }
 
+  const base::HistogramTester& histograms() const { return histogram_tester_; }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -238,6 +240,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   MockComposeDialog compose_dialog_;
   autofill::FormFieldData field_data_;
   raw_ptr<content::WebContents> contents_;
+  base::HistogramTester histogram_tester_;
 
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialog>>
       callback_router_;
@@ -1002,6 +1005,36 @@ TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
 
   // All session should be deleted.
   EXPECT_EQ(0, client().GetSessionCountForTest());
+}
+
+TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
+  ShowDialogAndBindMojo();
+  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  histograms().ExpectBucketCount("Compose.SessionCloseReason",
+                                 0,  // close button pressed
+                                 1);
+}
+
+TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
+  ShowDialogAndBindMojo();
+  client().CloseUI(compose::mojom::CloseReason::kInsertButton);
+
+  histograms().ExpectBucketCount("Compose.SessionCloseReason",
+                                 1,  // Accept button pressed
+                                 1);
+}
+
+TEST_F(ChromeComposeClientTest, LoseFocusHistogramTest) {
+  ShowDialogAndBindMojo();
+
+  // Dismiss dialog by losing focus by navigating.
+  GURL next_page("http://example.com/a.html");
+  NavigateAndCommit(web_contents(), next_page);
+
+  histograms().ExpectBucketCount("Compose.SessionCloseReason",
+                                 2,  // lost focus
+                                 1);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)

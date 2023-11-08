@@ -42,6 +42,13 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="User permission is denied"/>
 </enum>
 
+<enum name="ComposeSessionCloseReasonType">
+  <int value="0" label="Accepted suggestion"/>
+  <int value="1" label="Close button"/>
+  <int value="2"
+      label="Session implicitly closed, often by web contents destruction"/>
+</enum>
+
 <enum name="ComposeShowStatus">
   <int value="0" label="Menu item displayed"/>
   <int value="1" label="Blocked for generic reason"/>

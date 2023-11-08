@@ -13,6 +13,7 @@
 #include "chrome/browser/compose/inner_text_extractor.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/compose/core/browser/compose_metrics.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -96,6 +97,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Refresh the inner text on session resumption.
   void RefreshInnerText();
 
+  void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
+
  private:
   void ProcessError(compose::mojom::ComposeStatus status);
   void ModelExecutionCallback(
@@ -126,6 +129,9 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Renderer provided text selection.
   std::string initial_input_;
+
+  // Reason that a compose session was exited, used for metrics.
+  compose::ComposeSessionCloseReason close_reason_;
 
   // ComposeSession is owned by WebContentsUserData, so `web_contents_` outlives
   // `this`.

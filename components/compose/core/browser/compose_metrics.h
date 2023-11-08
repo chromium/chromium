@@ -26,6 +26,14 @@ enum class ComposeContextMenuCtrEvent {
   kComposeOpened = 1,
   kMaxValue = kComposeOpened,
 };
+// Keep in sync with ComposeContextMenuCtrEvent in
+// src/tools/metrics/histograms/enums.xml.
+enum class ComposeSessionCloseReason {
+  kAcceptedSuggestion = 0,
+  kCloseButtonPressed = 1,
+  kEndedImplicitly = 2,
+  kMaxValue = kEndedImplicitly,
+};
 
 // Enum for recording the show status of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -49,6 +57,9 @@ void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 // Log the duration of a compose request. |is_valid| indicates the status of
 // the request.
 void LogComposeRequestDuration(base::TimeDelta duration, bool is_ok);
+
+void LogComposeSessionCloseReason(ComposeSessionCloseReason reason);
+
 }  // namespace compose
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_

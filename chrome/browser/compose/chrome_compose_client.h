@@ -114,6 +114,9 @@ class ChromeComposeClient
   void CreateSessionIfNeeded(const autofill::FormFieldData& trigger_field,
                              ComposeCallback callback);
 
+  // Set the exit reason for a session.
+  void SetSessionCloseReason(compose::ComposeSessionCloseReason close_reason);
+
   // Removes `last_compose_field_id_` from `sessions_` and resets
   // `last_compose_field_id_`.
   void RemoveActiveSession();
