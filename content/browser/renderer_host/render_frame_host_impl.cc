@@ -8734,17 +8734,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features) {
-  if (!blink::features::IsFencedFramesEnabled()) {
-    mojo::ReportBadMessage(
-        "SendFencedFrameReportingBeacon() received while FencedFrames not "
-        "enabled.");
-    return;
-  }
-
-  if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
-    mojo::ReportBadMessage(
-        "The data provided to SendFencedFrameReportingBeacon() exceeds the "
-        "maximum length, which is 64KB.");
+  if (!IsFencedFrameReportingFromRendererAllowed()) {
     return;
   }
 
@@ -8752,7 +8742,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
        destinations) {
     SendFencedFrameReportingBeaconInternal(
         DestinationEnumEvent(event_type, event_data), destination,
-        /*from_renderer=*/true, attribution_reporting_runtime_features);
+        attribution_reporting_runtime_features);
   }
 }
 
@@ -8762,13 +8752,6 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
     const GURL& destination_url,
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features) {
-  if (!blink::features::IsFencedFramesEnabled()) {
-    mojo::ReportBadMessage(
-        "SendFencedFrameReportingBeaconToCustomURL() received while "
-        "FencedFrames not enabled.");
-    return;
-  }
-
   if (!base::FeatureList::IsEnabled(
           blink::features::kAdAuctionReportingWithMacroApi)) {
     mojo::ReportBadMessage(
@@ -8785,15 +8768,23 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
     return;
   }
 
+  if (!IsFencedFrameReportingFromRendererAllowed()) {
+    return;
+  }
+
   SendFencedFrameReportingBeaconInternal(
       DestinationURLEvent(destination_url),
       blink::FencedFrame::ReportingDestination::kBuyer,
-      /*from_renderer=*/true, attribution_reporting_runtime_features);
+      attribution_reporting_runtime_features);
 }
 
 void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
     NavigationRequest& navigation_request,
     blink::mojom::AutomaticBeaconType event_type) {
+  if (!blink::features::IsFencedFramesEnabled()) {
+    return;
+  }
+
   // The automatic beacon only cares about top-frame navigations.
   if (!IsOutermostMainFrame()) {
     return;
@@ -8885,8 +8876,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
       }
       initiator_rfh->SendFencedFrameReportingBeaconInternal(
           AutomaticBeaconEvent(event_type, data), destination,
-          /*from_renderer=*/false, attribution_reporting_features,
-          navigation_request.GetNavigationId());
+          attribution_reporting_features, navigation_request.GetNavigationId());
     }
   } else {
     if (!info->destinations.empty()) {
@@ -8897,7 +8887,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
          info->destinations) {
       initiator_rfh->SendFencedFrameReportingBeaconInternal(
           AutomaticBeaconEvent(event_type, info->data), destination,
-          /*from_renderer=*/false, info->attribution_reporting_runtime_features,
+          info->attribution_reporting_runtime_features,
           navigation_request.GetNavigationId());
     }
   }
@@ -8906,36 +8896,23 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
       ->MaybeResetFencedFrameAutomaticBeaconReportEventData(event_type);
 }
 
-void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
-    const FencedFrameReporter::DestinationVariant& event_variant,
-    blink::FencedFrame::ReportingDestination destination,
-    bool from_renderer,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features,
-    absl::optional<int64_t> navigation_id) {
+bool RenderFrameHostImpl::IsFencedFrameReportingFromRendererAllowed() {
+  if (!blink::features::IsFencedFramesEnabled()) {
+    mojo::ReportBadMessage(
+        "Request to send reporting beacons received while FencedFrames not "
+        "enabled.");
+    return false;
+  }
+
   if (!IsActive()) {
     // reportEvent is not allowed when this RenderFrameHost or one of its
     // ancestors is not active.
-    return;
+    return false;
   }
 
   // Get the reporting metadata associated with the fenced frame.
   const absl::optional<FencedFrameProperties>& fenced_frame_properties =
       frame_tree_node_->GetFencedFrameProperties();
-  if (fenced_frame_properties.has_value() &&
-      fenced_frame_properties->is_ad_component_) {
-    if (from_renderer) {
-      // Direct invocation of fence.reportEvent from an ad component is
-      // disallowed.
-      AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
-          "This frame is an ad component. It is not allowed to call "
-          "fence.reportEvent.");
-      return;
-    }
-    // Only automatic beacon events are allowed from ad components.
-    CHECK(absl::holds_alternative<AutomaticBeaconEvent>(event_variant));
-  }
 
   if (!fenced_frame_properties.has_value() ||
       !fenced_frame_properties->fenced_frame_reporter_) {
@@ -8945,7 +8922,17 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     // renderer.
     mojo::ReportBadMessage(
         "This frame has no fenced frame reporter registered in the browser.");
-    return;
+    return false;
+  }
+
+  if (fenced_frame_properties->is_ad_component_) {
+    // Direct invocation of fence.reportEvent from an ad component is
+    // disallowed.
+    AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "This frame is an ad component. It is not allowed to call "
+        "fence.reportEvent.");
+    return false;
   }
 
   if (!fenced_frame_properties->mapped_url_.has_value() ||
@@ -8955,6 +8942,24 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     mojo::ReportBadMessage(
         "This frame is cross-origin to the mapped url of its fenced frame "
         "config, so the renderer should not be able to call reportEvent.");
+    return false;
+  }
+
+  return true;
+}
+
+void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
+    const FencedFrameReporter::DestinationVariant& event_variant,
+    blink::FencedFrame::ReportingDestination destination,
+    network::AttributionReportingRuntimeFeatures
+        attribution_reporting_runtime_features,
+    absl::optional<int64_t> navigation_id) {
+  if (absl::holds_alternative<DestinationEnumEvent>(event_variant) &&
+      absl::get<DestinationEnumEvent>(event_variant).data.length() >
+          blink::kFencedFrameMaxBeaconLength) {
+    mojo::ReportBadMessage(
+        "The data provided to SendFencedFrameReportingBeaconInternal() exceeds "
+        "the maximum length, which is 64KB.");
     return;
   }
 
@@ -8963,11 +8968,13 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
   // depending on the error.
   blink::mojom::ConsoleMessageLevel console_message_level =
       blink::mojom::ConsoleMessageLevel::kError;
-  if (!fenced_frame_properties->fenced_frame_reporter_->SendReport(
-          event_variant, destination,
-          /*request_initiator_frame=*/this,
-          attribution_reporting_runtime_features, error_message,
-          console_message_level, GetFrameTreeNodeId(), navigation_id)) {
+
+  if (!frame_tree_node_->GetFencedFrameProperties()
+           ->fenced_frame_reporter_->SendReport(
+               event_variant, destination,
+               /*request_initiator_frame=*/this,
+               attribution_reporting_runtime_features, error_message,
+               console_message_level, GetFrameTreeNodeId(), navigation_id)) {
     AddMessageToConsole(console_message_level, error_message);
   }
 }

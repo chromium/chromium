@@ -4079,20 +4079,24 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // document commits first.
   void ClosePageTimeout(ClosePageSource source);
 
-  // Helper function that handles creating and sending a fenced frame beacon.
-  // This also handles sending console messages if the call to send the beacon
-  // originated from the renderer.
-  // Calls to this function for automatic beacons (i.e. the
-  // "reserved.top_navigation_*" beacon) will originate from the browser. All
-  // other fenced frame beacon calls happen through a `fence.sendBeacon()`
-  // JavaScript call which will originate from the renderer.
+  // Perform pre-conditions checks on RenderFrameHost lifecycle state and fenced
+  // frame properties that are common for `SendFencedFrameReportingBeacon()` and
+  // `SendFencedFrameReportingBeaconToCustomURL()`, both are from renderers. If
+  // checks fail, it implies none of the reporting beacons can be sent. This
+  // function should only handle checks not specific to individual destination
+  // and event data.
+  // Note: This function has side effects. It may terminate misbehaving
+  // renderers. It may also add messages for certain cases that return false.
+  bool IsFencedFrameReportingFromRendererAllowed();
+
+  // Helper function that handles creating and sending a fenced frame beacon for
+  // a given destination.
   // `attribution_reporting_runtime_features` indicates whether Attribution
   // Reporting API related runtime features are enabled and is needed for
   // integration with Attribution Reporting API.
   void SendFencedFrameReportingBeaconInternal(
       const FencedFrameReporter::DestinationVariant& event_variant,
       blink::FencedFrame::ReportingDestination destination,
-      bool from_renderer,
       network::AttributionReportingRuntimeFeatures
           attribution_reporting_features,
       absl::optional<int64_t> navigation_id = absl::nullopt);
