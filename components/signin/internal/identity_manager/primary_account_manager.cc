@@ -134,16 +134,18 @@ class PrimaryAccountManager::ScopedPrefCommit {
   }
 
   void SetBoolean(const std::string& path, bool value) {
-    if (pref_service_->GetBoolean(path) == value)
+    if (pref_service_->GetBoolean(path) == value) {
       return;
+    }
 
     need_commit_ = true;
     pref_service_->SetBoolean(path, value);
   }
 
   void SetString(const std::string& path, const std::string& value) {
-    if (pref_service_->GetString(path) == value)
+    if (pref_service_->GetString(path) == value) {
       return;
+    }
 
     need_commit_ = true;
     pref_service_->SetString(path, value);
@@ -644,8 +646,11 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
 
   LogPrimaryAccountChangeMetrics(event_details, event_source);
 
-  for (Observer& observer : observers_)
+  client_->OnPrimaryAccountChangedWithEventSource(event_details, event_source);
+
+  for (Observer& observer : observers_) {
     observer.OnPrimaryAccountChanged(event_details);
+  }
 }
 
 void PrimaryAccountManager::OnRefreshTokensLoaded() {

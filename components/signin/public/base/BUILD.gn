@@ -101,6 +101,9 @@ static_library("test_support") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/prefs",
+
+    # TODO(b/309104936): Remove this unwanted dependency.
+    "//components/signin/public/identity_manager:identity_manager",
     "//crypto",
     "//google_apis:test_support",
   ]

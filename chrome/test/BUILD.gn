@@ -3340,6 +3340,7 @@ if (!is_android) {
 
     if (enable_dice_support) {
       sources += [
+        "../browser/signin/chrome_signin_client_browsertest.cc",
         "../browser/signin/dice_browsertest.cc",
         "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
         "../browser/signin/signin_ui_util_browsertest.cc",

@@ -11,10 +11,13 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -32,16 +35,21 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/url_and_title.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/metrics/metrics_service.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/version_info/channel.h"
@@ -49,6 +57,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -106,6 +115,56 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     signin_metrics::ProfileSignout::
         kUserClickedSignoutFromUserPolicyNotificationDialog,
 };
+
+// Returns the histogram suffix name per group of `signin_metrics::AccessPoint`.
+std::string_view NameOfGroupedAccessPointHistogram(
+    signin_metrics::AccessPoint access_point) {
+  switch (access_point) {
+    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+      return ".PreUnoWebSignin";
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
+      return ".UnoSigninBubble";
+    case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
+      return ".ProfileCreation";
+    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+      return ".ProfileMenu";
+    default:
+      return ".Other";
+  }
+}
+
+void RecordBookmarksCounts(signin_metrics::AccessPoint access_point,
+                           signin::ConsentLevel consent_level,
+                           size_t all_bookmarks_count,
+                           size_t bar_bookmarks_count) {
+  static constexpr std::string_view kBaseHistogramName = "Signin.Bookmarks";
+
+  std::string_view consent_level_token =
+      consent_level == signin::ConsentLevel::kSignin ? ".OnSignin" : ".OnSync";
+
+  std::string all_bookmarks_histogram_name =
+      base::StrCat({kBaseHistogramName, consent_level_token, ".AllBookmarks"});
+  base::UmaHistogramCounts1000(all_bookmarks_histogram_name,
+                               all_bookmarks_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat({all_bookmarks_histogram_name,
+                    NameOfGroupedAccessPointHistogram(access_point)}),
+      all_bookmarks_count);
+
+  std::string bar_bookmarks_histogram_name =
+      base::StrCat({kBaseHistogramName, consent_level_token, ".BookmarksBar"});
+  base::UmaHistogramCounts1000(bar_bookmarks_histogram_name,
+                               bar_bookmarks_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat({bar_bookmarks_histogram_name,
+                    NameOfGroupedAccessPointHistogram(access_point)}),
+      bar_bookmarks_count);
+}
 
 }  // namespace
 
@@ -256,6 +315,34 @@ version_info::Channel ChromeSigninClient::GetClientChannel() {
   return chrome::GetChannel();
 }
 
+void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
+    signin::PrimaryAccountChangeEvent event_details,
+    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+        event_source) {
+  for (signin::ConsentLevel consent_level :
+       {signin::ConsentLevel::kSignin, signin::ConsentLevel::kSync}) {
+    switch (event_details.GetEventTypeFor(consent_level)) {
+      case signin::PrimaryAccountChangeEvent::Type::kNone:
+      case signin::PrimaryAccountChangeEvent::Type::kCleared:
+        // Only record metrics when setting the primary account.
+        break;
+      case signin::PrimaryAccountChangeEvent::Type::kSet:
+        CHECK(
+            absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
+        absl::optional<size_t> all_bookmarks_count = GetAllBookmarksCount();
+        absl::optional<size_t> bar_bookmarks_count =
+            GetBookmarkBarBookmarksCount();
+        if (all_bookmarks_count.has_value() &&
+            bar_bookmarks_count.has_value()) {
+          RecordBookmarksCounts(
+              absl::get<signin_metrics::AccessPoint>(event_source),
+              consent_level, all_bookmarks_count.value(),
+              bar_bookmarks_count.value());
+        }
+    }
+  }
+}
+
 SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
     bool has_sync_account,
     const absl::optional<signin_metrics::ProfileSignout> signout_source) const {
@@ -343,6 +430,41 @@ void ChromeSigninClient::OnTokenFetchComplete(bool token_is_valid) {
       /*skip_beforeunload=*/true);
 }
 #endif
+
+absl::optional<size_t> ChromeSigninClient::GetAllBookmarksCount() {
+  bookmarks::BookmarkModel* bookmarks =
+      BookmarkModelFactory::GetForBrowserContext(profile_);
+  if (!bookmarks || !bookmarks->root_node()) {
+    return absl::nullopt;
+  }
+
+  // Recursive traversal of the root node, counting URLs only.
+  size_t count = 0;
+  ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(
+      bookmarks->root_node());
+  while (iterator.has_next()) {
+    const bookmarks::BookmarkNode* const node = iterator.Next();
+    // Skip folders.
+    if (node->is_url()) {
+      ++count;
+    }
+  }
+  return count;
+}
+
+absl::optional<size_t> ChromeSigninClient::GetBookmarkBarBookmarksCount() {
+  bookmarks::BookmarkModel* bookmarks =
+      BookmarkModelFactory::GetForBrowserContext(profile_);
+  if (!bookmarks || !bookmarks->bookmark_bar_node()) {
+    return absl::nullopt;
+  }
+
+  // It is intended that we only count the visible bookmarks on the bar, meaning
+  // we are not interested in the bookmarks within a folder or subfolder of the
+  // bar. Counting the children only gets us the first layer that appears on the
+  // bar which is the count we need (Note: a folder on that layer counts as 1).
+  return bookmarks->bookmark_bar_node()->children().size();
+}
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the account that must be auto-signed-in to the Main Profile in

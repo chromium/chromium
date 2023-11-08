@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/version_info/channel.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -131,6 +132,11 @@ std::unique_ptr<GaiaAuthFetcher> TestSigninClient::CreateGaiaAuthFetcher(
 version_info::Channel TestSigninClient::GetClientChannel() {
   return version_info::Channel::UNKNOWN;
 }
+
+void TestSigninClient::OnPrimaryAccountChangedWithEventSource(
+    signin::PrimaryAccountChangeEvent event_details,
+    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+        event_source) {}
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 absl::optional<account_manager::Account>
