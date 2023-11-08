@@ -104,6 +104,11 @@ PrefetchRequest CreateScriptRequest(const GURL& url,
                          network::mojom::RequestDestination::kScript);
 }
 
+PrefetchRequest CreateFontRequest(const GURL& url, const GURL& main_frame_url) {
+  return PrefetchRequest(url, CreateNetworkIsolationKey(main_frame_url),
+                         network::mojom::RequestDestination::kFont);
+}
+
 }  // namespace
 
 // A test fixture for the PrefetchManager.
@@ -630,6 +635,44 @@ TEST_F(PrefetchManagerTest, Throttles) {
   EXPECT_EQ(iter->second, "injected value");
 
   content::SetBrowserClientForTesting(old_content_browser_client);
+}
+
+// Tests prefetching a font URL.
+TEST_F(PrefetchManagerTest, Font) {
+  GURL main_frame_url("https://abc.invalid");
+  GURL subresource_url("https://xyz.invalid/font.woff");
+  PrefetchRequest request = CreateFontRequest(subresource_url, main_frame_url);
+
+  base::RunLoop loop;
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
+        network::ResourceRequest& request = params->url_request;
+        EXPECT_EQ(request.url, subresource_url);
+        EXPECT_TRUE(request.load_flags & net::LOAD_PREFETCH);
+
+        EXPECT_EQ(request.referrer_policy, net::ReferrerPolicy::NO_REFERRER);
+        EXPECT_EQ(request.destination,
+                  network::mojom::RequestDestination::kFont);
+        EXPECT_EQ(
+            static_cast<blink::mojom::ResourceType>(request.resource_type),
+            blink::mojom::ResourceType::kFontResource);
+
+        EXPECT_EQ(request.mode, network::mojom::RequestMode::kNoCors);
+
+        std::string purpose;
+        EXPECT_TRUE(request.headers.GetHeader("Purpose", &purpose));
+        EXPECT_EQ(purpose, "prefetch");
+
+        loop.Quit();
+        return false;
+      }));
+  prefetch_manager_->Start(main_frame_url, {request});
+  loop.Run();
+
+  EXPECT_THAT(fake_delegate_->GetPrefetchedURLsForURL(main_frame_url),
+              UnorderedElementsAreArray({subresource_url}));
+
+  fake_delegate_->WaitForPrefetchFinished(main_frame_url);
 }
 
 }  // namespace predictors

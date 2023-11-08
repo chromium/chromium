@@ -655,6 +655,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
     LcppPreloadLazyLoadImageType>
     kLCPCriticalPathPredictorPreloadLazyLoadImageType;
 
+// Enables prefetch using the LCPP font URL predictor.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLCPPFontURLPredictorEnablePrefetch;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLightweightNoStatePrefetch);

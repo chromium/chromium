@@ -157,6 +157,7 @@ bool LoadingPredictor::PrepareForPageLoad(
   // TODO(crbug.com/1493768): make prefetch work for platforms without the
   // optimization guide.
   if (base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor) &&
+      blink::features::kLCPPFontURLPredictorEnablePrefetch.Get() &&
       base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) &&
       features::kLoadingPredictorPrefetchSubresourceType.Get() ==
           features::PrefetchSubresourceType::kAll) {

@@ -201,6 +201,8 @@ blink::mojom::ResourceType GetResourceType(
       return blink::mojom::ResourceType::kScript;
     case network::mojom::RequestDestination::kStyle:
       return blink::mojom::ResourceType::kStylesheet;
+    case network::mojom::RequestDestination::kFont:
+      return blink::mojom::ResourceType::kFontResource;
     default:
       NOTREACHED() << destination;
   }

@@ -1130,6 +1130,9 @@ const base::FeatureParam<LcppPreloadLazyLoadImageType>
         &kLCPPLazyLoadImagePreload, "lcpp_preload_lazy_load_image_type",
         LcppPreloadLazyLoadImageType::kNone, &lcpp_preload_lazy_load_image};
 
+const base::FeatureParam<bool> kLCPPFontURLPredictorEnablePrefetch{
+    &kLCPPFontURLPredictor, "lcpp_enable_font_prefetch", false};
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",
