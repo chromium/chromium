@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="2410940059315936967">你造訪的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。其他網站設定的 Cookie 稱為第三方 Cookie。</translation>
 <translation id="2434158240863470628">下載完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">你已暫時允許這個網站使用第三方 Cookie。換言之，網頁瀏覽防護的強度會降低，但網站功能正常運作的機率會提高。<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">在無痕模式下，某些網站的功能可能無法正常運作</translation>
 <translation id="2442870161001914531">一律要求電腦版網站</translation>
 <translation id="2469312991797799607">這項操作將刪除 <ph name="ORIGIN" /> 及底下所有網站的所有資料和 Cookie</translation>
@@ -207,6 +208,7 @@
 <translation id="4644713492825682049">刪除並重設</translation>
 <translation id="4645575059429386691">你的家長已停用這項功能</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
+<translation id="4673958474310291465">請嘗試暫時允許使用第三方 Cookie，這代表保護程度較低，但網站功能較容易正常運作</translation>
 <translation id="4751476147751820511">動作或光源感應器</translation>
 <translation id="4779083564647765204">縮放</translation>
 <translation id="4811450222531576619">瞭解來源和主題</translation>
@@ -343,6 +345,7 @@
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
 <translation id="7087918508125750058">已選取 <ph name="ITEM_COUNT" /> 個項目。選項位於畫面頂端</translation>
+<translation id="7137403271056944713">控制 MIDI 裝置/重設程式</translation>
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗及重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">重新整理</translation>

@@ -1044,7 +1044,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3140646734028448730">Shërbime biznesi</translation>
 <translation id="3141093262818886744">Hape sidoqoftë</translation>
 <translation id="3141641372357166056">Nuk ka vendim për pëlqimin</translation>
-<translation id="3142736425087361223">Chrome duhet të ketë leje te <ph name="PERMISSION" /> për ta përdorur atë në <ph name="ORIGIN" /></translation>
 <translation id="3144458715650412431">Politikat e testimit janë zbatuar. Rishikoji dhe rivendosi ato në chrome://policy/test. Politikat e administratorit nuk do të zbatohen.</translation>
 <translation id="3145945101586104090">Dekodimi i përgjigjes dështoi</translation>
 <translation id="3150653042067488994">Gabim i përkohshëm i serverit</translation>
@@ -1193,6 +1192,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3427342743765426898">&amp;Ribëj redaktimin</translation>
 <translation id="342781501876943858">Chromium rekomandon rivendosjen e fjalëkalimit tënd nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="3428151540071562330">Një ose disa nga URI-të e shablloneve të serverit DnsOverHttpsTemplates janë të pavlefshme dhe nuk do të përdoren.</translation>
+<translation id="3428789896412418755">Historiku i grupimit</translation>
 <translation id="3431216045099978607">Shtyp |<ph name="ACCELERATOR" />| për të dalë nga ekrani i plotë dhe për të parë shkarkimin.</translation>
 <translation id="3432601291244612633">Mbyll faqen</translation>
 <translation id="3433111389595862568">Softuer bashkëpunimi dhe konferencash</translation>
@@ -3177,6 +3177,7 @@ Detaje shtesë:
 <translation id="7423283032694727565">Butoni "Menaxho kukit". Aktivizoje për të menaxhuar preferencat e tua për kukit te cilësimet e Chrome</translation>
 <translation id="7427366580982928791">Siguria e fëmijës në rrjet</translation>
 <translation id="7429429656042611765">Ekzekutive</translation>
+<translation id="7432774160230062882">Verifiko që je ti që Chromium të mund të plotësojë informacionet e tua të pagesës.</translation>
 <translation id="7437289804838430631">Shto informacionet e kontaktit</translation>
 <translation id="7437490109271760224">Lojërat me letra</translation>
 <translation id="7438338505272634288">Sulmuesit në sajtin që po përpiqesh të vizitosh mund të të mashtrojnë që të instalosh një softuer të dëmshëm që ndikon në mënyrën se si ti shfleton, p.sh. duke ndryshuar faqen kryesore ose duke të shfaqur reklama shtesë në sajtet që ti viziton. Chrome rekomandon shumë të kthehesh aty ku je i sigurt për të shmangur dëmtimet. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3411,6 +3412,7 @@ Detaje shtesë:
 <translation id="7831993212387676366">Çfarë është "Lista e blerjeve"?</translation>
 <translation id="7840103971441592723">Regjistrimi i ekranit ka filluar</translation>
 <translation id="784137052867620416">Statistikat për blerjet</translation>
+<translation id="784404208867107517">Historiku i grupimit</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Asnjë}=1{1 aplikacion (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Më vonë, një sajt që viziton ti mund t'i kërkojë Chrome temat e tua që të personalizojë reklamat që shikon ti. Chrome ndan deri në 3 tema ndërkohë që mbron historikun e shfletimit dhe identitetin tënd.</translation>
@@ -3437,6 +3439,7 @@ Detaje shtesë:
 <translation id="79338296614623784">Fut një numër të vlefshëm telefoni</translation>
 <translation id="7934414805353235750"><ph name="URL" /> dëshiron të luajë përmbajtje të mbrojtur. Identiteti i pajisjes sate do të verifikohet nga Google.</translation>
 <translation id="7935318582918952113">Distiluesi i DOM-it</translation>
+<translation id="7936775433939783906">Verifiko që je ti që Google Chrome të mund të plotësojë informacionet e tua të pagesës.</translation>
 <translation id="7937163678541954811">CVC-ja e kësaj karte do të enkriptohet dhe do të ruhet në pajisjen tënde për përfundim më të shpejtë të blerjes</translation>
 <translation id="7937554595067888181">Skadon më <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Certifikata e serverit nuk është ende e vlefshme.</translation>

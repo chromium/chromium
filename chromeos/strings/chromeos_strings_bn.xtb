@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">ChromeOS Flex ইনস্টল করুন</translation>
 <translation id="1856388568474281774">নিম্নমুখী তীরচিহ্ন</translation>
 <translation id="1858620243986915808">স্ক্রিনশট অ্যাটাচ করুন</translation>
+<translation id="1871413952174074704">APN-এ <ph name="CHAR_LIMIT" />টির বেশি অক্ষর থাকতে পারবে না</translation>
 <translation id="1871569928317311284">ডার্ক থিম বন্ধ করুন</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">'ডার্ক মোড' বন্ধ করুন</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">হালকা গোলাপি</translation>
 <translation id="982713511914535780">ডিসচার্জ টেস্ট করুন</translation>
 <translation id="987264212798334818">সাধারণ</translation>
+<translation id="995062385528875723">উচ্চারিত বর্ণ, অ-ল্যাটিন বর্ণমালা বা প্রতীক ব্যবহার করা যাবে না</translation>
 </translationbundle>

@@ -93,7 +93,6 @@
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Открыть приложение "Возможности"</translation>
-<translation id="1294929383540927798">Изменить настройки уведомлений на заблокированном экране</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">РЕКОМЕНДУЕМЫЕ ПРИЛОЖЕНИЯ</translation>
 <translation id="1311294419381837540">Идет трансляция вкладки. Этот процесс можно в любое время приостановить или завершить.</translation>
@@ -116,6 +115,7 @@
 <translation id="1391102559483454063">Включено</translation>
 <translation id="1407069428457324124">Тёмная тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Чтобы переключаться между датами, используйте клавиши со стрелками.</translation>
+<translation id="141170878022560212">Средняя кнопка</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, установленное приложение</translation>
 <translation id="1414919006379339073">Закрыть текущее окно</translation>
 <translation id="1415846719612499304">Показать список сетей. <ph name="STATE_TEXT" />.</translation>
@@ -131,7 +131,6 @@
 <translation id="1469148162491666137">Доступ будет предоставлен приложениям "<ph name="APP1_NAME" />" и "<ph name="APP2_NAME" />", а также всем приложениям и сайтам с разрешениями "Камера" и "Микрофон". Возможно, потребуется обновить веб-страницу или перезапустить приложение.</translation>
 <translation id="147310119694673958">Батарея телефона: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1479909375538722835">Плавающее меню специальных возможностей</translation>
-<translation id="1480845547124508962"><ph name="CURRENT_TIME" />, чтобы открыть календарь, нажмите Ввод</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Чтобы продиктовать текст, выберите текстовое поле и нажмите кнопку голосового ввода или значок микрофона в нижней части экрана. Язык голосового ввода: <ph name="LANGUAGE" />. Записи с речью передаются для обработки в Google. Изменить язык голосового ввода можно в любой момент в меню "Настройки &gt; Специальные возможности".</translation>
 <translation id="1487931858675166540">Вы поменяли местами объекты "<ph name="FIRST_ITEM_TITLE" />" и "<ph name="SECOND_ITEM_TITLE" />"</translation>
@@ -272,6 +271,7 @@
 <translation id="2086334242442703436">Открыть окно выбора эмодзи</translation>
 <translation id="2088116547584365419">игры</translation>
 <translation id="209965399369889474">Нет подключения к сети</translation>
+<translation id="2107581415810719320">Другая кнопка <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Кабель USB-C не поддерживает интерфейс Thunderbolt. Производительность устройства может быть ограничена.</translation>
 <translation id="2108303511227308752">Функция сочетания клавиш Alt + Backspace изменилась. Чтобы выполнить действие клавиши Delete, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Добавить рабочий стол</translation>
@@ -754,7 +754,6 @@
 <translation id="412298498316631026">окно</translation>
 <translation id="4123259114412175274">Чтобы разблокировать Chromebook, включите Bluetooth на телефоне</translation>
 <translation id="4125970834901680537">Приложения нельзя транслировать в режиме планшета. Повторите попытку в режиме ноутбука.</translation>
-<translation id="4129129681837227511">Чтобы разрешить показ уведомлений на заблокированном экране, разблокируйте устройство, а затем измените эту настройку.</translation>
 <translation id="4131973331381812765">Температура: <ph name="TEMPERATURE" /> °C - Текущая скорость: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> ГГц</translation>
 <translation id="4132502210362661715">На Chromebook уже установлены некоторые полезные приложения. Они находятся на панели запуска.</translation>
 <translation id="4136724716305260864">Вкл. до рассвета</translation>
@@ -1085,7 +1084,6 @@
 <translation id="5393156353051693207">Чтобы упорядочить приложения, нажмите и удерживайте в любом месте</translation>
 <translation id="5395308026110844773">Вы поместили ярлык приложения "<ph name="DRAGGED_APP_NAME" />" над ярлыком приложения "<ph name="IN_PLACE_APP" />". Чтобы создать папку, отпустите палец.</translation>
 <translation id="5397578532367286026">Менеджер (<ph name="MANAGER_EMAIL" />) может просматривать данные об использовании и историю этого профиля на сайте chrome.com.</translation>
-<translation id="5400461572260843123">Быстрые настройки: чтобы открыть центр уведомлений, нажмите Поиск + Стрелка влево.</translation>
 <translation id="5413656666631274079">Страница настроек</translation>
 <translation id="5414198321558177633">Список профилей обновляется. Это может занять несколько минут.</translation>
 <translation id="5426063383988017631">Меню настроек закрыто</translation>
@@ -1132,7 +1130,6 @@
 <translation id="558849140439112033">Перетащите, чтобы выделить область для снимка</translation>
 <translation id="5590609058453685222">Функция "Напоминание включить микрофон" теперь работает. Если вы будете говорить с отключенным звуком микрофона, появится уведомление.</translation>
 <translation id="5596627076506792578">Ещё</translation>
-<translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5599242528220103262">Сочетание клавиш отключено</translation>
 <translation id="5600837773213129531">Чтобы отключить озвучивание текста на экране, нажмите CTRL + ALT + Z.</translation>
 <translation id="5601503069213153581">PIN-код</translation>
@@ -1186,6 +1183,7 @@
 <translation id="5788127256798019331">Файлы Google Play</translation>
 <translation id="5788535737706478207">Открыть последнюю закрытую вкладку или окно</translation>
 <translation id="5790085346892983794">Выполнено</translation>
+<translation id="5802516411616338943">Открыть быстрые настройки</translation>
 <translation id="5804651031882187592">Отключите блокировку SIM-карты</translation>
 <translation id="5805809050170488595">Нажмите, чтобы активировать <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Задачи (веб-версия)</translation>
@@ -1211,6 +1209,7 @@
 <translation id="5901630391730855834">Желтый</translation>
 <translation id="5911231045062997865">Окна Lacros пока не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Новое уведомление, всего <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5920710855273935292">Микрофон отключен.</translation>
 <translation id="5946788582095584774">Функция "<ph name="FEATURE_NAME" />" включена</translation>
@@ -1753,7 +1752,6 @@
 <translation id="8155628902202578800">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Используемый язык: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Показать или скрыть меню для режима блокировки изменения размеров</translation>
-<translation id="8192202700944119416">Уведомления скрыты</translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8203795194971602413">Нажатие правой кнопкой мыши</translation>
@@ -1798,7 +1796,6 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
 <translation id="8420205633584771378">Удалить эту подсказку?</translation>
 <translation id="8421270167862077762">Приложение "<ph name="UNAVAILABLE_APPS" />" не установлено на этом устройстве.</translation>
-<translation id="8425213833346101688">Изменить</translation>
 <translation id="8426708595819210923">Добрый вечер, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> клавиши от <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>

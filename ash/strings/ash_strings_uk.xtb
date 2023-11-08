@@ -93,7 +93,6 @@
 <translation id="1293556467332435079">Файли</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Відкрити додаток Можливості</translation>
-<translation id="1294929383540927798">Змінити налаштування сповіщень на заблокованому екрані</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">РЕКОМЕНДОВАНІ ПРОГРАМИ</translation>
 <translation id="1311294419381837540">Ви транслюєте вкладку. Трансляцію можна будь-коли призупинити або припинити.</translation>
@@ -132,7 +131,6 @@
 <translation id="1469148162491666137">Буде надано доступ для додатків <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> і всіх додатків та веб-сайтів, які мають дозволи на доступ до камери й мікрофона. Можливо, вам також доведеться оновити веб-сторінку або перезапустити додаток.</translation>
 <translation id="147310119694673958">Заряд акумулятора телефона – <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Плаваюче меню функцій доступності</translation>
-<translation id="1480845547124508962"><ph name="CURRENT_TIME" />; натисніть клавішу Enter, щоб відкрити запис у Календарі</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">За допомогою функції диктування ви можете вводити текст голосом. У текстовому полі натисніть клавішу диктування або значок мікрофона внизу екрана. Вибрано таку мову диктування: <ph name="LANGUAGE" />. Мовлення надсилається для обробки на сервери Google. Ви можете будь-коли змінити мову диктування в меню "Налаштування &gt; Функції доступності".</translation>
 <translation id="1487931858675166540">Заміна: "<ph name="FIRST_ITEM_TITLE" />" на "<ph name="SECOND_ITEM_TITLE" />"</translation>
@@ -756,7 +754,6 @@
 <translation id="412298498316631026">вікна</translation>
 <translation id="4123259114412175274">Щоб розблокувати Chromebook, переконайтеся, що на телефоні ввімкнено Bluetooth</translation>
 <translation id="4125970834901680537">Не можна транслювати додатки в режимі планшета. Повторіть спробу в режимі ноутбука.</translation>
-<translation id="4129129681837227511">Щоб переглядати сповіщення на заблокованому екрані, розблокуйте його й змініть налаштування</translation>
 <translation id="4131973331381812765">Температура: <ph name="TEMPERATURE" /> °C – поточна швидкість: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> ГГц</translation>
 <translation id="4132502210362661715">Chromebook має вбудовані додатки, які дають змогу виконувати різноманітні завдання. Їх можна знайти на Панелі запуску.</translation>
 <translation id="4136724716305260864">Увімкнено до сходу сонця</translation>
@@ -1087,7 +1084,6 @@
 <translation id="5393156353051693207">Натисніть і втримуйте будь-яке місце, щоб змінити порядок додатків</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> перетягнено на додаток <ph name="IN_PLACE_APP" />. Відпустіть, щоб створити папку.</translation>
 <translation id="5397578532367286026">Менеджер (<ph name="MANAGER_EMAIL" />) може переглядати дії й історію цього користувача на chrome.com.</translation>
-<translation id="5400461572260843123">Швидкі налаштування: натисніть клавішу пошуку + стрілку ліворуч, щоб перейти в центр сповіщень.</translation>
 <translation id="5413656666631274079">Сторінка налаштувань</translation>
 <translation id="5414198321558177633">Триває оновлення списку профілів. Це може зайняти кілька хвилин.</translation>
 <translation id="5426063383988017631">Меню налаштувань закрито</translation>
@@ -1134,7 +1130,6 @@
 <translation id="558849140439112033">Потягніть, щоб вибрати область, знімок якої потрібно зробити</translation>
 <translation id="5590609058453685222">Нагадування про вимкнений мікрофон увімкнено. Якщо ви говоритимете в режимі "Без звуку", то отримаєте сповіщення.</translation>
 <translation id="5596627076506792578">Інші опції</translation>
-<translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5599242528220103262">Комбінацію клавіш вимкнено</translation>
 <translation id="5600837773213129531">Натисніть Ctrl + Alt + Z, щоб вимкнути голосові підказки.</translation>
 <translation id="5601503069213153581">PIN-код</translation>
@@ -1757,7 +1752,6 @@
 <translation id="8155628902202578800">Відкрити вікно з інформацією про обліковий запис <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Використовується: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Відкрити або закрити меню режиму, що блокує змінення розміру додатка</translation>
-<translation id="8192202700944119416">Сповіщення сховано.</translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>
 <translation id="8200772114523450471">Відновити</translation>
 <translation id="8203795194971602413">Натиснути правою кнопкою</translation>
@@ -1802,7 +1796,6 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Футляр)</translation>
 <translation id="8420205633584771378">Видалити цю пропозицію?</translation>
 <translation id="8421270167862077762">Додаток <ph name="UNAVAILABLE_APPS" /> не встановлено на цьому пристрої.</translation>
-<translation id="8425213833346101688">Змінити</translation>
 <translation id="8426708595819210923">Доброго вечора, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> від <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>

@@ -559,6 +559,7 @@
 <translation id="2072275792380684364">फेसन तथा शै‌ली</translation>
 <translation id="2075497153347571252">तपाईंका एड्मिनले <ph name="ORIGIN" /> मा <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिनुभएको छैन</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
+<translation id="2080021694978766903">यो नीतिमा <ph name="MAX_ITEMS_LIMIT" /> भन्दा बढी इन्ट्री समावेश हुनु हुँदैन।</translation>
 <translation id="20817612488360358">प्रणाली प्रोक्सी सेटिङहरू प्रयोगका लागि सेट छन् तर एउटा स्पष्ट प्रोक्सी कन्फिगरेसन पनि निर्दिष्ट गरिएको छ।</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2083256696566019397">हरेक पटक अनुमति दिनुहोस्</translation>
@@ -638,6 +639,7 @@
 <translation id="2225927550500503913">भर्चुअल कार्ड अन गरिएको छ</translation>
 <translation id="2226636330183131181">Wi-Fi नेटवर्कमा <ph name="BEGIN_LINK" />साइन इन गर्ने तरिका<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">यो ठेगाना हाल Chrome मा सेभ गरिएको छ। तपाईं यो ठेगाना Google का विभिन्न उत्पादनहरूमा प्रयोग गर्न चाहनुहुन्छ भने यसलाई आफ्नो Google खाता (<ph name="ACCOUNT" />) मा सेभ गर्नुहोस्।</translation>
+<translation id="2229456043301340598">बेवास्ता गरिएको सामान्य सर्टकट: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">कम्प्याक्ट डिस्क</translation>
 <translation id="2235344399760031203">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाइएको छ</translation>
 <translation id="2239100178324503013">अहिले पठाउनुहोस्</translation>
@@ -1044,7 +1046,6 @@
 <translation id="3140646734028448730">व्यावसायिक सेवाहरू</translation>
 <translation id="3141093262818886744">जे भए पनि खोल्नुहोस्</translation>
 <translation id="3141641372357166056">सहमति जनाउने कि नजनाउने भनेर निर्णय गरिएको छैन</translation>
-<translation id="3142736425087361223"><ph name="ORIGIN" /> मा Chrome प्रयोग गर्नका निम्ति तपाईंले यसलाई <ph name="PERMISSION" /> दिनु पर्ने हुन्छ</translation>
 <translation id="3144458715650412431">परीक्षणसम्बन्धी नीतिहरू लागू गरिएका छन्। chrome://policy/test मा गई ती नीतिहरूको समीक्षा गरी रिसेट गर्नुहोस्। एड्मिनसम्बन्धी नीतिहरू लागू गरिने छैनन्।</translation>
 <translation id="3145945101586104090">प्रतिक्रिया डिकोड गर्न असफल भयो</translation>
 <translation id="3150653042067488994">अस्थायी सर्भर त्रुटि</translation>
@@ -2330,6 +2331,7 @@
 <translation id="5720705177508910913">हालको प्रयोगकर्ता</translation>
 <translation id="572328651809341494">हालका ट्याबहरू</translation>
 <translation id="5723287205918986743">रक्षा उद्योग</translation>
+<translation id="5725297205162868298">सर्टकटको नामको सुरुमा @ वर्ण प्रयोग गर्न मिल्दैन: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">तपाईंले आफ्नो पासवर्ड अन्य साइटहरूमा प्रयोग गर्नुभएका खण्डमा Chrome ले तपाईंको पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
 <translation id="5732392974455271431">तपाईंका अभिभावकहरूले तपाईंको रोक हटाउन सक्नुहुन्छ</translation>
 <translation id="573555826359077410">फारम बनाउने बटन, Google Forms प्रयोग गरी तुरुन्तै नयाँ फारम बनाउन यो बटन थिच्नुहोस्</translation>
@@ -2847,6 +2849,7 @@
 <translation id="6793213097893210590">कार्डबोर्ड</translation>
 <translation id="679355240208270552">डिफल्ट खोजलाई नीतिअनुसार असक्षम नपारिएको हुनाले बेवास्ता गरियो।</translation>
 <translation id="6794951432696553238">अब उप्रान्त Windows Hello प्रयोग गरी आफ्ना कार्डहरू अझ छिटो पुष्टि गर्नुहोस्</translation>
+<translation id="6798066466127540426">यो सूचीमा कुनै पनि वैध खोज प्रदायक समावेश छैन।</translation>
 <translation id="6798460514924505775">Envelope Chou 3</translation>
 <translation id="6799145206637008376">यो भर्चुअल कार्डका हकमा CVC भर्नुहोस्</translation>
 <translation id="6805030849054648206">Envelope B6/C4</translation>
@@ -3236,6 +3239,7 @@
 <translation id="7521825010239864438">"<ph name="SECTION" />" नामक खण्ड लुकाइएको छ</translation>
 <translation id="752189128961566325">तपाईं सेभ गरिएको ठेगाना Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="7523408071729642236">उत्पादन</translation>
+<translation id="7525804896095537619">नाम खाली छाड्न मिल्दैन</translation>
 <translation id="7526934274050461096">यो साइटमा तपाईंको जडान निजी होइन</translation>
 <translation id="7529884293139707752">होमस्कुलिङ</translation>
 <translation id="7534987659046836932">Envelope C7</translation>
@@ -3457,6 +3461,7 @@
 <translation id="7950027195171824198">Chrome का सेटिङमा गई कुकीसम्बन्धी आफ्ना प्राथमिकताहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7951415247503192394">(32-बिट)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952250633095257243">सर्टकटको नाम खाली छाड्न मिल्दैन</translation>
 <translation id="7952327717479677595">सर्च इन्जिनहरू व्यवस्थापन गर्ने बटन, आफ्नो डिफल्ट सर्च इन्जिन र साइटमा भएको कुरा खोज्ने सुविधा व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="7953236668995583915">तपाईंले परिवर्तन गरेका सेटिङ यो साइटमा लागू गर्न यो पेज रिलोड गर्नुहोस्</translation>
 <translation id="7953569069500808819">सिरानको किनारमा स्टिच</translation>
@@ -3668,6 +3673,7 @@
 <translation id="8344776605855290140">भर्चुअल कार्ड दर्ता गर्ने डायलग पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="8347658365704983341">दूर शिक्षा</translation>
 <translation id="8349305172487531364">बुकमार्क पट्टी</translation>
+<translation id="8350416046273606058">सर्टकटको नाममा स्पेस समावेश गर्न मिल्दैन: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">टिपोट सिर्जना गर्नुहोस्</translation>
 <translation id="8352849934814541340">यो डिभाइसका एड्मिनले थप सुविधाहरू प्राप्त गर्न विभिन्न एप इन्स्टल गरेका छन्। ती एपले तपाईंका केही जानकारी प्रयोग गर्न सक्छन्।</translation>
 <translation id="8355270400102541638">स्थानीय क्र्यासको सन्दर्भ:</translation>

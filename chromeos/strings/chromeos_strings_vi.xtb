@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">Cài đặt ChromeOS Flex</translation>
 <translation id="1856388568474281774">Mũi tên xuống</translation>
 <translation id="1858620243986915808">Đính kèm ảnh chụp màn hình</translation>
+<translation id="1871413952174074704">APN không được có nhiều hơn <ph name="CHAR_LIMIT" /> ký tự</translation>
 <translation id="1871569928317311284">Tắt giao diện tối</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Tắt chế độ tối</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Hồng nhạt</translation>
 <translation id="982713511914535780">Chạy quá trình Kiểm tra mức xả pin</translation>
 <translation id="987264212798334818">Chung</translation>
+<translation id="995062385528875723">Không được dùng chữ cái có dấu, bảng chữ cái không phải chữ Latinh hoặc biểu tượng</translation>
 </translationbundle>

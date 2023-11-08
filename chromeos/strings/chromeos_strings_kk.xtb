@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">ChromeOS Flex-ті орнату</translation>
 <translation id="1856388568474281774">Төмен бағыт пернесі</translation>
 <translation id="1858620243986915808">Скриншот тіркеу</translation>
+<translation id="1871413952174074704">APN көп дегенде <ph name="CHAR_LIMIT" /> таңбадан тұруы керек.</translation>
 <translation id="1871569928317311284">Қараңғы режимді өшіру</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Қараңғы режимді өшіру</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Ашық қызғылт</translation>
 <translation id="982713511914535780">Зарядтың азаюы тексерісін іске қосу</translation>
 <translation id="987264212798334818">Жалпы</translation>
+<translation id="995062385528875723">Екпін белгісі бар әріптерді, латыннан басқа алфавитті немесе таңбаларды пайдалануға болмайды.</translation>
 </translationbundle>

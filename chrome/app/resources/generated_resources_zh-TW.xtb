@@ -1369,6 +1369,7 @@
 <translation id="2046702855113914483">拉麵</translation>
 <translation id="204706822916043810">正在檢查虛擬機器</translation>
 <translation id="2048182445208425546">存取你的網路流量</translation>
+<translation id="2048254245884707305">正在檢查惡意軟體...</translation>
 <translation id="2048554637254265991">啟動容器管理工具時發生錯誤，請再試一次。</translation>
 <translation id="2048653237708779538">無法執行操作</translation>
 <translation id="204914487372604757">建立捷徑</translation>
@@ -2083,6 +2084,7 @@
 <translation id="2580889980133367162">永遠允許 <ph name="HOST" /> 下載多個檔案</translation>
 <translation id="258095186877893873">長</translation>
 <translation id="2581455244799175627">進一步瞭解允許第三方 Cookie</translation>
+<translation id="2581992808349413349">在 DNS (網域名稱系統) 中透過安全連線查詢網站的 IP 位址。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的代管服務供應商</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (平台：<ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">無法取得 Kerberos 票證。請再試一次，或與貴機構的裝置管理員聯絡。(錯誤代碼 <ph name="ERROR_CODE" />)。</translation>
 <translation id="2586561813241011046">無法安裝「<ph name="APP_NAME" />」。請再試一次，或是與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -2557,6 +2559,7 @@
 <translation id="2942581856830209953">自訂這個頁面</translation>
 <translation id="2942707801577151363">開啟、編輯及儲存 Word、Excel 和 PowerPoint 檔案。你可能要訂閱相關服務，才能使用某些功能。</translation>
 <translation id="2943268899142471972">選取 Ansible Playbook 或 Crostini 備份檔案</translation>
+<translation id="2943478529590267286">變更系統鍵盤配置</translation>
 <translation id="2944060181911631861">傳送使用狀況與診斷資料。讓系統自動將診斷資料以及裝置和應用程式的使用狀況資料傳送給 Google，協助改善你的 Android 使用體驗。這些資料將有助於系統和應用程式提高穩定性及做出其他改善。部分匯總資料還能夠為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供幫助。如果你的「其他網路和應用程式活動」設定為開啟，系統可能會將這些資料儲存到你的 Google 帳戶。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">前往檔案</translation>
 <translation id="2946119680249604491">新增連線</translation>
@@ -2846,6 +2849,7 @@
 <translation id="3192947282887913208">音訊檔</translation>
 <translation id="3193695589337931419">系統信號公用程式</translation>
 <translation id="3194786596445804250">顯示封鎖第三方 Cookie 的詳細資料</translation>
+<translation id="3196912927885212665">Chromebook 需要開啟藍牙功能，才能使用 Android 手機進行設定</translation>
 <translation id="3197453258332670132">按一下滑鼠右鍵或長按畫面，即可查看所選文字的相關資訊</translation>
 <translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，我們即可為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。如果同時開啟應用程式同步功能，系統也會收集其他應用程式診斷和使用資料 (包括 Android 和網頁應用程式)。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可以在孩子的 ChromeOS 裝置設定中允許或禁止傳送這類報告。網域管理員可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
@@ -3267,6 +3271,7 @@
 <translation id="3544879808695557954">使用者名稱 (選填)</translation>
 <translation id="3547954654003013442">Proxy 設定</translation>
 <translation id="3548162552723420559">配合環境調整螢幕顏色</translation>
+<translation id="354949590254473526">輸入自訂 DNS 查詢網址</translation>
 <translation id="3550593477037018652">中斷與行動數據網路的連線</translation>
 <translation id="3550915441744863158">Chrome 會自動更新，隨時讓你使用最新版本</translation>
 <translation id="3551320343578183772">關閉分頁</translation>
@@ -3582,6 +3587,7 @@
 <translation id="3784472333786002075">Cookie 是網站所建立的檔案，可分為兩種類型：第一方 Cookie 由你造訪過的網站所建立，也就是網址列所顯示的網站。第三方 Cookie 由其他網站所建立。這類網站通常是在你造訪的網站上提供部分內容 (例如廣告或圖片) 的其他網站。</translation>
 <translation id="3785308913036335955">顯示應用程式捷徑</translation>
 <translation id="3785727820640310185">已儲存這個網站的密碼</translation>
+<translation id="3786224729726357296">刪除 <ph name="SITE" /> 的網站資料和權限</translation>
 <translation id="3786834302860277193">輸入組合文字時顯示底線</translation>
 <translation id="3787434344076711519">正在等待翻譯</translation>
 <translation id="3788301286821743879">無法啟動資訊站應用程式。</translation>
@@ -4056,6 +4062,7 @@
 <translation id="4147911968024186208">請再試一次。如果這個錯誤再次發生，請與你的產品支援代表聯絡。</translation>
 <translation id="414800391140809654">可以在你瀏覽時使用你的資訊</translation>
 <translation id="4148195018520464922">你可以限制只有特定使用者才能登入。設定完成後，系統會移除登入畫面上的「新增使用者」選項。你也可以移除現有的使用者。</translation>
+<translation id="4148957013307229264">安裝中...</translation>
 <translation id="4150201353443180367">顯示設定</translation>
 <translation id="4150569944729499860">畫面內容</translation>
 <translation id="4151449637210235443">請與我們分享你近期的遊戲體驗</translation>
@@ -4403,6 +4410,7 @@
 <translation id="443454694385851356">舊版 (不安全)</translation>
 <translation id="4434611816075088065">目前沒有需要處理的事項</translation>
 <translation id="443475966875174318">更新或移除不相容的應用程式</translation>
+<translation id="4437947179446780764">新增自訂 DNS 服務供應商</translation>
 <translation id="4438043733494739848">透明</translation>
 <translation id="4441124369922430666">你要在裝置開機時自動啟動這個應用程式嗎？</translation>
 <translation id="4441147046941420429">如要繼續，請將安全金鑰從裝置上移除，然後重新插入並輕觸安全金鑰</translation>
@@ -4990,7 +4998,9 @@
 <translation id="4907161631261076876">一般使用者不常下載這個檔案，代表這個檔案可能不安全。</translation>
 <translation id="4908811072292128752">開啟新分頁即可一次瀏覽兩個網站</translation>
 <translation id="4909038193460299775">這個帳戶是由 <ph name="DOMAIN" /> 所管理，因此系統會將你的書籤、歷史記錄、密碼和其他設定從這個裝置上清除。不過，你的資料仍會儲存在你的 Google 帳戶中，並可透過 <ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />管理。</translation>
+<translation id="4911572142453926213">在 DNS (網域名稱系統) 中透過安全連線查詢網站的 IP 位址</translation>
 <translation id="4912643508233590958">閒置喚醒</translation>
+<translation id="4913209098186576320">這個檔案可能含有危險內容<ph name="LINE_BREAK" />這項檢查超出正常所需時間...</translation>
 <translation id="4915961947098019832">可以顯示圖片</translation>
 <translation id="4916542008280060967">要允許網站編輯「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="4917385247580444890">強</translation>
@@ -5027,6 +5037,7 @@
 <translation id="4941963255146903244">查看手機上的相片、媒體和應用程式</translation>
 <translation id="494286511941020793">Proxy 設定說明</translation>
 <translation id="4943368462779413526">足球</translation>
+<translation id="4943927218331934807">需要密碼</translation>
 <translation id="4944310289250773232">這是由 <ph name="SAML_DOMAIN" /> 代管的驗證服務</translation>
 <translation id="4945439665401275950">如要設定指紋，請讓孩子輕觸電源按鈕。孩子的指紋資料會安全儲存在這部 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="4946459324029651239">你將獲得標準防護</translation>
@@ -5466,6 +5477,7 @@
 <translation id="5307030433605830021">不支援的來源</translation>
 <translation id="5307386115243749078">與藍牙開關配對</translation>
 <translation id="5308380583665731573">連線</translation>
+<translation id="5308989548591363504">檢查惡意軟體</translation>
 <translation id="5309418307557605830">Google 助理亦支援這部裝置</translation>
 <translation id="5309641450810523897">客服案件 ID</translation>
 <translation id="5311304534597152726">使用以下身分登入：</translation>
@@ -5773,6 +5785,7 @@
 <translation id="555604722231274592">啟用<ph name="FEATURE_NAME" /></translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
+<translation id="5558594314398017686">OS 預設選項 (如果有的話)</translation>
 <translation id="5559311991468302423">刪除地址</translation>
 <translation id="5559768063688681413">沒有已儲存的印表機</translation>
 <translation id="55601339223879446">調整顯示畫面中的桌面邊界</translation>
@@ -8843,6 +8856,7 @@
 <translation id="8005600846065423578">一律允許 <ph name="HOST" /> 讀取剪貼簿</translation>
 <translation id="8006630792898017994">空格鍵或 Tab 鍵</translation>
 <translation id="8008356846765065031">網路連線中斷，請檢查你的網際網路連線。</translation>
+<translation id="8008704580256716350">已封鎖可疑檔案</translation>
 <translation id="8009225694047762179">管理密碼</translation>
 <translation id="8011372169388649948">已移動「<ph name="BOOKMARK_TITLE" />」。</translation>
 <translation id="8012188750847319132">Caps Lock 鍵</translation>
@@ -10190,6 +10204,7 @@
 <translation id="9057354806206861646">更新時間表</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{每天約傳送 1 則通知}other{每天約傳送 {NUM_NOTIFICATION} 則通知}}</translation>
 <translation id="9058760336383947367">查看印表機 PPD</translation>
+<translation id="9060042817356580609">選取 DNS 供應商</translation>
 <translation id="9061694916020926968">需要登入 Google 帳戶才能使用 Steam for Chromebook (Beta 版)。請登入帳戶，然後再試一次。</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 至第 <ph name="ERROR_LINE_END" /> 行有錯誤</translation>

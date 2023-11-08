@@ -559,6 +559,7 @@
 <translation id="2072275792380684364">Μόδα και στιλ</translation>
 <translation id="2075497153347571252">Ο διαχειριστής απέκλεισε την άδεια <ph name="PERMISSION" /> στον ιστότοπο <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
+<translation id="2080021694978766903">Αυτή η πολιτική δεν πρέπει να έχει περισσότερες από <ph name="MAX_ITEMS_LIMIT" /> καταχωρίσεις.</translation>
 <translation id="20817612488360358">Οι ρυθμίσεις διακομιστή μεσολάβησης του συστήματος έχουν οριστεί για να χρησιμοποιηθούν, αλλά καθορίζεται επίσης μια ρητή διαμόρφωση του διακομιστή μεσολάβησης.</translation>
 <translation id="2082238445998314030">Αποτέλεσμα <ph name="RESULT_NUMBER" /> από <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Να επιτρέπεται σε κάθε επίσκεψη</translation>
@@ -638,6 +639,7 @@
 <translation id="2225927550500503913">Η εικονική κάρτα ενεργοποιήθηκε</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Σύνδεση<ph name="END_LINK" /> στο δίκτυο Wi-Fi</translation>
 <translation id="2228057197024893428">Αυτή η διεύθυνση είναι αποθηκευμένη στο Chrome. Για να τη χρησιμοποιήσετε σε όλα τα προϊόντα Google, αποθηκεύστε τη στον Λογαριασμό σας Google, <ph name="ACCOUNT" />.</translation>
+<translation id="2229456043301340598">Παραβλέφθηκε η μη μοναδική συντόμευση: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">Compact Disc (CD)</translation>
 <translation id="2235344399760031203">Τα cookie τρίτου μέρους αποκλείστηκαν.</translation>
 <translation id="2239100178324503013">Αποστολή τώρα</translation>
@@ -1044,7 +1046,6 @@
 <translation id="3140646734028448730">Επαγγελματικές Υπηρεσίες</translation>
 <translation id="3141093262818886744">Άνοιγμα ούτως ή άλλως</translation>
 <translation id="3141641372357166056">Χωρίς απόφαση συναίνεσης</translation>
-<translation id="3142736425087361223">Το Chrome χρειάζεται την άδεια <ph name="PERMISSION" /> για να τη χρησιμοποιήσει στο <ph name="ORIGIN" /></translation>
 <translation id="3144458715650412431">Εφαρμόστηκαν πολιτικές δοκιμής. Προχωρήστε σε έλεγχο και επαναφορά τους στη διεύθυνση chrome://policy/test. Οι πολιτικές διαχειριστή δεν θα εφαρμοστούν.</translation>
 <translation id="3145945101586104090">Αποτυχία αποκωδικοποίησης απόκρισης</translation>
 <translation id="3150653042067488994">Προσωρινό σφάλμα διακομιστή</translation>
@@ -2333,6 +2334,7 @@
 <translation id="5720705177508910913">Τρέχων χρήστης</translation>
 <translation id="572328651809341494">Πρόσφατες καρτέλες</translation>
 <translation id="5723287205918986743">Αμυντική βιομηχανία</translation>
+<translation id="5725297205162868298">Η συντόμευση δεν μπορεί να αρχίζει με τον χαρακτήρα @: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">Το Chrome συνιστά την επαναφορά του κωδικού πρόσβασης, εάν τον έχετε χρησιμοποιήσει και σε άλλους ιστοτόπους.</translation>
 <translation id="5732392974455271431">Οι γονείς σου μπορούν να καταργήσουν τον αποκλεισμό του</translation>
 <translation id="573555826359077410">Κουμπί Δημιουργία φόρμας, ενεργοποιήστε το για να δημιουργήσετε γρήγορα μια νέα φόρμα στις Φόρμες Google</translation>
@@ -2850,6 +2852,7 @@
 <translation id="6793213097893210590">Χαρτόνι</translation>
 <translation id="679355240208270552">Έγινε παράβλεψη επειδή η προεπιλεγμένη αναζήτηση δεν έχει ενεργοποιηθεί από την πολιτική.</translation>
 <translation id="6794951432696553238">Επιβεβαιώστε πιο γρήγορα τις κάρτες σας, χρησιμοποιώντας το Windows Hello από εδώ και στο εξής</translation>
+<translation id="6798066466127540426">Η λίστα δεν περιέχει κανέναν έγκυρο πάροχο αναζήτησης.</translation>
 <translation id="6798460514924505775">Φάκελος Chou 3</translation>
 <translation id="6799145206637008376">Συμπληρώστε το CVC αυτής της εικονικής κάρτας</translation>
 <translation id="6805030849054648206">Φάκελος B6/C4</translation>
@@ -3239,6 +3242,7 @@
 <translation id="7521825010239864438">Η ενότητα <ph name="SECTION" /> δεν εμφανίζεται</translation>
 <translation id="752189128961566325">Μπορείτε να τη χρησιμοποιήσετε σε όλα τα προϊόντα Google</translation>
 <translation id="7523408071729642236">Κατασκευές</translation>
+<translation id="7525804896095537619">Το όνομα δεν μπορεί να είναι κενό</translation>
 <translation id="7526934274050461096">Η σύνδεσή σας σε αυτόν τον ιστότοπο δεν είναι ιδιωτική</translation>
 <translation id="7529884293139707752">Σχολική εκπαίδευση στο σπίτι</translation>
 <translation id="7534987659046836932">Φάκελος C7</translation>
@@ -3460,6 +3464,7 @@
 <translation id="7950027195171824198">Διαχειριστείτε τις προτιμήσεις σας για τα cookie από τις ρυθμίσεις του Chrome</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952250633095257243">Η συντόμευση δεν μπορεί να είναι κενή</translation>
 <translation id="7952327717479677595">Κουμπί Διαχείριση μηχανών αναζήτησης, ενεργοποιήστε το για να διαχειριστείτε την προεπιλεγμένη μηχανή αναζήτησης και την αναζήτηση ιστοτόπου</translation>
 <translation id="7953236668995583915">Επαναλάβετε τη φόρτωση αυτής της σελίδας, για να εφαρμοστούν οι ενημερωμένες ρυθμίσεις σε αυτόν τον ιστότοπο</translation>
 <translation id="7953569069500808819">Ραφή στο επάνω άκρο</translation>
@@ -3671,6 +3676,7 @@
 <translation id="8344776605855290140">Η εγγραφή εικονικής κάρτας άνοιξε σε πλήρες ύψος</translation>
 <translation id="8347658365704983341">Εξ αποστάσεως εκπαίδευση</translation>
 <translation id="8349305172487531364">Γραμμή σελιδοδεικτών</translation>
+<translation id="8350416046273606058">Η συντόμευση δεν μπορεί να περιέχει κενά: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
 <translation id="8352849934814541340">Ο διαχειριστής αυτής της συσκευής εγκατέστησε εφαρμογές για επιπλέον λειτουργίες. Οι εφαρμογές έχουν πρόσβαση σε κάποια από τα δεδομένα σας.</translation>
 <translation id="8355270400102541638">Περιβάλλον τοπικού σφάλματος:</translation>

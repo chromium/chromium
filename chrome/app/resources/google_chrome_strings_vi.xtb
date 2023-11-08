@@ -71,6 +71,7 @@
 <translation id="2130870084309816036">Không kết nối với Internet. Nếu bạn sử dụng tường lửa, vui lòng đưa <ph name="PRODUCT_EXE_NAME" /> vào danh sách cho phép.</translation>
 <translation id="2131230230468101642">Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá các mối quan tâm không được làm mới sau 4 tuần. Trong quá trình bạn duyệt web, các mối quan tâm có thể xuất hiện lại trong danh sách. Bạn cũng có thể xoá các mối quan tâm mà bạn không muốn Chrome xem xét.</translation>
 <translation id="2139300032719313227">Khởi động lại ChromeOS</translation>
+<translation id="2146761408396054429">Tệp này có thể nguy hiểm<ph name="LINE_BREAK" />Chrome có thể giúp bạn kiểm tra tệp đã tải xuống này nếu bạn cung cấp mật khẩu. Mật khẩu của bạn vẫn được lưu trên thiết bị</translation>
 <translation id="2151406531797534936">Vui lòng khởi động lại Chrome ngay bây giờ</translation>
 <translation id="2174917724755363426">Chưa cài đặt xong. Bạn có chắc chắn muốn huỷ không?</translation>
 <translation id="2190166659037789668">Lỗi khi kiểm tra bản cập nhật: <ph name="UPDATE_CHECK_ERROR" />.</translation>

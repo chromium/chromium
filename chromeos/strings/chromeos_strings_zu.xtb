@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">Faka i-ChromeOS Flex</translation>
 <translation id="1856388568474281774">Umcibisholo waphansi</translation>
 <translation id="1858620243986915808">Namathisela isithombe-skrini</translation>
+<translation id="1871413952174074704">I-APN ayikwazi ukuba nezinhlamvu ezingaphezu kwezinhlamvu ezingu-<ph name="CHAR_LIMIT" /></translation>
 <translation id="1871569928317311284">Vala itimu emnyama</translation>
 <translation id="1874612839560830905">I-MTU</translation>
 <translation id="188114911237521550">Vala imodi emnyama</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Okuphinki okukhanyayo</translation>
 <translation id="982713511914535780">Qalisa ukuhlolwa kokukhipha ukushaja</translation>
 <translation id="987264212798334818">Okujwayelekile</translation>
+<translation id="995062385528875723">Ayikwazi ukusebenzisa izinhlamvu ezigxilile, izinhlamvu noma izimpawu okungezona ezesi-Latin</translation>
 </translationbundle>

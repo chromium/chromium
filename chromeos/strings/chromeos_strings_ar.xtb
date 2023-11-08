@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">‏تثبيت نظام التشغيل ChromeOS Flex</translation>
 <translation id="1856388568474281774">السهم المتّجه للأسفل</translation>
 <translation id="1858620243986915808">إرفاق لقطة شاشة</translation>
+<translation id="1871413952174074704">‏لا يمكن أن يحتوي اسم نقطة الوصول (APN) على أكثر من <ph name="CHAR_LIMIT" /> حرف.</translation>
 <translation id="1871569928317311284">إيقاف تشغيل المظهر الداكن</translation>
 <translation id="1874612839560830905">‏وحدة النقل العظمى (MTU)</translation>
 <translation id="188114911237521550">إيقاف تشغيل الوضع المُعتِم</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">وردي فاتح</translation>
 <translation id="982713511914535780">تشغيل اختبار تفريغ شحن البطارية</translation>
 <translation id="987264212798334818">عام</translation>
+<translation id="995062385528875723">لا يمكن استخدام أحرف تحمل علامات صوتية أو أحرف أبجدية غير لاتينية أو رموز.</translation>
 </translationbundle>

@@ -80,6 +80,7 @@
 <translation id="2478295928299953161">‏Chromium به‌زودی بسته می‌شود</translation>
 <translation id="2483889755041906834">‏در Chromium</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
+<translation id="2513154137948333830">بازراه‌اندازی لازم است: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2554739539410784893">‏Chromium می‌خواهد گذواژه‌های موجود را جایگزین کند. برای مجاز کردن این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="2560420686485554789">‏Chromium برای بارگیری فایل‌ها باید به حافظه دسترسی داشته باشد</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
@@ -96,12 +97,14 @@
 <translation id="2785438272836277133">‏این افزونه حاوی بدافزار است و ناامن است. آن را از Chromium حذف کنید تا دیگر نتواند داده‌های شما (ازجمله اطلاعات شخصی) را در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
 <translation id="2837693172913560447">‏با این کار، نمایه Chromium جدیدی برای <ph name="USER_EMAIL_ADDRESS" /> ایجاد خواهد شد</translation>
+<translation id="2846251086934905009">خطای نصب: نصب‌کننده کامل نشد. نصب لغو شد.</translation>
 <translation id="2847479871509788944">‏حذف از Chromium...</translation>
 <translation id="2850691299438350830">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chromium حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود</translation>
 <translation id="2885378588091291677">مدیر وظایف</translation>
 <translation id="2910007522516064972">‏درباره &amp;Chromium</translation>
 <translation id="2915996080311180594">بازراه‌اندازی در فرصتی دیگر</translation>
 <translation id="2928420929544864228">نصب کامل شد.</translation>
+<translation id="2945997411976714835">خطای نصب: فرایند نصب‌کننده شروع نشد.</translation>
 <translation id="2977470724722393594">‏Chromium به‌روز است</translation>
 <translation id="2977506796191543575">‏اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chromium ممکن است نشانی‌های وب را نیز به‌همراه بخش‌های کوچکی از محتوای صفحه به «مرور ایمن» ارسال کند</translation>
 <translation id="3032706164202344641">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعداً دوباره امتحان کنید.</translation>
@@ -158,6 +161,7 @@
 <translation id="3909353120217047026">‏این افزونه خط‌مشی «نت‌بازار Chrome» را نقض می‌کند و ممکن است ناامن باشد. آن را از Chromium حذف کنید تا دیگر نتواند داده‌های شما (ازجمله اطلاعات شخصی) را در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
 <translation id="391789666908693569">‏<ph name="MANAGER_NAME" /> حساب شما را مدیریت می‌کند. سرپرستتان می‌تواند این نمایه مرورگر Chromium و داده‌های آن را (مثل نشانک‌ها، سابقه، و گذرواژه‌ها) ببیند و ویرایش کند.</translation>
 <translation id="3922825997980843979">‏وقتی تایپ می‌کنید، Chromium محتوای نوار نشانی یا چارگوش جستجو را به موتور جستجوی پیش‌فرض شما ارسال می‌کند</translation>
+<translation id="3941890832296813527">خطای نصب: نام فایل نصب‌کننده نامعتبر است یا از آن پشتیبانی نمی‌شود.</translation>
 <translation id="3945058413678539331">‏Chromium می‌خواهد گذرواژه‌ها را کپی کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="3962647064319009959">‏ببینید Chromium چگونه ایمنی شما را حفظ می‌کند</translation>
 <translation id="3975724895399328945">‏درباره Google Chrome for Testing</translation>
@@ -220,6 +224,7 @@
 <translation id="5296845517486664001">‏اگر نسخه آزمایشی روشن باشد و Chromium به‌طور تصادفی نسخه آزمایشی را برایتان فعال کرده باشد، سابقه مرورتان بر آگهی‌هایی که می‌بینید و علایقتان که در زیر برآورد شده است تأثیر می‌گذارد. برای محافظت از حریم خصوصی شما، Chromium علایقتان را هر ماه به‌طور چرخشی حذف می‌کند.</translation>
 <translation id="5352264705793813212">‏Chromium چند توصیه ایمنی برای بررسی پیدا کرد</translation>
 <translation id="5358375970380395591">‏شما با حساب مدیریت‌شده وارد سیستم می‌شوید و به سرپرست آن اجازه کنترل بر نمایه Chromium خود را می‌دهید. داده‌های Chromium شما شامل برنامه‌ها، نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیمات برای همیشه به <ph name="USER_NAME" /> مرتبط خواهد شد. می‌توانید این داده‌ها را از طریق داشبورد حساب‌های Google حذف کنید اما نمی‌توانید این داده‌ها را به حساب دیگری مرتبط سازید. <ph name="LEARN_MORE" /></translation>
+<translation id="5368118228313795342">کد اضافی: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386450000063123300">‏درحال به‌روزرسانی Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">‏مجاز کردن ورود به سیستم Chromium</translation>
 <translation id="5398878173008909840">‏نسخه جدیدی از Chromium موجود است.</translation>
@@ -422,6 +427,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8648201657708811153">‏نمی‌توان Google Chrome for Testing را به‌عنوان مرورگر پیش‌فرض تنظیم کرد.</translation>
 <translation id="8697124171261953979">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chromium یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="8704119203788522458">‏این Chromium شماست</translation>
+<translation id="878572486461146056">خطای نصب: سرپرست شبکه شما «خط‌مشی گروهی» اعمال کرده است که از نصب جلوگیری می‌کند: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">‏Chromium به مجوز دسترسی به دوربین و میکروفون برای این سایت نیاز دارد</translation>
 <translation id="8826492472752484139">روی «مدیر گذرواژه» کلیک کنید</translation>
 <translation id="8833697763442816810">‏سیستم ChromiumOS</translation>

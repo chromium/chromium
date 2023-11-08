@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">安装 ChromeOS Flex</translation>
 <translation id="1856388568474281774">向下</translation>
 <translation id="1858620243986915808">附加屏幕截图</translation>
+<translation id="1871413952174074704">APN 长度不得超过 <ph name="CHAR_LIMIT" /> 个字符</translation>
 <translation id="1871569928317311284">关闭深色主题</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">关闭深色模式</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">浅粉色</translation>
 <translation id="982713511914535780">运行放电测试</translation>
 <translation id="987264212798334818">常规</translation>
+<translation id="995062385528875723">无法使用带重音符号的字母、非拉丁字母或符号</translation>
 </translationbundle>

@@ -534,6 +534,7 @@
 <translation id="2025891858974379949">ខ្លឹមសារ​ដែលគ្មាន​សុវត្ថិភាព</translation>
 <translation id="2027465737841872819">ប្លាស្ទិក</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />សូមពិនិត្យប្រូកស៊ី និង firewall<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">ផ្លូវកាត់មិនអាចដូចគ្នានឹងពាក្យគន្លឹះ​ក្រុមហ៊ុនផ្ដល់សេវា​ស្វែងរក​លំនាំដើមដែលកំណត់ដោយ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />៖ <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">មិនអីទេ រក្សាទុក​ចុះ</translation>
 <translation id="2035400064145347639">សៀវភៅ​ធ្វើដំណើរ និង​ការណែនាំ​អំពីការ​ធ្វើដំណើរ</translation>
 <translation id="2036514476578229158">អ្នក​បានស្នើសុំ​ចូលទៅកាន់​គេហទំព័រ​នេះ។ មាតាបិតា​របស់អ្នក​អាច​ឆ្លើយតប​នៅក្នុង Family Link។</translation>
@@ -1049,7 +1050,6 @@
 <translation id="3140646734028448730">សេវា​អាជីវកម្ម</translation>
 <translation id="3141093262818886744">មិន​អីទេ បើក​ចុះ</translation>
 <translation id="3141641372357166056">គ្មានការសម្រេចចិត្តលើការយល់ព្រម</translation>
-<translation id="3142736425087361223">Chrome ត្រូវការ<ph name="PERMISSION" />របស់អ្នក​ដើម្បីប្រើវា​នៅលើ <ph name="ORIGIN" /></translation>
 <translation id="3144458715650412431">គោលការណ៍​តេស្ត​ត្រូវបាន​អនុវត្ត។ ពិនិត្យមើល និង​កំណត់​គោលការណ៍​ទាំងនោះ​ឡើងវិញ​តាមរយៈ chrome://policy/test។ គោលការណ៍​អ្នកគ្រប់គ្រង​នឹងមិនត្រូវបាន​អនុវត្តទេ។</translation>
 <translation id="3145945101586104090">បានបរាជ័យក្នុងការបម្លែងការឆ្លើយតប</translation>
 <translation id="3150653042067488994">កំហុសឆ្គងម៉ាស៊ីនមេបណ្តោះអាសន្ន</translation>
@@ -1081,6 +1081,7 @@
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> នៅលើ <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">អាចសួរដើម្បីដឹងថា នៅពេលណាដែល​អ្នកកំពុងប្រើ​ឧបករណ៍នេះ​យ៉ាងសកម្ម</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីគ្រប់គ្រងថាព័ត៌មានអ្វីដែលអ្នកធ្វើសមកាលកម្មនៅក្នុងការកំណត់ Chrome</translation>
+<translation id="3203025201812691413">URL មិន​អាច​ទទេ​បានទេ</translation>
 <translation id="320323717674993345">បោះបង់ការ​បង់ប្រាក់</translation>
 <translation id="3203366800380907218">​ពី​បណ្តាញ</translation>
 <translation id="3207960819495026254">បានចំណាំ</translation>
@@ -2308,6 +2309,7 @@
 <translation id="5651323159439184939">ចោះរន្ធសងខាង</translation>
 <translation id="5653432653077411130">ការផ្គត់ផ្គង់ និង​ការចែកចាយ​ទឹក</translation>
 <translation id="5654927323611874862">លេខសម្គាល់របាយការណ៍អំពីការគាំងដែលបានបង្ហោះ៖</translation>
+<translation id="5654965123204121933">URL មិនរួមបញ្ចូលជួរអក្សរជំនួសដែលបានតម្រូវ <ph name="SEARCH_TERMS_REPLACEMENT" />៖ <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">អ៊ីម៉េល</translation>
 <translation id="5660122698869360728">ថតឆ្លាតវៃថ្មីដែលជួយអ្នករក្សាទុកទំព័រទិញទំនិញទាំងអស់របស់អ្នកនៅកន្លែងតែមួយ និងតាមដានតម្លៃដោយស្វ័យប្រវត្តិ ទទួលបានព័ត៌មានស៊ីជម្រៅអំពីតម្លៃ និងធ្វើអ្វីៗជាច្រើនទៀត។</translation>
 <translation id="5663955426505430495">អ្នកគ្រប់គ្រង​ឧបករណ៍នេះ​បានដំឡើង​កម្មវិធីបន្ថែមសម្រាប់​មុខងារបន្ថែម។ កម្មវិធីបន្ថែម​មានសិទ្ធិចូលប្រើ​ទិន្នន័យមួយចំនួន​របស់អ្នក។</translation>

@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">Ներդիրների խումբ – <ph name="TAB_COUNT" /> ներդիր</translation>
 <translation id="17513872634828108">Բաց ներդիրներ</translation>
 <translation id="1757620656501361327">Google գաղտնաբառերի կառավարչի զգուշացում</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{Էջեր, 1 էջ ցանկում}one{Էջեր, # էջ ցանկում}other{Էջեր, # էջ ցանկում}}</translation>
 <translation id="1778457539567749232">Նշել որպես չկարդացված</translation>
 <translation id="1779766957982586368">Փակել պատուհանը</translation>
 <translation id="1791662854739702043">Տեղադրվեց</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">Մուգ</translation>
 <translation id="2421705177906985956">Այս պահին կայքեր չկան</translation>
 <translation id="2426805022920575512">Ընտրել այլ հաշիվ</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{Տեսանյութեր, 1 տեսանյութ ցանկում}one{Տեսանյութեր, # տեսանյութ ցանկում}other{Տեսանյութեր, # տեսանյութ ցանկում}}</translation>
 <translation id="2433507940547922241">Արտաքին տեսք</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> կայքի նախադիտում</translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">Մուտք...</translation>
 <translation id="4866368707455379617">Չհաջողվեց տեղադրել «<ph name="MODULE" />» բաղադրիչը Chrome-ի համար</translation>
 <translation id="4871568871368204250">Անջատել համաժամացումը</translation>
+<translation id="4874961007154620743">Այս պարամետրը անջատելու դեպքում էլ կտեսնեք լոկալ հուշումներ Chrome-ից</translation>
 <translation id="4875775213178255010">Բովանդակության առաջարկներ</translation>
 <translation id="4877678010818027629">Մտնել ինկոգնիտո ռեժիմ</translation>
 <translation id="4878404682131129617">Չհաջողվեց կապ հաստատել պրոքսի սերվերի միջոցով</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">Արագ բացեք նոր ներդիր։ Այս դյուրանցումը փոփոխելու համար անցեք կարգավորումներ։</translation>
 <translation id="6802555630140434547">Պատուհանը կփակվի</translation>
 <translation id="6811034713472274749">Էջը պատրաստ է</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{Պատկերներ, 1 պատկեր ցանկում}one{Պատկերներ, # պատկեր ցանկում}other{Պատկերներ, # պատկեր ցանկում}}</translation>
 <translation id="6813446258015311409">Մուտք գործել Chrome, բացված է։</translation>
 <translation id="6817747507826986771">Արագ կիսվեք այս էջով։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
 <translation id="6819199143469632133">Google-ի ծառայություններից մի քանի սարքերում օգտվելու համար մուտք գործեք հաշիվ</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">Բեռնում…</translation>
 <translation id="6850409657436465440">Ներբեռնումն ընթացքում է</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> փակված ներդիր</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{Աուդիո ֆայլեր, 1 աուդիո ֆայլ ցանկում}one{Աուդիո ֆայլեր, # աուդիո ֆայլ ցանկում}other{Աուդիո ֆայլեր, # աուդիո ֆայլ ցանկում}}</translation>
 <translation id="685850645784703949">Discover by Google – անջատված է</translation>
 <translation id="686366188661646310">Ջնջե՞լ գաղտնաբառը</translation>
 <translation id="6864459304226931083">Ներբեռնել պատկերը</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">Կայքերի համար մուգ թեման հասանելի է</translation>
 <translation id="7388615499319468910">Կայքերն ու գովազդատուները կարող են գնահատել իրենց գովազդի արդյունավետությունը։ Այս կարգավորումն անջատված է։</translation>
 <translation id="7397416715506917976">Դիտել էջի վիճակագրությունը</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{Եվս 1 ֆայլ ցանկում}one{Եվս # ֆայլ ցանկում}other{Եվս # ֆայլ ցանկում}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome-ի առաջին գործարկում</translation>
 <translation id="7411224099004328643">Google հաշվի օգտատեր</translation>
@@ -1311,6 +1317,7 @@
 <translation id="780301667611848630">Ոչ</translation>
 <translation id="7808889146555843082">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="SITE" /> կայքից։ Անվտանգության նկատառումներով փոխեք գաղտնաբառը կամ ջնջեք հաշիվը <ph name="SITE" /> կայքում։</translation>
 <translation id="7810647596859435254">Բացել հավելվածով…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{Բոլոր ֆայլերը, 1 ֆայլ ցանկում}one{Բոլոր ֆայլերը, # ֆայլ ցանկում}other{Բոլոր ֆայլերը, # ֆայլ ցանկում}}</translation>
 <translation id="7815484226266492798">Երկար սքրինշոթ</translation>
 <translation id="7822705602465980873">Երբ մուտք գործեք, այս տվյալները կկապվեն ձեր Google հաշվի հետ՝ ձեզ Google-ի ծառայություններում պաշտպանելու համար, օրինակ՝ անվտանգության հետ կապված միջադեպից հետո բարձրացնելու անվտանգության մակարդակը Gmail-ում։</translation>
 <translation id="782705168687182233">Ձեր գործողությունները պահվում են ձեր <ph name="BEGIN_LINK" />Google հաշվում<ph name="END_LINK" />։</translation>
@@ -1535,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> լեզվի փաթեթը պատրաստ է</translation>
 <translation id="8937772741022875483">Հեռացնե՞լ Chrome-ի պատմությունը Թվային բարեկեցությունից</translation>
+<translation id="893938492099608175">Ձեր կարգավորումներից կախված՝ Chrome-ը կարող է նաև ուղարկել քուքիներ, ձեր ընթացիկ URL-ը և ձեր տեղադրությունը</translation>
 <translation id="8942627711005830162">Բացել նոր պատուհանում</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> լեզուն հնարավոր չէ ներբեռնել։ Փորձեք ավելի ուշ։</translation>
 <translation id="8955719471735800169">Հետ դեպի վերև</translation>

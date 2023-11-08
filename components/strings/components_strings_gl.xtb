@@ -1044,7 +1044,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3140646734028448730">Servizos para empresas</translation>
 <translation id="3141093262818886744">Abrir de todas formas</translation>
 <translation id="3141641372357166056">Ningunha decisión de consentimento</translation>
-<translation id="3142736425087361223">Para poder usar Chrome en <ph name="ORIGIN" />, debes concederlle permiso para acceder a: <ph name="PERMISSION" /></translation>
 <translation id="3144458715650412431">Aplicáronse as políticas de proba. Podes revisalas e restablecelas en chrome://policy/test. Non se aplicarán as políticas de administrador.</translation>
 <translation id="3145945101586104090">Non se puido descodificar a resposta</translation>
 <translation id="3150653042067488994">Erro de servidor temporal</translation>
@@ -1193,6 +1192,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3427342743765426898">&amp;Refacer modificación</translation>
 <translation id="342781501876943858">Chromium recoméndache que restablezas o contrasinal se o reutilizaches noutros sitios.</translation>
 <translation id="3428151540071562330">Un ou varios URI do modelo do servidor DnsOverHttpsTemplates non son válidos e non se utilizarán.</translation>
+<translation id="3428789896412418755">Historial agrupado</translation>
 <translation id="3431216045099978607">Preme |<ph name="ACCELERATOR" />| para saír de pantalla completa e ver a descarga.</translation>
 <translation id="3432601291244612633">Pechar páxina</translation>
 <translation id="3433111389595862568">Software de colaboración e conferencia</translation>
@@ -3178,6 +3178,7 @@ Detalles adicionais:
 <translation id="7423283032694727565">Botón para xestionar as cookies. Actívao para xestionar na configuración de Chrome as túas preferencias relativas ás cookies</translation>
 <translation id="7427366580982928791">Seguranza infantil en Internet</translation>
 <translation id="7429429656042611765">Executivo</translation>
+<translation id="7432774160230062882">Verifica a túa identidade para que Chromium poida completar a túa información de pago.</translation>
 <translation id="7437289804838430631">Engadir información de contacto</translation>
 <translation id="7437490109271760224">Xogos de cartas</translation>
 <translation id="7438338505272634288">Os atacantes do sitio que tentas visitar poderían enganarte para que instales software daniño que afecte á túa navegación (por exemplo, que cambie a túa páxina de inicio ou mostre máis anuncios nos sitios aos que accedas). Chrome recoméndache encarecidamente volver a un sitio seguro para evitar danos. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3412,6 +3413,7 @@ Detalles adicionais:
 <translation id="7831993212387676366">Que é a lista da compra?</translation>
 <translation id="7840103971441592723">Comezou a captura de pantalla</translation>
 <translation id="784137052867620416">Estatísticas de compras</translation>
+<translation id="784404208867107517">Historial agrupado</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ningunha}=1{1 aplicación (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacións (<ph name="EXAMPLE_APP_1" /> e <ph name="EXAMPLE_APP_2" />)}other{# aplicacións (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> e <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Máis tarde, os sitios que visites poderán solicitarlle información a Chrome sobre os teus temas para personalizar os anuncios que se che mostren. Chrome comparte como máximo 3 temas e ao tempo protexe o teu historial de navegación e a túa identidade.</translation>
@@ -3438,6 +3440,7 @@ Detalles adicionais:
 <translation id="79338296614623784">Introduce un número de teléfono válido</translation>
 <translation id="7934414805353235750"><ph name="URL" /> quere reproducir contido protexido. Google verificará a identidade do teu dispositivo.</translation>
 <translation id="7935318582918952113">Extractor de DOM</translation>
+<translation id="7936775433939783906">Verifica a túa identidade para que Google Chrome poida completar a túa información de pago.</translation>
 <translation id="7937163678541954811">O CVC desta tarxeta encriptarase e gardarase no teu dispositivo para que a tramitación das compras sexa máis rápida</translation>
 <translation id="7937554595067888181">Caduca o <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">O certificado do servidor aínda non é válido.</translation>

@@ -532,6 +532,7 @@
 <translation id="2025891858974379949">Қорғалмаған контент</translation>
 <translation id="2027465737841872819">Пластик</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Прокси және брандмауэр конфигурациясын тексеріп көріңіз<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Жылдам пәрмен <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> анықтаған әдепкі іздеу провайдері кілтсөзімен бірдей болмауы керек: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Сонда да сақтау</translation>
 <translation id="2035400064145347639">Саяхатшы анықтамалығы мен жолжазбалар</translation>
 <translation id="2036514476578229158">Осы сайтқа кіруді сұрадыңыз. Ата-аналарыңыз Family Link-те жауап бере алады.</translation>
@@ -1044,7 +1045,6 @@
 <translation id="3140646734028448730">Іскери қызметтер</translation>
 <translation id="3141093262818886744">Бәрібір ашу</translation>
 <translation id="3141641372357166056">Келісім шешімі жоқ</translation>
-<translation id="3142736425087361223">Chrome-ға <ph name="PERMISSION" /> рұқсаты <ph name="ORIGIN" /> сайтында пайдалану үшін қажет.</translation>
 <translation id="3144458715650412431">Сынақ саясаттары қолданылды. Оларды chrome://policy/test бетінде қарап шығыңыз және қайта орнатыңыз. Әкімші саясаттары қолданылмайды.</translation>
 <translation id="3145945101586104090">Жауапты шифрсыздандыру сәтсіз аяқталды</translation>
 <translation id="3150653042067488994">Уақытша сервер қатесі</translation>
@@ -1075,6 +1075,7 @@
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> серверіндегі <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Осы құрылғыны қашан белсенді пайдаланатыныңыз туралы білу үшін сұрай алады</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлеріне кіріп, синхрондалатын ақпаратты басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
+<translation id="3203025201812691413">URL бос болмауы керек</translation>
 <translation id="320323717674993345">Төлемнен бас тарту</translation>
 <translation id="3203366800380907218">Интернеттен</translation>
 <translation id="3207960819495026254">Бетбелгі қойылған</translation>
@@ -1192,6 +1193,7 @@
 <translation id="3427342743765426898">&amp;Өзгертуді қайталау</translation>
 <translation id="342781501876943858">Chromium басқа сайттарда пайдаланылған құпия сөзіңізді қайта орнатуды ұсынады.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates серверінің бір немесе бірнеше URI үлгісі жарамсыз және пайдаланылмайды.</translation>
+<translation id="3428789896412418755">Топтастырылған тарих</translation>
 <translation id="3431216045099978607">Толық экраннан шығу және жүктеп салынғандарды көру үшін |<ph name="ACCELERATOR" />| пернесін басыңыз.</translation>
 <translation id="3432601291244612633">Бетті жабу</translation>
 <translation id="3433111389595862568">Конференция мен бірлесе жұмыс істеуге арналған бағдарламалық құралдар</translation>
@@ -2300,6 +2302,7 @@
 <translation id="5651323159439184939">Үздіксіз беру</translation>
 <translation id="5653432653077411130">Сумен қамту және су тазарту</translation>
 <translation id="5654927323611874862">Жүктеп салынған жаңылыс туралы есеп идентификаторы:</translation>
+<translation id="5654965123204121933">URL мекенжайында қажетті <ph name="SEARCH_TERMS_REPLACEMENT" /> ауыстыру жолы жоқ: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Электрондық пошта</translation>
 <translation id="5660122698869360728">Қалаулы тауарлардың беттерін бір жерге сақтауға, бағаларды автоматты түрде бақылауға, баға статистикасын алуға және т.б. мүмкіндік беретін жаңа смарт қалта.</translation>
 <translation id="5663955426505430495">Құрылғының әкімшісі қосымша функциялар үшін кеңейтімдер орнатты. Кеңейтімдер кейбір деректерді пайдалана алады.</translation>
@@ -3177,6 +3180,7 @@
 <translation id="7423283032694727565">"Cookie файлдарын басқару" түймесі, Chrome параметрлерінде cookie файлдарын басқару үшін белсендіріңіз</translation>
 <translation id="7427366580982928791">Баланың интернеттегі қауіпсіздігі</translation>
 <translation id="7429429656042611765">Executive</translation>
+<translation id="7432774160230062882">Chromium төлем туралы ақпаратыңызды толтыруы үшін, жеке басыңызды растаңыз.</translation>
 <translation id="7437289804838430631">Байланыс ақпаратын енгізу</translation>
 <translation id="7437490109271760224">Карта ойындары</translation>
 <translation id="7438338505272634288">Сіз кіргелі жатқан сайттағы шабуылдаушылар браузерді пайдалануға теріс әсер ететін зиянды бағдарламалық құралды алдап орнатқызуы (мысалы, негізгі бетті өзгерту немесе сіз кірген сайттарда қосымша жарнамалар көрсету арқылы) мүмкін. Chrome зиянды әрекеттерден аулақ болу үшін міндетті түрде қауіпсіздікке оралуды ұсынады. <ph name="BEGIN_LEARN_MORE_LINK" />Толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3411,6 +3415,7 @@
 <translation id="7831993212387676366">Сатып алу тізімі деген не?</translation>
 <translation id="7840103971441592723">Экранды түсіру басталды</translation>
 <translation id="784137052867620416">Сауда-саттық статистикасы</translation>
+<translation id="784404208867107517">Топтастырылған тарих</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Жоқ}=1{1 қолданба (<ph name="EXAMPLE_APP_1" />)}=2{2 қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Кейінірек сіз кірген сайт сіз көрген жарнамаларды жекелендіру үшін Chrome браузерінен тақырыптарыңызды сұрай алады. Chrome браузерді қолдану тарихыңыз бен жеке басыңызды куәландыратын деректеріңізді қорғай отырып, 3 тақырыпқа дейін бөліседі.</translation>
@@ -3437,6 +3442,7 @@
 <translation id="79338296614623784">Дұрыс телефон нөмірін енгізіңіз</translation>
 <translation id="7934414805353235750"><ph name="URL" /> қорғалған контентті ойнатуға рұқсат сұрады. Google құрылғыңыздың идентификаторын тексереді.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Google Chrome төлем туралы ақпаратыңызды толтыруы үшін, жеке басыңызды растаңыз.</translation>
 <translation id="7937163678541954811">Жылдам төлеу үшін бұл картаның CVC коды шифрланады және құрылғыңызға сақталады.</translation>
 <translation id="7937554595067888181">Жарамдылық мерзімі: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сервер сертификаты әлі жарамды емес.</translation>

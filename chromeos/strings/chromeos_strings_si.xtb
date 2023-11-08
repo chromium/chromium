@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">ChromeOS Flex ස්ථාපනය කරන්න</translation>
 <translation id="1856388568474281774">පහළ ඊතලය</translation>
 <translation id="1858620243986915808">තිර රුව අමුණන්න</translation>
+<translation id="1871413952174074704">APN හි අනුලකුණු <ph name="CHAR_LIMIT" />කට වඩා තිබිය නොහැක</translation>
 <translation id="1871569928317311284">අඳුරු තේමාව ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">අඳුරු ප්‍රකාරය ක්‍රියාවිරහිත කරන්න</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">ලා රෝස</translation>
 <translation id="982713511914535780">විසර්ජන පරීක්ෂණය ධාවනය කරන්න</translation>
 <translation id="987264212798334818">සාමාන්‍ය</translation>
+<translation id="995062385528875723">උච්චාරණ අකුරු, ලතින් නොවන හෝඩිය, හෝ සංකේත භාවිතා කළ නොහැක</translation>
 </translationbundle>

@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">பக்கக் குழு -<ph name="TAB_COUNT" /> பக்கங்கள்</translation>
 <translation id="17513872634828108">தாவல்களைத் திற</translation>
 <translation id="1757620656501361327">Google Password Manager அறிவிப்பு</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{பக்கங்கள், பட்டியலில் 1 பக்கம் உள்ளது}other{பக்கங்கள், பட்டியலில் # பக்கங்கள் உள்ளன}}</translation>
 <translation id="1778457539567749232">படிக்காததாகக் குறிக்கும்</translation>
 <translation id="1779766957982586368">சாளரத்தை மூடுக</translation>
 <translation id="1791662854739702043">நிறுவப்பட்டது</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">அடர்</translation>
 <translation id="2421705177906985956">தற்சமயம் காட்ட தளங்கள் எதுவுமில்லை</translation>
 <translation id="2426805022920575512">மற்றொரு கணக்கைத் தேர்வுசெய்க</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{வீடியோக்கள், பட்டியலில் 1 வீடியோ உள்ளது}other{வீடியோக்கள், பட்டியலில் # வீடியோக்கள் உள்ளன}}</translation>
 <translation id="2433507940547922241">தோற்றம்</translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> மாதிரிக்காட்சி</translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">உள்நுழைகிறீர்கள்...</translation>
 <translation id="4866368707455379617">Chromeமுக்கான <ph name="MODULE" />ஐ நிறுவ முடியவில்லை</translation>
 <translation id="4871568871368204250">ஒத்திசைவை முடக்கவும்</translation>
+<translation id="4874961007154620743">முடக்கப்பட்டிருக்கும்போது, Chrome வழங்கும் சாதன அளவிலான பரிந்துரைகளை நீங்கள் தொடர்ந்து பார்க்கலாம்</translation>
 <translation id="4875775213178255010">உள்ளடக்கப் பரிந்துரைகள்</translation>
 <translation id="4877678010818027629">மறைநிலையில் திறக்கும்</translation>
 <translation id="4878404682131129617">ப்ராக்ஸி சர்வர் மூலமாக டனல் இணைப்பை உருவாக்க முடியவில்லை</translation>
@@ -1100,6 +1103,7 @@
 <translation id="6795633245022906657">புதிய தாவலை உடனடியாகத் திறக்கலாம். இந்த ஷார்ட்கட்டை மாற்ற அமைப்புகளுக்குச் செல்லவும்.</translation>
 <translation id="6802555630140434547">சாளரம் மூடப்படும்</translation>
 <translation id="6811034713472274749">பக்கத்தைப் பார்க்கலாம்</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{படங்கள், பட்டியலில் 1 படம் உள்ளது}other{படங்கள், பட்டியலில் # படங்கள் உள்ளன}}</translation>
 <translation id="6813446258015311409">Chromeமில் உள்நுழைக, திறக்கப்பட்டுள்ளது.</translation>
 <translation id="6817747507826986771">இந்தப் பக்கத்தை உடனடியாகப் பகிரலாம். இந்த ஷார்ட்கட்டை மாற்ற தொட்டுப் பிடித்திருக்கவும்.</translation>
 <translation id="6819199143469632133">அனைத்துச் சாதனங்களிலும் உங்கள் Google தயாரிப்புகளையும் சேவைகளையும் பெற உள்நுழையுங்கள்</translation>
@@ -1113,6 +1117,7 @@
 <translation id="6846298663435243399">ஏற்றுகிறது...</translation>
 <translation id="6850409657436465440">பதிவிறக்கம் செயலில் உள்ளது</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> தாவல்கள் மூடப்பட்டன</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{ஆடியோ ஃபைல்கள், பட்டியலில் 1 ஆடியோ ஃபைல் உள்ளது}other{ஆடியோ ஃபைல்கள், பட்டியலில் # ஆடியோ ஃபைல்கள் உள்ளன}}</translation>
 <translation id="685850645784703949">Discover by Google - முடக்கப்பட்டுள்ளது</translation>
 <translation id="686366188661646310">கடவுச்சொல்லை நீக்கவா?</translation>
 <translation id="6864459304226931083">படத்தைப் பதிவிறக்கு</translation>
@@ -1218,6 +1223,7 @@
 <translation id="7379900596734708416">தளங்களுக்கான டார்க் தீம் கிடைக்கிறது</translation>
 <translation id="7388615499319468910">விளம்பரங்களின் செயல்திறனைத் தளங்களும் விளம்பரதாரர்களும் தெரிந்துகொள்ளலாம். இந்த அமைப்பு முடக்கப்பட்டுள்ளது.</translation>
 <translation id="7397416715506917976">பக்க புள்ளிவிவரத்தை காட்டு</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{மற்றவை, பட்டியலில் 1 ஃபைல் உள்ளது}other{மற்றவை, பட்டியலில் # ஃபைல்கள் உள்ளன}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome முதல் இயக்க அனுபவம்</translation>
 <translation id="7411224099004328643">Google கணக்குப் பயனர்</translation>
@@ -1290,6 +1296,7 @@
 <translation id="7691043218961417207">பின்தொடர வேண்டிய உள்ளடக்கத்தைக் கண்டறியுங்கள்</translation>
 <translation id="7697383401610880082">இழுப்பதற்கான ஹேண்டில்</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> இல் மின்னஞ்சலை உருவாக்கவும்</translation>
+<translation id="7702029078562412515">வினவல் கட்டங்கள்</translation>
 <translation id="7702388902581909985">உலாவிய தரவை அழிப்பதால் உங்கள் Google கணக்கில் இருந்து வெளியேற மாட்டீர்கள். அதைச் செய்ய, <ph name="BEGIN_LINK1" />Chromeமில் இருந்து வெளியேறுங்கள்<ph name="END_LINK1" />.</translation>
 <translation id="7707922173985738739">மொபைல் டேட்டாவைப் பயன்படுத்து</translation>
 <translation id="7709918231054955894">உங்கள் உலாவிப் பக்கங்கள் அனைத்தையும் பெறுங்கள்</translation>
@@ -1311,6 +1318,7 @@
 <translation id="780301667611848630">வேண்டாம்</translation>
 <translation id="7808889146555843082">இந்தக் கடவுச்சொல்லை நீக்கினால் <ph name="SITE" /> டொமைனில் உள்ள உங்கள் கணக்கு நீக்கப்படாது. <ph name="SITE" /> டொமைனில் உள்ள உங்கள் கணக்கைப் பிறரிடமிருந்து பாதுகாக்க, உங்கள் கடவுச்சொல்லை மாற்றவும் அல்லது உங்கள் கணக்கை நீக்கவும்.</translation>
 <translation id="7810647596859435254">இதன் மூலம் திற…</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{அனைத்து ஃபைல்களும், பட்டியலில் 1 ஃபைல் உள்ளது}other{அனைத்து ஃபைல்களும், பட்டியலில் # ஃபைல்கள் உள்ளன}}</translation>
 <translation id="7815484226266492798">நீண்ட ஸ்கிரீன்ஷாட்</translation>
 <translation id="7822705602465980873">நீங்கள் உள்நுழைந்திருக்கும்போது, Google சேவைகள் முழுவதும் உங்களைப் பாதுகாக்க இந்தத் தரவு உங்கள் Google கணக்குடன் இணைக்கப்படும். உதாரணம்: பாதுகாப்புச் சிக்கலுக்குப் பிறகு Gmailலில் உங்கள் பாதுகாப்பை அதிகரித்தல்.</translation>
 <translation id="782705168687182233">உங்கள் செயல்பாடுகள் உங்கள் <ph name="BEGIN_LINK" />Google கணக்கில்<ph name="END_LINK" /> சேமிக்கப்படுகின்றன.</translation>
@@ -1535,6 +1543,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> மொழி தயாராக உள்ளது</translation>
 <translation id="8937772741022875483">உங்கள் Chrome செயல்பாட்டை டிஜிட்டல் வெல்பீயிங்கிலிருந்து நீக்கவா?</translation>
+<translation id="893938492099608175">உங்கள் அமைப்புகளைப் பொறுத்து குக்கீகள், உங்களின் தற்போதைய URL, உங்கள் இருப்பிடம் ஆகியவற்றை Chrome அனுப்பக்கூடும்</translation>
 <translation id="8942627711005830162">வேறு சாளரத்தில் திற</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - இந்த மொழித் தொகுப்பைப் பதிவிறக்க முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="8955719471735800169">மேலே செல்க</translation>

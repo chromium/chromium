@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">Տեղադրել ChromeOS Flex-ը</translation>
 <translation id="1856388568474281774">Ներքև սլաք</translation>
 <translation id="1858620243986915808">Կցել սքրինշոթ</translation>
+<translation id="1871413952174074704">APN-ը կարող է առավելագույնը <ph name="CHAR_LIMIT" /> նիշ պարունակել</translation>
 <translation id="1871569928317311284">Անջատել մուգ թեման</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Անջատել մուգ ռեժիմը</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Բաց վարդագույն</translation>
 <translation id="982713511914535780">Փորձարկել լիցքաթափումը</translation>
 <translation id="987264212798334818">Ընդհանուր</translation>
+<translation id="995062385528875723">Հնարավոր չէ օգտագործել տարբերիչ նշաններով տառեր, լատինականից բացի այլ այբուբեն կամ նշաններ</translation>
 </translationbundle>

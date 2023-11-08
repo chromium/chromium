@@ -1044,7 +1044,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3140646734028448730">İşletme Hizmetleri</translation>
 <translation id="3141093262818886744">Yine de aç</translation>
 <translation id="3141641372357166056">İzin kararı yok</translation>
-<translation id="3142736425087361223">Chrome'a, <ph name="ORIGIN" /> sitesinde kullanması için <ph name="PERMISSION" /> izni vermeniz gerekiyor</translation>
 <translation id="3144458715650412431">Test politikaları uygulandı. Bu politikaları chrome://policy/test adresinden inceleyip sıfırlayabilirsiniz. Yönetici politikaları uygulanmaz.</translation>
 <translation id="3145945101586104090">Yanıtın kodu çözülemedi</translation>
 <translation id="3150653042067488994">Geçici sunucu hatası</translation>

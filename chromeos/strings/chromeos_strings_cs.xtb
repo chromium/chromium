@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">Nainstalovat ChromeOS Flex</translation>
 <translation id="1856388568474281774">Šipka dolů</translation>
 <translation id="1858620243986915808">Přiložit snímek obrazovky</translation>
+<translation id="1871413952174074704">APN nemůže mít více než <ph name="CHAR_LIMIT" /> znaků</translation>
 <translation id="1871569928317311284">Vypnout tmavý motiv</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Vypnout tmavý režim</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Světle růžová</translation>
 <translation id="982713511914535780">Spustit test vybíjení</translation>
 <translation id="987264212798334818">Všeobecné</translation>
+<translation id="995062385528875723">Nelze použít písmena s diakritikou, jinou než latinskou abecedu ani symboly</translation>
 </translationbundle>

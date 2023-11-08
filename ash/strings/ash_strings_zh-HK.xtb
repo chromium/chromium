@@ -93,7 +93,6 @@
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1293699935367580298">Esc 鍵</translation>
 <translation id="1294046132466831888">開啟「探索」</translation>
-<translation id="1294929383540927798">變更上鎖畫面通知設定</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">推薦的應用程式</translation>
 <translation id="1311294419381837540">您正在投放分頁。您可以隨時暫停或停止投放。</translation>
@@ -132,7 +131,6 @@
 <translation id="1469148162491666137">此操作會允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」以及所有具備相機和麥克風權限的應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="147310119694673958">手機電量 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">浮動式無障礙選單</translation>
-<translation id="1480845547124508962"><ph name="CURRENT_TIME" />，㩒 Enter 制就可以開日曆檢視畫面</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">語音聽寫功能可讓你透過語音輸入文字。請在文字欄位中，按下語音聽寫鍵或選取畫面底部的「麥克風」圖示。你的語音聽寫語言已設定為<ph name="LANGUAGE" />。語音將會傳送至 Google 進行處理。你可隨時在「設定」&gt; [無障礙設定] 變更語音聽寫語言。</translation>
 <translation id="1487931858675166540">「<ph name="FIRST_ITEM_TITLE" />」同「<ph name="SECOND_ITEM_TITLE" />」調換咗</translation>
@@ -756,7 +754,6 @@
 <translation id="412298498316631026">視窗</translation>
 <translation id="4123259114412175274">如要解鎖 Chromebook，請確保手機的藍牙已開啟</translation>
 <translation id="4125970834901680537">無法在平板電腦模式中串流應用程式。請使用手提電腦模式再試一次。</translation>
-<translation id="4129129681837227511">如要在上鎖畫面上查看通知，請將裝置解鎖並變更相關設定</translation>
 <translation id="4131973331381812765">溫度：<ph name="TEMPERATURE" />°C - 目前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4132502210362661715">Chromebook 內置應用程式，可幫助你完成大小工作。現在就透過「啟動器」尋找所需的應用程式吧！</translation>
 <translation id="4136724716305260864">開啟，直到日出</translation>
@@ -1086,7 +1083,6 @@
 <translation id="5393156353051693207">輕觸並按住任何位置即可將應用程式重新排序</translation>
 <translation id="5395308026110844773">「<ph name="DRAGGED_APP_NAME" />」宜家拉咗去「<ph name="IN_PLACE_APP" />」上面，放開滑鼠就可以建立資料夾。</translation>
 <translation id="5397578532367286026">管理員 (<ph name="MANAGER_EMAIL" />) 可以在 chrome.com 瞭解這位使用者的使用情況和記錄。</translation>
-<translation id="5400461572260843123">快速設定，㩒一下搜尋鍵 + 向左鍵就可以存取通知中心。</translation>
 <translation id="5413656666631274079">設定頁面</translation>
 <translation id="5414198321558177633">正在重新整理設定檔清單。這項操作可能需時數分鐘。</translation>
 <translation id="5426063383988017631">閂咗設定選單</translation>
@@ -1133,7 +1129,6 @@
 <translation id="558849140439112033">拖曳以選取要擷取的範圍</translation>
 <translation id="5590609058453685222">「略過自動提醒」功能已開啟。如果在靜音狀態下說話，系統會傳送通知給您。</translation>
 <translation id="5596627076506792578">更多選項</translation>
-<translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5599242528220103262">鍵盤快速鍵已關閉</translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用朗讀功能。</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -1755,7 +1750,6 @@
 <translation id="8155628902202578800">打開 <ph name="USER_EMAIL_ADDRESS" /> 嘅資料對話框</translation>
 <translation id="8167567890448493835">正在使用「<ph name="LOCALE_NAME" />」</translation>
 <translation id="8185090165691050712">開啟/關閉選單即可調整鎖定模式的大小</translation>
-<translation id="8192202700944119416">已隱藏通知。</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8203795194971602413">按一下右鍵</translation>
@@ -1800,7 +1794,6 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>
 <translation id="8420205633584771378">要移除此建議嗎？</translation>
 <translation id="8421270167862077762">此裝置上未安裝「<ph name="UNAVAILABLE_APPS" />」。</translation>
-<translation id="8425213833346101688">變更</translation>
 <translation id="8426708595819210923"><ph name="GIVEN_NAME" />，晚安：</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 到 <ph name="KEY_TWO" /></translation>

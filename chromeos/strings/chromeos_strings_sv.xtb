@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">Installera ChromeOS Flex</translation>
 <translation id="1856388568474281774">Nedåtpiltangenten</translation>
 <translation id="1858620243986915808">Bifoga skärmbild</translation>
+<translation id="1871413952174074704">APN får inte innehålla fler än <ph name="CHAR_LIMIT" /> tecken</translation>
 <translation id="1871569928317311284">Inaktivera mörkt tema</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Inaktivera mörkt läge</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Ljusrosa</translation>
 <translation id="982713511914535780">Kör urladdningstest</translation>
 <translation id="987264212798334818">Allmänt</translation>
+<translation id="995062385528875723">Det går inte att använda bokstäver med accenttecken, icke-latinska tecken eller symboler</translation>
 </translationbundle>

@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">Instalo Chrome OS Flex</translation>
 <translation id="1856388568474281774">Shigjeta poshtë</translation>
 <translation id="1858620243986915808">Bashkëngjit pamjen e ekranit</translation>
+<translation id="1871413952174074704">APN-ja nuk mund të ketë më shumë se <ph name="CHAR_LIMIT" /> karaktere</translation>
 <translation id="1871569928317311284">Çaktivizo temën e errët</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Çaktivizo modalitetin e errët</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Rozë e çelur</translation>
 <translation id="982713511914535780">Ekzekuto testin e shkarkimit</translation>
 <translation id="987264212798334818">Të përgjithshme</translation>
+<translation id="995062385528875723">Nuk mund të përdoren shkronjat me thekse, alfabeti jolatin ose simbolet</translation>
 </translationbundle>

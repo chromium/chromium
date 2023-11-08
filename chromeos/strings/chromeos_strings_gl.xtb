@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">Instalar Chrome OS Flex</translation>
 <translation id="1856388568474281774">Frecha abaixo</translation>
 <translation id="1858620243986915808">Anexar captura de pantalla</translation>
+<translation id="1871413952174074704">O APN non pode ter máis de <ph name="CHAR_LIMIT" /> caracteres</translation>
 <translation id="1871569928317311284">Quitar tema escuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Quitar modo escuro</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Rosa claro</translation>
 <translation id="982713511914535780">Realizar proba de descarga</translation>
 <translation id="987264212798334818">Xeral</translation>
+<translation id="995062385528875723">Non se poden usar letras con acentos, caracteres de alfabetos non latinos nin símbolos</translation>
 </translationbundle>

@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">ChromeOS Flex 설치</translation>
 <translation id="1856388568474281774">아래쪽 화살표</translation>
 <translation id="1858620243986915808">스크린샷 첨부</translation>
+<translation id="1871413952174074704">APN은 <ph name="CHAR_LIMIT" />자(영문 기준)를 초과할 수 없습니다.</translation>
 <translation id="1871569928317311284">어두운 테마 사용 중지</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">어두운 모드 사용 중지</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">연한 분홍색</translation>
 <translation id="982713511914535780">방전 테스트 실행</translation>
 <translation id="987264212798334818">일반</translation>
+<translation id="995062385528875723">악센트 표시가 있는 문자, 라틴어가 아닌 알파벳 또는 기호를 사용할 수 없습니다.</translation>
 </translationbundle>

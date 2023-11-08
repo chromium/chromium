@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">Установить Chrome OS Flex</translation>
 <translation id="1856388568474281774">Стрелка вниз</translation>
 <translation id="1858620243986915808">Прикрепить скриншот</translation>
+<translation id="1871413952174074704">Максимальное количество знаков в названии точки доступа – <ph name="CHAR_LIMIT" />.</translation>
 <translation id="1871569928317311284">Выключить тёмную тему</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Выключить тёмную тему</translation>
@@ -190,6 +191,7 @@
 <translation id="2236746079896696523">Подсветка клавиатуры</translation>
 <translation id="2240366984605217732">Переключение раскладки клавиатуры</translation>
 <translation id="225692081236532131">Статус активации</translation>
+<translation id="2267285889943769271">Добавить скриншот</translation>
 <translation id="2271469253353559191">Расписание тёмной темы</translation>
 <translation id="2276999893457278469">Самый популярный справочный контент</translation>
 <translation id="2279051792571591988">Восстановить настройки по умолчанию</translation>
@@ -433,6 +435,7 @@
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4300073214558989">Изображений: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4333390807948134856">Клавиша <ph name="KEY_NAME" /> нажата</translation>
+<translation id="4354430579665871434">клавиша</translation>
 <translation id="435692326371619097">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Сбросить все сочетания клавиш</translation>
 <translation id="4378373042927530923">Не проверено</translation>
@@ -1101,4 +1104,5 @@
 <translation id="979450713603643090">Светло-розовый</translation>
 <translation id="982713511914535780">Запустить проверку расхода заряда</translation>
 <translation id="987264212798334818">Общие</translation>
+<translation id="995062385528875723">Невозможно использовать знаки любых алфавитов, кроме латинского, буквы с диакритическими знаками и специальные символы.</translation>
 </translationbundle>

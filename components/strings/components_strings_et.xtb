@@ -559,6 +559,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2072275792380684364">Mood ja stiil</translation>
 <translation id="2075497153347571252">Teie administraator on blokeerinud loa <ph name="PERMISSION" /> lähtekohas <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
+<translation id="2080021694978766903">Sellel reeglil ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> kirje.</translation>
 <translation id="20817612488360358">Kasutamiseks on määratud süsteemi puhverserveri seaded, kuid määratud on ka konkreetne puhverserveri konfigureerimine.</translation>
 <translation id="2082238445998314030">Tulemus <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Luba igal külastusel</translation>
@@ -638,6 +639,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2225927550500503913">Virtuaalkaart on sisse lülitatud</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Sisselogimine<ph name="END_LINK" /> WiFi-võrku</translation>
 <translation id="2228057197024893428">See aadress on praegu salvestatud Chrome'i. Kui soovite seda Google'i teenustes kasutada, salvestage see oma Google'i kontole <ph name="ACCOUNT" />.</translation>
+<translation id="2229456043301340598">Korduvat otseteed eirati: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">CD</translation>
 <translation id="2235344399760031203">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="2239100178324503013">Saada kohe</translation>
@@ -1044,7 +1046,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3140646734028448730">Äriteenused</translation>
 <translation id="3141093262818886744">Ava ikka</translation>
 <translation id="3141641372357166056">Nõusoleku otsus puudub</translation>
-<translation id="3142736425087361223">Chrome vajab teie luba <ph name="PERMISSION" />, et seda saidil <ph name="ORIGIN" /> kasutada</translation>
 <translation id="3144458715650412431">Testreeglid on rakendatud. Vaadake ja lähtestage neid lehel chrome://policy/test. Administraatori reegleid ei rakendata.</translation>
 <translation id="3145945101586104090">Vastuse dekodeerimine ebaõnnestus</translation>
 <translation id="3150653042067488994">Serveris ilmnes ajutine viga</translation>
@@ -2332,6 +2333,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5720705177508910913">Praegune kasutaja</translation>
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
 <translation id="5723287205918986743">Kaitsetööstus</translation>
+<translation id="5725297205162868298">Otsetee ei saa alata tähemärgiga @: „<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="5730040223043577876">Chrome soovitab teil parooli lähtestada, kui kasutasite seda ka muudel saitidel.</translation>
 <translation id="5732392974455271431">Vanemad saavad blokeeringu teie eest tühistada</translation>
 <translation id="573555826359077410">Nupp Loo vorm, aktiveerige nupp, et luua teenuses Google'i vormid kiiresti uus vorm</translation>
@@ -2849,6 +2851,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6793213097893210590">Papp</translation>
 <translation id="679355240208270552">Seda eiratakse, kuna vaikeotsing ei ole reegliga lubatud.</translation>
 <translation id="6794951432696553238">Kinnitage oma kaardid kiiremini, kasutades edaspidi funktsiooni Google Hello</translation>
+<translation id="6798066466127540426">Loend ei sisalda kehtivat otsingupakkujat.</translation>
 <translation id="6798460514924505775">Ümbrik Chou 3</translation>
 <translation id="6799145206637008376">Selle virtuaalkaardi CVC täitmine</translation>
 <translation id="6805030849054648206">Ümbrik B6/C4</translation>
@@ -3238,6 +3241,7 @@ Lisateave:
 <translation id="7521825010239864438">Jaotis „<ph name="SECTION" />” on peidetud</translation>
 <translation id="752189128961566325">Saate seda kasutada kõigis Google'i teenustes</translation>
 <translation id="7523408071729642236">Tööstus</translation>
+<translation id="7525804896095537619">Nime väli ei tohi olla tühi</translation>
 <translation id="7526934274050461096">Teie ühendus selle saidiga pole privaatne</translation>
 <translation id="7529884293139707752">Koduõpe</translation>
 <translation id="7534987659046836932">Ümbrik C7</translation>
@@ -3459,6 +3463,7 @@ Lisateave:
 <translation id="7950027195171824198">Hallake Chrome'i seadetes küpsiste eelistusi</translation>
 <translation id="7951415247503192394">(32-bitine)</translation>
 <translation id="7952192831285741665">Euroopa EDP</translation>
+<translation id="7952250633095257243">Otsetee väli ei tohi olla tühi</translation>
 <translation id="7952327717479677595">Nupp Otsingumootorite haldamine, aktiveerige nupp vaikeotsingumootori ja -saidiotsingu haldamiseks</translation>
 <translation id="7953236668995583915">Laadige see leht uuesti, et rakendada värskendatud seaded sellel saidil</translation>
 <translation id="7953569069500808819">Õmblus ülaservas</translation>
@@ -3670,6 +3675,7 @@ Lisateave:
 <translation id="8344776605855290140">Virtuaalkaardi registreerimise dialoog on avatud poolel kõrgusel</translation>
 <translation id="8347658365704983341">Kaugõpe</translation>
 <translation id="8349305172487531364">Järjehoidjariba</translation>
+<translation id="8350416046273606058">Otsetee ei tohi sisaldada tühikuid: „<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Märkme loomine</translation>
 <translation id="8352849934814541340">Seadme administraator on installinud rakendused, mis hõlmavad lisafunktsioone. Rakendustel on juurdepääs teie mõningatele andmetele.</translation>
 <translation id="8355270400102541638">Kohaliku kokkujooksmise kontekst:</translation>

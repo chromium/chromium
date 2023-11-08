@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">На сайте, который вы просматриваете, может быть встроенный контент с других сайтов, например изображения, реклама и текст. Файлы cookie с таких сайтов называются сторонними файлами cookie.</translation>
 <translation id="2434158240863470628">Скачивание завершено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Вы временно разрешили этому сайту использовать сторонние файлы cookie. Браузер станет хуже защищен, но функции сайта могут начать работать правильно. <ph name="BEGIN_LINK" />Отправить отзыв<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">В режиме инкогнито некоторые функции сайтов могут быть отключены</translation>
 <translation id="2442870161001914531">Всегда запрашивать версию для ПК</translation>
 <translation id="2469312991797799607">Будут удалены все данные и файлы cookie, сохраненные сайтом <ph name="ORIGIN" /> и связанными с ним сайтами.</translation>
@@ -114,6 +115,7 @@
 <translation id="2910701580606108292">Запрашивать разрешение на воспроизведение защищенного контента</translation>
 <translation id="2932883381142163287">Сообщить о нарушении</translation>
 <translation id="2968755619301702150">Просмотр сертификатов</translation>
+<translation id="2979365474350987274">Использование сторонних файлов cookie ограничено</translation>
 <translation id="3008272652534848354">Сбросить все разрешения</translation>
 <translation id="3013291976881901233">MIDI-устройства</translation>
 <translation id="301521992641321250">Заблокировано автоматически</translation>
@@ -206,6 +208,7 @@
 <translation id="4644713492825682049">Удалить и сбросить</translation>
 <translation id="4645575059429386691">Управляется вашими родителями</translation>
 <translation id="4670064810192446073">Виртуальная реальность</translation>
+<translation id="4673958474310291465">Попробуйте временно разрешить сторонние файлы cookie. Это снизит вашу защиту, но функции сайта могут начать работать правильно.</translation>
 <translation id="4751476147751820511">Датчики движения и освещенности</translation>
 <translation id="4779083564647765204">Масштаб</translation>
 <translation id="4811450222531576619">Сведения об источнике и теме</translation>
@@ -342,6 +345,7 @@
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Выбран 1 объект}one{Выбран # объект}few{Выбрано # объекта}many{Выбрано # объектов}other{Выбрано # объекта}}</translation>
 <translation id="7087918508125750058">Выбрано: <ph name="ITEM_COUNT" />. Меню находится в верхней части экрана.</translation>
+<translation id="7137403271056944713">Управление/программирование MIDI</translation>
 <translation id="7141896414559753902">Блокировать всплывающие окна и переадресацию на сайтах (рекомендуется)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Обновить</translation>

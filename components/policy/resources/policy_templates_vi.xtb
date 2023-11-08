@@ -8301,6 +8301,11 @@ Nếu bạn đặt thành Disabled (Tắt) hoặc không đặt chính sách nà
           Đối với những nguồn gốc không khớp với các mẫu nêu ở đây, giá trị mặc định chung của chính sách sẽ được lấy từ chính sách <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> (nếu được đặt) hoặc từ cấu hình cá nhân của người dùng.
 
           Để biết thông tin chi tiết về mẫu URL hợp lệ, vui lòng truy cập https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="7904584382309857420">Chính sách này đã bị loại bỏ trong phiên bản M121. Chính sách này được dùng để bật/tắt cơ chế Chứng thực từ xa cho thiết bị nhưng cơ chế này đã được bật theo mặc định.
+
+Việc đặt chính sách này thành Bật sẽ cho phép chứng thực từ xa đối với thiết bị này. Một chứng chỉ sẽ được tạo tự động và tải lên Máy chủ quản lý thiết bị.
+
+Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, thì sẽ không có chứng chỉ nào được tạo và các lệnh gọi đến <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> sẽ không thực hiện được.</translation>
 <translation id="7906983682927840536">Tìm nạp thời lượng giữ kết nối khi Tắt</translation>
 <translation id="7908384265697653397">Thời gian (tính theo ngày) mà sau đó người dùng sẽ bị đăng xuất nếu phiên bản <ph name="PRODUCT_OS_NAME" /> cũ hơn phiên bản <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> được chỉ định</translation>
 <translation id="7911685775490889216">Thiết lập khoảng thời gian hiển thị một hình ảnh (tính bằng giây) khi trình bảo vệ màn hình cho màn hình khoá có nhiều hình ảnh cần hiển thị.

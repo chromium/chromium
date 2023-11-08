@@ -1044,7 +1044,6 @@
 <translation id="3140646734028448730">Бизнес услуги</translation>
 <translation id="3141093262818886744">Отваряне въпреки това</translation>
 <translation id="3141641372357166056">Няма решение относно съгласието</translation>
-<translation id="3142736425087361223">Chrome се нуждае от разрешение за достъп до <ph name="PERMISSION" /> за <ph name="ORIGIN" /></translation>
 <translation id="3144458715650412431">Приложени са тестови правила. Можете да ги прегледате и нулирате на адрес chrome://policy/test. Администраторските правила няма да бъдат приложени.</translation>
 <translation id="3145945101586104090">Декодирането на отговора не бе успешно</translation>
 <translation id="3150653042067488994">Временна грешка в сървъра</translation>

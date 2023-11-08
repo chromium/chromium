@@ -244,6 +244,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Chromium अपडेट उपलब्ध आहे}=1{Chromium अपडेट उपलब्ध आहे}other{Chromium अपडेट # दिवसांसाठी उपलब्ध आहे}}</translation>
 <translation id="5643865575100044307">तुम्ही Chromium बंद करता, तेव्हा नेहमी तुमच्या डिव्हाइसवरून साइट डेटा हटवा</translation>
 <translation id="5653831366781983928">कृपया आता Chromium रीस्टार्ट करा</translation>
+<translation id="5675598751761067447">ही फाइल धोकादायक असू शकते<ph name="LINE_BREAK" />तुम्ही पासवर्ड पुरवल्यास, Chromium तुमच्या वतीने हा डाउनलोड तपासू शकते — तुमचा पासवर्ड तुमच्या डिव्हाइसवर राहतो</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium या भाषेत डिस्प्ले करा</translation>
 <translation id="569897634095159764">इंटरनेटशी कनेक्ट करता आले नाही. प्रॉक्सी सर्व्हरसाठी ऑथेंटिकेशन आवश्यक आहे.</translation>

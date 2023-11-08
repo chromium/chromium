@@ -1044,7 +1044,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3140646734028448730">Servicios empresariales</translation>
 <translation id="3141093262818886744">Abrir de todos modos</translation>
 <translation id="3141641372357166056">Sin decisión sobre el consentimiento</translation>
-<translation id="3142736425087361223">Chrome necesita la <ph name="PERMISSION" /> para usarla en <ph name="ORIGIN" /></translation>
 <translation id="3144458715650412431">Se aplicaron las políticas de prueba. Revísalas y restablécelas en chrome://policy/test. No se aplicarán las políticas de administración.</translation>
 <translation id="3145945101586104090">Se produjo un error al decodificar respuesta.</translation>
 <translation id="3150653042067488994">Error temporal del servidor</translation>
