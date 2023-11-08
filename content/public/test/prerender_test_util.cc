@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -370,12 +371,39 @@ void PrerenderTestHelper::WaitForPrerenderLoadCompletion(const GURL& gurl) {
 
 int PrerenderTestHelper::AddPrerender(const GURL& prerendering_url,
                                       int32_t world_id) {
+  return AddPrerender(prerendering_url, /*eagerness=*/absl::nullopt,
+                      /*target_hint=*/"", world_id);
+}
+
+int PrerenderTestHelper::AddPrerender(
+    const GURL& prerendering_url,
+    absl::optional<blink::mojom::SpeculationEagerness> eagerness,
+    const std::string& target_hint,
+    int32_t world_id) {
   TRACE_EVENT("test", "PrerenderTestHelper::AddPrerender", "prerendering_url",
               prerendering_url);
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  AddPrerenderAsync(prerendering_url, world_id);
 
-  WaitForPrerenderLoadCompletion(prerendering_url);
+  WebContents* prerender_web_contents = nullptr;
+  if (target_hint == "_blank") {
+    // Wait until AddPrerendersAsync() creates a new WebContents for
+    // prerendering.
+    base::RunLoop run_loop;
+    auto creation_subscription = content::RegisterWebContentsCreationCallback(
+        base::BindLambdaForTesting([&](content::WebContents* web_contents) {
+          prerender_web_contents = web_contents;
+          run_loop.QuitClosure().Run();
+        }));
+    AddPrerendersAsync({prerendering_url}, eagerness, target_hint, world_id);
+    run_loop.Run();
+  } else {
+    // For other target hints, the initiator's WebContents will host a
+    // prerendered page.
+    prerender_web_contents = GetWebContents();
+    AddPrerendersAsync({prerendering_url}, eagerness, target_hint, world_id);
+  }
+
+  WaitForPrerenderLoadCompletion(*prerender_web_contents, prerendering_url);
   int host_id = GetHostForUrl(prerendering_url);
   EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   return host_id;

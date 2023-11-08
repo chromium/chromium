@@ -126,11 +126,14 @@ class PrerenderTestHelper {
   // Adds <script type="speculationrules"> in the current main frame and waits
   // until the completion of prerendering. Returns the id of the resulting
   // prerendering host.
-  //
-  // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
-  // the completion of prerendering.
   int AddPrerender(const GURL& prerendering_url,
                    int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+  int AddPrerender(const GURL& prerendering_url,
+                   absl::optional<blink::mojom::SpeculationEagerness> eagerness,
+                   const std::string& target_hint,
+                   int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+  // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
+  // the completion of prerendering.
   void AddPrerenderAsync(const GURL& prerendering_url,
                          int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
   void AddPrerendersAsync(

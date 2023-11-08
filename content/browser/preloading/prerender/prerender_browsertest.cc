@@ -266,16 +266,18 @@ class PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder {
 
 // Tests the params of WebContentsImpl that contains a prerendered page for a
 // new tab navigation.
-void ExpectWebContentsIsForNewTabPrerendering(WebContentsImpl& web_contents) {
+void ExpectWebContentsIsForNewTabPrerendering(WebContents& web_contents) {
+  auto& web_contents_impl = static_cast<WebContentsImpl&>(web_contents);
+
   // The primary page shows the initial blank page.
-  EXPECT_TRUE(web_contents.GetLastCommittedURL().is_empty());
+  EXPECT_TRUE(web_contents_impl.GetLastCommittedURL().is_empty());
 
   // The prerendering WebContents should not have an opener to avoid cross-page
   // scripting during prerendering.
-  EXPECT_FALSE(web_contents.HasOpener());
+  EXPECT_FALSE(web_contents_impl.HasOpener());
 
   // The prerendering WebContents should be hidden until prerender activation.
-  EXPECT_TRUE(web_contents.IsHidden());
+  EXPECT_TRUE(web_contents_impl.IsHidden());
 }
 
 // This is a fake implementation of WebContentsDelegate that allows
@@ -395,12 +397,6 @@ class PrerenderBrowserTest : public ContentBrowserTest,
                           blink::mojom::SpeculationEagerness eagerness,
                           const std::string& target_hint) {
     prerender_helper_->AddPrerendersAsync(prerendering_urls, eagerness,
-                                          target_hint);
-  }
-
-  void AddPrerenderWithTargetHintAsync(const GURL& prerendering_url,
-                                       const std::string& target_hint) {
-    prerender_helper_->AddPrerendersAsync({prerendering_url}, absl::nullopt,
                                           target_hint);
   }
 
@@ -1082,18 +1078,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering `kPrerenderingUrl`.
-  TestNavigationObserver nav_observer(kPrerenderingUrl);
-  nav_observer.StartWatchingNewWebContents();
-  AddPrerenderWithTargetHintAsync(kPrerenderingUrl, "_blank");
-  nav_observer.WaitForNavigationFinished();
-  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderingUrl);
-
-  PrerenderHost* prerender_host =
-      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
-          kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  auto* prerender_web_contents = WebContentsImpl::FromFrameTreeNode(
-      prerender_host->GetPrerenderFrameTree().root());
+  int host_id = prerender_helper()->AddPrerender(
+      kPrerenderingUrl, /*eagerness=*/absl::nullopt, "_blank");
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
   ASSERT_NE(prerender_web_contents, web_contents_impl());
   ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
 
@@ -1101,8 +1088,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // prerendered page.
   TestNavigationObserver activation_observer(kPrerenderingUrl);
   activation_observer.WatchExistingWebContents();
-  test::PrerenderHostObserver prerender_observer(
-      *prerender_web_contents, prerender_host->frame_tree_node_id());
+  test::PrerenderHostObserver prerender_observer(*prerender_web_contents,
+                                                 host_id);
   const std::string kLinkClickScript = R"(
       clickSameSiteNewWindowLink();
   )";
@@ -1183,18 +1170,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering `kPrerenderingUrl`.
-  TestNavigationObserver nav_observer(kPrerenderingUrl);
-  nav_observer.StartWatchingNewWebContents();
-  AddPrerenderWithTargetHintAsync(kPrerenderingUrl, "_blank");
-  nav_observer.WaitForNavigationFinished();
-  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderingUrl);
-
-  PrerenderHost* prerender_host =
-      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
-          kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  auto* prerender_web_contents = WebContentsImpl::FromFrameTreeNode(
-      prerender_host->GetPrerenderFrameTree().root());
+  int host_id = prerender_helper()->AddPrerender(
+      kPrerenderingUrl, /*eagerness=*/absl::nullopt, "_blank");
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
   ASSERT_NE(prerender_web_contents, web_contents_impl());
   ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
 
@@ -1202,8 +1180,8 @@ IN_PROC_BROWSER_TEST_F(
   // activate the prerendered page.
   TestNavigationObserver activation_observer(kPrerenderingUrl);
   activation_observer.WatchExistingWebContents();
-  test::PrerenderHostObserver prerender_observer(
-      *prerender_web_contents, prerender_host->frame_tree_node_id());
+  test::PrerenderHostObserver prerender_observer(*prerender_web_contents,
+                                                 host_id);
   const std::string kLinkClickScript = R"(
       clickSameSiteNewWindowWithNoopenerLink();
   )";
@@ -1291,18 +1269,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering `kPrerenderingUrl`.
-  TestNavigationObserver nav_observer(kPrerenderingUrl);
-  nav_observer.StartWatchingNewWebContents();
-  AddPrerenderWithTargetHintAsync(kPrerenderingUrl, "_blank");
-  nav_observer.WaitForNavigationFinished();
-  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderingUrl);
-
-  PrerenderHost* prerender_host =
-      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
-          kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  auto* prerender_web_contents = WebContentsImpl::FromFrameTreeNode(
-      prerender_host->GetPrerenderFrameTree().root());
+  int host_id = prerender_helper()->AddPrerender(
+      kPrerenderingUrl, /*eagerness=*/absl::nullopt, "_blank");
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
   ASSERT_NE(prerender_web_contents, web_contents_impl());
   ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
 
@@ -1311,8 +1280,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Click the link annotated with "target=_blank rel=opener". This should not
   // activate the prerendered page.
-  test::PrerenderHostObserver prerender_observer(
-      *prerender_web_contents, prerender_host->frame_tree_node_id());
+  test::PrerenderHostObserver prerender_observer(*prerender_web_contents,
+                                                 host_id);
   const std::string kLinkClickScript = R"(
       clickSameSiteNewWindowWithOpenerLink();
   )";
@@ -1734,18 +1703,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start prerendering.
   const GURL kPrerenderingUrl = GetUrl("/title2.html");
-  TestNavigationObserver nav_observer(kPrerenderingUrl);
-  nav_observer.StartWatchingNewWebContents();
-  AddPrerenderWithTargetHintAsync(kPrerenderingUrl, "_blank");
-  nav_observer.WaitForNavigationFinished();
-  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderingUrl);
-
-  PrerenderHost* prerender_host =
-      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
-          kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  auto* prerender_web_contents = WebContentsImpl::FromFrameTreeNode(
-      prerender_host->GetPrerenderFrameTree().root());
+  int host_id = prerender_helper()->AddPrerender(
+      kPrerenderingUrl, /*eagerness=*/absl::nullopt, "_blank");
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
   ASSERT_NE(prerender_web_contents, web_contents_impl());
   ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
 
@@ -1754,8 +1714,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Remove the rules and check that the prerender is cancelled with an
   // appropriate final status.
-  test::PrerenderHostObserver host_observer(
-      *prerender_web_contents, prerender_host->frame_tree_node_id());
+  test::PrerenderHostObserver host_observer(*prerender_web_contents, host_id);
   ASSERT_TRUE(ExecJs(
       web_contents_impl()->GetPrimaryMainFrame(),
       "document.querySelector('script[type=speculationrules]').remove()"));
@@ -4413,18 +4372,9 @@ void PrerenderBrowserTest::TestCancelPrerenderWithTargetBlankWhenTimeout(
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering `kPrerenderUrl`.
-  TestNavigationObserver nav_observer(kPrerenderUrl);
-  nav_observer.StartWatchingNewWebContents();
-  AddPrerenderWithTargetHintAsync(kPrerenderUrl, "_blank");
-  nav_observer.WaitForNavigationFinished();
-  EXPECT_EQ(nav_observer.last_navigation_url(), kPrerenderUrl);
-
-  PrerenderHost* prerender_host =
-      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
-          kPrerenderUrl);
-  ASSERT_TRUE(prerender_host);
-  auto* prerender_web_contents = WebContentsImpl::FromFrameTreeNode(
-      prerender_host->GetPrerenderFrameTree().root());
+  int host_id = prerender_helper()->AddPrerender(
+      kPrerenderUrl, /*eagerness=*/absl::nullopt, "_blank");
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
   ASSERT_NE(prerender_web_contents, web_contents_impl());
   ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
 
@@ -6099,57 +6049,40 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
 
   // Start prerendering.
-  TestNavigationObserver nav_observer(prerendering_urls[2]);
-  nav_observer.StartWatchingNewWebContents();
+  std::vector<int> prerender_host_ids;
+  std::vector<WebContents*> prerender_web_contents_list;
   for (const GURL& prerendering_url : prerendering_urls) {
-    AddPrerenderWithTargetHintAsync(prerendering_url, "_blank");
+    int host_id = prerender_helper()->AddPrerender(
+        prerendering_url, /*eagerness=*/absl::nullopt, "_blank");
+
+    EXPECT_FALSE(base::Contains(prerender_host_ids, host_id));
+    prerender_host_ids.push_back(host_id);
+
+    // Make sure that prerendering in a new tab creates new WebContentsImpl, not
+    // reuse existing WebContentsImpl.
+    auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+    ASSERT_TRUE(prerender_web_contents);
+    EXPECT_NE(prerender_web_contents, web_contents_impl());
+    ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
+    EXPECT_FALSE(
+        base::Contains(prerender_web_contents_list, prerender_web_contents));
+    prerender_web_contents_list.push_back(prerender_web_contents);
   }
-  nav_observer.WaitForNavigationFinished();
-  EXPECT_EQ(nav_observer.last_navigation_url(), prerendering_urls[2]);
-
-  // Make sure that prerendering in a new tab creates new PrerenderHost and
-  // new WebContentsImpl every time.
-  std::vector<PrerenderHost*> prerender_hosts;
-  std::vector<WebContentsImpl*> prerender_web_contents_impls;
-  for (const GURL& prerendering_url : prerendering_urls) {
-    PrerenderHost* prerender_host =
-        web_contents_impl()
-            ->GetPrerenderHostRegistry()
-            ->FindHostByUrlForTesting(prerendering_url);
-    ASSERT_TRUE(prerender_host);
-    EXPECT_FALSE(base::Contains(prerender_hosts, prerender_host));
-    prerender_hosts.push_back(prerender_host);
-
-    auto* prerender_web_contents_impl = WebContentsImpl::FromFrameTreeNode(
-        prerender_host->GetPrerenderFrameTree().root());
-    ASSERT_TRUE(prerender_web_contents_impl);
-    EXPECT_NE(prerender_web_contents_impl, web_contents_impl());
-    ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents_impl);
-
-    // Prerendering in a new tab should create a new WebContentsImpl, not reuse
-    // existing WebContentsImpl.
-    EXPECT_FALSE(base::Contains(prerender_web_contents_impls,
-                                prerender_web_contents_impl));
-    prerender_web_contents_impls.push_back(prerender_web_contents_impl);
-  }
-  ASSERT_EQ(prerender_hosts.size(), prerendering_urls.size());
-  ASSERT_EQ(prerender_web_contents_impls.size(), prerendering_urls.size());
 
   // Click the link to prerendering_urls[0]. This should activate
-  // prerender_hosts[0].
+  // prerender_host_ids[0].
   test::PrerenderHostObserver prerender_observer(
-      *prerender_web_contents_impls[0],
-      prerender_hosts[0]->frame_tree_node_id());
+      *prerender_web_contents_list[0], prerender_host_ids[0]);
   const std::string kLinkClickScript = R"(
       clickSameSiteNewWindowLink();
   )";
   EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
   prerender_observer.WaitForActivation();
-  EXPECT_EQ(prerender_web_contents_impls[0]->GetLastCommittedURL(),
+  EXPECT_EQ(prerender_web_contents_list[0]->GetLastCommittedURL(),
             prerendering_urls[0]);
   EXPECT_TRUE(prerender_observer.was_activated());
 
-  // prerender_hosts[0] was consumed for activation, but others were not.
+  // prerendering_urls[0] was consumed for activation, but others were not.
   EXPECT_FALSE(HasHostForUrl(prerendering_urls[0]));
   EXPECT_TRUE(HasHostForUrl(prerendering_urls[1]));
   EXPECT_TRUE(HasHostForUrl(prerendering_urls[2]));
