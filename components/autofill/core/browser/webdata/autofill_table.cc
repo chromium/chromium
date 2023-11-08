@@ -530,9 +530,11 @@ bool DropColumn(sql::Database* db,
   ;
 }
 
-// Drops `table_name` and returns true if successful.
-bool DropTable(sql::Database* db, std::string_view table_name) {
-  return db->Execute(base::StrCat({"DROP TABLE ", table_name}).c_str());
+// Drops `table_name`, if the table exists. Returns true if the statement
+// finishes successfully, independently of whether a table was actually dropped.
+bool DropTableIfExists(sql::Database* db, std::string_view table_name) {
+  return db->Execute(
+      base::StrCat({"DROP TABLE IF EXISTS ", table_name}).c_str());
 }
 
 // Initializes `statement` with DELETE FROM `table_name`. A WHERE clause
@@ -3492,7 +3494,7 @@ bool AutofillTable::MigrateToVersion98RemoveStatusColumnMaskedCreditCards() {
 }
 
 bool AutofillTable::MigrateToVersion99RemoveAutofillProfilesTrashTable() {
-  return DropTable(db_, "autofill_profiles_trash");
+  return DropTableIfExists(db_, "autofill_profiles_trash");
 }
 
 bool AutofillTable::MigrateToVersion100RemoveProfileValidityBitfieldColumn() {
@@ -3505,7 +3507,7 @@ bool AutofillTable::MigrateToVersion100RemoveProfileValidityBitfieldColumn() {
 }
 
 bool AutofillTable::MigrateToVersion101RemoveCreditCardArtImageTable() {
-  return db_->Execute("DROP TABLE IF EXISTS credit_card_art_images");
+  return DropTableIfExists(db_, "credit_card_art_images");
 }
 
 bool AutofillTable::MigrateToVersion102AddAutofillBirthdatesTable() {
@@ -3544,7 +3546,7 @@ bool AutofillTable::MigrateToVersion105AddAutofillIbanTable() {
 
 bool AutofillTable::MigrateToVersion106RecreateAutofillIbanTable() {
   sql::Transaction transaction(db_);
-  return transaction.Begin() && DropTable(db_, kIbansTable) &&
+  return transaction.Begin() && DropTableIfExists(db_, kIbansTable) &&
          CreateTable(db_, kIbansTable,
                      {{kGuid, "VARCHAR PRIMARY KEY"},
                       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
@@ -3655,8 +3657,7 @@ bool AutofillTable::MigrateToVersion114DropLegacyAddressTables() {
        {kAutofillProfilesTable, kAutofillProfileAddressesTable,
         kAutofillProfileNamesTable, kAutofillProfileEmailsTable,
         kAutofillProfilePhonesTable, kAutofillProfileBirthdatesTable}) {
-    success = success && (!db_->DoesTableExist(deprecated_table) ||
-                          DropTable(db_, deprecated_table));
+    success = success && DropTableIfExists(db_, deprecated_table);
   }
   return success && transaction.Commit();
 }
@@ -3724,9 +3725,7 @@ bool AutofillTable::MigrateToVersion117AddProfileObservationColumn() {
 
 bool AutofillTable::MigrateToVersion118RemovePaymentsUpiVpaTable() {
   sql::Transaction transaction(db_);
-  return transaction.Begin() &&
-         (!db_->DoesTableExist(kPaymentsUpiVpaTable) ||
-          DropTable(db_, kPaymentsUpiVpaTable)) &&
+  return transaction.Begin() && DropTableIfExists(db_, kPaymentsUpiVpaTable) &&
          transaction.Commit();
 }
 
