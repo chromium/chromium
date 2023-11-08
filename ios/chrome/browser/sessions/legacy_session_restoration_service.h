@@ -7,12 +7,16 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "ios/chrome/browser/sessions/session_restoration_observer.h"
 #include "ios/chrome/browser/sessions/session_restoration_service.h"
 
 @class SessionServiceIOS;
+namespace sessions {
+class TabRestoreService;
+}  // namespace sessions
 
 // Implementation of SessionRestorationService that wraps the legacy API
 // (SessionRestorationBrowserAgent and SessionServiceIOS). Used when the
@@ -23,8 +27,10 @@ class LegacySessionRestorationService final
     : public SessionRestorationService,
       public SessionRestorationObserver {
  public:
-  LegacySessionRestorationService(bool is_pinned_tabs_enabled,
-                                  SessionServiceIOS* session_service_ios);
+  LegacySessionRestorationService(
+      bool is_pinned_tabs_enabled,
+      SessionServiceIOS* session_service_ios,
+      sessions::TabRestoreService* tab_restore_service);
 
   ~LegacySessionRestorationService() final;
 
@@ -64,6 +70,10 @@ class LegacySessionRestorationService final
 
   // Service used to schedule and save the data to storage.
   __strong SessionServiceIOS* session_service_ios_ = nil;
+
+  // Pointer to the TabRestoreService used to report closed tabs if the
+  // session migration fails.
+  raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
 
   // Set of observed Browser objects.
   std::set<Browser*> browsers_;

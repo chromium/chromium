@@ -8,6 +8,7 @@
 #import "base/containers/contains.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/sessions/session_migration.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -17,9 +18,11 @@
 
 LegacySessionRestorationService::LegacySessionRestorationService(
     bool is_pinned_tabs_enabled,
-    SessionServiceIOS* session_service_ios)
+    SessionServiceIOS* session_service_ios,
+    sessions::TabRestoreService* tab_restore_service)
     : is_pinned_tabs_enabled_(is_pinned_tabs_enabled),
-      session_service_ios_(session_service_ios) {
+      session_service_ios_(session_service_ios),
+      tab_restore_service_(tab_restore_service) {
   DCHECK(session_service_ios_);
 }
 
@@ -28,6 +31,7 @@ LegacySessionRestorationService::~LegacySessionRestorationService() {}
 void LegacySessionRestorationService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(browsers_.empty()) << "Disconnect() must be called for all Browser";
+  tab_restore_service_ = nullptr;
 }
 
 void LegacySessionRestorationService::AddObserver(
@@ -65,6 +69,11 @@ void LegacySessionRestorationService::SetSessionID(
   DCHECK(!base::Contains(browsers_, browser));
   browsers_.insert(browser);
 
+  // Migrate the storage to legacy format before trying to load.
+  ios::sessions::MigrateNamedSessionToLegacy(
+      browser->GetBrowserState()->GetStatePath(), identifier,
+      tab_restore_service_.get());
+
   // Create the SessionRestorationBrowserAgent for browser.
   SessionRestorationBrowserAgent::CreateForBrowser(
       browser, session_service_ios_, is_pinned_tabs_enabled_);
@@ -93,8 +102,10 @@ void LegacySessionRestorationService::Disconnect(Browser* browser) {
   browser_agent->SaveSession(/* immediately */ true);
   browser_agent->RemoveObserver(this);
 
-  // Destroy the SessionRestorationBrowserAgent for browser.
-  SessionRestorationBrowserAgent::RemoveFromBrowser(browser);
+  // Force disconnection of the SessionRestorationBrowserAgent, but do
+  // no destroy it (as client still directly register as observer with
+  // it instead of the SessionRestorationService).
+  static_cast<BrowserObserver*>(browser_agent)->BrowserDestroyed(browser);
 }
 
 std::unique_ptr<web::WebState>

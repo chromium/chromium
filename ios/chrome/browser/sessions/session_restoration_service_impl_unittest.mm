@@ -264,7 +264,8 @@ class SessionRestorationServiceImplTest : public PlatformTest {
     service_ = std::make_unique<SessionRestorationServiceImpl>(
         kSaveDelay, /* enable_pinned_web_states */ true,
         browser_state_->GetStatePath(),
-        base::SequencedTaskRunner::GetCurrentDefault());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        /* tab_restore_service */ nullptr);
   }
 
   ~SessionRestorationServiceImplTest() override { service_->Shutdown(); }

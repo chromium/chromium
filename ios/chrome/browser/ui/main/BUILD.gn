@@ -85,12 +85,8 @@ source_set("main") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/sessions",
-    "//ios/chrome/browser/sessions:restoration_agent",
-    "//ios/chrome/browser/sessions:serialisation",
-    "//ios/chrome/browser/sessions:session_migration",
     "//ios/chrome/browser/sessions:session_restoration_service",
     "//ios/chrome/browser/sessions:session_restoration_service_factory",
-    "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
@@ -122,7 +118,6 @@ source_set("main") {
     "//ios/chrome/browser/web:tab_helper_delegates",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common/ui/colors",
-    "//ios/web/common:features",
     "//net",
   ]
 

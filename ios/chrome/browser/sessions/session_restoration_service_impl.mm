@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/sessions/session_internal_util.h"
 #import "ios/chrome/browser/sessions/session_io_request.h"
 #import "ios/chrome/browser/sessions/session_loading.h"
+#import "ios/chrome/browser/sessions/session_migration.h"
 #import "ios/chrome/browser/sessions/session_restoration_web_state_list_observer.h"
 #import "ios/chrome/browser/sessions/web_state_list_serialization.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -184,7 +185,8 @@ SessionRestorationServiceImpl::SessionRestorationServiceImpl(
     base::TimeDelta save_delay,
     bool enable_pinned_web_states,
     const base::FilePath& storage_path,
-    const scoped_refptr<base::SequencedTaskRunner> task_runner)
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    sessions::TabRestoreService* tab_restore_service)
     : save_delay_(save_delay),
       enable_pinned_web_states_(enable_pinned_web_states),
       storage_path_(storage_path.Append(kSessionRestorationDirname)),
@@ -198,6 +200,7 @@ SessionRestorationServiceImpl::~SessionRestorationServiceImpl() {}
 void SessionRestorationServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(infos_.empty()) << "Disconnect() must be called for all Browser";
+  tab_restore_service_ = nullptr;
 }
 
 #pragma mark - SessionRestorationService
@@ -236,6 +239,10 @@ void SessionRestorationServiceImpl::SetSessionID(
 
   DCHECK(!base::Contains(identifiers_, identifier));
   identifiers_.insert(identifier);
+
+  // Migrate the storage to optimized format before trying to load.
+  ios::sessions::MigrateNamedSessionToOptimized(
+      storage_path_.DirName(), identifier, tab_restore_service_.get());
 
   // It is safe to use base::Unretained(this) as the callback is never called
   // after SessionRestorationWebStateListObserver is destroyed. Those objects
