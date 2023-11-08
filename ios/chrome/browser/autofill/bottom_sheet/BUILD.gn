@@ -8,6 +8,9 @@ source_set("bottom_sheet") {
   sources = [
     "autofill_bottom_sheet_java_script_feature.h",
     "autofill_bottom_sheet_java_script_feature.mm",
+    "autofill_bottom_sheet_observer.h",
+    "autofill_bottom_sheet_observer_bridge.h",
+    "autofill_bottom_sheet_observer_bridge.mm",
     "autofill_bottom_sheet_tab_helper.h",
     "autofill_bottom_sheet_tab_helper.mm",
   ]
@@ -29,6 +32,17 @@ source_set("bottom_sheet") {
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_bottom_sheet_observer_bridge_unittest.mm" ]
+  deps = [
+    ":bottom_sheet",
+    "//components/autofill/ios/form_util",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
   ]
 }
 
