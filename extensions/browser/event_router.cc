@@ -1218,7 +1218,8 @@ void EventRouter::DispatchEventToProcess(
 
 void EventRouter::DecrementInFlightEventsForServiceWorker(
     const WorkerId& worker_id,
-    int event_id) {
+    int event_id,
+    bool event_will_run_in_lazy_background_page_script) {
   auto* process = RenderProcessHost::FromID(worker_id.render_process_id);
   // Check to make sure the rendered process hasn't gone away by the time
   // we've gotten here. (It's possible it has crashed, etc.) If that's
@@ -1227,6 +1228,12 @@ void EventRouter::DecrementInFlightEventsForServiceWorker(
   if (!process) {
     return;
   }
+
+  if (event_will_run_in_lazy_background_page_script) {
+    bad_message::ReceivedBadMessage(
+        process, bad_message::ER_SW_INVALID_LAZY_BACKGROUND_PARAM);
+  }
+
   const bool worker_stopped = !ProcessManager::Get(process->GetBrowserContext())
                                    ->HasServiceWorker(worker_id);
   content::ServiceWorkerContext* service_worker_context =
@@ -1245,7 +1252,8 @@ void EventRouter::DecrementInFlightEventsForServiceWorker(
 void EventRouter::DecrementInFlightEventsForRenderFrameHost(
     int render_process_host,
     const ExtensionId& extension_id,
-    int event_id) {
+    int event_id,
+    bool event_will_run_in_lazy_background_page_script) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* process = RenderProcessHost::FromID(render_process_host);
   if (!process) {
@@ -1255,7 +1263,7 @@ void EventRouter::DecrementInFlightEventsForRenderFrameHost(
   ProcessManager* pm = ProcessManager::Get(process->GetBrowserContext());
   ExtensionHost* host = pm->GetBackgroundHostForExtension(extension_id);
   if (host) {
-    host->OnEventAck(event_id);
+    host->OnEventAck(event_id, event_will_run_in_lazy_background_page_script);
   }
 }
 

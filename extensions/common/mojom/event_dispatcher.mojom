@@ -12,10 +12,17 @@ import "url/mojom/url.mojom";
 // pages, or a web renderer, for content script listeners).
 // The interface is implemented in //extensions/renderer code, and is
 // called on the browser side by the EventRouter.
+// `event_will_run_in_lazy_background_page_script` indicates that during the
+// event dispatch the event will, at least, run in a lazy background page
+// script. It is should always be false for service workers.
 interface EventDispatcher {
     // Sent to the renderer to dispatch an event to a listener.
     DispatchEvent(DispatchEventParams params,
-                  mojo_base.mojom.ListValue event_args) => ();
+                  mojo_base.mojom.ListValue event_args) => (
+                    // TODO(crbug.com/1470045): Remove this variable once
+                    // crbug.com/1470045  allows us to only ack for lazy
+                    // background page events.
+                    bool event_will_run_in_lazy_background_page_script);
 };
 
 struct EventFilteringInfo {

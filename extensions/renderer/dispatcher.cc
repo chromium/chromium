@@ -1383,6 +1383,14 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
   CHECK_EQ(params->worker_thread_id, kMainThreadId);
   content::RenderFrame* background_frame =
       ExtensionFrameHelper::GetBackgroundPageFrame(params->extension_id);
+  ScriptContext* background_context = nullptr;
+  if (background_frame) {
+    background_context =
+        ScriptContextSet::GetMainWorldContextForFrame(background_frame);
+  }
+  bool event_has_listener_in_background_context =
+      background_context && bindings_system_->HasEventListenerInContext(
+                                params->event_name, background_context);
 
   // Synthesize a user gesture if this was in response to user action; this is
   // necessary if the gesture was e.g. by clicking on the extension toolbar
@@ -1393,14 +1401,10 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
   // the user gesture. This is intentional, since frames other than the
   // background page should have their own user gestures, such as through button
   // clicks.
-  if (params->is_user_gesture && background_frame) {
-    ScriptContext* background_context =
-        ScriptContextSet::GetMainWorldContextForFrame(background_frame);
-    if (background_context && bindings_system_->HasEventListenerInContext(
-                                  params->event_name, background_context)) {
-      background_frame->GetWebFrame()->NotifyUserActivation(
-          blink::mojom::UserActivationNotificationType::kExtensionEvent);
-    }
+  if (params->is_user_gesture && background_context &&
+      event_has_listener_in_background_context) {
+    background_frame->GetWebFrame()->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kExtensionEvent);
   }
 
   DispatchEventHelper(params->extension_id, params->event_name, event_args,
@@ -1414,11 +1418,12 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
         RendererExtensionRegistry::Get()->GetByID(params->extension_id);
     if (extension && BackgroundInfo::HasLazyBackgroundPage(extension)) {
       background_frame->Send(new ExtensionHostMsg_EventAck(
-          background_frame->GetRoutingID(), params->event_id));
+          background_frame->GetRoutingID(), params->event_id,
+          event_has_listener_in_background_context));
     }
   }
 #endif
-  std::move(callback).Run();
+  std::move(callback).Run(event_has_listener_in_background_context);
 }
 
 void Dispatcher::SetDeveloperMode(bool current_developer_mode) {

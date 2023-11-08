@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -28,12 +31,12 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, DispatchMetricTest) {
     const std::vector<std::string> event_metrics_not_emitted;
   } test_cases[] = {
       // DispatchToAckTime
-      {"Extensions.Events.DispatchToAckTime.ExtensionEventPage2",
+      {"Extensions.Events.DispatchToAckTime.ExtensionEventPage3",
        ContextType::kFromManifest,  // event page
        {"Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2"}},
       {"Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
        ContextType::kServiceWorker,
-       {"Extensions.Events.DispatchToAckTime.ExtensionEventPage2"}},
+       {"Extensions.Events.DispatchToAckTime.ExtensionEventPage3"}},
       // TODO(crbug.com/1441221): Add `event_metrics_not_emitted` when other
       // versions are created.
       // DispatchToAckLongTime
@@ -253,6 +256,107 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          EventMetricsDispatchToSenderBrowserTest,
                          ::testing::Values(ContextType::kServiceWorker));
+
+class LazyBackgroundEventMetricsApiTest : public ExtensionApiTest {
+ public:
+  LazyBackgroundEventMetricsApiTest() = default;
+
+  LazyBackgroundEventMetricsApiTest(const LazyBackgroundEventMetricsApiTest&) =
+      delete;
+  LazyBackgroundEventMetricsApiTest& operator=(
+      const LazyBackgroundEventMetricsApiTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(StartEmbeddedTestServer());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+};
+
+// Tests that if there is a listener in the extension renderer process, but that
+// listener is not in the lazy background page script, then do not emit
+// background context event dispatching histograms.
+IN_PROC_BROWSER_TEST_F(
+    LazyBackgroundEventMetricsApiTest,
+    ContextsOutsideLazyBackgroundDoNotEmitBackgroundContextMetrics) {
+  // Load an extension with a page script that runs in the extension renderer
+  // process, and has the only chrome.storage.onChanged listener.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Event page",
+           "version": "0.1",
+           "manifest_version": 2,
+           "background": {
+             "scripts": ["background.js"],
+             "persistent": false
+            },
+           "permissions": ["storage"]
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  constexpr char kPageHtml[] = R"(<script src="page.js"></script>)";
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  constexpr char kPageScriptJs[] =
+      R"(
+       chrome.storage.onChanged.addListener((details) => {
+         // Asynchronously send the message that the listener fired so that the
+         // event is considered ack'd in the browser C++ code.
+         setTimeout(() => {
+           chrome.test.sendMessage('listener fired');
+         }, 0);
+       });
+
+       chrome.test.sendMessage('page script loaded');
+      )";
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageScriptJs);
+  constexpr char kBackgroundJs[] =
+      R"(
+      chrome.runtime.onInstalled.addListener((details) => {
+        // Asynchronously send the message that the listener fired so that the
+        // event is considered ack'd in the browser C++ code.
+        setTimeout(() => {
+          chrome.test.sendMessage('installed listener fired');
+        }, 0);
+      });
+    )";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  ExtensionTestMessageListener page_script_loaded("page script loaded");
+  // Navigate to page.html to get the content_script to load.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html")));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(page_script_loaded.WaitUntilSatisfied());
+
+  // Set storage value which should fire chrome.storage.onChanged listener in
+  // the page.
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener page_script_event_listener_fired(
+      "listener fired");
+  static constexpr char kScript[] =
+      R"(chrome.storage.local.set({"key" : "value"});)";
+  BackgroundScriptExecutor::ExecuteScriptAsync(profile(), extension->id(),
+                                               kScript);
+
+  // Confirm that the listener in the page script was fired, but that we do not
+  // emit a histogram for it.
+  EXPECT_TRUE(page_script_event_listener_fired.WaitUntilSatisfied());
+  // Call to storage.onChanged expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionEventPage3",
+      /*expected_count=*/0);
+}
 
 }  // namespace
 

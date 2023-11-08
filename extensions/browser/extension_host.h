@@ -178,7 +178,10 @@ class ExtensionHost : public DeferredStartRenderHost,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  void OnEventAck(int event_id);
+  // Notifies observers when an event has been acknowledged from the renderer to
+  // the browser. `event_ran_in_lazy_background_page_context` being set to true
+  // emits histograms for some events that ran in lazy background pages.
+  void OnEventAck(int event_id, bool event_ran_in_lazy_background_page_context);
 
  protected:
   // Called each time this ExtensionHost completes a load finishes loading,

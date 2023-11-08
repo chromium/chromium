@@ -1288,12 +1288,16 @@ chromium-metrics-reviews@google.com.
     API, and web view API events).
   </summary>
   <token key="BackgroundContextType">
-    <variant name="ExtensionEventPage2"
+    <variant name="ExtensionEventPage3"
         summary="event page. Emitted when extensions browser code receives
                  receives an ack from the renderer that it fired the event in
-                 the event page. Replaced previous version because values
-                 were inaccurate due to a bug with recording the dispatch
-                 start time 2023-08"/>
+                 the event page. It only counts events that ran in a event
+                 page background script, other listeners in the extension
+                 renderer that can receive the event are not counted.
+                 Replaced previous version because values were inaccurate due
+                 to a bug where we recorded this metric for all events for an
+                 extension, rather that just for those that ran in the lazy
+                 background page script 2023-10"/>
     <variant name="ExtensionServiceWorker2"
         summary="service worker. Emitted shortly after extensions browser
                  code receives the ack from the renderer that it fired the

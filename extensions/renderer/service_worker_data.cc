@@ -144,7 +144,10 @@ void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
   bindings_system()->DispatchEventInContext(params->event_name, event_args,
                                             std::move(params->filtering_info),
                                             context());
-  std::move(callback).Run();
+
+  std::move(callback).Run(
+      // False since this is only possibly true for lazy background page.
+      /*event_will_run_in_lazy_background_page_script=*/false);
 }
 
 void ServiceWorkerData::DispatchOnConnect(

@@ -466,7 +466,10 @@ void WorkerThreadDispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
   // Note that this will run right away on the IO thread and the worker thread
   // will not have processed the event. The browser does not use this callback
   // when ENABLE_EXTENSIONS_LEGACY_IPC is enabled so this is fine.
-  std::move(callback).Run();
+  // `event_will_run_in_lazy_background_page_script` will always be false since
+  // this event will run for a service worker not a lazy background page.
+  std::move(callback).Run(
+      /*event_will_run_in_lazy_background_page_script=*/false);
 }
 
 void WorkerThreadDispatcher::OnDispatchOnConnect(

@@ -89,7 +89,8 @@ class MockEventDispatcher : public mojom::EventDispatcher {
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
                      base::Value::List event_args,
                      DispatchEventCallback callback) override {
-    std::move(callback).Run();
+    std::move(callback).Run(
+        /*event_will_run_in_lazy_background_page_script=*/false);
   }
 
  private:

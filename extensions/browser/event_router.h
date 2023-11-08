@@ -480,12 +480,16 @@ class EventRouter : public KeyedService,
                                base::TimeTicks dispatch_start_time,
                                int64_t service_worker_version_id,
                                EventDispatchSource dispatch_source);
-  void DecrementInFlightEventsForServiceWorker(const WorkerId& worker_id,
-                                               int event_id);
+  void DecrementInFlightEventsForServiceWorker(
+      const WorkerId& worker_id,
+      int event_id,
+      // Always false since this is only possibly true for lazy background page.
+      bool event_will_run_in_lazy_background_page_script);
   void DecrementInFlightEventsForRenderFrameHost(
       int render_process_host,
       const ExtensionId& extension_id,
-      int event_id);
+      int event_id,
+      bool event_will_run_in_lazy_background_page_script);
 
   void RouteDispatchEvent(
       content::RenderProcessHost* rph,
