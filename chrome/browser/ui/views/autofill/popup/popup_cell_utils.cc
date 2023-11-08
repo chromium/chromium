@@ -138,7 +138,7 @@ std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
   return image_view;
 }
 
-std::unique_ptr<views::ImageView> GetIconImageViewByName(
+std::unique_ptr<views::ImageView> GetIconImageViewFromIcon(
     Suggestion::Icon icon) {
   switch (icon) {
     case Suggestion::Icon::kNoIcon:
@@ -306,7 +306,7 @@ std::unique_ptr<views::ImageView> GetIconImageView(
     return ImageViewFromImageSkia(suggestion.custom_icon.AsImageSkia());
   }
   std::unique_ptr<views::ImageView> icon_image_view =
-      GetIconImageViewByName(suggestion.icon);
+      GetIconImageViewFromIcon(suggestion.icon);
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 
@@ -317,7 +317,7 @@ std::unique_ptr<views::ImageView> GetTrailingIconImageView(
     const Suggestion& suggestion) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   std::unique_ptr<views::ImageView> icon_image_view =
-      GetIconImageViewByName(suggestion.trailing_icon);
+      GetIconImageViewFromIcon(suggestion.trailing_icon);
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 
