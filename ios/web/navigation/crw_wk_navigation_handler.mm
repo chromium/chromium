@@ -2051,7 +2051,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   DCHECK_EQ(item->GetUniqueID(), context->GetNavigationItemUniqueID());
 
   net::SSLInfo info;
-  absl::optional<net::SSLInfo> ssl_info = absl::nullopt;
+  std::optional<net::SSLInfo> ssl_info = std::nullopt;
 
   if (web::IsWKWebViewSSLCertError(error)) {
     web::GetSSLInfoFromWKWebViewSSLCertError(error, &info);

@@ -264,7 +264,7 @@ const GURL& FakeWebState::GetLastCommittedURL() const {
   return url_;
 }
 
-absl::optional<GURL> FakeWebState::GetLastCommittedURLIfTrusted() const {
+std::optional<GURL> FakeWebState::GetLastCommittedURLIfTrusted() const {
   return url_;
 }
 

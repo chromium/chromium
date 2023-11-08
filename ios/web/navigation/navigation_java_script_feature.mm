@@ -47,7 +47,7 @@ NavigationJavaScriptFeature::NavigationJavaScriptFeature()
 
 NavigationJavaScriptFeature::~NavigationJavaScriptFeature() = default;
 
-absl::optional<std::string>
+std::optional<std::string>
 NavigationJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptHandlerName;
 }

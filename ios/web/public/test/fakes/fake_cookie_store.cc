@@ -4,9 +4,10 @@
 
 #include "ios/web/public/test/fakes/fake_cookie_store.h"
 
+#include <optional>
+
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web {
 
@@ -29,7 +30,7 @@ void FakeCookieStore::SetCanonicalCookieAsync(
     const GURL& source_url,
     const net::CookieOptions& options,
     SetCookiesCallback callback,
-    absl::optional<net::CookieAccessResult> cookie_access_result) {
+    std::optional<net::CookieAccessResult> cookie_access_result) {
   NOTIMPLEMENTED() << "Implement this if necessary.";
 }
 

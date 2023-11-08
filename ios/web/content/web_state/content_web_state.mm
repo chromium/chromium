@@ -399,7 +399,7 @@ const GURL& ContentWebState::GetLastCommittedURL() const {
   return item ? item->GetURL() : GURL::EmptyGURL();
 }
 
-absl::optional<GURL> ContentWebState::GetLastCommittedURLIfTrusted() const {
+std::optional<GURL> ContentWebState::GetLastCommittedURLIfTrusted() const {
   return GetLastCommittedURL();
 }
 

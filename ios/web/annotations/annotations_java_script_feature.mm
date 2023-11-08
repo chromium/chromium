@@ -139,7 +139,7 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
 
   if (*command == "annotations.extractedText") {
     const std::string* text = dict.FindString("text");
-    absl::optional<double> seq_id = dict.FindDouble("seqId");
+    std::optional<double> seq_id = dict.FindDouble("seqId");
     const base::Value::Dict* metadata = dict.FindDict("metadata");
     if (!text || !seq_id || !metadata) {
       return;
@@ -147,9 +147,8 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     manager->OnTextExtracted(web_state, *text, static_cast<int>(seq_id.value()),
                              *metadata);
   } else if (*command == "annotations.decoratingComplete") {
-    absl::optional<double> optional_annotations =
-        dict.FindDouble("annotations");
-    absl::optional<double> optional_successes = dict.FindDouble("successes");
+    std::optional<double> optional_annotations = dict.FindDouble("annotations");
+    std::optional<double> optional_successes = dict.FindDouble("successes");
     if (!optional_annotations || !optional_successes) {
       return;
     }
@@ -158,7 +157,7 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     manager->OnDecorated(web_state, successes, annotations);
   } else if (*command == "annotations.onClick") {
     const std::string* data = dict.FindString("data");
-    absl::optional<CGRect> rect =
+    std::optional<CGRect> rect =
         shared_highlighting::ParseRect(dict.FindDict("rect"));
     const std::string* text = dict.FindString("text");
     if (!data || !rect || !text) {
@@ -170,7 +169,7 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
   }
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 AnnotationsJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptHandlerName;
 }

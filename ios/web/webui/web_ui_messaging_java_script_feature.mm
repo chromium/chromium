@@ -30,7 +30,7 @@ WebUIMessagingJavaScriptFeature::WebUIMessagingJavaScriptFeature()
 
 WebUIMessagingJavaScriptFeature::~WebUIMessagingJavaScriptFeature() = default;
 
-absl::optional<std::string>
+std::optional<std::string>
 WebUIMessagingJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kWebUIMessageHandlerName;
 }
@@ -43,7 +43,7 @@ void WebUIMessagingJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  absl::optional<GURL> url = script_message.request_url();
+  std::optional<GURL> url = script_message.request_url();
   // Messages must be from an app specific url.
   if (!url || !web::GetWebClient()->IsAppSpecificURL(url.value())) {
     return;

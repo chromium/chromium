@@ -196,7 +196,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   int GetNavigationItemCount() const;
   const GURL& GetVisibleURL() const;
   const GURL& GetLastCommittedURL() const;
-  absl::optional<GURL> GetLastCommittedURLIfTrusted() const;
+  std::optional<GURL> GetLastCommittedURLIfTrusted() const;
   id<CRWWebViewProxy> GetWebViewProxy() const;
   void DidChangeVisibleSecurityState();
   WebState::InterfaceBinder* GetInterfaceBinderForMainFrame();

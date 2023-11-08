@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_FIND_IN_PAGE_JAVA_SCRIPT_FIND_IN_PAGE_MANAGER_IMPL_H_
 #define IOS_WEB_FIND_IN_PAGE_JAVA_SCRIPT_FIND_IN_PAGE_MANAGER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -13,7 +14,6 @@
 #import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/web_state_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class NSString;
 
@@ -55,7 +55,7 @@ class JavaScriptFindInPageManagerImpl : public JavaScriptFindInPageManager,
   // null, then does nothing more.
   void ProcessFindInPageResult(const std::string& frame_id,
                                const int request_id,
-                               absl::optional<int> result);
+                               std::optional<int> result);
   // Calls delegate DidHighlightMatches() method if `delegate_` is set and
   // starts a FindInPageNext find. Called when the last frame returns results
   // from a Find request.

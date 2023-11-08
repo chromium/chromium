@@ -229,11 +229,11 @@ WriteDataResult WriteDataHelper(base::File file, NSArray<NSData*>* array) {
 }
 
 // Move the `base::File` out of `optional` and reset the `optional` to have
-// no value (i.e. to be equal to `absl::nullopt`).
-base::File take(absl::optional<base::File>& optional) {
+// no value (i.e. to be equal to `std::nullopt`).
+base::File take(std::optional<base::File>& optional) {
   DCHECK(optional.has_value());
   base::File value = std::move(optional.value());
-  optional = absl::nullopt;
+  optional = std::nullopt;
   return value;
 }
 
@@ -358,11 +358,11 @@ class Session {
   // empty or not, the data is enqueued in `pending_` or a new task is
   // posted to the background sequence using `task_runner_`.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  absl::optional<base::File> file_;
+  std::optional<base::File> file_;
   NSMutableArray<NSData*>* pending_ = nil;
 
   // Stores the error code received from `TaskFinished`.
-  absl::optional<int> error_code_;
+  std::optional<int> error_code_;
 
   // References to the NSURLSession and NSURLSessionTask used to perform
   // the download in the background.

@@ -771,7 +771,7 @@ const GURL& WebStateImpl::RealizedWebState::GetLastCommittedURL() const {
   return item ? item->GetVirtualURL() : GURL::EmptyGURL();
 }
 
-absl::optional<GURL>
+std::optional<GURL>
 WebStateImpl::RealizedWebState::GetLastCommittedURLIfTrusted() const {
   NavigationItemImpl* item = navigation_manager_->GetLastCommittedItemImpl();
   if (!item) {
@@ -779,7 +779,7 @@ WebStateImpl::RealizedWebState::GetLastCommittedURLIfTrusted() const {
   }
 
   if (item->IsUntrusted()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return item->GetVirtualURL();

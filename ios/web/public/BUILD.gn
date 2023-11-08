@@ -16,7 +16,6 @@ source_set("public") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
-    "//third_party/abseil-cpp:absl",
     "//ui/base",
   ]
 

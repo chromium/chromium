@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -88,7 +89,7 @@ class FakeWebState : public WebState {
   int GetNavigationItemCount() const override;
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
-  absl::optional<GURL> GetLastCommittedURLIfTrusted() const override;
+  std::optional<GURL> GetLastCommittedURLIfTrusted() const override;
   CRWWebViewProxyType GetWebViewProxy() const override;
 
   void AddObserver(WebStateObserver* observer) override;

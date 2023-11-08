@@ -4,6 +4,8 @@
 
 #import "ios/web/js_messaging/java_script_content_world.h"
 
+#import <optional>
+
 #import "base/check_op.h"
 #import "base/containers/contains.h"
 #import "base/debug/crash_logging.h"
@@ -19,7 +21,6 @@
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "net/base/mac/url_conversions.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web {
 
@@ -174,7 +175,7 @@ void JavaScriptContentWorld::ScriptMessageReceived(
   }
 
   NSURL* ns_url = script_message.frameInfo.request.URL;
-  absl::optional<GURL> url;
+  std::optional<GURL> url;
   if (ns_url) {
     url = net::GURLWithNSURL(ns_url);
   }

@@ -12,6 +12,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -339,7 +340,7 @@ class WebStateImpl final : public WebState {
   int GetNavigationItemCount() const final;
   const GURL& GetVisibleURL() const final;
   const GURL& GetLastCommittedURL() const final;
-  absl::optional<GURL> GetLastCommittedURLIfTrusted() const final;
+  std::optional<GURL> GetLastCommittedURLIfTrusted() const final;
   id<CRWWebViewProxy> GetWebViewProxy() const final;
   void DidChangeVisibleSecurityState() final;
   InterfaceBinder* GetInterfaceBinderForMainFrame() final;

@@ -94,7 +94,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   CGPoint locationInWebView =
       [self.webView.scrollView convertPoint:location fromView:interaction.view];
 
-  absl::optional<web::ContextMenuParams> optionalParams =
+  std::optional<web::ContextMenuParams> optionalParams =
       [self fetchContextMenuParamsAtLocation:locationInWebView];
 
   if (!optionalParams.has_value()) {
@@ -196,7 +196,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
 
 // Fetches the context menu params for the element at `locationInWebView`. The
 // returned params can be empty.
-- (absl::optional<web::ContextMenuParams>)fetchContextMenuParamsAtLocation:
+- (std::optional<web::ContextMenuParams>)fetchContextMenuParamsAtLocation:
     (CGPoint)locationInWebView {
   // While traditionally using dispatch_async would be used here, we have to
   // instead use CFRunLoop because dispatch_async blocks the thread. As this
@@ -207,7 +207,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   __block BOOL javascriptEvaluationComplete = NO;
   __block BOOL isRunLoopComplete = NO;
 
-  __block absl::optional<web::ContextMenuParams> resultParams;
+  __block std::optional<web::ContextMenuParams> resultParams;
 
   __weak __typeof(self) weakSelf = self;
   [self.elementFetcher

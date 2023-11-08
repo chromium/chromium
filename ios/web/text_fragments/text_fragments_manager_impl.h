@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -14,7 +16,6 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/text_fragments/text_fragments_java_script_feature.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 @protocol CRWWebViewHandlerDelegate;
 
@@ -85,7 +86,7 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   // If the URL and navigation state indicate that a highlight should occur,
   // returns the needed params to complete highlighting. Otherwise, returns
   // empty.
-  absl::optional<TextFragmentProcessingParams> ProcessTextFragments(
+  std::optional<TextFragmentProcessingParams> ProcessTextFragments(
       const web::NavigationContext* context,
       const web::Referrer& referrer);
 
@@ -111,7 +112,7 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   // Processing may be deferred in cases where the main WebFrame isn't available
   // right away. In those cases, the params needed to complete processing are
   // cached here until a frame becomes available.
-  absl::optional<TextFragmentProcessingParams> deferred_processing_params_;
+  std::optional<TextFragmentProcessingParams> deferred_processing_params_;
 
   __weak id<TextFragmentsDelegate> delegate_;
 };

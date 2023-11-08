@@ -33,7 +33,7 @@ class IOSWebMessageHost : public js_injection::WebMessageHost {
   // js_injection::WebMessageHost:
   void OnPostMessage(
       std::unique_ptr<js_injection::WebMessage> web_message) override {
-    absl::optional<std::u16string> received_message;
+    std::optional<std::u16string> received_message;
     absl::visit(
         base::Overloaded{
             [&received_message](const std::u16string& str) {
@@ -49,7 +49,7 @@ class IOSWebMessageHost : public js_injection::WebMessageHost {
     }
 
     // TODO(crbug.com/1423527): Move this parsing to the renderer process.
-    absl::optional<base::Value> message_value =
+    std::optional<base::Value> message_value =
         base::JSONReader::Read(base::UTF16ToUTF8(*received_message));
     if (!message_value) {
       return;

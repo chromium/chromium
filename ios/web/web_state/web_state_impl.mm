@@ -711,7 +711,7 @@ const GURL& WebStateImpl::GetLastCommittedURL() const {
                         : saved_->GetLastCommittedURL();
 }
 
-absl::optional<GURL> WebStateImpl::GetLastCommittedURLIfTrusted() const {
+std::optional<GURL> WebStateImpl::GetLastCommittedURLIfTrusted() const {
   return LIKELY(pimpl_) ? pimpl_->GetLastCommittedURLIfTrusted()
                         : saved_->GetLastCommittedURL();
 }

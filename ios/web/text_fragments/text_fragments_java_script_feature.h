@@ -5,12 +5,12 @@
 #ifndef IOS_WEB_TEXT_FRAGMENTS_TEXT_FRAGMENTS_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_TEXT_FRAGMENTS_TEXT_FRAGMENTS_JAVA_SCRIPT_FEATURE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/no_destructor.h"
 #include "base/values.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -39,7 +39,7 @@ class TextFragmentsJavaScriptFeature : public JavaScriptFeature {
   // JavaScriptFeature:
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& script_message) override;
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   TextFragmentsJavaScriptFeature();
   ~TextFragmentsJavaScriptFeature() override;
 
