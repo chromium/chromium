@@ -9939,11 +9939,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUpstreamAllowAllEmailDomains)},
 
-#if BUILDFLAG(IS_ANDROID)
     {"safe-browsing-hash-prefix",
      flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsName,
      flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsDescription,
-     kOsAndroid, FEATURE_VALUE_TYPE(safe_browsing::kHashPrefixRealTimeLookups)},
+     kOsAll, FEATURE_VALUE_TYPE(safe_browsing::kHashPrefixRealTimeLookups)},
+#if BUILDFLAG(IS_ANDROID)
     {"safe-browsing-new-gms-core-api-for-browse-url-database-check",
      flag_descriptions::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName,
      flag_descriptions::

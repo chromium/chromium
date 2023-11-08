@@ -161,7 +161,8 @@ BASE_FEATURE(kHashPrefixRealTimeLookups,
 constexpr base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl{
     &kHashPrefixRealTimeLookups,
     "SafeBrowsingHashPrefixRealTimeLookupsRelayUrl",
-    /*default_value=*/""};
+    /*default_value=*/
+    "https://google-ohttp-relay-safebrowsing.fastly-edge.com/"};
 
 BASE_FEATURE(kHashRealTimeOverOhttp,
              "SafeBrowsingHashRealTimeOverOhttp",

@@ -1549,6 +1549,12 @@ const char kExperimentalWebPlatformFeaturesName[] =
 const char kExperimentalWebPlatformFeaturesDescription[] =
     "Enables experimental Web Platform features that are in development.";
 
+const char kSafeBrowsingHashPrefixRealTimeLookupsName[] =
+    "Safe Browsing Hash Prefix Real Time Lookups";
+const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[] =
+    "Enable checking URLs through Safe Browsing hash-prefix real time "
+    "protocol.";
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 const char kExtensionsMenuAccessControlName[] =
     "Extensions Menu Access Control";
@@ -4336,12 +4342,6 @@ const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[] =
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[] =
     "Allow revoking site-level notification permission if Chrome has no "
     "app-level notification permission on Android.";
-
-const char kSafeBrowsingHashPrefixRealTimeLookupsName[] =
-    "Safe Browsing Hash Prefix Real Time Lookups";
-const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[] =
-    "Enable checking URLs through Safe Browsing hash-prefix real time "
-    "protocol.";
 
 const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName[] =
     "Safe Browsing new GMS API for browse URL database check";

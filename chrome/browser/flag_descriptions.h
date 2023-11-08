@@ -884,6 +884,9 @@ extern const char kEvDetailsInPageInfoDescription[];
 extern const char kExperimentalWebPlatformFeaturesName[];
 extern const char kExperimentalWebPlatformFeaturesDescription[];
 
+extern const char kSafeBrowsingHashPrefixRealTimeLookupsName[];
+extern const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[];
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kExtensionsMenuAccessControlName[];
 extern const char kExtensionsMenuAccessControlDescription[];
@@ -2550,9 +2553,6 @@ extern const char kRequestDesktopSiteZoomDescription[];
 extern const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[];
 extern const char
     kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[];
-
-extern const char kSafeBrowsingHashPrefixRealTimeLookupsName[];
-extern const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[];
 
 extern const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName[];
 extern const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription[];
