@@ -16,6 +16,7 @@ import './strings.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
+import './bypass_warning_confirmation_dialog.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -185,6 +186,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       },
 
       useFileIcon_: Boolean,
+
+      showBypassWarningConfirmationDialog_: Boolean,
     };
   }
 
@@ -215,6 +218,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private displayType_: DisplayType;
   private improvedDownloadWarningsUx_: boolean;
   private completelyOnDisk_: boolean;
+  private showBypassWarningConfirmationDialog_: boolean;
   override overrideCustomEquivalent: boolean;
 
   constructor() {
@@ -924,10 +928,24 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private onSaveDangerousClick_() {
-    this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
     if (this.improvedDownloadWarningsUx_) {
       this.getMoreActionsMenu().close();
+      if (this.displayType_ === DisplayType.DANGEROUS) {
+        this.showBypassWarningConfirmationDialog_ = true;
+        return;
+      }
     }
+    this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
+  }
+
+  private onBypassWarningConfirmationDialogClose_() {
+    const dialog = this.shadowRoot!.querySelector(
+        'download-bypass-warning-confirmation-dialog');
+    assert(dialog);
+    if (dialog.wasConfirmed()) {
+      this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
+    }
+    this.showBypassWarningConfirmationDialog_ = false;
   }
 
   private onShowClick_() {

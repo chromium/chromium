@@ -2482,6 +2482,15 @@ are declared in tools/grit/grit_rule.gni.
         Unverified download blocked
       </message>
 
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_TITLE"
+               desc="On the downloads page, the title of the dialog to bypass a dangerous download warning.">
+        This file could harm your device
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_DESCRIPTION"
+               desc="On the downloads page, the description in the dialog to bypass a dangerous download warning.">
+        This file contains malware or comes from a suspicious site
+      </message>
+
       <!-- Download Alerts for Accessibility -->
       <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS_ACCESSIBLE_ALERT"
                desc="The title of a download notification: the current download status is in progress. This message is for screen reader users.">
