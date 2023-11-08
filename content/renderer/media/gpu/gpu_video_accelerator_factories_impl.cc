@@ -33,22 +33,6 @@
 
 namespace content {
 
-namespace {
-
-// This enum values match ContextProviderPhase in histograms.xml
-enum ContextProviderPhase {
-  CONTEXT_PROVIDER_ACQUIRED = 0,
-  CONTEXT_PROVIDER_RELEASED = 1,
-  CONTEXT_PROVIDER_RELEASED_MAX_VALUE = CONTEXT_PROVIDER_RELEASED,
-};
-
-void RecordContextProviderPhaseUmaEnum(const ContextProviderPhase phase) {
-  UMA_HISTOGRAM_ENUMERATION("Media.GPU.HasEverLostContext", phase,
-                            CONTEXT_PROVIDER_RELEASED_MAX_VALUE + 1);
-}
-
-}  // namespace
-
 // static
 std::unique_ptr<GpuVideoAcceleratorFactoriesImpl>
 GpuVideoAcceleratorFactoriesImpl::Create(
@@ -61,8 +45,6 @@ GpuVideoAcceleratorFactoriesImpl::Create(
     bool enable_media_stream_gpu_memory_buffers,
     bool enable_video_decode_accelerator,
     bool enable_video_encode_accelerator) {
-  RecordContextProviderPhaseUmaEnum(
-      ContextProviderPhase::CONTEXT_PROVIDER_ACQUIRED);
   return base::WrapUnique(new GpuVideoAcceleratorFactoriesImpl(
       std::move(gpu_channel_host), main_thread_task_runner, task_runner,
       std::move(context_provider), std::move(codec_factory),
@@ -182,8 +164,6 @@ void GpuVideoAcceleratorFactoriesImpl::DestroyContext() {
 
   context_provider_->RemoveObserver(this);
   context_provider_ = nullptr;
-  RecordContextProviderPhaseUmaEnum(
-      ContextProviderPhase::CONTEXT_PROVIDER_RELEASED);
 }
 
 bool GpuVideoAcceleratorFactoriesImpl::IsGpuVideoDecodeAcceleratorEnabled() {

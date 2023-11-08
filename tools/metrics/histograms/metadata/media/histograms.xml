@@ -3395,15 +3395,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.GPU.HasEverLostContext" enum="ContextProviderPhase"
-    expires_after="M77">
-  <owner>dcastagna@chromium.org</owner>
-  <summary>
-    Records when a context provider is acquired in media, and when it's released
-    because a context loss has been detected.
-  </summary>
-</histogram>
-
 <histogram name="Media.GPU.OutputFormat" enum="OutputFormat"
     expires_after="2024-04-28">
   <owner>hitawala@chromium.org</owner>
