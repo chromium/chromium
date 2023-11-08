@@ -804,7 +804,7 @@ void ShoppingListUiTabHelper::RecordPriceTrackingIconMetrics(
   // interaction was to track a product, otherwise we would have been blocked
   // above.
   if (from_icon_use) {
-    if (price_tracking_expanded) {
+    if (!price_tracking_expanded) {
       base::UmaHistogramEnumeration(histogram_name,
                                     PageActionIconInteractionState::kClicked);
     } else {
@@ -813,7 +813,7 @@ void ShoppingListUiTabHelper::RecordPriceTrackingIconMetrics(
     }
 
   } else {
-    if (price_tracking_expanded) {
+    if (!price_tracking_expanded) {
       base::UmaHistogramEnumeration(
           histogram_name, PageActionIconInteractionState::kNotClicked);
     } else {
