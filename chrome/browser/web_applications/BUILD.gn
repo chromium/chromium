@@ -33,6 +33,8 @@ source_set("web_applications") {
     "commands/install_from_info_command.h",
     "commands/install_from_sync_command.cc",
     "commands/install_from_sync_command.h",
+    "commands/launch_web_app_command.cc",
+    "commands/launch_web_app_command.h",
     "commands/manifest_update_check_command.cc",
     "commands/manifest_update_check_command.h",
     "commands/manifest_update_finalize_command.cc",

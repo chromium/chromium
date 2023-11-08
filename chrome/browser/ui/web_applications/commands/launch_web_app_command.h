@@ -15,12 +15,13 @@ struct AppLaunchParams;
 
 namespace web_app {
 
-base::Value LaunchWebApp(apps::AppLaunchParams params,
-                         LaunchWebAppWindowSetting launch_setting,
-                         Profile& profile,
-                         WebAppRegistrar& registrar,
-                         OsIntegrationManager& os_integration_manager,
-                         LaunchWebAppCallback callback);
+class AppLock;
+
+void LaunchWebApp(apps::AppLaunchParams params,
+                  LaunchWebAppWindowSetting launch_setting,
+                  Profile& profile,
+                  AppLock& lock,
+                  LaunchWebAppDebugValueCallback callback);
 
 }  // namespace web_app
 

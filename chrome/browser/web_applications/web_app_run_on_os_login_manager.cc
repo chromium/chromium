@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -86,7 +87,8 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
                base::WeakPtr<Browser> browser,
                base::WeakPtr<content::WebContents> web_contents,
                apps::LaunchContainer container) {
-              if (app_names.empty()) {
+              if (app_names.empty() ||
+                  container == apps::LaunchContainer::kLaunchContainerNone) {
                 return;
               }
               provider->ui_manager().DisplayRunOnOsLoginNotification(

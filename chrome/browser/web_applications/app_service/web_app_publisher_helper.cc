@@ -1717,7 +1717,15 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
           [](base::OnceCallback<void(const std::vector<content::WebContents*>&)>
                  callback,
              content::WebContents* contents) {
-            std::move(callback).Run({contents});
+            // These calls are piped through LaunchWebAppCommand and can end
+            // early during an Abort due to various reasons (like
+            // FirstRunService not completed), in which case there will be no
+            // web contents.
+            if (contents) {
+              std::move(callback).Run({contents});
+            } else {
+              std::move(callback).Run({});
+            }
           },
           std::move(callback)));
 }

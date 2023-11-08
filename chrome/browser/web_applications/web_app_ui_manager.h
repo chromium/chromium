@@ -47,6 +47,7 @@ using UninstallCompleteCallback =
     base::OnceCallback<void(webapps::UninstallResultCode code)>;
 using WebAppLaunchAcceptanceCallback =
     base::OnceCallback<void(bool allowed, bool remember_user_choice)>;
+using FirstRunServiceCompletedCallback = base::OnceCallback<void(bool success)>;
 
 // Overrides the app identity update dialog's behavior for testing, allowing the
 // test to auto-accept or auto-skip the dialog.
@@ -73,6 +74,11 @@ using LaunchWebAppCallback =
     base::OnceCallback<void(base::WeakPtr<Browser> browser,
                             base::WeakPtr<content::WebContents> web_contents,
                             apps::LaunchContainer container)>;
+using LaunchWebAppDebugValueCallback =
+    base::OnceCallback<void(base::WeakPtr<Browser> browser,
+                            base::WeakPtr<content::WebContents> web_contents,
+                            apps::LaunchContainer container,
+                            base::Value debug_value)>;
 
 enum class LaunchWebAppWindowSetting {
   // The window container and disposition from the launch params are used,
@@ -175,12 +181,20 @@ class WebAppUiManager {
   // windows if configured by the launch handlers, etc. See
   // `web_app::LaunchWebApp` and `WebAppLaunchProcess` for more info.
   // If the app_id is invalid, an empty browser window is opened.
-  virtual void WaitForFirstRunAndLaunchWebApp(
-      apps::AppLaunchParams params,
-      LaunchWebAppWindowSetting launch_setting,
+  // Note: this function should typically be run after the completion of the
+  // `WebAppUiManager::WaitForFirstRunService` function.
+  virtual void LaunchWebApp(apps::AppLaunchParams params,
+                            LaunchWebAppWindowSetting launch_setting,
+                            Profile& profile,
+                            LaunchWebAppDebugValueCallback callback,
+                            AppLock& lock) = 0;
+
+  // This function calls the callback as soon as first run service is completed.
+  // Note: The callback will be called synchronously on platforms that do not
+  // have a first-run service.
+  virtual void WaitForFirstRunService(
       Profile& profile,
-      LaunchWebAppCallback callback,
-      AppLock& lock) = 0;
+      FirstRunServiceCompletedCallback callback) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Migrates launcher state, such as parent folder id, position in App Launcher

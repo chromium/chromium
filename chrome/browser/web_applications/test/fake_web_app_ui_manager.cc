@@ -135,23 +135,31 @@ void FakeWebAppUiManager::ShowWebAppIdentityUpdateDialog(
   std::move(callback).Run(identity_update_dialog_action_for_testing.value());
 }
 
-void FakeWebAppUiManager::WaitForFirstRunAndLaunchWebApp(
-    apps::AppLaunchParams params,
-    LaunchWebAppWindowSetting launch_setting,
-    Profile& profile,
-    LaunchWebAppCallback callback,
-    AppLock& lock) {
+void FakeWebAppUiManager::LaunchWebApp(apps::AppLaunchParams params,
+                                       LaunchWebAppWindowSetting launch_setting,
+                                       Profile& profile,
+                                       LaunchWebAppDebugValueCallback callback,
+                                       AppLock& lock) {
   // Due to this sometimes causing confusion in tests, print that a launch has
   // been faked. To have launches create real WebContents in unit_tests (which
   // will be non-functional anyways), populate the WebAppUiManagerImpl in the
   // FakeWebAppProvider during startup.
   LOG(INFO) << "Pretending to launch web app " << params.app_id;
-  std::move(callback).Run(nullptr, nullptr,
-                          apps::LaunchContainer::kLaunchContainerNone);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), /*browser=*/nullptr,
+                     /*web_contents=*/nullptr, params.container,
+                     base::Value("FakeWebAppUiManager::LaunchWebApp")));
   if (on_launch_web_app_callback_) {
     on_launch_web_app_callback_.Run(std::move(params),
                                     std::move(launch_setting));
   }
+}
+
+void FakeWebAppUiManager::WaitForFirstRunService(
+    Profile& profile,
+    FirstRunServiceCompletedCallback callback) {
+  std::move(callback).Run(/*success=*/true);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

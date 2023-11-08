@@ -10,7 +10,9 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -78,11 +80,14 @@ class FakeWebAppUiManager : public WebAppUiManager {
       AppIdentityDialogCallback callback) override;
   void ShowWebAppSettings(const webapps::AppId& app_id) override {}
 
-  void WaitForFirstRunAndLaunchWebApp(apps::AppLaunchParams params,
-                                      LaunchWebAppWindowSetting launch_setting,
-                                      Profile& profile,
-                                      LaunchWebAppCallback callback,
-                                      AppLock& lock) override;
+  void LaunchWebApp(apps::AppLaunchParams params,
+                    LaunchWebAppWindowSetting launch_setting,
+                    Profile& profile,
+                    LaunchWebAppDebugValueCallback callback,
+                    AppLock& lock) override;
+  void WaitForFirstRunService(
+      Profile& profile,
+      FirstRunServiceCompletedCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void MigrateLauncherState(const webapps::AppId& from_app_id,
                             const webapps::AppId& to_app_id,

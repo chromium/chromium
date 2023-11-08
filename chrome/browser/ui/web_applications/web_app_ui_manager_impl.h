@@ -100,11 +100,14 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
       content::WebContents* web_contents,
       web_app::AppIdentityDialogCallback callback) override;
   void ShowWebAppSettings(const webapps::AppId& app_id) override;
-  void WaitForFirstRunAndLaunchWebApp(apps::AppLaunchParams params,
-                                      LaunchWebAppWindowSetting launch_setting,
-                                      Profile& profile,
-                                      LaunchWebAppCallback callback,
-                                      AppLock& lock) override;
+  void LaunchWebApp(apps::AppLaunchParams params,
+                    LaunchWebAppWindowSetting launch_setting,
+                    Profile& profile,
+                    LaunchWebAppDebugValueCallback callback,
+                    AppLock& lock) override;
+  void WaitForFirstRunService(
+      Profile& profile,
+      FirstRunServiceCompletedCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void MigrateLauncherState(const webapps::AppId& from_app_id,
                             const webapps::AppId& to_app_id,
