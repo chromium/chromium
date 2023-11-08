@@ -489,11 +489,14 @@ message AutofillWalletSpecifics {
   optional PaymentInstrument payment_instrument = 6;
 }
 
-// Wallet card and address usage information that can be synced.
+// Wallet card usage information that can be synced.
 message WalletMetadataSpecifics {
   enum Type {
     UNKNOWN = 0;
     CARD = 1;
+    // Unused by the client since M121.
+    // TODO(crbug.com/1457187): Some server-side code still relies on this.
+    // To keep the protos in sync, it is kept until that code is cleaned up.
     ADDRESS = 2;
   }
 
@@ -502,21 +505,6 @@ message WalletMetadataSpecifics {
 
   // Base64 encoding of the unique ID string of the corresponding Wallet data.
   // For Wallet cards, this value is server generated and opaque to Chrome.
-  // For Wallet addresses, this is a SHA1 hash of the following fields:
-  //
-  // - First name
-  // - Middle name
-  // - Last name
-  // - Company name
-  // - Street address
-  // - Dependent locality
-  // - City
-  // - State
-  // - Zip code
-  // - Sorting code
-  // - Country
-  // - Phone number
-  // - Language code
   optional string id = 2;
 
   // The number of times that this Wallet card or address was used.
@@ -530,6 +518,8 @@ message WalletMetadataSpecifics {
   // Wallet card.
   optional string card_billing_address_id = 5;
 
-  // Whether this Wallet address has been converted to a local autofill profile.
+  // Unused by the client since M121.
+  // TODO(crbug.com/1457187): Some server-side code still relies on this field.
+  // To keep the protos in sync, it is kept until that code is cleaned up.
   optional bool address_has_converted = 6;
 }

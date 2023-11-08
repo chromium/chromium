@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 
 namespace sync_pb {
@@ -15,8 +14,6 @@ class AutofillWalletSpecifics;
 }
 
 namespace autofill {
-
-AutofillProfile CreateServerProfile(const std::string& server_id);
 
 CreditCard CreateServerCreditCard(const std::string& server_id);
 

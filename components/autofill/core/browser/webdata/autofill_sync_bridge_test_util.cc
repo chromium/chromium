@@ -8,11 +8,6 @@
 
 namespace autofill {
 
-AutofillProfile CreateServerProfile(const std::string& server_id) {
-  // TODO(sebsg): Set data.
-  return AutofillProfile(AutofillProfile::SERVER_PROFILE, server_id);
-}
-
 CreditCard CreateServerCreditCard(const std::string& server_id) {
   // TODO(sebsg): Set data.
   return CreditCard(CreditCard::RecordType::kMaskedServerCard, server_id);

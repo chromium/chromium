@@ -80,7 +80,6 @@ class AutofillWalletMetadataSyncBridge
                                    delete_metadata_change_list) override;
 
   // AutofillWebDataServiceObserverOnDBSequence implementation.
-  void AutofillProfileChanged(const AutofillProfileChange& change) override;
   void CreditCardChanged(const CreditCardChange& change) override;
 
  private:

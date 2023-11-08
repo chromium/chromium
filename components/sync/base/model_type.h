@@ -64,8 +64,8 @@ enum ModelType {
   // Credit cards and customer data from the user's account. These are read-only
   // on the client.
   AUTOFILL_WALLET_DATA,
-  // Usage counts and last use dates for Wallet cards and addresses. This data
-  // is both readable and writable.
+  // Usage counts and last use dates for Wallet cards. This data is both
+  // readable and writable.
   AUTOFILL_WALLET_METADATA,
   // Offers and rewards from the user's account. These are read-only on the
   // client side.
