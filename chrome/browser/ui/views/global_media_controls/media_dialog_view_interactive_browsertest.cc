@@ -386,6 +386,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
         media_router::ChromeMediaRouterFactory::GetInstance()
             ->SetTestingFactoryAndUse(
                 context, base::BindRepeating(&TestMediaRouter::Create)));
+    ON_CALL(*media_router_, RegisterMediaSinksObserver)
+        .WillByDefault(testing::Return(true));
   }
 
   void OpenTestURL() {
