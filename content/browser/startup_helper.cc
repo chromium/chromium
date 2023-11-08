@@ -24,8 +24,10 @@ namespace content {
 
 std::unique_ptr<base::FieldTrialList> SetUpFieldTrialsAndFeatureList() {
   std::unique_ptr<base::FieldTrialList> field_trial_list;
-  if (!base::FieldTrialList::GetInstance())
+  if (!base::FieldTrialList::GetInstance()) {
     field_trial_list = std::make_unique<base::FieldTrialList>();
+  }
+
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
 
