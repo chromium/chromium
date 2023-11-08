@@ -35,12 +35,6 @@ PopupCellView::PopupCellView() {
 
 PopupCellView::~PopupCellView() = default;
 
-bool PopupCellView::HandleKeyPressEvent(
-    const content::NativeWebKeyboardEvent& event) {
-  // TODO(1491373): Remove when PopupCellWithButtonView gets reworked as a row.
-  return false;
-}
-
 void PopupCellView::SetSelected(bool selected) {
   if (selected_ == selected) {
     return;

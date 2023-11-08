@@ -52,14 +52,6 @@ using CellIndex = PopupRowView::SelectionDelegate::CellIndex;
 
 constexpr gfx::Point kOutOfBounds{1000, 1000};
 
-class MockPopupCellView : public PopupCellView {
- public:
-  MOCK_METHOD(bool,
-              HandleKeyPressEvent,
-              (const content::NativeWebKeyboardEvent& event),
-              (override));
-};
-
 class MockingTestPopupRowStrategy : public TestPopupRowStrategy {
  public:
   explicit MockingTestPopupRowStrategy(int line_number)
@@ -67,17 +59,8 @@ class MockingTestPopupRowStrategy : public TestPopupRowStrategy {
   ~MockingTestPopupRowStrategy() override = default;
 
   std::unique_ptr<PopupCellView> CreateContent() override {
-    auto content_cell = std::make_unique<NiceMock<MockPopupCellView>>();
-    last_created_mock_content_cell_ = content_cell.get();
-    return content_cell;
+    return std::make_unique<PopupCellView>();
   }
-
-  MockPopupCellView* last_created_content_cell() {
-    return last_created_mock_content_cell_;
-  }
-
- private:
-  raw_ptr<MockPopupCellView> last_created_mock_content_cell_ = nullptr;
 };
 
 }  // namespace

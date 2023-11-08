@@ -20,10 +20,6 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
-namespace content {
-struct NativeWebKeyboardEvent;
-}  // namespace content
-
 namespace views {
 class Label;
 }  // namespace views
@@ -54,11 +50,6 @@ class PopupCellView : public views::View {
   // Updates the color of the view's background and adjusts the style of the
   // labels contained in it based on the selection status of the view.
   void RefreshStyle();
-
-  // Attempts to process a key press `event`. Returns true if it did (and the
-  // parent no longer needs to handle it).
-  virtual bool HandleKeyPressEvent(
-      const content::NativeWebKeyboardEvent& event);
 
  protected:
   // The selection state.

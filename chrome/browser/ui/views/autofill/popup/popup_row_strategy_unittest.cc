@@ -157,14 +157,6 @@ class PopupSuggestionStrategyTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  void SimulateKeyPress(int windows_key_code) {
-    content::NativeWebKeyboardEvent event(
-        blink::WebKeyboardEvent::Type::kRawKeyDown,
-        blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-    event.windows_key_code = windows_key_code;
-    view().HandleKeyPressEvent(event);
-  }
-
   void ShowSuggestion(Suggestion suggestion) {
     // Show the button.
     controller().set_suggestions({std::move(suggestion)});
