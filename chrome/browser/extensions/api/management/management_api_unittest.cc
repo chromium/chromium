@@ -43,6 +43,7 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(b/265970428): Fix and include extensions tests on LaCrOS.
 // TODO(b/266051970): Fix and include extensions tests on Windows/Mac/Linux.
@@ -639,8 +640,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     // |may_enable| is only returned for extensions which are not enabled.
@@ -663,8 +663,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
     ASSERT_TRUE(info->may_enable);
@@ -687,8 +686,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
     ASSERT_TRUE(info->may_enable);
@@ -714,8 +712,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     EXPECT_TRUE(info->may_disable);
@@ -737,8 +734,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
         api_test_utils::RunFunctionAndReturnSingleResult(function.get(), args,
                                                          profile());
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info =
-        ExtensionInfo::FromValueDeprecated(*value);
+    absl::optional<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     EXPECT_FALSE(info->may_disable);

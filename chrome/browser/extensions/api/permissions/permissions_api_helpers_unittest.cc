@@ -79,13 +79,13 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
 
   // Origins shouldn't have to be present.
   {
-    Permissions permissions_object;
     base::Value::Dict dict;
     dict.Set("permissions", apis.Clone());
-    EXPECT_TRUE(Permissions::Populate(dict, permissions_object));
+    auto permissions_object = Permissions::FromValue(dict);
+    EXPECT_TRUE(permissions_object);
 
     std::unique_ptr<UnpackPermissionSetResult> unpack_result =
-        UnpackPermissionSet(permissions_object, PermissionSet(),
+        UnpackPermissionSet(*permissions_object, PermissionSet(),
                             optional_permissions, true, &error);
 
     ASSERT_TRUE(unpack_result);
@@ -97,13 +97,13 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
 
   // The api permissions don't need to be present either.
   {
-    Permissions permissions_object;
     base::Value::Dict dict;
     dict.Set("origins", origins.Clone());
-    EXPECT_TRUE(Permissions::Populate(dict, permissions_object));
+    auto permissions_object = Permissions::FromValue(dict);
+    EXPECT_TRUE(permissions_object);
 
     std::unique_ptr<UnpackPermissionSetResult> unpack_result =
-        UnpackPermissionSet(permissions_object, PermissionSet(),
+        UnpackPermissionSet(*permissions_object, PermissionSet(),
                             optional_permissions, true, &error);
     ASSERT_TRUE(unpack_result);
     EXPECT_TRUE(error.empty());
@@ -114,49 +114,49 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
 
   // Throw errors for non-string API permissions.
   {
-    Permissions permissions_object;
     base::Value::Dict dict;
     base::Value::List invalid_apis = apis.Clone();
     invalid_apis.Append(3);
     dict.Set("permissions", std::move(invalid_apis));
-    EXPECT_FALSE(Permissions::Populate(dict, permissions_object));
+    auto permissions_object = Permissions::FromValue(dict);
+    EXPECT_FALSE(permissions_object);
   }
 
   // Throw errors for non-string origins.
   {
-    Permissions permissions_object;
     base::Value::Dict dict;
     base::Value::List invalid_origins = origins.Clone();
     invalid_origins.Append(3);
     dict.Set("origins", std::move(invalid_origins));
-    EXPECT_FALSE(Permissions::Populate(dict, permissions_object));
+    auto permissions_object = Permissions::FromValue(dict);
+    EXPECT_FALSE(permissions_object);
   }
 
   // Throw errors when "origins" or "permissions" are not list values.
   {
-    Permissions permissions_object;
     base::Value::Dict dict;
     dict.Set("origins", 2);
-    EXPECT_FALSE(Permissions::Populate(dict, permissions_object));
+    auto permissions_object = Permissions::FromValue(dict);
+    EXPECT_FALSE(permissions_object);
   }
 
   {
-    Permissions permissions_object;
     base::Value::Dict dict;
     dict.Set("permissions", 2);
-    EXPECT_FALSE(Permissions::Populate(dict, permissions_object));
+    auto permissions_object = Permissions::FromValue(dict);
+    EXPECT_FALSE(permissions_object);
   }
 
   // Additional fields should be allowed.
   {
-    Permissions permissions_object;
     base::Value::Dict dict;
     dict.Set("origins", origins.Clone());
     dict.Set("random", 3);
-    EXPECT_TRUE(Permissions::Populate(dict, permissions_object));
+    auto permissions_object = Permissions::FromValue(dict);
+    EXPECT_TRUE(permissions_object);
 
     std::unique_ptr<UnpackPermissionSetResult> unpack_result =
-        UnpackPermissionSet(permissions_object, PermissionSet(),
+        UnpackPermissionSet(*permissions_object, PermissionSet(),
                             optional_permissions, true, &error);
     ASSERT_TRUE(unpack_result);
     EXPECT_TRUE(error.empty());
@@ -167,14 +167,14 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
 
   // Unknown permissions should throw an error.
   {
-    Permissions permissions_object;
     base::Value::Dict dict;
     base::Value::List invalid_apis = apis.Clone();
     invalid_apis.Append("unknown_permission");
     dict.Set("permissions", std::move(invalid_apis));
-    EXPECT_TRUE(Permissions::Populate(dict, permissions_object));
+    auto permissions_object = Permissions::FromValue(dict);
+    EXPECT_TRUE(permissions_object);
 
-    EXPECT_FALSE(UnpackPermissionSet(permissions_object, PermissionSet(),
+    EXPECT_FALSE(UnpackPermissionSet(*permissions_object, PermissionSet(),
                                      optional_permissions, true, &error));
     EXPECT_EQ(error, "'unknown_permission' is not a recognized permission.");
   }

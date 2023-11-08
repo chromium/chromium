@@ -28,6 +28,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 namespace extensions {
@@ -46,24 +47,20 @@ const char kBackgroundTabDisposition[] = "newBackgroundTab";
 // Pref key for omnibox.setDefaultSuggestion.
 const char kOmniboxDefaultSuggestion[] = "omnibox_default_suggestion";
 
-std::unique_ptr<omnibox::SuggestResult> GetOmniboxDefaultSuggestion(
+absl::optional<omnibox::SuggestResult> GetOmniboxDefaultSuggestion(
     Profile* profile,
     const std::string& extension_id) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
   if (!prefs) {
-    return nullptr;
+    return absl::nullopt;
   }
 
   const base::Value::Dict* dict =
       prefs->ReadPrefAsDict(extension_id, kOmniboxDefaultSuggestion);
   if (!dict) {
-    return nullptr;
+    return absl::nullopt;
   }
-
-  auto suggestion = std::make_unique<omnibox::SuggestResult>();
-  omnibox::SuggestResult::Populate(*dict, *suggestion);
-
-  return suggestion;
+  return omnibox::SuggestResult::FromValue(*dict);
 }
 
 // Tries to set the omnibox default suggestion; returns true on success or
@@ -445,7 +442,7 @@ void ApplyDefaultSuggestionForExtensionKeyword(
     AutocompleteMatch* match) {
   DCHECK(keyword->type() == TemplateURL::OMNIBOX_API_EXTENSION);
 
-  std::unique_ptr<omnibox::SuggestResult> suggestion(
+  absl::optional<omnibox::SuggestResult> suggestion(
       GetOmniboxDefaultSuggestion(profile, keyword->GetExtensionId()));
   if (!suggestion || suggestion->description.empty())
     return;  // fall back to the universal default

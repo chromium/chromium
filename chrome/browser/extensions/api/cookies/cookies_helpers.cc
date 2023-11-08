@@ -155,10 +155,9 @@ CookieStore CreateCookieStore(Profile* profile, base::Value::List tab_ids) {
   dict.Set(cookies_api_constants::kIdKey, GetStoreIdFromProfile(profile));
   dict.Set(cookies_api_constants::kTabIdsKey, std::move(tab_ids));
 
-  CookieStore cookie_store;
-  bool rv = CookieStore::Populate(dict, cookie_store);
-  CHECK(rv);
-  return cookie_store;
+  auto cookie_store = CookieStore::FromValue(dict);
+  CHECK(cookie_store);
+  return std::move(cookie_store).value();
 }
 
 void GetCookieListFromManager(

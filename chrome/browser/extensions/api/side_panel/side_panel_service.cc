@@ -42,14 +42,6 @@ api::side_panel::PanelOptions GetPanelOptionsFromManifest(
   return options;
 }
 
-// TODO(crbug.com/1332599): Add a Clone() method for generated types.
-api::side_panel::PanelOptions CloneOptions(
-    const api::side_panel::PanelOptions& options) {
-  auto clone = api::side_panel::PanelOptions::FromValueDeprecated(
-      base::Value(options.ToValue()));
-  return clone ? std::move(*clone) : api::side_panel::PanelOptions();
-}
-
 }  // namespace
 
 SidePanelService::~SidePanelService() = default;
@@ -110,15 +102,14 @@ api::side_panel::PanelOptions SidePanelService::GetOptions(
   if (tab_id != default_tab_id) {
     auto specific_tab_options = tab_panel_options.find(tab_id);
     if (specific_tab_options != tab_panel_options.end())
-      return CloneOptions(specific_tab_options->second);
+      return specific_tab_options->second.Clone();
   }
 
   // Fall back to the default tab if no tab ID was specified or entries for the
   // specific tab weren't found.
   auto default_options = tab_panel_options.find(default_tab_id);
   if (default_options != tab_panel_options.end()) {
-    auto options = CloneOptions(default_options->second);
-    return options;
+    return default_options->second.Clone();
   }
 
   // Fall back to the manifest-specified options as a last resort.
@@ -137,7 +128,7 @@ api::side_panel::PanelOptions SidePanelService::GetSpecificOptionsForTab(
   auto specific_tab_options = tab_panel_options.find(tab_id);
   return specific_tab_options == tab_panel_options.end()
              ? api::side_panel::PanelOptions()
-             : CloneOptions(specific_tab_options->second);
+             : specific_tab_options->second.Clone();
 }
 
 // Upsert to merge `panels_[extension_id][tab_id]` with `set_options`.
