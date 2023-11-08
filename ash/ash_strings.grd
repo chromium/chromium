@@ -4790,6 +4790,9 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_DESCRIPTION" desc="Description shown on the local authentication input dialog. Explains local authentication credentials should be used to unlock the device.">
         Enter device password for <ph name="EMAIL">$1<ex>john.doe@example.com</ex></ph>
       </message>
+      <message name="IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_CLOSE_DIALOG_BUTTON" desc="The close button of the local authentication input dialog.">
+        Close dialog
+      </message>
       <message name="IDS_ASH_LOGIN_SECURITY_TOKEN_REQUEST_DIALOG_TITLE" desc="Title of the PIN dialog to unlock the device with a smart card.">
         Smart card PIN
       </message>

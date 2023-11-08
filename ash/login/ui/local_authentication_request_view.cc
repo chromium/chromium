@@ -227,8 +227,8 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
                                      kCrossSizeDp));
   close_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   close_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  close_button_->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_BACK_BUTTON_ACCESSIBLE_NAME));
+  close_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_CLOSE_DIALOG_BUTTON));
   close_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   close_button_view->AddChildView(close_button_.get());
 
@@ -305,6 +305,13 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
 }
 
 LocalAuthenticationRequestView::~LocalAuthenticationRequestView() = default;
+
+void LocalAuthenticationRequestView::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  views::DialogDelegateView::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kDialog;
+  node_data->SetNameChecked(description_label_->GetText());
+}
 
 void LocalAuthenticationRequestView::RequestFocus() {
   login_password_view_->RequestFocus();
@@ -398,6 +405,8 @@ void LocalAuthenticationRequestView::OnAuthComplete(
         LocalAuthenticationRequestViewState::kError, default_title_,
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD));
     ClearInput();
+    NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                             true /*send_native_event*/);
     SetInputEnabled(true);
   } else {
     LocalAuthenticationRequestWidget::Get()->Close(true /* success */);

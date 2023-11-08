@@ -89,6 +89,7 @@ class ASH_EXPORT LocalAuthenticationRequestView
   ~LocalAuthenticationRequestView() override;
 
   // views::DialogDelegateView:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void RequestFocus() override;
   gfx::Size CalculatePreferredSize() const override;
   views::View* GetInitiallyFocusedView() override;
