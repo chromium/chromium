@@ -1234,6 +1234,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
 
   Profile* profile = browser()->profile();
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  Browser* regular_browser = chrome::GetLastActiveBrowser();
 
   // Load profile's History Service backend so it will be assigned to the
   // HistoryMenuBridge, or else this test will fail flaky.
@@ -1252,12 +1253,27 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   BrowserList* active_browser_list = BrowserList::GetInstance();
   EXPECT_EQ(2u, active_browser_list->size());
 
+  Browser* inc_browser = chrome::GetLastActiveBrowser();
+  EXPECT_TRUE(inc_browser->profile()->IsIncognitoProfile());
+
+  // Assure that `windowDidBecomeMain` is called even if this browser window
+  // losts focus because of other browser processes in other tests are taking
+  // focus. It prevents flakiness.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidBecomeMainNotification
+                    object:inc_browser->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
+
   // Verify that history bridge service is not available in Incognito.
   EXPECT_FALSE([app_controller historyMenuBridge]->service());
 
-  // Switch back to the regular profile window.
-  Browser* browser1 = active_browser_list->get(0);
-  browser1->window()->Show();
+  // Switch the focus back to the regular profile window.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidBecomeMainNotification
+                    object:regular_browser->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
 
   // Verify that history bridge service is available again.
   EXPECT_TRUE([app_controller historyMenuBridge]->service());
