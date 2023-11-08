@@ -76,6 +76,12 @@ using ui::AXTreeFormatter;
 // the end of the test; anything received after that is too late.
 class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
  public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "KeyboardFocusableScrollers");
+    DumpAccessibilityTestBase::SetUpCommandLine(command_line);
+  }
+
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<ui::AXPropertyFilter> property_filters;
     // Suppress spurious focus events on the document object.
