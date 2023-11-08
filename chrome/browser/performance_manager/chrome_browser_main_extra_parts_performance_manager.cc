@@ -147,11 +147,10 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     graph->PassToGraph(
         std::make_unique<
             performance_manager::policies::OomScorePolicyChromeOS>());
+    graph->PassToGraph(
+        std::make_unique<
+            performance_manager::policies::ReportPageProcessesPolicy>());
   }
-
-  graph->PassToGraph(
-      std::make_unique<
-          performance_manager::policies::ReportPageProcessesPolicy>());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_ANDROID)
