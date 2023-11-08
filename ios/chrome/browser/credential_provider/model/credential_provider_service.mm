@@ -294,7 +294,7 @@ void CredentialProviderService::UpdateAccountId() {
 }
 
 void CredentialProviderService::UpdateUserEmail() {
-  absl::optional accountForSaving =
+  std::optional accountForSaving =
       password_manager::sync_util::GetAccountForSaving(prefs_, sync_service_);
   [app_group::GetGroupUserDefaults()
       setObject:accountForSaving ? base::SysUTF8ToNSString(*accountForSaving)

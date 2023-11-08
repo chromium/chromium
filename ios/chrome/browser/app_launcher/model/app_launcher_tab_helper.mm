@@ -245,8 +245,8 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
     NSURLRequest* request,
     web::WebStatePolicyDecider::RequestInfo request_info) const {
   using PolicyDecision = web::WebStatePolicyDecider::PolicyDecision;
-  static const absl::optional<AppLaunchRequest> kNoAppLaunchRequest =
-      absl::nullopt;
+  static const std::optional<AppLaunchRequest> kNoAppLaunchRequest =
+      std::nullopt;
   GURL request_url = net::GURLWithNSURL(request.URL);
 
   if (!IsAppUrl(request_url)) {
@@ -317,7 +317,7 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
       model->SetReadStatusIfExists(original_pending_url, true);
     }
   }
-  absl::optional<AppLaunchRequest> optional_app_launch_request =
+  std::optional<AppLaunchRequest> optional_app_launch_request =
       kNoAppLaunchRequest;
   if (last_committed_url.is_valid() ||
       !web_state_->GetNavigationManager()->GetLastCommittedItem()) {

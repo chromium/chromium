@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_JAVA_SCRIPT_FEATURE_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_JAVA_SCRIPT_FEATURE_H_
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 #include "url/gurl.h"
@@ -44,7 +46,7 @@ class SearchEngineJavaScriptFeature : public web::JavaScriptFeature {
       const SearchEngineJavaScriptFeature&) = delete;
 
   // JavaScriptFeature:
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 

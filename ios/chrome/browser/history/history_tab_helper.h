@@ -113,7 +113,7 @@ class HistoryTabHelper
     int nav_entry_id;
     GURL url;
   };
-  absl::optional<NavigationState> cached_navigation_state_;
+  std::optional<NavigationState> cached_navigation_state_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

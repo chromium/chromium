@@ -16,7 +16,6 @@ source_set("device_reauth") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser_state:browser_state",
     "//ios/chrome/common/ui/reauthentication",
-    "//third_party/abseil-cpp:absl",
     "//ui/base:base",
   ]
 }

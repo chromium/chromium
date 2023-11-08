@@ -72,7 +72,7 @@ TEST_F(RestrictAccountsPolicyHandlerTest, ApplyPolicySettings) {
       store_->GetValue(prefs::kRestrictAccountsToPatterns, &pref_value));
   ASSERT_TRUE(pref_value);
 
-  absl::optional<base::Value> expected = ValidPatterns();
+  std::optional<base::Value> expected = ValidPatterns();
   EXPECT_EQ(expected, *pref_value);
 }
 
@@ -91,7 +91,7 @@ TEST_F(RestrictAccountsPolicyHandlerTest, ApplyInvalidPolicySettings) {
   ASSERT_TRUE(pref_value);
 
   // The setting is not filtering the invalid patterns out.
-  absl::optional<base::Value> expected = InvalidPatterns();
+  std::optional<base::Value> expected = InvalidPatterns();
   EXPECT_EQ(expected, *pref_value);
 }
 

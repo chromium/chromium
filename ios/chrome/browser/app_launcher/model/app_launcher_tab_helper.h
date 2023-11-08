@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_APP_LAUNCHER_MODEL_APP_LAUNCHER_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_APP_LAUNCHER_MODEL_APP_LAUNCHER_TAB_HELPER_H_
 
+#import <optional>
+
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -97,7 +99,7 @@ class AppLauncherTabHelper
   };
   using PolicyDecisionAndOptionalAppLaunchRequest =
       std::pair<web::WebStatePolicyDecider::PolicyDecision,
-                absl::optional<AppLaunchRequest>>;
+                std::optional<AppLaunchRequest>>;
   // Returns the appropriate policy decision for the given `request`. If the
   // request should trigger an app launch request, returns an app launch request
   // too.

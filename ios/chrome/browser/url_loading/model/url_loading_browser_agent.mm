@@ -329,7 +329,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   }
 
   if (!params.in_background()) {
-    LoadUrlInNewTabImpl(params, absl::nullopt);
+    LoadUrlInNewTabImpl(params, std::nullopt);
   } else {
     __block void* hint = nullptr;
     __block UrlLoadParams saved_params = params;
@@ -351,7 +351,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
 }
 
 void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
-                                                 absl::optional<void*> hint) {
+                                                 std::optional<void*> hint) {
   web::WebState* parent_web_state = nullptr;
   if (params.append_to == OpenPosition::kCurrentTab) {
     parent_web_state = browser_->GetWebStateList()->GetActiveWebState();

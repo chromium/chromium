@@ -18,7 +18,7 @@ TextClassifierModelService::TextClassifierModelService(
   DCHECK(opt_guide_service_);
   opt_guide_service_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_TEXT_CLASSIFIER,
-      /*model_metadata=*/absl::nullopt, this);
+      /*model_metadata=*/std::nullopt, this);
 }
 
 TextClassifierModelService::~TextClassifierModelService() {

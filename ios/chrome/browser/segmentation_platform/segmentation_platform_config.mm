@@ -74,7 +74,7 @@ void IOSFieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
     int subsegment_rank) {
   // Per target checks should be replaced by making this as a ModelProvider
   // method.
-  absl::optional<std::string> group_name;
+  std::optional<std::string> group_name;
 
   if (!group_name) {
     return;

@@ -26,14 +26,14 @@
 
 namespace {
 
-absl::optional<std::u16string> GetPageTitle(const web::NavigationItem& item) {
+std::optional<std::u16string> GetPageTitle(const web::NavigationItem& item) {
   const std::u16string& title = item.GetTitleForDisplay();
   if (title.empty() ||
       title == l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return absl::optional<std::u16string>(title);
+  return std::optional<std::u16string>(title);
 }
 
 }  // namespace
@@ -65,7 +65,7 @@ void HistoryTabHelper::UpdateHistoryForNavigation(
 void HistoryTabHelper::UpdateHistoryPageTitle(const web::NavigationItem& item) {
   DCHECK(!delay_notification_);
 
-  const absl::optional<std::u16string> title = GetPageTitle(item);
+  const std::optional<std::u16string> title = GetPageTitle(item);
   // Don't update the history if current entry has no title.
   if (!title) {
     return;
@@ -154,14 +154,14 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       referrer_url, redirects, transition, hidden, history::SOURCE_BROWSED,
       /*did_replace_entry=*/false, consider_for_ntp_most_visited,
       navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
-                                           : absl::nullopt,
+                                           : std::nullopt,
       // TODO(crbug.com/1475717): due to WebKit constraints, iOS does not
       // support triple-key partitioning. Once supported, we need to populate
       // `top_level_url` with the correct value. Until then, :visited history on
       // iOS is unpartitioned.
-      /*top_level_url=*/absl::nullopt,
-      /*opener=*/absl::nullopt,
-      /*bookmark_id=*/absl::nullopt,
+      /*top_level_url=*/std::nullopt,
+      /*opener=*/std::nullopt,
+      /*bookmark_id=*/std::nullopt,
       /*context_annotations=*/std::move(context_annotations));
 }
 

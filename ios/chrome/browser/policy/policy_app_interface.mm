@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 
 #import <memory>
+#import <optional>
 
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
@@ -38,7 +39,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -71,7 +71,7 @@ NSString* SerializeValue(const base::Value* value) {
 // Takes a JSON-encoded string representing a `base::Value`, and deserializes
 // into a `base::Value` pointer. If nullptr is given, returns a pointer to a
 // `base::Value` of type NONE.
-absl::optional<base::Value> DeserializeValue(NSString* json_value) {
+std::optional<base::Value> DeserializeValue(NSString* json_value) {
   if (!json_value) {
     return base::Value(base::Value::Type::NONE);
   }
@@ -82,7 +82,7 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
       deserializer.Deserialize(/*error_code=*/nullptr,
                                /*error_message=*/nullptr);
   return value ? absl::make_optional<base::Value>(std::move(*value))
-               : absl::nullopt;
+               : std::nullopt;
 }
 }  // namespace
 
@@ -111,7 +111,7 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
 }
 
 + (void)setPolicyValue:(NSString*)jsonValue forKey:(NSString*)policyKey {
-  absl::optional<base::Value> value = DeserializeValue(jsonValue);
+  std::optional<base::Value> value = DeserializeValue(jsonValue);
   policy::PolicyMap values;
   values.Set(base::SysNSStringToUTF8(policyKey), policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,

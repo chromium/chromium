@@ -7,6 +7,7 @@
 #import <stdint.h>
 
 #import <memory>
+#import <optional>
 #import <string>
 #import <vector>
 
@@ -30,7 +31,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
@@ -68,9 +68,9 @@ class IOSConfigurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
-  absl::optional<bool> IsMachineExternallyManaged() const override;
+  std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  absl::optional<base::FilePath> GetCrxCachePath() const override;
+  std::optional<base::FilePath> GetCrxCachePath() const override;
 
  private:
   friend class base::RefCountedThreadSafe<IOSConfigurator>;
@@ -214,7 +214,7 @@ IOSConfigurator::GetProtocolHandlerFactory() const {
   return configurator_impl_.GetProtocolHandlerFactory();
 }
 
-absl::optional<bool> IOSConfigurator::IsMachineExternallyManaged() const {
+std::optional<bool> IOSConfigurator::IsMachineExternallyManaged() const {
   return configurator_impl_.IsMachineExternallyManaged();
 }
 
@@ -223,10 +223,10 @@ update_client::UpdaterStateProvider IOSConfigurator::GetUpdaterStateProvider()
   return configurator_impl_.GetUpdaterStateProvider();
 }
 
-absl::optional<base::FilePath> IOSConfigurator::GetCrxCachePath() const {
+std::optional<base::FilePath> IOSConfigurator::GetCrxCachePath() const {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_CACHE, &path)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return path.Append(FILE_PATH_LITERAL("ios_crx_cache"));
 }

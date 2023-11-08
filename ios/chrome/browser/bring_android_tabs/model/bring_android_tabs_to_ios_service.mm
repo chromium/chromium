@@ -57,7 +57,7 @@ bool UserEligibleForAndroidSwitcherPrompt() {
                    experimental_flags::AlwaysDisplayFirstRun();
   if (!first_run) {
     // Check the time of first run.
-    absl::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
+    std::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
     if (info.has_value()) {
       base::Time first_run_time = info.value().creation_time;
       bool first_run_over_7_days_ago =

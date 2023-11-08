@@ -26,7 +26,7 @@ bool IsUserNewChromeUser(
   bool first_run = FirstRun::IsChromeFirstRun() ||
                    experimental_flags::AlwaysDisplayFirstRun();
   if (!first_run) {
-    absl::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
+    std::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
     if (info.has_value()) {
       base::Time first_run_time = info.value().creation_time;
       bool is_first_run_recent =

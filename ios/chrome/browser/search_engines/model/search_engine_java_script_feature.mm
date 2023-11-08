@@ -42,7 +42,7 @@ SearchEngineJavaScriptFeature::SearchEngineJavaScriptFeature()
 
 SearchEngineJavaScriptFeature::~SearchEngineJavaScriptFeature() = default;
 
-absl::optional<std::string>
+std::optional<std::string>
 SearchEngineJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kSearchEngineMessageHandlerName;
 }

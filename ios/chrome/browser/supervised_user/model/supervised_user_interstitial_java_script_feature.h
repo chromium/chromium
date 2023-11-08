@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_INTERSTITIAL_JAVA_SCRIPT_FEATURE_H_
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_INTERSTITIAL_JAVA_SCRIPT_FEATURE_H_
 
+#import <optional>
+
 #import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
@@ -19,7 +21,7 @@ class SupervisedUserInterstitialJavaScriptFeature
  private:
   friend class base::NoDestructor<SupervisedUserInterstitialJavaScriptFeature>;
   // JavaScriptFeature implementation.
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& script_message) override;
   SupervisedUserInterstitialJavaScriptFeature();

@@ -7,9 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 class SceneUrlLoadingService;
 class Browser;
@@ -68,7 +69,7 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
   // it to a separate function makes it safer not to capture state that can
   // become invalid when creating the asynchronous task).
   void LoadUrlInNewTabImpl(const UrlLoadParams& params,
-                           absl::optional<void*> hint);
+                           std::optional<void*> hint);
 
   __weak id<URLLoadingDelegate> delegate_;
   Browser* browser_;
