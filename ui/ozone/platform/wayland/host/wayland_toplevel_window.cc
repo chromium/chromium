@@ -544,20 +544,20 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   fullscreen_display_id_ = display::kInvalidDisplayId;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (shell_toplevel_ && shell_toplevel()->SupportsTopLevelImmersiveStatus() &&
+      is_immersive_fullscreen_ != window_states.is_immersive_fullscreen) {
+    // The immersive state change has finished and we need to inform the
+    // browser/app that the transition is done.
+    is_immersive_fullscreen_ = window_states.is_immersive_fullscreen;
+    delegate()->OnImmersiveModeChanged(is_immersive_fullscreen_);
+  }
+
   if (is_fullscreen_ != window_states.is_fullscreen &&
       !!requested_window_show_state_count_) {
     // The fullscreen state change has finished and we we need to inform the
     // browser/app that the transition is done.
     delegate()->OnFullscreenModeChanged();
     is_fullscreen_ = window_states.is_fullscreen;
-  }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (shell_toplevel_ && shell_toplevel()->SupportsTopLevelImmersiveStatus() &&
-      is_immersive_fullscreen_ != window_states.is_immersive_fullscreen) {
-    is_immersive_fullscreen_ = window_states.is_immersive_fullscreen;
-    delegate()->OnImmersiveModeChanged(is_immersive_fullscreen_);
   }
 #endif
 
