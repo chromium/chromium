@@ -416,8 +416,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // only one value per |PasswordAutofillAgent| instance.
   void LogPrefilledUsernameFillOutcome(PrefilledUsernameFillOutcome outcome);
 
-  void OnFrameDetached();
-
   void HidePopup();
 
   // Returns pair(username_element, password_element) based on renderer ids from

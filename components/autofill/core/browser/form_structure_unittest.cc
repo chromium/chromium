@@ -2419,13 +2419,6 @@ TEST_F(FormStructureTestImpl,
       AutofillUploadContents::DOM_MUTATION_AFTER_XHR ==
           static_cast<int>(SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR),
       "DOM_MUTATION_AFTER_XHR enumerator does not match!");
-  static_assert(AutofillUploadContents::
-                        PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD ==
-                    static_cast<int>(
-                        SubmissionIndicatorEvent::
-                            PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD),
-                "PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD enumerator "
-                "does not match!");
   static_assert(
       AutofillUploadContents::PROBABLE_FORM_SUBMISSION ==
           static_cast<int>(SubmissionIndicatorEvent::PROBABLE_FORM_SUBMISSION),

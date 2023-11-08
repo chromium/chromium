@@ -1395,20 +1395,6 @@ void PasswordAutofillAgent::DidCommitProvisionalLoad(
   recorded_first_filling_result_ = false;
 }
 
-void PasswordAutofillAgent::OnFrameDetached() {
-  // If a sub frame has been destroyed while the user was entering information
-  // into a password form, try to save the data. See https://crbug.com/450806
-  // for examples of sites that perform login using this technique.
-  // We are treating primary main frame and the root of embedded frames the same
-  // on purpose.
-  if (FrameCanAccessPasswordManager() &&
-      render_frame()->GetWebFrame()->Parent()) {
-    GetPasswordManagerDriver().DynamicFormSubmission(
-        SubmissionIndicatorEvent::FRAME_DETACHED);
-  }
-  CleanupOnDocumentShutdown();
-}
-
 void PasswordAutofillAgent::OnDestruct() {
   receiver_.reset();
 }
@@ -1892,21 +1878,21 @@ void PasswordAutofillAgent::OnProvisionallySaveForm(
     const WebFormElement& form,
     const WebFormControlElement& element,
     ElementChangeSource source) {
-  // PasswordAutofillAgent isn't interested in SELECT control change.
-  if (source == ElementChangeSource::SELECT_CHANGED)
-    return;
-
   WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  if (source == ElementChangeSource::TEXTFIELD_CHANGED) {
-    // Keeps track of all text changes even if it isn't displaying UI.
-    if (!input_element.IsNull()) {
-      UpdateStateForTextChange(input_element);
-    }
-    return;
+  switch (source) {
+    case FormTracker::Observer::ElementChangeSource::TEXTFIELD_CHANGED:
+      // Keeps track of all text changes even if it isn't displaying UI.
+      if (!input_element.IsNull()) {
+        UpdateStateForTextChange(input_element);
+      }
+      return;
+    case FormTracker::Observer::ElementChangeSource::WILL_SEND_SUBMIT_EVENT:
+      InformBrowserAboutUserInput(form, input_element);
+      return;
+    case FormTracker::Observer::ElementChangeSource::SELECT_CHANGED:
+      // PasswordAutofillAgent isn't interested in select control change.
+      return;
   }
-
-  DCHECK_EQ(ElementChangeSource::WILL_SEND_SUBMIT_EVENT, source);
-  InformBrowserAboutUserInput(form, input_element);
 }
 
 void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
@@ -1943,7 +1929,17 @@ void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
     case mojom::SubmissionSource::FORM_SUBMISSION:
       NOTREACHED_NORETURN();
     case mojom::SubmissionSource::FRAME_DETACHED:
-      OnFrameDetached();
+      // If a sub frame has been destroyed while the user was entering
+      // information into a password form, try to save the data. See
+      // https://crbug.com/450806 or examples of sites that perform login using
+      // this technique. We are treating primary main frame and the root of
+      // embedded frames the same on purpose.
+      if (FrameCanAccessPasswordManager() &&
+          render_frame()->GetWebFrame()->Parent()) {
+        GetPasswordManagerDriver().DynamicFormSubmission(
+            SubmissionIndicatorEvent::FRAME_DETACHED);
+      }
+      CleanupOnDocumentShutdown();
       return;
     case mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR:
     case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
