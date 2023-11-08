@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -77,6 +78,8 @@ constexpr gfx::Vector2d kMenuOffset(0, 8);
 constexpr int kMenuShadowElevation = 12;
 
 class ComboboxMenuOption : public RadioButton {
+  METADATA_HEADER(ComboboxMenuOption, RadioButton)
+
  public:
   ComboboxMenuOption(int button_width,
                      PressedCallback callback,
@@ -110,7 +113,12 @@ class ComboboxMenuOption : public RadioButton {
   }
 };
 
+BEGIN_METADATA(ComboboxMenuOption)
+END_METADATA
+
 class ComboboxMenuOptionGroup : public RadioButtonGroup {
+  METADATA_HEADER(ComboboxMenuOptionGroup, RadioButtonGroup)
+
  public:
   ComboboxMenuOptionGroup()
       : RadioButtonGroup(kMaxMenuWidth,
@@ -138,6 +146,9 @@ class ComboboxMenuOptionGroup : public RadioButtonGroup {
     node_data->SetNameExplicitlyEmpty();
   }
 };
+
+BEGIN_METADATA(ComboboxMenuOptionGroup)
+END_METADATA
 
 }  // namespace
 

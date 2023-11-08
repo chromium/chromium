@@ -12,6 +12,8 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
@@ -41,6 +43,8 @@ std::unique_ptr<views::Widget> g_widget_for_testing;
 // The chips container with glanceables chips and hiding chips button.
 class GlanceablesBarView::GlanceablesChipsContainer
     : public views::BoxLayoutView {
+  METADATA_HEADER(GlanceablesChipsContainer, views::BoxLayoutView)
+
  public:
   explicit GlanceablesChipsContainer(GlanceablesBarView* glanceable_bar)
       : glanceable_bar_(glanceable_bar) {
@@ -78,6 +82,11 @@ class GlanceablesBarView::GlanceablesChipsContainer
   std::vector<raw_ptr<GlanceablesChipButton>> chips_;
   raw_ptr<IconButton> hide_glanceables_button_;
 };
+
+BEGIN_METADATA(GlanceablesBarView,
+               GlanceablesChipsContainer,
+               views::BoxLayoutView)
+END_METADATA
 
 //------------------------------------------------------------------------------
 // GlanceablesBarView
@@ -217,5 +226,8 @@ void GlanceablesBarView::OnShowHideChipsButtonPressed(bool show) {
       .SetTransform(chips_container_layer,
                     show ? gfx::Transform() : vertical_shift);
 }
+
+BEGIN_METADATA(GlanceablesBarView)
+END_METADATA
 
 }  // namespace ash

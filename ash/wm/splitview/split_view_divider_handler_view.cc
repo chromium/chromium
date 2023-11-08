@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -166,5 +167,8 @@ void SplitViewDividerHandlerView::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawColor(SK_ColorTRANSPARENT, SkBlendMode::kSrc);
   views::View::OnPaint(canvas);
 }
+
+BEGIN_METADATA(SplitViewDividerHandlerView)
+END_METADATA
 
 }  // namespace ash

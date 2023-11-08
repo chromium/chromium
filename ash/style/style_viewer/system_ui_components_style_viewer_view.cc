@@ -14,6 +14,8 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -59,6 +61,8 @@ static views::Widget* g_instance = nullptr;
 // SystemUIComponentsStyleViewerView::ComponentButton:
 class SystemUIComponentsStyleViewerView::ComponentButton
     : public views::LabelButton {
+  METADATA_HEADER(ComponentButton, views::LabelButton)
+
  public:
   ComponentButton(views::LabelButton::PressedCallback pressed_callback,
                   const std::u16string& name)
@@ -113,6 +117,11 @@ class SystemUIComponentsStyleViewerView::ComponentButton
   ui::ColorId background_color_id_ = kInactiveButtonBackgroundColorId;
   ui::ColorId text_color_id_ = kInactiveButtonTextColorId;
 };
+
+BEGIN_METADATA(SystemUIComponentsStyleViewerView,
+               ComponentButton,
+               views::LabelButton)
+END_METADATA
 
 // -----------------------------------------------------------------------------
 // SystemUIComponentsStyleViewerView:
@@ -241,5 +250,8 @@ void SystemUIComponentsStyleViewerView::OnWidgetDestroyed(
     views::Widget* widget) {
   g_instance = nullptr;
 }
+
+BEGIN_METADATA(SystemUIComponentsStyleViewerView)
+END_METADATA
 
 }  // namespace ash

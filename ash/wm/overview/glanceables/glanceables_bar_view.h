@@ -5,6 +5,7 @@
 #ifndef ASH_WM_OVERVIEW_GLANCEABLES_GLANCEABLES_BAR_VIEW_H_
 #define ASH_WM_OVERVIEW_GLANCEABLES_GLANCEABLES_BAR_VIEW_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -18,6 +19,8 @@ class IconButton;
 // hiding button, the glanceables chips will fade out and the showing chips
 // button will appear in the center.
 class GlanceablesBarView : public views::View {
+  METADATA_HEADER(GlanceablesBarView, views::View)
+
  public:
   // TODO(zxdan): When the data model is implemented, pass in the model to
   // generate glanceable chips.

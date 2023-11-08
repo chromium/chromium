@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_model_observer.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -69,6 +70,8 @@ constexpr gfx::Vector2d kMenuOffset(0, 8);
 constexpr int kMenuShadowElevation = 12;
 
 class CheckboxMenuOptionGroup : public CheckboxGroup {
+  METADATA_HEADER(CheckboxMenuOptionGroup, CheckboxGroup)
+
  public:
   CheckboxMenuOptionGroup()
       : CheckboxGroup(kMaxMenuWidth,
@@ -95,6 +98,9 @@ class CheckboxMenuOptionGroup : public CheckboxGroup {
     node_data->SetNameExplicitlyEmpty();
   }
 };
+
+BEGIN_METADATA(CheckboxMenuOptionGroup)
+END_METADATA
 
 }  // namespace
 
@@ -132,8 +138,9 @@ class DropDownCheckbox::SelectionModel : public ui::ListSelectionModel,
 //------------------------------------------------------------------------------
 // DropDownCheckbox::MenuView:
 class DropDownCheckbox::MenuView : public views::View {
+  METADATA_HEADER(MenuView, views::View)
+
  public:
-  METADATA_HEADER(MenuView);
   explicit MenuView(DropDownCheckbox* drop_down_check_box)
       : drop_down_checkbox_(drop_down_check_box) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
