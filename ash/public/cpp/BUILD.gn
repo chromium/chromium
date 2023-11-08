@@ -507,7 +507,6 @@ source_set("unit_tests") {
     "app_list/app_list_config_provider_unittest.cc",
     "file_preview/file_preview_factory_unittest.cc",
     "file_preview/file_preview_unittest.cc",
-    "holding_space/holding_space_controller_unittest.cc",
     "holding_space/holding_space_image_unittest.cc",
     "holding_space/holding_space_item_unittest.cc",
     "holding_space/holding_space_model_unittest.cc",

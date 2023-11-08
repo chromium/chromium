@@ -14,8 +14,6 @@ source_set("test_support") {
     "mock_holding_space_client.h",
     "mock_holding_space_model_observer.cc",
     "mock_holding_space_model_observer.h",
-    "scoped_mock_holding_space_controller_observer.cc",
-    "scoped_mock_holding_space_controller_observer.h",
   ]
 
   deps = [
