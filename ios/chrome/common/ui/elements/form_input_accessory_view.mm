@@ -273,17 +273,16 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   [nextButton setAccessibilityLabel:textData.nextButtonAccessibilityLabel];
 
   UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [closeButton setTitle:textData.closeButtonTitle
-               forState:UIControlStateNormal];
   [closeButton addTarget:self
                   action:@selector(closeButtonTapped)
         forControlEvents:UIControlEventTouchUpInside];
 
-  // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
-  // deployment target is iOS 15.
-  UIEdgeInsets contentInsets = UIEdgeInsetsMake(
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.title = textData.closeButtonTitle;
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
       0, ManualFillCloseButtonLeftInset, 0, ManualFillCloseButtonRightInset);
-  SetContentEdgeInsets(closeButton, contentInsets);
+  closeButton.configuration = buttonConfiguration;
 
   [closeButton setAccessibilityLabel:textData.closeButtonAccessibilityLabel];
 
