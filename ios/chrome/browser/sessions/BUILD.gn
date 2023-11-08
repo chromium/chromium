@@ -109,7 +109,8 @@ source_set("session_saving") {
     "session_saving_scene_agent.mm",
   ]
   deps = [
-    ":session_util",
+    ":session_restoration_service",
+    ":session_restoration_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -247,21 +248,6 @@ source_set("session_migration") {
     "//ios/chrome/browser/sessions/proto",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",
-  ]
-}
-
-source_set("session_util") {
-  sources = [
-    "session_restoration_util.h",
-    "session_restoration_util.mm",
-  ]
-  deps = [
-    ":restoration_agent",
-    ":session_restoration_service",
-    ":session_restoration_service_factory",
-    ":session_service",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/web/common:features",
   ]
 }
 

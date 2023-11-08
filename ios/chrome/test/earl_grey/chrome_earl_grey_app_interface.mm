@@ -42,7 +42,8 @@
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_util.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -121,7 +122,22 @@ NSString* SerializedValue(const base::Value* value) {
   serializer.Serialize(*result);
   return base::SysUTF8ToNSString(serialized_value);
 }
+
+// Returns a RepeatingClosure that will call `closure` after being called
+// exactly n time. The closure does not have to be called on a specific
+// thread or sequence.
+base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
+  return base::BindRepeating(
+      [](base::RepeatingClosure closure,
+         const std::unique_ptr<std::atomic<uint32_t>>& counter) {
+        if (!--*counter) {
+          closure.Run();
+        }
+      },
+      std::move(closure), std::make_unique<std::atomic<uint32_t>>(n));
 }
+
+}  // namespace
 
 @implementation JavaScriptExecutionResult
 
@@ -186,13 +202,31 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (void)saveSessionImmediately {
-  SaveSessionForBrowser(chrome_test_util::GetMainBrowser());
+  ChromeBrowserState* browserState =
+      chrome_test_util::GetOriginalBrowserState();
+
+  SessionRestorationService* service =
+      SessionRestorationServiceFactory::GetForBrowserState(browserState);
+
+  SessionRestorationService* otrService = nullptr;
+  if (browserState->HasOffTheRecordChromeBrowserState()) {
+    SessionRestorationServiceFactory::GetForBrowserState(
+        browserState->GetOffTheRecordChromeBrowserState());
+  }
 
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-  ExecuteClosureWhenSessionServiceBackgroundProcessingDone(
-      chrome_test_util::GetOriginalBrowserState(), base::BindOnce(^{
-        dispatch_semaphore_signal(semaphore);
-      }));
+  base::RepeatingClosure closure =
+      ExpectNCall(otrService ? 2u : 1u, base::BindRepeating(^{
+                    dispatch_semaphore_signal(semaphore);
+                  }));
+
+  service->SaveSessions();
+  service->InvokeClosureWhenBackgroundProcessingDone(closure);
+  if (otrService) {
+    otrService->SaveSessions();
+    otrService->InvokeClosureWhenBackgroundProcessingDone(closure);
+  }
+
   dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 

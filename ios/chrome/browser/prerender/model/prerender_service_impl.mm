@@ -7,7 +7,8 @@
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/prerender/model/preload_controller.h"
-#import "ios/chrome/browser/sessions/session_restoration_util.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/load_timing_tab_helper.h"
@@ -91,7 +92,9 @@ bool PrerenderServiceImpl::MaybeLoadPrerenderedURL(
     LoadTimingTabHelper::FromWebState(active_web_state)
         ->DidPromotePrerenderTab();
   }
-  ScheduleSaveSessionForBrowser(browser);
+  ChromeBrowserState* browser_state = browser->GetBrowserState();
+  SessionRestorationServiceFactory::GetForBrowserState(browser_state)
+      ->ScheduleSaveSessions();
   return true;
 }
 

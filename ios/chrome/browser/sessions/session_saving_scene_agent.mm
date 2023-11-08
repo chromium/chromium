@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 
-#import "ios/chrome/browser/sessions/session_restoration_util.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -55,14 +56,19 @@
   }
 
   // Since the app is about to be backgrounded or terminated, save the sessions
-  // immediately for the main Browser, the inactive Browser and, if it exists,
-  // the incognito Browser.
-  auto mainBrowserProvider = browserProviderInterface.mainBrowserProvider;
-  SaveSessionForBrowser(mainBrowserProvider.browser);
-  SaveSessionForBrowser(mainBrowserProvider.inactiveBrowser);
+  // immediately for the main BrowserState and, if it exists, the incognito
+  // BrowserState.
+  ChromeBrowserState* mainBrowserState =
+      browserProviderInterface.mainBrowserProvider.browser->GetBrowserState();
+  SessionRestorationServiceFactory::GetForBrowserState(mainBrowserState)
+      ->SaveSessions();
+
   if (browserProviderInterface.hasIncognitoBrowserProvider) {
-    SaveSessionForBrowser(
-        browserProviderInterface.incognitoBrowserProvider.browser);
+    ChromeBrowserState* incognitoBrowserstate =
+        browserProviderInterface.incognitoBrowserProvider.browser
+            ->GetBrowserState();
+    SessionRestorationServiceFactory::GetForBrowserState(incognitoBrowserstate)
+        ->SaveSessions();
   }
 
   // Save a grey version of the active webstates.

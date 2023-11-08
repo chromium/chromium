@@ -86,7 +86,6 @@
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_util.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
@@ -130,7 +129,6 @@
 #import "ios/public/provider/chrome/browser/overrides/overrides_api.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #import "net/base/mac/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -140,15 +138,13 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_service_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_support.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #endif
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 #import "ios/chrome/app/dump_documents_statistics.h"
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 namespace {
 
@@ -157,6 +153,20 @@ namespace {
 BASE_FEATURE(kFastApplicationWillTerminate,
              "FastApplicationWillTerminate",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Returns a RepeatingClosure that will call `closure` after being called
+// exactly n time. The closure does not have to be called on a specific
+// thread or sequence.
+base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
+  return base::BindRepeating(
+      [](base::RepeatingClosure closure,
+         const std::unique_ptr<std::atomic<uint32_t>>& counter) {
+        if (!--*counter) {
+          closure.Run();
+        }
+      },
+      std::move(closure), std::make_unique<std::atomic<uint32_t>>(n));
+}
 #endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 
 // Constants for deferring resetting the startup attempt count (to give the app
@@ -814,18 +824,37 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // applicationWillTerminate to fail after a 5s delay. Experiment with skipping
   // this shutdown call. See: crbug.com/1328891
   if (base::FeatureList::IsEnabled(kFastApplicationWillTerminate)) {
+    // Expected number of time the `completionBlock` defined below needs to
+    // be called before it signal the semaphore. This corresponds to the
+    // number of services that needs to be waited for.
+    uint32_t expected_count = 1;
+
+    ChromeBrowserState* browserState = self.appState.mainBrowserState;
+    if (browserState->HasOffTheRecordChromeBrowserState()) {
+      expected_count += 1;
+    }
+
     metrics::MetricsService* metrics =
         GetApplicationContext()->GetMetricsService();
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    static std::atomic<uint32_t> counter{metrics ? 2u : 1u};
-    ProceduralBlock completionBlock = ^{
-      if (!--counter) {
-        dispatch_semaphore_signal(semaphore);
-      }
-    };
+    if (metrics) {
+      expected_count += 1;
+    }
 
-    ExecuteClosureWhenSessionServiceBackgroundProcessingDone(
-        self.appState.mainBrowserState, base::BindOnce(completionBlock));
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    base::RepeatingClosure closure =
+        ExpectNCall(expected_count, base::BindRepeating(^{
+                      dispatch_semaphore_signal(semaphore);
+                    }));
+
+    SessionRestorationServiceFactory::GetForBrowserState(browserState)
+        ->InvokeClosureWhenBackgroundProcessingDone(closure);
+
+    if (browserState->HasOffTheRecordChromeBrowserState()) {
+      ChromeBrowserState* otrBrowserState =
+          browserState->GetOffTheRecordChromeBrowserState();
+      SessionRestorationServiceFactory::GetForBrowserState(otrBrowserState)
+          ->InvokeClosureWhenBackgroundProcessingDone(closure);
+    }
 
     if (metrics) {
       metrics->Stop();
@@ -834,8 +863,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       // This will introduce a wait that will likely be the source of a number
       // of watchdog kills, but it should still be fewer than the number of
       // kills `_chromeMain.reset()` is responsible for.
-      GetApplicationContext()->GetLocalState()->CommitPendingWrite(
-          {}, base::BindOnce(completionBlock));
+      GetApplicationContext()->GetLocalState()->CommitPendingWrite({}, closure);
     }
 
     dispatch_time_t dispatchTime =
