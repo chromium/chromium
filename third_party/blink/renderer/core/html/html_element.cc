@@ -1308,10 +1308,6 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
   }
   if (action == PopoverTriggerAction::kShow &&
       GetPopoverData()->visibilityState() != PopoverVisibilityState::kHidden) {
-    if (!RuntimeEnabledFeatures::PopoverDialogDontThrowEnabled()) {
-      maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
-                            "Invalid on popover elements which aren't hidden.");
-    }
     return false;
   }
   if (action == PopoverTriggerAction::kHide &&
@@ -1319,11 +1315,6 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
     // Important to check that visibility is not kShowing (rather than
     // popoverOpen()), because a hide transition might have been started on this
     // popover already, and we don't want to allow a double-hide.
-    if (!RuntimeEnabledFeatures::PopoverDialogDontThrowEnabled()) {
-      maybe_throw_exception(
-          DOMExceptionCode::kInvalidStateError,
-          "Invalid on popover elements that aren't already showing.");
-    }
     return false;
   }
   if (!isConnected()) {
