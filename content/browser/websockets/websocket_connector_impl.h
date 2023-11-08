@@ -41,6 +41,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
                const std::vector<std::string>& requested_protocols,
                const net::SiteForCookies& site_for_cookies,
                const absl::optional<std::string>& user_agent,
+               bool has_storage_access,
                mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
                    handshake_client,
                const absl::optional<base::UnguessableToken>&
@@ -50,6 +51,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
   static void ConnectCalledByContentBrowserClient(
       const std::vector<std::string>& requested_protocols,
       const net::SiteForCookies& site_for_cookies,
+      bool has_storage_access,
       const net::IsolationInfo& isolation_info,
       int process_id,
       int frame_id,

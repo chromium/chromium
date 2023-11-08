@@ -63,6 +63,7 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
                               const std::vector<std::string>& sub_protocols,
                               const url::Origin& origin,
                               const SiteForCookies& site_for_cookies,
+                              bool has_storage_access,
                               const IsolationInfo& isolation_info,
                               const HttpRequestHeaders& additional_headers,
                               std::unique_ptr<base::OneShotTimer> timer);

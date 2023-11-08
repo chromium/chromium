@@ -74,6 +74,7 @@ void WebSocketConnectorImpl::Connect(
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<std::string>& user_agent,
+    bool has_storage_access,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client,
     const absl::optional<base::UnguessableToken>& throttling_profile_id) {
@@ -91,8 +92,8 @@ void WebSocketConnectorImpl::Connect(
     GetContentClient()->browser()->CreateWebSocket(
         frame,
         base::BindOnce(ConnectCalledByContentBrowserClient, requested_protocols,
-                       site_for_cookies, isolation_info_, process_id_,
-                       frame_id_, origin_, options,
+                       site_for_cookies, has_storage_access, isolation_info_,
+                       process_id_, frame_id_, origin_, options,
                        std::move(throttling_profile_id)),
         url, site_for_cookies, user_agent, std::move(handshake_client));
     return;
@@ -103,8 +104,8 @@ void WebSocketConnectorImpl::Connect(
         net::HttpRequestHeaders::kUserAgent, *user_agent));
   }
   process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
-      url, requested_protocols, site_for_cookies, isolation_info_,
-      std::move(headers), process_id_, origin_, options,
+      url, requested_protocols, site_for_cookies, has_storage_access,
+      isolation_info_, std::move(headers), process_id_, origin_, options,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
       process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
@@ -115,6 +116,7 @@ void WebSocketConnectorImpl::Connect(
 void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
+    bool has_storage_access,
     const net::IsolationInfo& isolation_info,
     int process_id,
     int frame_id,
@@ -135,9 +137,9 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     return;
   }
   process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
-      url, requested_protocols, site_for_cookies, isolation_info,
-      std::move(additional_headers), process_id, origin, options,
-      net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
+      url, requested_protocols, site_for_cookies, has_storage_access,
+      isolation_info, std::move(additional_headers), process_id, origin,
+      options, net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
       process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
           process_id, frame_id),

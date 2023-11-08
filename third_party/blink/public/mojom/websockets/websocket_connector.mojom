@@ -13,14 +13,17 @@ import "url/mojom/url.mojom";
 // implemented in the browser process.
 interface WebSocketConnector {
   // Starts an opening handshake.
-  // |user_agent| is a "user-agent" request header value. For other params, see
-  // CreateWebSocket in //services/network/public/mojom/network_context.mojom.
-  // It is recommended to detect mojo connection errors on |handshake_client|
-  // until the connection is established. See network_context.mojom for details.
+  // |has_storage_access| is whether the calling context has opted into using a
+  // "storage-access" permission grant. |user_agent| is a "user-agent" request
+  // header value. For other params, see CreateWebSocket in
+  // //services/network/public/mojom/network_context.mojom.  It is recommended
+  // to detect mojo connection errors on |handshake_client| until the connection
+  // is established. See network_context.mojom for details.
   Connect(url.mojom.Url url,
           array<string> requested_protocols,
           network.mojom.SiteForCookies site_for_cookies,
           string? user_agent,
+          bool has_storage_access,
           pending_remote<network.mojom.WebSocketHandshakeClient> handshake_client,
           mojo_base.mojom.UnguessableToken? throttling_profile_id);
 

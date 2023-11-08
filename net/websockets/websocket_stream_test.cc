@@ -30,6 +30,7 @@
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/url_util.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
@@ -179,7 +180,8 @@ class WebSocketStreamCreateTest
       const std::vector<std::string>& sub_protocols,
       const WebSocketExtraHeaders& send_additional_request_headers,
       const WebSocketExtraHeaders& extra_request_headers,
-      const WebSocketExtraHeaders& extra_response_headers) {
+      const WebSocketExtraHeaders& extra_response_headers,
+      bool has_storage_access = false) {
     const GURL socket_url(url);
     const std::string socket_host = GetHostAndOptionalPort(socket_url);
     const std::string socket_path = socket_url.path();
@@ -193,7 +195,8 @@ class WebSocketStreamCreateTest
               WebSocketExtraHeadersToString(extra_response_headers)) +
               additional_data_);
       CreateAndConnectStream(socket_url, sub_protocols, Origin(),
-                             SiteForCookies(), CreateIsolationInfo(),
+                             SiteForCookies(), has_storage_access,
+                             CreateIsolationInfo(),
                              WebSocketExtraHeadersToHttpRequestHeaders(
                                  send_additional_request_headers),
                              std::move(timer_));
@@ -328,7 +331,8 @@ class WebSocketStreamCreateTest
     EXPECT_FALSE(request->is_pending());
 
     CreateAndConnectStream(socket_url, sub_protocols, Origin(),
-                           SiteForCookies(), CreateIsolationInfo(),
+                           SiteForCookies(), has_storage_access,
+                           CreateIsolationInfo(),
                            WebSocketExtraHeadersToHttpRequestHeaders(
                                send_additional_request_headers),
                            std::move(timer_));
@@ -341,7 +345,8 @@ class WebSocketStreamCreateTest
       const std::vector<std::string>& sub_protocols,
       const WebSocketExtraHeaders& send_additional_request_headers,
       const WebSocketExtraHeaders& extra_request_headers,
-      const std::string& response_body) {
+      const std::string& response_body,
+      bool has_storage_access = false) {
     ASSERT_EQ(BASIC_HANDSHAKE_STREAM, stream_type_);
 
     const GURL socket_url(url);
@@ -354,7 +359,8 @@ class WebSocketStreamCreateTest
                                  extra_request_headers),
         response_body);
     CreateAndConnectStream(socket_url, sub_protocols, Origin(),
-                           SiteForCookies(), CreateIsolationInfo(),
+                           SiteForCookies(), has_storage_access,
+                           CreateIsolationInfo(),
                            WebSocketExtraHeadersToHttpRequestHeaders(
                                send_additional_request_headers),
                            nullptr);
@@ -366,7 +372,8 @@ class WebSocketStreamCreateTest
   void CreateAndConnectStringResponse(
       base::StringPiece url,
       const std::vector<std::string>& sub_protocols,
-      const std::string& extra_response_headers) {
+      const std::string& extra_response_headers,
+      bool has_storage_access = false) {
     ASSERT_EQ(BASIC_HANDSHAKE_STREAM, stream_type_);
 
     const GURL socket_url(url);
@@ -379,8 +386,9 @@ class WebSocketStreamCreateTest
                                  /*extra_headers=*/{}),
         WebSocketStandardResponse(extra_response_headers));
     CreateAndConnectStream(socket_url, sub_protocols, Origin(),
-                           SiteForCookies(), CreateIsolationInfo(),
-                           HttpRequestHeaders(), nullptr);
+                           SiteForCookies(), has_storage_access,
+                           CreateIsolationInfo(), HttpRequestHeaders(),
+                           nullptr);
   }
 
   // Like CreateAndConnectStandard(), but take raw mock data.
@@ -388,13 +396,14 @@ class WebSocketStreamCreateTest
       base::StringPiece url,
       const std::vector<std::string>& sub_protocols,
       const HttpRequestHeaders& additional_headers,
-      std::unique_ptr<SequencedSocketData> socket_data) {
+      std::unique_ptr<SequencedSocketData> socket_data,
+      bool has_storage_access = false) {
     ASSERT_EQ(BASIC_HANDSHAKE_STREAM, stream_type_);
 
     AddRawExpectations(std::move(socket_data));
     CreateAndConnectStream(GURL(url), sub_protocols, Origin(), SiteForCookies(),
-                           CreateIsolationInfo(), additional_headers,
-                           std::move(timer_));
+                           has_storage_access, CreateIsolationInfo(),
+                           additional_headers, std::move(timer_));
   }
 
   bool PriorityHeaderEnabled() const { return std::get<bool>(GetParam()); }
@@ -720,6 +729,30 @@ TEST_P(WebSocketStreamCreateTest, HandshakeOverrideHeaders) {
       RequestHeadersToVector(request_info_->headers);
   EXPECT_EQ(HeaderKeyValuePair("User-Agent", "OveRrIde"), request_headers[4]);
   EXPECT_EQ(HeaderKeyValuePair("rAnDomHeader", "foobar"), request_headers[5]);
+}
+
+TEST_P(WebSocketStreamCreateTest, OmitsHasStorageAccess) {
+  CreateAndConnectStandard("ws://www.example.org/", NoSubProtocols(), {}, {},
+                           {}, /*has_storage_access=*/false);
+  WaitUntilConnectDone();
+
+  EXPECT_THAT(
+      url_request_context_host_.network_delegate()
+          .cookie_setting_overrides_records(),
+      testing::ElementsAre(CookieSettingOverrides(), CookieSettingOverrides()));
+}
+
+TEST_P(WebSocketStreamCreateTest, PlumbsHasStorageAccess) {
+  CreateAndConnectStandard("ws://www.example.org/", NoSubProtocols(), {}, {},
+                           {}, /*has_storage_access=*/true);
+  WaitUntilConnectDone();
+
+  CookieSettingOverrides expected_overrides;
+  expected_overrides.Put(CookieSettingOverride::kStorageAccessGrantEligible);
+
+  EXPECT_THAT(url_request_context_host_.network_delegate()
+                  .cookie_setting_overrides_records(),
+              testing::ElementsAre(expected_overrides, expected_overrides));
 }
 
 // Confirm that the stream isn't established until the message loop runs.
