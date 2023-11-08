@@ -76,7 +76,7 @@ class CORE_EXPORT CSSUrlData {
 
   const Referrer& GetReferrer() const { return referrer_; }
 
-  bool IsFromFromOriginCleanStyleSheet() const {
+  bool IsFromOriginCleanStyleSheet() const {
     return is_from_origin_clean_style_sheet_;
   }
   OriginClean GetOriginClean() const {

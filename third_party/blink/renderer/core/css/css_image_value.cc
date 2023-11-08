@@ -80,7 +80,7 @@ FetchParameters CSSImageValue::PrepareFetch(
     params.SetLazyImageDeferred();
   }
 
-  if (!url_data_.IsFromFromOriginCleanStyleSheet()) {
+  if (!url_data_.IsFromOriginCleanStyleSheet()) {
     params.SetFromOriginDirtyStyleSheet(true);
   }
 

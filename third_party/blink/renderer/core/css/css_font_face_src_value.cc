@@ -162,7 +162,7 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
       params.SetCacheAwareLoadingEnabled(kIsCacheAwareLoadingEnabled);
     }
     params.SetFromOriginDirtyStyleSheet(
-        !url_data.IsFromFromOriginCleanStyleSheet());
+        !url_data.IsFromOriginCleanStyleSheet());
     const SecurityOrigin* security_origin = context->GetSecurityOrigin();
 
     // Local fonts are accessible from file: URLs even when
