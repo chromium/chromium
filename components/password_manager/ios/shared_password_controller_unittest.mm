@@ -255,6 +255,26 @@ class SharedPasswordControllerTest : public PlatformTest {
 };
 
 TEST_F(SharedPasswordControllerTest,
+       PasswordManagerIsNotNotifiedAboutHeuristicsPredictions) {
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/true, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  AddWebFrame(std::move(web_frame));
+
+  EXPECT_CALL(password_manager_, ProcessAutofillPredictions).Times(0);
+
+  // Simulate seeing a form.
+  TestBrowserAutofillManager* manager =
+      autofill_manager_injector_->GetForFrame(frame);
+  ASSERT_TRUE(manager);
+  FormData test_form = autofill::test::CreateTestPersonalInformationFormData();
+  // `OnFormsSeen` emits a `OnFieldTypesDetermined` event, but with source
+  // heuristics - this should be ignored by the `SharedPasswordController`.
+  manager->OnFormsSeen(/*updated_forms=*/{test_form}, /*removed_forms=*/{});
+}
+
+TEST_F(SharedPasswordControllerTest,
        PasswordManagerIsNotifiedAboutServerPredictions) {
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
@@ -270,6 +290,13 @@ TEST_F(SharedPasswordControllerTest,
   ASSERT_TRUE(manager);
   FormData test_form = autofill::test::CreateTestPersonalInformationFormData();
   manager->OnFormsSeen(/*updated_forms=*/{test_form}, /*removed_forms=*/{});
+
+  // Trigger `OnFieldTypesDetetermined` with source `kAutofillServer` explicitly
+  // to simulate receiving server predictions.
+  using Observer = autofill::AutofillManager::Observer;
+  manager->NotifyObservers(&Observer::OnFieldTypesDetermined,
+                           test_form.global_id(),
+                           Observer::FieldTypeSource::kAutofillServer);
 }
 
 // Test that PasswordManager is notified of main frame navigation.
