@@ -23,6 +23,7 @@
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
+#include "ash/public/cpp/holding_space/scoped_mock_holding_space_controller_observer.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -263,30 +264,6 @@ const views::MenuItemView* GetMenuItemByCommandId(HoldingSpaceCommandId id) {
   }
   return nullptr;
 }
-
-// ScopedMockHoldingSpaceControllerObserver ------------------------------------
-
-// An implementation of `HoldingSpaceControllerObserver` that enables its
-// methods to be mocked.
-class ScopedMockHoldingSpaceControllerObserver
-    : public HoldingSpaceControllerObserver {
- public:
-  explicit ScopedMockHoldingSpaceControllerObserver(
-      HoldingSpaceController* controller) {
-    observation_.Observe(controller);
-  }
-
-  // HoldingSpaceControllerObserver:
-  MOCK_METHOD(void,
-              OnHoldingSpaceTrayBubbleVisibilityChanged,
-              (const HoldingSpaceTray*, bool),
-              (override));
-
- private:
-  base::ScopedObservation<HoldingSpaceController,
-                          HoldingSpaceControllerObserver>
-      observation_{this};
-};
 
 // ViewVisibilityChangedWaiter -------------------------------------------------
 
