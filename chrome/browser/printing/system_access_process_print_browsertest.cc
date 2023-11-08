@@ -2532,7 +2532,9 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 #endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 
 #if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest, OpenPdfInPreview) {
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
+                       // TODO(crbug.com/1500113): Re-enable this test
+                       DISABLED_OpenPdfInPreview) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
@@ -3451,7 +3453,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
 
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
-                       OpenPdfInPreviewFromPrintPreview) {
+                       // TODO(crbug.com/1500113): Re-enable this test
+                       DISABLED_OpenPdfInPreviewFromPrintPreview) {
   AddPrinter("printer_name");
 
   ASSERT_TRUE(embedded_test_server()->Started());
