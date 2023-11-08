@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_JAVA_SCRIPT_FEATURE_H_
 #define IOS_CHROME_BROWSER_WEB_SELECTION_MODEL_WEB_SELECTION_JAVA_SCRIPT_FEATURE_H_
 
+#include <optional>
+
 #import "base/no_destructor.h"
 #import "base/observer_list.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
@@ -38,7 +40,7 @@ class WebSelectionJavaScriptFeature : public web::JavaScriptFeature {
 
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& script_message) override;
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   void Timeout();
 
  private:

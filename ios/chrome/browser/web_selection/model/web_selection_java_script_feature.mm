@@ -74,7 +74,7 @@ bool WebSelectionJavaScriptFeature::GetSelectedText(web::WebState* web_state) {
 
 // pragma mark - web::JavaScriptFeature methods
 
-absl::optional<std::string>
+std::optional<std::string>
 WebSelectionJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptHandlerName;
 }
