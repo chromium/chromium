@@ -106,7 +106,7 @@ TEST(VariationsCrosEvaluateSeed, GetClientFilterableState_FormFactor) {
 // Should ignore data if flag is off.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off) {
   featured::SeedDetails safe_seed;
-  safe_seed.set_compressed_data("some text");
+  safe_seed.set_b64_compressed_data("some text");
   std::string text;
   safe_seed.SerializeToString(&text);
   FILE* stream = fmemopen(text.data(), text.size(), "r");
@@ -123,7 +123,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off) {
 // Should return specified data via stream if flag is on.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On) {
   featured::SeedDetails safe_seed;
-  safe_seed.set_compressed_data("some text");
+  safe_seed.set_b64_compressed_data("some text");
   std::string text;
   safe_seed.SerializeToString(&text);
   FILE* stream = fmemopen(text.data(), text.size(), "r");
@@ -140,7 +140,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On) {
 // Should not attempt to read stream if flag is not on.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off_FailRead) {
   featured::SeedDetails safe_seed;
-  safe_seed.set_compressed_data("some text");
+  safe_seed.set_b64_compressed_data("some text");
   std::string text;
   safe_seed.SerializeToString(&text);
   FILE* stream = fmemopen(text.data(), text.size(), "w");
@@ -157,7 +157,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off_FailRead) {
 // If flag is on and reading fails, should return nullopt.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailRead) {
   featured::SeedDetails safe_seed;
-  safe_seed.set_compressed_data("some text");
+  safe_seed.set_b64_compressed_data("some text");
   std::string text;
   safe_seed.SerializeToString(&text);
   FILE* stream = fmemopen(text.data(), text.size(), "w");
