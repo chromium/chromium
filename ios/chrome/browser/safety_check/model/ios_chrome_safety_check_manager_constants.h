@@ -5,8 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The amount of time (inclusive) to wait for an Omaha response before
 // considering the request an Omaha error.
@@ -93,17 +94,17 @@ const std::string NameForSafetyCheckState(
 
 // Returns UpdateChromeSafetyCheckState given its string representation
 // `check_state`.
-absl::optional<UpdateChromeSafetyCheckState>
-UpdateChromeSafetyCheckStateForName(const std::string& check_state);
+std::optional<UpdateChromeSafetyCheckState> UpdateChromeSafetyCheckStateForName(
+    const std::string& check_state);
 
 // Returns PasswordSafetyCheckState given its string representation
 // `check_state`.
-absl::optional<PasswordSafetyCheckState> PasswordSafetyCheckStateForName(
+std::optional<PasswordSafetyCheckState> PasswordSafetyCheckStateForName(
     const std::string& check_state);
 
 // Returns SafeBrowsingSafetyCheckState given its string representation
 // `check_state`.
-absl::optional<SafeBrowsingSafetyCheckState>
-SafeBrowsingSafetyCheckStateForName(const std::string& check_state);
+std::optional<SafeBrowsingSafetyCheckState> SafeBrowsingSafetyCheckStateForName(
+    const std::string& check_state);
 
 #endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_

@@ -70,8 +70,8 @@ const std::string NameForSafetyCheckState(
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
-absl::optional<UpdateChromeSafetyCheckState>
-UpdateChromeSafetyCheckStateForName(const std::string& check_state) {
+std::optional<UpdateChromeSafetyCheckState> UpdateChromeSafetyCheckStateForName(
+    const std::string& check_state) {
   if (check_state == "UpdateChromeSafetyCheckState::kDefault") {
     return UpdateChromeSafetyCheckState::kDefault;
   }
@@ -104,12 +104,12 @@ UpdateChromeSafetyCheckStateForName(const std::string& check_state) {
     return UpdateChromeSafetyCheckState::kChannel;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
-absl::optional<PasswordSafetyCheckState> PasswordSafetyCheckStateForName(
+std::optional<PasswordSafetyCheckState> PasswordSafetyCheckStateForName(
     const std::string& check_state) {
   if (check_state == "PasswordSafetyCheckState::kDefault") {
     return PasswordSafetyCheckState::kDefault;
@@ -151,13 +151,13 @@ absl::optional<PasswordSafetyCheckState> PasswordSafetyCheckStateForName(
     return PasswordSafetyCheckState::kSignedOut;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
-absl::optional<SafeBrowsingSafetyCheckState>
-SafeBrowsingSafetyCheckStateForName(const std::string& check_state) {
+std::optional<SafeBrowsingSafetyCheckState> SafeBrowsingSafetyCheckStateForName(
+    const std::string& check_state) {
   if (check_state == "SafeBrowsingSafetyCheckState::kDefault") {
     return SafeBrowsingSafetyCheckState::kDefault;
   }
@@ -178,5 +178,5 @@ SafeBrowsingSafetyCheckStateForName(const std::string& check_state) {
     return SafeBrowsingSafetyCheckState::kUnsafe;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }

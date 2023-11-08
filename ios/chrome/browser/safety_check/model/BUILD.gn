@@ -57,10 +57,7 @@ source_set("constants") {
     "ios_chrome_safety_check_manager_constants.cc",
     "ios_chrome_safety_check_manager_constants.h",
   ]
-  public_deps = [
-    "//base",
-    "//third_party/abseil-cpp:absl",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("utils") {
