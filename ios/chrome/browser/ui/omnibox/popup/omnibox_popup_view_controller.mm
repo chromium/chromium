@@ -300,10 +300,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
                                              [UITableViewHeaderFooterView
                                                  class])];
   self.shouldUpdateVisibleSuggestionCount = YES;
-
-  if (@available(iOS 15.0, *)) {
-    self.tableView.sectionHeaderTopPadding = 0;
-  }
+  self.tableView.sectionHeaderTopPadding = 0;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
