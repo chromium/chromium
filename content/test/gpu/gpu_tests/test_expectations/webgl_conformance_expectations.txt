@@ -566,8 +566,6 @@ crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL
 # Android failures #
 ####################
 
-crbug.com/903903 [ android-nexus-5x android-nougat qualcomm target-cpu-64 ] conformance/glsl/bugs/sampler-array-struct-function-arg.html [ Failure ]
-crbug.com/478572 [ android-nexus-5x android-nougat qualcomm target-cpu-64 ] conformance/glsl/bugs/sequence-operator-evaluation-order.html [ Failure ]
 crbug.com/1439682 [ android android-nexus-5x passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 
 # Need to investigate failure on basically all devices with passthrough on Android.
@@ -578,17 +576,13 @@ crbug.com/angleproject/5038 [ android no-passthrough qualcomm renderer-skia-gl ]
 crbug.com/angleproject/5038 [ android-pie android-shield-android-tv no-passthrough nvidia renderer-skia-gl target-cpu-32 ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Was too difficult to suppress these failures on individual bots.
-crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 crbug.com/1470376 [ android-oreo ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
-# These video tests are flakey on many configurations.
-crbug.com/1347077 [ android-nexus-5x android-nougat angle-opengles passthrough qualcomm renderer-skia-gl target-cpu-64 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 ## Nexus 5X ##
 
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so
 # flaky (2018-09-10) that it had to be upgraded to Fail.
-crbug.com/609883 [ android-nexus-5x android-nougat ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Failure ]
 crbug.com/951628 [ android android-nexus-5x no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 # Timing out on this device for unknown reasons.
