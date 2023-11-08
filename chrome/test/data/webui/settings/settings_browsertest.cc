@@ -710,9 +710,8 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePage) {
           "runMochaSuite('PrivacyGuidePage')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SettingsFlowLength) {
-  RunTest("settings/privacy_guide_page_test.js",
-          "runMochaSuite('SettingsFlowLength')");
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, FlowLength) {
+  RunTest("settings/privacy_guide_page_test.js", "runMochaSuite('FlowLength')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePagePG3Off) {
@@ -720,9 +719,9 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePagePG3Off) {
           "runMochaSuite('PrivacyGuidePagePG3Off')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SettingsFlowLengthPG3Off) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, FlowLengthPG3Off) {
   RunTest("settings/privacy_guide_page_test.js",
-          "runMochaSuite('SettingsFlowLengthPG3Off')");
+          "runMochaSuite('FlowLengthPG3Off')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MsbbCardNavigations) {
