@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
 #include <limits>
 #include <utility>
@@ -28,9 +27,9 @@ namespace media {
 // We do this by allocating space for potentially more frames than requested.
 // This method returns the required size for the contiguous memory block
 // in bytes and outputs the adjusted number of frames via |out_aligned_frames|.
-static size_t CalculateMemorySizeInternal(int channels,
-                                          int frames,
-                                          int* out_aligned_frames) {
+static int CalculateMemorySizeInternal(int channels,
+                                       int frames,
+                                       int* out_aligned_frames) {
   // Since our internal sample format is float, we can guarantee the alignment
   // by making the number of frames an integer multiple of
   // AudioBus::kChannelAlignment / sizeof(float).
@@ -64,11 +63,10 @@ AudioBus::AudioBus(int channels, int frames)
   ValidateConfig(channels, frames_);
 
   int aligned_frames = 0;
-  size_t size = CalculateMemorySizeInternal(channels, frames, &aligned_frames);
+  int size = CalculateMemorySizeInternal(channels, frames, &aligned_frames);
 
   data_.reset(static_cast<float*>(base::AlignedAlloc(
       size, AudioBus::kChannelAlignment)));
-  memset(data_.get(), 0, size);
 
   BuildChannelData(channels, aligned_frames, data_.get());
 }
