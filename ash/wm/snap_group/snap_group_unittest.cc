@@ -23,6 +23,7 @@
 #include "ash/wm/overview/overview_drop_target.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_group_item.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
@@ -884,7 +885,6 @@ class SnapGroupTest : public AshTestBase {
 
     // Snap `window1` to trigger the overview session shown on the other side of
     // the screen.
-    UpdateDisplay("800x600");
     SnapOneTestWindow(
         window1,
         /*state_type=*/chromeos::WindowStateType::kPrimarySnapped);
@@ -1627,6 +1627,49 @@ TEST_F(SnapGroupTest, OverviewItemTest) {
 
   EXPECT_EQ(overview_session->GetOverviewItemForWindow(w1.get()),
             overview_session->GetOverviewItemForWindow(w2.get()));
+}
+
+// Tests that the size of the `OverviewItem`s hosted by the `OverviewGroupItem`
+// will correspond to the actual window layout.
+TEST_F(SnapGroupTest, ReflectSnapRatioInOverviewGroupItem) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  ASSERT_TRUE(split_view_divider());
+  const gfx::Point hover_location =
+      split_view_divider_bounds_in_screen().CenterPoint();
+  split_view_divider()->StartResizeWithDivider(hover_location);
+  const gfx::Vector2d drag_delta(-work_area_bounds().width() / 6, 0);
+  const auto end_point = hover_location + drag_delta;
+  split_view_divider()->ResizeWithDivider(end_point);
+  split_view_divider()->EndResizeWithDivider(end_point);
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_NEAR(0.33f, WindowState::Get(w1.get())->snap_ratio().value(),
+              /*abs_error=*/0.01);
+  EXPECT_NEAR(0.67f, WindowState::Get(w2.get())->snap_ratio().value(),
+              /*abs_error=*/0.01);
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kTests);
+  OverviewSession* overview_session = overview_controller->overview_session();
+  ASSERT_TRUE(overview_session);
+
+  OverviewGroupItem* overview_group_item =
+      static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(w1.get()));
+  ASSERT_TRUE(overview_group_item);
+
+  const auto& overview_items = overview_group_item->overview_items_;
+  ASSERT_EQ(overview_items.size(), 2u);
+
+  // Since `w1` is roughly half the width of `w2`, verify that `item1_bounds` is
+  // also half the width of `item2_bounds`.
+  const gfx::Rect item1_bounds =
+      overview_items[0]->item_widget()->GetWindowBoundsInScreen();
+  const gfx::Rect item2_bounds =
+      overview_items[1]->item_widget()->GetWindowBoundsInScreen();
+  const float size_ratio =
+      static_cast<float>(item1_bounds.width()) / item2_bounds.width();
+  EXPECT_NEAR(size_ratio, 0.5, /*abs_error=*/0.01);
 }
 
 // Tests that the overview group item will be closed when focused in overview

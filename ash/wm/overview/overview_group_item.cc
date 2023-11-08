@@ -4,6 +4,8 @@
 
 #include "ash/wm/overview/overview_group_item.h"
 
+#include "ash/display/screen_orientation_controller.h"
+#include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -33,6 +35,38 @@ constexpr gfx::InsetsF kLeftItemBoundsInsets =
     gfx::InsetsF::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/0, /*right=*/1);
 constexpr gfx::InsetsF kRightItemBoundsInsets =
     gfx::InsetsF::TLBR(/*top=*/0, /*left=*/1, /*bottom=*/0, /*right=*/0);
+
+float CalculateSnapRatioForPrimarySnappedWindow(
+    const aura::Window* primary_window,
+    const aura::Window* secondary_window) {
+  const auto primary_window_bounds_in_screen =
+      primary_window->GetBoundsInScreen();
+  const auto secondary_window_bounds_in_screen =
+      secondary_window->GetBoundsInScreen();
+  // TODO(http://b/309539997): Calculate differently for portrait screen
+  // orientation.
+  return static_cast<float>(primary_window_bounds_in_screen.width()) /
+         (primary_window_bounds_in_screen.width() +
+          secondary_window_bounds_in_screen.width());
+}
+
+// TODO(http://b/309539997): Calculate differently for portrait screen
+// orientation.
+gfx::RectF CalculateScreenBoundsForWindow(const gfx::RectF& union_bounds,
+                                          const float primary_snap_ratio,
+                                          const bool is_primary) {
+  const float snap_ratio =
+      is_primary ? primary_snap_ratio : (1 - primary_snap_ratio);
+  const gfx::PointF origin =
+      is_primary ? union_bounds.origin()
+                 : gfx::PointF(union_bounds.origin().x() +
+                                   union_bounds.width() * primary_snap_ratio,
+                               union_bounds.origin().y());
+  gfx::RectF bounds(origin, gfx::SizeF(union_bounds.width() * snap_ratio,
+                                       union_bounds.height()));
+  bounds.Inset(is_primary ? kLeftItemBoundsInsets : kRightItemBoundsInsets);
+  return bounds;
+}
 
 }  // namespace
 
@@ -136,19 +170,22 @@ void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
 
   CHECK_EQ(size, 2);
   item_widget_->SetBounds(gfx::ToRoundedRect(target_bounds));
-  // TODO(michelefan): Set bounds differently based on the screen orientation.
-  // TODO(michelefan): Calculate the actual snap ratio based on the window
-  // bounds and apply it on the individual items hosted by `this`.
-  auto sub_bounds1 = gfx::RectF(
-      target_bounds.origin(),
-      gfx::SizeF(target_bounds.width() / 2.f, target_bounds.height()));
-  sub_bounds1.Inset(kLeftItemBoundsInsets);
-  overview_items_[0]->SetBounds(sub_bounds1, animation_type);
 
-  auto sub_bounds2 = gfx::RectF(
-      gfx::PointF(target_bounds.top_center()),
-      gfx::SizeF(target_bounds.width() / 2.f, target_bounds.height()));
+  // TODO(http://b/309539997): Set bounds differently based on the screen
+  // orientation.
+  const float primary_window_snap_ratio =
+      CalculateSnapRatioForPrimarySnappedWindow(
+          overview_items_[0]->GetWindow(), overview_items_[1]->GetWindow());
+
+  gfx::RectF sub_bounds1 =
+      CalculateScreenBoundsForWindow(target_bounds, primary_window_snap_ratio,
+                                     /*is_primary=*/true);
+  sub_bounds1.Inset(kLeftItemBoundsInsets);
+  gfx::RectF sub_bounds2 =
+      CalculateScreenBoundsForWindow(target_bounds, primary_window_snap_ratio,
+                                     /*is_primary=*/false);
   sub_bounds2.Inset(kRightItemBoundsInsets);
+  overview_items_[0]->SetBounds(sub_bounds1, animation_type);
   overview_items_[1]->SetBounds(sub_bounds2, animation_type);
 }
 

@@ -94,6 +94,7 @@ class OverviewGroupItem : public OverviewItemBase,
   void CreateItemWidget() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SnapGroupTest, ReflectSnapRatioInOverviewGroupItem);
   // A list of `OverviewItem`s hosted and owned by `this`.
   std::vector<std::unique_ptr<OverviewItem>> overview_items_;
 
