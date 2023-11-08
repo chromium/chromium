@@ -1964,7 +1964,6 @@ void AuthenticatorCommonImpl::OnTimeout() {
     return;
   }
 
-  DCHECK(req_state_->request_delegate);
   if (req_state_->get_assertion_response_callback) {
     req_state_->get_assertion_result = GetAssertionResult::kTimeout;
   }
