@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_options.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_canon.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "url/url_util.h"
 
@@ -250,6 +251,10 @@ Component* Component::Compile(StringView pattern,
         "Blink.URLPattern.IncompatiblePatternWithUnicodeSetsMode",
         regexp->IsValid() && !regexp_v->IsValid());
 
+    if (RuntimeEnabledFeatures::URLPatternRegexpUnicodeSetsModeEnabled()) {
+      regexp = regexp_v;
+    }
+
     if (!regexp->IsValid()) {
       // The regular expression failed to compile.  This means that some
       // custom regexp group within the pattern is illegal.  Attempt to
@@ -262,7 +267,9 @@ Component* Component::Compile(StringView pattern,
         String group_value(part.value.data(), part.value.size());
         regexp = MakeGarbageCollected<ScriptRegexp>(
             group_value, case_sensitive, MultilineMode::kMultilineDisabled,
-            UnicodeMode::kUnicode);
+            RuntimeEnabledFeatures::URLPatternRegexpUnicodeSetsModeEnabled()
+                ? UnicodeMode::kUnicodeSets
+                : UnicodeMode::kUnicode);
         if (regexp->IsValid())
           continue;
         exception_state.ThrowTypeError("Invalid " + TypeToString(type) +

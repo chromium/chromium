@@ -2829,5 +2829,29 @@
       "search": { "input": "q=*&v=?&hmm={}&umm=()", "groups": {} },
       "hash": { "input": "foo", "groups": {} }
     }
+  },
+  {
+    "pattern": [{ "pathname": "/([[a-z]--a])" }],
+    "inputs": [{ "pathname": "/a" }],
+    "expected_match": null
+  },
+  {
+    "pattern": [{ "pathname": "/([[a-z]--a])" }],
+    "inputs": [{ "pathname": "/z" }],
+    "expected_match": {
+      "pathname": { "input": "/z", "groups": { "0": "z" } }
+    }
+  },
+    {
+    "pattern": [{ "pathname": "/([\\d&&[0-1]])" }],
+    "inputs": [{ "pathname": "/0" }],
+    "expected_match": {
+      "pathname": { "input": "/0", "groups": { "0": "0" } }
+    }
+  },
+  {
+    "pattern": [{ "pathname": "/([\\d&&[0-1]])" }],
+    "inputs": [{ "pathname": "/3" }],
+    "expected_match": null
   }
 ]
