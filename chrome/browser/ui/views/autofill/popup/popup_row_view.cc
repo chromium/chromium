@@ -19,7 +19,9 @@
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -184,6 +186,7 @@ void PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
 }
 
 // static
+// TODO(crbug.com/1491373): Move this method into popup_row_factory_utils.h/cc
 std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
                                                    int line_number) {
   base::WeakPtr<AutofillPopupController> controller = popup_view.controller();
@@ -192,6 +195,15 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
   PopupItemId popup_item_id =
       controller->GetSuggestionAt(line_number).popup_item_id;
   std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker;
+
+  if (popup_item_id == PopupItemId::kAutocompleteEntry &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton)) {
+    return CreateAutocompleteRowWithDeleteButton(
+        controller, /*a11y_selection_delegate=*/popup_view,
+        /*selection_delegate=*/popup_view, line_number);
+  }
+
   std::unique_ptr<PopupRowStrategy> strategy;
   switch (popup_item_id) {
     // These `popup_item_id` should never be displayed in a `PopupRowView`.
@@ -228,10 +240,12 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
       break;
   }
 
-  return std::make_unique<PopupRowView>(
+  auto row_view = std::make_unique<PopupRowView>(
       /*a11y_selection_delegate=*/popup_view, /*selection_delegate=*/popup_view,
-      controller, line_number, strategy->CreateContent(),
-      std::move(new_badge_tracker));
+      controller, line_number, strategy->CreateContent());
+  row_view->set_new_badge_tracker(std::move(new_badge_tracker));
+
+  return row_view;
 }
 
 PopupRowView::PopupRowView(
@@ -239,13 +253,11 @@ PopupRowView::PopupRowView(
     SelectionDelegate& selection_delegate,
     base::WeakPtr<AutofillPopupController> controller,
     int line_number,
-    std::unique_ptr<PopupCellView> content_view,
-    std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker)
+    std::unique_ptr<PopupCellView> content_view)
     : a11y_selection_delegate_(a11y_selection_delegate),
       selection_delegate_(selection_delegate),
       controller_(controller),
       line_number_(line_number),
-      new_badge_tracker_(std::move(new_badge_tracker)),
       should_ignore_mouse_observed_outside_item_bounds_check_(
           controller &&
           controller->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()) {
@@ -457,13 +469,6 @@ bool PopupRowView::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
   // Some cells may want to define their own behavior.
   CHECK(GetSelectedCell());
-
-  // TODO(1491373): Temporary left over for PopupCellWithButtonView, remove when
-  // it gets reworked as a row.
-  if (*GetSelectedCell() == CellType::kContent &&
-      content_view_->HandleKeyPressEvent(event)) {
-    return true;
-  }
 
   switch (event.windows_key_code) {
     case ui::VKEY_RETURN:

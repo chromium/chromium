@@ -8,27 +8,16 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/callback.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/time/time.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_with_button_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/strings/grit/components_strings.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/widget/widget_utils.h"
 
 using ::testing::IsNull;
@@ -193,9 +182,6 @@ class PopupSuggestionStrategyTest : public ChromeViewsTestBase {
   MockAutofillPopupController& controller() { return controller_; }
   ui::test::EventGenerator& generator() { return *generator_; }
   PopupCellView& view() { return *view_; }
-  PopupCellWithButtonView& cell_with_button_view() {
-    return static_cast<PopupCellWithButtonView&>(*view_);
-  }
   views::Widget& widget() { return *widget_; }
 
  private:
@@ -209,90 +195,5 @@ class PopupSuggestionStrategyTest : public ChromeViewsTestBase {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillShowAutocompleteDeleteButton};
 };
-
-TEST_F(PopupSuggestionStrategyTest, AutocompleteDeleteRecordsMetricOnDeletion) {
-  ShowAutocompleteSuggestion();
-  views::ImageButton* button = cell_with_button_view().GetCellButtonForTest();
-  base::HistogramTester histogram_tester;
-  view().SetSelected(true);
-  // In test env we have to manually set the bounds when a view becomes visible.
-  button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
-
-  EXPECT_CALL(controller(), RemoveSuggestion(0)).WillOnce(Return(true));
-
-  generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-  generator().ClickLeftButton();
-  task_environment()->RunUntilIdle();
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
-          kDeleteButtonClicked,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events",
-      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
-}
-
-TEST_F(PopupSuggestionStrategyTest,
-       AutocompleteDeleteRecordsNoMetricOnFailedDeletion) {
-  ShowAutocompleteSuggestion();
-  views::ImageButton* button = cell_with_button_view().GetCellButtonForTest();
-  base::HistogramTester histogram_tester;
-  view().SetSelected(true);
-  // In test env we have to manually set the bounds when a view becomes visible.
-  button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
-
-  EXPECT_CALL(controller(), RemoveSuggestion(0)).WillOnce(Return(false));
-
-  generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-  generator().ClickLeftButton();
-  task_environment()->RunUntilIdle();
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
-          kDeleteButtonClicked,
-      0);
-  histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events",
-      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
-}
-
-TEST_F(PopupSuggestionStrategyTest, AutocompleteDeleteButtonHasTooltip) {
-  ShowAutocompleteSuggestion();
-  views::ImageButton* button = cell_with_button_view().GetCellButtonForTest();
-  EXPECT_EQ(button->GetTooltipText(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
-}
-
-TEST_F(PopupSuggestionStrategyTest, AutocompleteDeleteButtonSetsAccessibility) {
-  ShowAutocompleteSuggestion();
-  views::ImageButton* button = cell_with_button_view().GetCellButtonForTest();
-  // We only set the accessible name once the user navigates to the button.
-  // TODO(crbug.com/1417187): Delete this once we find out why calling
-  // NotifyAccessibilityEvent in the content is including the button's
-  // accessible name attribute value.
-  SimulateKeyPress(ui::VKEY_RIGHT);
-  ui::AXNodeData node_data;
-  button->GetAccessibleNodeData(&node_data);
-
-  EXPECT_EQ(node_data.role, ax::mojom::Role::kMenuItem);
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT, u"Some entry"),
-      node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
-}
-
-TEST_F(PopupSuggestionStrategyTest, AutocompleteControlsFocusByKeyboardKeys) {
-  ShowAutocompleteSuggestion();
-
-  SimulateKeyPress(ui::VKEY_RIGHT);
-  EXPECT_TRUE(cell_with_button_view().GetCellButtonFocusedForTest());
-
-  SimulateKeyPress(ui::VKEY_LEFT);
-  EXPECT_FALSE(cell_with_button_view().GetCellButtonFocusedForTest());
-}
 
 }  // namespace autofill

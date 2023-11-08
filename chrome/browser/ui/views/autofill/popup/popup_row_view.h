@@ -104,9 +104,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
                SelectionDelegate& selection_delegate,
                base::WeakPtr<AutofillPopupController> controller,
                int line_number,
-               std::unique_ptr<PopupCellView> content_view,
-               std::optional<ScopedNewBadgeTrackerWithAcceptAction>
-                   new_badge_tracker = std::nullopt);
+               std::unique_ptr<PopupCellView> content_view);
   PopupRowView(const PopupRowView&) = delete;
   PopupRowView& operator=(const PopupRowView&) = delete;
   ~PopupRowView() override;
@@ -114,6 +112,11 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // Acts as a factory method for creating a row view.
   static std::unique_ptr<PopupRowView> Create(PopupViewViews& popup_view,
                                               int line_number);
+
+  void set_new_badge_tracker(
+      std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker) {
+    new_badge_tracker_ = std::move(new_badge_tracker);
+  }
 
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -128,7 +131,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
   // Gets and sets the selected cell within this row.
   absl::optional<CellType> GetSelectedCell() const { return selected_cell_; }
-  void SetSelectedCell(absl::optional<CellType> cell);
+  virtual void SetSelectedCell(absl::optional<CellType> cell);
 
   // Sets whether the row's child suggestions are displayed in a sub-popup.
   // Note that the row doesn't control the sub-popup, but rather should be
@@ -140,7 +143,8 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
   // Attempts to process a key press `event`. Returns true if it did (and the
   // parent no longer needs to handle it).
-  bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
+  virtual bool HandleKeyPressEvent(
+      const content::NativeWebKeyboardEvent& event);
 
   // Returns the view representing the content area of the row.
   PopupCellView& GetContentView() { return *content_view_; }
@@ -149,6 +153,11 @@ class PopupRowView : public views::View, public views::ViewObserver {
   views::View* GetExpandChildSuggestionsView() {
     return expand_child_suggestions_view_.get();
   }
+
+ protected:
+  base::WeakPtr<AutofillPopupController> controller() { return controller_; }
+
+  int line_number() const { return line_number_; }
 
  private:
   // If the suggestion has child suggestions the row view adds this view to

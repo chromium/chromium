@@ -81,9 +81,6 @@ class PopupSuggestionStrategy : public PopupRowBaseStrategy {
   std::unique_ptr<PopupCellView> CreateContent() override;
 
  private:
-  // Creates the cell for an Autocomplete entry with a delete button.
-  std::unique_ptr<PopupCellView> CreateAutocompleteWithDeleteButtonCell();
-
   // Adds content and labels for a suggestion. A helper method used by all
   // suggestion types.
   void AddContentLabelsAndCallbacks(PopupCellView& view);

@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_with_button_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -29,6 +28,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view.h"
 
 namespace autofill {
 
@@ -51,21 +51,6 @@ constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
     PopupItemId::kPasswordAccountStorageOptIn,
     PopupItemId::kPasswordAccountStorageReSignin,
     PopupItemId::kPasswordAccountStorageOptInAndGenerate};
-
-// The size of a close or delete icon.
-constexpr int kCloseIconSize = 16;
-
-// Returns a wrapper around `closure` that posts it to the default message
-// queue instead of executing it directly. This is to avoid that the callback's
-// caller can suicide by (unwittingly) deleting itself or its parent.
-base::RepeatingClosure CreateExecuteSoonWrapper(base::RepeatingClosure task) {
-  return base::BindRepeating(
-      [](base::RepeatingClosure delayed_task) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(delayed_task));
-      },
-      std::move(task));
-}
 
 }  // namespace
 
@@ -98,68 +83,8 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
     return nullptr;
   }
 
-  if (GetController()->GetSuggestionAt(GetLineNumber()).popup_item_id ==
-          PopupItemId::kAutocompleteEntry &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillShowAutocompleteDeleteButton)) {
-    return CreateAutocompleteWithDeleteButtonCell();
-  }
-
   auto view = std::make_unique<PopupCellView>();
   AddContentLabelsAndCallbacks(*view);
-  return view;
-}
-
-std::unique_ptr<PopupCellView>
-PopupSuggestionStrategy::CreateAutocompleteWithDeleteButtonCell() {
-  auto view = std::make_unique<PopupCellWithButtonView>(GetController(),
-                                                        GetLineNumber());
-  AddContentLabelsAndCallbacks(*view);
-
-  // Add a delete button for Autocomplete entries.
-  views::BoxLayout* layout =
-      static_cast<views::BoxLayout*>(view->GetLayoutManager());
-  for (views::View* child : view->children()) {
-    layout->SetFlexForView(child, 1);
-  }
-
-  // The closure that actually attempts to delete an entry and record metrics
-  // for it.
-  base::RepeatingClosure deletion_action = base::BindRepeating(
-      [](base::WeakPtr<AutofillPopupController> controller, int line_number) {
-        if (controller && controller->RemoveSuggestion(line_number)) {
-          AutofillMetrics::OnAutocompleteSuggestionDeleted(
-              AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
-                  kDeleteButtonClicked);
-        }
-      },
-      GetController(), GetLineNumber());
-  std::unique_ptr<views::ImageButton> button =
-      views::CreateVectorImageButtonWithNativeTheme(
-          CreateExecuteSoonWrapper(std::move(deletion_action)),
-          views::kIcCloseIcon, kCloseIconSize);
-
-  // We are making sure that the vertical distance from the delete button edges
-  // to the cell border is the same as the horizontal distance.
-  // 1. Take the current horizontal distance.
-  int horizontal_margin = layout->inside_border_insets().right();
-  // 2. Take the height of the cell.
-  int cell_height = layout->minimum_cross_axis_size();
-  // 3. The diameter needs to be the height - 2 * the desired margin.
-  int radius = (cell_height - horizontal_margin * 2) / 2;
-  InstallFixedSizeCircleHighlightPathGenerator(button.get(), radius);
-  button->SetPreferredSize(gfx::Size(radius * 2, radius * 2));
-  button->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
-  button->SetAccessibleRole(ax::mojom::Role::kMenuItem);
-  button->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT,
-      popup_cell_utils::GetVoiceOverStringFromSuggestion(
-          GetController()->GetSuggestionAt(GetLineNumber()))));
-  button->SetVisible(false);
-  view->SetCellButton(std::move(button));
-  static_cast<views::BoxLayout*>(view->GetLayoutManager())
-      ->SetFlexForView(view->GetButtonContainer(), 0);
   return view;
 }
 

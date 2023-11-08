@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_with_button_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 
 #include <memory>
 #include <utility>
@@ -13,6 +13,8 @@
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
+#include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -37,11 +39,12 @@
 
 namespace autofill {
 
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::StrictMock;
-using CellButtonBehavior = PopupCellWithButtonView::CellButtonBehavior;
+using ButtonBehavior = PopupRowWithButtonView::ButtonBehavior;
 
-class PopupCellWithButtonViewTest : public ChromeViewsTestBase {
+class PopupRowWithButtonViewTest : public ChromeViewsTestBase {
  public:
   // views::ViewsTestBase:
   void SetUp() override {
@@ -49,10 +52,11 @@ class PopupCellWithButtonViewTest : public ChromeViewsTestBase {
     widget_ = CreateTestWidget();
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
+    controller_.set_suggestions({PopupItemId::kAddressEntry});
   }
 
-  void ShowView(std::unique_ptr<PopupCellWithButtonView> cell_view) {
-    view_ = widget_->SetContentsView(std::move(cell_view));
+  void ShowView(std::unique_ptr<PopupRowWithButtonView> view) {
+    view_ = widget_->SetContentsView(std::move(view));
     widget_->Show();
   }
 
@@ -73,87 +77,96 @@ class PopupCellWithButtonViewTest : public ChromeViewsTestBase {
 
   views::ImageButton* CreateRowAndGetButton(
       base::RepeatingClosure button_callback = base::DoNothing(),
-      CellButtonBehavior cell_button_behavior =
-          CellButtonBehavior::kShowOnHoverOrSelect) {
-    auto cell = std::make_unique<PopupCellWithButtonView>(
-        controller_.GetWeakPtr(), /*line_number=*/0);
-    cell->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      ButtonBehavior button_behavior =
+          ButtonBehavior::kShowOnHoverOrSelect) {
+    auto content_view = std::make_unique<PopupCellView>();
+    content_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
-    cell->AddChildView(std::make_unique<views::Label>(u"Some label"));
-    cell->SetCellButtonBehavior(cell_button_behavior);
-    cell->SetCellButton(
-        std::make_unique<views::ImageButton>(std::move(button_callback)));
-    views::ImageButton* button = cell->GetCellButtonForTest();
-    ShowView(std::move(cell));
+    content_view->AddChildView(std::make_unique<views::Label>(u"Some label"));
+    auto row = std::make_unique<PopupRowWithButtonView>(
+        a11y_selection_delegate(), selection_delegate(),
+        controller_.GetWeakPtr(), 0, std::move(content_view),
+        std::make_unique<views::ImageButton>(std::move(button_callback)),
+        button_behavior);
+    views::ImageButton* button = row->GetButtonForTest();
+    ShowView(std::move(row));
     return button;
   }
 
  protected:
   MockAutofillPopupController& controller() { return controller_; }
+  MockAccessibilitySelectionDelegate& a11y_selection_delegate() {
+    return mock_a11y_selection_delegate_;
+  }
+  MockSelectionDelegate& selection_delegate() {
+    return mock_selection_delegate_;
+  }
   ui::test::EventGenerator& generator() { return *generator_; }
-  PopupCellWithButtonView& view() { return *view_; }
+  PopupRowWithButtonView& view() { return *view_; }
   views::Widget& widget() { return *widget_; }
 
  private:
-  MockAutofillPopupController controller_;
+  NiceMock<MockAccessibilitySelectionDelegate> mock_a11y_selection_delegate_;
+  NiceMock<MockSelectionDelegate> mock_selection_delegate_;
+  NiceMock<MockAutofillPopupController> controller_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  raw_ptr<PopupCellWithButtonView> view_ = nullptr;
+  raw_ptr<PopupRowWithButtonView> view_ = nullptr;
 };
 
-TEST_F(PopupCellWithButtonViewTest, ShowsOrHideButtonOnSelected) {
+TEST_F(PopupRowWithButtonViewTest, ShowsOrHideButtonOnSelected) {
   views::ImageButton* button = CreateRowAndGetButton();
 
   // The button is shown if the row is selected.
   EXPECT_FALSE(button->GetVisible());
-  view().SetSelected(true);
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
   EXPECT_TRUE(button->GetVisible());
 
   // The button is hidden if the row is not selected.
-  view().SetSelected(false);
+  view().SetSelectedCell(absl::nullopt);
   EXPECT_FALSE(button->GetVisible());
 }
 
 // Tests that the cell button is always visible for
-// `CellButtonBehavior::kShowAlways`.
-TEST_F(PopupCellWithButtonViewTest, DoNotHideButtonForShowAlwaysBehavior) {
+// `ButtonBehavior::kShowAlways`.
+TEST_F(PopupRowWithButtonViewTest, DoNotHideButtonForShowAlwaysBehavior) {
   views::ImageButton* button = CreateRowAndGetButton(
-      /*button_callback=*/base::DoNothing(), CellButtonBehavior::kShowAlways);
+      /*button_callback=*/base::DoNothing(), ButtonBehavior::kShowAlways);
 
   EXPECT_TRUE(button->GetVisible());
-  view().SetSelected(true);
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
   EXPECT_TRUE(button->GetVisible());
 
-  view().SetSelected(false);
+  view().SetSelectedCell(absl::nullopt);
   EXPECT_TRUE(button->GetVisible());
 }
 
-TEST_F(PopupCellWithButtonViewTest,
-       UpdateSelectedAndRunCallbacksOnButtonHovered) {
+TEST_F(PopupRowWithButtonViewTest,
+       UpdateFocusedPartAndRunCallbacksOnButtonHovered) {
   views::ImageButton* button = CreateRowAndGetButton();
   views::View* label = view().children()[0];
 
-  view().SetSelected(true);
-  ASSERT_TRUE(view().GetSelected());
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+  EXPECT_EQ(view().GetSelectedCell(), PopupRowView::CellType::kContent);
   // In test env we have to manually set the bounds when a view becomes visible.
   button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
 
-  // Selected is false if hovering button.
+  // The button becomes focused if it is hovered.
   EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>()));
   generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-  ASSERT_FALSE(view().GetSelected());
+  EXPECT_TRUE(view().GetButtonFocusedForTest());
 
   // Selected is true if hovering the label when the button state changes.
   EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(0)));
   generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(view().GetSelected());
+  EXPECT_FALSE(view().GetButtonFocusedForTest());
 }
 
-TEST_F(PopupCellWithButtonViewTest, ButtonClickTriggersCallback) {
+TEST_F(PopupRowWithButtonViewTest, ButtonClickTriggersCallback) {
   base::MockCallback<base::RepeatingClosure> callback;
   views::ImageButton* button = CreateRowAndGetButton(callback.Get());
 
-  view().SetSelected(true);
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
   // In test env we have to manually set the bounds when a view becomes visible.
   button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
   EXPECT_CALL(callback, Run);
@@ -162,27 +175,28 @@ TEST_F(PopupCellWithButtonViewTest, ButtonClickTriggersCallback) {
   generator().ClickLeftButton();
 }
 
-TEST_F(PopupCellWithButtonViewTest, KeyPressLeftRightEnter) {
+TEST_F(PopupRowWithButtonViewTest, KeyPressLeftRightEnter) {
   base::MockCallback<base::RepeatingClosure> callback;
   CreateRowAndGetButton(callback.Get());
 
-  view().SetSelected(true);
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
   // Pressing left does nothing.
   SimulateKeyPress(ui::VKEY_LEFT);
-  EXPECT_TRUE(view().GetSelected());
+  EXPECT_EQ(view().GetSelectedCell(), PopupRowView::CellType::kContent);
+  EXPECT_FALSE(view().GetButtonFocusedForTest());
 
   // Pressing right unselects and highlights the button.
   SimulateKeyPress(ui::VKEY_RIGHT);
-  EXPECT_FALSE(view().GetSelected());
+  EXPECT_TRUE(view().GetButtonFocusedForTest());
 
   // Pressing enter when the button is focused triggers the callback.
   EXPECT_CALL(callback, Run);
   SimulateKeyPress(ui::VKEY_RETURN);
 }
 
-TEST_F(PopupCellWithButtonViewTest, CursorVerticalNavigationAlwaysHidesButton) {
+TEST_F(PopupRowWithButtonViewTest, CursorVerticalNavigationAlwaysHidesButton) {
   views::ImageButton* button = CreateRowAndGetButton();
-  view().SetSelected(true);
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
   // In test env we have to manually set the bounds when a view becomes visible.
   button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
   generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
@@ -191,9 +205,20 @@ TEST_F(PopupCellWithButtonViewTest, CursorVerticalNavigationAlwaysHidesButton) {
   // Pressing down to indicate vertical navigation.
   SimulateKeyPress(ui::VKEY_DOWN);
   // Set selected as false to simulate another row was selected.
-  view().SetSelected(false);
+  view().SetSelectedCell(absl::nullopt);
 
   ASSERT_FALSE(button->GetVisible());
+}
+
+TEST_F(PopupRowWithButtonViewTest, AutocompleteControlsFocusByKeyboardKeys) {
+  CreateRowAndGetButton();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  EXPECT_TRUE(view().GetButtonFocusedForTest());
+
+  SimulateKeyPress(ui::VKEY_LEFT);
+  EXPECT_FALSE(view().GetButtonFocusedForTest());
 }
 
 }  // namespace autofill
