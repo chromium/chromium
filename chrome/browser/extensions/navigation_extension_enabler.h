@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_NAVIGATION_OBSERVER_H_
-#define CHROME_BROWSER_EXTENSIONS_NAVIGATION_OBSERVER_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_NAVIGATION_EXTENSION_ENABLER_H_
+#define CHROME_BROWSER_EXTENSIONS_NAVIGATION_EXTENSION_ENABLER_H_
 
 #include <memory>
 #include <set>
@@ -20,23 +20,24 @@
 
 namespace extensions {
 
-// The NavigationObserver listens to navigation notifications. If the user
-// navigates into an extension that has been disabled due to a permission
+// The NavigationExtensionEnabler listens to navigation notifications. If the
+// user navigates into an extension that has been disabled due to a permission
 // increase, it prompts the user to accept the new permissions and re-enables
 // the extension.
-class NavigationObserver
+class NavigationExtensionEnabler
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<NavigationObserver>,
+      public content::WebContentsUserData<NavigationExtensionEnabler>,
       public ExtensionRegistryObserver {
  public:
-  NavigationObserver(const NavigationObserver&) = delete;
-  NavigationObserver& operator=(const NavigationObserver&) = delete;
+  NavigationExtensionEnabler(const NavigationExtensionEnabler&) = delete;
+  NavigationExtensionEnabler& operator=(const NavigationExtensionEnabler&) =
+      delete;
 
-  ~NavigationObserver() override;
+  ~NavigationExtensionEnabler() override;
 
  private:
-  explicit NavigationObserver(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<NavigationObserver>;
+  explicit NavigationExtensionEnabler(content::WebContents* web_contents);
+  friend class content::WebContentsUserData<NavigationExtensionEnabler>;
 
   // Checks if the WebContents has navigated to an extension's web extent. If it
   // has and the extension is disabled due to a permissions increase, this
@@ -62,10 +63,10 @@ class NavigationObserver
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-  base::WeakPtrFactory<NavigationObserver> weak_factory_{this};
+  base::WeakPtrFactory<NavigationExtensionEnabler> weak_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_NAVIGATION_OBSERVER_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_NAVIGATION_EXTENSION_ENABLER_H_

@@ -252,7 +252,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
-#include "chrome/browser/extensions/navigation_observer.h"
+#include "chrome/browser/extensions/navigation_extension_enabler.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
@@ -735,7 +735,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
                           extensions::mojom::ViewType::kTabContents);
 
   extensions::TabHelper::CreateForWebContents(web_contents);
-  extensions::NavigationObserver::CreateForWebContents(web_contents);
+  extensions::NavigationExtensionEnabler::CreateForWebContents(web_contents);
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionSidePanelIntegration)) {

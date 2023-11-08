@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/navigation_observer.h"
+#include "chrome/browser/extensions/navigation_extension_enabler.h"
 
 #include <memory>
 
@@ -15,24 +15,27 @@
 
 namespace extensions {
 
-NavigationObserver::NavigationObserver(content::WebContents* web_contents)
+NavigationExtensionEnabler::NavigationExtensionEnabler(
+    content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<NavigationObserver>(*web_contents) {
+      content::WebContentsUserData<NavigationExtensionEnabler>(*web_contents) {
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(web_contents->GetBrowserContext()));
 }
 
-NavigationObserver::~NavigationObserver() = default;
+NavigationExtensionEnabler::~NavigationExtensionEnabler() = default;
 
-void NavigationObserver::NavigationEntryCommitted(
+void NavigationExtensionEnabler::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
   PromptToEnableExtensionIfNecessary(load_details.entry->GetURL());
 }
 
-void NavigationObserver::PromptToEnableExtensionIfNecessary(const GURL& url) {
+void NavigationExtensionEnabler::PromptToEnableExtensionIfNecessary(
+    const GURL& url) {
   // Bail out if we're already running a prompt.
-  if (!in_progress_prompt_extension_id_.empty())
+  if (!in_progress_prompt_extension_id_.empty()) {
     return;
+  }
 
   // NOTE: We only consider chrome-extension:// urls, and deliberately don't
   // consider hosted app urls. This is because it's really annoying to visit the
@@ -42,15 +45,17 @@ void NavigationObserver::PromptToEnableExtensionIfNecessary(const GURL& url) {
   // the item enabled, we won't show anything.
   // TODO(devlin): While true, I still wonder how useful this is. We should get
   // metrics.
-  if (!url.SchemeIs(kExtensionScheme))
+  if (!url.SchemeIs(kExtensionScheme)) {
     return;
+  }
 
   const Extension* extension =
       ExtensionRegistry::Get(web_contents()->GetBrowserContext())
           ->disabled_extensions()
           .GetExtensionOrAppByURL(url);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   ExtensionPrefs* extension_prefs =
       ExtensionPrefs::Get(web_contents()->GetBrowserContext());
@@ -70,22 +75,23 @@ void NavigationObserver::PromptToEnableExtensionIfNecessary(const GURL& url) {
       ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
           web_contents()->GetBrowserContext(), extension);
   extension_install_prompt_->ShowDialog(
-      base::BindRepeating(&NavigationObserver::OnInstallPromptDone,
+      base::BindRepeating(&NavigationExtensionEnabler::OnInstallPromptDone,
                           weak_factory_.GetWeakPtr()),
       extension, nullptr,
       std::make_unique<ExtensionInstallPrompt::Prompt>(type),
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
 }
 
-void NavigationObserver::OnInstallPromptDone(
+void NavigationExtensionEnabler::OnInstallPromptDone(
     ExtensionInstallPrompt::DoneCallbackPayload payload) {
   // This dialog doesn't support the "withhold permissions" checkbox.
   DCHECK_NE(payload.result,
             ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
 
   // The extension was already uninstalled.
-  if (in_progress_prompt_extension_id_.empty())
+  if (in_progress_prompt_extension_id_.empty()) {
     return;
+  }
 
   ExtensionRegistry* extension_registry =
       ExtensionRegistry::Get(web_contents()->GetBrowserContext());
@@ -106,7 +112,7 @@ void NavigationObserver::OnInstallPromptDone(
   extension_install_prompt_.reset();
 }
 
-void NavigationObserver::OnExtensionUninstalled(
+void NavigationExtensionEnabler::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UninstallReason reason) {
@@ -119,6 +125,6 @@ void NavigationObserver::OnExtensionUninstalled(
   extension_install_prompt_.reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationObserver);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationExtensionEnabler);
 
 }  // namespace extensions
