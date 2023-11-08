@@ -1949,7 +1949,6 @@
       default_value: "auto",
       keywords: ["auto", "first", "last"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSBaselineSource",
     },
     {
       name: "border-bottom-color",
