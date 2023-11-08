@@ -235,7 +235,7 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
   mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
   forwarded_race_network_request_url_loader_factory_.emplace(
       forwarding_client.InitWithNewPipeAndPassReceiver(),
-      resource_request_.url);
+      network::SharedURLLoaderFactory::Create(fallback_factory_->Clone()));
 
   DCHECK(!race_network_request_loader_client_);
   race_network_request_loader_client_.emplace(resource_request_,
