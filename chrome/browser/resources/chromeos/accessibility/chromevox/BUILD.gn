@@ -375,7 +375,6 @@ if (is_chromeos_ash) {
       "../common/testing/accessibility_test_base.js",
       "../common/testing/assert_additions.js",
       "../common/testing/callback_helper.js",
-      "../common/closure_shim.js",
       "background/braille/expanding_braille_translator.js",
       "background/braille/pan_strategy.js",
       "background/braille/spans.js",

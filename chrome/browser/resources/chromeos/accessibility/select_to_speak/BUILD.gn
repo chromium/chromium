@@ -151,7 +151,6 @@ js_type_check("closure_compile") {
     ":ui_manager",
     "../common:automation_predicate",
     "../common:automation_util",
-    "../common:closure_shim",
     "../common:constants",
     "../common:key_code",
     "../common:node_navigation_utils",

@@ -175,7 +175,6 @@ js_type_check("closure_compile") {
     ":text_navigation_manager",
     ":window_node",
     "../common:automation_predicate",
-    "../common:closure_shim",
     "../common:constants",
     "../common:event_generator",
     "../common:key_code",

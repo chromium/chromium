@@ -34,7 +34,6 @@ run_jsbundler("accessibility_common_copied_files") {
     "automation_util.js",
     "browser_util.js",
     "chrome_event_handler.js",
-    "closure_shim.js",
     "constants.js",
     "cursors/cursor.js",
     "cursors/range.js",
@@ -92,9 +91,6 @@ js_library("constants") {
   sources = [ "constants.js" ]
 }
 
-js_library("closure_shim") {
-}
-
 js_library("automation_util") {
   deps = [
     ":automation_predicate",
@@ -128,7 +124,6 @@ js_library("key_code") {
 }
 
 js_library("instance_checker") {
-  deps = [ ":closure_shim" ]
 }
 
 js_library("node_navigation_utils") {
