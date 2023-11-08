@@ -24,8 +24,8 @@
 #include "chrome/browser/ash/app_mode/fake_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -140,12 +140,12 @@ class KioskControllerHolder {
  public:
   KioskControllerHolder()
       : kiosk_controller(web_kiosk_app_manager_,
-                         chrome_app_kiosk_app_manager_,
+                         chrome_app_manager_,
                          arc_kiosk_app_manager_) {}
   ~KioskControllerHolder() = default;
 
   WebKioskAppManager web_kiosk_app_manager_;
-  KioskAppManager chrome_app_kiosk_app_manager_;
+  KioskChromeAppManager chrome_app_manager_;
   ArcKioskAppManager arc_kiosk_app_manager_;
   KioskController kiosk_controller;
 };

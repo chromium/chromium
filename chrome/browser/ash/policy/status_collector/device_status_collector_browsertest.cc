@@ -43,7 +43,7 @@
 #include "chrome/browser/apps/app_service/publisher_host.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -926,7 +926,7 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   ~DeviceStatusCollectorTest() override {
     ash::SeneschalClient::Shutdown();
-    kiosk_app_manager_.reset();
+    kiosk_chrome_app_manager_.reset();
     // |testing_profile_| must be destroyed while ConciergeClient is alive.
     testing_profile_.reset();
     ash::ConciergeClient::Shutdown();
@@ -1121,15 +1121,16 @@ class DeviceStatusCollectorTest : public testing::Test {
   void MockAutoLaunchKioskAppWithRequiredPlatformVersion(
       const DeviceLocalAccount& auto_launch_app_account,
       const std::string& required_platform_version) {
-    if (!kiosk_app_manager_) {
-      kiosk_app_manager_ = std::make_unique<ash::KioskAppManager>();
+    if (!kiosk_chrome_app_manager_) {
+      kiosk_chrome_app_manager_ =
+          std::make_unique<ash::KioskChromeAppManager>();
     }
-    kiosk_app_manager_->AddAppForTest(
+    kiosk_chrome_app_manager_->AddAppForTest(
         auto_launch_app_account.kiosk_app_id,
         AccountId::FromUserEmail(auto_launch_app_account.user_id),
         GURL("http://cws/"),  // Dummy URL to avoid setup ExtensionsClient.
         required_platform_version);
-    kiosk_app_manager_->SetEnableAutoLaunch(true);
+    kiosk_chrome_app_manager_->SetEnableAutoLaunch(true);
 
     std::vector<DeviceLocalAccount> accounts;
     accounts.push_back(auto_launch_app_account);
@@ -1141,8 +1142,9 @@ class DeviceStatusCollectorTest : public testing::Test {
 
     base::RunLoop().RunUntilIdle();
 
-    ASSERT_EQ(required_platform_version,
-              kiosk_app_manager_->GetAutoLaunchAppRequiredPlatformVersion());
+    ASSERT_EQ(
+        required_platform_version,
+        kiosk_chrome_app_manager_->GetAutoLaunchAppRequiredPlatformVersion());
   }
 
   void MockAutoLaunchArcKioskApp(
@@ -1210,7 +1212,7 @@ class DeviceStatusCollectorTest : public testing::Test {
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
   // Only set after MockAutoLaunchKioskAppWithRequiredPlatformVersion was
   // called.
-  std::unique_ptr<ash::KioskAppManager> kiosk_app_manager_;
+  std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<ReportingUserTracker> reporting_user_tracker_;
   em::DeviceStatusReportRequest device_status_;

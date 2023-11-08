@@ -384,8 +384,8 @@ void ExtensionServiceTestBase::SetUp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(b/308107135) own KioskController instead of KioskAppManager.
   // A test might have initialized a `KioskAppManager` already.
-  if (!ash::KioskAppManager::IsInitialized()) {
-    kiosk_app_manager_ = std::make_unique<ash::KioskAppManager>();
+  if (!ash::KioskChromeAppManager::IsInitialized()) {
+    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
   }
 #endif
 }
@@ -402,7 +402,7 @@ void ExtensionServiceTestBase::TearDown() {
   }
   policy_provider_.Shutdown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  kiosk_app_manager_.reset();
+  kiosk_chrome_app_manager_.reset();
 #endif
 }
 

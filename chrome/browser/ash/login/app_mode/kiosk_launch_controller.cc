@@ -28,8 +28,8 @@
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -320,8 +320,8 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   }
 
   if (auto_launch && kiosk_app_id.type == KioskAppType::kChromeApp) {
-    CHECK(KioskAppManager::IsInitialized());
-    KioskAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
+    CHECK(KioskChromeAppManager::IsInitialized());
+    KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
         *kiosk_app_id.app_id);
   }
 
@@ -452,7 +452,8 @@ void KioskLaunchController::OnCancelAppLaunch() {
   }
 
   // Only auto-launched apps should be cancelable.
-  if (KioskAppManager::Get()->GetDisableBailoutShortcut() && auto_launch_) {
+  if (KioskChromeAppManager::Get()->GetDisableBailoutShortcut() &&
+      auto_launch_) {
     return;
   }
 

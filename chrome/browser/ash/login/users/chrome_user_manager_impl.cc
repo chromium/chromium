@@ -39,7 +39,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -851,7 +851,8 @@ void ChromeUserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
   if (command_line->HasSwitch(switches::kLoginUser) &&
       command_line->HasSwitch(switches::kAppAutoLaunched) &&
       !kiosk_app_id.empty()) {
-    KioskAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(kiosk_app_id);
+    KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
+        kiosk_app_id);
   }
 }
 

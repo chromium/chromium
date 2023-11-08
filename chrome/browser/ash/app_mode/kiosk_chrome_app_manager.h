@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_MANAGER_H_
-#define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_CHROME_APP_MANAGER_H_
+#define CHROME_BROWSER_ASH_APP_MODE_KIOSK_CHROME_APP_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -51,9 +51,9 @@ extern const char kKioskPrimaryAppInstallErrorHistogram[];
 extern const char kKioskPrimaryAppUpdateResultHistogram[];
 extern const char kKioskExternalUpdateSuccessHistogram[];
 
-// KioskAppManager manages cached app data.
-class KioskAppManager : public KioskAppManagerBase,
-                        public chromeos::ExternalCacheDelegate {
+// KioskChromeAppManager manages cached app data.
+class KioskChromeAppManager : public KioskAppManagerBase,
+                              public chromeos::ExternalCacheDelegate {
  public:
   enum class ConsumerKioskAutoLaunchStatus {
     // Consumer kiosk mode auto-launch feature can be enabled on this machine.
@@ -95,21 +95,21 @@ class KioskAppManager : public KioskAppManagerBase,
 
   typedef std::vector<App> Apps;
 
-  // Interface that can be used to override default KioskAppManager behavior.
-  // For example, it can be used in tests to inject test components
+  // Interface that can be used to override default KioskChromeAppManager
+  // behavior. For example, it can be used in tests to inject test components
   // implementations.
   class Overrides {
    public:
     virtual ~Overrides() = default;
 
     // Creates the external cache that should be used by the
-    // KioskAppManager. It should always return a valid object.
+    // KioskChromeAppManager. It should always return a valid object.
     virtual std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
         chromeos::ExternalCacheDelegate* delegate,
         bool always_check_updates) = 0;
 
-    // Creates a `KioskSystemSession` object. Called when the KioskAppManager
-    // initializes the session. It can return nullptr.
+    // Creates a `KioskSystemSession` object. Called when the
+    // `KioskChromeAppManager` initializes the session. It can return `nullptr`.
     virtual std::unique_ptr<KioskSystemSession> CreateKioskSystemSession() = 0;
   };
 
@@ -122,14 +122,12 @@ class KioskAppManager : public KioskAppManagerBase,
   static const char kKeyAutoLoginState[];
 
   // Returns the manager instance. Crashes if it is not yet initialized.
-  static KioskAppManager* Get();
+  static KioskChromeAppManager* Get();
 
   static bool IsInitialized();
 
-  // Initializes KioskAppManager for testing, injecting the provided overrides.
-  // `overrides` can be null, in which case KioskAppManager will use default
-  // behavior.
-  // Must be called before Get().
+  // Initializes KioskChromeAppManager for testing. An `overrides` can be given
+  // to customize behavior in tests, or `null` to use the default behavior.
   static void InitializeForTesting(Overrides* overrides);
 
   // Registers kiosk app entries in local state.
@@ -141,10 +139,10 @@ class KioskAppManager : public KioskAppManagerBase,
 
   static bool IsConsumerKioskEnabled();
 
-  KioskAppManager();
-  KioskAppManager(const KioskAppManager&) = delete;
-  KioskAppManager& operator=(const KioskAppManager&) = delete;
-  ~KioskAppManager() override;
+  KioskChromeAppManager();
+  KioskChromeAppManager(const KioskChromeAppManager&) = delete;
+  KioskChromeAppManager& operator=(const KioskChromeAppManager&) = delete;
+  ~KioskChromeAppManager() override;
 
   // Initiates reading of consumer kiosk mode auto-launch status.
   void GetConsumerKioskAutoLaunchStatus(
@@ -242,7 +240,7 @@ class KioskAppManager : public KioskAppManagerBase,
   // Whether the platform is compliant for the given app.
   bool IsPlatformCompliantWithApp(const extensions::Extension* app) const;
 
-  // Notifies the KioskAppManager that a given app was auto-launched
+  // Notifies the KioskChromeAppManager that a given app was auto-launched
   // automatically with no delay on startup. Certain privacy-sensitive
   // kiosk-mode behavior (such as network reporting) is only enabled for
   // kiosk apps that are immediately auto-launched on startup.
@@ -265,7 +263,7 @@ class KioskAppManager : public KioskAppManagerBase,
 
  private:
   friend class GlobalManager;
-  friend class KioskAppManagerTest;
+  friend class ChromeAppKioskAppManagerTest;
   friend class KioskAutoLaunchViewsTest;
   friend class KioskBaseTest;
 
@@ -344,4 +342,4 @@ class KioskAppManager : public KioskAppManagerBase,
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_CHROME_APP_MANAGER_H_

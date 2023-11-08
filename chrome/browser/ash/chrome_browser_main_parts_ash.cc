@@ -51,7 +51,7 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -969,12 +969,12 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
                      chromeos::version_loader::VERSION_FULL),
       base::BindOnce(&ChromeOSVersionCallback));
 
-  kiosk_app_manager_ = std::make_unique<KioskAppManager>();
+  kiosk_chrome_app_manager_ = std::make_unique<KioskChromeAppManager>();
   arc_kiosk_app_manager_ = std::make_unique<ArcKioskAppManager>();
   web_kiosk_app_manager_ = std::make_unique<WebKioskAppManager>();
   kiosk_controller_ = std::make_unique<KioskController>(
       CHECK_DEREF(web_kiosk_app_manager_.get()),
-      CHECK_DEREF(kiosk_app_manager_.get()),
+      CHECK_DEREF(kiosk_chrome_app_manager_.get()),
       CHECK_DEREF(arc_kiosk_app_manager_.get()));
 
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
@@ -1620,7 +1620,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   kiosk_controller_.reset();
 
   // Clean up dependency on CrosSettings and stop pending data fetches.
-  kiosk_app_manager_.reset();
+  kiosk_chrome_app_manager_.reset();
 
   // Make sure that there is no pending URLRequests.
   if (pre_profile_init_called_) {

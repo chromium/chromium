@@ -4,15 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 
-#include <memory>
 #include <string_view>
 #include <utility>
 
 #include "ash/public/cpp/login_screen.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/kiosk_app.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -83,7 +80,7 @@ void AppLaunchSplashScreenHandler::Show(Data data) {
   base::Value::Dict dict =
       base::Value::Dict()
           .Set("shortcutEnabled",
-               !KioskAppManager::Get()->GetDisableBailoutShortcut())
+               !KioskChromeAppManager::Get()->GetDisableBailoutShortcut())
           .Set("appInfo",
                base::Value::Dict()
                    .Set("name", data.name)

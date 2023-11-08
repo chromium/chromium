@@ -290,7 +290,7 @@ int CountRegularUsers(const user_manager::UserList& users) {
   for (auto* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
-    // KioskAppManager, ArcKioskAppManager and WebKioskAppManager.
+    // KioskChromeAppManager, ArcKioskAppManager and WebKioskAppManager.
     if (user->IsKioskType()) {
       continue;
     }
@@ -607,7 +607,7 @@ void ExistingUserController::OnGaiaScreenReady() {
 }
 
 void ExistingUserController::OnStartKioskEnableScreen() {
-  KioskAppManager::Get()->GetConsumerKioskAutoLaunchStatus(base::BindOnce(
+  KioskChromeAppManager::Get()->GetConsumerKioskAutoLaunchStatus(base::BindOnce(
       &ExistingUserController::OnConsumerKioskAutoLaunchCheckCompleted,
       weak_factory_.GetWeakPtr()));
 }
@@ -643,8 +643,9 @@ void ExistingUserController::LocalStateChanged(
 }
 
 void ExistingUserController::OnConsumerKioskAutoLaunchCheckCompleted(
-    KioskAppManager::ConsumerKioskAutoLaunchStatus status) {
-  if (status == KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable) {
+    KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status) {
+  if (status ==
+      KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable) {
     ShowKioskEnableScreen();
   }
 }
@@ -1114,7 +1115,7 @@ user_manager::UserList ExistingUserController::ExtractLoginUsers(
   for (auto* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
-    // KioskAppManager, ArcKioskAppManager and WebKioskAppManager.
+    // KioskChromeAppManager, ArcKioskAppManager and WebKioskAppManager.
     if (user->IsKioskType()) {
       continue;
     }

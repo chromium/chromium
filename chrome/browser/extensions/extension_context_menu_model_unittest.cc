@@ -66,10 +66,6 @@
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#endif
-
 namespace extensions {
 
 using mojom::ManifestLocation;

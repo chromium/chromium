@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -27,7 +27,7 @@ constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
 // Get Kiosk dictionary value. It is replaced after each update.
 const base::Value::Dict& GetKioskDictionary() {
   return g_browser_process->local_state()->GetDict(
-      KioskAppManager::kKioskDictionaryName);
+      KioskChromeAppManager::kKioskDictionaryName);
 }
 
 }  // namespace

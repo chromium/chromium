@@ -339,8 +339,8 @@ void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
     StartWizard(EnableDebuggingScreenView::kScreenId);
   } else if (local_state->GetBoolean(::prefs::kEnableAdbSideloadingRequested)) {
     StartWizard(EnableAdbSideloadingScreenView::kScreenId);
-  } else if (!KioskAppManager::Get()->GetAutoLaunchApp().empty() &&
-             KioskAppManager::Get()->IsAutoLaunchRequested()) {
+  } else if (!KioskChromeAppManager::Get()->GetAutoLaunchApp().empty() &&
+             KioskChromeAppManager::Get()->IsAutoLaunchRequested()) {
     VLOG(0) << "Showing auto-launch warning";
     StartWizard(KioskAutolaunchScreenView::kScreenId);
   }

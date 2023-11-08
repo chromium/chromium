@@ -28,7 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
@@ -43,7 +43,7 @@ class TestingProfile;
 namespace content {
 class BrowserContext;
 class BrowserTaskEnvironment;
-}
+}  // namespace content
 
 namespace sync_preferences {
 class TestingPrefServiceSyncable;
@@ -137,10 +137,9 @@ class ExtensionServiceTestBase : public testing::Test {
   // Helpers to check the existence and values of extension prefs.
   size_t GetPrefKeyCount();
   void ValidatePrefKeyCount(size_t count);
-  testing::AssertionResult ValidateBooleanPref(
-      const std::string& extension_id,
-      const std::string& pref_path,
-      bool expected_val);
+  testing::AssertionResult ValidateBooleanPref(const std::string& extension_id,
+                                               const std::string& pref_path,
+                                               bool expected_val);
   void ValidateIntegerPref(const std::string& extension_id,
                            const std::string& pref_path,
                            int expected_val);
@@ -238,7 +237,7 @@ class ExtensionServiceTestBase : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  std::unique_ptr<ash::KioskAppManager> kiosk_app_manager_;
+  std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
   ash::ScopedTestUserManager test_user_manager_;
 #endif
 

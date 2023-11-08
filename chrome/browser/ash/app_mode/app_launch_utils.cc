@@ -9,8 +9,8 @@
 #include "base/command_line.h"
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -107,7 +107,8 @@ void CreateKioskSystemSession(const KioskAppId& kiosk_app_id,
                                                         app_name);
       return;
     case KioskAppType::kChromeApp:
-      KioskAppManager::Get()->InitKioskSystemSession(profile, kiosk_app_id);
+      KioskChromeAppManager::Get()->InitKioskSystemSession(profile,
+                                                           kiosk_app_id);
       return;
     case KioskAppType::kArcApp:
       // Do not create a `KioskBrowserSession` for ARC kiosk

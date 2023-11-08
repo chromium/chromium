@@ -200,8 +200,8 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, InstallAndLaunchApp) {
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   WaitForAppLaunchSuccess();
-  KioskAppManager::App app;
-  ASSERT_TRUE(KioskAppManager::Get()->GetApp(test_app_id(), &app));
+  KioskChromeAppManager::App app;
+  ASSERT_TRUE(KioskChromeAppManager::Get()->GetApp(test_app_id(), &app));
   EXPECT_FALSE(app.was_auto_launched_with_zero_delay);
   EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 }
@@ -354,8 +354,8 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, OpenA11ySettings) {
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
 
-  Browser* settings_browser =
-      OpenA11ySettingsBrowser(KioskAppManager::Get()->kiosk_system_session());
+  Browser* settings_browser = OpenA11ySettingsBrowser(
+      KioskChromeAppManager::Get()->kiosk_system_session());
   ASSERT_TRUE(settings_browser);
 }
 
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
   // Replace the settings allowlist with `settings_pages`.
   ScopedSettingsPages pages(&settings_pages);
   KioskSystemSession* system_session =
-      KioskAppManager::Get()->kiosk_system_session();
+      KioskChromeAppManager::Get()->kiosk_system_session();
 
   // App session should be initialized.
   ASSERT_TRUE(system_session);
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowShouldBeActive) {
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
   KioskSystemSession* system_session =
-      KioskAppManager::Get()->kiosk_system_session();
+      KioskChromeAppManager::Get()->kiosk_system_session();
 
   // App session should be initialized.
   ASSERT_TRUE(system_session);
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowRemainsOpen) {
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
   KioskSystemSession* system_session =
-      KioskAppManager::Get()->kiosk_system_session();
+      KioskChromeAppManager::Get()->kiosk_system_session();
   // App session should be initialized.
   ASSERT_NE(system_session, nullptr);
 
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, CloseSettingsWindow) {
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
   KioskSystemSession* system_session =
-      KioskAppManager::Get()->kiosk_system_session();
+      KioskChromeAppManager::Get()->kiosk_system_session();
   // App session should be initialized.
   ASSERT_NE(system_session, nullptr);
 

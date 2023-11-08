@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace ash {
@@ -57,12 +57,13 @@ class KioskAppsHandler : public content::WebUIMessageHandler,
   void UpdateApp(const std::string& app_id);
   void ShowError(const std::string& app_id);
 
-  // Callback for KioskAppManager::GetConsumerKioskModeStatus().
+  // Callback for KioskChromeAppManager::GetConsumerKioskModeStatus().
   void OnGetConsumerKioskAutoLaunchStatus(
       const std::string& callback_id,
-      KioskAppManager::ConsumerKioskAutoLaunchStatus status);
+      KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status);
 
-  raw_ptr<KioskAppManager, ExperimentalAsh> kiosk_app_manager_;  // not owned.
+  raw_ptr<KioskChromeAppManager, ExperimentalAsh>
+      chrome_app_manager_;  // not owned.
   bool initialized_;
   bool is_kiosk_enabled_;
   bool is_auto_launch_enabled_;

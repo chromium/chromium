@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -156,8 +155,7 @@ class BrowserDataBackMigratorForKiosk : public KioskBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserDataBackMigratorForKiosk, MigrateOnKioskLaunch) {
-  // Register the test app with `KioskAppManager` so that the `AccountId` can be
-  // retrieved.
+  // Register app in `KioskController` so its `AccountId` can be retrieved.
   PrepareAppLaunch();
   absl::optional<KioskApp> app = KioskController::Get().GetAppById(
       KioskAppId::ForChromeApp(test_app_id()));

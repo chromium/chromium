@@ -9,7 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -40,7 +40,7 @@ void ConsumerKioskModeAutoStartLockCheck(bool* out_locked,
 void EnableConsumerKioskMode() {
   bool locked = false;
   base::RunLoop loop;
-  KioskAppManager::Get()->EnableConsumerKioskAutoLaunch(base::BindOnce(
+  KioskChromeAppManager::Get()->EnableConsumerKioskAutoLaunch(base::BindOnce(
       &ConsumerKioskModeAutoStartLockCheck, &locked, loop.QuitClosure()));
   loop.Run();
   EXPECT_TRUE(locked);
@@ -81,8 +81,8 @@ class KioskConsumerTest : public KioskBaseTest {
 IN_PROC_BROWSER_TEST_F(KioskConsumerTest, AutolaunchWarningCancel) {
   EnableConsumerKioskMode();
   ReloadAutolaunchKioskApps();
-  EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
-  EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
+  EXPECT_FALSE(KioskChromeAppManager::Get()->GetAutoLaunchApp().empty());
+  EXPECT_FALSE(KioskChromeAppManager::Get()->IsAutoLaunchEnabled());
 
   ShowLoginWizard(OOBE_SCREEN_UNKNOWN);
   OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
@@ -94,14 +94,14 @@ IN_PROC_BROWSER_TEST_F(KioskConsumerTest, AutolaunchWarningCancel) {
   // Wait for the auto launch warning to go away.
   WaitForAutoLaunchWarning(/*visibility=*/false);
 
-  EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
+  EXPECT_FALSE(KioskChromeAppManager::Get()->IsAutoLaunchEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskConsumerTest, AutolaunchWarningConfirm) {
   EnableConsumerKioskMode();
   ReloadAutolaunchKioskApps();
-  EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
-  EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
+  EXPECT_FALSE(KioskChromeAppManager::Get()->GetAutoLaunchApp().empty());
+  EXPECT_FALSE(KioskChromeAppManager::Get()->IsAutoLaunchEnabled());
 
   ShowLoginWizard(OOBE_SCREEN_UNKNOWN);
   OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
@@ -114,13 +114,13 @@ IN_PROC_BROWSER_TEST_F(KioskConsumerTest, AutolaunchWarningConfirm) {
   // Wait for the auto launch warning to go away.
   WaitForAutoLaunchWarning(/*visibility=*/false);
 
-  EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
-  EXPECT_TRUE(KioskAppManager::Get()->IsAutoLaunchEnabled());
+  EXPECT_FALSE(KioskChromeAppManager::Get()->GetAutoLaunchApp().empty());
+  EXPECT_TRUE(KioskChromeAppManager::Get()->IsAutoLaunchEnabled());
 
   WaitForAppLaunchSuccess();
 
-  KioskAppManager::App app;
-  ASSERT_TRUE(KioskAppManager::Get()->GetApp(test_app_id(), &app));
+  KioskChromeAppManager::App app;
+  ASSERT_TRUE(KioskChromeAppManager::Get()->GetApp(test_app_id(), &app));
   EXPECT_TRUE(app.was_auto_launched_with_zero_delay);
   EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 }

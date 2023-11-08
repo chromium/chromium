@@ -27,7 +27,7 @@
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -151,9 +151,9 @@ void ChromeKioskAppLauncher::MaybeUpdateAppData() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::KioskAppManager::Get()->ClearAppData(app_id_);
-  ash::KioskAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_,
-                                                        nullptr);
+  ash::KioskChromeAppManager::Get()->ClearAppData(app_id_);
+  ash::KioskChromeAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_,
+                                                              nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

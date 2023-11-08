@@ -8,7 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -58,7 +58,9 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
     manager()->SetAppWasAutoLaunchedWithZeroDelay(kTestingAppId);
   }
 
-  ash::KioskAppManager* manager() const { return ash::KioskAppManager::Get(); }
+  ash::KioskChromeAppManager* manager() const {
+    return ash::KioskChromeAppManager::Get();
+  }
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;

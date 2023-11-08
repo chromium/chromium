@@ -9,7 +9,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
@@ -33,7 +33,7 @@ using remoting::protocol::ErrorCode;
 const ash::KioskAppManagerBase* GetKioskAppManager(
     const user_manager::UserManager& user_manager) {
   if (user_manager.IsLoggedInAsKioskApp()) {
-    return ash::KioskAppManager::Get();
+    return ash::KioskChromeAppManager::Get();
   }
   if (user_manager.IsLoggedInAsArcKioskApp()) {
     return ash::ArcKioskAppManager::Get();

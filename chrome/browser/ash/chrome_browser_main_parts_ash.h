@@ -94,7 +94,7 @@ class SystemTokenCertDBInitializer;
 class VideoConferenceAppServiceClient;
 class VideoConferenceAshFeatureClient;
 class WebKioskAppManager;
-class KioskAppManager;
+class KioskChromeAppManager;
 
 namespace carrier_lock {
 class CarrierLockManager;
@@ -223,7 +223,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<LowDiskNotification> low_disk_notification_;
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<WebKioskAppManager> web_kiosk_app_manager_;
-  std::unique_ptr<KioskAppManager> kiosk_app_manager_;
+  std::unique_ptr<KioskChromeAppManager> kiosk_chrome_app_manager_;
   std::unique_ptr<KioskController> kiosk_controller_;
   std::unique_ptr<MultiCaptureNotifications> multi_capture_notifications_;
 

@@ -19,7 +19,7 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config.h"
@@ -233,7 +233,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
     arc_kiosk_app_manager_ = std::make_unique<ash::ArcKioskAppManager>();
     web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
-    kiosk_app_manager_ = std::make_unique<ash::KioskAppManager>();
+    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
 
     // SystemSaltGetter is used by the token service.
     ash::SystemSaltGetter::Initialize();
@@ -247,7 +247,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     DeviceOAuth2TokenServiceFactory::Shutdown();
     ash::SystemSaltGetter::Shutdown();
 
-    kiosk_app_manager_.reset();
+    kiosk_chrome_app_manager_.reset();
     web_kiosk_app_manager_.reset();
     arc_kiosk_app_manager_.reset();
 
@@ -359,7 +359,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
  private:
   std::unique_ptr<ash::ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
-  std::unique_ptr<ash::KioskAppManager> kiosk_app_manager_;
+  std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 
   absl::optional<std::string> oauth_token_ = kTestOAuthToken;
 

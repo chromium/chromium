@@ -346,7 +346,7 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
@@ -1518,7 +1518,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::FastTransitionObserver::RegisterPrefs(registry);
   ash::HWDataUsageController::RegisterLocalStatePrefs(registry);
   ash::KerberosCredentialsManager::RegisterLocalStatePrefs(registry);
-  ash::KioskAppManager::RegisterLocalStatePrefs(registry);
+  ash::KioskChromeAppManager::RegisterLocalStatePrefs(registry);
   ash::KioskCryptohomeRemover::RegisterPrefs(registry);
   ash::language_prefs::RegisterPrefs(registry);
   ash::local_search_service::SearchMetricsReporter::RegisterLocalStatePrefs(
@@ -1940,7 +1940,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ProjectorAppClientImpl::RegisterProfilePrefs(registry);
   ash::floating_workspace_util::RegisterProfilePrefs(registry);
   policy::RebootNotificationsScheduler::RegisterProfilePrefs(registry);
-  ash::KioskAppManager::RegisterProfilePrefs(registry);
+  ash::KioskChromeAppManager::RegisterProfilePrefs(registry);
   file_manager::file_tasks::RegisterProfilePrefs(registry);
   file_manager::prefs::RegisterProfilePrefs(registry);
   bruschetta::prefs::RegisterProfilePrefs(registry);

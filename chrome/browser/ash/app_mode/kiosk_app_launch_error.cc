@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
@@ -78,7 +78,7 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
 void KioskAppLaunchError::Save(KioskAppLaunchError::Error error) {
   PrefService* local_state = g_browser_process->local_state();
   ScopedDictPrefUpdate dict_update(local_state,
-                                   KioskAppManager::kKioskDictionaryName);
+                                   KioskChromeAppManager::kKioskDictionaryName);
   dict_update->SetByDottedPath(kKeyLaunchError, static_cast<int>(error));
   s_last_error = error;
 }
@@ -88,7 +88,7 @@ void KioskAppLaunchError::SaveCryptohomeFailure(
     const AuthFailure& auth_failure) {
   PrefService* local_state = g_browser_process->local_state();
   ScopedDictPrefUpdate dict_update(local_state,
-                                   KioskAppManager::kKioskDictionaryName);
+                                   KioskChromeAppManager::kKioskDictionaryName);
   dict_update->SetByDottedPath(kKeyCryptohomeFailure, auth_failure.reason());
 }
 
@@ -100,7 +100,7 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get() {
   s_last_error = Error::kNone;
   PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& dict =
-      local_state->GetDict(KioskAppManager::kKioskDictionaryName);
+      local_state->GetDict(KioskChromeAppManager::kKioskDictionaryName);
 
   absl::optional<int> error = dict.FindInt(kKeyLaunchError);
   if (error.has_value()) {
@@ -115,7 +115,7 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get() {
 void KioskAppLaunchError::RecordMetricAndClear() {
   PrefService* local_state = g_browser_process->local_state();
   ScopedDictPrefUpdate dict_update(local_state,
-                                   KioskAppManager::kKioskDictionaryName);
+                                   KioskChromeAppManager::kKioskDictionaryName);
 
   absl::optional<int> error = dict_update->FindInt(kKeyLaunchError);
   if (error) {

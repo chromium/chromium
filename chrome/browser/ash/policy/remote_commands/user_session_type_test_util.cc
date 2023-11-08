@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "base/check_deref.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -35,7 +35,7 @@ AccountId CreateUserOfType(TestSessionType session_type,
       break;
     case TestSessionType::kManuallyLaunchedKioskSession:
       user_manager.AddKioskAppUser(account_id);
-      CHECK_DEREF(ash::KioskAppManager::Get())
+      CHECK_DEREF(ash::KioskChromeAppManager::Get())
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
       break;
     case TestSessionType::kAutoLaunchedArcKioskSession:
@@ -50,7 +50,7 @@ AccountId CreateUserOfType(TestSessionType session_type,
       break;
     case TestSessionType::kAutoLaunchedKioskSession:
       user_manager.AddKioskAppUser(account_id);
-      CHECK_DEREF(ash::KioskAppManager::Get())
+      CHECK_DEREF(ash::KioskChromeAppManager::Get())
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
       break;
     case TestSessionType::kManagedGuestSession:

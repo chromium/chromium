@@ -101,7 +101,7 @@ void BrowserWithTestWindowTest::SetUp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::IdleServiceAsh::DisableForTesting();
   manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
-  kiosk_app_manager_ = std::make_unique<ash::KioskAppManager>();
+  kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
 #endif
 
   // Subclasses can provide their own Profile.
@@ -137,7 +137,7 @@ void BrowserWithTestWindowTest::TearDown() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   manager_.reset();
-  kiosk_app_manager_.reset();
+  kiosk_chrome_app_manager_.reset();
 #endif
 
   user_performance_tuning_manager_environment_.TearDown();

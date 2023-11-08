@@ -12,9 +12,9 @@
 #include "base/check_deref.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -32,9 +32,9 @@ absl::optional<KioskApp> WebAppById(WebKioskAppManager& manager,
                   data->install_url());
 }
 
-absl::optional<KioskApp> ChromeAppById(KioskAppManager& manager,
+absl::optional<KioskApp> ChromeAppById(KioskChromeAppManager& manager,
                                        std::string_view chrome_app_id) {
-  KioskAppManager::App manager_app;
+  KioskChromeAppManager::App manager_app;
   if (!manager.GetApp(std::string(chrome_app_id), &manager_app)) {
     return absl::nullopt;
   }
@@ -62,7 +62,7 @@ KioskController& KioskController::Get() {
 }
 
 KioskController::KioskController(WebKioskAppManager& web_app_manager,
-                                 KioskAppManager& chrome_app_manager,
+                                 KioskChromeAppManager& chrome_app_manager,
                                  ArcKioskAppManager& arc_app_manager)
     : web_app_manager_(web_app_manager),
       chrome_app_manager_(chrome_app_manager),

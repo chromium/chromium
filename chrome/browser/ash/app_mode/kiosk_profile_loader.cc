@@ -19,7 +19,6 @@
 #include "base/system/sys_info.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/retry_runner.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"

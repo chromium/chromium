@@ -16,7 +16,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -207,7 +207,7 @@ class ExistingUserController : public content::NotificationObserver,
   // Handles result of consumer kiosk configurability check and starts
   // enable kiosk screen if applicable.
   void OnConsumerKioskAutoLaunchCheckCompleted(
-      KioskAppManager::ConsumerKioskAutoLaunchStatus status);
+      KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status);
 
   // Shows privacy notification in case of auto lunch managed guest session.
   void ShowAutoLaunchManagedGuestSessionNotification();

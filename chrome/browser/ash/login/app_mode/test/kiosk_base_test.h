@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -66,7 +66,7 @@ class KioskBaseTest : public OobeBaseTest {
   ~KioskBaseTest() override;
 
  protected:
-  static KioskAppManager::ConsumerKioskAutoLaunchStatus
+  static KioskChromeAppManager::ConsumerKioskAutoLaunchStatus
   GetConsumerKioskModeStatus();
 
   // Waits for window width to change. Listens to a 'size_change' message sent

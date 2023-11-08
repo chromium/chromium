@@ -11,9 +11,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
@@ -181,7 +181,7 @@ void KioskSystemSession::InitKioskAppUpdateService(const std::string& app_id) {
   }
 
   // Start to monitor external update from usb stick.
-  KioskAppManager::Get()->MonitorKioskExternalUpdate();
+  KioskChromeAppManager::Get()->MonitorKioskExternalUpdate();
 }
 
 void KioskSystemSession::SetRebootAfterUpdateIfNecessary() {

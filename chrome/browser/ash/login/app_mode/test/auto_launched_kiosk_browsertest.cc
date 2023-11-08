@@ -15,7 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
@@ -206,8 +206,8 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   }
 
   bool IsKioskAppAutoLaunched(const std::string& app_id) {
-    KioskAppManager::App app;
-    if (!KioskAppManager::Get()->GetApp(app_id, &app)) {
+    KioskChromeAppManager::App app;
+    if (!KioskChromeAppManager::Get()->GetApp(app_id, &app)) {
       ADD_FAILURE() << "App " << app_id << " not found.";
       return false;
     }

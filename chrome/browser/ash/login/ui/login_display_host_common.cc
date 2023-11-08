@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
@@ -389,7 +390,7 @@ void LoginDisplayHostCommon::AttemptShowEnableConsumerKioskScreen() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector->IsDeviceEnterpriseManaged() &&
-      KioskAppManager::IsConsumerKioskEnabled()) {
+      KioskChromeAppManager::IsConsumerKioskEnabled()) {
     ShowEnableConsumerKioskScreen();
   }
 }

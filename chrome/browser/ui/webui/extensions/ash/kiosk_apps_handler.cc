@@ -47,13 +47,13 @@ const SkBitmap& BitmapOrDefault(gfx::ImageSkia icon) {
                        : *icon.bitmap();
 }
 
-bool IsAutoLaunch(const KioskAppManager::App& app) {
-  return KioskAppManager::Get()->GetAutoLaunchApp() == app.app_id &&
-         (KioskAppManager::Get()->IsAutoLaunchEnabled() ||
-          KioskAppManager::Get()->IsAutoLaunchRequested());
+bool IsAutoLaunch(const KioskChromeAppManager::App& app) {
+  return KioskChromeAppManager::Get()->GetAutoLaunchApp() == app.app_id &&
+         (KioskChromeAppManager::Get()->IsAutoLaunchEnabled() ||
+          KioskChromeAppManager::Get()->IsAutoLaunchRequested());
 }
 
-base::Value::Dict PopulateAppDict(const KioskAppManager::App& app) {
+base::Value::Dict PopulateAppDict(const KioskChromeAppManager::App& app) {
   // This dict must mirror the `KioskApp` interface defined in
   // chrome/browser/resources/extensions/kiosk_browser_proxy.ts.
   return base::Value::Dict()
@@ -64,7 +64,8 @@ base::Value::Dict PopulateAppDict(const KioskAppManager::App& app) {
       .Set("isLoading", app.is_loading);
 }
 
-base::Value::List ToAppDictList(const std::vector<KioskAppManager::App>& apps) {
+base::Value::List ToAppDictList(
+    const std::vector<KioskChromeAppManager::App>& apps) {
   base::Value::List list;
   for (const auto& app : apps) {
     list.Append(PopulateAppDict(app));
@@ -123,7 +124,7 @@ bool ExtractsAppIdFromInput(const std::string& input, std::string* app_id) {
 }  // namespace
 
 KioskAppsHandler::KioskAppsHandler(OwnerSettingsServiceAsh* service)
-    : kiosk_app_manager_(KioskAppManager::Get()),
+    : chrome_app_manager_(KioskChromeAppManager::Get()),
       initialized_(false),
       is_kiosk_enabled_(false),
       is_auto_launch_enabled_(false),
@@ -133,15 +134,15 @@ KioskAppsHandler::~KioskAppsHandler() {
   // TODO(tommycli): This is needed because OnJavascriptDisallowed only called
   // with refresh or off-page navigation, otherwise DCHECK triggered when
   // exiting.
-  kiosk_app_manager_->RemoveObserver(this);
+  chrome_app_manager_->RemoveObserver(this);
 }
 
 void KioskAppsHandler::OnJavascriptAllowed() {
-  kiosk_app_manager_->AddObserver(this);
+  chrome_app_manager_->AddObserver(this);
 }
 
 void KioskAppsHandler::OnJavascriptDisallowed() {
-  kiosk_app_manager_->RemoveObserver(this);
+  chrome_app_manager_->RemoveObserver(this);
 }
 
 void KioskAppsHandler::RegisterMessages() {
@@ -194,9 +195,9 @@ void KioskAppsHandler::OnKioskExtensionDownloadFailed(
 
 void KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus(
     const std::string& callback_id,
-    ash::KioskAppManager::ConsumerKioskAutoLaunchStatus status) {
+    ash::KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status) {
   initialized_ = true;
-  if (KioskAppManager::IsConsumerKioskEnabled()) {
+  if (KioskChromeAppManager::IsConsumerKioskEnabled()) {
     if (!base::SysInfo::IsRunningOnChromeOS()) {
       // Enable everything when running on a dev box.
       is_kiosk_enabled_ = true;
@@ -206,7 +207,8 @@ void KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus(
       is_kiosk_enabled_ =
           ProfileHelper::IsOwnerProfile(Profile::FromWebUI(web_ui()));
       is_auto_launch_enabled_ =
-          status == KioskAppManager::ConsumerKioskAutoLaunchStatus::kEnabled;
+          status ==
+          KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kEnabled;
     }
   } else {
     // Otherwise, consumer kiosk is disabled.
@@ -231,8 +233,8 @@ base::Value::Dict KioskAppsHandler::GetSettingsDictionary() {
 
   return base::Value::Dict()
       .Set("disableBailout", !IsBailoutShortcutEnabled())
-      .Set("hasAutoLaunchApp", !kiosk_app_manager_->GetAutoLaunchApp().empty())
-      .Set("apps", ToAppDictList(kiosk_app_manager_->GetApps()));
+      .Set("hasAutoLaunchApp", !chrome_app_manager_->GetAutoLaunchApp().empty())
+      .Set("apps", ToAppDictList(chrome_app_manager_->GetApps()));
 }
 
 void KioskAppsHandler::HandleInitializeKioskAppSettings(
@@ -241,7 +243,7 @@ void KioskAppsHandler::HandleInitializeKioskAppSettings(
   const std::string& callback_id = args.front().GetString();
 
   AllowJavascript();
-  KioskAppManager::Get()->GetConsumerKioskAutoLaunchStatus(
+  KioskChromeAppManager::Get()->GetConsumerKioskAutoLaunchStatus(
       base::BindOnce(&KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus,
                      weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
@@ -267,7 +269,7 @@ void KioskAppsHandler::HandleAddKioskApp(const base::Value::List& args) {
     return;
   }
 
-  kiosk_app_manager_->AddApp(app_id, owner_settings_service_);
+  chrome_app_manager_->AddApp(app_id, owner_settings_service_);
 }
 
 void KioskAppsHandler::HandleRemoveKioskApp(const base::Value::List& args) {
@@ -277,7 +279,7 @@ void KioskAppsHandler::HandleRemoveKioskApp(const base::Value::List& args) {
 
   const std::string& app_id = args.front().GetString();
 
-  kiosk_app_manager_->RemoveApp(app_id, owner_settings_service_);
+  chrome_app_manager_->RemoveApp(app_id, owner_settings_service_);
 }
 
 void KioskAppsHandler::HandleEnableKioskAutoLaunch(
@@ -288,7 +290,7 @@ void KioskAppsHandler::HandleEnableKioskAutoLaunch(
 
   const std::string& app_id = args.front().GetString();
 
-  kiosk_app_manager_->SetAutoLaunchApp(app_id, owner_settings_service_);
+  chrome_app_manager_->SetAutoLaunchApp(app_id, owner_settings_service_);
 }
 
 void KioskAppsHandler::HandleDisableKioskAutoLaunch(
@@ -299,12 +301,12 @@ void KioskAppsHandler::HandleDisableKioskAutoLaunch(
 
   const std::string& app_id = args.front().GetString();
 
-  std::string startup_app_id = kiosk_app_manager_->GetAutoLaunchApp();
+  std::string startup_app_id = chrome_app_manager_->GetAutoLaunchApp();
   if (startup_app_id != app_id) {
     return;
   }
 
-  kiosk_app_manager_->SetAutoLaunchApp("", owner_settings_service_);
+  chrome_app_manager_->SetAutoLaunchApp("", owner_settings_service_);
 }
 
 void KioskAppsHandler::HandleSetDisableBailoutShortcut(
@@ -322,8 +324,8 @@ void KioskAppsHandler::HandleSetDisableBailoutShortcut(
 }
 
 void KioskAppsHandler::UpdateApp(const std::string& app_id) {
-  KioskAppManager::App app_data;
-  if (!kiosk_app_manager_->GetApp(app_id, &app_data)) {
+  KioskChromeAppManager::App app_data;
+  if (!chrome_app_manager_->GetApp(app_id, &app_data)) {
     return;
   }
 
@@ -334,7 +336,7 @@ void KioskAppsHandler::ShowError(const std::string& app_id) {
   base::Value app_id_value(app_id);
   FireWebUIListener("kiosk-app-error", app_id_value);
 
-  kiosk_app_manager_->RemoveApp(app_id, owner_settings_service_);
+  chrome_app_manager_->RemoveApp(app_id, owner_settings_service_);
 }
 
 }  // namespace ash

@@ -27,7 +27,7 @@
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -383,26 +383,26 @@ extensions::AppWindow* CreateAppWindow(Profile* profile,
   return app_window;
 }
 
-// This class overrides some of the behaviour of `KioskAppManager`, which is the
-// `KioskAppManagerBase` implementation for ChromeApp kiosk.
-// Notably it injects its own `ExternalCache` implementation and overrides the
-// construction on an `KioskBrowserSession` object.
-class ScopedKioskAppManagerOverrides : public KioskAppManager::Overrides {
+// This class overrides some of the behaviour of `KioskChromeAppManager`, which
+// is the `KioskAppManagerBase` implementation for ChromeApp kiosk. Notably it
+// injects its own `ExternalCache` implementation and overrides the construction
+// on an `KioskBrowserSession` object.
+class ScopedKioskAppManagerOverrides : public KioskChromeAppManager::Overrides {
  public:
   ScopedKioskAppManagerOverrides() {
-    KioskAppManager::InitializeForTesting(this);
+    KioskChromeAppManager::InitializeForTesting(this);
     CHECK(temp_dir_.CreateUniqueTempDir());
   }
 
   chromeos::TestExternalCache* external_cache() { return external_cache_; }
 
   void InitializePrimaryAppState() {
-    // Inject test kiosk app data to prevent KioskAppManager from attempting to
-    // load it.
+    // Inject test kiosk app data to prevent KioskChromeAppManager from
+    // attempting to load it.
     // TODO(tbarzic): Introducing a test KioskAppData class that overrides app
     //     data load logic, and injecting a KioskAppData object factory to
-    //     KioskAppManager would be a cleaner solution here.
-    KioskAppManager::Get()->AddAppForTest(
+    //     KioskChromeAppManager would be a cleaner solution here.
+    KioskChromeAppManager::Get()->AddAppForTest(
         kTestPrimaryAppId, AccountId::FromUserEmail(kTestUserAccount),
         GURL(kCwsUrl),
         /*required_platform_version=*/"");
@@ -469,7 +469,7 @@ class ScopedKioskAppManagerOverrides : public KioskAppManager::Overrides {
     return AssertionSuccess();
   }
 
-  // KioskAppManager::Overrides:
+  // KioskChromeAppManager::Overrides:
   std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
       chromeos::ExternalCacheDelegate* delegate,
       bool always_check_updates) override {
@@ -884,7 +884,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppDownloadFailure) {
 
   histogram.ExpectUniqueSample(
       kKioskPrimaryAppInstallErrorHistogram,
-      KioskAppManager::PrimaryAppDownloadResult::kCrxFetchFailed,
+      KioskChromeAppManager::PrimaryAppDownloadResult::kCrxFetchFailed,
       /*expected_bucket_count=*/1);
 }
 
@@ -1526,7 +1526,7 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
     const AccountId account_id(AccountId::FromUserEmail(kTestUserAccount));
     fake_user_manager_->AddKioskAppUser(account_id);
     fake_user_manager_->LoginUser(account_id);
-    kiosk_app_manager_ = std::make_unique<KioskAppManager>();
+    kiosk_app_manager_ = std::make_unique<KioskChromeAppManager>();
     kiosk_app_manager_overrides_.InitializePrimaryAppState();
     RegisterFakeCrosapi();
     ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabledInChromeKioskSession());
@@ -1617,7 +1617,7 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
   crosapi::FakeBrowserManager browser_manager_;
 
   ScopedKioskAppManagerOverrides kiosk_app_manager_overrides_;
-  std::unique_ptr<KioskAppManager> kiosk_app_manager_;
+  std::unique_ptr<KioskChromeAppManager> kiosk_app_manager_;
   std::unique_ptr<KioskAppLauncher> startup_app_launcher_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
