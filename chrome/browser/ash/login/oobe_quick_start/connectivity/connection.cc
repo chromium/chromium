@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -233,7 +234,12 @@ void Connection::OnRequestAccountTransferAssertionResponse(
       quick_start_message->get_fido_assertion_response();
   FidoAssertionInfo assertion_info;
   assertion_info.email = fido_response->email;
-  assertion_info.credential_id = fido_response->credential_id;
+
+  // The credential_id response is sent to us as raw bytes, Base64 encode them.
+  base::Base64UrlEncode(fido_response->credential_id,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &assertion_info.credential_id);
+
   assertion_info.authenticator_data = fido_response->auth_data;
   assertion_info.signature = fido_response->signature;
 

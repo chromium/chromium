@@ -22,7 +22,7 @@ struct FidoAssertionInfo {
   // User's email.
   std::string email;
 
-  // Base64 url encoded key identifier of the key used.
+  // Key identifier of the key used. (encoded as Base64 URL with padding)
   std::string credential_id;
 
   // The authenticator data returned by the authenticator.

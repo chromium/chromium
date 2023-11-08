@@ -5,6 +5,7 @@
 #include "connection.h"
 
 #include "base/base64.h"
+#include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -482,8 +483,13 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
 
   // Emulate a GetAssertion response.
   std::vector<uint8_t> credential_id = {0x01, 0x02, 0x03};
-  std::string expected_credential_id(credential_id.begin(),
-                                     credential_id.end());
+
+  // The credential ID should be Base64Url encoded with padding.
+  std::string expected_credential_id;
+  base::Base64UrlEncode(credential_id,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &expected_credential_id);
+
   std::vector<uint8_t> auth_data = {0x02, 0x03, 0x04};
   std::vector<uint8_t> signature = {0x03, 0x04, 0x05};
   std::string email = "testcase@google.com";
@@ -496,7 +502,8 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   fake_quick_start_decoder_->SetAssertionResponse(
       mojom::FidoAssertionResponse::New(
           /*email=*/email,
-          /*credential_id=*/expected_credential_id,
+          /*credential_id=*/
+          std::string(credential_id.begin(), credential_id.end()),
           /*auth_data=*/auth_data,
           /*signature=*/signature));
   fake_nearby_connection_->AppendReadableData(data);
