@@ -859,6 +859,14 @@ BASE_FEATURE(kEnterpriseReportingUI,
              "EnterpriseReportingUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use TPM-based encryption for enterprise rollback in ChromeOS instead of
+// OpenSSL-based encryption. Will be use in oobe_config package in platform2.
+// TODO(b:263065223): Remove once migration is finished and no issues occurred
+// for at least two stable milestones.
+BASE_FEATURE(kEnterpriseRollbackUseTpmEncryption,
+             "EnterpriseRollbackUseTpmEncryption",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether ephemeral network configuration policies are respected.
 BASE_FEATURE(kEphemeralNetworkPolicies,
              "kEphemeralNetworkPolicies",
