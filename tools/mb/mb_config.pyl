@@ -620,23 +620,6 @@
       'codesearch-gen-chromium-win': 'codesearch_gen_chromium_bot_reclient',
     },
 
-    'chromium.linux': {
-      'Cast Audio Linux': 'cast_audio_release_bot_reclient',
-      'Cast Linux': 'cast_release_bot_reclient',
-      'Cast Linux ARM64': 'cast_arm64_release_bot_reclient',
-      'Cast Linux Debug': 'cast_debug_bot_reclient',
-      'Deterministic Linux': 'release_bot_minimal_symbols_reclient',
-      'Leak Detection Linux': 'release_bot_reclient',
-      'Linux Builder': 'gpu_tests_release_bot_do_typecheck_reclient',
-      'Linux Builder (Wayland)': 'gpu_tests_wayland_release_bot_reclient',
-      'Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
-      'Network Service Linux': 'release_bot_reclient',
-      'linux-bfcache-rel': 'release_bot_blink',
-      'linux-extended-tracing-rel': 'release_bot_extended_tracing_reclient',
-      'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang',
-      'linux-v4l2-codec-rel': 'v4l2_codec_chrome_with_codecs_release_bot_reclient',
-    },
-
     'chromium.mac': {
       'Mac Builder': 'gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
       'Mac Builder (dbg)': 'gpu_tests_debug_bot_reclient',
@@ -1224,11 +1207,8 @@
       'gpu-try-linux-nvidia-dbg': 'gpu_tests_debug_bot_reclient',
       'gpu-try-linux-nvidia-rel': 'gpu_tests_release_trybot_reclient',
       'layout_test_leak_detection': 'release_trybot_reclient',
-      'leak_detection_linux': 'release_trybot_reclient',
       'linux-afl-asan-rel': 'afl_asan_release_trybot_reclient',
       'linux-annotator-rel': 'release_trybot_reclient',
-      'linux-arm64-castos': 'cast_arm64_release_bot_reclient_use_dummy_lastchange',
-      'linux-bfcache-rel': 'release_bot_blink',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification_reclient',
       'linux-centipede-asan-rel': 'centipede_asan_release_trybot_reclient',
@@ -1240,9 +1220,7 @@
       'linux-exp-asan-lsan-fyi-rel': 'asan_lsan_failsan_release_trybot_reclient',
       'linux-exp-msan-fyi-rel': 'msan_failsan_release_bot_reclient',
       'linux-exp-tsan-fyi-rel': 'tsan_disable_nacl_failsan_release_bot_reclient',
-      'linux-extended-tracing-rel': 'release_trybot_extended_tracing_reclient',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
-      'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang',
       'linux-headless-shell-rel': 'headless_shell_release_bot_reclient_use_dummy_lastchange',
       'linux-js-code-coverage': 'js_coverage_reclient',
       'linux-js-coverage-rel':  'js_coverage_reclient_use_dummy_lastchange',
@@ -1255,24 +1233,18 @@
       'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient',
       'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance_reclient',
       'linux-perfetto-rel': 'perfetto_release_trybot_reclient',
-      'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-siso-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'linux-ubsan-fyi-rel': 'ubsan_no_recover_release_bot_reclient',
       # This is intentionally a release_bot and not a release_trybot to match
       # the CI configuration, where no debug builder exists.
       'linux-ubsan-vptr': 'ubsan_vptr_release_bot_reclient',
-      'linux-v4l2-codec-rel': 'v4l2_codec_chrome_with_codecs_release_trybot_reclient',
       'linux-viz-rel': 'release_trybot_reclient',
-      'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
       'linux-webkit-asan-rel': 'asan_lsan_release_bot_blink',
       'linux-webkit-msan-rel': 'msan_release_bot_reclient',
       'linux-wpt-content-shell-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
       'linux-wpt-content-shell-leak-detection': 'release_bot_blink_minimal_symbols_reclient',
       'linux-wpt-fyi-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'linux-x64-castos': 'cast_release_trybot_reclient',
-      'linux-x64-castos-audio': 'cast_audio_release_trybot_reclient',
-      'linux-x64-castos-dbg': 'cast_debug_bot_reclient_use_dummy_lastchange',
       'linux_chromium_archive_rel_ng': 'release_bot_reclient',
       'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot_reclient',
       'linux_chromium_asan_siso_rel_ng': 'asan_lsan_release_trybot_reclient',
@@ -1280,9 +1252,7 @@
       'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_bot_dcheck_always_on_reclient',
       'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_release_bot_reclient',
       'linux_chromium_clobber_deterministic': 'release_trybot_reclient',
-      'linux_chromium_compile_dbg_ng': 'debug_bot_reclient_use_dummy_lastchange',
       'linux_chromium_compile_rel_ng': 'release_trybot_reclient',
-      'linux_chromium_dbg_ng': 'gpu_tests_debug_bot_reclient_use_dummy_lastchange',
 
       # This is intentionally a release_bot and not a release_trybot;
       # enabling DCHECKs seems to cause flaky failures that don't show up
@@ -1294,7 +1264,6 @@
 
       'linux_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'linux_upload_clang': 'release_bot',
-      'network_service_linux': 'release_trybot_reclient',
     },
 
     'tryserver.chromium.mac': {
@@ -2034,45 +2003,11 @@
       'asan', 'v8_heap', 'debug_bot_reclient', 'hybrid',
     ],
 
-    'cast_arm64_release_bot_reclient': [
-      'cast_receiver', 'cast_os', 'release_bot_reclient', 'arm64', 'minimal_symbols',
-    ],
-
-    'cast_arm64_release_bot_reclient_use_dummy_lastchange': [
-      'cast_receiver', 'cast_os', 'release_bot_reclient', 'arm64', 'minimal_symbols', 'use_dummy_lastchange',
-    ],
-
-    'cast_audio_release_bot_reclient': [
-      'cast_receiver', 'cast_os', 'cast_audio', 'release_bot_reclient', 'minimal_symbols',
-    ],
-
-    'cast_audio_release_trybot_reclient': [
-      'cast_receiver', 'cast_os', 'cast_audio', 'release_trybot_reclient',
-    ],
-
     'cast_binary_size': [
       'cast_receiver', 'cast_os', 'minimal_symbols', 'release_bot',
     ],
     'cast_binary_size_reclient': [
       'cast_receiver', 'cast_os', 'minimal_symbols', 'release_bot_reclient',
-    ],
-
-    'cast_debug_bot_reclient': [
-      'cast_receiver', 'cast_os', 'debug_bot_reclient',
-    ],
-
-    'cast_debug_bot_reclient_use_dummy_lastchange': [
-      'cast_receiver', 'cast_os', 'debug_bot_reclient', 'use_dummy_lastchange',
-    ],
-
-    # Cast Linux takes very long in linking, possibly due to being on GCE
-    # (crbug/794423).
-    'cast_release_bot_reclient': [
-      'cast_receiver', 'cast_os', 'release_bot_reclient', 'minimal_symbols',
-    ],
-
-    'cast_release_trybot_reclient': [
-      'cast_receiver', 'cast_os', 'release_trybot_reclient',
     ],
 
     'centipede_asan_release_trybot_reclient': [
@@ -2667,12 +2602,6 @@
       'debug_bot_reclient',
     ],
 
-    # When migrating to starlark, builders using this should instead just combine
-    # try_builder, debug and reclient configs
-    'debug_bot_reclient_use_dummy_lastchange': [
-      'debug_bot_reclient', 'use_dummy_lastchange',
-    ],
-
     'debug_bot_rust_android_arm64_reclient': [
       'debug_bot_reclient', 'enable_all_rust_features', 'android', 'arm64',
     ],
@@ -2972,15 +2901,6 @@
 
     'gpu_tests_release_trybot_x86_resource_allowlisting_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'x86', 'resource_allowlisting',
-    ],
-
-    'gpu_tests_wayland_release_bot_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'linux_wayland', 'ozone_headless',
-    ],
-
-    'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
-      'linux_wayland', 'ozone_headless', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'headless_shell_release_bot_reclient': [
@@ -3541,10 +3461,6 @@
       'release_bot_blink', 'enable_blink_heap_verification', 'dcheck_always_on',
     ],
 
-    'release_bot_extended_tracing_reclient': [
-      'release_bot_reclient', 'extended_tracing',
-    ],
-
     'release_bot_fuchsia_arm64_cast_receiver_reclient': [
       'release_bot_reclient', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized',
     ],
@@ -3591,10 +3507,6 @@
 
     'release_bot_minimal_symbols_chrome_for_testing_reclient_arm64': [
       'release_bot_reclient', 'minimal_symbols', 'chrome_for_testing', 'arm64',
-    ],
-
-    'release_bot_minimal_symbols_no_clang': [
-      'release_bot', 'minimal_symbols', 'no_clang', 'no_goma',
     ],
 
     'release_bot_minimal_symbols_no_com_init_hooks_with_codecs_reclient': [
@@ -3659,10 +3571,6 @@
 
     'release_trybot_enable_blink_heap_verification_reclient': [
       'release_trybot_blink', 'enable_blink_heap_verification',
-    ],
-
-    'release_trybot_extended_tracing_reclient': [
-      'release_trybot_reclient', 'extended_tracing',
     ],
 
     'release_trybot_fuchsia_arm64_cast_receiver_reclient': [
@@ -3800,14 +3708,6 @@
 
     'updater_release_trybot_reclient': [
       'updater', 'release_trybot_reclient',
-    ],
-
-    'v4l2_codec_chrome_with_codecs_release_bot_reclient': [
-      'v4l2_codec', 'chrome_with_codecs', 'release_bot_reclient',
-    ],
-
-    'v4l2_codec_chrome_with_codecs_release_trybot_reclient': [
-      'v4l2_codec', 'chrome_with_codecs', 'release_trybot_reclient',
     ],
 
     'v8_future_debug_bot_reclient': [
@@ -3976,10 +3876,6 @@
 
     'cast_android': {
       'gn_args': 'is_cast_android=true'
-    },
-
-    'cast_audio': {
-      'gn_args': 'is_cast_audio_only=true'
     },
 
     'cast_os': {
@@ -4306,10 +4202,6 @@
       'args_file': '//build/args/chromeos/eve-arc-r.gni',
     },
 
-    'extended_tracing': {
-      'gn_args': 'extended_tracing_enabled=true',
-    },
-
     'fail_on_android_expectations': {
       'gn_args': 'fail_on_android_expectations=true',
     },
@@ -4454,10 +4346,6 @@
 
     'libfuzzer': { 'gn_args': 'use_libfuzzer=true' },
 
-    'linux_wayland': {
-      'gn_args': 'ozone_auto_platforms=false ozone_platform_wayland=true ozone_platform="wayland" use_bundled_weston=true',
-    },
-
     'lsan': {
       'gn_args': 'is_lsan=true',
     },
@@ -4492,10 +4380,6 @@
 
     'msan_no_origins': {
       'gn_args': 'is_msan=true msan_track_origins=0',
-    },
-
-    'no_clang': {
-      'gn_args': 'is_clang=false',
     },
 
     'no_codecs': {
@@ -4850,12 +4734,6 @@
 
     'use_javascript_coverage': {
       'gn_args': 'use_javascript_coverage=true',
-    },
-
-    'v4l2_codec': {
-      # The build system dislikes enabling both V4L2 and VA-API.
-      # Be explicit about which one we want to avoid platform defaults.
-      'gn_args': 'use_v4l2_codec=true use_vaapi=false',
     },
 
     'v8_enable_debugging_features': {

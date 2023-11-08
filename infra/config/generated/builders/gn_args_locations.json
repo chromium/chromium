@@ -3,7 +3,21 @@
     "linux-official": "ci/linux-official/gn-args.json"
   },
   "chromium.linux": {
-    "Deterministic Linux (dbg)": "ci/Deterministic Linux (dbg)/gn-args.json"
+    "Cast Audio Linux": "ci/Cast Audio Linux/gn-args.json",
+    "Cast Linux": "ci/Cast Linux/gn-args.json",
+    "Cast Linux ARM64": "ci/Cast Linux ARM64/gn-args.json",
+    "Cast Linux Debug": "ci/Cast Linux Debug/gn-args.json",
+    "Deterministic Linux": "ci/Deterministic Linux/gn-args.json",
+    "Deterministic Linux (dbg)": "ci/Deterministic Linux (dbg)/gn-args.json",
+    "Leak Detection Linux": "ci/Leak Detection Linux/gn-args.json",
+    "Linux Builder": "ci/Linux Builder/gn-args.json",
+    "Linux Builder (Wayland)": "ci/Linux Builder (Wayland)/gn-args.json",
+    "Linux Builder (dbg)": "ci/Linux Builder (dbg)/gn-args.json",
+    "Network Service Linux": "ci/Network Service Linux/gn-args.json",
+    "linux-bfcache-rel": "ci/linux-bfcache-rel/gn-args.json",
+    "linux-extended-tracing-rel": "ci/linux-extended-tracing-rel/gn-args.json",
+    "linux-gcc-rel": "ci/linux-gcc-rel/gn-args.json",
+    "linux-v4l2-codec-rel": "ci/linux-v4l2-codec-rel/gn-args.json"
   },
   "chromium.reclient.fyi": {
     "Comparison Linux (reclient vs reclient remote links)": "reclient/Comparison Linux (reclient vs reclient remote links)/gn-args.json",
@@ -41,5 +55,21 @@
   },
   "tryserver.chromium": {
     "linux-official": "try/linux-official/gn-args.json"
+  },
+  "tryserver.chromium.linux": {
+    "leak_detection_linux": "try/leak_detection_linux/gn-args.json",
+    "linux-arm64-castos": "try/linux-arm64-castos/gn-args.json",
+    "linux-bfcache-rel": "try/linux-bfcache-rel/gn-args.json",
+    "linux-extended-tracing-rel": "try/linux-extended-tracing-rel/gn-args.json",
+    "linux-gcc-rel": "try/linux-gcc-rel/gn-args.json",
+    "linux-rel": "try/linux-rel/gn-args.json",
+    "linux-v4l2-codec-rel": "try/linux-v4l2-codec-rel/gn-args.json",
+    "linux-wayland-rel": "try/linux-wayland-rel/gn-args.json",
+    "linux-x64-castos": "try/linux-x64-castos/gn-args.json",
+    "linux-x64-castos-audio": "try/linux-x64-castos-audio/gn-args.json",
+    "linux-x64-castos-dbg": "try/linux-x64-castos-dbg/gn-args.json",
+    "linux_chromium_compile_dbg_ng": "try/linux_chromium_compile_dbg_ng/gn-args.json",
+    "linux_chromium_dbg_ng": "try/linux_chromium_dbg_ng/gn-args.json",
+    "network_service_linux": "try/network_service_linux/gn-args.json"
   }
 }

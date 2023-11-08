@@ -192,16 +192,6 @@
       "use_remoteexec": true
     }
   },
-  "leak_detection_linux": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-afl-asan-rel": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -228,29 +218,6 @@
       "is_debug": false,
       "symbol_level": 0,
       "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
-  "linux-arm64-castos": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_cast_receiver": true,
-      "is_castos": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
-  "linux-bfcache-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
       "use_remoteexec": true
     }
   },
@@ -387,17 +354,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-extended-tracing-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "extended_tracing_enabled": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-fieldtrial-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -405,16 +361,6 @@
       "is_debug": false,
       "symbol_level": 1,
       "use_remoteexec": true
-    }
-  },
-  "linux-gcc-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_clang": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": false
     }
   },
   "linux-headless-shell-rel": {
@@ -574,24 +520,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-rel": {
-    "gn_args": {
-      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
-      "dcheck_always_on": true,
-      "devtools_skip_typecheck": false,
-      "enable_backup_ref_ptr_feature_flag": true,
-      "enable_dangling_raw_ptr_checks": true,
-      "enable_dangling_raw_ptr_feature_flag": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_clang_coverage": true,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-rel-warmed": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
@@ -644,45 +572,12 @@
       "use_remoteexec": true
     }
   },
-  "linux-v4l2-codec-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true,
-      "use_v4l2_codec": true,
-      "use_vaapi": false
-    }
-  },
   "linux-viz-rel": {
     "gn_args": {
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
-  "linux-wayland-rel": {
-    "gn_args": {
-      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "ozone_auto_platforms": false,
-      "ozone_platform": "wayland",
-      "ozone_platform_headless": true,
-      "ozone_platform_wayland": true,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_bundled_weston": true,
-      "use_clang_coverage": true,
       "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
@@ -739,42 +634,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
-  "linux-x64-castos": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_cast_receiver": true,
-      "is_castos": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
-  "linux-x64-castos-audio": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_cast_receiver": true,
-      "is_cast_audio_only": true,
-      "is_castos": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
-  "linux-x64-castos-dbg": {
-    "gn_args": {
-      "enable_cast_receiver": true,
-      "is_castos": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -858,32 +717,12 @@
       "use_remoteexec": true
     }
   },
-  "linux_chromium_compile_dbg_ng": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "linux_chromium_compile_rel_ng": {
     "gn_args": {
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
-  "linux_chromium_dbg_ng": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
       "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
@@ -941,16 +780,6 @@
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
-    }
-  },
-  "network_service_linux": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
     }
   }
 }

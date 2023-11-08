@@ -64,6 +64,16 @@ ci.builder(
         category = "cast",
         short_name = "aud",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "cast_receiver",
+            "cast_os",
+            "cast_audio",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
 )
 
 ci.builder(
@@ -90,6 +100,15 @@ ci.builder(
         short_name = "vid",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "cast_receiver",
+            "cast_os",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
 )
 
 ci.builder(
@@ -118,6 +137,14 @@ ci.builder(
         short_name = "dbg",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "cast_receiver",
+            "cast_os",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
 )
 
 ci.builder(
@@ -146,6 +173,16 @@ ci.builder(
         short_name = "arm64",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "cast_receiver",
+            "cast_os",
+            "release_builder",
+            "reclient",
+            "arm64",
+            "minimal_symbols",
+        ],
+    ),
 )
 
 ci.builder(
@@ -162,6 +199,13 @@ ci.builder(
         short_name = "det",
     ),
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     notifies = ["Deterministic Linux", "close-on-any-step-failure"],
     reclient_jobs = reclient.jobs.DEFAULT,
 )
@@ -204,6 +248,9 @@ ci.builder(
         short_name = "lk",
     ),
     main_console_view = None,
+    gn_args = gn_args.config(
+        configs = ["release_builder", "reclient"],
+    ),
     notifies = args.ignore_default([]),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
@@ -233,6 +280,14 @@ ci.builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "devtools_do_typecheck",
+        ],
+    ),
 )
 
 ci.builder(
@@ -255,6 +310,13 @@ ci.builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -283,6 +345,15 @@ ci.builder(
         short_name = "bld-wl",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "linux_wayland",
+            "ozone_headless",
+        ],
+    ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -401,6 +472,9 @@ ci.builder(
         category = "release",
         short_name = "nsl",
     ),
+    gn_args = gn_args.config(
+        configs = ["release_builder", "reclient"],
+    ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -426,6 +500,9 @@ ci.builder(
         category = "bfcache",
         short_name = "bfc",
     ),
+    gn_args = gn_args.config(
+        configs = ["release_builder_blink", "reclient"],
+    ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -450,6 +527,13 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "trc",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "extended_tracing",
+        ],
     ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
@@ -478,6 +562,14 @@ ci.builder(
         category = "release",
         short_name = "gcc",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "minimal_symbols",
+            "no_clang",
+            "no_goma",
+        ],
+    ),
     reclient_instance = None,
 )
 
@@ -505,4 +597,12 @@ ci.builder(
         category = "linux",
     ),
     cq_mirrors_console_view = "mirrors",
+    gn_args = gn_args.config(
+        configs = [
+            "v4l2_codec",
+            "chrome_with_codecs",
+            "release_builder",
+            "reclient",
+        ],
+    ),
 )

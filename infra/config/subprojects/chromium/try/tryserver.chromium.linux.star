@@ -6,6 +6,7 @@
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient", "siso")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -44,6 +45,9 @@ try_.builder(
 try_.builder(
     name = "leak_detection_linux",
     mirrors = ["ci/Leak Detection Linux"],
+    gn_args = gn_args.config(
+        configs = ["ci/Leak Detection Linux", "release_try_builder"],
+    ),
 )
 
 try_.builder(
@@ -63,6 +67,12 @@ try_.builder(
     mirrors = [
         "ci/Cast Linux ARM64",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Cast Linux ARM64",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -77,6 +87,7 @@ try_.builder(
     mirrors = [
         "ci/linux-bfcache-rel",
     ],
+    gn_args = "ci/linux-bfcache-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -146,6 +157,12 @@ try_.builder(
     mirrors = [
         "ci/linux-extended-tracing-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-extended-tracing-rel",
+            "release_try_builder",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -156,6 +173,7 @@ try_.builder(
     ],
     # Focal is needed for better C++20 support. See crbug.com/1284275.
     os = os.LINUX_FOCAL,
+    gn_args = "ci/linux-gcc-rel",
 )
 
 try_.builder(
@@ -254,6 +272,16 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux Builder",
+            "release_try_builder",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+            "enable_dangling_raw_ptr_feature_flag",
+            "enable_backup_ref_ptr_feature_flag",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
@@ -320,6 +348,15 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux Builder (Wayland)",
+            "release_try_builder",
+            "use_dummy_lastchange",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
@@ -387,6 +424,12 @@ try_.builder(
         "ci/Cast Linux",
     ],
     builderless = not settings.is_main,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Cast Linux",
+            "release_try_builder",
+        ],
+    ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -397,6 +440,12 @@ try_.builder(
     mirrors = [
         "ci/Cast Audio Linux",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Cast Audio Linux",
+            "release_try_builder",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -406,6 +455,12 @@ try_.builder(
     mirrors = [
         "ci/Cast Linux Debug",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Cast Linux Debug",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -553,6 +608,13 @@ try_.builder(
             path = "linux_debug",
         ),
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -583,6 +645,14 @@ try_.builder(
             path = "linux_debug",
         ),
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "reclient",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -700,6 +770,12 @@ try_.builder(
     mirrors = [
         "ci/linux-v4l2-codec-rel",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-v4l2-codec-rel",
+            "release_try_builder",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -714,6 +790,9 @@ try_.builder(
     mirrors = [
         "ci/Network Service Linux",
     ],
+    gn_args = gn_args.config(
+        configs = ["ci/Network Service Linux", "release_try_builder"],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
