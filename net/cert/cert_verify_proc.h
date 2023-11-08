@@ -69,6 +69,57 @@ class NET_EXPORT CertVerifyProc
     VERIFY_FLAGS_LAST = VERIFY_DISABLE_NETWORK_FETCHES
   };
 
+  // The set factory parameters that are variable over time, but are expected to
+  // be consistent between multiple verifiers that are created. For example,
+  // CertNetFetcher is not in this struct as it is expected that different
+  // verifiers will have different net fetchers. (There is no technical
+  // restriction against creating different verifiers with different ImplParams,
+  // structuring the parameters this way just makes some APIs more convenient
+  // for the common case.)
+  struct NET_EXPORT ImplParams {
+    ImplParams();
+    ~ImplParams();
+    ImplParams(const ImplParams&);
+    ImplParams& operator=(const ImplParams& other);
+    ImplParams(ImplParams&&);
+    ImplParams& operator=(ImplParams&& other);
+
+    scoped_refptr<CRLSet> crl_set;
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    absl::optional<net::ChromeRootStoreData> root_store_data;
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+    bool use_chrome_root_store;
+#endif
+  };
+
+  // The set of parameters that are variable over time and can differ between
+  // different verifiers created by a CertVerifierProcFactory.
+  struct NET_EXPORT InstanceParams {
+    InstanceParams();
+    ~InstanceParams();
+    InstanceParams(const InstanceParams&);
+    InstanceParams& operator=(const InstanceParams& other);
+    InstanceParams(InstanceParams&&);
+    InstanceParams& operator=(InstanceParams&& other);
+
+    // TODO(crbug.com/1477317): store these as ParsedCertificateList here so
+    // that it only needs to be done once since the same InstanceParams can be
+    // used to create a CertVerifyProc multiple times.
+
+    // Additional trust anchors to consider during path validation. Ordinarily,
+    // implementations of CertVerifier use trust anchors from the configured
+    // system store. This is implementation-specific plumbing for passing
+    // additional anchors through.
+    CertificateList additional_trust_anchors;
+
+    // Additional temporary certs to consider as intermediates during path
+    // validation. Ordinarily, implementations of CertVerifier use intermediate
+    // certs from the configured system store. This is implementation-specific
+    // plumbing for passing additional intermediates through.
+    CertificateList additional_untrusted_authorities;
+  };
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class NameNormalizationResult {
@@ -92,7 +143,8 @@ class NET_EXPORT CertVerifyProc
   // Creates and returns a CertVerifyProcBuiltin using the SSL SystemTrustStore.
   static scoped_refptr<CertVerifyProc> CreateBuiltinVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      scoped_refptr<CRLSet> crl_set);
+      scoped_refptr<CRLSet> crl_set,
+      const InstanceParams instance_params);
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -102,7 +154,8 @@ class NET_EXPORT CertVerifyProc
   static scoped_refptr<CertVerifyProc> CreateBuiltinWithChromeRootStore(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
       scoped_refptr<CRLSet> crl_set,
-      const ChromeRootStoreData* root_store_data);
+      const ChromeRootStoreData* root_store_data,
+      const InstanceParams instance_params);
 #endif
 
   CertVerifyProc(const CertVerifyProc&) = delete;
@@ -127,23 +180,13 @@ class NET_EXPORT CertVerifyProc
   // If VERIFY_REV_CHECKING_ENABLED is set in |flags|, online certificate
   // revocation checking is performed (i.e. OCSP and downloading CRLs). CRLSet
   // based revocation checking is always enabled, regardless of this flag.
-  //
-  // |additional_trust_anchors| lists certificates that can be trusted when
-  // building a certificate chain, in addition to the anchors known to the
-  // implementation.
   int Verify(X509Certificate* cert,
              const std::string& hostname,
              const std::string& ocsp_response,
              const std::string& sct_list,
              int flags,
-             const CertificateList& additional_trust_anchors,
              CertVerifyResult* verify_result,
              const NetLogWithSource& net_log);
-
-  // Returns true if the implementation supports passing additional trust
-  // anchors to the Verify() call. The |additional_trust_anchors| parameter
-  // passed to Verify() is ignored when this returns false.
-  virtual bool SupportsAdditionalTrustAnchors() const = 0;
 
  protected:
   explicit CertVerifyProc(scoped_refptr<CRLSet> crl_set);
@@ -191,7 +234,6 @@ class NET_EXPORT CertVerifyProc
                              const std::string& ocsp_response,
                              const std::string& sct_list,
                              int flags,
-                             const CertificateList& additional_trust_anchors,
                              CertVerifyResult* verify_result,
                              const NetLogWithSource& net_log) = 0;
 
@@ -216,35 +258,13 @@ class NET_EXPORT CertVerifyProc
 class NET_EXPORT CertVerifyProcFactory
     : public base::RefCountedThreadSafe<CertVerifyProcFactory> {
  public:
-  // The set of factory parameters that are variable over time, but are
-  // expected to be consistent between multiple verifiers that are created. For
-  // example, CertNetFetcher is not in this struct as it is expected that
-  // different verifiers will have different net fetchers. (There is no
-  // technical restriction against creating different verifiers with different
-  // ImplParams, structuring the parameters this way just makes some APIs more
-  // convenient for the common case.)
-  struct NET_EXPORT ImplParams {
-    ImplParams();
-    ~ImplParams();
-    ImplParams(const ImplParams&);
-    ImplParams& operator=(const ImplParams& other);
-    ImplParams(ImplParams&&);
-    ImplParams& operator=(ImplParams&& other);
-
-    scoped_refptr<CRLSet> crl_set;
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    absl::optional<net::ChromeRootStoreData> root_store_data;
-#endif
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-    bool use_chrome_root_store;
-#endif
-  };
 
   // Create a new CertVerifyProc that uses the passed in CRLSet and
   // ChromeRootStoreData.
   virtual scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      const ImplParams& impl_params) = 0;
+      const CertVerifyProc::ImplParams& impl_params,
+      const CertVerifyProc::InstanceParams& instance_params) = 0;
 
  protected:
   virtual ~CertVerifyProcFactory() = default;

@@ -68,18 +68,6 @@ class NET_EXPORT CertVerifier {
     // Disable enforcement of the policies described at
     // https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec.html
     bool disable_symantec_enforcement = false;
-
-    // Additional trust anchors to consider during path validation. Ordinarily,
-    // implementations of CertVerifier use trust anchors from the configured
-    // system store. This is implementation-specific plumbing for passing
-    // additional anchors through.
-    CertificateList additional_trust_anchors;
-
-    // Additional temporary certs to consider as intermediates during path
-    // validation. Ordinarily, implementations of CertVerifier use intermediate
-    // certs from the configured system store. This is implementation-specific
-    // plumbing for passing additional intermediates through.
-    CertificateList additional_untrusted_authorities;
   };
 
   class Request {
@@ -241,7 +229,8 @@ class NET_EXPORT CertVerifierWithUpdatableProc : public CertVerifier {
   // Update the CertVerifyProc with a new set of parameters.
   virtual void UpdateVerifyProcData(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      const net::CertVerifyProcFactory::ImplParams& impl_params) = 0;
+      const net::CertVerifyProc::ImplParams& impl_params,
+      const net::CertVerifyProc::InstanceParams& instance_params) = 0;
 };
 
 }  // namespace net

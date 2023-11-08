@@ -110,6 +110,20 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
       GetReducedUserAgent(base::CommandLine::ForCurrentProcess()->HasSwitch(
                               switches::kUseMobileUserAgent),
                           delegate ? delegate->GetMajorVersionNumber() : "");
+  // The verifier created here does not have the same parameters as used in the
+  // profile (where additional parameters are added in
+  // chrome/browser/net/profile_network_context_service.h
+  // ProfileNetworkContextService::ConfigureNetworkContextParamsInternal, as
+  // well as updates in ProfileNetworkContextService::UpdateCertificatePolicy).
+  //
+  // Currently this does not cause problems as additional parameters only ensure
+  // more requests validate, so the only harm is that prefetch requests will
+  // fail and then later succeed when they are actually fetched. In the future
+  // when additional parameters can cause validations to fail, this will cause
+  // problems.
+  //
+  // TODO(crbug.com/1477317): figure out how to get this verifier in sync with
+  // the profile verifier.
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->cors_exempt_header_list = {kCorsExemptPurposeHeaderName};

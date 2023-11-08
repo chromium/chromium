@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
+import "services/network/public/mojom/network_param.mojom";
 
 // Parameters to specify how the net::CertVerifier and net::CertVerifyProc
 // objects should be instantiated.
@@ -26,6 +27,10 @@ struct CertVerifierCreationParams {
   // isn't opened multiple times for NetworkContexts in the same profie.
   [EnableIf=is_chromeos_ash]
   string username_hash;
+
+  // Initial additional certificates that will be used for certificate
+  // validation.
+  AdditionalCertificates? initial_additional_certificates;
 };
 
 // Serialized copy of the Chrome Root store.
@@ -54,6 +59,7 @@ interface CertVerifierServiceFactory {
   // Gets a new CertVerifierService, which //net code can interface with using
   // cert_verifier::MojoCertVerifier.
   GetNewCertVerifier(pending_receiver<CertVerifierService> receiver,
+                     pending_receiver<CertVerifierServiceUpdater>? updater,
                      pending_remote<CertVerifierServiceClient> client,
                      CertVerifierCreationParams? creation_params);
 

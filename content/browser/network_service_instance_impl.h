@@ -8,6 +8,10 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
+#include "services/network/public/mojom/cert_verifier_service.mojom-forward.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace content {
 
@@ -52,6 +56,19 @@ CONTENT_EXPORT void ShutDownNetworkService();
 // `on_restart` will be called at the end of every RestartNetworkService().
 CONTENT_EXPORT void OnRestartNetworkServiceForTesting(
     base::RepeatingClosure on_restart);
+
+// Returns a CertVerifierParams that can be placed into a new
+// network::mojom::NetworkContextParams.
+//
+// Like |GetCertVerifierParams| but the |cert_verifier_updater_remote| pipe
+// passed in can be used to update the returned CertVerifierService with new
+// verification parameters.
+CONTENT_EXPORT network::mojom::CertVerifierServiceRemoteParamsPtr
+GetCertVerifierParamsWithUpdater(
+    cert_verifier::mojom::CertVerifierCreationParamsPtr
+        cert_verifier_creation_params,
+    mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceUpdater>
+        cert_verifier_updater_remote);
 
 }  // namespace content
 

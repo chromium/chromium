@@ -159,15 +159,6 @@ interface CustomProxyConfigClient {
   ClearBadProxiesCache();
 };
 
-[EnableIf=is_chromeos]
-struct AdditionalCertificates {
-  // List of all additional certificates.
-  array<X509Certificate> all_certificates;
-
-  // List of additional trust anchors.
-  array<X509Certificate> trust_anchors;
-};
-
 // Sent by TrustedURLLoaderHeaderClient to perform modifications for a request.
 interface TrustedHeaderClient {
   // Allows modifying request headers before the request is sent.
@@ -479,11 +470,6 @@ struct NetworkContextParams {
 
   // Contains a pipe to a CertVerifierService.
   CertVerifierServiceRemoteParams cert_verifier_params;
-
-  // Initial additional certificates that will be used for certificate
-  // validation.
-  [EnableIf=is_chromeos]
-  AdditionalCertificates? initial_additional_certificates;
 
   // Parameters for constructing the cookie manager.
   CookieManagerParams? cookie_manager_params;
@@ -1236,10 +1222,6 @@ interface NetworkContext {
 
   // If false, the referrer of requests is never populated.
   SetEnableReferrers(bool enable_referrers);
-
-  // Updates the additional trust anchors for certificate verification.
-  [EnableIf=is_chromeos]
-  UpdateAdditionalCertificates(AdditionalCertificates? additional_certificates);
 
   // Updates the CT policy to be used for requests. Only applies if the
   // NetworkContextParams set enforce_chrome_ct_policy to true.

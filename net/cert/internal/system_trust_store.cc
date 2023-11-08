@@ -63,7 +63,7 @@ class DummySystemTrustStore : public SystemTrustStore {
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  int64_t chrome_root_store_version() override { return 0; }
+  int64_t chrome_root_store_version() const override { return 0; }
 #endif
 
  private:
@@ -97,7 +97,7 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
     return trust_store_chrome_->Contains(trust_anchor);
   }
 
-  int64_t chrome_root_store_version() override {
+  int64_t chrome_root_store_version() const override {
     return trust_store_chrome_->version();
   }
 

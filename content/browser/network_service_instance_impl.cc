@@ -876,10 +876,19 @@ GetCertVerifierServiceFactoryRemoteForTesting() {
 
   return GetCertVerifierServiceFactoryRemoteStorage();
 }
-
 network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
     cert_verifier::mojom::CertVerifierCreationParamsPtr
         cert_verifier_creation_params) {
+  return GetCertVerifierParamsWithUpdater(
+      std::move(cert_verifier_creation_params), mojo::NullReceiver());
+}
+
+network::mojom::CertVerifierServiceRemoteParamsPtr
+GetCertVerifierParamsWithUpdater(
+    cert_verifier::mojom::CertVerifierCreationParamsPtr
+        cert_verifier_creation_params,
+    mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceUpdater>
+        cert_verifier_updater_remote) {
   mojo::PendingRemote<cert_verifier::mojom::CertVerifierService>
       cert_verifier_remote;
   mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceClient>
@@ -887,6 +896,7 @@ network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
 
   GetCertVerifierServiceFactory()->GetNewCertVerifier(
       cert_verifier_remote.InitWithNewPipeAndPassReceiver(),
+      std::move(cert_verifier_updater_remote),
       cert_verifier_client.InitWithNewPipeAndPassRemote(),
       std::move(cert_verifier_creation_params));
 

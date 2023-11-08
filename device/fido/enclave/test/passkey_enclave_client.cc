@@ -175,6 +175,7 @@ EnclaveTestClient::GetCertVerifierParams() {
       factory_remote.BindNewPipeAndPassReceiver());
   factory_->GetNewCertVerifier(
       cert_verifier_remote.InitWithNewPipeAndPassReceiver(),
+      /*updater_receiver=*/mojo::NullReceiver(),
       cert_verifier_client.InitWithNewPipeAndPassRemote(),
       cert_verifier::mojom::CertVerifierCreationParams::New());
 

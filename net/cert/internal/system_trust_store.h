@@ -41,7 +41,7 @@ class SystemTrustStore {
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // Returns the current version of the Chrome Root Store being used. If
   // Chrome Root Store is not in use, returns 0.
-  virtual int64_t chrome_root_store_version() = 0;
+  virtual int64_t chrome_root_store_version() const = 0;
 #endif
 };
 

@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "services/network/public/mojom/cert_verifier_service.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace base {
@@ -81,13 +82,9 @@ GetNetworkTaskRunner();
 // Returns a CertVerifierParams that can be placed into a new
 // network::mojom::NetworkContextParams.
 //
-// If the CertVerifierService feature is enabled, the
-// |cert_verifier_creation_params| will be used to configure a new
+// The |cert_verifier_creation_params| will be used to configure a new
 // CertVerifierService, and a pipe to the new CertVerifierService will be placed
 // in the CertVerifierParams.
-//
-// Otherwise, |cert_verifier_creation_params| will just be placed directly into
-// the CertVerifierParams to configure an in-network-service CertVerifier.
 CONTENT_EXPORT network::mojom::CertVerifierServiceRemoteParamsPtr
 GetCertVerifierParams(cert_verifier::mojom::CertVerifierCreationParamsPtr
                           cert_verifier_creation_params);

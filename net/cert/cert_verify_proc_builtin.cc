@@ -79,6 +79,14 @@ base::Value::Dict NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
   return results;
 }
 
+base::Value::Dict NetLogAdditionalCert(const CRYPTO_BUFFER* cert_handle,
+                                       const bssl::CertificateTrust& trust,
+                                       const bssl::CertErrors& errors) {
+  base::Value::Dict results = NetLogCertParams(cert_handle, errors);
+  results.Set("trust", trust.ToDebugString());
+  return results;
+}
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 base::Value::Dict NetLogChromeRootStoreVersion(
     int64_t chrome_root_store_version) {
@@ -170,9 +178,12 @@ bool IsEVCandidate(const EVRootCAMetadata* ev_metadata,
 class CertVerifyProcTrustStore {
  public:
   // |system_trust_store| must outlive this object.
-  explicit CertVerifyProcTrustStore(SystemTrustStore* system_trust_store)
-      : system_trust_store_(system_trust_store) {
-    trust_store_.AddTrustStore(&additional_trust_store_);
+  explicit CertVerifyProcTrustStore(
+      SystemTrustStore* system_trust_store,
+      bssl::TrustStoreInMemory* additional_trust_store)
+      : system_trust_store_(system_trust_store),
+        additional_trust_store_(additional_trust_store) {
+    trust_store_.AddTrustStore(additional_trust_store_);
     trust_store_.AddTrustStore(system_trust_store_->GetTrustStore());
     // When running in test mode, also layer in the test-only root certificates.
     //
@@ -187,10 +198,6 @@ class CertVerifyProcTrustStore {
 
   bssl::TrustStore* trust_store() { return &trust_store_; }
 
-  void AddTrustAnchor(std::shared_ptr<const bssl::ParsedCertificate> cert) {
-    additional_trust_store_.AddTrustAnchor(std::move(cert));
-  }
-
   bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const {
     if (TestRootCerts::HasInstance() &&
         TestRootCerts::GetInstance()->IsKnownRoot(
@@ -202,12 +209,12 @@ class CertVerifyProcTrustStore {
 
   bool IsAdditionalTrustAnchor(
       const bssl::ParsedCertificate* trust_anchor) const {
-    return additional_trust_store_.Contains(trust_anchor);
+    return additional_trust_store_->Contains(trust_anchor);
   }
 
  private:
   raw_ptr<SystemTrustStore> system_trust_store_;
-  bssl::TrustStoreInMemory additional_trust_store_;
+  raw_ptr<bssl::TrustStoreInMemory> additional_trust_store_;
   bssl::TrustStoreCollection trust_store_;
 };
 
@@ -413,13 +420,20 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   base::TimeTicks deadline_;
 };
 
+std::shared_ptr<const bssl::ParsedCertificate> ParseCertificateFromBuffer(
+    CRYPTO_BUFFER* cert_handle,
+    bssl::CertErrors* errors) {
+  return bssl::ParsedCertificate::Create(
+      bssl::UpRef(cert_handle), x509_util::DefaultParseCertificateOptions(),
+      errors);
+}
+
 class CertVerifyProcBuiltin : public CertVerifyProc {
  public:
   CertVerifyProcBuiltin(scoped_refptr<CertNetFetcher> net_fetcher,
                         scoped_refptr<CRLSet> crl_set,
-                        std::unique_ptr<SystemTrustStore> system_trust_store);
-
-  bool SupportsAdditionalTrustAnchors() const override;
+                        std::unique_ptr<SystemTrustStore> system_trust_store,
+                        const CertVerifyProc::InstanceParams& instance_params);
 
  protected:
   ~CertVerifyProcBuiltin() override;
@@ -430,37 +444,68 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
                      const std::string& ocsp_response,
                      const std::string& sct_list,
                      int flags,
-                     const CertificateList& additional_trust_anchors,
                      CertVerifyResult* verify_result,
                      const NetLogWithSource& net_log) override;
 
   const scoped_refptr<CertNetFetcher> net_fetcher_;
   const std::unique_ptr<SystemTrustStore> system_trust_store_;
+  bssl::TrustStoreInMemory additional_trust_store_;
 };
 
 CertVerifyProcBuiltin::CertVerifyProcBuiltin(
     scoped_refptr<CertNetFetcher> net_fetcher,
     scoped_refptr<CRLSet> crl_set,
-    std::unique_ptr<SystemTrustStore> system_trust_store)
+    std::unique_ptr<SystemTrustStore> system_trust_store,
+    const CertVerifyProc::InstanceParams& instance_params)
     : CertVerifyProc(std::move(crl_set)),
       net_fetcher_(std::move(net_fetcher)),
       system_trust_store_(std::move(system_trust_store)) {
   DCHECK(system_trust_store_);
+
+  NetLogWithSource net_log =
+      NetLogWithSource::Make(net::NetLogSourceType::CERT_VERIFY_PROC_CREATED);
+  net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_CREATED);
+
+  // Parse the additional trust anchors and setup trust store.
+  for (const auto& x509_cert : instance_params.additional_trust_anchors) {
+    bssl::CertErrors parsing_errors;
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        ParseCertificateFromBuffer(x509_cert->cert_buffer(), &parsing_errors);
+    if (cert) {
+      additional_trust_store_.AddTrustAnchor(std::move(cert));
+    }
+    net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
+      return NetLogAdditionalCert(x509_cert->cert_buffer(),
+                                  bssl::CertificateTrust::ForTrustAnchor(),
+                                  parsing_errors);
+    });
+  }
+
+  for (const auto& x509_cert :
+       instance_params.additional_untrusted_authorities) {
+    bssl::CertErrors parsing_errors;
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        ParseCertificateFromBuffer(x509_cert->cert_buffer(), &parsing_errors);
+    // Only add the untrusted cert if it isn't already present in
+    // `additional_trust_store_`. If the same cert was already added as a
+    // trust anchor then adding it again as an untrusted cert can lead to it
+    // not being treated as a trust anchor since TrustStoreInMemory doesn't
+    // expect to contain duplicates.
+    if (cert && !additional_trust_store_.Contains(cert.get())) {
+      additional_trust_store_.AddCertificateWithUnspecifiedTrust(
+          std::move(cert));
+    }
+    net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
+      return NetLogAdditionalCert(x509_cert->cert_buffer(),
+                                  bssl::CertificateTrust::ForUnspecified(),
+                                  parsing_errors);
+    });
+  }
+
+  net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_CREATED);
 }
 
 CertVerifyProcBuiltin::~CertVerifyProcBuiltin() = default;
-
-bool CertVerifyProcBuiltin::SupportsAdditionalTrustAnchors() const {
-  return true;
-}
-
-std::shared_ptr<const bssl::ParsedCertificate> ParseCertificateFromBuffer(
-    CRYPTO_BUFFER* cert_handle,
-    bssl::CertErrors* errors) {
-  return bssl::ParsedCertificate::Create(
-      bssl::UpRef(cert_handle), x509_util::DefaultParseCertificateOptions(),
-      errors);
-}
 
 void AddIntermediatesToIssuerSource(X509Certificate* x509_cert,
                                     bssl::CertIssuerSourceStatic* intermediates,
@@ -474,8 +519,9 @@ void AddIntermediatesToIssuerSource(X509Certificate* x509_cert,
     net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_INPUT_CERT, [&] {
       return NetLogCertParams(intermediate.get(), errors);
     });
-    if (cert)
+    if (cert) {
       intermediates->AddCert(std::move(cert));
+    }
   }
 }
 
@@ -749,7 +795,6 @@ int CertVerifyProcBuiltin::VerifyInternal(
     const std::string& ocsp_response,
     const std::string& sct_list,
     int flags,
-    const CertificateList& additional_trust_anchors,
     CertVerifyResult* verify_result,
     const NetLogWithSource& net_log) {
   // VerifyInternal() is expected to carry out verifications using the current
@@ -774,6 +819,10 @@ int CertVerifyProcBuiltin::VerifyInternal(
   }
 #endif
 
+  // TODO(crbug.com/1477317): Netlog extra configuration information stored
+  // inside CertVerifyProcBuiltin (e.g. certs in additional_trust_store and
+  // system trust store)
+
   // Parse the target certificate.
   std::shared_ptr<const bssl::ParsedCertificate> target;
   {
@@ -795,22 +844,8 @@ int CertVerifyProcBuiltin::VerifyInternal(
   bssl::CertIssuerSourceStatic intermediates;
   AddIntermediatesToIssuerSource(input_cert, &intermediates, net_log);
 
-  // Parse the additional trust anchors and setup trust store.
-  CertVerifyProcTrustStore trust_store(system_trust_store_.get());
-  for (const auto& x509_cert : additional_trust_anchors) {
-    bssl::CertErrors parsing_errors;
-    std::shared_ptr<const bssl::ParsedCertificate> cert =
-        ParseCertificateFromBuffer(x509_cert->cert_buffer(), &parsing_errors);
-    if (cert)
-      trust_store.AddTrustAnchor(std::move(cert));
-    // TODO(crbug.com/634484): this duplicates the logging of the
-    // additional_trust_anchors maybe should only log if there is a parse
-    // error/warning?
-    net_log.AddEvent(
-        NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_TRUST_ANCHOR, [&] {
-          return NetLogCertParams(x509_cert->cert_buffer(), parsing_errors);
-        });
-  }
+  CertVerifyProcTrustStore trust_store(system_trust_store_.get(),
+                                       &additional_trust_store_);
 
   // Get the global dependencies.
   const EVRootCAMetadata* ev_metadata = EVRootCAMetadata::GetInstance();
@@ -924,10 +959,11 @@ int CertVerifyProcBuiltin::VerifyInternal(
 scoped_refptr<CertVerifyProc> CreateCertVerifyProcBuiltin(
     scoped_refptr<CertNetFetcher> net_fetcher,
     scoped_refptr<CRLSet> crl_set,
-    std::unique_ptr<SystemTrustStore> system_trust_store) {
+    std::unique_ptr<SystemTrustStore> system_trust_store,
+    const CertVerifyProc::InstanceParams& instance_params) {
   return base::MakeRefCounted<CertVerifyProcBuiltin>(
-      std::move(net_fetcher), std::move(crl_set),
-      std::move(system_trust_store));
+      std::move(net_fetcher), std::move(crl_set), std::move(system_trust_store),
+      instance_params);
 }
 
 base::TimeDelta GetCertVerifyProcBuiltinTimeLimitForTesting() {

@@ -368,14 +368,12 @@ void RecordTrustAnchorHistogram(const HashValueVector& spki_hashes,
   return true;
 }
 
-base::Value::Dict CertVerifyParams(
-    X509Certificate* cert,
-    const std::string& hostname,
-    const std::string& ocsp_response,
-    const std::string& sct_list,
-    int flags,
-    CRLSet* crl_set,
-    const CertificateList& additional_trust_anchors) {
+base::Value::Dict CertVerifyParams(X509Certificate* cert,
+                                   const std::string& hostname,
+                                   const std::string& ocsp_response,
+                                   const std::string& sct_list,
+                                   int flags,
+                                   CRLSet* crl_set) {
   base::Value::Dict dict;
   dict.Set("certificates", NetLogX509CertificateList(cert));
   if (!ocsp_response.empty()) {
@@ -390,19 +388,6 @@ base::Value::Dict CertVerifyParams(
   dict.Set("crlset_sequence", NetLogNumberValue(crl_set->sequence()));
   if (crl_set->IsExpired())
     dict.Set("crlset_is_expired", true);
-
-  if (!additional_trust_anchors.empty()) {
-    base::Value::List certs;
-    for (auto& anchor : additional_trust_anchors) {
-      std::string pem_encoded;
-      if (X509Certificate::GetPEMEncodedFromDER(
-              x509_util::CryptoBufferAsStringPiece(anchor->cert_buffer()),
-              &pem_encoded)) {
-        certs.Append(std::move(pem_encoded));
-      }
-    }
-    dict.Set("additional_trust_anchors", std::move(certs));
-  }
 
   return dict;
 }
@@ -429,10 +414,11 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
 // static
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
     scoped_refptr<CertNetFetcher> cert_net_fetcher,
-    scoped_refptr<CRLSet> crl_set) {
-  return CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
-                                     std::move(crl_set),
-                                     CreateSslSystemTrustStore());
+    scoped_refptr<CRLSet> crl_set,
+    const InstanceParams instance_params) {
+  return CreateCertVerifyProcBuiltin(
+      std::move(cert_net_fetcher), std::move(crl_set),
+      CreateSslSystemTrustStore(), instance_params);
 }
 #endif
 
@@ -441,13 +427,15 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinWithChromeRootStore(
     scoped_refptr<CertNetFetcher> cert_net_fetcher,
     scoped_refptr<CRLSet> crl_set,
-    const ChromeRootStoreData* root_store_data) {
+    const ChromeRootStoreData* root_store_data,
+    const InstanceParams instance_params) {
   std::unique_ptr<TrustStoreChrome> chrome_root =
       root_store_data ? std::make_unique<TrustStoreChrome>(*root_store_data)
                       : std::make_unique<TrustStoreChrome>();
   return CreateCertVerifyProcBuiltin(
       std::move(cert_net_fetcher), std::move(crl_set),
-      CreateSslSystemTrustStoreChromeRoot(std::move(chrome_root)));
+      CreateSslSystemTrustStoreChromeRoot(std::move(chrome_root)),
+      instance_params);
 }
 #endif
 
@@ -463,7 +451,6 @@ int CertVerifyProc::Verify(X509Certificate* cert,
                            const std::string& ocsp_response,
                            const std::string& sct_list,
                            int flags,
-                           const CertificateList& additional_trust_anchors,
                            CertVerifyResult* verify_result,
                            const NetLogWithSource& net_log) {
   CHECK(cert);
@@ -471,7 +458,7 @@ int CertVerifyProc::Verify(X509Certificate* cert,
 
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC, [&] {
     return CertVerifyParams(cert, hostname, ocsp_response, sct_list, flags,
-                            crl_set(), additional_trust_anchors);
+                            crl_set());
   });
   // CertVerifyProc's contract allows ::VerifyInternal() to wait on File I/O
   // (such as the Windows registry or smart cards on all platforms) or may re-
@@ -486,7 +473,7 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   verify_result->verified_cert = cert;
 
   int rv = VerifyInternal(cert, hostname, ocsp_response, sct_list, flags,
-                          additional_trust_anchors, verify_result, net_log);
+                          verify_result, net_log);
 
   CHECK(verify_result->verified_cert);
 
@@ -833,7 +820,7 @@ bool CertVerifyProc::HasTooLongValidity(const X509Certificate& cert) {
   return validity_duration > base::Days(398);
 }
 
-CertVerifyProcFactory::ImplParams::ImplParams() {
+CertVerifyProc::ImplParams::ImplParams() {
   crl_set = net::CRLSet::BuiltinCRLSet();
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   use_chrome_root_store =
@@ -841,13 +828,23 @@ CertVerifyProcFactory::ImplParams::ImplParams() {
 #endif
 }
 
-CertVerifyProcFactory::ImplParams::~ImplParams() = default;
+CertVerifyProc::ImplParams::~ImplParams() = default;
 
-CertVerifyProcFactory::ImplParams::ImplParams(const ImplParams&) = default;
-CertVerifyProcFactory::ImplParams& CertVerifyProcFactory::ImplParams::operator=(
+CertVerifyProc::ImplParams::ImplParams(const ImplParams&) = default;
+CertVerifyProc::ImplParams& CertVerifyProc::ImplParams::operator=(
     const ImplParams& other) = default;
-CertVerifyProcFactory::ImplParams::ImplParams(ImplParams&&) = default;
-CertVerifyProcFactory::ImplParams& CertVerifyProcFactory::ImplParams::operator=(
+CertVerifyProc::ImplParams::ImplParams(ImplParams&&) = default;
+CertVerifyProc::ImplParams& CertVerifyProc::ImplParams::operator=(
     ImplParams&& other) = default;
+
+CertVerifyProc::InstanceParams::InstanceParams() = default;
+CertVerifyProc::InstanceParams::~InstanceParams() = default;
+
+CertVerifyProc::InstanceParams::InstanceParams(const InstanceParams&) = default;
+CertVerifyProc::InstanceParams& CertVerifyProc::InstanceParams::operator=(
+    const InstanceParams& other) = default;
+CertVerifyProc::InstanceParams::InstanceParams(InstanceParams&&) = default;
+CertVerifyProc::InstanceParams& CertVerifyProc::InstanceParams::operator=(
+    InstanceParams&& other) = default;
 
 }  // namespace net

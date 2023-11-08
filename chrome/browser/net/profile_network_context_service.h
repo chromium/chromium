@@ -170,7 +170,7 @@ class ProfileNetworkContextService
   // authority certificates for |relative_partition_path|.
   void PopulateInitialAdditionalCerts(
       const base::FilePath& relative_partition_path,
-      network::mojom::NetworkContextParams* network_context_params);
+      cert_verifier::mojom::CertVerifierCreationParams* creation_params);
 
   // content_settings::Observer:
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
