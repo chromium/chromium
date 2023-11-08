@@ -166,7 +166,7 @@ void DisableParentalControls(PrefService& pref_service) {
   SetIsChildAccountStatusKnown(pref_service);
 }
 
-bool IsChildAccountStatusKnown(PrefService& pref_service) {
+bool IsChildAccountStatusKnown(const PrefService& pref_service) {
   return pref_service.GetBoolean(prefs::kChildAccountStatusKnown);
 }
 

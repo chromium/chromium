@@ -24,7 +24,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 void EnableParentalControls(PrefService& pref_service);
 void DisableParentalControls(PrefService& pref_service);
 
-bool IsChildAccountStatusKnown(PrefService& pref_service);
+bool IsChildAccountStatusKnown(const PrefService& pref_service);
 
 // Returns true if the user is a type of Family Link supervised account.
 // This method should be preferred on gating child-specific features if there
