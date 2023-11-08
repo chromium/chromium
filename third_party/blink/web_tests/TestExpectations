@@ -7137,6 +7137,7 @@ crbug.com/1499775 [ Chrome ] external/wpt/css/css-color/composited-filters-under
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-color/filters-under-will-change-opacity.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-contain/contain-layout-ink-overflow-019.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-contain/contain-layout-overflow-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-contain/content-visibility/content-visibility-vs-scrollIntoView-001.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-counter-styles/korean-hangul-formal/counter-korean-hangul-formal.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-counter-styles/korean-hanja-formal/counter-korean-hanja-formal.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-counter-styles/simp-chinese-informal/counter-simp-chinese-informal.html [ Failure ]  # Reftest image failure
@@ -7161,16 +7162,19 @@ crbug.com/1499775 [ Chrome ] external/wpt/css/css-fonts/size-adjust-01.html [ Fa
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-fonts/size-adjust-unicode-range-system-fallback.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-over-ruby-tall.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-rtl.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/initial-letter-float-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-rtl.html [ Failure ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-vrl.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-lists/content-property/marker-text-matches-lower-greek.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-inline-006.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-inline-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-inline-004.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-inline-010.html [ Failure ] # pass on wpt.fyi
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-multicol/multicol-fill-auto-block-children-002.xht [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-multicol/multicol-width-ch-001.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-multicol/getclientrects-001.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-rl-002.html [ Failure ]  # Reftest image failure
@@ -7183,6 +7187,9 @@ crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/first-letter-003.html [
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/first-line-with-inline-block.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-cascade-008.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-ruby/block-ruby-003.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-ruby/ruby-text-combine-upright-001a.html [ Failure ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-shapes/shape-outside/values/shape-margin-001.html [ Failure ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-polygon-004.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-decoration-subelements-002.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-color-property-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-color-property-001a.html [ Failure ]  # Reftest image failure
@@ -7253,6 +7260,7 @@ crbug.com/1499775 [ Chrome ] external/wpt/css/selectors/dir-style-01b.html [ Fai
 crbug.com/1499775 [ Chrome ] external/wpt/css/selectors/invalidation/fullscreen-pseudo-class-in-has.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/selectors/invalidation/modal-pseudo-class-in-has.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/css/selectors/modal-pseudo-class.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/selectors/remove-hovered-element.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/dom/events/scrolling/input-text-scroll-event-when-using-arrow-keys.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/event-timing/event-click-visibilitychange.html [ Skip Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/eventsource/eventsource-request-cancellation.window.any.html [ Failure ]  # Flaky output
@@ -7321,6 +7329,7 @@ crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/embedded-content/the-im
 crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/embedded-content/the-object-element/object-events.html [ Skip Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/forms/the-selectlist-element/selectlist-explicit-size.tentative.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/interactive-elements/the-dialog-element/top-layer-stacking.tentative.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/invokers/invoketarget-fullscreen-behavior.tentative.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/popovers/popover-open-overflow-display.tentative.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/popovers/popover-top-layer-combinations.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/popovers/popover-top-layer-interactions.html [ Timeout ]
@@ -7374,6 +7383,7 @@ crbug.com/1499775 [ Chrome ] external/wpt/svg/text/reftests/xml-lang-attribute.s
 crbug.com/1499775 [ Chrome ] external/wpt/webrtc-stats/hardware-capability-stats.https.html [ Skip Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/websockets/send-many-64K-messages-with-backpressure.any.sharedworker.html?wpt_flags=h2 [ Skip Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/websockets/stream/tentative/backpressure-send.any.sharedworker.html?wpt_flags=h2 [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/webvtt/rendering/cues-with-video/processing-model/audio_has_no_subtitles.html [ Failure ]
 crbug.com/1499775 [ Chrome ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/webxr/dom-overlay/ar_dom_overlay_hit_test.https.html [ Timeout ]
 crbug.com/1499775 [ Chrome ] external/wpt/webxr/dom-overlay/nested_fullscreen.https.html [ Timeout ]
