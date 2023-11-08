@@ -2107,6 +2107,7 @@
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R118-15604.42.0",
+        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2124,6 +2125,7 @@
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R119-15633.10.0",
+        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -2158,6 +2160,7 @@
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R117-15572.63.0",
+        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_STABLE",
         "resultdb": {
           "enable": true,

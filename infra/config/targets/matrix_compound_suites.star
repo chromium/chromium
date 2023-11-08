@@ -1003,6 +1003,10 @@ targets.legacy_matrix_compound_suite(
         "lacros_skylab_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
+            ],
+        ),
+        "lacros_skylab_tests_version_skew": targets.legacy_matrix_config(
+            variants = [
                 "CROS_JACUZZI_RELEASE_DEV",
                 "CROS_JACUZZI_RELEASE_BETA",
                 "CROS_JACUZZI_RELEASE_STABLE",

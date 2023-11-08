@@ -7470,6 +7470,10 @@
       'lacros_skylab_tests': {
         'variants': [
           'CROS_JACUZZI_RELEASE_LKGM',
+        ],
+      },
+      'lacros_skylab_tests_version_skew': {
+        'variants': [
           'CROS_JACUZZI_RELEASE_DEV',
           'CROS_JACUZZI_RELEASE_BETA',
           'CROS_JACUZZI_RELEASE_STABLE',
