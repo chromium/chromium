@@ -43130,6 +43130,7 @@ from previous Chrome versions.
   <int value="-1113746031" label="AppDeduplicationService:enabled"/>
   <int value="-1113373128" label="WebUIDownloadShelf:enabled"/>
   <int value="-1112782121" label="AndroidSigninPromos:disabled"/>
+  <int value="-1111269978" label="FluentOverlayScrollbar:enabled"/>
   <int value="-1111094917" label="Cormorant:enabled"/>
   <int value="-1111056156" label="AdvancedPeripheralsSupportTabStrip:enabled"/>
   <int value="-1110928012" label="force-companion-pinned-state"/>
@@ -43498,6 +43499,7 @@ from previous Chrome versions.
   <int value="-936652950"
       label="AutofillEnableManualFallbackForVirtualCards:disabled"/>
   <int value="-936308513" label="CompactBubbleLauncher:enabled"/>
+  <int value="-934900747" label="FluentOverlayScrollbar:disabled"/>
   <int value="-934444201" label="Hotspot:enabled"/>
   <int value="-934163513" label="EcheSWA:enabled"/>
   <int value="-933377608"

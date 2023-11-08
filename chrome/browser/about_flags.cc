@@ -4719,6 +4719,13 @@ const FeatureEntry kFeatureEntries[] = {
                                        "DXGIWaitableSwapChain"),
     },
     {
+        "fluent-overlay-scrollbars",
+        flag_descriptions::kFluentOverlayScrollbarsName,
+        flag_descriptions::kFluentOverlayScrollbarsDescription,
+        kOsWin,
+        FEATURE_VALUE_TYPE(features::kFluentOverlayScrollbar),
+    },
+    {
         "fluent-scrollbars",
         flag_descriptions::kFluentScrollbarsName,
         flag_descriptions::kFluentScrollbarsDescription,

@@ -980,6 +980,9 @@ extern const char kDrawImmediatelyWhenInteractiveDescription[];
 extern const char kFillingAcrossGroupedSitesName[];
 extern const char kFillingAcrossGroupedSitesDescription[];
 
+extern const char kFluentOverlayScrollbarsName[];
+extern const char kFluentOverlayScrollbarsDescription[];
+
 extern const char kFluentScrollbarsName[];
 extern const char kFluentScrollbarsDescription[];
 
