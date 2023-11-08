@@ -8,7 +8,8 @@
   SecureContext,
   IsolatedContext
 ]
-interface WebPrintingManager {
-  [CallWith=ScriptState, RaisesException]
-  Promise<sequence<WebPrinter>> getPrinters();
+interface WebPrinter {
+  WebPrinterAttributes cachedAttributes();
+
+  // TODO(b/302505962): Add remaining methods.
 };

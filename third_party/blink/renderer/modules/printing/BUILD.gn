@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("printing") {
   sources = [
+    "web_printer.cc",
+    "web_printer.h",
     "web_printing_manager.cc",
     "web_printing_manager.h",
   ]

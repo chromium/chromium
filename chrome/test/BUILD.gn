@@ -4821,6 +4821,7 @@ if (!is_android) {
           "../browser/extensions/api/printing/fake_print_job_controller_ash.cc",
           "../browser/extensions/api/printing/fake_print_job_controller_ash.h",
           "../browser/extensions/api/printing/printing_apitest.cc",
+          "../browser/printing/web_api/web_printing_browsertest.cc",
         ]
         deps += [
           "//chrome/browser/chromeos/extensions/printing_metrics",
@@ -5647,6 +5648,7 @@ if (is_chromeos_lacros) {
       sources += [
         "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc",
         "../browser/extensions/api/printing/printing_apitest.cc",
+        "../browser/printing/web_api/web_printing_browsertest.cc",
       ]
       deps += [
         "//chrome/browser/chromeos/extensions/printing_metrics",

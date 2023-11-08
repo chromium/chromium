@@ -13,7 +13,10 @@
 
 namespace blink {
 
+class ExceptionState;
 class NavigatorBase;
+class ScriptPromise;
+class ScriptPromiseResolver;
 
 class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
                                           public Supplement<NavigatorBase> {
@@ -27,11 +30,17 @@ class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
 
   explicit WebPrintingManager(NavigatorBase&);
 
+  // navigator.printing.getPrinters()
+  ScriptPromise getPrinters(ScriptState*, ExceptionState&);
+
   // ScriptWrappable:
   void Trace(Visitor*) const override;
 
  private:
   mojom::blink::WebPrintingService* GetPrintingService();
+  void OnPrintersRetrieved(
+      ScriptPromiseResolver*,
+      WTF::Vector<mojom::blink::WebPrinterInfoPtr> printers);
 
   HeapMojoRemote<mojom::blink::WebPrintingService> printing_service_;
 };

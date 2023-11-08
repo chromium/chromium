@@ -4,8 +4,21 @@
 
 module blink.mojom;
 
+// Interface for interactions with a particular printer from the render process.
+// The implementation is responsible for checking access permissions.
+interface WebPrinter {
+  // TODO(b/302505962): Add necessary methods.
+};
+
+// Basic description of a single printer.
+struct WebPrinterInfo {
+  string printer_name;
+  pending_remote<WebPrinter> printer_remote;
+};
+
 // Interface for accessing printers from the render process.
 // The implementation is responsible for checking access permissions.
 interface WebPrintingService {
-  // TODO(b/302505962): Add necessary methods.
+  // Returns a list of local printers for this device.
+  GetPrinters() => (array<WebPrinterInfo> printers);
 };

@@ -3079,9 +3079,15 @@ if (target_os != "android") {
 # current_os = "linux" and target_os = "android". Using target_os is necessary as
 # we need to compile in the same way as would happen when current_os = "android".
 if (target_os != "android") {
+  generated_dictionary_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h",
+  ]
   generated_interface_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_manager.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_manager.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printer.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printer.h",
   ]
 }
 
