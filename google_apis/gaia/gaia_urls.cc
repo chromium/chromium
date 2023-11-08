@@ -42,6 +42,7 @@ const char kEmbeddedSetupChromeOsKidSignupUrlSuffix[] =
 const char kEmbeddedSetupChromeOsKidSigninUrlSuffix[] =
     "embedded/setup/kidsignin/chromeos";
 const char kEmbeddedSetupWindowsUrlSuffix[] = "embedded/setup/windows";
+const char kSamlRedirectChromeOsUrlSuffix[] = "samlredirect";
 // Parameter "ssp=1" is used to skip showing the password bubble when a user
 // signs in to Chrome. Note that Gaia will pass this client specified parameter
 // to all URLs that are loaded as part of thi sign-in flow.
@@ -217,6 +218,10 @@ const GURL& GaiaUrls::embedded_reauth_chromeos_url() const {
   return embedded_reauth_chromeos_url_;
 }
 
+const GURL& GaiaUrls::saml_redirect_chromeos_url() const {
+  return saml_redirect_chromeos_url_;
+}
+
 const GURL& GaiaUrls::signin_chrome_sync_dice() const {
   return signin_chrome_sync_dice_;
 }
@@ -380,6 +385,8 @@ void GaiaUrls::InitializeDefault() {
                       kEmbeddedSetupWindowsUrlSuffix);
   ResolveURLIfInvalid(&embedded_reauth_chromeos_url_, gaia_url,
                       kEmbeddedReauthChromeOsUrlSuffix);
+  ResolveURLIfInvalid(&saml_redirect_chromeos_url_, gaia_url,
+                      kSamlRedirectChromeOsUrlSuffix);
   ResolveURLIfInvalid(&signin_chrome_sync_dice_, gaia_url,
                       kSigninChromeSyncDice);
   ResolveURLIfInvalid(&reauth_chrome_dice_, gaia_url, kAccountChooser);
@@ -451,6 +458,7 @@ void GaiaUrls::InitializeFromConfig() {
       URL_KEY_AND_PTR(embedded_setup_chromeos_kid_signin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_setup_windows_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_reauth_chromeos_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(saml_redirect_chromeos_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(signin_chrome_sync_dice));
   config->GetURLIfExists(URL_KEY_AND_PTR(reauth_chrome_dice));
   config->GetURLIfExists(

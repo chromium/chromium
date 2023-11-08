@@ -193,16 +193,24 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.Set("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
 
-  params.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
-  params.Set(
-      "gaiaPath",
-      GaiaUrls::GetInstance()->embedded_setup_chromeos_url().path().substr(1));
-  params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  const GaiaUrls& gaia_urls = *GaiaUrls::GetInstance();
+  params.Set("gaiaUrl", gaia_urls.gaia_url().spec());
+  params.Set("clientId", gaia_urls.oauth2_chrome_client_id());
 
   std::string hosted_domain = GetHostedDomain(context.gaia_id);
   bool do_saml_redirect =
       force_saml_redirect_for_testing_ || ShouldDoSamlRedirect(context.email);
   params.Set("doSamlRedirect", do_saml_redirect);
+
+  // Path without the leading slash, as expected by authenticator.js.
+  const std::string default_gaia_path =
+      gaia_urls.embedded_setup_chromeos_url().path().substr(1);
+  params.Set("fallbackGaiaPath", default_gaia_path);
+  params.Set("gaiaPath",
+             do_saml_redirect
+                 ? gaia_urls.saml_redirect_chromeos_url().path().substr(1)
+                 : default_gaia_path);
+
   if (force_saml_redirect_for_testing_) {
     params.Set("enterpriseEnrollmentDomain", kIdpTestingDomain);
   } else if (!hosted_domain.empty()) {

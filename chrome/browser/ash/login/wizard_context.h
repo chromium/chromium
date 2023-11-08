@@ -42,6 +42,7 @@ class WizardContext {
     kChildSignup,
     kChildSignin,
     kReauth,
+    kSamlRedirect,
   };
 
   struct GaiaConfig {

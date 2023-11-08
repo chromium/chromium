@@ -326,7 +326,8 @@ void FakeGaia::Initialize() {
   REGISTER_PATH_RESPONSE_HANDLER("/SSO", HandleSSO);
 
   // Handles the /samlredirect requests for tests.
-  REGISTER_PATH_RESPONSE_HANDLER("/samlredirect", HandleSAMLRedirect);
+  REGISTER_RESPONSE_HANDLER(gaia_urls->saml_redirect_chromeos_url(),
+                            HandleSAMLRedirect);
 
   REGISTER_RESPONSE_HANDLER(
       gaia_urls->gaia_url().Resolve(kFakeSAMLContinuePath),

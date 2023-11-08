@@ -359,6 +359,17 @@ class GaiaSigninElement extends GaiaSigninElementBase {
      * @private
      */
     this.pinDialogResultReported_ = false;
+
+    /**
+     * Gaia path which can serve as a fallback in reloading scenarios. Expected
+     * to correspond to editable Gaia username page.
+     * TODO(b/259181755): this should no longer be needed once we change the
+     * implementation of the "Enter Google Account info" button to fully reload
+     * the flow through cpp code.
+     * @type {string}
+     * @private
+     */
+    this.fallbackGaiaPath_ = '';
   }
 
   get EXTERNAL_API() {
@@ -605,6 +616,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
     this.authCompleted_ = false;
     this.navigationButtonsHidden_ = false;
+    this.fallbackGaiaPath_ = data.fallbackGaiaPath;
 
     // Reset SAML
     this.isSaml_ = false;
@@ -1072,6 +1084,11 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     // field of the auth params.
     this.videoEnabled_ = false;
     this.authenticatorParams_.email = '';
+    // Replace Gaia path with a fallback path to land on Gaia username page.
+    assert(
+        this.fallbackGaiaPath_,
+        'fallback Gaia path needed when trying to switch from SAML to Gaia');
+    this.authenticatorParams_.gaiaPath = this.fallbackGaiaPath_;
     this.loadAuthenticator_(false /* doSamlRedirect */);
   }
 

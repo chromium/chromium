@@ -295,6 +295,11 @@ bool IsProxyError(NetworkStateInformer::State state,
            frame_error == net::ERR_TUNNEL_CONNECTION_FAILED));
 }
 
+// Path without the leading slash, as expected by authenticator.js.
+std::string GetPath(const GURL& url) {
+  return url.path().substr(1);
+}
+
 }  // namespace
 
 GaiaScreenHandler::GaiaScreenHandler(
@@ -432,8 +437,10 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     }
   }
 
+  const GaiaUrls& gaia_urls = *GaiaUrls::GetInstance();
+
   params.Set("chromeType", GetChromeType());
-  params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  params.Set("clientId", gaia_urls.oauth2_chrome_client_id());
   params.Set("clientVersion", version_info::GetVersionNumber());
   if (!platform_version->empty())
     params.Set("platformVersion", *platform_version);
@@ -449,7 +456,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     params.Set("emailDomain", email_domain);
   }
 
-  params.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
+  params.Set("gaiaUrl", gaia_urls.gaia_url().spec());
 
   WizardContext::GaiaPath gaia_path = WizardContext::GaiaPath::kDefault;
   if (LoginDisplayHost::default_host()) {
@@ -457,31 +464,26 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
                     ->GetWizardContext()
                     ->gaia_config.gaia_path;
   }
-
+  const std::string default_gaia_path =
+      GetPath(gaia_urls.embedded_setup_chromeos_url());
+  params.Set("fallbackGaiaPath", default_gaia_path);
   switch (gaia_path) {
     case WizardContext::GaiaPath::kDefault:
-      params.Set(
-          "gaiaPath",
-          GaiaUrls::GetInstance()->embedded_setup_chromeos_url().path().substr(
-              1));
+      params.Set("gaiaPath", default_gaia_path);
       break;
     case WizardContext::GaiaPath::kChildSignup:
-      params.Set("gaiaPath", GaiaUrls::GetInstance()
-                                 ->embedded_setup_chromeos_kid_signup_url()
-                                 .path()
-                                 .substr(1));
+      params.Set("gaiaPath",
+                 GetPath(gaia_urls.embedded_setup_chromeos_kid_signup_url()));
       break;
     case WizardContext::GaiaPath::kChildSignin:
-      params.Set("gaiaPath", GaiaUrls::GetInstance()
-                                 ->embedded_setup_chromeos_kid_signin_url()
-                                 .path()
-                                 .substr(1));
+      params.Set("gaiaPath",
+                 GetPath(gaia_urls.embedded_setup_chromeos_kid_signin_url()));
       break;
     case WizardContext::GaiaPath::kReauth:
-      params.Set(
-          "gaiaPath",
-          GaiaUrls::GetInstance()->embedded_reauth_chromeos_url().path().substr(
-              1));
+      params.Set("gaiaPath", GetPath(gaia_urls.embedded_reauth_chromeos_url()));
+      break;
+    case WizardContext::GaiaPath::kSamlRedirect:
+      params.Set("gaiaPath", GetPath(gaia_urls.saml_redirect_chromeos_url()));
       break;
   }
 

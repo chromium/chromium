@@ -119,7 +119,6 @@ const SIGN_IN_HEADER = 'google-accounts-signin';
 const EMBEDDED_FORM_HEADER = 'google-accounts-embedded';
 const LOCATION_HEADER = 'location';
 const SERVICE_ID = 'chromeoslogin';
-const SAML_REDIRECTION_PATH = 'samlredirect';
 const BLANK_PAGE_URL = 'about:blank';
 
 const GAIA_DONE_ELAPSED_TIME = 'ChromeOS.Gaia.Done.ElapsedTime';
@@ -781,8 +780,11 @@ export class Authenticator extends EventTarget {
   }
 
   constructInitialFrameUrl_(data) {
+    assert(this.idpOrigin_ !== undefined, "this.idpOrigin_ must be defined");
+    assert(data.gaiaPath !== undefined, "data.gaiaPath must be defined");
+    let url = this.idpOrigin_ + data.gaiaPath;
+
     if (data.doSamlRedirect) {
-      let url = this.idpOrigin_ + SAML_REDIRECTION_PATH;
       url = appendParam(url, 'domain', data.enterpriseEnrollmentDomain);
       if (data.ssoProfile) {
         url = appendParam(url, 'sso_profile', data.ssoProfile);
@@ -799,10 +801,6 @@ export class Authenticator extends EventTarget {
 
       return url;
     }
-
-    assert(this.idpOrigin_ !== undefined, "this.idpOrigin_ must be defined");
-    assert(data.gaiaPath !== undefined, "data.gaiaPath must be defined");
-    let url = this.idpOrigin_ + data.gaiaPath;
 
     if (data.chromeType) {
       url = appendParam(url, 'chrometype', data.chromeType);
