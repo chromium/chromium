@@ -12015,21 +12015,6 @@
             ]
         }
     ],
-    "PartialCustomTabsSideSheet3rdPartyPolicy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CCTResizableSideSheetForThirdParties"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocBackupRefPtr16BRefcount": [
         {
             "platforms": [
