@@ -18,7 +18,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -640,7 +640,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 // reauth setting's UI cell.
 - (void)didTapIncognitoReauthDisabledInfoButton:(UIButton*)buttonView {
   InfoPopoverViewController* popover;
-  if (supervised_user::IsSubjectToParentalControls(_browserState->GetPrefs())) {
+  if (supervised_user::IsSubjectToParentalControls(
+                           *_browserState->GetPrefs())) {
     popover = [[SupervisedUserInfoPopoverViewController alloc]
         initWithMessage:
             l10n_util::GetNSString(
@@ -663,7 +664,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 // interstitial setting's UI cell.
 - (void)didTapIncognitoInterstitialDisabledInfoButton:(UIButton*)buttonView {
   InfoPopoverViewController* popover;
-  if (supervised_user::IsSubjectToParentalControls(_browserState->GetPrefs())) {
+  if (supervised_user::IsSubjectToParentalControls(
+                           *_browserState->GetPrefs())) {
     popover = [[SupervisedUserInfoPopoverViewController alloc]
         initWithMessage:
             l10n_util::GetNSString(

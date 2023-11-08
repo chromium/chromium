@@ -4,6 +4,8 @@
 
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 
+#include <memory>
+
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -119,6 +121,79 @@ TEST_F(SupervisedUserPreferencesTest, IsChildAccountNonSupervisedUser) {
   pref_service_.SetString(prefs::kSupervisedUserId, std::string());
   EXPECT_FALSE(supervised_user::IsChildAccount(pref_service_));
 }
+
+enum class UrlFilteringStatus { kEnabled, kDisabled };
+
+// Tests for the method IsSubjectToParentalControlsForSupervisedUser which
+// depends on enabling platform-specific feature flags.
+class SupervisedUserPreferencesTestWithUrlFilteringFeature
+    : public ::testing::Test,
+      public testing::WithParamInterface<UrlFilteringStatus> {
+ public:
+  void SetUp() override {
+    auto* registry = pref_service_.registry();
+    supervised_user::RegisterProfilePrefs(registry);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_IOS)
+    if (IsURLFilteringEnabled()) {
+      feature_list_.InitAndEnableFeature(
+          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+    }
+#endif
+  }
+
+  bool IsURLFilteringEnabled() {
+    return GetParam() == UrlFilteringStatus::kEnabled;
+  }
+
+ protected:
+  TestingPrefServiceSimple pref_service_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(SupervisedUserPreferencesTestWithUrlFilteringFeature,
+       IsSubjectToParentalControlsForSupervisedUser) {
+  // Set supervised user preference.
+  pref_service_.SetString(prefs::kSupervisedUserId,
+                          supervised_user::kChildAccountSUID);
+  EXPECT_EQ(supervised_user::IsSubjectToParentalControls(pref_service_),
+            IsURLFilteringEnabled());
+}
+
+TEST_P(SupervisedUserPreferencesTestWithUrlFilteringFeature,
+       IsSubjectToParentalControlsForNonSupervisedUser) {
+  // Set non-supervised user preference.
+  pref_service_.SetString(prefs::kSupervisedUserId, std::string());
+  EXPECT_FALSE(supervised_user::IsSubjectToParentalControls(pref_service_));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupervisedUserPreferencesTestWithUrlFilteringFeature,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_IOS)
+    testing::Values(UrlFilteringStatus::kDisabled,
+                    UrlFilteringStatus::kEnabled),
+#else
+    // Android and ChromeOS have supervised user filteting on by
+    // default.
+    testing::Values(UrlFilteringStatus::kEnabled),
+#endif
+    [](const testing::TestParamInfo<UrlFilteringStatus> info) {
+      // Generate the test suffix from boolean param.
+      switch (info.param) {
+        case UrlFilteringStatus::kEnabled:
+          return "with_enabled_url_filtering";
+        case UrlFilteringStatus::kDisabled:
+          return "with_disabled_url_filtering";
+      }
+    });
 
 enum class ExtensionsPermissionStatus { kEnabled, kDisabled };
 

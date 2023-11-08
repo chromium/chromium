@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
-#import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
@@ -56,8 +56,8 @@ void OnHTTPAuthOverlayFinished(web::WebStateDelegate::AuthCallback callback,
 bool IsMicOrCameraAccessSubjectToParentalControls(
     ChromeBrowserState* browser_state,
     NSArray<NSNumber*>* permissions) {
-  if (!supervised_user::IsSubjectToParentalControls(
-          browser_state->GetPrefs())) {
+  if (!browser_state || !supervised_user::IsSubjectToParentalControls(
+                            *browser_state->GetPrefs())) {
     return false;
   }
 

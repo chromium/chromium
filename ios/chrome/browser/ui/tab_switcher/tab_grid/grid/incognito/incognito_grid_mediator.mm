@@ -9,9 +9,9 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
-#import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -226,7 +226,7 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
   }
 
   return ShouldFilterWebSitesForSupervisedUsers() &&
-         supervised_user::IsSubjectToParentalControls(prefService);
+         supervised_user::IsSubjectToParentalControls(*prefService);
 }
 
 @end

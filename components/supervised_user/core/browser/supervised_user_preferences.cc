@@ -175,6 +175,10 @@ bool IsChildAccount(const PrefService& pref_service) {
   return pref_service.GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
 }
 
+bool IsSubjectToParentalControls(const PrefService& pref_service) {
+  return IsChildAccount(pref_service) && IsChildAccountSupervisionEnabled();
+}
+
 bool AreExtensionsPermissionsEnabled(const PrefService& pref_service) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
@@ -196,6 +200,6 @@ static jboolean JNI_SupervisedUserPreferences_IsSubjectToParentalControls(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jprefs) {
   PrefService* prefs = PrefServiceAndroid::FromPrefServiceAndroid(jprefs);
-  return supervised_user::IsSubjectToParentalControls(prefs);
+  return prefs && supervised_user::IsSubjectToParentalControls(*prefs);
 }
 #endif
