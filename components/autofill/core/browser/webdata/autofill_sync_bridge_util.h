@@ -16,7 +16,6 @@ namespace autofill {
 class AutofillOfferData;
 struct ServerCvc;
 class AutofillWalletUsageData;
-class AutofillProfile;
 class AutofillTable;
 class CreditCard;
 struct CreditCardCloudTokenData;
@@ -32,13 +31,6 @@ std::string GetBase64DecodedId(const std::string& id);
 std::string GetStorageKeyForWalletMetadataTypeAndSpecificsId(
     sync_pb::WalletMetadataSpecifics::Type type,
     const std::string& specifics_id);
-
-// Sets the fields of the |wallet_specifics| based on the the specified
-// |address|. If |enforce_utf8|, ids are encoded into UTF-8.
-void SetAutofillWalletSpecificsFromServerProfile(
-    const AutofillProfile& address,
-    sync_pb::AutofillWalletSpecifics* wallet_specifics,
-    bool enforce_utf8 = false);
 
 // Sets the fields of the |wallet_specifics| based on the the specified |card|.
 // If |enforce_utf8|, ids are encoded into UTF-8.
@@ -95,10 +87,6 @@ ServerCvc AutofillWalletCvcStructDataFromWalletCredentialSpecifics(
 VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
     const sync_pb::AutofillWalletUsageSpecifics& usage_specifics);
 
-// Creates an AutofillProfile from the specified |address| specifics.
-AutofillProfile ProfileFromSpecifics(
-    const sync_pb::WalletPostalAddress& address);
-
 // TODO(sebsg): This should probably copy the converted state for the address
 // too.
 // Copies the metadata from the local cards (if present) to the corresponding
@@ -109,13 +97,10 @@ void CopyRelevantWalletMetadataFromDisk(
     const AutofillTable& table,
     std::vector<CreditCard>* cards_from_server);
 
-// Populates the wallet datatypes from the sync data and uses the sync data to
-// link the card to its billing address. If |wallet_addresses| is a nullptr,
-// this function will not extract addresses.
+// Populates the wallet datatypes from the sync data.
 void PopulateWalletTypesFromSyncData(
     const ::syncer::EntityChangeList& entity_data,
     std::vector<CreditCard>* wallet_cards,
-    std::vector<AutofillProfile>* wallet_addresses,
     std::vector<PaymentsCustomerData>* customer_data,
     std::vector<CreditCardCloudTokenData>* cloud_token_data);
 

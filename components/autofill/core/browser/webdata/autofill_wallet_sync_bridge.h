@@ -20,7 +20,6 @@
 
 namespace autofill {
 
-class AutofillProfile;
 class AutofillTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
@@ -105,13 +104,6 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // individual entity changes.
   bool SetWalletCards(std::vector<CreditCard> wallet_cards,
                       bool notify_webdata_backend);
-
-  // Sets `wallet_addresses` to this client and returns whether any change has
-  // been applied (i.e., whether `wallet_addresses` was different from local
-  // data). If `notify_webdata_backend`, it also notifies via WebDataBackend
-  // about any individual entity changes.
-  bool SetWalletAddresses(std::vector<AutofillProfile> wallet_addresses,
-                          bool notify_webdata_backend);
 
   // Sets |cloud_token_data| to this client and returns whether any change has
   // been applied (i.e., whether |cloud_token_data| was different from the local

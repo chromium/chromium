@@ -39,19 +39,6 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForCard(
   return wallet_specifics;
 }
 
-sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForAddress(
-    const std::string& client_tag) {
-  sync_pb::AutofillWalletSpecifics wallet_specifics;
-  wallet_specifics.set_type(
-      sync_pb::AutofillWalletSpecifics_WalletInfoType::
-          AutofillWalletSpecifics_WalletInfoType_POSTAL_ADDRESS);
-
-  sync_pb::WalletPostalAddress* profile_specifics =
-      wallet_specifics.mutable_address();
-  profile_specifics->set_id(client_tag);
-  return wallet_specifics;
-}
-
 sync_pb::AutofillWalletSpecifics
 CreateAutofillWalletSpecificsForPaymentsCustomerData(
     const std::string& client_tag) {

@@ -78,7 +78,6 @@ const char kCustomerDataId[] = "deadbeef";
 const char kCustomerDataId2[] = "deadcafe";
 
 // Unique client tags for the server data.
-const char kAddr1ClientTag[] = "YWRkcjHvv74=";
 const char kCard1ClientTag[] = "Y2FyZDHvv74=";
 const char kCustomerDataClientTag[] = "deadbeef";
 const char kCloudTokenDataClientTag[] = "token";
@@ -111,27 +110,6 @@ std::string WalletMaskedCreditCardSpecificsAsDebugString(
          << ", bank_name: " << specifics.masked_card().bank_name()
          << ", instrument_id: " << specifics.masked_card().instrument_id()
          << "]";
-  return output.str();
-}
-
-std::string WalletPostalAddressSpecificsAsDebugString(
-    const AutofillWalletSpecifics& specifics) {
-  std::ostringstream output;
-  output << "[id: " << specifics.address().id()
-         << ", type: " << static_cast<int>(specifics.type())
-         << ", recipient_name: " << specifics.address().recipient_name()
-         << ", company_name: " << specifics.address().company_name()
-         << ", street_address: "
-         << (specifics.address().street_address_size()
-                 ? specifics.address().street_address(0)
-                 : "")
-         << ", address_1: " << specifics.address().address_1()
-         << ", address_2: " << specifics.address().address_2()
-         << ", address_3: " << specifics.address().address_3()
-         << ", postal_code: " << specifics.address().postal_code()
-         << ", country_code: " << specifics.address().country_code()
-         << ", phone_number: " << specifics.address().phone_number()
-         << ", sorting_code: " << specifics.address().sorting_code() << "]";
   return output.str();
 }
 
@@ -195,7 +173,7 @@ std::string AutofillWalletSpecificsAsDebugString(
       return WalletMaskedCreditCardSpecificsAsDebugString(specifics);
     case sync_pb::AutofillWalletSpecifics_WalletInfoType::
         AutofillWalletSpecifics_WalletInfoType_POSTAL_ADDRESS:
-      return WalletPostalAddressSpecificsAsDebugString(specifics);
+      return "POSTAL_ADDRESS is deprecated";
     case sync_pb::AutofillWalletSpecifics_WalletInfoType::
         AutofillWalletSpecifics_WalletInfoType_CUSTOMER_DATA:
       return "CustomerData";
@@ -331,15 +309,10 @@ class AutofillWalletSyncBridgeTest : public testing::Test {
                                       gc_directive);
   }
 
-  void ExpectCountsOfWalletMetadataInDB(unsigned int cards_count,
-                                        unsigned int addresses_count) {
+  void ExpectCountOfCreditCardMetadataInDB(unsigned int cards_count) {
     std::map<std::string, AutofillMetadata> cards_metadata;
     ASSERT_TRUE(table()->GetServerCardsMetadata(&cards_metadata));
     EXPECT_EQ(cards_count, cards_metadata.size());
-
-    std::map<std::string, AutofillMetadata> addresses_metadata;
-    ASSERT_TRUE(table()->GetServerAddressesMetadata(&addresses_metadata));
-    EXPECT_EQ(addresses_count, addresses_metadata.size());
   }
 
   EntityData SpecificsToEntity(const AutofillWalletSpecifics& specifics) {
@@ -392,14 +365,7 @@ class AutofillWalletSyncBridgeTest : public testing::Test {
   std::unique_ptr<AutofillWalletSyncBridge> bridge_;
 };
 
-// The following 4 tests make sure client tags stay stable.
-TEST_F(AutofillWalletSyncBridgeTest, GetClientTagForAddress) {
-  AutofillWalletSpecifics specifics =
-      CreateAutofillWalletSpecificsForAddress(kAddr1ClientTag);
-  EXPECT_EQ(bridge()->GetClientTag(SpecificsToEntity(specifics)),
-            kAddr1ClientTag);
-}
-
+// The following 3 tests make sure client tags stay stable.
 TEST_F(AutofillWalletSyncBridgeTest, GetClientTagForCard) {
   AutofillWalletSpecifics specifics =
       CreateAutofillWalletSpecificsForCard(kCard1ClientTag);
@@ -423,14 +389,7 @@ TEST_F(AutofillWalletSyncBridgeTest, GetClientTagForCreditCardCloudTokenData) {
             kCloudTokenDataClientTag);
 }
 
-// The following 4 tests make sure storage keys stay stable.
-TEST_F(AutofillWalletSyncBridgeTest, GetStorageKeyForAddress) {
-  AutofillWalletSpecifics specifics1 =
-      CreateAutofillWalletSpecificsForAddress(kAddr1ClientTag);
-  EXPECT_EQ(bridge()->GetStorageKey(SpecificsToEntity(specifics1)),
-            kAddr1ClientTag);
-}
-
+// The following 3 tests make sure storage keys stay stable.
 TEST_F(AutofillWalletSyncBridgeTest, GetStorageKeyForCard) {
   AutofillWalletSpecifics specifics2 =
       CreateAutofillWalletSpecificsForCard(kCard1ClientTag);
@@ -456,10 +415,7 @@ TEST_F(AutofillWalletSyncBridgeTest, GetStorageKeyForCreditCardCloudTokenData) {
 
 TEST_F(AutofillWalletSyncBridgeTest,
        GetAllDataForDebugging_ShouldReturnAllData) {
-  // Create Wallet Data and store them to table.
-  AutofillProfile address1 = test::GetServerProfile();
-  AutofillProfile address2 = test::GetServerProfile2();
-  table()->SetServerProfiles({address1, address2});
+  // Create Wallet Data and store them in the table.
   CreditCard card1 = test::GetMaskedServerCard();
   // Set the card issuer to Google.
   card1.set_card_issuer(CreditCard::Issuer::kGoogle);
@@ -479,10 +435,6 @@ TEST_F(AutofillWalletSyncBridgeTest,
   CreditCardCloudTokenData data2 = test::GetCreditCardCloudTokenData2();
   table()->SetCreditCardCloudTokenData({data1, data2});
 
-  AutofillWalletSpecifics profile_specifics1;
-  SetAutofillWalletSpecificsFromServerProfile(address1, &profile_specifics1);
-  AutofillWalletSpecifics profile_specifics2;
-  SetAutofillWalletSpecificsFromServerProfile(address2, &profile_specifics2);
   AutofillWalletSpecifics card_specifics1;
   SetAutofillWalletSpecificsFromServerCard(card1, &card_specifics1);
   AutofillWalletSpecifics card_specifics2;
@@ -522,9 +474,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
   // wallet specifics.
   EXPECT_THAT(
       GetAllLocalData(),
-      UnorderedElementsAre(EqualsSpecifics(profile_specifics1),
-                           EqualsSpecifics(profile_specifics2),
-                           EqualsSpecifics(card_specifics1),
+      UnorderedElementsAre(EqualsSpecifics(card_specifics1),
                            EqualsSpecifics(card_specifics2),
                            EqualsSpecifics(card_specifics_with_nickname),
                            EqualsSpecifics(customer_data_specifics),
@@ -555,13 +505,10 @@ TEST_F(AutofillWalletSyncBridgeTest,
                            EqualsSpecifics(cloud_token_data_specifics2)));
 }
 
-// Tests that when a new wallet card and new wallet address are sent by the
-// server, the client only keeps the new data.
-TEST_F(AutofillWalletSyncBridgeTest,
-       MergeFullSyncData_NewWalletAddressAndCard) {
-  // Create one profile and one card on the client.
-  AutofillProfile address1 = test::GetServerProfile();
-  table()->SetServerProfiles({address1});
+// Tests that when a new wallet card is sent by the server, the client only
+// keeps the new data.
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewWalletCard) {
+  // Create one card on the client.
   CreditCard card1 = test::GetMaskedServerCard();
   card1.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnenrolled);
@@ -573,10 +520,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
       test::GetCreditCardCloudTokenData1();
   table()->SetCreditCardCloudTokenData({cloud_token_data});
 
-  // Create a different profile and a different card on the server.
-  AutofillProfile address2 = test::GetServerProfile2();
-  AutofillWalletSpecifics profile_specifics2;
-  SetAutofillWalletSpecificsFromServerProfile(address2, &profile_specifics2);
+  // Create a different card on the server.
   CreditCard card2 = test::GetMaskedServerCardAmex();
   card2.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
@@ -593,16 +537,12 @@ TEST_F(AutofillWalletSyncBridgeTest,
   EXPECT_CALL(*backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged(
-                              AddChange(address2.server_id(), address2)));
-  EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged(
-                              RemoveChange(address1.server_id())));
   EXPECT_CALL(*backend(),
               NotifyOfCreditCardChanged(AddChange(card2.server_id(), card2)));
   EXPECT_CALL(*backend(),
               NotifyOfCreditCardChanged(RemoveChange(card1.server_id())));
-  StartSyncing({profile_specifics2, card_specifics2, customer_data_specifics,
-                cloud_token_data_specifics});
+  StartSyncing(
+      {card_specifics2, customer_data_specifics, cloud_token_data_specifics});
 
   // This bridge does not store metadata, i.e. billing_address_id. Strip it
   // off so that the expectations below pass.
@@ -611,23 +551,18 @@ TEST_F(AutofillWalletSyncBridgeTest,
   // Only the server card should be present on the client.
   EXPECT_THAT(
       GetAllLocalData(),
-      UnorderedElementsAre(EqualsSpecifics(profile_specifics2),
-                           EqualsSpecifics(card_specifics2),
+      UnorderedElementsAre(EqualsSpecifics(card_specifics2),
                            EqualsSpecifics(customer_data_specifics),
                            EqualsSpecifics(cloud_token_data_specifics)));
 }
 
-// Tests that in initial sync, no metrics are recorded for new addresses and
-// cards.
+// Tests that in initial sync, no metrics are recorded for new cards.
 TEST_F(AutofillWalletSyncBridgeTest,
-       MergeFullSyncData_NewWalletAddressAndCardNoMetricsInitialSync) {
+       MergeFullSyncData_NewWalletCardNoMetricsInitialSync) {
   ResetProcessor();
   ResetBridge(/*initial_sync_done=*/false);
 
   // Create a data set on the server.
-  AutofillProfile address = test::GetServerProfile();
-  AutofillWalletSpecifics profile_specifics;
-  SetAutofillWalletSpecificsFromServerProfile(address, &profile_specifics);
   CreditCard card = test::GetMaskedServerCard();
   AutofillWalletSpecifics card_specifics;
   SetAutofillWalletSpecificsFromServerCard(card, &card_specifics);
@@ -644,10 +579,10 @@ TEST_F(AutofillWalletSyncBridgeTest,
   EXPECT_CALL(*backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), CommitChanges());
-  StartSyncing({profile_specifics, card_specifics, customer_data_specifics,
-                cloud_token_data_specifics});
+  StartSyncing(
+      {card_specifics, customer_data_specifics, cloud_token_data_specifics});
 
-  ExpectCountsOfWalletMetadataInDB(/*cards_count=*/0u, /*address_count=*/0u);
+  ExpectCountOfCreditCardMetadataInDB(0u);
 
   // This bridge does not store metadata, i.e. billing_address_id. Strip it
   // off so that the expectations below pass.
@@ -655,8 +590,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
 
   EXPECT_THAT(
       GetAllLocalData(),
-      UnorderedElementsAre(EqualsSpecifics(profile_specifics),
-                           EqualsSpecifics(card_specifics),
+      UnorderedElementsAre(EqualsSpecifics(card_specifics),
                            EqualsSpecifics(customer_data_specifics),
                            EqualsSpecifics(cloud_token_data_specifics)));
 }
@@ -665,10 +599,8 @@ TEST_F(AutofillWalletSyncBridgeTest,
 // client only keeps the new data.
 TEST_F(AutofillWalletSyncBridgeTest,
        MergeFullSyncData_NewPaymentsCustomerData) {
-  // Create one profile, one card, one customer data and one cloud token data
-  // entry on the client.
-  AutofillProfile address = test::GetServerProfile();
-  table()->SetServerProfiles({address});
+  // Create one card, one customer data and one cloud token data entry on the
+  // client.
   CreditCard card = test::GetMaskedServerCard();
   table()->SetServerCreditCards({card});
   PaymentsCustomerData customer_data1{/*customer_id=*/kCustomerDataId};
@@ -678,8 +610,6 @@ TEST_F(AutofillWalletSyncBridgeTest,
   table()->SetCreditCardCloudTokenData({cloud_token_data});
 
   // Create a different customer data entry on the server.
-  AutofillWalletSpecifics profile_specifics;
-  SetAutofillWalletSpecificsFromServerProfile(address, &profile_specifics);
   AutofillWalletSpecifics card_specifics;
   SetAutofillWalletSpecificsFromServerCard(card, &card_specifics);
   PaymentsCustomerData customer_data2{/*customer_id=*/kCustomerDataId2};
@@ -695,14 +625,13 @@ TEST_F(AutofillWalletSyncBridgeTest,
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged).Times(0);
   EXPECT_CALL(*backend(), NotifyOfCreditCardChanged).Times(0);
-  StartSyncing({profile_specifics, card_specifics, customer_data_specifics2,
-                cloud_token_data_specifics});
+  StartSyncing(
+      {card_specifics, customer_data_specifics2, cloud_token_data_specifics});
 
   // Only the server card should be present on the client.
   EXPECT_THAT(
       GetAllLocalData(),
-      UnorderedElementsAre(EqualsSpecifics(profile_specifics),
-                           EqualsSpecifics(card_specifics),
+      UnorderedElementsAre(EqualsSpecifics(card_specifics),
                            EqualsSpecifics(customer_data_specifics2),
                            EqualsSpecifics(cloud_token_data_specifics)));
 }
@@ -710,8 +639,6 @@ TEST_F(AutofillWalletSyncBridgeTest,
 // Tests that when a new credit card cloud token data is sent by the server,
 // the client only keeps the new data.
 TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewCloudTokenData) {
-  AutofillProfile address = test::GetServerProfile();
-  table()->SetServerProfiles({address});
   CreditCard card = test::GetMaskedServerCard();
   table()->SetServerCreditCards({card});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
@@ -721,8 +648,6 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewCloudTokenData) {
   table()->SetCreditCardCloudTokenData({cloud_token_data1});
 
   // Create a different cloud token data entry on the server.
-  AutofillWalletSpecifics profile_specifics;
-  SetAutofillWalletSpecificsFromServerProfile(address, &profile_specifics);
   AutofillWalletSpecifics card_specifics;
   SetAutofillWalletSpecificsFromServerCard(card, &card_specifics);
   AutofillWalletSpecifics customer_data_specifics;
@@ -737,41 +662,35 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewCloudTokenData) {
   EXPECT_CALL(*backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged).Times(0);
   EXPECT_CALL(*backend(), NotifyOfCreditCardChanged).Times(0);
-  StartSyncing({profile_specifics, card_specifics, customer_data_specifics,
-                cloud_token_data_specifics2});
+  StartSyncing(
+      {card_specifics, customer_data_specifics, cloud_token_data_specifics2});
 
   // Only the new cloud token data should be present on the client.
   EXPECT_THAT(
       GetAllLocalData(),
-      UnorderedElementsAre(EqualsSpecifics(profile_specifics),
-                           EqualsSpecifics(card_specifics),
+      UnorderedElementsAre(EqualsSpecifics(card_specifics),
                            EqualsSpecifics(customer_data_specifics),
                            EqualsSpecifics(cloud_token_data_specifics2)));
 }
 
-// Tests that when the server sends no cards or address, the client should
-// delete all it's existing data.
-TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoWalletAddressOrCard) {
-  // Create one profile and one card on the client.
-  AutofillProfile local_profile = test::GetServerProfile();
-  table()->SetServerProfiles({local_profile});
+// Tests that when the server sends no cards, the client should delete all it's
+// existing data.
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoWalletCard) {
+  // Create one card on the client.
   CreditCard local_card = test::GetMaskedServerCard();
   table()->SetServerCreditCards({local_card});
 
   EXPECT_CALL(*backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged(
-                              RemoveChange(local_profile.server_id())));
   EXPECT_CALL(*backend(),
               NotifyOfCreditCardChanged(RemoveChange(local_card.server_id())));
   StartSyncing({});
 
   // This bridge should not touch the metadata; should get deleted by the
   // metadata bridge.
-  ExpectCountsOfWalletMetadataInDB(/*cards_count=*/1u, /*address_count=*/1u);
+  ExpectCountOfCreditCardMetadataInDB(1u);
 
   EXPECT_TRUE(GetAllLocalData().empty());
 }
@@ -787,7 +706,6 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoCloudTokenData) {
   EXPECT_CALL(*backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged).Times(0);
   EXPECT_CALL(*backend(), NotifyOfCreditCardChanged).Times(0);
   StartSyncing({});
 
@@ -796,12 +714,9 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoCloudTokenData) {
 
 // Tests that when the server sends the same data as the client has, nothing
 // changes on the client.
-TEST_F(
-    AutofillWalletSyncBridgeTest,
-    MergeFullSyncData_SameWalletAddressAndCardAndCustomerDataAndCloudTokenData) {
-  // Create one profile and one card on the client.
-  AutofillProfile profile = test::GetServerProfile();
-  table()->SetServerProfiles({profile});
+TEST_F(AutofillWalletSyncBridgeTest,
+       MergeFullSyncData_SameWalletCardAndCustomerDataAndCloudTokenData) {
+  // Create one card on the client.
   CreditCard card = test::GetMaskedServerCard();
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnenrolled);
@@ -813,9 +728,7 @@ TEST_F(
       test::GetCreditCardCloudTokenData1();
   table()->SetCreditCardCloudTokenData({cloud_token_data});
 
-  // Create the same profile and card on the server.
-  AutofillWalletSpecifics profile_specifics;
-  SetAutofillWalletSpecificsFromServerProfile(profile, &profile_specifics);
+  // Create the card on the server.
   AutofillWalletSpecifics card_specifics;
   SetAutofillWalletSpecificsFromServerCard(card, &card_specifics);
   AutofillWalletSpecifics customer_data_specifics;
@@ -830,15 +743,13 @@ TEST_F(
       .Times(0);
   // We still need to commit the updated progress marker on the client.
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged).Times(0);
   EXPECT_CALL(*backend(), NotifyOfCreditCardChanged).Times(0);
-  StartSyncing({profile_specifics, card_specifics, customer_data_specifics,
-                cloud_token_data_specifics});
+  StartSyncing(
+      {card_specifics, customer_data_specifics, cloud_token_data_specifics});
 
   EXPECT_THAT(
       GetAllLocalData(),
-      UnorderedElementsAre(EqualsSpecifics(profile_specifics),
-                           EqualsSpecifics(card_specifics),
+      UnorderedElementsAre(EqualsSpecifics(card_specifics),
                            EqualsSpecifics(customer_data_specifics),
                            EqualsSpecifics(cloud_token_data_specifics)));
 }
@@ -846,19 +757,14 @@ TEST_F(
 // Tests that when there are multiple changes happening at the same time, the
 // data from the server is what the client ends up with.
 TEST_F(AutofillWalletSyncBridgeTest,
-       MergeFullSyncData_AddRemoveAndPreserveWalletAddressAndCard) {
-  // Create two profile and one card on the client.
-  AutofillProfile profile = test::GetServerProfile();
-  AutofillProfile profile2 = test::GetServerProfile2();
-  table()->SetServerProfiles({profile, profile2});
+       MergeFullSyncData_AddRemoveAndPreserveWalletCard) {
+  // Create one card on the client.
   CreditCard card = test::GetMaskedServerCard();
   table()->SetServerCreditCards({card});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
   table()->SetPaymentsCustomerData(&customer_data);
 
-  // Create one of the same profiles and a different card on the server.
-  AutofillWalletSpecifics profile_specifics;
-  SetAutofillWalletSpecificsFromServerProfile(profile, &profile_specifics);
+  // Create a different card on the server.
   // The Amex card has different values for the relevant fields.
   CreditCard card2 = test::GetMaskedServerCardAmex();
   AutofillWalletSpecifics card2_specifics;
@@ -870,13 +776,11 @@ TEST_F(AutofillWalletSyncBridgeTest,
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged(
-                              RemoveChange(profile2.server_id())));
   EXPECT_CALL(*backend(),
               NotifyOfCreditCardChanged(RemoveChange(card.server_id())));
   EXPECT_CALL(*backend(),
               NotifyOfCreditCardChanged(AddChange(card2.server_id(), card2)));
-  StartSyncing({profile_specifics, card2_specifics, customer_data_specifics});
+  StartSyncing({card2_specifics, customer_data_specifics});
 
   // This bridge does not store metadata, i.e. billing_address_id. Strip it
   // off so that the expectations below pass.
@@ -884,64 +788,8 @@ TEST_F(AutofillWalletSyncBridgeTest,
 
   // Make sure that the client only has the data from the server.
   EXPECT_THAT(GetAllLocalData(),
-              UnorderedElementsAre(EqualsSpecifics(profile_specifics),
-                                   EqualsSpecifics(card2_specifics),
+              UnorderedElementsAre(EqualsSpecifics(card2_specifics),
                                    EqualsSpecifics(customer_data_specifics)));
-}
-
-// Test that all field values for a address sent form the server are copied on
-// the address on the client.
-TEST_F(AutofillWalletSyncBridgeTest,
-       MergeFullSyncData_SetsAllWalletAddressData) {
-  // Create a profile to be synced from the server.
-  AutofillProfile profile = test::GetServerProfile();
-  AutofillWalletSpecifics profile_specifics;
-  SetAutofillWalletSpecificsFromServerProfile(profile, &profile_specifics);
-
-  StartSyncing({profile_specifics});
-
-  EXPECT_THAT(GetAllLocalData(),
-              UnorderedElementsAre(EqualsSpecifics(profile_specifics)));
-
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  table()->GetServerProfiles(&profiles);
-  ASSERT_EQ(1U, profiles.size());
-
-  // Make sure that all the data was set properly.
-  EXPECT_EQ(profile.GetRawInfo(NAME_FULL), profiles[0]->GetRawInfo(NAME_FULL));
-  EXPECT_EQ(profile.GetRawInfo(COMPANY_NAME),
-            profiles[0]->GetRawInfo(COMPANY_NAME));
-  EXPECT_EQ(profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
-            profiles[0]->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
-  EXPECT_EQ(profile.GetRawInfo(ADDRESS_HOME_STATE),
-            profiles[0]->GetRawInfo(ADDRESS_HOME_STATE));
-  EXPECT_EQ(profile.GetRawInfo(ADDRESS_HOME_CITY),
-            profiles[0]->GetRawInfo(ADDRESS_HOME_CITY));
-  EXPECT_EQ(profile.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY),
-            profiles[0]->GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY));
-  EXPECT_EQ(profile.GetRawInfo(ADDRESS_HOME_ZIP),
-            profiles[0]->GetRawInfo(ADDRESS_HOME_ZIP));
-  EXPECT_EQ(profile.GetRawInfo(ADDRESS_HOME_COUNTRY),
-            profiles[0]->GetRawInfo(ADDRESS_HOME_COUNTRY));
-  EXPECT_EQ(profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER),
-            profiles[0]->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  EXPECT_EQ(profile.GetRawInfo(ADDRESS_HOME_SORTING_CODE),
-            profiles[0]->GetRawInfo(ADDRESS_HOME_SORTING_CODE));
-  EXPECT_EQ(profile.language_code(), profiles[0]->language_code());
-
-  // Also make sure that those types are not empty, to exercice all the code
-  // paths.
-  EXPECT_FALSE(profile.GetRawInfo(NAME_FULL).empty());
-  EXPECT_FALSE(profile.GetRawInfo(COMPANY_NAME).empty());
-  EXPECT_FALSE(profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS).empty());
-  EXPECT_FALSE(profile.GetRawInfo(ADDRESS_HOME_STATE).empty());
-  EXPECT_FALSE(profile.GetRawInfo(ADDRESS_HOME_CITY).empty());
-  EXPECT_FALSE(profile.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY).empty());
-  EXPECT_FALSE(profile.GetRawInfo(ADDRESS_HOME_ZIP).empty());
-  EXPECT_FALSE(profile.GetRawInfo(ADDRESS_HOME_COUNTRY).empty());
-  EXPECT_FALSE(profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER).empty());
-  EXPECT_FALSE(profile.GetRawInfo(ADDRESS_HOME_SORTING_CODE).empty());
-  EXPECT_FALSE(profile.language_code().empty());
 }
 
 // Test that all field values for a card sent from the server are copied on the
@@ -1037,9 +885,7 @@ TEST_F(AutofillWalletSyncBridgeTest, LoadMetadataCalled) {
 }
 
 TEST_F(AutofillWalletSyncBridgeTest, ApplyDisableSyncChanges) {
-  // Create one profile, one card and one cloud token data on the client.
-  AutofillProfile local_profile = test::GetServerProfile();
-  table()->SetServerProfiles({local_profile});
+  // Create one card and one cloud token data on the client.
   CreditCard local_card = test::GetMaskedServerCard();
   table()->SetServerCreditCards({local_card});
   CreditCardCloudTokenData cloud_token_data =
@@ -1049,7 +895,6 @@ TEST_F(AutofillWalletSyncBridgeTest, ApplyDisableSyncChanges) {
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged).Times(0);
   EXPECT_CALL(*backend(), NotifyOfCreditCardChanged).Times(0);
 
   // ApplyDisableSyncChanges indicates to the bridge that sync is stopping
@@ -1059,7 +904,7 @@ TEST_F(AutofillWalletSyncBridgeTest, ApplyDisableSyncChanges) {
 
   // This bridge should not touch the metadata; should get deleted by the
   // metadata bridge.
-  ExpectCountsOfWalletMetadataInDB(/*cards_count=*/1u, /*address_count=*/1u);
+  ExpectCountOfCreditCardMetadataInDB(1u);
 
   EXPECT_TRUE(GetAllLocalData().empty());
 }

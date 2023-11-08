@@ -66,7 +66,7 @@ EntityData SpecificsToEntity(const sync_pb::AutofillWalletSpecifics& specifics,
 
 class AutofillSyncBridgeUtilTest : public testing::Test {
  public:
-  AutofillSyncBridgeUtilTest() {}
+  AutofillSyncBridgeUtilTest() = default;
 
   AutofillSyncBridgeUtilTest(const AutofillSyncBridgeUtilTest&) = delete;
   AutofillSyncBridgeUtilTest& operator=(const AutofillSyncBridgeUtilTest&) =
@@ -77,13 +77,7 @@ class AutofillSyncBridgeUtilTest : public testing::Test {
 
 // Tests that PopulateWalletTypesFromSyncData behaves as expected.
 TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
-  // Add an address first.
   syncer::EntityChangeList entity_data;
-  std::string address_id("address1");
-  entity_data.push_back(EntityChange::CreateAdd(
-      address_id,
-      SpecificsToEntity(CreateAutofillWalletSpecificsForAddress(address_id),
-                        /*client_tag=*/"address-address1")));
   // Add two credit cards.
   std::string credit_card_id_1 = "credit_card_1";
   std::string credit_card_id_2 = "credit_card_2";
@@ -91,8 +85,8 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   // No nickname is set.
   sync_pb::AutofillWalletSpecifics wallet_specifics_card1 =
       CreateAutofillWalletSpecificsForCard(
-          /*id=*/credit_card_id_1,
-          /*billing_address_id=*/address_id);
+          /*client_tag=*/credit_card_id_1,
+          /*billing_address_id=*/"1");
   wallet_specifics_card1.mutable_masked_card()
       ->set_virtual_card_enrollment_state(
           sync_pb::WalletMaskedCreditCard::UNENROLLED);
@@ -103,7 +97,7 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   std::string nickname("Grocery card");
   sync_pb::AutofillWalletSpecifics wallet_specifics_card2 =
       CreateAutofillWalletSpecificsForCard(
-          /*id=*/credit_card_id_2,
+          /*client_tag=*/credit_card_id_2,
           /*billing_address_id=*/"", /*nickname=*/nickname);
   // Set the second card's issuer to GOOGLE.
   wallet_specifics_card2.mutable_masked_card()
@@ -132,33 +126,27 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   entity_data.push_back(EntityChange::CreateAdd(
       "deadbeef",
       SpecificsToEntity(CreateAutofillWalletSpecificsForPaymentsCustomerData(
-                            /*specifics_id=*/"deadbeef"),
+                            /*client_tag=*/"deadbeef"),
                         /*client_tag=*/"customer-deadbeef")));
   // Add cloud token data.
   entity_data.push_back(EntityChange::CreateAdd(
       "data1", SpecificsToEntity(
                    CreateAutofillWalletSpecificsForCreditCardCloudTokenData(
-                       /*specifics_id=*/"data1"),
+                       /*client_tag=*/"data1"),
                    /*client_tag=*/"token-data1")));
 
   std::vector<CreditCard> wallet_cards;
-  std::vector<AutofillProfile> wallet_addresses;
   std::vector<PaymentsCustomerData> customer_data;
   std::vector<CreditCardCloudTokenData> cloud_token_data;
-  PopulateWalletTypesFromSyncData(entity_data, &wallet_cards, &wallet_addresses,
-                                  &customer_data, &cloud_token_data);
+  PopulateWalletTypesFromSyncData(entity_data, &wallet_cards, &customer_data,
+                                  &cloud_token_data);
 
   ASSERT_EQ(2U, wallet_cards.size());
-  ASSERT_EQ(1U, wallet_addresses.size());
 
   EXPECT_EQ("deadbeef", customer_data.back().customer_id);
 
   EXPECT_EQ("data1", cloud_token_data.back().instrument_token);
 
-  // Make sure the first card's billing address id is equal to the address'
-  // server id.
-  EXPECT_EQ(wallet_addresses.back().server_id(),
-            wallet_cards.front().billing_address_id());
   // The first card's nickname is empty.
   EXPECT_TRUE(wallet_cards.front().nickname().empty());
 

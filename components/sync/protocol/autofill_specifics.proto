@@ -326,6 +326,9 @@ message WalletMaskedCreditCard {
   optional VirtualCardEnrollmentType virtual_card_enrollment_type = 19;
 }
 
+// Unused by the client since M121.
+// TODO(crbug.com/1457187): Some server-side code still relies on this message.
+// To keep the protos in sync, it is kept until that code is cleaned up.
 // Different than an AutofillProfile because this represents some known address
 // on the server that is pulled down rather than synced between Chromes.
 message WalletPostalAddress {
@@ -455,6 +458,7 @@ message AutofillWalletSpecifics {
   enum WalletInfoType {
     UNKNOWN = 0;
     MASKED_CREDIT_CARD = 1;
+    // POSTAL_ADDRESS is unused by the client since M121.
     POSTAL_ADDRESS = 2;
     CUSTOMER_DATA = 3;
     CREDIT_CARD_CLOUD_TOKEN_DATA = 4;
@@ -467,7 +471,10 @@ message AutofillWalletSpecifics {
   // MASKED_CREDIT_CARD.
   optional WalletMaskedCreditCard masked_card = 2;
 
-  // This field exists if and only if the "type" field equals to ADDRESS.
+  // Unused by the client since M121.
+  // This field exists if and only if the `type` equals POSTAL_ADDRESS.
+  // TODO(crbug.com/1457187): Some server-side code still relies on this field.
+  // To keep the protos in sync, it is kept until that code is cleaned up.
   optional WalletPostalAddress address = 3;
 
   // This field exists if and only if the "type" field equals to CUSTOMER_DATA.

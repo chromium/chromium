@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -201,65 +200,6 @@ std::string GetStorageKeyForWalletMetadataTypeAndSpecificsId(
   // We use the (base64-encoded) |specifics_id| here.
   pickle.WriteString(specifics_id);
   return std::string(pickle.data_as_char(), pickle.size());
-}
-
-void SetAutofillWalletSpecificsFromServerProfile(
-    const AutofillProfile& address,
-    AutofillWalletSpecifics* wallet_specifics,
-    bool enforce_utf8) {
-  wallet_specifics->set_type(AutofillWalletSpecifics::POSTAL_ADDRESS);
-
-  sync_pb::WalletPostalAddress* wallet_address =
-      wallet_specifics->mutable_address();
-
-  if (enforce_utf8) {
-    wallet_address->set_id(GetBase64EncodedId(address.server_id()));
-  } else {
-    wallet_address->set_id(address.server_id());
-  }
-
-  wallet_address->set_language_code(TruncateUTF8(address.language_code()));
-
-  if (address.HasRawInfo(NAME_FULL)) {
-    wallet_address->set_recipient_name(
-        TruncateUTF8(base::UTF16ToUTF8(address.GetRawInfo(NAME_FULL))));
-  }
-  if (address.HasRawInfo(COMPANY_NAME)) {
-    wallet_address->set_company_name(
-        TruncateUTF8(base::UTF16ToUTF8(address.GetRawInfo(COMPANY_NAME))));
-  }
-  if (address.HasRawInfo(ADDRESS_HOME_STREET_ADDRESS)) {
-    wallet_address->add_street_address(TruncateUTF8(
-        base::UTF16ToUTF8(address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))));
-  }
-  if (address.HasRawInfo(ADDRESS_HOME_STATE)) {
-    wallet_address->set_address_1(TruncateUTF8(
-        base::UTF16ToUTF8(address.GetRawInfo(ADDRESS_HOME_STATE))));
-  }
-  if (address.HasRawInfo(ADDRESS_HOME_CITY)) {
-    wallet_address->set_address_2(
-        TruncateUTF8(base::UTF16ToUTF8(address.GetRawInfo(ADDRESS_HOME_CITY))));
-  }
-  if (address.HasRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY)) {
-    wallet_address->set_address_3(TruncateUTF8(base::UTF16ToUTF8(
-        address.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY))));
-  }
-  if (address.HasRawInfo(ADDRESS_HOME_ZIP)) {
-    wallet_address->set_postal_code(
-        TruncateUTF8(base::UTF16ToUTF8(address.GetRawInfo(ADDRESS_HOME_ZIP))));
-  }
-  if (address.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
-    wallet_address->set_country_code(TruncateUTF8(
-        base::UTF16ToUTF8(address.GetRawInfo(ADDRESS_HOME_COUNTRY))));
-  }
-  if (address.HasRawInfo(PHONE_HOME_WHOLE_NUMBER)) {
-    wallet_address->set_phone_number(TruncateUTF8(
-        base::UTF16ToUTF8(address.GetRawInfo(PHONE_HOME_WHOLE_NUMBER))));
-  }
-  if (address.HasRawInfo(ADDRESS_HOME_SORTING_CODE)) {
-    wallet_address->set_sorting_code(TruncateUTF8(
-        base::UTF16ToUTF8(address.GetRawInfo(ADDRESS_HOME_SORTING_CODE))));
-  }
 }
 
 void SetAutofillWalletSpecificsFromServerCard(
@@ -581,46 +521,6 @@ VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
           GURL(virtual_card_usage_data_specifics.merchant_url())));
 }
 
-AutofillProfile ProfileFromSpecifics(
-    const sync_pb::WalletPostalAddress& address) {
-  AutofillProfile profile(AutofillProfile::SERVER_PROFILE, std::string(),
-                          AddressCountryCode(address.country_code()));
-
-  // AutofillProfile stores multi-line addresses with newline separators.
-  std::vector<base::StringPiece> street_address(
-      address.street_address().begin(), address.street_address().end());
-  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS,
-                     base::UTF8ToUTF16(base::JoinString(street_address, "\n")));
-
-  profile.SetRawInfo(COMPANY_NAME, base::UTF8ToUTF16(address.company_name()));
-  profile.SetRawInfo(ADDRESS_HOME_STATE,
-                     base::UTF8ToUTF16(address.address_1()));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, base::UTF8ToUTF16(address.address_2()));
-  profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                     base::UTF8ToUTF16(address.address_3()));
-  // AutofillProfile doesn't support address_4 ("sub dependent locality").
-  profile.SetRawInfo(ADDRESS_HOME_ZIP,
-                     base::UTF8ToUTF16(address.postal_code()));
-  profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE,
-                     base::UTF8ToUTF16(address.sorting_code()));
-  profile.set_language_code(address.language_code());
-
-  // SetInfo instead of SetRawInfo so the constituent pieces will be parsed
-  // for these data types.
-  profile.SetInfo(NAME_FULL, base::UTF8ToUTF16(address.recipient_name()),
-                  profile.language_code());
-  profile.SetInfo(PHONE_HOME_WHOLE_NUMBER,
-                  base::UTF8ToUTF16(address.phone_number()),
-                  profile.language_code());
-
-  profile.GenerateServerProfileIdentifier();
-
-  // Call the finalization routine to parse the structure of the name and the
-  // address into their components.
-  profile.FinalizeAfterImport();
-  return profile;
-}
-
 void CopyRelevantWalletMetadataFromDisk(
     const AutofillTable& table,
     std::vector<CreditCard>* cards_from_server) {
@@ -651,11 +551,8 @@ void CopyRelevantWalletMetadataFromDisk(
 void PopulateWalletTypesFromSyncData(
     const syncer::EntityChangeList& entity_data,
     std::vector<CreditCard>* wallet_cards,
-    std::vector<AutofillProfile>* wallet_addresses,
     std::vector<PaymentsCustomerData>* customer_data,
     std::vector<CreditCardCloudTokenData>* cloud_token_data) {
-  std::map<std::string, std::string> ids;
-
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     DCHECK(change->data().specifics.has_autofill_wallet());
 
@@ -668,17 +565,7 @@ void PopulateWalletTypesFromSyncData(
             CardFromSpecifics(autofill_specifics.masked_card()));
         break;
       case sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS:
-        // Unlike other pointers, |wallet_addresses| can be nullptr. This means
-        // that addresses should not get populated (and billing address ids not
-        // get translated to local profile ids).
-        if (wallet_addresses) {
-          wallet_addresses->push_back(
-              ProfileFromSpecifics(autofill_specifics.address()));
-
-          // Map the sync billing address id to the profile's id.
-          ids[autofill_specifics.address().id()] =
-              wallet_addresses->back().server_id();
-        }
+        // POSTAL_ADDRESS is deprecated.
         break;
       case sync_pb::AutofillWalletSpecifics::CUSTOMER_DATA:
         customer_data->push_back(
@@ -695,14 +582,6 @@ void PopulateWalletTypesFromSyncData(
         // Just ignore new entry types that the client doesn't know about.
         break;
     }
-  }
-
-  // Set the billing address of the wallet cards to the id of the appropriate
-  // profile.
-  for (CreditCard& card : *wallet_cards) {
-    auto it = ids.find(card.billing_address_id());
-    if (it != ids.end())
-      card.set_billing_address_id(it->second);
   }
 }
 
