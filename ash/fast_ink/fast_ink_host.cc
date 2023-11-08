@@ -157,15 +157,8 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
     if (features::ShouldUseMappableSharedImage()) {
       CHECK(!gpu_memory_buffer_);
       CHECK(mailbox_.IsZero());
-      auto client_shared_image = sii->CreateSharedImage(
-          fast_ink_internal::kFastInkSharedImageFormat, buffer_size_,
-          gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          usage, "FastInkHostUIResource", gpu::kNullSurfaceHandle,
-          buffer_usage);
-      LOG_IF(ERROR, !client_shared_image) << "Failed to create MappableSI";
-      if (client_shared_image) {
-        mailbox_ = client_shared_image->mailbox();
-      }
+      mailbox_ = fast_ink_internal::CreateMappableSharedImage(
+          buffer_size_, usage, buffer_usage);
     } else {
       auto client_shared_image = sii->CreateSharedImage(
           fast_ink_internal::kFastInkSharedImageFormat,

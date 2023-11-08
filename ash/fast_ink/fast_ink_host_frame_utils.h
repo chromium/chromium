@@ -52,6 +52,13 @@ ASH_EXPORT std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBuffer(
     const gfx::Size& size,
     const gfx::BufferUsageAndFormat& usage_and_format);
 
+// Creates a Mappable SharedImage of given `size`, `shared_image_usage`, and
+// `buffer_usage`. The returned Mailbox will be zero if creation failed.
+ASH_EXPORT gpu::Mailbox CreateMappableSharedImage(
+    const gfx::Size& size,
+    uint32_t shared_image_usage,
+    gfx::BufferUsage buffer_usage);
+
 // Creates a UiResource of a given `size` and `format`. Uses the SharedImage
 // that `mailbox` is referencing if that is non-zero, in which case the created
 // UiResource does not own that SharedImage. Otherwise creates a new SharedImage
