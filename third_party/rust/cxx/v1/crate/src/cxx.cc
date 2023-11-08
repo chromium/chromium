@@ -271,17 +271,11 @@ CXX_CPP_EXPORT String::iterator String::end() noexcept {
   return const_cast<char *>(this->data()) + this->size();
 }
 
-CXX_CPP_EXPORT String::const_iterator String::begin() const noexcept {
-  return this->cbegin();
-}
+CXX_CPP_EXPORT String::const_iterator String::begin() const noexcept { return this->cbegin(); }
 
-CXX_CPP_EXPORT String::const_iterator String::end() const noexcept {
-  return this->cend();
-}
+CXX_CPP_EXPORT String::const_iterator String::end() const noexcept { return this->cend(); }
 
-CXX_CPP_EXPORT String::const_iterator String::cbegin() const noexcept {
-  return this->data();
-}
+CXX_CPP_EXPORT String::const_iterator String::cbegin() const noexcept { return this->data(); }
 
 CXX_CPP_EXPORT String::const_iterator String::cend() const noexcept {
   return this->data() + this->size();
@@ -326,9 +320,7 @@ CXX_CPP_EXPORT std::ostream &operator<<(std::ostream &os, const String &s) {
 
 CXX_CPP_EXPORT Str::Str() noexcept { cxxbridge1$str$new(this); }
 
-CXX_CPP_EXPORT Str::Str(const String &s) noexcept {
-  cxxbridge1$str$ref(this, &s);
-}
+CXX_CPP_EXPORT Str::Str(const String &s) noexcept { cxxbridge1$str$ref(this, &s); }
 
 static void initStr(Str *self, const char *ptr, std::size_t len) {
   if (!cxxbridge1$str$from(self, ptr, len)) {
@@ -336,9 +328,7 @@ static void initStr(Str *self, const char *ptr, std::size_t len) {
   }
 }
 
-CXX_CPP_EXPORT Str::Str(const std::string &s) {
-  initStr(this, s.data(), s.length());
-}
+CXX_CPP_EXPORT Str::Str(const std::string &s) { initStr(this, s.data(), s.length()); }
 
 CXX_CPP_EXPORT Str::Str(const char *s) {
   assert(s != nullptr);
@@ -356,29 +346,19 @@ CXX_CPP_EXPORT Str::operator std::string() const {
   return std::string(this->data(), this->size());
 }
 
-CXX_CPP_EXPORT const char *Str::data() const noexcept {
-  return cxxbridge1$str$ptr(this);
-}
+CXX_CPP_EXPORT const char *Str::data() const noexcept { return cxxbridge1$str$ptr(this); }
 
-CXX_CPP_EXPORT std::size_t Str::size() const noexcept {
-  return cxxbridge1$str$len(this);
-}
+CXX_CPP_EXPORT std::size_t Str::size() const noexcept { return cxxbridge1$str$len(this); }
 
 CXX_CPP_EXPORT std::size_t Str::length() const noexcept { return this->size(); }
 
 CXX_CPP_EXPORT bool Str::empty() const noexcept { return this->size() == 0; }
 
-CXX_CPP_EXPORT Str::const_iterator Str::begin() const noexcept {
-  return this->cbegin();
-}
+CXX_CPP_EXPORT Str::const_iterator Str::begin() const noexcept { return this->cbegin(); }
 
-CXX_CPP_EXPORT Str::const_iterator Str::end() const noexcept {
-  return this->cend();
-}
+CXX_CPP_EXPORT Str::const_iterator Str::end() const noexcept { return this->cend(); }
 
-CXX_CPP_EXPORT Str::const_iterator Str::cbegin() const noexcept {
-  return this->data();
-}
+CXX_CPP_EXPORT Str::const_iterator Str::cbegin() const noexcept { return this->data(); }
 
 CXX_CPP_EXPORT Str::const_iterator Str::cend() const noexcept {
   return this->data() + this->size();
@@ -389,9 +369,7 @@ CXX_CPP_EXPORT bool Str::operator==(const Str &rhs) const noexcept {
          std::equal(this->begin(), this->end(), rhs.begin());
 }
 
-CXX_CPP_EXPORT bool Str::operator!=(const Str &rhs) const noexcept {
-  return !(*this == rhs);
-}
+CXX_CPP_EXPORT bool Str::operator!=(const Str &rhs) const noexcept { return !(*this == rhs); }
 
 CXX_CPP_EXPORT bool Str::operator<(const Str &rhs) const noexcept {
   return std::lexicographical_compare(this->begin(), this->end(), rhs.begin(),
@@ -415,13 +393,9 @@ CXX_CPP_EXPORT bool Str::operator<=(const Str &rhs) const noexcept {
   }
 }
 
-CXX_CPP_EXPORT bool Str::operator>(const Str &rhs) const noexcept {
-  return rhs < *this;
-}
+CXX_CPP_EXPORT bool Str::operator>(const Str &rhs) const noexcept { return rhs < *this; }
 
-CXX_CPP_EXPORT bool Str::operator>=(const Str &rhs) const noexcept {
-  return rhs <= *this;
-}
+CXX_CPP_EXPORT bool Str::operator>=(const Str &rhs) const noexcept { return rhs <= *this; }
 
 CXX_CPP_EXPORT void Str::swap(Str &rhs) noexcept {
   using std::swap;
@@ -433,14 +407,11 @@ CXX_CPP_EXPORT std::ostream &operator<<(std::ostream &os, const Str &s) {
   return os;
 }
 
-CXX_CPP_EXPORT void sliceInit(void *self, const void *ptr,
-                              std::size_t len) noexcept {
+CXX_CPP_EXPORT void sliceInit(void *self, const void *ptr, std::size_t len) noexcept {
   cxxbridge1$slice$new(self, ptr, len);
 }
 
-CXX_CPP_EXPORT void *slicePtr(const void *self) noexcept {
-  return cxxbridge1$slice$ptr(self);
-}
+CXX_CPP_EXPORT void *slicePtr(const void *self) noexcept { return cxxbridge1$slice$ptr(self); }
 
 CXX_CPP_EXPORT std::size_t sliceLen(const void *self) noexcept {
   return cxxbridge1$slice$len(self);
@@ -545,7 +516,7 @@ CXX_CPP_EXPORT Error &Error::operator=(const Error &other) & {
   return *this;
 }
 
-CXX_CPP_EXPORT Error &Error::operator=(Error &&other) & noexcept {
+CXX_CPP_EXPORT Error &Error::operator=(Error &&other) &noexcept {
   std::exception::operator=(std::move(other));
   delete[] this->msg;
   this->msg = other.msg;
@@ -574,8 +545,7 @@ struct PtrLen final {
 } // namespace repr
 
 extern "C" {
-CXX_RS_EXPORT repr::PtrLen cxxbridge1$exception(const char *,
-                                                std::size_t len) noexcept;
+CXX_RS_EXPORT repr::PtrLen cxxbridge1$exception(const char *, std::size_t len) noexcept;
 }
 
 namespace detail {
@@ -601,11 +571,11 @@ public:
   void operator()(const std::string &) noexcept;
 };
 
-void Fail::operator()(const char *catch$) noexcept {
+CXX_CPP_EXPORT void Fail::operator()(const char *catch$) noexcept {
   throw$ = cxxbridge1$exception(catch$, std::strlen(catch$));
 }
 
-void Fail::operator()(const std::string &catch$) noexcept {
+CXX_CPP_EXPORT void Fail::operator()(const std::string &catch$) noexcept {
   throw$ = cxxbridge1$exception(catch$.data(), catch$.length());
 }
 } // namespace detail
@@ -653,71 +623,70 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
 } // namespace
 
 #define STD_VECTOR_OPS(RUST_TYPE, CXX_TYPE)                                    \
-  CXX_RS_EXPORT std::vector<CXX_TYPE>                                          \
-      *cxxbridge1$std$vector$##RUST_TYPE##$new() noexcept {                    \
+  CXX_RS_EXPORT std::vector<CXX_TYPE> *cxxbridge1$std$vector$##RUST_TYPE##$new() noexcept {  \
     return new std::vector<CXX_TYPE>();                                        \
   }                                                                            \
-  CXX_RS_EXPORT std::size_t cxxbridge1$std$vector$##RUST_TYPE##$size(          \
+  CXX_RS_EXPORT std::size_t cxxbridge1$std$vector$##RUST_TYPE##$size(                        \
       const std::vector<CXX_TYPE> &s) noexcept {                               \
     return s.size();                                                           \
   }                                                                            \
-  CXX_RS_EXPORT CXX_TYPE *cxxbridge1$std$vector$##RUST_TYPE##$get_unchecked(   \
+  CXX_RS_EXPORT CXX_TYPE *cxxbridge1$std$vector$##RUST_TYPE##$get_unchecked(                 \
       std::vector<CXX_TYPE> *s, std::size_t pos) noexcept {                    \
     return &(*s)[pos];                                                         \
   }                                                                            \
-  CXX_RS_EXPORT void cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$null(      \
+  CXX_RS_EXPORT void cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$null(                    \
       std::unique_ptr<std::vector<CXX_TYPE>> *ptr) noexcept {                  \
     new (ptr) std::unique_ptr<std::vector<CXX_TYPE>>();                        \
   }                                                                            \
-  CXX_RS_EXPORT void cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$raw(       \
+  CXX_RS_EXPORT void cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$raw(                     \
       std::unique_ptr<std::vector<CXX_TYPE>> *ptr,                             \
       std::vector<CXX_TYPE> *raw) noexcept {                                   \
     new (ptr) std::unique_ptr<std::vector<CXX_TYPE>>(raw);                     \
   }                                                                            \
-  CXX_RS_EXPORT const std::vector<CXX_TYPE>                                    \
+  CXX_RS_EXPORT const std::vector<CXX_TYPE>                                                  \
       *cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$get(                     \
           const std::unique_ptr<std::vector<CXX_TYPE>> &ptr) noexcept {        \
     return ptr.get();                                                          \
   }                                                                            \
-  CXX_RS_EXPORT std::vector<CXX_TYPE>                                          \
+  CXX_RS_EXPORT std::vector<CXX_TYPE>                                                        \
       *cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$release(                 \
           std::unique_ptr<std::vector<CXX_TYPE>> &ptr) noexcept {              \
     return ptr.release();                                                      \
   }                                                                            \
-  CXX_RS_EXPORT void cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$drop(      \
+  CXX_RS_EXPORT void cxxbridge1$unique_ptr$std$vector$##RUST_TYPE##$drop(                    \
       std::unique_ptr<std::vector<CXX_TYPE>> *ptr) noexcept {                  \
     ptr->~unique_ptr();                                                        \
   }
 
 #define STD_VECTOR_TRIVIAL_OPS(RUST_TYPE, CXX_TYPE)                            \
-  CXX_RS_EXPORT void cxxbridge1$std$vector$##RUST_TYPE##$push_back(            \
+  CXX_RS_EXPORT void cxxbridge1$std$vector$##RUST_TYPE##$push_back(                          \
       std::vector<CXX_TYPE> *v, CXX_TYPE *value) noexcept {                    \
     v->push_back(std::move(*value));                                           \
     destroy(value);                                                            \
   }                                                                            \
-  CXX_RS_EXPORT void cxxbridge1$std$vector$##RUST_TYPE##$pop_back(             \
-      std::vector<CXX_TYPE> *v, CXX_TYPE *out) noexcept {                      \
+  CXX_RS_EXPORT void cxxbridge1$std$vector$##RUST_TYPE##$pop_back(std::vector<CXX_TYPE> *v,  \
+                                                    CXX_TYPE *out) noexcept {  \
     new (out) CXX_TYPE(std::move(v->back()));                                  \
     v->pop_back();                                                             \
   }
 
 #define RUST_VEC_EXTERNS(RUST_TYPE, CXX_TYPE)                                  \
-  CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$new(                    \
+  CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$new(                                  \
       rust::Vec<CXX_TYPE> *ptr) noexcept;                                      \
-  CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$drop(                   \
+  CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$drop(                                 \
       rust::Vec<CXX_TYPE> *ptr) noexcept;                                      \
-  CXX_RS_EXPORT std::size_t cxxbridge1$rust_vec$##RUST_TYPE##$len(             \
+  CXX_RS_EXPORT std::size_t cxxbridge1$rust_vec$##RUST_TYPE##$len(                           \
       const rust::Vec<CXX_TYPE> *ptr) noexcept;                                \
-  CXX_RS_EXPORT std::size_t cxxbridge1$rust_vec$##RUST_TYPE##$capacity(        \
+  CXX_RS_EXPORT std::size_t cxxbridge1$rust_vec$##RUST_TYPE##$capacity(                      \
       const rust::Vec<CXX_TYPE> *ptr) noexcept;                                \
-  CXX_RS_EXPORT const CXX_TYPE *cxxbridge1$rust_vec$##RUST_TYPE##$data(        \
+  CXX_RS_EXPORT const CXX_TYPE *cxxbridge1$rust_vec$##RUST_TYPE##$data(                      \
       const rust::Vec<CXX_TYPE> *ptr) noexcept;                                \
-  CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$reserve_total(          \
+  CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$reserve_total(                        \
       rust::Vec<CXX_TYPE> *ptr, std::size_t new_cap) noexcept;                 \
-  CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$set_len(                \
-      rust::Vec<CXX_TYPE> *ptr, std::size_t len) noexcept;                     \
-  CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$truncate(               \
-      rust::Vec<CXX_TYPE> *ptr, std::size_t len) noexcept;
+  CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$set_len(rust::Vec<CXX_TYPE> *ptr,     \
+                                                 std::size_t len) noexcept;    \
+  CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$truncate(rust::Vec<CXX_TYPE> *ptr,    \
+                                                  std::size_t len) noexcept;
 
 #define RUST_VEC_OPS(RUST_TYPE, CXX_TYPE)                                      \
   template <>                                                                  \

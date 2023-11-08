@@ -14,7 +14,7 @@ pub(crate) struct Error {
 }
 
 impl Error {
-    pub fn kind(&self) -> io::ErrorKind {
+    pub(crate) fn kind(&self) -> io::ErrorKind {
         match &self.source {
             Some(io_error) => io_error.kind(),
             None => io::ErrorKind::Other,

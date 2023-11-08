@@ -7,7 +7,7 @@ enum Mark {
     Visited,
 }
 
-pub fn sort<'a>(cx: &mut Errors, apis: &'a [Api], types: &Types<'a>) -> Vec<&'a Struct> {
+pub(crate) fn sort<'a>(cx: &mut Errors, apis: &'a [Api], types: &Types<'a>) -> Vec<&'a Struct> {
     let mut sorted = Vec::new();
     let ref mut marks = Map::new();
     for api in apis {

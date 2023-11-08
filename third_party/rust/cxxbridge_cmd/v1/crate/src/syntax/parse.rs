@@ -22,12 +22,12 @@ use syn::{
     TypeReference, Variant as RustVariant, Visibility,
 };
 
-pub mod kw {
+pub(crate) mod kw {
     syn::custom_keyword!(Pin);
     syn::custom_keyword!(Result);
 }
 
-pub fn parse_items(
+pub(crate) fn parse_items(
     cx: &mut Errors,
     items: Vec<Item>,
     trusted: bool,

@@ -17,7 +17,7 @@ use core::ptr;
 /// (e.g., `collections::HashMap` uses it by default).
 ///
 /// See: <https://131002.net/siphash>
-pub struct SipHasher13 {
+pub(crate) struct SipHasher13 {
     k0: u64,
     k1: u64,
     length: usize, // how many bytes we've processed
@@ -110,7 +110,7 @@ unsafe fn u8to64_le(buf: &[u8], start: usize, len: usize) -> u64 {
 
 impl SipHasher13 {
     /// Creates a new `SipHasher13` with the two initial keys set to 0.
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self::new_with_keys(0, 0)
     }
 

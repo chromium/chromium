@@ -12,7 +12,7 @@ use core::str;
 
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct PtrLen {
+pub(crate) struct PtrLen {
     pub ptr: NonNull<u8>,
     pub len: usize,
 }

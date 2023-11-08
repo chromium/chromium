@@ -1,9 +1,9 @@
-From 29dd29972c20a19087e8b0482509542bfb59edd2 Mon Sep 17 00:00:00 2001
-From: danakj <danakj@chromium.org>
-Date: Fri, 29 Oct 2021 17:02:29 -0400
-Subject: [PATCH 2/4] Remove executable bit from build.js
+From 0b3dd0c355b0be484f87b64b305415e4131e5a3f Mon Sep 17 00:00:00 2001
+From: Adrian Taylor <adetaylor@chromium.org>
+Date: Wed, 8 Nov 2023 16:59:08 +0000
+Subject: [PATCH 2/4] Remove executable bit from JS file
 
-Signed-off-by: Collin Baker <collinbaker@chromium.org>
+Change-Id: I3665b8a18fea653c61e0f9663ded100d5482921e
 ---
  third_party/rust/cxx/v1/crate/book/build.js | 0
  1 file changed, 0 insertions(+), 0 deletions(-)
@@ -13,5 +13,5 @@ diff --git a/third_party/rust/cxx/v1/crate/book/build.js b/third_party/rust/cxx/
 old mode 100755
 new mode 100644
 -- 
-2.36.1.255.ge46751e96f-goog
+2.42.0.869.gea05f2083d-goog
 

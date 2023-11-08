@@ -4,7 +4,7 @@ use syn::parse::discouraged::Speculative;
 use syn::parse::{Error, Parse, ParseStream, Result};
 use syn::{braced, Attribute, Ident, Item, Meta, Token, Visibility};
 
-pub struct File {
+pub(crate) struct File {
     pub modules: Vec<Module>,
 }
 

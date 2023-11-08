@@ -18,7 +18,7 @@ use syn::{parse_quote, Path};
 
 const CXX_CLANG_AST: &str = "CXX_CLANG_AST";
 
-pub fn load(cx: &mut Errors, apis: &mut [Api]) {
+pub(crate) fn load(cx: &mut Errors, apis: &mut [Api]) {
     let ref mut variants_from_header = Vec::new();
     for api in apis {
         if let Api::Enum(enm) = api {
@@ -36,7 +36,7 @@ pub fn load(cx: &mut Errors, apis: &mut [Api]) {
         }
     }
 
-    let span = match variants_from_header.get(0) {
+    let span = match variants_from_header.first() {
         None => return,
         Some(enm) => enm.variants_from_header_attr.clone().unwrap(),
     };
@@ -60,7 +60,7 @@ pub fn load(cx: &mut Errors, apis: &mut [Api]) {
             if is_gzipped {
                 gunzipped = Vec::new();
                 let decode_result = GzDecoder::new(&mut gunzipped).write_all(memmap);
-                decode_result.map(|_| gunzipped.as_slice())
+                decode_result.map(|()| gunzipped.as_slice())
             } else {
                 Ok(memmap as &[u8])
             }

@@ -5,18 +5,18 @@ use proc_macro2::TokenStream;
 use quote::ToTokens;
 use syn::{Lifetime, Token};
 
-pub struct ImplGenerics<'a> {
+pub(crate) struct ImplGenerics<'a> {
     explicit_impl: Option<&'a Impl>,
     resolve: Resolution<'a>,
 }
 
-pub struct TyGenerics<'a> {
+pub(crate) struct TyGenerics<'a> {
     key: NamedImplKey<'a>,
     explicit_impl: Option<&'a Impl>,
     resolve: Resolution<'a>,
 }
 
-pub fn split_for_impl<'a>(
+pub(crate) fn split_for_impl<'a>(
     key: NamedImplKey<'a>,
     explicit_impl: Option<&'a Impl>,
     resolve: Resolution<'a>,
@@ -62,12 +62,12 @@ impl<'a> ToTokens for TyGenerics<'a> {
     }
 }
 
-pub struct UnderscoreLifetimes<'a> {
+pub(crate) struct UnderscoreLifetimes<'a> {
     generics: &'a Lifetimes,
 }
 
 impl Lifetimes {
-    pub fn to_underscore_lifetimes(&self) -> UnderscoreLifetimes {
+    pub(crate) fn to_underscore_lifetimes(&self) -> UnderscoreLifetimes {
         UnderscoreLifetimes { generics: self }
     }
 }

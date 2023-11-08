@@ -2,12 +2,12 @@ use syn::ext::IdentExt;
 use syn::parse::{Error, ParseStream, Result};
 use syn::{Ident, LitStr, Token};
 
-pub struct QualifiedName {
+pub(crate) struct QualifiedName {
     pub segments: Vec<Ident>,
 }
 
 impl QualifiedName {
-    pub fn parse_quoted(lit: &LitStr) -> Result<Self> {
+    pub(crate) fn parse_quoted(lit: &LitStr) -> Result<Self> {
         if lit.value().is_empty() {
             let segments = Vec::new();
             Ok(QualifiedName { segments })
@@ -19,12 +19,12 @@ impl QualifiedName {
         }
     }
 
-    pub fn parse_unquoted(input: ParseStream) -> Result<Self> {
+    pub(crate) fn parse_unquoted(input: ParseStream) -> Result<Self> {
         let allow_raw = true;
         parse_unquoted(input, allow_raw)
     }
 
-    pub fn parse_quoted_or_unquoted(input: ParseStream) -> Result<Self> {
+    pub(crate) fn parse_quoted_or_unquoted(input: ParseStream) -> Result<Self> {
         if input.peek(LitStr) {
             let lit: LitStr = input.parse()?;
             Self::parse_quoted(&lit)

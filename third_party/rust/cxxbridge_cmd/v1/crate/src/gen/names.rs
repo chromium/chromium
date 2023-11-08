@@ -1,7 +1,7 @@
 use crate::syntax::Pair;
 
 impl Pair {
-    pub fn to_fully_qualified(&self) -> String {
+    pub(crate) fn to_fully_qualified(&self) -> String {
         let mut fully_qualified = String::new();
         for segment in &self.namespace {
             fully_qualified += "::";

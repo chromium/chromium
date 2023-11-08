@@ -1,9 +1,9 @@
 use serde_derive::{Deserialize, Serialize};
 
-pub type Node = clang_ast::Node<Clang>;
+pub(crate) type Node = clang_ast::Node<Clang>;
 
 #[derive(Deserialize, Serialize)]
-pub enum Clang {
+pub(crate) enum Clang {
     NamespaceDecl(NamespaceDecl),
     EnumDecl(EnumDecl),
     EnumConstantDecl(EnumConstantDecl),
@@ -13,13 +13,13 @@ pub enum Clang {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct NamespaceDecl {
+pub(crate) struct NamespaceDecl {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<Box<str>>,
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct EnumDecl {
+pub(crate) struct EnumDecl {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<Box<str>>,
     #[serde(
@@ -30,17 +30,17 @@ pub struct EnumDecl {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct EnumConstantDecl {
+pub(crate) struct EnumConstantDecl {
     pub name: Box<str>,
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct ConstantExpr {
+pub(crate) struct ConstantExpr {
     pub value: Box<str>,
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct Type {
+pub(crate) struct Type {
     #[serde(rename = "qualType")]
     pub qual_type: Box<str>,
     #[serde(rename = "desugaredQualType", skip_serializing_if = "Option::is_none")]

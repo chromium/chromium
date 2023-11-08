@@ -3,7 +3,7 @@ use crate::gen::ifndef;
 use crate::gen::out::{Content, OutFile};
 
 #[derive(Default, PartialEq)]
-pub struct Builtins<'a> {
+pub(crate) struct Builtins<'a> {
     pub panic: bool,
     pub rust_string: bool,
     pub rust_str: bool,
@@ -36,7 +36,7 @@ pub struct Builtins<'a> {
 }
 
 impl<'a> Builtins<'a> {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Builtins::default()
     }
 }

@@ -17,7 +17,7 @@ pub(crate) struct OutFile<'a> {
 }
 
 #[derive(Default)]
-pub struct Content<'a> {
+pub(crate) struct Content<'a> {
     bytes: String,
     namespace: &'a Namespace,
     blocks: Vec<BlockBoundary<'a>>,
@@ -32,7 +32,7 @@ enum BlockBoundary<'a> {
 }
 
 impl<'a> OutFile<'a> {
-    pub fn new(header: bool, opt: &'a Opt, types: &'a Types) -> Self {
+    pub(crate) fn new(header: bool, opt: &'a Opt, types: &'a Types) -> Self {
         OutFile {
             header,
             opt,
@@ -44,28 +44,28 @@ impl<'a> OutFile<'a> {
     }
 
     // Write a blank line if the preceding section had any contents.
-    pub fn next_section(&mut self) {
+    pub(crate) fn next_section(&mut self) {
         self.content.get_mut().next_section();
     }
 
-    pub fn begin_block(&mut self, block: Block<'a>) {
+    pub(crate) fn begin_block(&mut self, block: Block<'a>) {
         self.content.get_mut().begin_block(block);
     }
 
-    pub fn end_block(&mut self, block: Block<'a>) {
+    pub(crate) fn end_block(&mut self, block: Block<'a>) {
         self.content.get_mut().end_block(block);
     }
 
-    pub fn set_namespace(&mut self, namespace: &'a Namespace) {
+    pub(crate) fn set_namespace(&mut self, namespace: &'a Namespace) {
         self.content.get_mut().set_namespace(namespace);
     }
 
-    pub fn write_fmt(&self, args: Arguments) {
+    pub(crate) fn write_fmt(&self, args: Arguments) {
         let content = &mut *self.content.borrow_mut();
         Write::write_fmt(content, args).unwrap();
     }
 
-    pub fn content(&mut self) -> Vec<u8> {
+    pub(crate) fn content(&mut self) -> Vec<u8> {
         self.flush();
         let include = &self.include.content.bytes;
         let builtin = &self.builtin.content.bytes;
@@ -112,19 +112,19 @@ impl<'a> Content<'a> {
         Content::default()
     }
 
-    pub fn next_section(&mut self) {
+    pub(crate) fn next_section(&mut self) {
         self.section_pending = true;
     }
 
-    pub fn begin_block(&mut self, block: Block<'a>) {
+    pub(crate) fn begin_block(&mut self, block: Block<'a>) {
         self.push_block_boundary(BlockBoundary::Begin(block));
     }
 
-    pub fn end_block(&mut self, block: Block<'a>) {
+    pub(crate) fn end_block(&mut self, block: Block<'a>) {
         self.push_block_boundary(BlockBoundary::End(block));
     }
 
-    pub fn set_namespace(&mut self, namespace: &'a Namespace) {
+    pub(crate) fn set_namespace(&mut self, namespace: &'a Namespace) {
         for name in self.namespace.iter().rev() {
             self.end_block(Block::UserDefinedNamespace(name));
         }
@@ -134,7 +134,7 @@ impl<'a> Content<'a> {
         self.namespace = namespace;
     }
 
-    pub fn write_fmt(&mut self, args: Arguments) {
+    pub(crate) fn write_fmt(&mut self, args: Arguments) {
         Write::write_fmt(self, args).unwrap();
     }
 

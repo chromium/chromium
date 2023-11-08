@@ -3,13 +3,13 @@ use crate::syntax::{Lifetimes, NamedType, Pair, Types};
 use proc_macro2::Ident;
 
 #[derive(Copy, Clone)]
-pub struct Resolution<'a> {
+pub(crate) struct Resolution<'a> {
     pub name: &'a Pair,
     pub generics: &'a Lifetimes,
 }
 
 impl<'a> Types<'a> {
-    pub fn resolve(&self, ident: &impl UnresolvedName) -> Resolution<'a> {
+    pub(crate) fn resolve(&self, ident: &impl UnresolvedName) -> Resolution<'a> {
         let ident = ident.ident();
         match self.try_resolve(ident) {
             Some(resolution) => resolution,
@@ -17,13 +17,13 @@ impl<'a> Types<'a> {
         }
     }
 
-    pub fn try_resolve(&self, ident: &impl UnresolvedName) -> Option<Resolution<'a>> {
+    pub(crate) fn try_resolve(&self, ident: &impl UnresolvedName) -> Option<Resolution<'a>> {
         let ident = ident.ident();
         self.resolutions.get(ident).copied()
     }
 }
 
-pub trait UnresolvedName {
+pub(crate) trait UnresolvedName {
     fn ident(&self) -> &Ident;
 }
 

@@ -7,19 +7,24 @@ use syn::{
     ItemStruct, ItemUse, LitStr, Token, Visibility,
 };
 
-pub struct Module {
+pub(crate) struct Module {
+    #[allow(dead_code)]
     pub cfg: CfgExpr,
     pub namespace: Namespace,
     pub attrs: Vec<Attribute>,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub vis: Visibility,
     pub unsafety: Option<Token![unsafe]>,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub mod_token: Token![mod],
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub ident: Ident,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub brace_token: token::Brace,
     pub content: Vec<Item>,
 }
 
-pub enum Item {
+pub(crate) enum Item {
     Struct(ItemStruct),
     Enum(ItemEnum),
     ForeignMod(ItemForeignMod),
@@ -28,10 +33,11 @@ pub enum Item {
     Other(RustItem),
 }
 
-pub struct ItemForeignMod {
+pub(crate) struct ItemForeignMod {
     pub attrs: Vec<Attribute>,
     pub unsafety: Option<Token![unsafe]>,
     pub abi: Abi,
+    #[allow(dead_code)]
     pub brace_token: token::Brace,
     pub items: Vec<ForeignItem>,
 }

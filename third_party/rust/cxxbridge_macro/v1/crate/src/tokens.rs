@@ -3,17 +3,17 @@ use proc_macro2::TokenStream;
 use quote::{quote_spanned, ToTokens};
 use syn::Token;
 
-pub struct ReceiverType<'a>(&'a Receiver);
-pub struct ReceiverTypeSelf<'a>(&'a Receiver);
+pub(crate) struct ReceiverType<'a>(&'a Receiver);
+pub(crate) struct ReceiverTypeSelf<'a>(&'a Receiver);
 
 impl Receiver {
     // &TheType
-    pub fn ty(&self) -> ReceiverType {
+    pub(crate) fn ty(&self) -> ReceiverType {
         ReceiverType(self)
     }
 
     // &Self
-    pub fn ty_self(&self) -> ReceiverTypeSelf {
+    pub(crate) fn ty_self(&self) -> ReceiverTypeSelf {
         ReceiverTypeSelf(self)
     }
 }

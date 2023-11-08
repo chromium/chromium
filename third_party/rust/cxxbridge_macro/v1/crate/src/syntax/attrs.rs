@@ -27,7 +27,7 @@ use syn::{Attribute, Error, Expr, Lit, LitStr, Meta, Path, Result, Token};
 //     );
 //
 #[derive(Default)]
-pub struct Parser<'a> {
+pub(crate) struct Parser<'a> {
     pub cfg: Option<&'a mut CfgExpr>,
     pub doc: Option<&'a mut Doc>,
     pub derives: Option<&'a mut Vec<Derive>>,
@@ -44,7 +44,7 @@ pub struct Parser<'a> {
     pub(crate) _more: (),
 }
 
-pub fn parse(cx: &mut Errors, attrs: Vec<Attribute>, mut parser: Parser) -> OtherAttrs {
+pub(crate) fn parse(cx: &mut Errors, attrs: Vec<Attribute>, mut parser: Parser) -> OtherAttrs {
     let mut passthrough_attrs = Vec::new();
     for attr in attrs {
         let attr_path = attr.path();
@@ -283,14 +283,14 @@ fn parse_rust_name_attribute(meta: &Meta) -> Result<Ident> {
 }
 
 #[derive(Clone)]
-pub struct OtherAttrs(Vec<Attribute>);
+pub(crate) struct OtherAttrs(Vec<Attribute>);
 
 impl OtherAttrs {
-    pub fn none() -> Self {
+    pub(crate) fn none() -> Self {
         OtherAttrs(Vec::new())
     }
 
-    pub fn extend(&mut self, other: Self) {
+    pub(crate) fn extend(&mut self, other: Self) {
         self.0.extend(other.0);
     }
 }

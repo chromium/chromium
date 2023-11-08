@@ -1,25 +1,28 @@
 use std::env;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 fn main() {
-    // Removed for Chromium build.
-    // cc::Build::new()
-    //     .file("src/cxx.cc")
-    //     .cpp(true)
-    //     .cpp_link_stdlib(None) // linked via link-cplusplus crate
-    //     .flag_if_supported(cxxbridge_flags::STD)
-    //     .warnings_into_errors(cfg!(deny_warnings))
-    //     .compile("cxxbridge1");
+    // Removed for Chromium build
+    //let manifest_dir_opt = env::var_os("CARGO_MANIFEST_DIR").map(PathBuf::from);
+    //let manifest_dir = manifest_dir_opt.as_deref().unwrap_or(Path::new(""));
 
-    // println!("cargo:rerun-if-changed=src/cxx.cc");
-    // println!("cargo:rerun-if-changed=include/cxx.h");
-    // println!("cargo:rustc-cfg=built_with_cargo");
+    //cc::Build::new()
+        //.file(manifest_dir.join("src/cxx.cc"))
+        //.cpp(true)
+        //.cpp_link_stdlib(None) // linked via link-cplusplus crate
+        //.flag_if_supported(cxxbridge_flags::STD)
+        //.warnings_into_errors(cfg!(deny_warnings))
+        //.compile("cxxbridge1");
 
-    // if let Some(manifest_dir) = env::var_os("CARGO_MANIFEST_DIR") {
-    //     let cxx_h = Path::new(&manifest_dir).join("include").join("cxx.h");
-    //     println!("cargo:HEADER={}", cxx_h.to_string_lossy());
-    // }
+    //println!("cargo:rerun-if-changed=src/cxx.cc");
+    //println!("cargo:rerun-if-changed=include/cxx.h");
+    //println!("cargo:rustc-cfg=built_with_cargo");
+
+    //if let Some(manifest_dir) = &manifest_dir_opt {
+        //let cxx_h = manifest_dir.join("include").join("cxx.h");
+        //println!("cargo:HEADER={}", cxx_h.to_string_lossy());
+    //}
 
     if let Some(rustc) = rustc_version() {
         if rustc.minor < 60 {

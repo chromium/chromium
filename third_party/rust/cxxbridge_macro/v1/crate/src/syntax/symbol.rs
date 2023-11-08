@@ -6,7 +6,7 @@ use std::fmt::{self, Display, Write};
 
 // A mangled symbol consisting of segments separated by '$'.
 // For example: cxxbridge1$string$new
-pub struct Symbol(String);
+pub(crate) struct Symbol(String);
 
 impl Display for Symbol {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -30,7 +30,7 @@ impl Symbol {
         assert!(self.0.len() > len_before);
     }
 
-    pub fn from_idents<'a>(it: impl Iterator<Item = &'a dyn Segment>) -> Self {
+    pub(crate) fn from_idents<'a>(it: impl Iterator<Item = &'a dyn Segment>) -> Self {
         let mut symbol = Symbol(String::new());
         for segment in it {
             segment.write(&mut symbol);
@@ -40,7 +40,7 @@ impl Symbol {
     }
 }
 
-pub trait Segment {
+pub(crate) trait Segment {
     fn write(&self, symbol: &mut Symbol);
 }
 
@@ -100,7 +100,7 @@ where
     }
 }
 
-pub fn join(segments: &[&dyn Segment]) -> Symbol {
+pub(crate) fn join(segments: &[&dyn Segment]) -> Symbol {
     let mut symbol = Symbol(String::new());
     for segment in segments {
         segment.write(&mut symbol);

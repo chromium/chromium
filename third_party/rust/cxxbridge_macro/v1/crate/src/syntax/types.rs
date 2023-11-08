@@ -12,7 +12,7 @@ use crate::syntax::{
 use proc_macro2::Ident;
 use quote::ToTokens;
 
-pub struct Types<'a> {
+pub(crate) struct Types<'a> {
     pub all: OrderedSet<&'a Type>,
     pub structs: UnorderedMap<&'a Ident, &'a Struct>,
     pub enums: UnorderedMap<&'a Ident, &'a Enum>,
@@ -28,7 +28,7 @@ pub struct Types<'a> {
 }
 
 impl<'a> Types<'a> {
-    pub fn collect(cx: &mut Errors, apis: &'a [Api]) -> Self {
+    pub(crate) fn collect(cx: &mut Errors, apis: &'a [Api]) -> Self {
         let mut all = OrderedSet::new();
         let mut structs = UnorderedMap::new();
         let mut enums = UnorderedMap::new();
@@ -241,7 +241,7 @@ impl<'a> Types<'a> {
         types
     }
 
-    pub fn needs_indirect_abi(&self, ty: &Type) -> bool {
+    pub(crate) fn needs_indirect_abi(&self, ty: &Type) -> bool {
         match ty {
             Type::RustBox(_) | Type::UniquePtr(_) => false,
             Type::Array(_) => true,
@@ -255,7 +255,8 @@ impl<'a> Types<'a> {
     // refuses to believe that C could know how to supply us with a pointer to a
     // Rust String, even though C could easily have obtained that pointer
     // legitimately from a Rust call.
-    pub fn is_considered_improper_ctype(&self, ty: &Type) -> bool {
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    pub(crate) fn is_considered_improper_ctype(&self, ty: &Type) -> bool {
         match self.determine_improper_ctype(ty) {
             ImproperCtype::Definite(improper) => improper,
             ImproperCtype::Depends(ident) => self.struct_improper_ctypes.contains(ident),
@@ -264,7 +265,7 @@ impl<'a> Types<'a> {
 
     // Types which we need to assume could possibly exist by value on the Rust
     // side.
-    pub fn is_maybe_trivial(&self, ty: &Ident) -> bool {
+    pub(crate) fn is_maybe_trivial(&self, ty: &Ident) -> bool {
         self.structs.contains_key(ty)
             || self.enums.contains_key(ty)
             || self.aliases.contains_key(ty)

@@ -3,7 +3,7 @@ use proc_macro2::Ident;
 use std::fmt::{self, Display};
 
 #[derive(Copy, Clone, PartialEq)]
-pub enum Atom {
+pub(crate) enum Atom {
     Bool,
     Char, // C char, not Rust char
     U8,
@@ -23,11 +23,11 @@ pub enum Atom {
 }
 
 impl Atom {
-    pub fn from(ident: &Ident) -> Option<Self> {
+    pub(crate) fn from(ident: &Ident) -> Option<Self> {
         Self::from_str(ident.to_string().as_str())
     }
 
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub(crate) fn from_str(s: &str) -> Option<Self> {
         use self::Atom::*;
         match s {
             "bool" => Some(Bool),

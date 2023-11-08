@@ -2,7 +2,7 @@ use core::char;
 use core::fmt::{self, Write as _};
 use core::str;
 
-pub fn display(mut bytes: &[u8], f: &mut fmt::Formatter) -> fmt::Result {
+pub(crate) fn display(mut bytes: &[u8], f: &mut fmt::Formatter) -> fmt::Result {
     loop {
         match str::from_utf8(bytes) {
             Ok(valid) => return f.write_str(valid),
@@ -21,7 +21,7 @@ pub fn display(mut bytes: &[u8], f: &mut fmt::Formatter) -> fmt::Result {
     }
 }
 
-pub fn debug(mut bytes: &[u8], f: &mut fmt::Formatter) -> fmt::Result {
+pub(crate) fn debug(mut bytes: &[u8], f: &mut fmt::Formatter) -> fmt::Result {
     f.write_char('"')?;
 
     while !bytes.is_empty() {

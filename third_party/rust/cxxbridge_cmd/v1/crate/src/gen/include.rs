@@ -19,7 +19,7 @@ pub struct Include {
 }
 
 #[derive(Default, PartialEq)]
-pub struct Includes<'a> {
+pub(crate) struct Includes<'a> {
     pub custom: Vec<Include>,
     pub algorithm: bool,
     pub array: bool,
@@ -44,15 +44,15 @@ pub struct Includes<'a> {
 }
 
 impl<'a> Includes<'a> {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Includes::default()
     }
 
-    pub fn insert(&mut self, include: impl Into<Include>) {
+    pub(crate) fn insert(&mut self, include: impl Into<Include>) {
         self.custom.push(include.into());
     }
 
-    pub fn has_cxx_header(&self) -> bool {
+    pub(crate) fn has_cxx_header(&self) -> bool {
         self.custom
             .iter()
             .any(|header| header.path == "rust/cxx.h" || header.path == "rust\\cxx.h")

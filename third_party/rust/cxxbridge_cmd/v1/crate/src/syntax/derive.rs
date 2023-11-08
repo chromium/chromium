@@ -2,13 +2,13 @@ use proc_macro2::{Ident, Span};
 use std::fmt::{self, Display};
 
 #[derive(Copy, Clone)]
-pub struct Derive {
+pub(crate) struct Derive {
     pub what: Trait,
     pub span: Span,
 }
 
 #[derive(Copy, Clone, PartialEq)]
-pub enum Trait {
+pub(crate) enum Trait {
     Clone,
     Copy,
     Debug,
@@ -24,7 +24,7 @@ pub enum Trait {
 }
 
 impl Derive {
-    pub fn from(ident: &Ident) -> Option<Self> {
+    pub(crate) fn from(ident: &Ident) -> Option<Self> {
         let what = match ident.to_string().as_str() {
             "Clone" => Trait::Clone,
             "Copy" => Trait::Copy,
@@ -76,6 +76,6 @@ impl Display for Derive {
     }
 }
 
-pub fn contains(derives: &[Derive], query: Trait) -> bool {
+pub(crate) fn contains(derives: &[Derive], query: Trait) -> bool {
     derives.iter().any(|derive| derive.what == query)
 }

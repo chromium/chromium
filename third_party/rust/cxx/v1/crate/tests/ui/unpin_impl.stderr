@@ -1,9 +1,3 @@
-error[E0282]: type annotations needed
- --> tests/ui/unpin_impl.rs:4:14
-  |
-4 |         type Opaque;
-  |              ^^^^^^ cannot infer type
-
 error[E0283]: type annotations needed
  --> tests/ui/unpin_impl.rs:4:14
   |

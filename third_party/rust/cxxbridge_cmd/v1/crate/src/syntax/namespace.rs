@@ -10,20 +10,20 @@ mod kw {
 }
 
 #[derive(Clone, Default)]
-pub struct Namespace {
+pub(crate) struct Namespace {
     segments: Vec<Ident>,
 }
 
 impl Namespace {
-    pub const ROOT: Self = Namespace {
+    pub(crate) const ROOT: Self = Namespace {
         segments: Vec::new(),
     };
 
-    pub fn iter(&self) -> Iter<Ident> {
+    pub(crate) fn iter(&self) -> Iter<Ident> {
         self.segments.iter()
     }
 
-    pub fn parse_bridge_attr_namespace(input: ParseStream) -> Result<Self> {
+    pub(crate) fn parse_bridge_attr_namespace(input: ParseStream) -> Result<Self> {
         if input.is_empty() {
             return Ok(Namespace::ROOT);
         }
@@ -35,7 +35,7 @@ impl Namespace {
         Ok(namespace)
     }
 
-    pub fn parse_meta(meta: &Meta) -> Result<Self> {
+    pub(crate) fn parse_meta(meta: &Meta) -> Result<Self> {
         if let Meta::NameValue(meta) = meta {
             match &meta.value {
                 Expr::Lit(expr) => {

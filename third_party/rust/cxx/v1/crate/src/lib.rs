@@ -364,14 +364,19 @@
 //! </table>
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/cxx/1.0.107")]
+#![doc(html_root_url = "https://docs.rs/cxx/1.0.110")]
+#![cfg_attr(doc_cfg, feature(doc_cfg))]
 #![deny(
     improper_ctypes,
     improper_ctypes_definitions,
     missing_docs,
     unsafe_op_in_unsafe_fn
 )]
-#![cfg_attr(doc_cfg, feature(doc_cfg))]
+#![warn(
+    clippy::alloc_instead_of_core,
+    clippy::std_instead_of_alloc,
+    clippy::std_instead_of_core
+)]
 #![allow(non_camel_case_types)]
 #![allow(
     clippy::cast_possible_truncation,

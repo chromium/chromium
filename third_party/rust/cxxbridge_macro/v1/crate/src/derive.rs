@@ -2,9 +2,12 @@ use crate::syntax::{derive, Enum, Struct, Trait};
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::{quote, quote_spanned, ToTokens};
 
-pub use crate::syntax::derive::*;
+pub(crate) use crate::syntax::derive::*;
 
-pub fn expand_struct(strct: &Struct, actual_derives: &mut Option<TokenStream>) -> TokenStream {
+pub(crate) fn expand_struct(
+    strct: &Struct,
+    actual_derives: &mut Option<TokenStream>,
+) -> TokenStream {
     let mut expanded = TokenStream::new();
     let mut traits = Vec::new();
 
@@ -35,7 +38,7 @@ pub fn expand_struct(strct: &Struct, actual_derives: &mut Option<TokenStream>) -
     expanded
 }
 
-pub fn expand_enum(enm: &Enum, actual_derives: &mut Option<TokenStream>) -> TokenStream {
+pub(crate) fn expand_enum(enm: &Enum, actual_derives: &mut Option<TokenStream>) -> TokenStream {
     let mut expanded = TokenStream::new();
     let mut traits = Vec::new();
     let mut has_copy = false;
@@ -212,7 +215,8 @@ fn struct_partial_ord(strct: &Struct, span: Span) -> TokenStream {
 
     quote_spanned! {span=>
         impl #generics ::cxx::core::cmp::PartialOrd for #ident #generics {
-            #[allow(clippy::incorrect_partial_ord_impl_on_ord_type)]
+            #[allow(clippy::non_canonical_partial_ord_impl)]
+            #[allow(renamed_and_removed_lints, clippy::incorrect_partial_ord_impl_on_ord_type)] // Rust 1.73 and older
             fn partial_cmp(&self, other: &Self) -> ::cxx::core::option::Option<::cxx::core::cmp::Ordering> {
                 #body
             }
@@ -281,7 +285,8 @@ fn enum_partial_ord(enm: &Enum, span: Span) -> TokenStream {
 
     quote_spanned! {span=>
         impl ::cxx::core::cmp::PartialOrd for #ident {
-            #[allow(clippy::incorrect_partial_ord_impl_on_ord_type)]
+            #[allow(clippy::non_canonical_partial_ord_impl)]
+            #[allow(renamed_and_removed_lints, clippy::incorrect_partial_ord_impl_on_ord_type)] // Rust 1.73 and older
             fn partial_cmp(&self, other: &Self) -> ::cxx::core::option::Option<::cxx::core::cmp::Ordering> {
                 ::cxx::core::cmp::PartialOrd::partial_cmp(&self.repr, &other.repr)
             }

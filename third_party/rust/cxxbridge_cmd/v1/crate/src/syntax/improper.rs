@@ -3,14 +3,14 @@ use crate::syntax::atom::Atom::{self, *};
 use crate::syntax::{Type, Types};
 use proc_macro2::Ident;
 
-pub enum ImproperCtype<'a> {
+pub(crate) enum ImproperCtype<'a> {
     Definite(bool),
     Depends(&'a Ident),
 }
 
 impl<'a> Types<'a> {
     // yes, no, maybe
-    pub fn determine_improper_ctype(&self, ty: &Type) -> ImproperCtype<'a> {
+    pub(crate) fn determine_improper_ctype(&self, ty: &Type) -> ImproperCtype<'a> {
         match ty {
             Type::Ident(ident) => {
                 let ident = &ident.rust;

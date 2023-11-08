@@ -4,7 +4,7 @@ use std::hash::{Hash, Hasher};
 use syn::Token;
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
-pub enum ImplKey<'a> {
+pub(crate) enum ImplKey<'a> {
     RustBox(NamedImplKey<'a>),
     RustVec(NamedImplKey<'a>),
     UniquePtr(NamedImplKey<'a>),
@@ -14,11 +14,15 @@ pub enum ImplKey<'a> {
 }
 
 #[derive(Copy, Clone)]
-pub struct NamedImplKey<'a> {
+pub(crate) struct NamedImplKey<'a> {
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub begin_span: Span,
     pub rust: &'a Ident,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub lt_token: Option<Token![<]>,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub gt_token: Option<Token![>]>,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
     pub end_span: Span,
 }
 

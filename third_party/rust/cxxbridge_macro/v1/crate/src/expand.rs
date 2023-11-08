@@ -17,7 +17,7 @@ use quote::{format_ident, quote, quote_spanned, ToTokens};
 use std::mem;
 use syn::{parse_quote, punctuated, Generics, Lifetime, Result, Token};
 
-pub fn bridge(mut ffi: Module) -> Result<TokenStream> {
+pub(crate) fn bridge(mut ffi: Module) -> Result<TokenStream> {
     let ref mut errors = Errors::new();
 
     let mut cfg = CfgExpr::Unconditional;
@@ -142,6 +142,7 @@ fn expand(ffi: Module, doc: Doc, attrs: OtherAttrs, apis: &[Api], types: &Types)
         #[allow(
             non_camel_case_types,
             non_snake_case,
+            unused_unsafe, // FIXME: only needed by rustc 1.64 and older
             clippy::extra_unused_type_parameters,
             clippy::items_after_statements,
             clippy::ptr_as_ptr,
@@ -718,12 +719,9 @@ fn expand_cxx_function_shim(efn: &ExternFn, types: &Types) -> TokenStream {
             expr = quote_spanned!(span=> ::cxx::core::result::Result::Ok(#expr));
         }
     };
-    let mut dispatch = quote!(#setup #expr);
+    let dispatch = quote_spanned!(span=> unsafe { #setup #expr });
     let visibility = efn.visibility;
     let unsafety = &efn.sig.unsafety;
-    if unsafety.is_none() {
-        dispatch = quote_spanned!(span=> unsafe { #dispatch });
-    }
     let fn_token = efn.sig.fn_token;
     let ident = &efn.name.rust;
     let generics = &efn.generics;
@@ -985,22 +983,31 @@ fn expand_rust_function_shim_impl(
     });
     let all_args = receiver.into_iter().chain(args);
 
+    let mut requires_unsafe = false;
     let arg_vars = sig.args.iter().map(|arg| {
         let var = &arg.name.rust;
         let span = var.span();
         match &arg.ty {
             Type::Ident(i) if i.rust == RustString => {
+                requires_unsafe = true;
                 quote_spanned!(span=> ::cxx::core::mem::take((*#var).as_mut_string()))
             }
-            Type::RustBox(_) => quote_spanned!(span=> ::cxx::alloc::boxed::Box::from_raw(#var)),
+            Type::RustBox(_) => {
+                requires_unsafe = true;
+                quote_spanned!(span=> ::cxx::alloc::boxed::Box::from_raw(#var))
+            }
             Type::RustVec(vec) => {
+                requires_unsafe = true;
                 if vec.inner == RustString {
                     quote_spanned!(span=> ::cxx::core::mem::take((*#var).as_mut_vec_string()))
                 } else {
                     quote_spanned!(span=> ::cxx::core::mem::take((*#var).as_mut_vec()))
                 }
             }
-            Type::UniquePtr(_) => quote_spanned!(span=> ::cxx::UniquePtr::from_raw(#var)),
+            Type::UniquePtr(_) => {
+                requires_unsafe = true;
+                quote_spanned!(span=> ::cxx::UniquePtr::from_raw(#var))
+            }
             Type::Ref(ty) => match &ty.inner {
                 Type::Ident(i) if i.rust == RustString => match ty.mutable {
                     false => quote_spanned!(span=> #var.as_string()),
@@ -1016,8 +1023,12 @@ fn expand_rust_function_shim_impl(
                 },
                 _ => quote!(#var),
             },
-            Type::Str(_) => quote_spanned!(span=> #var.as_str()),
+            Type::Str(_) => {
+                requires_unsafe = true;
+                quote_spanned!(span=> #var.as_str())
+            }
             Type::SliceRef(slice) => {
+                requires_unsafe = true;
                 let inner = &slice.inner;
                 match slice.mutable {
                     false => quote_spanned!(span=> #var.as_slice::<#inner>()),
@@ -1025,6 +1036,7 @@ fn expand_rust_function_shim_impl(
                 }
             }
             ty if types.needs_indirect_abi(ty) => {
+                requires_unsafe = true;
                 quote_spanned!(span=> ::cxx::core::ptr::read(#var))
             }
             _ => quote!(#var),
@@ -1042,6 +1054,7 @@ fn expand_rust_function_shim_impl(
         }
         None => {
             requires_closure = true;
+            requires_unsafe = true;
             quote!(::cxx::core::mem::transmute::<*const (), #sig>(__extern))
         }
     };
@@ -1109,10 +1122,16 @@ fn expand_rust_function_shim_impl(
             None => quote_spanned!(span=> &mut ()),
         };
         requires_closure = true;
+        requires_unsafe = true;
         expr = quote_spanned!(span=> ::cxx::private::r#try(#out, #expr));
     } else if indirect_return {
         requires_closure = true;
+        requires_unsafe = true;
         expr = quote_spanned!(span=> ::cxx::core::ptr::write(__return, #expr));
+    }
+
+    if requires_unsafe {
+        expr = quote_spanned!(span=> unsafe { #expr });
     }
 
     let closure = if requires_closure {
@@ -1193,9 +1212,14 @@ fn expand_rust_function_shim_super(
         }
     };
 
+    let mut body = quote_spanned!(span=> #call(#(#vars,)*));
+    if unsafety.is_some() {
+        body = quote_spanned!(span=> unsafe { #body });
+    }
+
     quote_spanned! {span=>
         #unsafety fn #local_name #generics(#(#all_args,)*) #ret {
-            #call(#(#vars,)*)
+            #body
         }
     }
 }
@@ -1286,13 +1310,13 @@ fn expand_rust_box(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
         #[export_name = #link_dealloc]
         unsafe extern "C" fn #local_dealloc #impl_generics(ptr: *mut ::cxx::core::mem::MaybeUninit<#ident #ty_generics>) {
             // No prevent_unwind: the global allocator is not allowed to panic.
-            let _ = ::cxx::alloc::boxed::Box::from_raw(ptr);
+            let _ = unsafe { ::cxx::alloc::boxed::Box::from_raw(ptr) };
         }
         #[doc(hidden)]
         #[export_name = #link_drop]
         unsafe extern "C" fn #local_drop #impl_generics(this: *mut ::cxx::alloc::boxed::Box<#ident #ty_generics>) {
             let __fn = concat!("<", module_path!(), #prevent_unwind_drop_label);
-            ::cxx::private::prevent_unwind(__fn, || ::cxx::core::ptr::drop_in_place(this));
+            ::cxx::private::prevent_unwind(__fn, || unsafe { ::cxx::core::ptr::drop_in_place(this) });
         }
     }
 }
@@ -1334,49 +1358,61 @@ fn expand_rust_vec(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
         #[export_name = #link_new]
         unsafe extern "C" fn #local_new #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>) {
             // No prevent_unwind: cannot panic.
-            ::cxx::core::ptr::write(this, ::cxx::private::RustVec::new());
+            unsafe {
+                ::cxx::core::ptr::write(this, ::cxx::private::RustVec::new());
+            }
         }
         #[doc(hidden)]
         #[export_name = #link_drop]
         unsafe extern "C" fn #local_drop #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>) {
             let __fn = concat!("<", module_path!(), #prevent_unwind_drop_label);
-            ::cxx::private::prevent_unwind(__fn, || ::cxx::core::ptr::drop_in_place(this));
+            ::cxx::private::prevent_unwind(
+                __fn,
+                || unsafe { ::cxx::core::ptr::drop_in_place(this) },
+            );
         }
         #[doc(hidden)]
         #[export_name = #link_len]
         unsafe extern "C" fn #local_len #impl_generics(this: *const ::cxx::private::RustVec<#elem #ty_generics>) -> usize {
             // No prevent_unwind: cannot panic.
-            (*this).len()
+            unsafe { (*this).len() }
         }
         #[doc(hidden)]
         #[export_name = #link_capacity]
         unsafe extern "C" fn #local_capacity #impl_generics(this: *const ::cxx::private::RustVec<#elem #ty_generics>) -> usize {
             // No prevent_unwind: cannot panic.
-            (*this).capacity()
+            unsafe { (*this).capacity() }
         }
         #[doc(hidden)]
         #[export_name = #link_data]
         unsafe extern "C" fn #local_data #impl_generics(this: *const ::cxx::private::RustVec<#elem #ty_generics>) -> *const #elem #ty_generics {
             // No prevent_unwind: cannot panic.
-            (*this).as_ptr()
+            unsafe { (*this).as_ptr() }
         }
         #[doc(hidden)]
         #[export_name = #link_reserve_total]
         unsafe extern "C" fn #local_reserve_total #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, new_cap: usize) {
             // No prevent_unwind: the global allocator is not allowed to panic.
-            (*this).reserve_total(new_cap);
+            unsafe {
+                (*this).reserve_total(new_cap);
+            }
         }
         #[doc(hidden)]
         #[export_name = #link_set_len]
         unsafe extern "C" fn #local_set_len #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, len: usize) {
             // No prevent_unwind: cannot panic.
-            (*this).set_len(len);
+            unsafe {
+                (*this).set_len(len);
+            }
         }
         #[doc(hidden)]
         #[export_name = #link_truncate]
         unsafe extern "C" fn #local_truncate #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, len: usize) {
             let __fn = concat!("<", module_path!(), #prevent_unwind_drop_label);
-            ::cxx::private::prevent_unwind(__fn, || (*this).truncate(len));
+            ::cxx::private::prevent_unwind(
+                __fn,
+                || unsafe { (*this).truncate(len) },
+            );
         }
     }
 }
@@ -1408,7 +1444,9 @@ fn expand_unique_ptr(
                     fn __uninit(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut ::cxx::core::ffi::c_void;
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
-                unsafe { __uninit(&mut repr).cast::<#ident #ty_generics>().write(value) }
+                unsafe {
+                    __uninit(&mut repr).cast::<#ident #ty_generics>().write(value);
+                }
                 repr
             }
         })
@@ -1431,7 +1469,9 @@ fn expand_unique_ptr(
                     fn __null(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>);
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
-                unsafe { __null(&mut repr) }
+                unsafe {
+                    __null(&mut repr);
+                }
                 repr
             }
             #new_method
@@ -1441,7 +1481,9 @@ fn expand_unique_ptr(
                     fn __raw(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>, raw: *mut ::cxx::core::ffi::c_void);
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
-                __raw(&mut repr, raw.cast());
+                unsafe {
+                    __raw(&mut repr, raw.cast());
+                }
                 repr
             }
             unsafe fn __get(repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *const Self {
@@ -1449,21 +1491,23 @@ fn expand_unique_ptr(
                     #[link_name = #link_get]
                     fn __get(this: *const ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *const ::cxx::core::ffi::c_void;
                 }
-                __get(&repr).cast()
+                unsafe { __get(&repr).cast() }
             }
             unsafe fn __release(mut repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut Self {
                 extern "C" {
                     #[link_name = #link_release]
                     fn __release(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut ::cxx::core::ffi::c_void;
                 }
-                __release(&mut repr).cast()
+                unsafe { __release(&mut repr).cast() }
             }
             unsafe fn __drop(mut repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) {
                 extern "C" {
                     #[link_name = #link_drop]
                     fn __drop(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>);
                 }
-                __drop(&mut repr);
+                unsafe {
+                    __drop(&mut repr);
+                }
             }
         }
     }
@@ -1494,7 +1538,9 @@ fn expand_shared_ptr(
                     #[link_name = #link_uninit]
                     fn __uninit(new: *mut ::cxx::core::ffi::c_void) -> *mut ::cxx::core::ffi::c_void;
                 }
-                __uninit(new).cast::<#ident #ty_generics>().write(value);
+                unsafe {
+                    __uninit(new).cast::<#ident #ty_generics>().write(value);
+                }
             }
         })
     } else {
@@ -1515,7 +1561,9 @@ fn expand_shared_ptr(
                     #[link_name = #link_null]
                     fn __null(new: *mut ::cxx::core::ffi::c_void);
                 }
-                __null(new);
+                unsafe {
+                    __null(new);
+                }
             }
             #new_method
             unsafe fn __clone(this: *const ::cxx::core::ffi::c_void, new: *mut ::cxx::core::ffi::c_void) {
@@ -1523,21 +1571,25 @@ fn expand_shared_ptr(
                     #[link_name = #link_clone]
                     fn __clone(this: *const ::cxx::core::ffi::c_void, new: *mut ::cxx::core::ffi::c_void);
                 }
-                __clone(this, new);
+                unsafe {
+                    __clone(this, new);
+                }
             }
             unsafe fn __get(this: *const ::cxx::core::ffi::c_void) -> *const Self {
                 extern "C" {
                     #[link_name = #link_get]
                     fn __get(this: *const ::cxx::core::ffi::c_void) -> *const ::cxx::core::ffi::c_void;
                 }
-                __get(this).cast()
+                unsafe { __get(this).cast() }
             }
             unsafe fn __drop(this: *mut ::cxx::core::ffi::c_void) {
                 extern "C" {
                     #[link_name = #link_drop]
                     fn __drop(this: *mut ::cxx::core::ffi::c_void);
                 }
-                __drop(this);
+                unsafe {
+                    __drop(this);
+                }
             }
         }
     }
@@ -1570,35 +1622,45 @@ fn expand_weak_ptr(key: NamedImplKey, types: &Types, explicit_impl: Option<&Impl
                     #[link_name = #link_null]
                     fn __null(new: *mut ::cxx::core::ffi::c_void);
                 }
-                __null(new);
+                unsafe {
+                    __null(new);
+                }
             }
             unsafe fn __clone(this: *const ::cxx::core::ffi::c_void, new: *mut ::cxx::core::ffi::c_void) {
                 extern "C" {
                     #[link_name = #link_clone]
                     fn __clone(this: *const ::cxx::core::ffi::c_void, new: *mut ::cxx::core::ffi::c_void);
                 }
-                __clone(this, new);
+                unsafe {
+                    __clone(this, new);
+                }
             }
             unsafe fn __downgrade(shared: *const ::cxx::core::ffi::c_void, weak: *mut ::cxx::core::ffi::c_void) {
                 extern "C" {
                     #[link_name = #link_downgrade]
                     fn __downgrade(shared: *const ::cxx::core::ffi::c_void, weak: *mut ::cxx::core::ffi::c_void);
                 }
-                __downgrade(shared, weak);
+                unsafe {
+                    __downgrade(shared, weak);
+                }
             }
             unsafe fn __upgrade(weak: *const ::cxx::core::ffi::c_void, shared: *mut ::cxx::core::ffi::c_void) {
                 extern "C" {
                     #[link_name = #link_upgrade]
                     fn __upgrade(weak: *const ::cxx::core::ffi::c_void, shared: *mut ::cxx::core::ffi::c_void);
                 }
-                __upgrade(weak, shared);
+                unsafe {
+                    __upgrade(weak, shared);
+                }
             }
             unsafe fn __drop(this: *mut ::cxx::core::ffi::c_void) {
                 extern "C" {
                     #[link_name = #link_drop]
                     fn __drop(this: *mut ::cxx::core::ffi::c_void);
                 }
-                __drop(this);
+                unsafe {
+                    __drop(this);
+                }
             }
         }
     }
@@ -1648,7 +1710,12 @@ fn expand_cxx_vector(
                         value: *mut ::cxx::core::ffi::c_void,
                     );
                 }
-                __push_back(this, value as *mut ::cxx::core::mem::ManuallyDrop<Self> as *mut ::cxx::core::ffi::c_void);
+                unsafe {
+                    __push_back(
+                        this,
+                        value as *mut ::cxx::core::mem::ManuallyDrop<Self> as *mut ::cxx::core::ffi::c_void,
+                    );
+                }
             }
             unsafe fn __pop_back(
                 this: ::cxx::core::pin::Pin<&mut ::cxx::CxxVector<Self>>,
@@ -1661,7 +1728,12 @@ fn expand_cxx_vector(
                         out: *mut ::cxx::core::ffi::c_void,
                     );
                 }
-                __pop_back(this, out as *mut ::cxx::core::mem::MaybeUninit<Self> as *mut ::cxx::core::ffi::c_void);
+                unsafe {
+                    __pop_back(
+                        this,
+                        out as *mut ::cxx::core::mem::MaybeUninit<Self> as *mut ::cxx::core::ffi::c_void,
+                    );
+                }
             }
         })
     } else {
@@ -1695,7 +1767,7 @@ fn expand_cxx_vector(
                         pos: usize,
                     ) -> *mut ::cxx::core::ffi::c_void;
                 }
-                __get_unchecked(v, pos) as *mut Self
+                unsafe { __get_unchecked(v, pos) as *mut Self }
             }
             #by_value_methods
             fn __unique_ptr_null() -> ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void> {
@@ -1704,7 +1776,9 @@ fn expand_cxx_vector(
                     fn __unique_ptr_null(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>);
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
-                unsafe { __unique_ptr_null(&mut repr) }
+                unsafe {
+                    __unique_ptr_null(&mut repr);
+                }
                 repr
             }
             unsafe fn __unique_ptr_raw(raw: *mut ::cxx::CxxVector<Self>) -> ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void> {
@@ -1713,7 +1787,9 @@ fn expand_cxx_vector(
                     fn __unique_ptr_raw #impl_generics(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>, raw: *mut ::cxx::CxxVector<#elem #ty_generics>);
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
-                __unique_ptr_raw(&mut repr, raw);
+                unsafe {
+                    __unique_ptr_raw(&mut repr, raw);
+                }
                 repr
             }
             unsafe fn __unique_ptr_get(repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *const ::cxx::CxxVector<Self> {
@@ -1721,21 +1797,23 @@ fn expand_cxx_vector(
                     #[link_name = #link_unique_ptr_get]
                     fn __unique_ptr_get #impl_generics(this: *const ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *const ::cxx::CxxVector<#elem #ty_generics>;
                 }
-                __unique_ptr_get(&repr)
+                unsafe { __unique_ptr_get(&repr) }
             }
             unsafe fn __unique_ptr_release(mut repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut ::cxx::CxxVector<Self> {
                 extern "C" {
                     #[link_name = #link_unique_ptr_release]
                     fn __unique_ptr_release #impl_generics(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut ::cxx::CxxVector<#elem #ty_generics>;
                 }
-                __unique_ptr_release(&mut repr)
+                unsafe { __unique_ptr_release(&mut repr) }
             }
             unsafe fn __unique_ptr_drop(mut repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) {
                 extern "C" {
                     #[link_name = #link_unique_ptr_drop]
                     fn __unique_ptr_drop(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>);
                 }
-                __unique_ptr_drop(&mut repr);
+                unsafe {
+                    __unique_ptr_drop(&mut repr);
+                }
             }
         }
     }

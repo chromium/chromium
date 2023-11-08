@@ -100,7 +100,7 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.107"
+version = "1.0.110"
 dependencies = [
  "cxxbridge-macro",
  "link-cplusplus",
@@ -108,7 +108,7 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.107"
+version = "1.0.110"
 dependencies = [
  "clap",
  "codespan-reporting",
@@ -119,7 +119,7 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.107"
+version = "1.0.110"
 dependencies = [
  "proc-macro2",
  "quote",

@@ -5,7 +5,7 @@ use syn::parse::ParseStream;
 use syn::{Ident, LitBool, LitStr, Token};
 
 #[derive(Ord, PartialOrd, Eq, PartialEq)]
-pub enum CfgValue {
+pub(crate) enum CfgValue {
     Bool(bool),
     Str(String),
 }
@@ -15,12 +15,12 @@ impl CfgValue {
     const TRUE: Self = CfgValue::Bool(true);
 }
 
-pub struct FlagsCfgEvaluator {
+pub(crate) struct FlagsCfgEvaluator {
     map: Map<String, Set<CfgValue>>,
 }
 
 impl FlagsCfgEvaluator {
-    pub fn new(map: Map<String, Set<CfgValue>>) -> Self {
+    pub(crate) fn new(map: Map<String, Set<CfgValue>>) -> Self {
         FlagsCfgEvaluator { map }
     }
 }
@@ -73,7 +73,7 @@ impl Debug for CfgValue {
     }
 }
 
-pub fn parse(input: ParseStream) -> syn::Result<(String, CfgValue)> {
+pub(crate) fn parse(input: ParseStream) -> syn::Result<(String, CfgValue)> {
     let ident: Ident = input.parse()?;
     let name = ident.to_string();
     if input.is_empty() {
