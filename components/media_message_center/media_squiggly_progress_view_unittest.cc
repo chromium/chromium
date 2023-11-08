@@ -79,7 +79,7 @@ TEST_F(MediaSquigglyProgressViewTest, MediaPaused) {
   EXPECT_FALSE(view()->is_live_for_testing());
 }
 
-TEST_F(MediaSquigglyProgressViewTest, SeekTo) {
+TEST_F(MediaSquigglyProgressViewTest, MouseEventSeekTo) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(600),
       /*position=*/base::Seconds(100), /*end_of_media=*/false);
@@ -101,12 +101,6 @@ TEST_F(MediaSquigglyProgressViewTest, SeekTo) {
   EXPECT_CALL(*this, OnProgressDragging(false));
   view()->OnMouseReleased(released_event);
 
-  // Simulate a gesture tap event and SeekTo() should be called.
-  ui::GestureEvent tapped_event(point.x(), point.y(), 0, ui::EventTimeForNow(),
-                                ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  EXPECT_CALL(*this, SeekTo(0.5));
-  view()->OnGestureEvent(&tapped_event);
-
   // Simulate a position change with infinite duration. i.e. a live media.
   media_session::MediaPosition media_position_live(
       /*playback_rate=*/1, /*duration=*/base::TimeDelta::Max(),
@@ -118,6 +112,29 @@ TEST_F(MediaSquigglyProgressViewTest, SeekTo) {
   EXPECT_CALL(*this, OnProgressDragging(testing::_)).Times(0);
   view()->OnMousePressed(pressed_event);
   EXPECT_TRUE(view()->is_live_for_testing());
+}
+
+TEST_F(MediaSquigglyProgressViewTest, GestureEventSeekTo) {
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false);
+  view()->UpdateProgress(media_position);
+
+  // Simulate gesture tap events and SeekTo() should be called.
+  gfx::Point point(view()->width() / 2, view()->height() / 2);
+  ui::GestureEvent tapped_event(
+      point.x(), point.y(), 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+  EXPECT_CALL(*this, SeekTo(0.5));
+  EXPECT_CALL(*this, OnProgressDragging(true));
+  view()->OnGestureEvent(&tapped_event);
+
+  ui::GestureEvent released_event(point.x(), point.y(), 0,
+                                  ui::EventTimeForNow(),
+                                  ui::GestureEventDetails(ui::ET_GESTURE_END));
+  EXPECT_CALL(*this, SeekTo(0.5));
+  EXPECT_CALL(*this, OnProgressDragging(false));
+  view()->OnGestureEvent(&released_event);
 }
 
 TEST_F(MediaSquigglyProgressViewTest, KeyEventSeekBackward) {
