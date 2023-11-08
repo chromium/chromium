@@ -155,8 +155,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals(1, checkedMarkedColors.length);
       assertEquals(
           checkedMarkedColors[0],
-          $$(wallpaperSearchElement,
-             '.default-color .color-check-mark-wrapper'));
+          $$(wallpaperSearchElement, '.default-color .color-check-mark'));
 
       wallpaperSearchElement.$.hueSlider.dispatchEvent(
           new Event('selected-hue-changed'));
@@ -479,8 +478,7 @@ suite('WallpaperSearchTest', () => {
       await waitAfterNextRender(wallpaperSearchElement);
 
       // The first result should be checked and be the only one checked.
-      const firstResult =
-          $$(wallpaperSearchElement, '.tile .image-check-mark-wrapper');
+      const firstResult = $$(wallpaperSearchElement, '.tile .image-check-mark');
       const checkedResults =
           wallpaperSearchElement.shadowRoot!.querySelectorAll(
               '.tile [checked]');

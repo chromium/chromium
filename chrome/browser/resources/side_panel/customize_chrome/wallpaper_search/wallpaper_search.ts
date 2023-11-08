@@ -275,8 +275,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return this.expandedCategories_[category];
   }
 
-  private isDefaultColorSelected_(color: string): boolean {
-    return color === this.selectedDefaultColor_;
+  private isColorSelected_(defaultColor: string): boolean {
+    return defaultColor === this.selectedDefaultColor_;
   }
 
   private async onBackClick_() {

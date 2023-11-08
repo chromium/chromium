@@ -46,6 +46,11 @@ export class CustomizeChromeCombobox extends PolymerElement {
       },
       highlightedElement_: Object,
       label: String,
+      rightAlignDropbox: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
       selectedElement_: {
         type: Object,
         observer: 'onSelectedElementChanged_',
