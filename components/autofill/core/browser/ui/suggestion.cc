@@ -156,9 +156,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kCardVisa";
     case Suggestion::Icon::kNoIcon:
       return "kNoIcon";
-    default:
-      NOTREACHED_NORETURN();
   }
+  NOTREACHED_NORETURN();
 }
 
 void PrintTo(const Suggestion& suggestion, std::ostream* os) {

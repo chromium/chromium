@@ -261,53 +261,65 @@ std::u16string CreditCard::NetworkForDisplay(const std::string& network) {
 int CreditCard::IconResourceId(Suggestion::Icon icon) {
   bool should_show_metadata_icon = base::FeatureList::IsEnabled(
       features::kAutofillEnableNewCardArtAndNetworkImages);
+  auto get_icon = [&](int metadata_icon, int default_icon) {
+    return should_show_metadata_icon ? metadata_icon : default_icon;
+  };
 
-  if (icon == Suggestion::Icon::kCardAmericanExpress) {
-    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_AMEX
-                                     : IDR_AUTOFILL_CC_AMEX;
+  switch (icon) {
+    case Suggestion::Icon::kCardAmericanExpress:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_AMEX, IDR_AUTOFILL_CC_AMEX);
+    case Suggestion::Icon::kCardDiners:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_DINERS, IDR_AUTOFILL_CC_DINERS);
+    case Suggestion::Icon::kCardDiscover:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_DISCOVER,
+                      IDR_AUTOFILL_CC_DISCOVER);
+    case Suggestion::Icon::kCardElo:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_ELO, IDR_AUTOFILL_CC_ELO);
+    case Suggestion::Icon::kCardJCB:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_JCB, IDR_AUTOFILL_CC_JCB);
+    case Suggestion::Icon::kCardMasterCard:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_MASTERCARD,
+                      IDR_AUTOFILL_CC_MASTERCARD);
+    case Suggestion::Icon::kCardMir:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_MIR, IDR_AUTOFILL_CC_MIR);
+    case Suggestion::Icon::kCardTroy:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_TROY, IDR_AUTOFILL_CC_TROY);
+    case Suggestion::Icon::kCardUnionPay:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_UNIONPAY,
+                      IDR_AUTOFILL_CC_UNIONPAY);
+    case Suggestion::Icon::kCardVisa:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_VISA, IDR_AUTOFILL_CC_VISA);
+    case Suggestion::Icon::kCardGeneric:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_GENERIC,
+                      IDR_AUTOFILL_CC_GENERIC);
+    case Suggestion::Icon::kNoIcon:
+    case Suggestion::Icon::kAccount:
+    case Suggestion::Icon::kClear:
+    case Suggestion::Icon::kCreate:
+    case Suggestion::Icon::kCode:
+    case Suggestion::Icon::kDelete:
+    case Suggestion::Icon::kDevice:
+    case Suggestion::Icon::kEdit:
+    case Suggestion::Icon::kEmpty:
+    case Suggestion::Icon::kGlobe:
+    case Suggestion::Icon::kGoogle:
+    case Suggestion::Icon::kGooglePasswordManager:
+    case Suggestion::Icon::kGooglePay:
+    case Suggestion::Icon::kGooglePayDark:
+    case Suggestion::Icon::kHttpWarning:
+    case Suggestion::Icon::kHttpsInvalid:
+    case Suggestion::Icon::kKey:
+    case Suggestion::Icon::kLocation:
+    case Suggestion::Icon::kMagic:
+    case Suggestion::Icon::kOfferTag:
+    case Suggestion::Icon::kPenSpark:
+    case Suggestion::Icon::kScanCreditCard:
+    case Suggestion::Icon::kSettings:
+    case Suggestion::Icon::kSettingsAndroid:
+    case Suggestion::Icon::kUndo:
+      NOTREACHED_NORETURN();
   }
-  if (icon == Suggestion::Icon::kCardDiners) {
-    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_DINERS
-                                     : IDR_AUTOFILL_CC_DINERS;
-  }
-  if (icon == Suggestion::Icon::kCardDiscover) {
-    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_DISCOVER
-                                     : IDR_AUTOFILL_CC_DISCOVER;
-  }
-  if (icon == Suggestion::Icon::kCardElo) {
-    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_ELO
-                                     : IDR_AUTOFILL_CC_ELO;
-  }
-  if (icon == Suggestion::Icon::kCardJCB) {
-    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_JCB
-                                     : IDR_AUTOFILL_CC_JCB;
-  }
-  if (icon == Suggestion::Icon::kCardMasterCard) {
-    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_MASTERCARD
-                                     : IDR_AUTOFILL_CC_MASTERCARD;
-  }
-  if (icon == Suggestion::Icon::kCardMir) {
-    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_MIR
-                                     : IDR_AUTOFILL_CC_MIR;
-  }
-  if (icon == Suggestion::Icon::kCardTroy) {
-    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_TROY
-                                     : IDR_AUTOFILL_CC_TROY;
-  }
-  if (icon == Suggestion::Icon::kCardUnionPay) {
-    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_UNIONPAY
-                                     : IDR_AUTOFILL_CC_UNIONPAY;
-  }
-  if (icon == Suggestion::Icon::kCardVisa) {
-    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_VISA
-                                     : IDR_AUTOFILL_CC_VISA;
-  }
-
-  // If you hit this CHECK, the above list of cases needs to be updated to
-  // include a new card.
-  CHECK_EQ(Suggestion::Icon::kCardGeneric, icon);
-  return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_GENERIC
-                                   : IDR_AUTOFILL_CC_GENERIC;
+  NOTREACHED_NORETURN();
 }
 
 // static

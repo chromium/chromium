@@ -74,41 +74,58 @@ constexpr char kHistogramGetImageViewByName[] =
 // otherwise.
 std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
   // Networks for which icons are currently shown.
-  if (icon == Suggestion::Icon::kCardAmericanExpress) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_AMEX);
+  switch (icon) {
+    case Suggestion::Icon::kCardAmericanExpress:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_AMEX);
+    case Suggestion::Icon::kCardDiners:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_DINERS);
+    case Suggestion::Icon::kCardDiscover:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_DISCOVER);
+    case Suggestion::Icon::kCardElo:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_ELO);
+    case Suggestion::Icon::kCardJCB:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_JCB);
+    case Suggestion::Icon::kCardMasterCard:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MASTERCARD);
+    case Suggestion::Icon::kCardMir:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MIR);
+    case Suggestion::Icon::kCardTroy:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_TROY);
+    case Suggestion::Icon::kCardUnionPay:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_UNION_PAY);
+    case Suggestion::Icon::kCardVisa:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA);
+    // Other networks.
+    case Suggestion::Icon::kCardGeneric:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
+    case Suggestion::Icon::kNoIcon:
+    case Suggestion::Icon::kAccount:
+    case Suggestion::Icon::kClear:
+    case Suggestion::Icon::kCreate:
+    case Suggestion::Icon::kCode:
+    case Suggestion::Icon::kDelete:
+    case Suggestion::Icon::kDevice:
+    case Suggestion::Icon::kEdit:
+    case Suggestion::Icon::kEmpty:
+    case Suggestion::Icon::kGlobe:
+    case Suggestion::Icon::kGoogle:
+    case Suggestion::Icon::kGooglePasswordManager:
+    case Suggestion::Icon::kGooglePay:
+    case Suggestion::Icon::kGooglePayDark:
+    case Suggestion::Icon::kHttpWarning:
+    case Suggestion::Icon::kHttpsInvalid:
+    case Suggestion::Icon::kKey:
+    case Suggestion::Icon::kLocation:
+    case Suggestion::Icon::kMagic:
+    case Suggestion::Icon::kOfferTag:
+    case Suggestion::Icon::kPenSpark:
+    case Suggestion::Icon::kScanCreditCard:
+    case Suggestion::Icon::kSettings:
+    case Suggestion::Icon::kSettingsAndroid:
+    case Suggestion::Icon::kUndo:
+      return std::u16string();
   }
-  if (icon == Suggestion::Icon::kCardDiners) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_DINERS);
-  }
-  if (icon == Suggestion::Icon::kCardDiscover) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_DISCOVER);
-  }
-  if (icon == Suggestion::Icon::kCardElo) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_ELO);
-  }
-  if (icon == Suggestion::Icon::kCardJCB) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_JCB);
-  }
-  if (icon == Suggestion::Icon::kCardMasterCard) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MASTERCARD);
-  }
-  if (icon == Suggestion::Icon::kCardMir) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MIR);
-  }
-  if (icon == Suggestion::Icon::kCardTroy) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_TROY);
-  }
-  if (icon == Suggestion::Icon::kCardUnionPay) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_UNION_PAY);
-  }
-  if (icon == Suggestion::Icon::kCardVisa) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA);
-  }
-  // Other networks.
-  if (icon == Suggestion::Icon::kCardGeneric) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
-  }
-  return std::u16string();
+  NOTREACHED_NORETURN();
 }
 
 std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
@@ -123,107 +140,89 @@ std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
 
 std::unique_ptr<views::ImageView> GetIconImageViewByName(
     Suggestion::Icon icon) {
-  if (icon == Suggestion::Icon::kNoIcon) {
-    return nullptr;
-  }
-
-  // For http warning message, get icon images from VectorIcon, which is the
-  // same as security indicator icons in location bar.
-  if (icon == Suggestion::Icon::kHttpWarning) {
-    return ImageViewFromVectorIcon(omnibox::kHttpIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kHttpsInvalid) {
-    return std::make_unique<views::ImageView>(
-        ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
-                                       ui::kColorAlertHighSeverity, kIconSize));
-  }
-
-  if (icon == Suggestion::Icon::kKey) {
-    return ImageViewFromVectorIcon(kKeyIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kEdit) {
-    return ImageViewFromVectorIcon(vector_icons::kEditIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kCode) {
-    return ImageViewFromVectorIcon(vector_icons::kCodeIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kLocation) {
-    return ImageViewFromVectorIcon(vector_icons::kLocationOnIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kDelete) {
-    return ImageViewFromVectorIcon(kTrashCanLightIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kClear) {
-    return ImageViewFromVectorIcon(kBackspaceIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kUndo) {
-    return ImageViewFromVectorIcon(vector_icons::kUndoIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kGlobe) {
-    return ImageViewFromVectorIcon(kGlobeIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kMagic) {
-    return ImageViewFromVectorIcon(vector_icons::kMagicButtonIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kAccount) {
-    return ImageViewFromVectorIcon(kAccountCircleIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kSettings) {
-    return ImageViewFromVectorIcon(omnibox::kProductIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kEmpty) {
-    return ImageViewFromVectorIcon(omnibox::kHttpIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kDevice) {
-    return ImageViewFromVectorIcon(kDevicesIcon, kIconSize);
-  }
-
-  if (icon == Suggestion::Icon::kGoogle) {
+  switch (icon) {
+    case Suggestion::Icon::kNoIcon:
+      return nullptr;
+    case Suggestion::Icon::kHttpWarning:
+      // For the http warning message, get the icon images from VectorIcon,
+      // which is the same as the security indicator icons in the location bar.
+      return ImageViewFromVectorIcon(omnibox::kHttpIcon, kIconSize);
+    case Suggestion::Icon::kHttpsInvalid:
+      return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          vector_icons::kNotSecureWarningIcon, ui::kColorAlertHighSeverity,
+          kIconSize));
+    case Suggestion::Icon::kKey:
+      return ImageViewFromVectorIcon(kKeyIcon, kIconSize);
+    case Suggestion::Icon::kEdit:
+      return ImageViewFromVectorIcon(vector_icons::kEditIcon, kIconSize);
+    case Suggestion::Icon::kCode:
+      return ImageViewFromVectorIcon(vector_icons::kCodeIcon, kIconSize);
+    case Suggestion::Icon::kLocation:
+      return ImageViewFromVectorIcon(vector_icons::kLocationOnIcon, kIconSize);
+    case Suggestion::Icon::kDelete:
+      return ImageViewFromVectorIcon(kTrashCanLightIcon, kIconSize);
+    case Suggestion::Icon::kClear:
+      return ImageViewFromVectorIcon(kBackspaceIcon, kIconSize);
+    case Suggestion::Icon::kUndo:
+      return ImageViewFromVectorIcon(vector_icons::kUndoIcon, kIconSize);
+    case Suggestion::Icon::kGlobe:
+      return ImageViewFromVectorIcon(kGlobeIcon, kIconSize);
+    case Suggestion::Icon::kMagic:
+      return ImageViewFromVectorIcon(vector_icons::kMagicButtonIcon, kIconSize);
+    case Suggestion::Icon::kAccount:
+      return ImageViewFromVectorIcon(kAccountCircleIcon, kIconSize);
+    case Suggestion::Icon::kSettings:
+      return ImageViewFromVectorIcon(omnibox::kProductIcon, kIconSize);
+    case Suggestion::Icon::kEmpty:
+      return ImageViewFromVectorIcon(omnibox::kHttpIcon, kIconSize);
+    case Suggestion::Icon::kDevice:
+      return ImageViewFromVectorIcon(kDevicesIcon, kIconSize);
+    case Suggestion::Icon::kGoogle:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    return ImageViewFromImageSkia(gfx::CreateVectorIcon(
-        vector_icons::kGoogleGLogoIcon, kIconSize, gfx::kPlaceholderColor));
+      return ImageViewFromImageSkia(gfx::CreateVectorIcon(
+          vector_icons::kGoogleGLogoIcon, kIconSize, gfx::kPlaceholderColor));
 #else
-    return nullptr;
+      return nullptr;
 #endif
-  }
-
-  if (icon == Suggestion::Icon::kPenSpark) {
+    case Suggestion::Icon::kPenSpark:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    return ImageViewFromVectorIcon(vector_icons::kPenSparkIcon, kIconSize);
+      return ImageViewFromVectorIcon(vector_icons::kPenSparkIcon, kIconSize);
 #else
-    return nullptr;
+      return nullptr;
 #endif
-  }
-
-  if (icon == Suggestion::Icon::kGooglePasswordManager) {
-    return ImageViewFromVectorIcon(GooglePasswordManagerVectorIcon(),
-                                   kGooglePasswordManagerIconSize);
-  }
-
+    case Suggestion::Icon::kGooglePasswordManager:
+      return ImageViewFromVectorIcon(GooglePasswordManagerVectorIcon(),
+                                     kGooglePasswordManagerIconSize);
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (icon == Suggestion::Icon::kGooglePay ||
-      icon == Suggestion::Icon::kGooglePayDark) {
-    return nullptr;
-  }
+    case Suggestion::Icon::kGooglePay:
+    case Suggestion::Icon::kGooglePayDark:
+      return nullptr;
+#else
+    case Suggestion::Icon::kGooglePay:
+    case Suggestion::Icon::kGooglePayDark:
 #endif
-  // For other suggestion entries, get icon from PNG files.
-  int icon_id = GetIconResourceID(icon);
-  DCHECK_NE(icon_id, 0);
-  return ImageViewFromImageSkia(
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_id));
+    case Suggestion::Icon::kCreate:
+    case Suggestion::Icon::kOfferTag:
+    case Suggestion::Icon::kScanCreditCard:
+    case Suggestion::Icon::kSettingsAndroid:
+    case Suggestion::Icon::kCardGeneric:
+    case Suggestion::Icon::kCardAmericanExpress:
+    case Suggestion::Icon::kCardDiners:
+    case Suggestion::Icon::kCardDiscover:
+    case Suggestion::Icon::kCardElo:
+    case Suggestion::Icon::kCardJCB:
+    case Suggestion::Icon::kCardMasterCard:
+    case Suggestion::Icon::kCardMir:
+    case Suggestion::Icon::kCardTroy:
+    case Suggestion::Icon::kCardUnionPay:
+    case Suggestion::Icon::kCardVisa:
+      // For other suggestion entries, get the icon from PNG files.
+      int icon_id = GetIconResourceID(icon);
+      DCHECK_NE(icon_id, 0);
+      return ImageViewFromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_id));
+  }
+  NOTREACHED_NORETURN();
 }
 
 std::u16string GetSuggestionA11yCoreMessage(const Suggestion& suggestion) {
