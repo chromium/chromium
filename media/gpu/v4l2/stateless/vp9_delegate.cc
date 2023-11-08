@@ -300,12 +300,6 @@ bool VP9Delegate::OutputPicture(scoped_refptr<VP9Picture> pic) {
   return true;
 }
 
-bool VP9Delegate::GetFrameContext(scoped_refptr<VP9Picture> pic,
-                                  Vp9FrameContext* frame_ctx) {
-  NOTIMPLEMENTED() << "Frame context update not supported";
-  return false;
-}
-
 bool VP9Delegate::NeedsCompressedHeaderParsed() const {
   return supports_compressed_header_;
 }

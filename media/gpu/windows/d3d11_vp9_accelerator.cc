@@ -265,9 +265,4 @@ bool D3D11VP9Accelerator::NeedsCompressedHeaderParsed() const {
   return false;
 }
 
-bool D3D11VP9Accelerator::GetFrameContext(scoped_refptr<VP9Picture> picture,
-                                          Vp9FrameContext* frame_context) {
-  return false;
-}
-
 }  // namespace media

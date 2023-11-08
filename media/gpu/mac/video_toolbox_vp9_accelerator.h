@@ -56,8 +56,6 @@ class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
                       const Vp9ReferenceFrameVector& reference_frames) override;
   bool OutputPicture(scoped_refptr<VP9Picture> pic) override;
   bool NeedsCompressedHeaderParsed() const override;
-  bool GetFrameContext(scoped_refptr<VP9Picture> pic,
-                       Vp9FrameContext* frame_ctx) override;
 
  private:
   // Grow the current superframe.

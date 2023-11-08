@@ -361,21 +361,6 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
   }
 }
 
-void VP9Decoder::UpdateFrameContext(
-    scoped_refptr<VP9Picture> pic,
-    Vp9Parser::ContextRefreshCallback context_refresh_cb) {
-  DCHECK(context_refresh_cb);
-  Vp9FrameContext frame_ctx;
-  memset(&frame_ctx, 0, sizeof(frame_ctx));
-
-  if (!accelerator_->GetFrameContext(std::move(pic), &frame_ctx)) {
-    SetError();
-    return;
-  }
-
-  std::move(context_refresh_cb).Run(frame_ctx);
-}
-
 VP9Decoder::VP9Accelerator::Status VP9Decoder::DecodeAndOutputPicture(
     scoped_refptr<VP9Picture> pic) {
   DCHECK(!pic_size_.IsEmpty());

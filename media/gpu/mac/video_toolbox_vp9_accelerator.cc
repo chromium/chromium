@@ -78,14 +78,6 @@ bool VideoToolboxVP9Accelerator::NeedsCompressedHeaderParsed() const {
   return false;
 }
 
-bool VideoToolboxVP9Accelerator::GetFrameContext(scoped_refptr<VP9Picture> pic,
-                                                 Vp9FrameContext* frame_ctx) {
-  DVLOG(4) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Not called because SupportsContextProbabilityReadback() returns false.
-  NOTREACHED_NORETURN();
-}
-
 bool VideoToolboxVP9Accelerator::ProcessFrame(scoped_refptr<VP9Picture> pic) {
   DVLOG(4) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

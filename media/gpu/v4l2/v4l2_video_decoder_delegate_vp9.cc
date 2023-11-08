@@ -331,12 +331,6 @@ bool V4L2VideoDecoderDelegateVP9::OutputPicture(scoped_refptr<VP9Picture> pic) {
   return true;
 }
 
-bool V4L2VideoDecoderDelegateVP9::GetFrameContext(scoped_refptr<VP9Picture> pic,
-                                                  Vp9FrameContext* frame_ctx) {
-  NOTIMPLEMENTED() << "Frame context update not supported";
-  return false;
-}
-
 bool V4L2VideoDecoderDelegateVP9::NeedsCompressedHeaderParsed() const {
   return supports_compressed_header_;
 }

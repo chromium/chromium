@@ -106,11 +106,6 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
     // Return true if the accelerator requires us to provide the compressed
     // header fully parsed.
     virtual bool NeedsCompressedHeaderParsed() const = 0;
-
-    // Set |frame_ctx| to the state after decoding |pic|, returning true on
-    // success, false otherwise.
-    virtual bool GetFrameContext(scoped_refptr<VP9Picture> pic,
-                                 Vp9FrameContext* frame_ctx) = 0;
   };
 
   explicit VP9Decoder(
@@ -147,11 +142,6 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
   // Return kOk on success, kTryAgain if this should be attempted again on the
   // next Decode call, and kFail otherwise.
   VP9Accelerator::Status DecodeAndOutputPicture(scoped_refptr<VP9Picture> pic);
-
-  // Get frame context state after decoding |pic| from the accelerator, and call
-  // |context_refresh_cb| with the acquired state.
-  void UpdateFrameContext(scoped_refptr<VP9Picture> pic,
-                          Vp9Parser::ContextRefreshCallback context_refresh_cb);
 
   // Called on error, when decoding cannot continue. Sets state_ to kError and
   // releases current state.
