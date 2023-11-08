@@ -3463,7 +3463,7 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
       Cada entrada de la lista contiene un diccionario que debe incluir el ID de extensión en el campo "extension-id" y su URL de actualización en el campo "update-url".</translation>
 <translation id="3869180930654347954">Inhabilitar First-Party Sets para todos los usuarios afectados</translation>
 <translation id="3869566220234507038">Cargar siempre el navegador <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /></translation>
-<translation id="3870035799352372700">Bloquear el acceso de Asistente de Google al contexto de la pantalla durante las interacciones</translation>
+<translation id="3870035799352372700">Bloquear el acceso de Asistente de Google al contexto en pantalla durante las interacciones</translation>
 <translation id="3870059789954671543">Habilita la función de accesibilidad para destacar el cursor del teclado en la pantalla de acceso.
 
           Esta función destaca el objeto que se selecciona con el cursor del teclado.
@@ -4552,7 +4552,7 @@ Si la inhabilitas, no se le mostrará la promoción para la extensión del Prove
       Si el tamaño de la página no está disponible en la impresora que elija el usuario, se ignorará esta política.</translation>
 <translation id="4789450349513792856">Bloquear ventanas emergentes en estos sitios</translation>
 <translation id="4790391579868456557">Usar cookies esenciales y no esenciales en la búsqueda</translation>
-<translation id="4790588245699320140">Permitir que Asistente de Google acceda al contexto de la pantalla</translation>
+<translation id="4790588245699320140">Permitir que Asistente de Google acceda al contexto en pantalla</translation>
 <translation id="4800438168909332958">Habilita la función de cancelación del eco de audio (AEC) del sistema. El AEC del sistema es un cancelador de eco acústico,
 es decir, un módulo de procesamiento de audio que quita la reproducción de audio del sistema (echo) de la señal del micrófono.
 Esta política es temporal y se quitará ni bien se inicie la cancelación del eco de audio del sistema.
