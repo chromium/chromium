@@ -221,12 +221,12 @@ class BaselineOptimizer:
             nonvirtual_locations = [
                 self.location(path) for path in search_path
             ]
-            if not self._skips_test(port, nonvirtual_test):
+            if not self.skips_test(port, nonvirtual_test):
                 yield nonvirtual_locations
             else:
                 skipped_ports_by_test[nonvirtual_test].append(port)
             for virtual_test in virtual_tests:
-                if self._skips_test(port, virtual_test):
+                if self.skips_test(port, virtual_test):
                     skipped_ports_by_test[virtual_test].append(port)
                     continue
                 virtual_locations = [
@@ -252,7 +252,7 @@ class BaselineOptimizer:
             _log.debug('Excluding ports that skip "%s": %s', test,
                        ', '.join(port_names))
 
-    def _skips_test(self, port: Port, test: str) -> bool:
+    def skips_test(self, port: Port, test: str) -> bool:
         expectations = self._exp_cache.load(port)
         results = expectations.get_expectations(test).results
         return ResultType.Skip in results or port.skips_test(test)
