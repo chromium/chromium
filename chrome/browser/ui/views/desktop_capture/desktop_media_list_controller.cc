@@ -7,6 +7,8 @@
 #include "base/command_line.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
@@ -14,6 +16,19 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+
+namespace {
+
+bool ShouldAutoAcceptThisTabCapture() {
+#if BUILDFLAG(PLATFORM_CFM)
+  return true;
+#else
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kThisTabCaptureAutoAccept);
+#endif
+}
+
+}  // namespace
 
 BEGIN_METADATA(DesktopMediaListController, ListView, views::View)
 END_METADATA
@@ -29,9 +44,7 @@ DesktopMediaListController::DesktopMediaListController(
       auto_select_source_(
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               switches::kAutoSelectDesktopCaptureSource)),
-      auto_accept_this_tab_capture_(
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kThisTabCaptureAutoAccept)),
+      auto_accept_this_tab_capture_(ShouldAutoAcceptThisTabCapture()),
       auto_reject_this_tab_capture_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kThisTabCaptureAutoReject)) {

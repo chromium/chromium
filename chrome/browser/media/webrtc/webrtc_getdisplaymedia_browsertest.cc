@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -259,6 +260,16 @@ class WebRtcScreenCaptureBrowserTestWithPicker
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   WebRtcScreenCaptureBrowserTestWithPicker() : test_config_(GetParam()) {}
+
+  void SetUpOnMainThread() override {
+    WebRtcScreenCaptureBrowserTest::SetUpOnMainThread();
+#if BUILDFLAG(PLATFORM_CFM)
+    if (test_config_.should_prefer_current_tab &&
+        !test_config_.accept_this_tab_capture) {
+      GTEST_SKIP();  // CFMs always automatically accept current-tab captures.
+    }
+#endif
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(

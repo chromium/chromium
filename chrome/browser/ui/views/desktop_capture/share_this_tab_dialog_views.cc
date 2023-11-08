@@ -7,6 +7,8 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
@@ -65,6 +67,15 @@ void RecordUmaSelection(base::TimeTicks dialog_open_time) {
 const base::FeatureParam<int> kShareThisTabDialogActivationDelayMs{
     &kShareThisTabDialog, "activation_delay_ms", 500};
 
+bool ShouldAutoAcceptThisTabCapture() {
+#if BUILDFLAG(PLATFORM_CFM)
+  return true;
+#else
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kThisTabCaptureAutoAccept);
+#endif
+}
+
 }  // namespace
 
 ShareThisTabDialogView::ShareThisTabDialogView(
@@ -79,9 +90,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
       auto_select_source_(
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               switches::kAutoSelectDesktopCaptureSource)),
-      auto_accept_this_tab_capture_(
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kThisTabCaptureAutoAccept)),
+      auto_accept_this_tab_capture_(ShouldAutoAcceptThisTabCapture()),
       auto_reject_this_tab_capture_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kThisTabCaptureAutoReject)),
