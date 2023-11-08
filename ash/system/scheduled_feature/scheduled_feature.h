@@ -251,8 +251,6 @@ class ASH_EXPORT ScheduledFeature
   const std::string prefs_path_schedule_type_;
   const std::string prefs_path_custom_start_time_;
   const std::string prefs_path_custom_end_time_;
-  const std::string prefs_path_latitude_;
-  const std::string prefs_path_longitude_;
 
   raw_ptr<GeolocationController, ExperimentalAsh> geolocation_controller_;
 
