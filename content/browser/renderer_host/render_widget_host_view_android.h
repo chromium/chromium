@@ -86,6 +86,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       public ui::ViewAndroidObserver,
       public ui::WindowAndroidObserver {
  public:
+  static RenderWidgetHostViewAndroid* FromRenderWidgetHostView(
+      RenderWidgetHostView* view);
+
   // Note: The tree of `gfx::NativeView` might not match the tree of
   // `cc::slim::Layer`.
   RenderWidgetHostViewAndroid(RenderWidgetHostImpl* widget,
