@@ -127,6 +127,43 @@ std::u16string AddWhiteSpaceSeparatorForNumber(const std::u16string& number,
   return formatted;
 }
 
+Suggestion::Icon ConvertCardNetworkIntoIcon(std::string_view network) {
+  if (network == kAmericanExpressCard) {
+    return Suggestion::Icon::kCardAmericanExpress;
+  }
+  if (network == kDinersCard) {
+    return Suggestion::Icon::kCardDiners;
+  }
+  if (network == kDiscoverCard) {
+    return Suggestion::Icon::kCardDiscover;
+  }
+  if (network == kEloCard) {
+    return Suggestion::Icon::kCardElo;
+  }
+  if (network == kJCBCard) {
+    return Suggestion::Icon::kCardJCB;
+  }
+  if (network == kMasterCard) {
+    return Suggestion::Icon::kCardMasterCard;
+  }
+  if (network == kMirCard) {
+    return Suggestion::Icon::kCardMir;
+  }
+  if (network == kTroyCard) {
+    return Suggestion::Icon::kCardTroy;
+  }
+  if (network == kUnionPay) {
+    return Suggestion::Icon::kCardUnionPay;
+  }
+  if (network == kVisaCard) {
+    return Suggestion::Icon::kCardVisa;
+  }
+  // If you hit this CHECK, the above list of cases needs to be updated to
+  // include a new card.
+  CHECK_EQ(network, kGenericCard);
+  return Suggestion::Icon::kCardGeneric;
+}
+
 }  // namespace
 
 // static
@@ -275,7 +312,7 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
 
 // static
 int CreditCard::IconResourceId(std::string_view icon_str) {
-  return IconResourceId(Suggestion::ConvertIconStringIntoIcon(icon_str));
+  return IconResourceId(ConvertCardNetworkIntoIcon(icon_str));
 }
 
 // static
@@ -1071,7 +1108,7 @@ CreditCard::ObfuscatedNumberWithVisibleLastFourDigitsForSplitFields() const {
 }
 
 Suggestion::Icon CreditCard::CardIconStringForAutofillSuggestion() const {
-  return Suggestion::ConvertIconStringIntoIcon(network_);
+  return ConvertCardNetworkIntoIcon(network_);
 }
 
 std::u16string CreditCard::NetworkAndLastFourDigits(

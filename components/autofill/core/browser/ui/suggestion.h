@@ -97,11 +97,6 @@ struct Suggestion {
     kCardVisa,
   };
 
-  // TODO(crbug.com/1019660): Remove this method, pass Suggestion::Icon from the
-  // beginning.
-  static Suggestion::Icon ConvertIconStringIntoIcon(
-      std::string_view icon_string);
-
   Suggestion();
   explicit Suggestion(std::u16string main_text);
   explicit Suggestion(PopupItemId popup_item_id);

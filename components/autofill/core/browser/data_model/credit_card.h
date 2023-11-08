@@ -147,9 +147,7 @@ class CreditCard : public AutofillDataModel {
   // The ResourceBundle ID for the appropriate card issuer icon.
   static int IconResourceId(Suggestion::Icon icon);
 
-  // Converts string to Suggestion::Icon and calls the method above.
-  // TODO(crbug.com/1019660): Rename this method to
-  // "IconResourceIdFromCreditCardNetwork"
+  // Converts icon_str to Suggestion::Icon and calls the method above.
   static int IconResourceId(std::string_view icon_str);
 
   // Returns the internal representation of card issuer network corresponding to
