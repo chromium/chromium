@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -137,10 +138,14 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
 
 TEST_F(HatsHandlerTest, SecurityPageInteractions) {
   SurveyStringData expected_product_specific_data = {
-      {"Security Page User Action", "enhanced_protection_radio_button_clicked"},
-      {"Safe Browsing Setting Before Trigger", "standard_protection"},
-      {"Safe Browsing Setting After Trigger", "standard_protection"},
-      {"Client Channel", "unknown"},
+    {"Security Page User Action", "enhanced_protection_radio_button_clicked"},
+    {"Safe Browsing Setting Before Trigger", "standard_protection"},
+    {"Safe Browsing Setting After Trigger", "standard_protection"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {"Client Channel", "stable"},
+#else
+    {"Client Channel", "unknown"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
 
   // Check that triggering the security page handler function will trigger HaTS
