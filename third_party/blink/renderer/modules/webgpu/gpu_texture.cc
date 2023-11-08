@@ -25,12 +25,15 @@ namespace {
 
 bool ConvertToDawn(const GPUTextureDescriptor* in,
                    WGPUTextureDescriptor* out,
+                   WGPUTextureBindingViewDimensionDescriptor*
+                       out_texture_binding_view_dimension,
                    std::string* label,
                    std::unique_ptr<WGPUTextureFormat[]>* view_formats,
                    GPUDevice* device,
                    ExceptionState& exception_state) {
   DCHECK(in);
   DCHECK(out);
+  DCHECK(out_texture_binding_view_dimension);
   DCHECK(label);
   DCHECK(view_formats);
   DCHECK(device);
@@ -41,6 +44,20 @@ bool ConvertToDawn(const GPUTextureDescriptor* in,
   out->format = AsDawnEnum(in->format());
   out->mipLevelCount = in->mipLevelCount();
   out->sampleCount = in->sampleCount();
+
+  if (in->hasTextureBindingViewDimension()) {
+    WGPUTextureViewDimension texture_binding_view_dimension =
+        AsDawnEnum(in->textureBindingViewDimension());
+    if (texture_binding_view_dimension) {
+      *out_texture_binding_view_dimension = {};
+      out_texture_binding_view_dimension->chain.sType =
+          WGPUSType_TextureBindingViewDimensionDescriptor;
+      out_texture_binding_view_dimension->textureBindingViewDimension =
+          texture_binding_view_dimension;
+      out->nextInChain = reinterpret_cast<WGPUChainedStruct*>(
+          out_texture_binding_view_dimension);
+    }
+  }
 
   if (in->hasLabel()) {
     *label = in->label().Utf8();
@@ -99,10 +116,13 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   DCHECK(webgpu_desc);
 
   WGPUTextureDescriptor dawn_desc;
+  WGPUTextureBindingViewDimensionDescriptor texture_binding_view_dimension_desc;
+
   std::string label;
   std::unique_ptr<WGPUTextureFormat[]> view_formats;
-  if (!ConvertToDawn(webgpu_desc, &dawn_desc, &label, &view_formats, device,
-                     exception_state)) {
+  if (!ConvertToDawn(webgpu_desc, &dawn_desc,
+                     &texture_binding_view_dimension_desc, &label,
+                     &view_formats, device, exception_state)) {
     return nullptr;
   }
 
