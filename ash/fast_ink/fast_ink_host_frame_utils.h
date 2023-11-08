@@ -81,6 +81,9 @@ ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     gpu::Mailbox mailbox,
     gpu::SyncToken sync_token);
 
+// Returns the RasterContextProvider used within FastInk.
+ASH_EXPORT scoped_refptr<viz::RasterContextProvider> GetContextProvider();
+
 }  // namespace fast_ink_internal
 }  // namespace ash
 

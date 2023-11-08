@@ -17,7 +17,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -146,9 +145,7 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
 
   if (base::FeatureList::IsEnabled(
           features::kUseOneSharedImageForFastInkHostResources)) {
-    context_provider_ = aura::Env::GetInstance()
-                            ->context_factory()
-                            ->SharedMainThreadRasterContextProvider();
+    context_provider_ = fast_ink_internal::GetContextProvider();
     gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
     // This SharedImage will be used by the display compositor, will be updated

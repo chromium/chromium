@@ -131,9 +131,7 @@ std::unique_ptr<UiResource> CreateUiResource(
 
   auto resource = std::make_unique<UiResource>();
 
-  resource->context_provider = aura::Env::GetInstance()
-                                   ->context_factory()
-                                   ->SharedMainThreadRasterContextProvider();
+  resource->context_provider = GetContextProvider();
 
   if (!resource->context_provider) {
     LOG(ERROR) << "Failed to acquire a context provider";
@@ -271,6 +269,12 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   frame->render_pass_list.push_back(std::move(render_pass));
 
   return frame;
+}
+
+scoped_refptr<viz::RasterContextProvider> GetContextProvider() {
+  return aura::Env::GetInstance()
+      ->context_factory()
+      ->SharedMainThreadRasterContextProvider();
 }
 
 }  // namespace fast_ink_internal
