@@ -476,8 +476,19 @@ void AuthenticatorRequestDialogModel::
          (transport_availability_.has_empty_allow_list &&
           // iCloud Keychain has its own confirmation UI and we don't want to
           // duplicate it.
-          cred->value().source !=
-              device::AuthenticatorType::kICloudKeychain))) {
+          cred->value().source != device::AuthenticatorType::kICloudKeychain)
+#if BUILDFLAG(IS_MAC)
+         ||
+         // Never auto-trigger macOS profile credentials without either a local
+         // biometric or a UV requirement because, otherwise, there'll not be
+         // *any* UI.
+         (cred->value().source == device::AuthenticatorType::kTouchID &&
+          transport_availability_.user_verification_requirement !=
+              device::UserVerificationRequirement::kRequired &&
+          !local_biometrics_override_for_testing_.value_or(
+              device::fido::mac::DeviceHasBiometricsAvailable()))
+#endif
+             )) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else {
       mechanism.callback.Run();
