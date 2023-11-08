@@ -52,33 +52,33 @@ ReconnectParams ReconnectParams::FromDict(const base::Value::Dict& dict) {
 
 bool ReconnectParams::IsValid() const {
   if (support_id.empty()) {
-    LOG(WARNING) << "Missing field: support_id";
+    LOG(ERROR) << "Missing field: support_id";
     return false;
   } else if (support_id.length() != 7) {
-    LOG(WARNING) << "Invalid support_id: " << support_id;
+    LOG(ERROR) << "Invalid support_id: " << support_id;
     return false;
   }
 
   if (host_secret.empty()) {
-    LOG(WARNING) << "Missing field: host_secret";
+    LOG(ERROR) << "Missing field: host_secret";
     return false;
   } else if (host_secret.length() != 5) {
-    LOG(WARNING) << "Invalid host_secret: " << host_secret;
+    LOG(ERROR) << "Invalid host_secret: " << host_secret;
     return false;
   }
 
   if (private_key.empty()) {
-    LOG(WARNING) << "Missing field: private_key";
+    LOG(ERROR) << "Missing field: private_key";
     return false;
   }
 
   if (ftl_device_registration_id.empty()) {
-    LOG(WARNING) << "Missing field: ftl_device_registration_id";
+    LOG(ERROR) << "Missing field: ftl_device_registration_id";
     return false;
   } else if (!base::Uuid::ParseLowercase(ftl_device_registration_id)
                   .is_valid()) {
-    LOG(WARNING) << "Invalid ftl_device_registration_id: "
-                 << ftl_device_registration_id;
+    LOG(ERROR) << "Invalid ftl_device_registration_id: "
+               << ftl_device_registration_id;
     return false;
   }
 
