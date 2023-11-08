@@ -116,6 +116,9 @@ export class SettingsHotspotSubpageElement extends
     if (!this.hotspotInfo) {
       return true;
     }
+    if (this.hotspotInfo.state === HotspotState.kEnabling) {
+      return false;
+    }
     if (this.hotspotInfo.allowStatus !== HotspotAllowStatus.kAllowed) {
       return true;
     }
