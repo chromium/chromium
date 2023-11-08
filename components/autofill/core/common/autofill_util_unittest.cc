@@ -142,35 +142,6 @@ INSTANTIATE_TEST_SUITE_P(
         LowercaseAndTokenizeAttributeStringCase{"foO    baR bAz",
                                                 {"foo", "bar", "baz"}}));
 
-TEST(LevenshteinDistanceTest, WithoutMaxDistance) {
-  EXPECT_EQ(LevenshteinDistance(u"aa", u"aa"), 0u);
-  EXPECT_EQ(LevenshteinDistance(u"a", u"aa"), 1u);
-  EXPECT_EQ(LevenshteinDistance(u"aba", u"aa"), 1u);
-  EXPECT_EQ(LevenshteinDistance(u"", u"12"), 2u);
-  EXPECT_EQ(LevenshteinDistance(u"street", u"str."), 3u);
-  EXPECT_EQ(LevenshteinDistance(u"asdf", u"fdsa"), 4u);
-  EXPECT_EQ(
-      LevenshteinDistance(std::u16string(100, 'a'), std::u16string(200, 'a')),
-      100u);
-  EXPECT_EQ(LevenshteinDistance(u"ananas", u"banana"), 2u);
-}
-
-TEST(LevenshteinDistanceTest, WithMaxDistance) {
-  EXPECT_EQ(LevenshteinDistance(u"aa", u"aa", 0), 0u);
-  EXPECT_EQ(LevenshteinDistance(u"a", u"aa", 1), 1u);
-  EXPECT_EQ(LevenshteinDistance(u"ab", u"aa", 2), 1u);
-  EXPECT_EQ(LevenshteinDistance(u"aba", u"aa", 3), 1u);
-
-  // In the case where k is less than the LevenshteinDistance() this should
-  // return k+1.
-  EXPECT_EQ(LevenshteinDistance(u"", u"12", 1), 2u);
-  EXPECT_EQ(LevenshteinDistance(u"street", u"str.", 1), 2u);
-  EXPECT_EQ(LevenshteinDistance(u"asdf", u"fdsa", 2), 3u);
-  EXPECT_EQ(LevenshteinDistance(std::u16string(100, 'a'),
-                                std::u16string(200, 'a'), 50),
-            51u);
-}
-
 TEST(StripAuthAndParamsTest, StripsAll) {
   GURL url = GURL("https://login:password@example.com/login/?param=value#ref");
   EXPECT_EQ(GURL("https://example.com/login/"), StripAuthAndParams(url));

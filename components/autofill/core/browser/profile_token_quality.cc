@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/levenshtein_distance.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -28,7 +29,6 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
-#include "components/autofill/core/common/autofill_util.h"
 
 namespace autofill {
 
@@ -87,9 +87,10 @@ ObservationType GetObservationTypeForEditedField(
     return ObservationType::kEditedValueCleared;
   }
 
-  if (LevenshteinDistance(base::ToLowerASCII(profile.GetInfo(type, app_locale)),
-                          base::ToLowerASCII(edited_value),
-                          ProfileTokenQuality::kMaximumLevenshteinDistance) <=
+  if (base::LevenshteinDistance(
+          base::ToLowerASCII(profile.GetInfo(type, app_locale)),
+          base::ToLowerASCII(edited_value),
+          ProfileTokenQuality::kMaximumLevenshteinDistance) <=
       ProfileTokenQuality::kMaximumLevenshteinDistance) {
     return ObservationType::kEditedToSimilarValue;
   }

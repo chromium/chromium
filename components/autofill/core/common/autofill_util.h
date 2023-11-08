@@ -67,19 +67,6 @@ std::u16string RemoveWhitespace(const std::u16string& value);
 // entered by the website and not a real value entered by the user.
 bool SanitizedFieldIsEmpty(const std::u16string& value);
 
-// Returns the Levenshtein distance of `a` and `b`.
-// If `k = max_distance` is provided, the distance is only correctly calculated
-// up to k. In case the actual Levenshtein distance is larger than k, k+1 is
-// returned instead. This is useful for checking whether the distance is at most
-// some small constant, since the algorithm is more efficient in this case.
-// Edits, inserts and removes each count as one step.
-// Complexity:
-// - Without k: O(|a| * |b|) time and O(max(|a|, |b|)) memory.
-// - With k: O(min(|a|, |b|) * k + k) time and O(k) memory.
-size_t LevenshteinDistance(std::u16string_view a,
-                           std::u16string_view b,
-                           std::optional<size_t> max_distance = std::nullopt);
-
 // Returns true if the first suggestion should be autoselected when the autofill
 // dropdown is shown due to an arrow down event. Enabled on desktop only.
 bool ShouldAutoselectFirstSuggestionOnArrowDown();

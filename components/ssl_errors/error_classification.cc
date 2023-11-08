@@ -12,6 +12,7 @@
 #include "base/build_time.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/levenshtein_distance.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -324,36 +325,6 @@ bool AnyNamesUnderName(const std::vector<HostnameTokens>& potential_children,
   return false;
 }
 
-// Returns the Levenshtein distance between |str1| and |str2|.
-// Which is the minimum number of single-character edits (i.e. insertions,
-// deletions or substitutions) required to change one word into the other.
-// https://en.wikipedia.org/wiki/Levenshtein_distance
-size_t GetLevenshteinDistance(const std::string& str1,
-                              const std::string& str2) {
-  if (str1 == str2)
-    return 0;
-  if (str1.size() == 0)
-    return str2.size();
-  if (str2.size() == 0)
-    return str1.size();
-
-  std::vector<size_t> row(str2.size() + 1);
-  for (size_t i = 0; i < row.size(); ++i)
-    row[i] = i;
-
-  for (size_t i = 0; i < str1.size(); ++i) {
-    row[0] = i + 1;
-    size_t previous = i;
-    for (size_t j = 0; j < str2.size(); ++j) {
-      size_t old_row = row[j + 1];
-      int cost = str1[i] == str2[j] ? 0 : 1;
-      row[j + 1] = std::min(std::min(row[j], row[j + 1]) + 1, previous + cost);
-      previous = old_row;
-    }
-  }
-  return row[str2.size()];
-}
-
 bool IsSubDomainOutsideWildcard(const GURL& request_url,
                                 const net::X509Certificate& cert) {
   std::string host_name = request_url.host();
@@ -422,9 +393,11 @@ bool IsCertLikelyFromMultiTenantHosting(const GURL& request_url,
   static const size_t kMinimumEditDistance = 5;
   for (size_t i = 0; i < dns_names_size; ++i) {
     for (size_t j = i + 1; j < dns_names_size; ++j) {
-      size_t edit_distance = GetLevenshteinDistance(dns_names[i], dns_names[j]);
-      if (edit_distance < kMinimumEditDistance)
+      if (base::LevenshteinDistance(dns_names[i], dns_names[j],
+                                    kMinimumEditDistance - 1) <
+          kMinimumEditDistance) {
         return false;
+      }
     }
   }
   return true;
