@@ -37,7 +37,6 @@ void CopyLockResult(base::RunLoop* loop,
 
 static const char kTestDomain[] = "example.com";
 static const char kTestDeviceId[] = "133750519";
-static const char kTestUserDeprecated[] = "test@example.com";
 
 class InstallAttributesTest : public testing::Test {
  protected:
@@ -219,37 +218,15 @@ TEST_F(InstallAttributesTest, ConsumerKioskDevice) {
   ASSERT_TRUE(install_attributes_->IsConsumerKioskDeviceWithAutoLaunch());
 }
 
-TEST_F(InstallAttributesTest, DeviceLockedFromOlderVersion) {
-  install_attributes_->Init(GetTempPath());
-  EXPECT_EQ(policy::DEVICE_MODE_PENDING, install_attributes_->GetMode());
-  // Lock the attributes as if it was done from older Chrome version.
-  ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
-      InstallAttributes::kAttrEnterpriseOwned, "true"));
-  ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
-      InstallAttributes::kAttrEnterpriseUser, kTestUserDeprecated));
-  ASSERT_TRUE(install_attributes_util::InstallAttributesFinalize());
-  base::RunLoop loop;
-  install_attributes_->ReadImmutableAttributes(loop.QuitClosure());
-  loop.Run();
-
-  ASSERT_FALSE(install_attributes_util::InstallAttributesIsFirstInstall());
-  EXPECT_EQ(policy::DEVICE_MODE_ENTERPRISE, install_attributes_->GetMode());
-  EXPECT_EQ(kTestDomain, install_attributes_->GetDomain());
-  EXPECT_EQ(std::string(), install_attributes_->GetRealm());
-  EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
-}
-
 TEST_F(InstallAttributesTest, Init) {
   cryptohome::SerializedInstallAttributes install_attrs_proto;
   SetAttribute(&install_attrs_proto, InstallAttributes::kAttrEnterpriseOwned,
                "true");
-  SetAttribute(&install_attrs_proto, InstallAttributes::kAttrEnterpriseUser,
-               kTestUserDeprecated);
   const std::string blob(install_attrs_proto.SerializeAsString());
   ASSERT_TRUE(base::WriteFile(GetTempPath(), blob));
   install_attributes_->Init(GetTempPath());
   EXPECT_EQ(policy::DEVICE_MODE_ENTERPRISE, install_attributes_->GetMode());
-  EXPECT_EQ(kTestDomain, install_attributes_->GetDomain());
+  EXPECT_EQ(std::string(), install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
   EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
 }
@@ -280,14 +257,12 @@ TEST_F(InstallAttributesTest, VerifyFakeInstallAttributesCache) {
   // Write test values.
   ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
       InstallAttributes::kAttrEnterpriseOwned, "true"));
-  ASSERT_TRUE(install_attributes_util::InstallAttributesSet(
-      InstallAttributes::kAttrEnterpriseUser, kTestUserDeprecated));
   ASSERT_TRUE(install_attributes_util::InstallAttributesFinalize());
 
   // Verify that InstallAttributes correctly decodes the stub cache file.
   install_attributes_->Init(GetTempPath());
   EXPECT_EQ(policy::DEVICE_MODE_ENTERPRISE, install_attributes_->GetMode());
-  EXPECT_EQ(kTestDomain, install_attributes_->GetDomain());
+  EXPECT_EQ(std::string(), install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
   EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
 }

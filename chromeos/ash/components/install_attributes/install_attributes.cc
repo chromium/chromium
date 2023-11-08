@@ -203,9 +203,9 @@ void InstallAttributes::ReadAttributesIfReady(
     device_locked_ = true;
 
     static const char* const kEnterpriseAttributes[] = {
-        kAttrEnterpriseDeviceId,   kAttrEnterpriseDomain, kAttrEnterpriseRealm,
-        kAttrEnterpriseMode,       kAttrEnterpriseOwned,  kAttrEnterpriseUser,
-        kAttrConsumerKioskEnabled,
+        kAttrEnterpriseDeviceId, kAttrEnterpriseDomain,
+        kAttrEnterpriseRealm,    kAttrEnterpriseMode,
+        kAttrEnterpriseOwned,    kAttrConsumerKioskEnabled,
     };
     std::map<std::string, std::string> attr_map;
     for (size_t i = 0; i < std::size(kEnterpriseAttributes); ++i) {
@@ -483,7 +483,6 @@ const char InstallAttributes::kAttrEnterpriseDomain[] = "enterprise.domain";
 const char InstallAttributes::kAttrEnterpriseRealm[] = "enterprise.realm";
 const char InstallAttributes::kAttrEnterpriseMode[] = "enterprise.mode";
 const char InstallAttributes::kAttrEnterpriseOwned[] = "enterprise.owned";
-const char InstallAttributes::kAttrEnterpriseUser[] = "enterprise.user";
 const char InstallAttributes::kAttrConsumerKioskEnabled[] =
     "consumer.app_kiosk_enabled";
 
@@ -548,7 +547,6 @@ void InstallAttributes::DecodeInstallAttributes(
   const std::string domain = ReadMapKey(attr_map, kAttrEnterpriseDomain);
   const std::string realm = ReadMapKey(attr_map, kAttrEnterpriseRealm);
   const std::string device_id = ReadMapKey(attr_map, kAttrEnterpriseDeviceId);
-  const std::string user_deprecated = ReadMapKey(attr_map, kAttrEnterpriseUser);
 
   if (enterprise_owned == "true") {
     WarnIfNonempty(attr_map, kAttrConsumerKioskEnabled);
@@ -571,9 +569,6 @@ void InstallAttributes::DecodeInstallAttributes(
       if (!domain.empty()) {
         // The canonicalization is for compatibility with earlier versions.
         registration_domain_ = gaia::CanonicalizeDomain(domain);
-      } else if (!user_deprecated.empty()) {
-        // Compatibility for pre M19 code.
-        registration_domain_ = gaia::ExtractDomainName(user_deprecated);
       } else {
         LOG(WARNING) << "Couldn't read domain.";
       }
@@ -594,16 +589,13 @@ void InstallAttributes::DecodeInstallAttributes(
   WarnIfNonempty(attr_map, kAttrEnterpriseDomain);
   WarnIfNonempty(attr_map, kAttrEnterpriseRealm);
   WarnIfNonempty(attr_map, kAttrEnterpriseDeviceId);
-  WarnIfNonempty(attr_map, kAttrEnterpriseUser);
   if (consumer_kiosk_enabled == "true") {
     registration_mode_ = policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH;
     return;
   }
 
   WarnIfNonempty(attr_map, kAttrConsumerKioskEnabled);
-  if (user_deprecated.empty()) {
-    registration_mode_ = policy::DEVICE_MODE_CONSUMER;
-  }
+  registration_mode_ = policy::DEVICE_MODE_CONSUMER;
 }
 
 }  // namespace ash
