@@ -826,9 +826,8 @@ void NetworkingPrivateGetGlobalPolicyFunction::Result(
     absl::optional<base::Value::Dict> policy_dict) {
   // private_api::GlobalPolicy is a subset of the global policy dictionary
   // (by definition), so use the api setter/getter to generate the subset.
-  std::unique_ptr<private_api::GlobalPolicy> policy(
-      private_api::GlobalPolicy::FromValueDeprecated(
-          base::Value(std::move(policy_dict.value()))));
+  absl::optional<private_api::GlobalPolicy> policy =
+      private_api::GlobalPolicy::FromValue(policy_dict.value());
   DCHECK(policy);
   return Respond(
       ArgumentList(private_api::GetGlobalPolicy::Results::Create(*policy)));

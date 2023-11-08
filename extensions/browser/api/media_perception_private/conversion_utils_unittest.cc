@@ -593,9 +593,7 @@ TEST(MediaPerceptionConversionUtilsTest, StateProtoToIdl) {
 
   // Empty.
   EXPECT_EQ(*state_result.named_template_arguments->at(1).name, "");
-  EXPECT_FALSE(state_result.named_template_arguments->at(1).value->as_string);
-  EXPECT_THAT(state_result.named_template_arguments->at(1).value->as_number,
-              Eq(absl::nullopt));
+  EXPECT_FALSE(state_result.named_template_arguments->at(1).value);
 
   // String.
   EXPECT_EQ(*state_result.named_template_arguments->at(2).name,
@@ -656,16 +654,14 @@ TEST(MediaPerceptionConversionUtilsTest, StateIdlToProto) {
 
   state.named_template_arguments->at(0).name = kNumericalTemplateArgumentName;
 
-  state.named_template_arguments->at(0).value.emplace();
-  media_perception::NamedTemplateArgument::Value::Populate(
-      base::Value(kNumericalTemplateArgumentValue),
-      *state.named_template_arguments->at(0).value);
+  state.named_template_arguments->at(0).value =
+      media_perception::NamedTemplateArgument::Value::FromValue(
+          base::Value(kNumericalTemplateArgumentValue));
 
   state.named_template_arguments->at(2).name = kStringTemplateArgumentName;
-  state.named_template_arguments->at(2).value.emplace();
-  media_perception::NamedTemplateArgument::Value::Populate(
-      base::Value(kStringTemplateArgumentValue),
-      *state.named_template_arguments->at(2).value);
+  state.named_template_arguments->at(2).value =
+      media_perception::NamedTemplateArgument::Value::FromValue(
+          base::Value(kStringTemplateArgumentValue));
 
   state_proto = StateIdlToProto(state);
   EXPECT_EQ(state_proto.status(), mri::State::RUNNING);
