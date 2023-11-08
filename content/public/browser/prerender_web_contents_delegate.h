@@ -18,7 +18,53 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
   ~PrerenderWebContentsDelegate() override = default;
 
   // WebContentsDelegate overrides.
+  void AddNewContents(WebContents* source,
+                      std::unique_ptr<WebContents> new_contents,
+                      const GURL& target_url,
+                      WindowOpenDisposition disposition,
+                      const blink::mojom::WindowFeatures& window_features,
+                      bool user_gesture,
+                      bool* was_blocked) override;
+  void ActivateContents(WebContents* contents) override;
+  void LoadingStateChanged(WebContents* source,
+                           bool should_show_loading_ui) override;
   void CloseContents(WebContents* source) override;
+  bool ShouldSuppressDialogs(WebContents* source) override;
+  bool ShouldFocusPageAfterCrash(WebContents* source) override;
+  bool TakeFocus(WebContents* source, bool reverse) override;
+  void WebContentsCreated(WebContents* source_contents,
+                          int opener_render_process_id,
+                          int opener_render_frame_id,
+                          const std::string& frame_name,
+                          const GURL& target_url,
+                          WebContents* new_contents) override;
+  void PortalWebContentsCreated(WebContents* portal_web_contents) override;
+  void WebContentsBecamePortal(WebContents* portal_web_contents) override;
+  bool CanEnterFullscreenModeForTab(
+      RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void EnterFullscreenModeForTab(
+      RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void FullscreenStateChangedForTab(
+      RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void ExitFullscreenModeForTab(WebContents*) override;
+  bool IsFullscreenForTabOrPending(const WebContents* web_contents) override;
+  void OnDidBlockNavigation(
+      WebContents* web_contents,
+      const GURL& blocked_url,
+      const GURL& initiator_url,
+      blink::mojom::NavigationBlockedReason reason) override;
+  PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents) override;
+  std::unique_ptr<WebContents> ActivatePortalWebContents(
+      WebContents* predecessor_contents,
+      std::unique_ptr<WebContents> portal_contents) override;
+  void UpdateInspectedWebContentsIfNecessary(
+      WebContents* old_contents,
+      WebContents* new_contents,
+      base::OnceCallback<void()> callback) override;
 };
 
 }  // namespace content
