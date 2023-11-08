@@ -1061,7 +1061,7 @@
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_skylab_reclient',
       'linux-cfm-rel': 'linux_cfm_release_trybot_reclient',
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
-      'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_trybot_reclient',
+      'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_trybot_reclient_no_symbols',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_trybot_reclient',
       'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient_with_cups',
@@ -2256,6 +2256,10 @@
 
     'chromeos_with_codecs_debug_trybot_reclient': [
       'chromeos_with_codecs', 'debug_bot_reclient', 'use_cups', 'use_dummy_lastchange',
+    ],
+
+    'chromeos_with_codecs_debug_trybot_reclient_no_symbols': [
+      'chromeos_with_codecs', 'debug_bot_reclient', 'no_symbols', 'use_cups', 'use_dummy_lastchange',
     ],
 
     'chromeos_with_codecs_release_bot_coverage_reclient': [
