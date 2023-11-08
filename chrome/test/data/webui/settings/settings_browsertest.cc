@@ -693,8 +693,16 @@ IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest, OfficialBuild) {
 #endif
 
 class SettingsPrivacyGuideTest : public SettingsBrowserTest {
+ protected:
+  SettingsPrivacyGuideTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {content_settings::features::kTrackingProtection3pcd,
+         features::kPrivacyGuide3},
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kPrivacyGuide3};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePage) {
@@ -775,9 +783,14 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuideDialog) {
           "runMochaSuite('PrivacyGuideDialog')");
 }
 
+class SettingsPrivacyGuideIntegrationTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kPrivacyGuide3};
+};
+
 // TODO(https://crbug.com/1426530): Re-enable when no longer flaky.
 #if !BUILDFLAG(IS_LINUX) || defined(NDEBUG)
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, Integration) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideIntegrationTest, Integration) {
   RunTest("settings/privacy_guide_integration_test.js", "mocha.run()");
 }
 #endif

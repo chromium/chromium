@@ -303,9 +303,6 @@ suite('PrivacyGuidePage', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    // TODO(b:306414714): Remove once 3pcd launched.
-    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: true});
-
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -510,9 +507,6 @@ suite('SettingsFlowLength', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    // TODO(b:306414714): Remove once 3pcd launched.
-    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: true});
-
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -613,11 +607,7 @@ suite('PrivacyGuidePagePG3Off', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enablePrivacyGuide3: false,
-      // TODO(b:306414714): Remove once 3pcd launched.
-      is3pcdCookieSettingsRedesignEnabled: true,
-    });
+    loadTimeData.overrideValues({enablePrivacyGuide3: false});
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -736,11 +726,7 @@ suite('SettingsFlowLengthPG3Off', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enablePrivacyGuide3: false,
-      // TODO(b:306414714): Remove once 3pcd launched.
-      is3pcdCookieSettingsRedesignEnabled: true,
-    });
+    loadTimeData.overrideValues({enablePrivacyGuide3: false});
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -836,9 +822,6 @@ suite('MsbbCardNavigations', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    // TODO(b:306414714): Remove once 3pcd launched.
-    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: true});
-
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -916,11 +899,7 @@ suite('MsbbCardNavigationsPG3Off', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enablePrivacyGuide3: false,
-      // TODO(b:306414714): Remove once 3pcd launched.
-      is3pcdCookieSettingsRedesignEnabled: true,
-    });
+    loadTimeData.overrideValues({enablePrivacyGuide3: false});
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -968,9 +947,6 @@ suite('HistorySyncCardNavigations', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    // TODO(b:306414714): Remove once 3pcd launched.
-    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: true});
-
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -1072,11 +1048,7 @@ suite('HistorySyncCardNavigationsPG3Off', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enablePrivacyGuide3: false,
-      // TODO(b:306414714): Remove once 3pcd launched.
-      is3pcdCookieSettingsRedesignEnabled: true,
-    });
+    loadTimeData.overrideValues({enablePrivacyGuide3: false});
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -1166,9 +1138,6 @@ suite('SafeBrowsingCardNavigations', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    // TODO(b:306414714): Remove once 3pcd launched.
-    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: true});
-
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -1260,11 +1229,7 @@ suite('SafeBrowsingCardNavigationsPG3Off', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enablePrivacyGuide3: false,
-      // TODO(b:306414714): Remove once 3pcd launched.
-      is3pcdCookieSettingsRedesignEnabled: true,
-    });
+    loadTimeData.overrideValues({enablePrivacyGuide3: false});
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
