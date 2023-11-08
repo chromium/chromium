@@ -12,5 +12,5 @@ create {
 
 upload {
   universal: true
-  pkg_prefix: "chromium/fuchsia/test-scripts"
+  pkg_prefix: "chromium/fuchsia"
 }

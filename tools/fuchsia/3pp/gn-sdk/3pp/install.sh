@@ -7,6 +7,11 @@ set -e
 set -x
 set -o pipefail
 
+if [[ -z "$1" ]]; then
+  echo "Expect a prefix as the first argument."
+  exit 1
+fi
+
 PREFIX="$1"
 
 # Use "--parents" to reserve the relative paths, e.g.
