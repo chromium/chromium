@@ -13,6 +13,5 @@ source_set("first_run") {
     "//components/pref_registry",
     "//components/startup_metric_utils",
     "//ios/chrome/browser/shared/model/paths",
-    "//third_party/abseil-cpp:absl",
   ]
 }

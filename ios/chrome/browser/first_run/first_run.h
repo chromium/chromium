@@ -7,9 +7,10 @@
 #ifndef IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_H_
 #define IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_H_
 
+#include <optional>
+
 #include "base/files/file.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -40,8 +41,8 @@ class FirstRun {
   static bool IsChromeFirstRun();
 
   // If the first run sentinel file exist, returns the info; otherwise, return
-  // `absl::nullopt`.
-  static absl::optional<base::File::Info> GetSentinelInfo();
+  // `std::nullopt`.
+  static std::optional<base::File::Info> GetSentinelInfo();
 
   // Creates the sentinel file that signals that chrome has been configured if
   // the file does not exist yet.

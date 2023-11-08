@@ -22,11 +22,11 @@ const base::FilePath::CharType kSentinelFile[] = FILE_PATH_LITERAL("First Run");
 const char kPingDelayPrefName[] = "distribution.ping_delay";
 
 // The info from first run sentinel file; if the file doesn't exist, the value
-// would be `absl::nullopt`. Only accessed through LoadSentinelInfo() and
+// would be `std::nullopt`. Only accessed through LoadSentinelInfo() and
 // GetSentinelInfo();
-absl::optional<base::File::Info>& GetSentinelInfoGlobal() {
-  static base::NoDestructor<absl::optional<base::File::Info>> kInstance(
-      absl::nullopt);
+std::optional<base::File::Info>& GetSentinelInfoGlobal() {
+  static base::NoDestructor<std::optional<base::File::Info>> kInstance(
+      std::nullopt);
   return *kInstance;
 }
 
@@ -61,7 +61,7 @@ bool FirstRun::IsChromeFirstRun() {
 }
 
 // static
-absl::optional<base::File::Info> FirstRun::GetSentinelInfo() {
+std::optional<base::File::Info> FirstRun::GetSentinelInfo() {
   return GetSentinelInfoGlobal();
 }
 
@@ -98,7 +98,7 @@ startup_metric_utils::FirstRunSentinelCreationResult FirstRun::CreateSentinel(
 
 // static
 void FirstRun::LoadSentinelInfo() {
-  absl::optional<base::File::Info>& global_sentinel_info =
+  std::optional<base::File::Info>& global_sentinel_info =
       GetSentinelInfoGlobal();
   if (global_sentinel_info.has_value()) {
     return;

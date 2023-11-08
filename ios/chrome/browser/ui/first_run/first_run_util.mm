@@ -123,10 +123,10 @@ void RecordMetricsReportingDefaultState() {
   });
 }
 
-absl::optional<base::Time> GetFirstRunTime() {
-  absl::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
+std::optional<base::Time> GetFirstRunTime() {
+  std::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
   if (info.has_value()) {
     return info.value().creation_time;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
