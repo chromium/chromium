@@ -16937,6 +16937,21 @@
             ]
         }
     ],
+    "ShowNtpAtStartupAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShowNtpAtStartupAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShutdownConfirmationBubble": [
         {
             "platforms": [
