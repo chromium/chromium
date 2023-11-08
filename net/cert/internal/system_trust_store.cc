@@ -52,26 +52,6 @@
 
 namespace net {
 
-namespace {
-
-class DummySystemTrustStore : public SystemTrustStore {
- public:
-  bssl::TrustStore* GetTrustStore() override { return &trust_store_; }
-
-  bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const override {
-    return false;
-  }
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  int64_t chrome_root_store_version() const override { return 0; }
-#endif
-
- private:
-  bssl::TrustStoreCollection trust_store_;
-};
-
-}  // namespace
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
  public:
@@ -311,9 +291,5 @@ void InitializeTrustStoreAndroid() {}
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
 #endif
-
-std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore() {
-  return std::make_unique<DummySystemTrustStore>();
-}
 
 }  // namespace net

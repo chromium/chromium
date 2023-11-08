@@ -67,10 +67,6 @@ CreateSystemTrustStoreChromeForTesting(
     std::unique_ptr<bssl::TrustStore> trust_store_system);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
-// Creates an instance of SystemTrustStore that initially does not have any
-// trust roots.
-NET_EXPORT std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore();
-
 #if BUILDFLAG(IS_MAC)
 // Initializes trust cache on a worker thread, if the builtin verifier is
 // enabled.
