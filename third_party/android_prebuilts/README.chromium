@@ -1,0 +1,15 @@
+Name: Android Prebuilt Build Tools
+URL: https://android.googlesource.com/platform/prebuilts/build-tools
+Version: N/A
+Revision: 673c20b524a83b662d8c1057fd3eec8fd0f93f9d
+License: GPL 2 or later
+License File: build_tools/LICENSE-GPL-3.0
+Security Critical: no
+Shipped: no
+
+Description:
+A repository that contains Android's Prebuilt Build Tools
+
+This repository is used by Codesearch pipeline to extract Java compilation
+units. The only used binary is `common/framework/javac_extractor.jar`.
+
