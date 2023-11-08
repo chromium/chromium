@@ -17,6 +17,7 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ui/base/device_form_factor.h"
 
@@ -122,7 +123,7 @@ void CreateStorageDirectory(const base::FilePath& directory,
     return;
   }
 
-  if (legacy_directory.empty() || !base::DirectoryExists(legacy_directory)) {
+  if (!base::DirectoryExists(legacy_directory)) {
     return;
   }
 
@@ -130,7 +131,7 @@ void CreateStorageDirectory(const base::FilePath& directory,
   // `directory` and then delete the directory. As this function is
   // used to move snapshot file which are not stored recursively, limit
   // the enumeration to files and do not perform a recursive enumeration.
-  base::FileEnumerator iter(legacy_directory, /*recursive*/ false,
+  base::FileEnumerator iter(legacy_directory, /*recursive=*/false,
                             base::FileEnumerator::FILES);
 
   for (base::FilePath item = iter.Next(); !item.empty(); item = iter.Next()) {
@@ -226,7 +227,7 @@ void RemoveAllImages(const base::FilePath& directory) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  if (directory.empty() || !base::DirectoryExists(directory)) {
+  if (!base::DirectoryExists(directory)) {
     return;
   }
 
@@ -351,6 +352,30 @@ void ConvertAndSaveGreyImage(SnapshotID snapshot_id,
   base::apple::SetBackupExclusion(image_path);
 }
 
+// Frees up disk by deleting all grey snapshots if they exist in `directory`
+// because grey snapshots are not stored anymore when
+// `kGreySnapshotOptimization` feature is enabled.
+// TODO(crbug.com/1474387): This function should be removed in a few milestones
+// after `kGreySnapshotOptimization` feature is enabled by default.
+void DeleteAllGreyImages(const base::FilePath& directory) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  if (!base::DirectoryExists(directory)) {
+    return;
+  }
+
+  base::FileEnumerator iter(directory, /*recursive=*/false,
+                            base::FileEnumerator::FILES);
+
+  for (base::FilePath item = iter.Next(); !item.empty(); item = iter.Next()) {
+    if (item.BaseName().value().find(
+            SuffixForImageType(IMAGE_TYPE_GREYSCALE)) != std::string::npos) {
+      base::DeleteFile(item);
+    }
+  }
+}
+
 }  // anonymous namespace
 
 @implementation ImageFileManager {
@@ -383,6 +408,10 @@ void ConvertAndSaveGreyImage(SnapshotID snapshot_id,
     _taskRunner->PostTask(
         FROM_HERE,
         base::BindOnce(CreateStorageDirectory, _storageDirectory, legacyPath));
+    if (base::FeatureList::IsEnabled(kGreySnapshotOptimization)) {
+      _taskRunner->PostTask(
+          FROM_HERE, base::BindOnce(DeleteAllGreyImages, _storageDirectory));
+    }
   }
   return self;
 }

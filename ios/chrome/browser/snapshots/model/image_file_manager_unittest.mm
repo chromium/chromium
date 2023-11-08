@@ -13,8 +13,10 @@
 #import "base/functional/callback_forward.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/sessions/core/session_id.h"
+#import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -406,6 +408,67 @@ TEST_F(ImageFileManagerTest, AllImagesDeleted) {
 
   EXPECT_FALSE(base::PathExists(image_1_path));
   EXPECT_FALSE(base::PathExists(image_2_path));
+}
+
+class ImageFileManagerWithoutStoringGreySnapshotsTest
+    : public ImageFileManagerTest {
+ public:
+  ImageFileManagerWithoutStoringGreySnapshotsTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kGreySnapshotOptimization,
+        {{"level", "do-not-store-to-disk-and-cache"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that all grey images are deleted when ImageFileManager is initialized.
+TEST_F(ImageFileManagerWithoutStoringGreySnapshotsTest,
+       DeleteExistingGreySnapshotsOnInit) {
+  ImageFileManager* file_manager = GetImageFileManager();
+  ASSERT_TRUE(file_manager);
+
+  // Write color images to disk.
+  UIImage* image = GenerateRandomImage(0);
+  const SnapshotID kSnapshotID1(SessionID::NewUnique().id());
+  const SnapshotID kSnapshotID2(SessionID::NewUnique().id());
+  [file_manager writeImage:image withSnapshotID:kSnapshotID1];
+  [file_manager writeImage:image withSnapshotID:kSnapshotID2];
+
+  // Write grey images generated from color ones to disk.
+  [file_manager convertAndSaveGreyImage:kSnapshotID1];
+  [file_manager convertAndSaveGreyImage:kSnapshotID2];
+
+  // Wait until all operations are done.
+  FlushRunLoops();
+
+  base::FilePath image_1_path =
+      [file_manager greyImagePathForSnapshotID:kSnapshotID1];
+  base::FilePath image_2_path =
+      [file_manager greyImagePathForSnapshotID:kSnapshotID2];
+  EXPECT_TRUE(base::PathExists(image_1_path));
+  EXPECT_TRUE(base::PathExists(image_2_path));
+
+  // Initialize ImageFileManager again so that the existing grey images
+  // should be deleted.
+  ImageFileManager* file_manager2 = [[ImageFileManager alloc]
+      initWithStoragePath:scoped_temp_directory_.GetPath()
+               legacyPath:base::FilePath()];
+  ASSERT_TRUE(file_manager2);
+
+  // Wait until all grey images are deleted by initializing `file_manager2`.
+  base::RunLoop run_loop;
+  [file_manager2
+      readImageWithSnapshotID:SnapshotID(SessionID::NewUnique().id())
+                   completion:base::BindOnce(base::IgnoreArgs<UIImage*>(
+                                  run_loop.QuitClosure()))];
+  run_loop.Run();
+
+  EXPECT_FALSE(base::PathExists(image_1_path));
+  EXPECT_FALSE(base::PathExists(image_2_path));
+
+  [file_manager2 shutdown];
 }
 
 }  // namespace
