@@ -107,6 +107,9 @@ function convert_to_windows() {
   rm "${1}.bak"
 }
 
+# Fetch the latest tags; used in creating aom_version.h.
+git -C "${SRC}" fetch --tags
+
 # Scope 'trap' error reporting to configuration generation.
 (
 TMP=$(mktemp -d "${BASE}/build.XXXX")
