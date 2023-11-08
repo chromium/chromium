@@ -34,4 +34,7 @@ interface SeaPenProvider {
     // images were returned.
     // `text` must be smaller than `kMaximumSearchWallpaperTextBytes` bytes.
     SearchWallpaper(string text) => (array<SeaPenThumbnail>? images);
+
+    // Select a thumbnail and set as the system wallpaper for the current user.
+    SelectSeaPenThumbnail(uint32 id) => (bool success);
 };

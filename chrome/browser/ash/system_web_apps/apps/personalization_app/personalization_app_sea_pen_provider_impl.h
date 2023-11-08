@@ -7,6 +7,7 @@
 
 #include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -44,18 +45,19 @@ class PersonalizationAppSeaPenProviderImpl
   ~PersonalizationAppSeaPenProviderImpl() override;
 
   void BindInterface(
-      mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
-          receiver) override;
+      mojo::PendingReceiver<mojom::SeaPenProvider> receiver) override;
 
   void SearchWallpaper(const std::string& text,
                        SearchWallpaperCallback callback) override;
 
+  void SelectSeaPenThumbnail(uint32_t id,
+                             SelectSeaPenThumbnailCallback callback) override;
+
  private:
   wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
 
-  void OnSeaPenFetcherDone(
-      SearchWallpaperCallback callback,
-      const absl::optional<std::vector<ash::SeaPenImage>>& images);
+  void OnSeaPenFetcherDone(SearchWallpaperCallback callback,
+                           absl::optional<std::vector<SeaPenImage>> images);
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   const raw_ptr<Profile> profile_;
@@ -63,14 +65,16 @@ class PersonalizationAppSeaPenProviderImpl
   const std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
       wallpaper_fetcher_delegate_;
 
+  // A map of image id to image.
+  std::map<uint32_t, const SeaPenImage> sea_pen_images_;
+
   // Performs a network request to search available wallpapers. Constructed
   // lazily at the time of the first request and then persists for the rest of
   // the delegate's lifetime, unless preemptively or subsequently replaced by a
   // mock in a test.
   std::unique_ptr<wallpaper_handlers::SeaPenFetcher> sea_pen_fetcher_;
 
-  mojo::Receiver<ash::personalization_app::mojom::SeaPenProvider>
-      sea_pen_receiver_{this};
+  mojo::Receiver<mojom::SeaPenProvider> sea_pen_receiver_{this};
 
   base::WeakPtrFactory<PersonalizationAppSeaPenProviderImpl> weak_ptr_factory_{
       this};

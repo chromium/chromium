@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 
-#include "ash/constants/ash_features.h"
+#include <string>
+
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
@@ -19,7 +20,7 @@
 #include "test_wallpaper_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
-#include "url/gurl.h"
+#include "ui/gfx/image/image_skia.h"
 
 TestWallpaperController::TestWallpaperController() : id_cache_(0) {
   ClearCounts();
@@ -44,6 +45,7 @@ void TestWallpaperController::ClearCounts() {
   update_current_wallpaper_layout_count_ = 0;
   update_current_wallpaper_layout_layout_ = absl::nullopt;
   update_daily_refresh_wallpaper_count_ = 0;
+  one_shot_wallpaper_count_ = 0;
 }
 
 void TestWallpaperController::SetClient(
@@ -241,7 +243,8 @@ void TestWallpaperController::ShowSigninWallpaper() {
 
 void TestWallpaperController::ShowOneShotWallpaper(
     const gfx::ImageSkia& image) {
-  NOTIMPLEMENTED();
+  ++one_shot_wallpaper_count_;
+  ShowWallpaperImage(image);
 }
 
 void TestWallpaperController::ShowOverrideWallpaper(

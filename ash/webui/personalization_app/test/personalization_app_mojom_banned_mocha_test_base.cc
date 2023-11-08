@@ -110,6 +110,10 @@ class MockPersonalizationAppSeaPenProvider
               SearchWallpaper,
               (const std::string& text, SearchWallpaperCallback callback),
               (override));
+  MOCK_METHOD(void,
+              SelectSeaPenThumbnail,
+              (uint32_t, SelectSeaPenThumbnailCallback),
+              (override));
 };
 
 class MockPersonalizationAppThemeProvider

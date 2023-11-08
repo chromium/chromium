@@ -20,7 +20,7 @@ namespace wallpaper_handlers {
 class SeaPenFetcher {
  public:
   using OnWallpaperSearchComplete = base::OnceCallback<void(
-      const absl::optional<std::vector<ash::SeaPenImage>>& images)>;
+      absl::optional<std::vector<ash::SeaPenImage>> images)>;
 
   SeaPenFetcher();
 

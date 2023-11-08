@@ -29,11 +29,17 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
   constructor() {
     super([
       'searchWallpaper',
+      'selectSeaPenThumbnail',
     ]);
   }
 
   searchWallpaper(text: string) {
     this.methodCalled('searchWallpaper', text);
     return Promise.resolve({images: this.images});
+  }
+
+  selectSeaPenThumbnail(id: number) {
+    this.methodCalled('selectSeaPenThumbnail', id);
+    return Promise.resolve({success: true});
   }
 }

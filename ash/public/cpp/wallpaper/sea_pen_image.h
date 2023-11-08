@@ -15,7 +15,15 @@ namespace ash {
 // for SeaPen wallpaper.
 // @see //components/manta
 struct ASH_PUBLIC_EXPORT SeaPenImage {
-  bool operator==(const SeaPenImage& other) const = default;
+  SeaPenImage(std::string&& jpg_bytes, uint32_t id);
+
+  SeaPenImage(SeaPenImage&& other);
+  SeaPenImage& operator=(SeaPenImage&& other);
+
+  SeaPenImage(const SeaPenImage&) = delete;
+  SeaPenImage& operator=(const SeaPenImage&) = delete;
+
+  ~SeaPenImage();
 
   // A bytes string of the image data encoded in jpg format.
   std::string jpg_bytes;

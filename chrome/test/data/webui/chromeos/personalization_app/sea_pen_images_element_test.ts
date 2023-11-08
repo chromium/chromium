@@ -77,4 +77,22 @@ suite('SeaPenImagesElementTest', function() {
         'div:not([hidden]).thumbnail-item-container');
     assertEquals(4, thumbnails!.length, 'should be 4 images available.');
   });
+
+  test('selects thumbnail on click', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailsLoading = false;
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.images;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const thumbnail =
+        seaPenImagesElement.shadowRoot!.querySelector<HTMLElement>(
+            'div:not([hidden]).thumbnail-item-container img');
+    thumbnail!.click();
+
+    const id = await seaPenProvider.whenCalled('selectSeaPenThumbnail');
+    assertEquals(
+        seaPenProvider.images[0]!.id, id, 'id sent for first SeaPenThumbnail');
+  });
 });

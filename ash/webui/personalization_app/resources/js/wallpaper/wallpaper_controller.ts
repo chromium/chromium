@@ -8,7 +8,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../../personalization_app.mojom-webui.js';
-import {SeaPenProviderInterface} from '../../sea_pen.mojom-webui.js';
+import {SeaPenProviderInterface, SeaPenThumbnail} from '../../sea_pen.mojom-webui.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
@@ -275,6 +275,13 @@ export async function searchWallpaperThumbnails(
     console.warn('Failed to generate thumbnails.');
   }
   store.dispatch(action.setSeaPenThumbnailsAction(query, images));
+}
+
+export async function selectSeaPenWallpaper(
+    thumbnail: SeaPenThumbnail,
+    provider: SeaPenProviderInterface): Promise<void> {
+  // TODO(b/305965517) show loading state.
+  await provider.selectSeaPenThumbnail(thumbnail.id);
 }
 
 export async function getDefaultImageThumbnail(

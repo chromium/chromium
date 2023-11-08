@@ -12,9 +12,11 @@ import '../../../css/common.css.js';
 
 import {SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';
-import {getZerosArray, isNonEmptyArray} from '../../utils.js';
+import {getZerosArray, isNonEmptyArray, isSelectionEvent} from '../../utils.js';
+import {selectSeaPenWallpaper} from '../wallpaper_controller.js';
 
 import {getTemplate} from './sea_pen_images_element.html.js';
+import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 
 export class SeaPenImagesElement extends WithPersonalizationStore {
   static get is() {
@@ -74,6 +76,13 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
 
   private getPlaceholders_(x: number) {
     return getZerosArray(x);
+  }
+
+  private onThumbnailSelected_(event: Event&{model: {item: SeaPenThumbnail}}) {
+    if (!isSelectionEvent(event)) {
+      return;
+    }
+    selectSeaPenWallpaper(event.model.item, getSeaPenProvider());
   }
 }
 

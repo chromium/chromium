@@ -50,7 +50,10 @@
       role="list">
     <template>
       <div class="thumbnail-item-container" role="listitem">
-        <img is="cr-auto-img" auto-src="[[item.image.url]]"></img>
+        <img auto-src="[[item.image.url]]"
+            is="cr-auto-img"
+            on-click="onThumbnailSelected_"
+            on-keypress="onThumbnailSelected_">
       </div>
     </template>
   </iron-list>

@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
@@ -18,10 +20,30 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/manta/features.h"
 #include "content/public/browser/web_ui.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash::personalization_app {
+
+namespace {
+
+bool SetImageAsWallpaper(const SkBitmap& bitmap) {
+  if (bitmap.drawsNothing()) {
+    LOG(WARNING) << "Failed to decode image";
+    return false;
+  }
+  // TODO(b/304581889) save as a permanent wallpaper type.
+  WallpaperController::Get()->ShowOneShotWallpaper(
+      gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+  return true;
+}
+
+}  // namespace
 
 PersonalizationAppSeaPenProviderImpl::PersonalizationAppSeaPenProviderImpl(
     content::WebUI* web_ui,
@@ -58,6 +80,23 @@ void PersonalizationAppSeaPenProviderImpl::SearchWallpaper(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void PersonalizationAppSeaPenProviderImpl::SelectSeaPenThumbnail(
+    uint32_t id,
+    SelectSeaPenThumbnailCallback callback) {
+  auto it = sea_pen_images_.find(id);
+  if (it == sea_pen_images_.end()) {
+    sea_pen_receiver_.ReportBadMessage("Unknown wallpaper image selected");
+    return;
+  }
+  // TODO(b/300127993) save image on disk before setting as wallpaper.
+  data_decoder::DecodeImageIsolated(
+      base::as_bytes(base::make_span(it->second.jpg_bytes)),
+      data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
+      /*desired_image_frame_size=*/gfx::Size(),
+      base::BindOnce(&SetImageAsWallpaper).Then(std::move(callback)));
+}
+
 wallpaper_handlers::SeaPenFetcher*
 PersonalizationAppSeaPenProviderImpl::GetOrCreateSeaPenFetcher() {
   if (!sea_pen_fetcher_) {
@@ -69,15 +108,19 @@ PersonalizationAppSeaPenProviderImpl::GetOrCreateSeaPenFetcher() {
 
 void PersonalizationAppSeaPenProviderImpl::OnSeaPenFetcherDone(
     SearchWallpaperCallback callback,
-    const absl::optional<std::vector<ash::SeaPenImage>>& images) {
+    absl::optional<std::vector<SeaPenImage>> images) {
   if (!images) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
+  sea_pen_images_.clear();
   std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr> result;
-  for (const auto& image : images.value()) {
-    result.emplace_back(absl::in_place, GetJpegDataUrl(image.jpg_bytes),
-                        image.id);
+  for (auto& image : images.value()) {
+    const auto image_id = image.id;
+    auto [it, _] = sea_pen_images_.insert(
+        std::pair<uint32_t, SeaPenImage>(image_id, std::move(image)));
+    result.emplace_back(absl::in_place, GetJpegDataUrl(it->second.jpg_bytes),
+                        image_id);
   }
   std::move(callback).Run(std::move(result));
 }
