@@ -14,6 +14,7 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -88,6 +89,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   constexpr int kDefaultActiveDeskIndex = 0;
   registry->RegisterListPref(prefs::kDesksNamesList);
   registry->RegisterListPref(prefs::kDesksGuidsList);
+  registry->RegisterListPref(prefs::kDesksLacrosProfileIdList);
   registry->RegisterListPref(prefs::kDesksMetricsList);
   registry->RegisterDictionaryPref(prefs::kDesksWeeklyActiveDesksMetrics);
   registry->RegisterIntegerPref(prefs::kDesksActiveDesk,
@@ -107,6 +109,8 @@ void RestorePrimaryUserDesks() {
       primary_user_prefs->GetList(prefs::kDesksNamesList);
   const base::Value::List& desks_guids_list =
       primary_user_prefs->GetList(prefs::kDesksGuidsList);
+  const base::Value::List& desks_lacros_profile_ids_list =
+      primary_user_prefs->GetList(prefs::kDesksLacrosProfileIdList);
   const base::Value::List& desks_metrics_list =
       primary_user_prefs->GetList(prefs::kDesksMetricsList);
 
@@ -142,6 +146,15 @@ void RestorePrimaryUserDesks() {
       desks_controller->RestoreGuidOfDeskAtIndex(
           base::Uuid::ParseLowercase(desks_guids_list[index].GetString()),
           index);
+    }
+
+    if (index < desks_lacros_profile_ids_list.size()) {
+      uint64_t lacros_profile_id = 0;
+      if (base::StringToUint64(desks_lacros_profile_ids_list[index].GetString(),
+                               &lacros_profile_id)) {
+        desks_controller->GetDeskAtIndex(index)->SetLacrosProfileId(
+            lacros_profile_id, /*skip_prefs_update=*/true);
+      }
     }
 
     // Only restore metrics if there is existing data.
@@ -263,6 +276,29 @@ void UpdatePrimaryUserDeskGuidsPrefs() {
   }
 
   DCHECK_EQ(guid_pref_data.size(), desks.size());
+}
+
+void UpdatePrimaryUserDeskLacrosProfileIdPrefs() {
+  if (g_pause_desks_prefs_updates) {
+    return;
+  }
+
+  PrefService* primary_user_prefs = GetPrimaryUserPrefService();
+  if (!primary_user_prefs) {
+    // Can be null in tests.
+    return;
+  }
+
+  ScopedListPrefUpdate id_update(primary_user_prefs,
+                                 prefs::kDesksLacrosProfileIdList);
+  base::Value::List& id_pref_data = id_update.Get();
+  id_pref_data.clear();
+
+  for (const auto& desk : DesksController::Get()->desks()) {
+    // Lacros profile IDs are 64-bit unsigned integers, which will fall outside
+    // of the range of `int`. We therefore store them as strings.
+    id_pref_data.Append(base::NumberToString(desk->lacros_profile_id()));
+  }
 }
 
 void UpdatePrimaryUserDeskMetricsPrefs() {

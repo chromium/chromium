@@ -33,6 +33,10 @@ ASH_EXPORT void UpdatePrimaryUserDeskNamesPrefs();
 // a desk is created or destroyed.
 ASH_EXPORT void UpdatePrimaryUserDeskGuidsPrefs();
 
+// Called to update the desk lacros profile ID associations for the primary user
+// whenever it changes.
+ASH_EXPORT void UpdatePrimaryUserDeskLacrosProfileIdPrefs();
+
 // Called to update the desk metrics restore prefs for the primary user whenever
 // desks count changes, desks order changes or during
 // `DesksController::Shutdown()`.

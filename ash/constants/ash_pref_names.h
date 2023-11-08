@@ -652,6 +652,12 @@ inline constexpr char kDesksNamesList[] = "ash.desks.desks_names_list";
 // for the primary user on first sign-in. The guids are stored as lowercase
 // strings.
 inline constexpr char kDesksGuidsList[] = "ash.desks.desks_guids_list";
+// A list containing the lacros profile ID associations for desks in the same
+// order of the desks in the overview desks bar. This is used so that desk <->
+// profile associations can be restored. The profile IDs are logically unsigned
+// integers, but stored as strings since they can (and will) be 64-bits large.
+inline constexpr char kDesksLacrosProfileIdList[] =
+    "ash.desks.desks_lacros_profile_id_list";
 // This list stores the metrics of virtual desks. Like |kDesksNamesList|, this
 // list stores entries in the same order of the desks in the overview desks bar.
 // Values are stored as dictionaries.
