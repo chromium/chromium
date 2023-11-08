@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Progress) {
   if (SkipTestForOldAndroidVersions())
     return;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && !defined(ARCH_CPU_ARM64)
   // The pixel comparison fails on Mac Intel GPUs with Graphite due to MSAA
   // issues.
   // TODO(crbug.com/1500259): Re-enable test if possible.
