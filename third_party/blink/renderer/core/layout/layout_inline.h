@@ -153,6 +153,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
 
   PhysicalRect PhysicalLinesBoundingBox() const;
+  PhysicalRect LinesVisualOverflowBoundingBox() const;
   PhysicalRect VisualOverflowRect() const final;
 
   bool HasInlineFragments() const final;
@@ -269,10 +270,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   bool ComputeInitialShouldCreateBoxFragment(const ComputedStyle& style) const;
 
   PhysicalRect CulledInlineVisualOverflowBoundingBox() const;
-
-  // For VisualOverflowRect() only, to get bounding box of visual overflow of
-  // line boxes.
-  PhysicalRect LinesVisualOverflowBoundingBox() const;
 
   // PhysicalRectCollector should be like a function:
   // void (const PhysicalRect&).

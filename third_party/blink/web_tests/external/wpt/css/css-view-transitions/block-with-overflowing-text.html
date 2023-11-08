@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html class=reftest-wait>
-<title>View transitions: span with overflowing text is rendered correctly</title>
+<title>View transitions: block with overflowing text is rendered correctly</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-1/">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
-<link rel="match" href="span-with-overflowing-text-ref.html">
-<meta name="fuzzy" content="span-with-overflowing-text-ref.html:maxDifference=0-3;totalPixels=0-1100">
+<link rel="match" href="block-with-overflowing-text-ref.html">
+<meta name="fuzzy" content="block-with-overflowing-text-ref.html:maxDifference=0-2;totalPixels=0-1200">
 
 
 <script src="/common/reftest-wait.js"></script>
 <script src="/common/rendering-utils.js"></script>
 <style>
-span {
-  text-shadow: red -2px -5px;
+#target {
+  text-shadow: red -20px -50px;
+  position: relative;
+  top: 100px;
+  left: 100px;
   view-transition-name: target;
 }
 
@@ -42,7 +45,7 @@ html::view-transition {
 }
 </style>
 
-<span>This text should render correctly</span>
+<div id="target">This text should render correctly</div>
 <div class="hidden"></div>
 
 <script>

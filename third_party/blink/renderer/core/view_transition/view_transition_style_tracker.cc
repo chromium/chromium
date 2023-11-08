@@ -1796,6 +1796,10 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
             ComputeVisualOverflowRect(*child_box, ancestor_for_recursion);
         result.Unite(mapped_overflow_rect);
       } else if (auto* child_text = DynamicTo<LayoutText>(child)) {
+        if (box.IsLayoutInline()) {
+          continue;
+        }
+
         const bool child_visible =
             child_text->StyleRef().Visibility() == EVisibility::kVisible ||
             !child_text->VisualRectRespectsVisibility();
@@ -1820,10 +1824,8 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
             layout_box->ComputeVisualEffectOverflowOutsets();
         overflow_rect.Expand(outsets);
       }
-    } else if (auto* layout_inline = DynamicTo<LayoutInline>(box)) {
-      overflow_rect = layout_inline->PhysicalLinesBoundingBox();
     } else {
-      overflow_rect = PhysicalRect(box.BorderBoundingBox());
+      overflow_rect = To<LayoutInline>(box).LinesVisualOverflowBoundingBox();
     }
   }
 
