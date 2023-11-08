@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
@@ -30,6 +31,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
+#include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -487,6 +489,19 @@ class CookieDeprecationExperimentEligibilityOTRProfileTest
     : public PrivacySandboxSettingsDelegateTest,
       public testing::WithParamInterface<bool> {};
 
+// The parameter indicates whether to disable 3pcs.
+class CookieDeprecationLabelAllowedTest
+    : public PrivacySandboxSettingsDelegateTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CookieDeprecationLabelAllowedTest() {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        features::kCookieDeprecationFacilitatedTesting,
+        {{tpcd::experiment::kDisable3PCookiesName,
+          GetParam() ? "true" : "false"}});
+  }
+};
+
 }  // namespace
 
 TEST_F(PrivacySandboxSettingsDelegateTest, IsEligible) {
@@ -665,4 +680,71 @@ TEST_P(CookieDeprecationExperimentEligibilityOTRProfileTest, IsEligible) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CookieDeprecationExperimentEligibilityOTRProfileTest,
+                         testing::Bool());
+
+TEST_P(CookieDeprecationLabelAllowedTest, IsClientEligibleChecked) {
+  const bool disable_3pcs = GetParam();
+  if (disable_3pcs) {
+    auto* onboarding_service =
+        TrackingProtectionOnboardingFactory::GetForProfile(profile());
+    // Simulate onboarding a profile.
+    onboarding_service->MaybeMarkEligible();
+    onboarding_service->OnboardingNoticeShown();
+  }
+
+  for (bool is_client_eligible : {false, true}) {
+    SCOPED_TRACE(is_client_eligible);
+
+    EXPECT_CALL(*experiment_manager(), IsClientEligible)
+        .WillOnce(::testing::Return(is_client_eligible));
+    EXPECT_EQ(delegate()->IsCookieDeprecationLabelAllowed(),
+              is_client_eligible);
+  }
+}
+
+TEST_P(CookieDeprecationLabelAllowedTest, OnboardingStatusChecked) {
+  const struct {
+    privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
+        onboarding_status;
+    bool expected_allowed;
+  } kTestCases[] = {
+      {
+          .onboarding_status = privacy_sandbox::TrackingProtectionOnboarding::
+              OnboardingStatus::kIneligible,
+          .expected_allowed = false,
+      },
+      {
+          .onboarding_status = privacy_sandbox::TrackingProtectionOnboarding::
+              OnboardingStatus::kEligible,
+          .expected_allowed = false,
+      },
+      {
+          .onboarding_status = privacy_sandbox::TrackingProtectionOnboarding::
+              OnboardingStatus::kOnboarded,
+          .expected_allowed = true,
+      },
+
+  };
+
+  EXPECT_CALL(*experiment_manager(), IsClientEligible)
+      .WillRepeatedly(::testing::Return(true));
+
+  const bool disable_3pcs = GetParam();
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(static_cast<int>(test_case.onboarding_status));
+
+    prefs()->SetInteger(prefs::kTrackingProtectionOnboardingStatus,
+                        static_cast<int>(test_case.onboarding_status));
+    if (disable_3pcs) {
+      EXPECT_EQ(delegate()->IsCookieDeprecationLabelAllowed(),
+                test_case.expected_allowed);
+    } else {
+      EXPECT_TRUE(delegate()->IsCookieDeprecationLabelAllowed());
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CookieDeprecationLabelAllowedTest,
                          testing::Bool());

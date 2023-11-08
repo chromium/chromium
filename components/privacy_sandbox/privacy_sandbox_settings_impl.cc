@@ -916,7 +916,7 @@ PrivacySandboxSettingsImpl::GetCookieDeprecationExperimentCurrentEligibility()
 }
 
 bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowed() const {
-  return delegate_->IsCookieDeprecationExperimentEligible();
+  return delegate_->IsCookieDeprecationLabelAllowed();
 }
 
 bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowedForContext(

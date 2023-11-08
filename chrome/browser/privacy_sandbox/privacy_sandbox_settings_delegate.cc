@@ -16,6 +16,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tpcd/experiment/experiment_manager.h"
@@ -28,6 +29,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
+#include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/common/content_features.h"
@@ -305,3 +307,32 @@ void PrivacySandboxSettingsDelegate::OverrideWebappRegistryForTesting(
   webapp_registry_ = std::move(webapp_registry);
 }
 #endif
+
+bool PrivacySandboxSettingsDelegate::IsCookieDeprecationLabelAllowed() const {
+  if (!IsCookieDeprecationExperimentEligible()) {
+    return false;
+  }
+
+  if (!tpcd::experiment::kDisable3PCookies.Get()) {
+    return true;
+  }
+
+  auto* tracking_protection_onboarding =
+      TrackingProtectionOnboardingFactory::GetForProfile(profile_);
+  if (!tracking_protection_onboarding) {
+    return false;
+  }
+
+  switch (tracking_protection_onboarding->GetOnboardingStatus()) {
+    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+        kIneligible:
+    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+        kEligible:
+    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+        kOffboarded:
+      return false;
+    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+        kOnboarded:
+      return true;
+  }
+}
