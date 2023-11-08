@@ -65,12 +65,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, ConstructDestruct) {
   EXPECT_NE(nullptr, bridge());
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyQsRevamp_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(ash::features::kQsRevamp);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->qs_revamp);
-}
-
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(chromeos::features::kJelly);
   Connect();

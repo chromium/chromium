@@ -75,7 +75,6 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
     return;
   }
   mojom::FeatureFlagsPtr flags = mojom::FeatureFlags::New();
-  flags->qs_revamp = ash::features::IsQsRevampEnabled();
   flags->jelly_colors = chromeos::features::IsJellyEnabled();
   flags->touchscreen_emulation =
       base::FeatureList::IsEnabled(kTouchscreenEmulation);
