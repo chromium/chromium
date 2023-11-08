@@ -58,9 +58,6 @@ bool ReconnectParams::IsValid() const {
   if (private_key.empty()) {
     LOG(WARNING) << "Missing field: private_key";
     return false;
-  } else if (private_key.length() != 384) {
-    LOG(WARNING) << "Invalid private_key length: " << private_key.length();
-    return false;
   }
 
   if (ftl_device_registration_id.empty()) {
