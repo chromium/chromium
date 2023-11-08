@@ -811,7 +811,8 @@ void AppBannerManager::OnEngagementEvent(
       // directly to sending the banner prompt request.
       UpdateState(State::ACTIVE);
       SendBannerPromptRequest();
-    } else if (load_finished_ && state_ == State::INACTIVE) {
+    } else if (load_finished_ && validated_url_ == url &&
+               state_ == State::INACTIVE) {
       // This performs some simple tests and starts async checks to test
       // installability. It should be safe to start in response to user input.
       // Don't call if we're already working on processing a banner request.
