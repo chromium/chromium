@@ -195,20 +195,6 @@ void AutofillClient::ShowLocalCardMigrationResults(
   // This is overridden by platform subclasses.
 }
 
-void AutofillClient::ConfirmSaveIbanLocally(const Iban& iban,
-                                            bool should_show_prompt,
-                                            SaveIbanPromptCallback callback) {
-  // This is overridden by platform subclasses.
-}
-
-void AutofillClient::ConfirmUploadIbanToCloud(
-    const Iban& iban,
-    const LegalMessageLines& legal_message_lines,
-    bool should_show_prompt,
-    SaveIbanPromptCallback callback) {
-  // This is overridden by platform subclasses.
-}
-
 void AutofillClient::ShowWebauthnOfferDialog(
     WebauthnDialogCallback offer_dialog_callback) {
   // This is overridden by platform subclasses.
@@ -281,6 +267,16 @@ void AutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
   // This is overridden by platform subclasses.
 }
+
+void AutofillClient::ConfirmSaveIbanLocally(const Iban& iban,
+                                            bool should_show_prompt,
+                                            SaveIbanPromptCallback callback) {}
+
+void AutofillClient::ConfirmUploadIbanToCloud(
+    const Iban& iban,
+    const LegalMessageLines& legal_message_lines,
+    bool should_show_prompt,
+    SaveIbanPromptCallback callback) {}
 
 void AutofillClient::CreditCardUploadCompleted(bool card_saved) {
   // This is overridden by platform subclasses.

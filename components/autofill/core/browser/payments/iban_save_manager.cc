@@ -126,7 +126,6 @@ bool IbanSaveManager::MatchesExistingServerIban(
 }
 
 bool IbanSaveManager::AttemptToOfferLocalSave(const Iban& import_candidate) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   iban_save_candidate_ = import_candidate;
 
   if (observer_for_testing_) {
@@ -143,17 +142,11 @@ bool IbanSaveManager::AttemptToOfferLocalSave(const Iban& import_candidate) {
         AutofillMetrics::SaveTypeMetric::LOCAL);
   }
 
-  // If `show_save_prompt`'s value is false, desktop builds will still offer
-  // save in the omnibox without popping-up the bubble.
   client_->ConfirmSaveIbanLocally(
       iban_save_candidate_, show_save_prompt,
       base::BindOnce(&IbanSaveManager::OnUserDidDecideOnLocalSave,
                      weak_ptr_factory_.GetWeakPtr()));
   return show_save_prompt;
-#else
-  // IBAN save prompts do not currently exist on mobile.
-  return false;
-#endif
 }
 
 bool IbanSaveManager::AttemptToOfferUploadSave(const Iban& import_candidate) {

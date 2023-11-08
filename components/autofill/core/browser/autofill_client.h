@@ -630,22 +630,6 @@ class AutofillClient : public RiskDataLoader {
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback);
 
-  // Runs `callback` once the user makes a decision with respect to the
-  // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
-  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
-  virtual void ConfirmSaveIbanLocally(const Iban& iban,
-                                      bool should_show_prompt,
-                                      SaveIbanPromptCallback callback);
-
-  // Runs `callback` once the user makes a decision with respect to the
-  // offer-to-upload prompt. On desktop, shows the offer-to-upload bubble if
-  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
-  virtual void ConfirmUploadIbanToCloud(
-      const Iban& iban,
-      const LegalMessageLines& legal_message_lines,
-      bool should_show_prompt,
-      SaveIbanPromptCallback callback);
-
   // TODO(crbug.com/991037): Find a way to merge these two functions. Shouldn't
   // use WebauthnDialogState as that state is a purely UI state (should not be
   // accessible for managers?), and some of the states |KInactive| may be
@@ -722,6 +706,22 @@ class AutofillClient : public RiskDataLoader {
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback);
+
+  // Runs `callback` once the user makes a decision with respect to the
+  // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
+  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
+  virtual void ConfirmSaveIbanLocally(const Iban& iban,
+                                      bool should_show_prompt,
+                                      SaveIbanPromptCallback callback);
+
+  // Runs `callback` once the user makes a decision with respect to the
+  // offer-to-upload prompt. On desktop, shows the offer-to-upload bubble if
+  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
+  virtual void ConfirmUploadIbanToCloud(
+      const Iban& iban,
+      const LegalMessageLines& legal_message_lines,
+      bool should_show_prompt,
+      SaveIbanPromptCallback callback);
 
   // Called after credit card upload is finished. Will show upload result to
   // users. |card_saved| indicates if the card is successfully saved.
