@@ -367,6 +367,45 @@ typedef void (*ResetPaintSurfaceCallback)();
 void SetResetPaintSurfaceCallback(ResetPaintSurfaceCallback reset_paint_surface);
 void DoResetPaintSurface();
 
+/*
+ * A Pseudo-stack mechanism for diagnostics.
+ *
+ * Try to use the `AutoPseudoStackEntry` RAII class to interface with this.
+ * 
+ * Usage:
+ * ```
+ *    // Push an entry onto the stack, it'll get popped when `entry` is destroyed.
+ *    recordreplay::AutoPseudoStackEntry entry("MyString");
+ *
+ *    ...
+ *    // At any other point in the code...
+ *
+ *    // Iterate over the current entries in the pseudo-stack (outermost to innermost)
+ *    for (const std::string& entry : recordreplay::ReadPseudoStack()) {
+ *      ...
+ *    }
+ * 
+ *    // Get a convenient string of the form `Foo => Bar => Baz` of the current
+ *    // pseudostack entries.
+ *    std::string cur_stack = recordreplay::ReadPseudoStackString();
+ * ```
+ */
+size_t PushPseudoStackFrame(const char* name);
+void PopPseudoStackFrame(const char* name, size_t id);
+const std::vector<std::string>& ReadPseudoStack();
+std::string ReadPseudoStackString();
+
+class AutoPseudoStackEntry {
+ public:
+  AutoPseudoStackEntry(const char* name)
+    : name_(name), id_(PushPseudoStackFrame(name)) {}
+  ~AutoPseudoStackEntry() { PopPseudoStackFrame(name_, id_); }
+  
+ private:
+  const char* name_;
+  size_t id_;
+};
+
 } // namespace recordreplay
 
 #endif // BASE_RECORD_REPLAY_H_

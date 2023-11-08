@@ -7,6 +7,7 @@
 #include "base/values.h"
 
 #include <stdarg.h>
+#include <sstream>
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -579,6 +580,43 @@ void DoResetPaintSurface() {
   if (gResetPaintSurfaceCallback) {
     gResetPaintSurfaceCallback();
   }
+}
+
+std::vector<std::string> *gPseudoStack = nullptr;
+
+static std::vector<std::string>* GetPseudoStack() {
+  if (!gPseudoStack) {
+    gPseudoStack = new std::vector<std::string>();
+  }
+  return gPseudoStack;
+}
+
+size_t PushPseudoStackFrame(const char* name) {
+  std::vector<std::string>* pseudoStack = GetPseudoStack();
+  pseudoStack->push_back(name);
+  return pseudoStack->size();
+}
+void PopPseudoStackFrame(const char* name, size_t id) {
+  CHECK(gPseudoStack != nullptr);
+  CHECK(gPseudoStack->size() == id);
+  CHECK(gPseudoStack->back() == name);
+  gPseudoStack->pop_back();
+}
+const std::vector<std::string>& ReadPseudoStack() {
+  return *GetPseudoStack();
+}
+
+std::string ReadPseudoStackString() {
+  if (!gPseudoStack) {
+    return std::string();
+  }
+  std::ostringstream out;
+  size_t idx = 0;
+  for (auto& frame : *gPseudoStack) {
+    out << (idx > 0 ? " => " : "") << frame;
+    idx++;
+  }
+  return out.str();
 }
 
 } // namespace recordreplay
