@@ -3185,14 +3185,14 @@ TEST_P(MLGraphTestMojo, SplitTest) {
   using blink = blink_mojom::Operand::DataType;
   {
     SplitTester{.input = {.type = v8::kFloat32, .dimensions = {2, 2}},
-                .splits = 2,
+                .splits = 2u,
                 .expected = {{.type = blink::kFloat32, .dimensions = {1, 2}},
                              {.type = blink::kFloat32, .dimensions = {1, 2}}}}
         .Test(*this, scope, builder);
   }
   {
     SplitTester{.input = {.type = v8::kFloat32, .dimensions = {2, 2}},
-                .splits = 2,
+                .splits = 2u,
                 .axis = 1,
                 .expected = {{.type = blink::kFloat32, .dimensions = {2, 1}},
                              {.type = blink::kFloat32, .dimensions = {2, 1}}}}

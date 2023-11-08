@@ -728,7 +728,7 @@ TEST_P(VideoTrackRecorderTestParam,
 
 TEST_P(VideoTrackRecorderTestParam, KeyFramesGeneratedWithIntervalCount) {
   // Configure 3 delta frames for every key frame.
-  InitializeRecorder(testing::get<0>(GetParam()), /*keyframe_config=*/3);
+  InitializeRecorder(testing::get<0>(GetParam()), /*keyframe_config=*/3u);
   auto frame = media::VideoFrame::CreateBlackFrame(kTrackRecorderTestSize[0]);
 
   auto origin = base::TimeTicks::Now();

@@ -234,7 +234,7 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NoEmpty) {
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewFormUnowned) {
   EXPECT_CALL(autofill_driver_,
-              FormsSeen(HasSingleElementWhich(HasFormId(0), HasNumFields(1),
+              FormsSeen(HasSingleElementWhich(HasFormId(0u), HasNumFields(1),
                                               HasNumChildFrames(0)),
                         SizeIs(0)));
   LoadHTML(R"(<body> <input> </body>)");

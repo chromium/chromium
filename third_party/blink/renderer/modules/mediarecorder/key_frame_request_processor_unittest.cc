@@ -52,7 +52,7 @@ TEST_F(KeyFrameRequestProcessorClockTest,
 
 TEST_F(KeyFrameRequestProcessorClockTest,
        CountIntervalSuggestsKeyframesPeriodically) {
-  KeyFrameRequestProcessor processor(2);
+  KeyFrameRequestProcessor processor(2u);
   OnKeyFrame(processor);
   ASSERT_FALSE(OnFrameAndShouldRequestKeyFrame(processor));
   ASSERT_FALSE(OnFrameAndShouldRequestKeyFrame(processor));
