@@ -764,9 +764,11 @@ const char kChromeRefresh2023Id[] = "chrome-refresh-2023";
 const char kChromeRefresh2023Name[] = "Chrome Refresh 2023";
 const char kChromeRefresh2023Description[] = "Enables the new desktop design.";
 
+const char kChromeWebuiRefresh2023Id[] = "chrome-webui-refresh-2023";
 const char kChromeWebuiRefresh2023Name[] = "Chrome WebUI Refresh 2023";
 const char kChromeWebuiRefresh2023Description[] =
-    "Enables Chrome Refresh 2023 styles for various WebUI surfaces.";
+    "Enables the new desktop design for WebUI. Chrome Refresh 2023 must also "
+    "be enabled.";
 
 const char kChromeRefresh2023NTBName[] = "Chrome Refresh 2023 New Tab Button";
 const char kChromeRefresh2023NTBDescription[] =

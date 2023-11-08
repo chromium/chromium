@@ -10288,6 +10288,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="7" label="User selected the Tab Search Media Tabs lab"/>
   <int value="8" label="User selected the Chrome Refresh lab"/>
   <int value="9" label="User selected the Tab Groups Save lab"/>
+  <int value="10" label="User selected the Chrome WebUI Refresh lab"/>
 </enum>
 
 <enum name="ChromeOSBiosType">
