@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/auth_panel/auth_panel_event_dispatcher.h"
 #include "chromeos/ash/components/auth_panel/views/auth_panel_views_utils.h"
 #include "chromeos/ash/components/auth_panel/views/view_size_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/border.h"
 
@@ -60,5 +61,8 @@ void LoginTextfield::OnStateChanged(
                        ? ui::TEXT_INPUT_TYPE_NULL
                        : ui::TEXT_INPUT_TYPE_PASSWORD);
 }
+
+BEGIN_METADATA(LoginTextfield)
+END_METADATA
 
 }  // namespace ash

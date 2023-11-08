@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/auth_panel/auth_factor_store.h"
 #include "chromeos/ash/components/auth_panel/factor_auth_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
@@ -44,6 +45,8 @@ class AuthPanelEventDispatcher;
 class PasswordAuthView : public FactorAuthView,
                          public views::TextfieldController,
                          public ImeControllerImpl::Observer {
+  METADATA_HEADER(PasswordAuthView, FactorAuthView)
+
  public:
   PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
                    AuthFactorStore* store);

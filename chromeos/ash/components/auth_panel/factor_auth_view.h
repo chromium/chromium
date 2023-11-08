@@ -8,6 +8,7 @@
 #include "chromeos/ash/components/auth_panel/auth_factor_store.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -15,6 +16,8 @@ namespace ash {
 // Interface common to all factor views, abstracts an auth factor view on the
 // login, lock screen, or in-session.
 class FactorAuthView : public views::View {
+  METADATA_HEADER(FactorAuthView, views::View)
+
  public:
   ~FactorAuthView() override = default;
 

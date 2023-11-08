@@ -20,6 +20,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -54,6 +56,8 @@ namespace ash {
 // The login password row contains the password textfield and different buttons
 // and indicators (easy unlock, display password, caps lock enabled).
 class PasswordAuthView::LoginPasswordRow : public views::View {
+  METADATA_HEADER(LoginPasswordRow, views::View)
+
  public:
   LoginPasswordRow() {
     if (chromeos::features::IsJellyrollEnabled()) {
@@ -83,6 +87,9 @@ class PasswordAuthView::LoginPasswordRow : public views::View {
     }
   }
 };
+
+BEGIN_METADATA(PasswordAuthView, LoginPasswordRow, views::View)
+END_METADATA
 
 void PasswordAuthView::ConfigureRootLayout() {
   // Contains the password layout on the left and the submit button on the
@@ -280,5 +287,8 @@ void PasswordAuthView::SetCapsLockIconHighlighted(bool highlight) {
   capslock_icon_->SetImage(highlight ? capslock_icon_highlighted_
                                      : capslock_icon_blurred_);
 }
+
+BEGIN_METADATA(PasswordAuthView)
+END_METADATA
 
 }  // namespace ash
