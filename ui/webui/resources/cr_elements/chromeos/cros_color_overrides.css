@@ -77,7 +77,7 @@
   --cr-toggle-ripple-diameter: 32px;
 }
 
-:host-context([cros]) cr-toggle:focus {
+:host-context([cros]):host-context(.focus-outline-visible) cr-toggle:focus {
   --cr-toggle-ripple-ring: 2px solid var(--cros-focus-ring-color);
 }
 
@@ -309,7 +309,8 @@
   --cr-toggle-ripple-diameter: 32px;
 }
 
-:host-context(body.jelly-enabled) cr-toggle:focus {
+:host-context(body.jelly-enabled):host-context(.focus-outline-visible)
+    cr-toggle:focus {
   --cr-toggle-ripple-ring: 2px solid var(--cros-sys-focus_ring);
 }
 
@@ -333,6 +334,7 @@
   --cr-toggle-disabled-opacity: var(--cros-disabled-opacity);
 }
 
-:host-context([cros][chrome-refresh-2023]) cr-toggle:focus {
+:host-context([cros][chrome-refresh-2023]):host-context(.focus-outline-visible)
+    cr-toggle:focus {
   --cr-toggle-ripple-ring: none;
 }
