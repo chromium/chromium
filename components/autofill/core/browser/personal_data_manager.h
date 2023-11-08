@@ -417,10 +417,6 @@ class PersonalDataManager : public KeyedService,
   virtual std::vector<AutofillProfile*> GetProfilesFromSource(
       AutofillProfile::Source profile_source,
       ProfileOrder order = ProfileOrder::kNone) const;
-  // Returns just SERVER_PROFILES.
-  // TODO(crbug.com/1348294): Server profiles are only accessed in tests and the
-  // concept should be removed.
-  virtual std::vector<AutofillProfile*> GetServerProfiles() const;
   // Returns just LOCAL_CARD cards.
   virtual std::vector<CreditCard*> GetLocalCreditCards() const;
   // Returns just server cards.
@@ -845,9 +841,6 @@ class PersonalDataManager : public KeyedService,
   std::vector<std::unique_ptr<AutofillProfile>> synced_local_profiles_;
   std::vector<std::unique_ptr<AutofillProfile>> account_profiles_;
 
-  // Address profiles associated to the user's payment profile.
-  std::vector<std::unique_ptr<AutofillProfile>> credit_card_billing_addresses_;
-
   // Stores the PaymentsCustomerData obtained from the database.
   std::unique_ptr<PaymentsCustomerData> payments_customer_data_;
 
@@ -881,7 +874,6 @@ class PersonalDataManager : public KeyedService,
   // so they can be loaded at the same time.
   WebDataServiceBase::Handle pending_synced_local_profiles_query_ = 0;
   WebDataServiceBase::Handle pending_account_profiles_query_ = 0;
-  WebDataServiceBase::Handle pending_creditcard_billing_addresses_query_ = 0;
   WebDataServiceBase::Handle pending_creditcards_query_ = 0;
   WebDataServiceBase::Handle pending_server_creditcards_query_ = 0;
   WebDataServiceBase::Handle pending_server_creditcard_cloud_token_data_query_ =

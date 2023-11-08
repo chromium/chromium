@@ -511,7 +511,6 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
     std::unique_ptr<WDTypedResult> result) {
   DCHECK(pending_synced_local_profiles_query_ ||
          pending_account_profiles_query_ ||
-         pending_creditcard_billing_addresses_query_ ||
          pending_creditcards_query_ || pending_server_creditcards_query_ ||
          pending_server_creditcard_cloud_token_data_query_ ||
          pending_local_ibans_query_ || pending_server_ibans_query_ ||
@@ -524,8 +523,6 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
       pending_synced_local_profiles_query_ = 0;
     } else if (h == pending_account_profiles_query_) {
       pending_account_profiles_query_ = 0;
-    } else if (h == pending_creditcard_billing_addresses_query_) {
-      pending_creditcard_billing_addresses_query_ = 0;
     } else if (h == pending_creditcards_query_) {
       pending_creditcards_query_ = 0;
     } else if (h == pending_server_creditcards_query_) {
@@ -550,16 +547,11 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
           ReceiveLoadedDbValues(h, result.get(),
                                 &pending_synced_local_profiles_query_,
                                 &synced_local_profiles_);
-        } else if (h == pending_account_profiles_query_) {
+        } else {
+          CHECK_EQ(h, pending_account_profiles_query_);
           ReceiveLoadedDbValues(h, result.get(),
                                 &pending_account_profiles_query_,
                                 &account_profiles_);
-        } else {
-          DCHECK_EQ(h, pending_creditcard_billing_addresses_query_)
-              << "received profiles from invalid request.";
-          ReceiveLoadedDbValues(h, result.get(),
-                                &pending_creditcard_billing_addresses_query_,
-                                &credit_card_billing_addresses_);
         }
         break;
       case AUTOFILL_CREDITCARDS_RESULT:
@@ -817,8 +809,6 @@ void PersonalDataManager::RecordUseOf(
 
     Refresh();
   } else {
-    // TODO(crbug.com/941498): Server profiles are not recorded therefore
-    // GetProfileByGUID returns null for them.
     AutofillProfile* profile = GetProfileByGUID(
         absl::get<const AutofillProfile*>(profile_or_credit_card)->guid());
     if (!profile) {
@@ -827,19 +817,7 @@ void PersonalDataManager::RecordUseOf(
 
     AutofillProfile updated_profile = *profile;
     updated_profile.RecordAndLogUse();
-
-    switch (updated_profile.record_type()) {
-      case AutofillProfile::LOCAL_PROFILE:
-        UpdateProfile(updated_profile);
-        break;
-      case AutofillProfile::SERVER_PROFILE:
-        DCHECK(database_helper_->GetServerDatabase())
-            << "Recording use of server address without server storage.";
-        database_helper_->GetServerDatabase()->UpdateServerAddressMetadata(
-            updated_profile);
-        Refresh();
-        break;
-    }
+    UpdateProfile(updated_profile);
   }
 }
 
@@ -1243,7 +1221,6 @@ void PersonalDataManager::ClearAllServerDataForTesting() {
   // clear so that tests can synchronously verify that this data was cleared.
   server_credit_cards_.clear();
   server_ibans_.clear();
-  credit_card_billing_addresses_.clear();
   payments_customer_data_.reset();
   server_credit_card_cloud_token_data_.clear();
   autofill_offer_data_.clear();
@@ -1377,16 +1354,6 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesFromSource(
   for (const auto& profile : profiles)
     result.push_back(profile.get());
   OrderProfiles(result, order);
-  return result;
-}
-
-std::vector<AutofillProfile*> PersonalDataManager::GetServerProfiles() const {
-  std::vector<AutofillProfile*> result;
-  if (!IsAutofillProfileEnabled())
-    return result;
-  result.reserve(credit_card_billing_addresses_.size());
-  for (const auto& profile : credit_card_billing_addresses_)
-    result.push_back(profile.get());
   return result;
 }
 
@@ -2110,7 +2077,6 @@ void PersonalDataManager::LoadProfiles() {
 
   CancelPendingLocalQuery(&pending_synced_local_profiles_query_);
   CancelPendingLocalQuery(&pending_account_profiles_query_);
-  CancelPendingServerQuery(&pending_creditcard_billing_addresses_query_);
 
   pending_synced_local_profiles_query_ =
       database_helper_->GetLocalDatabase()->GetAutofillProfiles(
@@ -2118,10 +2084,6 @@ void PersonalDataManager::LoadProfiles() {
   pending_account_profiles_query_ =
       database_helper_->GetLocalDatabase()->GetAutofillProfiles(
           AutofillProfile::Source::kAccount, this);
-  if (database_helper_->GetServerDatabase()) {
-    pending_creditcard_billing_addresses_query_ =
-        database_helper_->GetServerDatabase()->GetServerProfiles(this);
-  }
 }
 
 void PersonalDataManager::LoadCreditCards() {
@@ -2214,7 +2176,6 @@ void PersonalDataManager::CancelPendingServerQuery(
 }
 
 void PersonalDataManager::CancelPendingServerQueries() {
-  CancelPendingServerQuery(&pending_creditcard_billing_addresses_query_);
   CancelPendingServerQuery(&pending_server_creditcards_query_);
   CancelPendingServerQuery(&pending_customer_data_query_);
   CancelPendingServerQuery(&pending_server_creditcard_cloud_token_data_query_);
@@ -2634,7 +2595,6 @@ bool PersonalDataManager::HasPendingQueries() {
   return pending_synced_local_profiles_query_ != 0 ||
          pending_account_profiles_query_ != 0 ||
          pending_creditcards_query_ != 0 ||
-         pending_creditcard_billing_addresses_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||
          pending_server_creditcard_cloud_token_data_query_ != 0 ||
          pending_customer_data_query_ != 0 || pending_offer_data_query_ != 0 ||

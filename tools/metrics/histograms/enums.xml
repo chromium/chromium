@@ -6439,8 +6439,6 @@ Called by update_autofill_enums.py.-->
   <int value="160" label="RemoveIBAN: Success"/>
   <int value="161" label="RemoveIBAN: ReadFailure"/>
   <int value="162" label="RemoveIBAN: WriteFailure"/>
-  <int value="170" label="UpdateServerAddressMetadata: Success"/>
-  <int value="171" label="UpdateServerAddressMetadata: Failure"/>
   <int value="180" label="AddUpiId: Success"/>
   <int value="181" label="AddUpiId: Failure"/>
   <int value="190" label="ClearAllServerData: Success"/>

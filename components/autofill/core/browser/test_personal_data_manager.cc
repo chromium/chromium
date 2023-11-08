@@ -155,7 +155,6 @@ void TestPersonalDataManager::LoadProfiles() {
   // for the side-effect of logging the profile count.
   pending_synced_local_profiles_query_ = 123;
   pending_account_profiles_query_ = 124;
-  pending_creditcard_billing_addresses_query_ = 125;
   {
     std::vector<std::unique_ptr<AutofillProfile>> profiles;
     synced_local_profiles_.swap(profiles);
@@ -172,15 +171,6 @@ void TestPersonalDataManager::LoadProfiles() {
         WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
         AUTOFILL_PROFILES_RESULT, std::move(profiles));
     OnWebDataServiceRequestDone(pending_account_profiles_query_,
-                                std::move(result));
-  }
-  {
-    std::vector<std::unique_ptr<AutofillProfile>> profiles;
-    credit_card_billing_addresses_.swap(profiles);
-    auto result = std::make_unique<
-        WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
-        AUTOFILL_PROFILES_RESULT, std::move(profiles));
-    OnWebDataServiceRequestDone(pending_creditcard_billing_addresses_query_,
                                 std::move(result));
   }
 }

@@ -84,8 +84,7 @@ enum class Result {
   kRemoveIban_Success = 160,
   kRemoveIban_ReadFailure = 161,
   kRemoveIban_WriteFailure = 162,
-  kUpdateServerAddressMetadata_Success = 170,
-  kUpdateServerAddressMetadata_Failure = 171,
+  // Server addresses metadata updates (170, 171) are deprecated.
   kAddUpiId_Success = 180,
   kAddUpiId_Failure = 181,
   kClearAllServerData_Success = 190,
@@ -424,16 +423,6 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
           AUTOFILL_PROFILES_RESULT, std::move(profiles)));
 }
 
-std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetServerProfiles(
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  AutofillTable::FromWebDatabase(db)->GetServerProfiles(&profiles);
-  return std::unique_ptr<WDTypedResult>(
-      new WDResult<std::vector<std::unique_ptr<AutofillProfile>>>(
-          AUTOFILL_PROFILES_RESULT, std::move(profiles)));
-}
-
 std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::GetCountOfValuesContainedBetween(
     const base::Time& begin,
@@ -703,26 +692,6 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveLocalIban(
     db_observer.IbanChanged(IbanChange(IbanChange::REMOVE, guid, *iban));
   }
   ReportResult(Result::kRemoveIban_Success);
-  return WebDatabase::COMMIT_NEEDED;
-}
-
-WebDatabase::State AutofillWebDataBackendImpl::UpdateServerAddressMetadata(
-    const AutofillProfile& profile,
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK_EQ(AutofillProfile::SERVER_PROFILE, profile.record_type());
-  if (!AutofillTable::FromWebDatabase(db)->UpdateServerAddressMetadata(
-          profile)) {
-    ReportResult(Result::kUpdateServerAddressMetadata_Failure);
-    return WebDatabase::COMMIT_NOT_NEEDED;
-  }
-
-  for (auto& db_observer : db_observer_list_) {
-    db_observer.AutofillProfileChanged(AutofillProfileChange(
-        AutofillProfileChange::UPDATE, profile.server_id(), profile));
-  }
-
-  ReportResult(Result::kUpdateServerAddressMetadata_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
