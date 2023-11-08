@@ -469,7 +469,6 @@ WebUITabStripContainerView::~WebUITabStripContainerView() {
   DeinitializeWebView();
   // The TabCounter button uses |this| as a listener. We need to make
   // sure we outlive it.
-  delete new_tab_button_;
   delete tab_counter_;
 }
 
@@ -539,24 +538,6 @@ void WebUITabStripContainerView::OpenForTabDrag() {
 
 views::NativeViewHost* WebUITabStripContainerView::GetNativeViewHost() {
   return web_view_->holder();
-}
-
-std::unique_ptr<views::View> WebUITabStripContainerView::CreateNewTabButton() {
-  DCHECK_EQ(nullptr, new_tab_button_);
-  auto new_tab_button = std::make_unique<ToolbarButton>(
-      base::BindRepeating(&WebUITabStripContainerView::NewTabButtonPressed,
-                          base::Unretained(this)));
-
-  new_tab_button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
-  const int button_height = GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT);
-  new_tab_button->SetPreferredSize(gfx::Size(button_height, button_height));
-  new_tab_button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  new_tab_button->SetVectorIcon(kNewTabToolbarButtonIcon);
-
-  new_tab_button_ = new_tab_button.get();
-  view_observations_.AddObservation(new_tab_button_.get());
-  return new_tab_button;
 }
 
 std::unique_ptr<views::View> WebUITabStripContainerView::CreateTabCounter() {
@@ -657,13 +638,6 @@ void WebUITabStripContainerView::EndDragToOpen(
       opening, fling_direction.has_value()
                    ? WebUITabStripOpenCloseReason::kFling
                    : WebUITabStripOpenCloseReason::kDragRelease);
-}
-
-void WebUITabStripContainerView::NewTabButtonPressed(const ui::Event& event) {
-  chrome::ExecuteCommand(browser_view_->browser(), IDC_NEW_TAB);
-  UMA_HISTOGRAM_ENUMERATION("Tab.NewTab",
-                            NewTabTypes::NEW_TAB_BUTTON_IN_TOOLBAR_FOR_TOUCH,
-                            NewTabTypes::NEW_TAB_ENUM_COUNT);
 }
 
 void WebUITabStripContainerView::TabCounterPressed(const ui::Event& event) {
@@ -894,12 +868,11 @@ void WebUITabStripContainerView::OnViewBoundsChanged(View* observed_view) {
 void WebUITabStripContainerView::OnViewIsDeleting(View* observed_view) {
   view_observations_.RemoveObservation(observed_view);
 
-  if (observed_view == new_tab_button_)
-    new_tab_button_ = nullptr;
-  else if (observed_view == tab_counter_)
+  if (observed_view == tab_counter_) {
     tab_counter_ = nullptr;
-  else if (observed_view == tab_contents_container_)
+  } else if (observed_view == tab_contents_container_) {
     tab_contents_container_ = nullptr;
+  }
 }
 
 void WebUITabStripContainerView::OnWidgetDestroying(views::Widget* widget) {
