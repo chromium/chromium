@@ -22,6 +22,7 @@
 #include "ash/accessibility/ui/accessibility_panel_layout_manager.h"
 #include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/events/accessibility_event_rewriter.h"
@@ -35,6 +36,8 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -175,6 +178,8 @@ const FeatureDialogData kFeatureDialogs[] = {
 
 constexpr char kNotificationId[] = "chrome://settings/accessibility";
 constexpr char kNotifierAccessibility[] = "ash.accessibility";
+constexpr char kDictationLanguageUpgradedNudgeId[] =
+    "dictation_language_upgraded.nudge_id";
 
 // TODO(warx): Signin screen has more controllable accessibility prefs. We may
 // want to expand this to a complete list. If so, merge this with
@@ -1914,6 +1919,19 @@ void AccessibilityControllerImpl::OnDictationKeyboardDialogDismissed() {
 void AccessibilityControllerImpl::ShowDictationLanguageUpgradedNudge(
     const std::string& dictation_locale,
     const std::string& application_locale) {
+  if (features::IsSystemNudgeMigrationEnabled()) {
+    const std::u16string language_name = l10n_util::GetDisplayNameForLocale(
+        dictation_locale, application_locale, /*is_for_ui=*/true);
+    const std::u16string body_text = l10n_util::GetStringFUTF16(
+        IDS_ASH_DICTATION_LANGUAGE_SUPPORTED_OFFLINE_NUDGE, language_name);
+
+    AnchoredNudgeData nudge_data(kDictationLanguageUpgradedNudgeId,
+                                 NudgeCatalogName::kDictation, body_text);
+
+    AnchoredNudgeManager::Get()->Show(nudge_data);
+    return;
+  }
+
   // TODO(b:259352600): Move dictation_nudge_controller_ into
   // accessibility_notification_controller.
   dictation_nudge_controller_ = std::make_unique<DictationNudgeController>(
