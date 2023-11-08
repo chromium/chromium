@@ -440,11 +440,13 @@ void WaylandToplevelWindow::OnRotateFocus(uint32_t serial,
                       : ZAURA_TOPLEVEL_ROTATE_HANDLED_STATE_NOT_HANDLED);
 }
 
+void WaylandToplevelWindow::OnOverviewChange(uint32_t in_overview_as_int) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void WaylandToplevelWindow::OnOverviewModeChanged(bool in_overview) {
+  const bool in_overview =
+      in_overview_as_int == ZAURA_TOPLEVEL_IN_OVERVIEW_IN_OVERVIEW;
   delegate()->OnOverviewModeChanged(in_overview);
-}
 #endif
+}
 
 void WaylandToplevelWindow::LockFrame() {
   OnFrameLockingChanged(true);
