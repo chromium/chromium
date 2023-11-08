@@ -767,7 +767,6 @@ crbug.com/906742 [ android-pie android-pixel-2 no-passthrough qualcomm ] conform
 crbug.com/1000354 [ android android-pixel-2 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1276186 [ android android-pixel-2 ] conformance2/glsl3/array-equality.html [ Failure ]
 crbug.com/angleproject/7421 [ android android-pixel-2 angle-disabled no-passthrough ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
-crbug.com/1473838 [ android android-pixel-2 passthrough ] conformance/extensions/ext-clip-control.html [ Failure ]
 
 
 ## Pixel 4 ##
