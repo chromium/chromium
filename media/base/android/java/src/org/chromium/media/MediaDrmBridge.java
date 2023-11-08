@@ -751,7 +751,7 @@ public class MediaDrmBridge {
             Log.e(TAG, "Failed to getKeyRequest().", e);
         }
 
-        String result = (request != null) ? "successed" : "failed";
+        String result = (request != null) ? "succeeded" : "failed";
         Log.d(TAG, "getKeyRequest %s!", result);
 
         return request;
@@ -1048,8 +1048,8 @@ public class MediaDrmBridge {
                 onSessionKeysChange(
                         sessionId,
                         getPlaceholderKeysInfo(MediaDrm.KeyStatus.STATUS_EXPIRED).toArray(),
-                        false /* hasAdditionalUsableKey */,
-                        true /* isKeyRelease */);
+                        /* hasAdditionalUsableKey= */ false,
+                        /* isKeyRelease= */ true);
                 return;
             }
 
