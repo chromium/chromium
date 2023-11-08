@@ -22,7 +22,7 @@ const char kPageMeta[] = "meta";
 CommerceWebExtractor::CommerceWebExtractor(
     content::RenderFrame* render_frame,
     service_manager::BinderRegistry* registry)
-    : render_frame_(render_frame) {
+    : content::RenderFrameObserver(render_frame), render_frame_(render_frame) {
   registry->AddInterface(base::BindRepeating(
       &CommerceWebExtractor::BindReceiver, base::Unretained(this)));
 }
@@ -56,5 +56,9 @@ void CommerceWebExtractor::BindReceiver(
         receiver) {
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
+}
+
+void CommerceWebExtractor::OnDestruct() {
+  delete this;
 }
 }  // namespace commerce

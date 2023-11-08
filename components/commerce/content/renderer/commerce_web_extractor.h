@@ -7,13 +7,15 @@
 
 #include "components/commerce/core/mojom/commerce_web_extractor.mojom.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace commerce {
 class CommerceWebExtractor
-    : public commerce_web_extractor::mojom::CommerceWebExtractor {
+    : public content::RenderFrameObserver,
+      public commerce_web_extractor::mojom::CommerceWebExtractor {
  public:
   CommerceWebExtractor(const CommerceWebExtractor&) = delete;
   CommerceWebExtractor& operator=(const CommerceWebExtractor&) = delete;
@@ -23,6 +25,9 @@ class CommerceWebExtractor
 
   // commerce_web_extractor::mojom::CommerceWebExtractor:
   void ExtractMetaInfo(ExtractMetaInfoCallback callback) override;
+
+  // RenderFrameObserver:
+  void OnDestruct() override;
 
  private:
   void BindReceiver(
