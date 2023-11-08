@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubMicrophoneSubpage} from 'chrome://os-settings/lazy_load.js';
 import {appPermissionHandlerMojom, CrLinkRowElement, CrToggleElement, PaperTooltipElement, Router, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
-import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -318,7 +318,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
   function createApp(
       id: string, name: string, permissionType: PermissionType,
       permissionValue: TriState): App {
-    const app: App = {id, name, permissions: {}};
+    const app: App = {id, name, type: AppType.kWeb, permissions: {}};
     app.permissions[permissionType] = createTriStatePermission(
         permissionType, permissionValue, /*is_managed=*/ false);
     return app;

@@ -30,6 +30,7 @@ app_permission::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
   auto app = app_permission::mojom::App::New();
   app->id = update.AppId();
   app->name = update.Name();
+  app->type = update.AppType();
 
   for (const auto& permission : update.Permissions()) {
     if (IsPermissionTypeRelevant(permission)) {
@@ -71,6 +72,10 @@ void AppPermissionHandler::GetApps(
     base::OnceCallback<void(std::vector<app_permission::mojom::AppPtr>)>
         callback) {
   std::move(callback).Run(GetAppList());
+}
+
+void AppPermissionHandler::OpenNativeSettings(const std::string& app_id) {
+  app_service_proxy_->OpenNativeSettings(app_id);
 }
 
 void AppPermissionHandler::SetPermission(const std::string& app_id,

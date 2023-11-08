@@ -9,10 +9,11 @@
  * controls page.
  */
 
-import {Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermissionValue, createTriStatePermissionValue, isBoolValue, isPermissionEnabled, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
@@ -79,6 +80,18 @@ export class SettingsPrivacyHubAppPermissionRow extends
         type: Boolean,
         value: false,
       },
+
+      shouldRedirectToAndroidSettings_: {
+        type: Boolean,
+        computed: 'computeShouldRedirectToAndroidSettings_(app.type, ' +
+            'isPermissionManaged_)',
+      },
+
+      shouldDisableToggle_: {
+        type: Boolean,
+        computed: 'computeShouldDisableToggle_(isPermissionManaged_, ' +
+            'shouldRedirectToAndroidSettings_)',
+      },
     };
   }
 
@@ -88,6 +101,8 @@ export class SettingsPrivacyHubAppPermissionRow extends
   private isPermissionManaged_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
   private permissionText_: string;
+  private shouldDisableToggle_: boolean;
+  private shouldRedirectToAndroidSettings_: boolean;
 
   static get observers() {
     return ['onPermissionChange_(app.permissions.*)'];
@@ -133,6 +148,11 @@ export class SettingsPrivacyHubAppPermissionRow extends
       return;
     }
 
+    if (this.shouldRedirectToAndroidSettings_) {
+      this.mojoInterfaceProvider_.openNativeSettings(this.app.id);
+      return;
+    }
+
     const permission =
         castExists(this.app.permissions[PermissionType[this.permissionType]]);
 
@@ -144,6 +164,16 @@ export class SettingsPrivacyHubAppPermissionRow extends
     }
 
     this.mojoInterfaceProvider_.setPermission(this.app.id, permission);
+  }
+
+  private computeShouldRedirectToAndroidSettings_(): boolean {
+    return !this.isPermissionManaged_ &&
+        loadTimeData.getBoolean('isArcReadOnlyPermissionsEnabled') &&
+        this.app.type === AppType.kArc;
+  }
+
+  private computeShouldDisableToggle_(): boolean {
+    return this.isPermissionManaged_ || this.shouldRedirectToAndroidSettings_;
   }
 }
 

@@ -19,6 +19,7 @@
     width: 32px;
   }
 
+  cr-icon-button,
   cr-policy-indicator {
     margin-inline-end: var(--cr-controlled-by-spacing);
   }
@@ -35,10 +36,13 @@
   <template is="dom-if" if="[[isPermissionManaged_]]" restamp>
     <cr-policy-indicator indicator-type="devicePolicy"></cr-policy-indicator>
   </template>
+  <template is="dom-if" if="[[shouldRedirectToAndroidSettings_]]" restamp>
+    <cr-icon-button iron-icon="cr:open-in-new"></cr-icon-button>
+  </template>
   <cr-toggle id="permissionToggle"
       checked="[[checked_]]"
       on-click="onPermissionRowClick_"
-      disabled="[[isPermissionManaged_]]"
+      disabled="[[shouldDisableToggle_]]"
       aria-labelledby="appName">
   </cr-toggle>
 </div>
