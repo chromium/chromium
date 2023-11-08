@@ -53,9 +53,6 @@ class WebThemeEngineDefault : public WebThemeEngine {
       const ui::RendererColorMap& light_colors,
       const ui::RendererColorMap& dark_colors,
       const ui::RendererColorMap& forced_colors_map) override;
-  void AdjustForcedColorsProvider(
-      ui::ColorProviderKey::ForcedColors forced_colors_state,
-      ui::ColorProviderKey::ColorMode color_mode) override;
   void EmulateForcedColors(bool is_dark_theme, bool is_web_test) override;
   bool IsFluentOverlayScrollbarEnabled() const override;
   int GetPaintedScrollbarTrackInset() const override;
@@ -99,9 +96,9 @@ class WebThemeEngineDefault : public WebThemeEngine {
   ui::ColorProvider forced_colors_provider_;
 
   // This provider is used when forced color emulation is enabled, overriding
-  // the light or dark color providers.
-  // TODO(samomekarajr): Remove this provider when we use the forced colors
-  // provider for painting.
+  // the light, dark or forced colors color providers.
+  // TODO(samomekarajr): Remove this provider when we figure out how to change
+  // the ForcedColors key from the renderer.
   ui::ColorProvider emulated_forced_colors_provider_;
 };
 
