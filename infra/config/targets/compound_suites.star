@@ -240,7 +240,7 @@ targets.legacy_compound_suite(
         "gl_gtests_passthrough",
         "gpu_fyi_vulkan_swiftshader_gtests",
         "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests_no_nacl",
+        "non_android_chromium_gtests",
         "vr_platform_specific_chromium_gtests",
     ],
 )
@@ -261,7 +261,7 @@ targets.legacy_compound_suite(
         "linux_specific_xr_gtests",
         "gl_gtests_passthrough",
         "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests_no_nacl",
+        "non_android_chromium_gtests",
         "vr_platform_specific_chromium_gtests",
     ],
 )
@@ -320,7 +320,7 @@ targets.legacy_compound_suite(
         "linux_flavor_specific_chromium_gtests",
         "linux_specific_xr_gtests",
         "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests_no_nacl",
+        "non_android_chromium_gtests",
         "vr_platform_specific_chromium_gtests",
     ],
 )
@@ -346,7 +346,7 @@ targets.legacy_compound_suite(
         "linux_flavor_specific_chromium_gtests",
         "linux_specific_xr_gtests",
         "non_android_and_cast_and_chromeos_chromium_gtests",
-        "non_android_chromium_gtests_no_nacl",
+        "non_android_chromium_gtests",
         "vr_platform_specific_chromium_gtests",
     ],
 )

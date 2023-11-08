@@ -116,9 +116,9 @@ vars = {
   # output.
   'checkout_js_coverage_modules': True,
 
-  # Check out and download nacl for ChromeOS only.
+  # Check out and download nacl by default, unless on Windows or Mac.
   # This can be disabled e.g. with custom_vars.
-  'checkout_nacl': 'checkout_chromeos',
+  'checkout_nacl': 'host_os == "linux"',
 
   # By default, do not check out src-internal. This can be overridden e.g. with
   # custom_vars.
