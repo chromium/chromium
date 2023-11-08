@@ -2575,9 +2575,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, FillLocalCreditCard) {
 
 // Test that we do not fill formless non-checkout forms when we enable the
 // formless form restrictions.
-//
-// TODO(crbug.com/1478563): Deflake this test everywhere.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_NoAutocomplete) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
   CreateTestProfile();
   GURL url =
       embedded_test_server()->GetURL("/autofill/formless_no_autocomplete.html");
@@ -2585,6 +2583,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_NoAutocomplete) {
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
+  content::FetchHistogramsFromChildProcesses();
   ::metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // If only some form fields are tagged with autocomplete types, then the
@@ -2607,8 +2606,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_NoAutocomplete) {
 // version of the the test in that at least one of the fields has an
 // autocomplete attribute, so autofill will always be aware of the existence
 // of the form.
-// TODO(crbug.com/1478122): Flaky.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_SomeAutocomplete) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "/autofill/formless_some_autocomplete.html");
@@ -2616,6 +2614,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_SomeAutocomplete) {
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
+  content::FetchHistogramsFromChildProcesses();
   ::metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // If only some form fields are tagged with autocomplete types, then the
@@ -2635,8 +2634,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_SomeAutocomplete) {
 
 // Test that we do not fill formless non-checkout forms when we enable the
 // formless form restrictions.
-// TODO(crbug.com/1478122): Flaky.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_AllAutocomplete) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "/autofill/formless_all_autocomplete.html");
@@ -2644,6 +2642,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_AllAutocomplete) {
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
+  content::FetchHistogramsFromChildProcesses();
   ::metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // If all form fields are tagged with autocomplete types, we make them all
