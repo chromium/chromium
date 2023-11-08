@@ -14,7 +14,6 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
@@ -88,8 +87,6 @@ void ConfigureHandlers(id<SettingsRootViewControlling> controller,
 }
 
 }  // namespace
-
-using password_manager::features::IsPasswordCheckupEnabled;
 
 NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
@@ -304,14 +301,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
-  if (IsPasswordCheckupEnabled()) {
-    [navigationController
-        showSavedPasswordsAndShowCancelButton:showCancelButton];
-  } else {
-    [navigationController
-        showSavedPasswordsAndStartPasswordCheck:YES
-                               showCancelButton:showCancelButton];
-  }
+  [navigationController showSavedPasswordsAndShowCancelButton:showCancelButton];
 
   return navigationController;
 }
@@ -807,31 +797,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.manageSyncSettingsCoordinator = nil;
 }
 
-// Shows the saved passwords and starts the password check if
-// `startPasswordCheck` is true. If `showCancelButton` is true, adds a cancel
-// button as the left navigation item. Used when kIOSPasswordCheckup is
-// disabled.
-- (void)showSavedPasswordsAndStartPasswordCheck:(BOOL)startPasswordCheck
-                               showCancelButton:(BOOL)showCancelButton {
-  DCHECK(!IsPasswordCheckupEnabled());
-  self.savedPasswordsCoordinator = [[PasswordsCoordinator alloc]
-      initWithBaseNavigationController:self
-                               browser:self.browser];
-  self.savedPasswordsCoordinator.delegate = self;
-  [self.savedPasswordsCoordinator start];
-  if (startPasswordCheck) {
-    [self.savedPasswordsCoordinator checkSavedPasswords];
-  }
-  if (showCancelButton) {
-    [self.savedPasswordsCoordinator.viewController navigationItem]
-        .leftBarButtonItem = [self cancelButton];
-  }
-}
-
 // Shows the saved passwords. If `showCancelButton` is true, adds a cancel
-// button as the left navigation item. Used when kIOSPasswordCheckup is enabled.
+// button as the left navigation item.
 - (void)showSavedPasswordsAndShowCancelButton:(BOOL)showCancelButton {
-  DCHECK(IsPasswordCheckupEnabled());
   self.savedPasswordsCoordinator = [[PasswordsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser];
@@ -1112,12 +1080,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
             (UIViewController*)baseViewController
                                     showCancelButton:(BOOL)showCancelButton
                                   startPasswordCheck:(BOOL)startPasswordCheck {
-  if (IsPasswordCheckupEnabled()) {
-    [self showSavedPasswordsAndShowCancelButton:showCancelButton];
-  } else {
-    [self showSavedPasswordsAndStartPasswordCheck:startPasswordCheck
-                                 showCancelButton:showCancelButton];
-  }
+  [self showSavedPasswordsAndShowCancelButton:showCancelButton];
 }
 
 // TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.

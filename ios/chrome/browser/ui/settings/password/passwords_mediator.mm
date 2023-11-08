@@ -11,7 +11,6 @@
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -38,7 +37,6 @@
 #import "url/gurl.h"
 
 using password_manager::WarningType;
-using password_manager::features::IsPasswordCheckupEnabled;
 
 @interface PasswordsMediator () <PasswordCheckObserver,
                                  SavedPasswordsPresenterObserver,
@@ -169,17 +167,6 @@ using password_manager::features::IsPasswordCheckupEnabled;
 }
 
 - (NSAttributedString*)passwordCheckErrorInfo {
-  // When the Password Checkup feature is disabled and a password check error
-  // occured, we want to show the result of the last successful check instead of
-  // showing the error if there were any compromised passwords. With the
-  // Password Checkup feature enabled, we want to show the error message (and
-  // therefore the error info also) no matter the result of the last successful
-  // check.
-  if (!IsPasswordCheckupEnabled() &&
-      !_passwordCheckManager->GetInsecureCredentials().empty()) {
-    return nil;
-  }
-
   NSString* message;
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
@@ -195,25 +182,15 @@ using password_manager::features::IsPasswordCheckupEnabled;
       return nil;
     case PasswordCheckState::kSignedOut:
       message =
-          IsPasswordCheckupEnabled()
-              ? l10n_util::GetNSString(
-                    IDS_IOS_PASSWORD_CHECKUP_ERROR_SIGNED_OUT)
-              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_SIGNED_OUT);
+          l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_SIGNED_OUT);
       break;
     case PasswordCheckState::kOffline:
-      message =
-          IsPasswordCheckupEnabled()
-              ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OFFLINE)
-              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OFFLINE);
+      message = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OFFLINE);
       break;
     case PasswordCheckState::kQuotaLimit:
       if ([self canUseAccountPasswordCheckup]) {
-        message =
-            IsPasswordCheckupEnabled()
-                ? l10n_util::GetNSString(
-                      IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT_VISIT_GOOGLE)
-                : l10n_util::GetNSString(
-                      IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT_VISIT_GOOGLE);
+        message = l10n_util::GetNSString(
+            IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT_VISIT_GOOGLE);
         NSDictionary* linkAttributes = @{
           NSLinkAttributeName :
               net::NSURLWithGURL(password_manager::GetPasswordCheckupURL(
@@ -223,18 +200,12 @@ using password_manager::features::IsPasswordCheckupEnabled;
         return AttributedStringFromStringWithLink(message, textAttributes,
                                                   linkAttributes);
       } else {
-        message = IsPasswordCheckupEnabled()
-                      ? l10n_util::GetNSString(
-                            IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT)
-                      : l10n_util::GetNSString(
-                            IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT);
+        message =
+            l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT);
       }
       break;
     case PasswordCheckState::kOther:
-      message =
-          IsPasswordCheckupEnabled()
-              ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OTHER)
-              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OTHER);
+      message = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OTHER);
       break;
   }
   return [[NSMutableAttributedString alloc] initWithString:message
@@ -311,9 +282,7 @@ using password_manager::features::IsPasswordCheckupEnabled;
                         insecureCredentials:insecureCredentials];
   WarningType warningType = GetWarningOfHighestPriority(insecureCredentials);
   NSInteger insecurePasswordsCount =
-      IsPasswordCheckupEnabled()
-          ? GetPasswordCountForWarningType(warningType, insecureCredentials)
-          : insecureCredentials.size();
+      GetPasswordCountForWarningType(warningType, insecureCredentials);
   [self.consumer setPasswordCheckUIState:passwordCheckUIState
                   insecurePasswordsCount:insecurePasswordsCount];
 }
@@ -333,27 +302,17 @@ using password_manager::features::IsPasswordCheckupEnabled;
     case PasswordCheckState::kNoPasswords:
       return PasswordCheckStateDisabled;
     case PasswordCheckState::kSignedOut:
-      if (!IsPasswordCheckupEnabled() && !insecureCredentials.empty()) {
-        return PasswordCheckStateUnmutedCompromisedPasswords;
-      }
       return PasswordCheckStateSignedOut;
     case PasswordCheckState::kOffline:
     case PasswordCheckState::kQuotaLimit:
     case PasswordCheckState::kOther:
-      if (!IsPasswordCheckupEnabled() && !insecureCredentials.empty()) {
-        return PasswordCheckStateUnmutedCompromisedPasswords;
-      }
       return PasswordCheckStateError;
     case PasswordCheckState::kCanceled:
     case PasswordCheckState::kIdle: {
-      if (!IsPasswordCheckupEnabled() && !insecureCredentials.empty()) {
-        return PasswordCheckStateUnmutedCompromisedPasswords;
-      } else if (_currentState == PasswordCheckState::kIdle && wasRunning) {
+      if (_currentState == PasswordCheckState::kIdle && wasRunning) {
         PasswordCheckUIState insecureState =
-            IsPasswordCheckupEnabled()
-                ? [self passwordCheckUIStateFromHighestPriorityWarningType:
-                            insecureCredentials]
-                : PasswordCheckStateUnmutedCompromisedPasswords;
+            [self passwordCheckUIStateFromHighestPriorityWarningType:
+                      insecureCredentials];
         return insecureCredentials.empty() ? PasswordCheckStateSafe
                                            : insecureState;
       }

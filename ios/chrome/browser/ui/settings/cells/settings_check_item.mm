@@ -4,12 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-
-using password_manager::features::IsPasswordCheckupEnabled;
 
 namespace {
 
@@ -85,18 +82,15 @@ constexpr NSInteger kTrailingSymbolImagePointSize = 22;
   switch (self.warningState) {
     case WarningState::kSafe:
       trailingImageName = kCheckmarkCircleFillSymbol;
-      trailingImageTintColorName =
-          IsPasswordCheckupEnabled() ? kGreen500Color : kGreenColor;
+      trailingImageTintColorName = kGreen500Color;
       break;
     case WarningState::kWarning:
       trailingImageName = kErrorCircleFillSymbol;
       trailingImageTintColorName = kYellow500Color;
       break;
     case WarningState::kSevereWarning:
-      trailingImageName = IsPasswordCheckupEnabled() ? kErrorCircleFillSymbol
-                                                     : kWarningFillSymbol;
-      trailingImageTintColorName =
-          IsPasswordCheckupEnabled() ? kRed500Color : kRedColor;
+      trailingImageName = kErrorCircleFillSymbol;
+      trailingImageTintColorName = kRed500Color;
       break;
   }
   self.trailingImage = DefaultSymbolTemplateWithPointSize(

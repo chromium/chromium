@@ -12,7 +12,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/common/password_manager_constants.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -54,7 +53,6 @@ using base::UmaHistogramEnumeration;
 using password_manager::GetWarningTypeForDetailsContext;
 using password_manager::constants::kMaxPasswordNoteLength;
 using password_manager::features::IsAuthOnEntryV2Enabled;
-using password_manager::features::IsPasswordCheckupEnabled;
 using password_manager::metrics_util::LogPasswordNoteActionInSettings;
 using password_manager::metrics_util::PasswordNoteAction;
 
@@ -86,7 +84,7 @@ bool ShouldAllowToDismissWarning(DetailsContext context, bool is_compromised) {
     case DetailsContext::kOutsideSettings:
     case DetailsContext::kCompromisedIssues:
     case DetailsContext::kDismissedWarnings:
-      return IsPasswordCheckupEnabled() && is_compromised;
+      return is_compromised;
     case DetailsContext::kReusedIssues:
     case DetailsContext::kWeakIssues:
       return false;
@@ -103,7 +101,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     case DetailsContext::kWeakIssues:
       return false;
     case DetailsContext::kDismissedWarnings:
-      return IsPasswordCheckupEnabled() && is_muted;
+      return is_muted;
   }
 }
 

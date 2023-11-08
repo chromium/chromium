@@ -79,9 +79,7 @@ bool ShouldDisplayCredentialAsCompromised(
 
   for (const auto& insecure_credential : insecure_credentials) {
     if (credential == insecure_credential) {
-      return password_manager::features::IsPasswordCheckupEnabled()
-                 ? IsCredentialUnmutedCompromised(insecure_credential)
-                 : IsCompromised(insecure_credential);
+      return IsCredentialUnmutedCompromised(insecure_credential);
     }
   }
   return false;
@@ -89,12 +87,6 @@ bool ShouldDisplayCredentialAsCompromised(
 
 // Whether displaying a credential as muted is supported in the current context.
 bool CanDisplayCredentialAsMuted(DetailsContext details_context) {
-  // Muted credentials are only available when kIOSPasswordCheckup feature is
-  // enabled.
-  if (!password_manager::features::IsPasswordCheckupEnabled()) {
-    return false;
-  }
-
   switch (details_context) {
     case DetailsContext::kPasswordSettings:
     case DetailsContext::kOutsideSettings:

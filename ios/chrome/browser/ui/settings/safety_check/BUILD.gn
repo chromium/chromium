@@ -55,7 +55,6 @@ source_set("safety_check") {
     ":safety_check_ui",
     ":safety_check_ui_swift",
     "//components/password_manager/core/browser",
-    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

@@ -3355,9 +3355,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_LEAK_CHECK_SWITCH" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         Warn You if Passwords Are Exposed in a Data Breach
       </message>
-      <message name="IDS_IOS_PASSWORDS" desc="Title for the view in Settings for managing saved passwords. [Length: 15em] [iOS only]">
-        Passwords
-      </message>
       <message name="IDS_IOS_PASSWORD_MANAGER" desc="Title for the view in Settings for managing saved passwords. [Length: 15em] [iOS only]">
         Password Manager
       </message>
@@ -3523,9 +3520,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_ADD_PASSWORD" desc="Text on a button which allows the user to save a password for a website in their Password Manager.">
         Add Password...
       </message>
-      <message name="IDS_IOS_CHECK_PASSWORDS" desc="Title for the item in Settings for Password Check feature." meaning="Label tells the user about status of Password Check [CHAR_LIMIT=25] [iOS only]">
-        Check Passwords
-      </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP" desc="Title for the item in Settings for Password Checkup feature." meaning="Label tells the user about status of Password Checkup [CHAR_LIMIT=25] [iOS only]">
         Password Checkup
       </message>
@@ -3538,9 +3532,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFETY_CHECK_PASSWORD_CHECKUP_ONGOING" desc="In sentence case: Subtitle for the password check item in Safety Check indicating that the checks are running. Sentence case. [CHAR_LIMIT=25] [iOS only]" meaning="In sentence case.">
         Checking passwords…
       </message>
-      <message name="IDS_IOS_CHECK_PASSWORDS_DESCRIPTION" desc="Description for the Password Check item in Settings." meaning="Label is shown to explain purpose of Password Check feature. This string is shown only if user didn't run Password Check before or check finished due to error without any results.  [iOS only]">
-        Keep your passwords safe from security issues
-      </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_DESCRIPTION" desc="Description for the Password Check item in Settings" meaning="Label is shown to explain purpose of Password Checkup feature. This string is shown only if user didn't run the password checkup before or checkup finished due to error without any results.  [iOS only]">
         Check your saved passwords to strengthen your security and stay safer online
       </message>
@@ -3548,12 +3539,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         {COUNT, plural,
           =1 {for {COUNT} site or app}
           other {for {COUNT} sites and apps}}
-      </message>
-      <message name="IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT" desc="Displays the number of compromised passwords present in the database.">
-        {COUNT, plural,
-          =0 {No compromised passwords}
-          =1 {{COUNT} Compromised password}
-          other {{COUNT} Compromised passwords}}
       </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT" desc="In sentence case: Displays the number of compromised passwords present in the database." meaning="[In sentence case]">
         {COUNT, plural,
@@ -3596,9 +3581,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_DISMISSED_WARNINGS_PASSWORD_ISSUES_TITLE"  desc="Title for the password manager screen displaying compromised credential issues dismissed by the user. [iOS only] [Length: 22em]">
         Dismissed Warnings
-      </message>
-      <message name="IDS_IOS_PASSWORD_ISSUES_DESCRIPTION" desc="Description for the screen with Compromised passwords [iOS only]" meaning="This label explains what is compromised password and why is it compromised. It suggest user fixing the issues as soon as possible.">
-        The following accounts use passwords which were exposed in a third-party data breach or entered on a deceptive website. Change these passwords immediately to keep your accounts safe.
       </message>
       <message name="IDS_IOS_COMPROMISED_PASSWORD_ISSUES_DESCRIPTION" desc="Header displayed on the password manager screen displaying credentials that have been leaked or phished [iOS only]">
         Some of your saved passwords were exposed in a non-Google data breach. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>

@@ -598,10 +598,6 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   std::unique_ptr<EarlGreyScopedBlockSwizzler> _passwordAutoFillStatusSwizzler;
 }
 
-- (BOOL)passwordCheckupEnabled {
-  return YES;
-}
-
 - (GREYElementInteraction*)interactionForSinglePasswordEntryWithDomain:
     (NSString*)domain {
   // Since passwords notes launch authentication is required before interacting
@@ -677,14 +673,6 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
 
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordUISplit);
-
-  if ([self passwordCheckupEnabled]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordCheckup);
-  } else {
-    config.features_disabled.push_back(
-        password_manager::features::kIOSPasswordCheckup);
-  }
 
   // TODO(crbug.com/1448574): Re-enable CPE promo and update
   // testCopyPasswordToast and testCopyPasswordMenuItem to check for the promo.
@@ -2623,55 +2611,6 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Checks that deleting a compromised password from password issues goes back
-// to the list-of-issues which doesn't display that password anymore.
-- (void)testDeletePasswordIssue {
-  if ([self passwordCheckupEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"This test isn't implemented for Password Checkup yet.");
-  }
-
-  password_manager_test_utils::SaveCompromisedPasswordForm();
-
-  OpenPasswordManager();
-
-  NSString* text = l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS);
-  NSString* detailText =
-      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-          IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 1));
-
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel([NSString
-                                          stringWithFormat:@"%@, %@", text,
-                                                           detailText])]
-      performAction:grey_tap()];
-
-  [GetInteractionForPasswordIssueEntry(@"example.com", kDefaultUsername)
-      performAction:grey_tap()];
-
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
-
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      performAction:grey_tap()];
-
-  DeleteCredential(kDefaultUsername, kDefaultSite);
-
-  // Wait until the alert and the detail view are dismissed.
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Check that the current view is now the list view, by locating
-  // PasswordIssuesTableView.
-  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
-                                          PasswordIssuesTableView()]
-      assertWithMatcher:grey_notNil()];
-
-  [GetInteractionForPasswordIssueEntry(@"example.com", kDefaultUsername)
-      assertWithMatcher:grey_nil()];
-
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
-}
-
 // Tests that reauthentication is not required to show password when notes are
 // enabled since the reauthentication happens before navigating to the details
 // view in this scenario.
@@ -3777,27 +3716,6 @@ void CheckPasswordManagerWidgetPromoInstructionScreenVisible(
   // option anymore.
   [[EarlGrey selectElementWithMatcher:PasswordDetailsMoveToAccountButton()]
       assertWithMatcher:grey_notVisible()];
-}
-
-@end
-
-// Rerun all the tests in this file but with kIOSPasswordCheckup disabled.
-// This will be removed once that feature launches fully, but ensures
-// regressions aren't introduced in the meantime.
-@interface PasswordManagerPasswordCheckupDisabledTestCase
-    : PasswordManagerTestCase
-
-@end
-
-@implementation PasswordManagerPasswordCheckupDisabledTestCase
-
-- (BOOL)passwordCheckupEnabled {
-  return NO;
-}
-
-// This causes the test case to actually be detected as a test case. The actual
-// tests are all inherited from the parent class.
-- (void)testEmpty {
 }
 
 @end

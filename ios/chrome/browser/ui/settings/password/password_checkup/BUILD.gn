@@ -92,7 +92,6 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/common",
-    "//components/password_manager/core/common:features",
     "//components/prefs:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/passwords/model",
@@ -126,7 +125,6 @@ source_set("eg2_tests") {
   sources = [ "password_checkup_egtest.mm" ]
   deps = [
     ":password_checkup_constants",
-    "//components/password_manager/core/common:features",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/signin:fake_system_identity",

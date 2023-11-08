@@ -85,9 +85,6 @@
 + (void)setFakeBulkLeakCheckBufferedState:
     (password_manager::BulkLeakCheckServiceInterface::State)state;
 
-// Returns true if the Password Checkup feature flag is enabled.
-+ (BOOL)isPasswordCheckupEnabled;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_APP_INTERFACE_H_

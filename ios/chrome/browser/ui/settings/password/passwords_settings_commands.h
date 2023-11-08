@@ -17,9 +17,6 @@ struct CredentialUIEntry;
 // Shows the Password Checkup screen.
 - (void)showPasswordCheckup;
 
-// Shows the screen with password issues.
-- (void)showPasswordIssues;
-
 // Shows passwords details for blocked passwords.
 - (void)showDetailedViewForCredential:
     (const password_manager::CredentialUIEntry&)credential;

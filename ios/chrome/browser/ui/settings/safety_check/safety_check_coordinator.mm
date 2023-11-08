@@ -11,7 +11,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -29,7 +28,6 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
@@ -44,7 +42,6 @@ using password_manager::WarningType;
 
 @interface SafetyCheckCoordinator () <
     PasswordCheckupCoordinatorDelegate,
-    PasswordIssuesCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
     PrivacySafeBrowsingCoordinatorDelegate,
     SafetyCheckNavigationCommands,
@@ -59,10 +56,6 @@ using password_manager::WarningType;
 // Coordinator for Password Checkup.
 @property(nonatomic, strong)
     PasswordCheckupCoordinator* passwordCheckupCoordinator;
-
-// Coordinator for passwords issues screen.
-@property(nonatomic, strong)
-    PasswordIssuesCoordinator* passwordIssuesCoordinator;
 
 // Dispatcher which can handle changing passwords on sites.
 @property(nonatomic, strong) id<ApplicationCommands> handler;
@@ -185,7 +178,6 @@ using password_manager::WarningType;
 
 - (void)showPasswordCheckupPage {
   DUMP_WILL_BE_CHECK(!self.passwordCheckupCoordinator);
-  CHECK(password_manager::features::IsPasswordCheckupEnabled());
   self.passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
@@ -194,18 +186,6 @@ using password_manager::WarningType;
                                            kSafetyCheck];
   self.passwordCheckupCoordinator.delegate = self;
   [self.passwordCheckupCoordinator start];
-}
-
-- (void)showPasswordIssuesPage {
-  CHECK(!password_manager::features::IsPasswordCheckupEnabled());
-  DUMP_WILL_BE_CHECK(!self.passwordIssuesCoordinator);
-  self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
-            initForWarningType:WarningType::kCompromisedPasswordsWarning
-      baseNavigationController:self.baseNavigationController
-                       browser:self.browser];
-  self.passwordIssuesCoordinator.delegate = self;
-  self.passwordIssuesCoordinator.reauthModule = nil;
-  [self.passwordIssuesCoordinator start];
 }
 
 - (void)showErrorInfoFrom:(UIButton*)buttonView
@@ -279,18 +259,6 @@ using password_manager::WarningType;
   [self.passwordCheckupCoordinator stop];
   self.passwordCheckupCoordinator.delegate = nil;
   self.passwordCheckupCoordinator = nil;
-}
-
-// TODO(crbug.com/1406871): Remove when kIOSPasswordCheckup is enabled by
-// default.
-#pragma mark - PasswordIssuesCoordinatorDelegate
-
-- (void)passwordIssuesCoordinatorDidRemove:
-    (PasswordIssuesCoordinator*)coordinator {
-  DCHECK_EQ(self.passwordIssuesCoordinator, coordinator);
-  [self.passwordIssuesCoordinator stop];
-  self.passwordIssuesCoordinator.delegate = nil;
-  self.passwordIssuesCoordinator = nil;
 }
 
 #pragma mark - PrivacySafeBrowsingCoordinatorDelegate

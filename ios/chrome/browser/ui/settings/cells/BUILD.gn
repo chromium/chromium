@@ -39,7 +39,6 @@ source_set("cells") {
   deps = [
     ":public",
     "//components/autofill/core/browser",
-    "//components/password_manager/core/common:features",
     "//components/strings",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",

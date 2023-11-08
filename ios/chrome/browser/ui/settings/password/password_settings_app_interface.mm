@@ -15,7 +15,6 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/prefs/pref_service.h"
@@ -300,10 +299,6 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
           IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
               chrome_test_util::GetOriginalBrowserState()));
   fakeBulkLeakCheckService->SetBufferedState(state);
-}
-
-+ (BOOL)isPasswordCheckupEnabled {
-  return password_manager::features::IsPasswordCheckupEnabled();
 }
 
 @end

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -275,9 +274,6 @@ NSString* LeakedPasswordDescription() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordCheckup);
 
   return config;
 }

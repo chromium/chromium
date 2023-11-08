@@ -12,7 +12,6 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
@@ -588,11 +587,6 @@ TEST_F(PasswordDetailsMediatorTest, EditCredential) {
 // the SavedPasswordsPresenter's credential list. Also tests that the consumer
 // is notified with the expected information.
 TEST_F(PasswordDetailsMediatorTest, DidConfirmWarningDismissalForPassword) {
-  // Enable Password Checkup feature since warning muting is only available
-  // with it.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   // Add an unmuted compromsied password to the store.
   AddInsecurePasswordForm(/*url=*/kExampleURL2,
                           /*password*/ kExamplePassword2,
@@ -635,11 +629,6 @@ TEST_F(PasswordDetailsMediatorTest, DidConfirmWarningDismissalForPassword) {
 // SavedPasswordsPresenter's credential list. Also tests that the consumer is
 // notified with the expected information.
 TEST_F(PasswordDetailsMediatorTest, RestoreWarningForCurrentPassword) {
-  // Enable Password Checkup feature since warning restoration is only
-  // available with it.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   // Warning restauration is only available in the `kDismissedWarnings`
   // context.
   mediator().context = DetailsContext::kDismissedWarnings;

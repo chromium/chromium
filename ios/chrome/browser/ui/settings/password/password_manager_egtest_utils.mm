@@ -40,22 +40,15 @@ NSString* GetDetailTextForPasswordCheckUIState(PasswordCheckUIState state,
                                                int number) {
   switch (state) {
     case PasswordCheckStateSafe:
-      return
-          [PasswordSettingsAppInterface isPasswordCheckupEnabled]
-              ? [NSString
-                    stringWithFormat:
-                        @"%@. %@", @"Checked just now",
-                        l10n_util::GetNSString(
-                            IDS_IOS_PASSWORD_CHECKUP_SAFE_STATE_ACCESSIBILITY_LABEL)]
-              : base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-                    IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 0));
+      return [NSString
+          stringWithFormat:
+              @"%@. %@", @"Checked just now",
+              l10n_util::GetNSString(
+                  IDS_IOS_PASSWORD_CHECKUP_SAFE_STATE_ACCESSIBILITY_LABEL)];
 
     case PasswordCheckStateUnmutedCompromisedPasswords:
       return base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-          [PasswordSettingsAppInterface isPasswordCheckupEnabled]
-              ? IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT
-              : IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
-          number));
+          IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, number));
     case PasswordCheckStateReusedPasswords:
       return l10n_util::GetNSStringF(IDS_IOS_PASSWORD_CHECKUP_REUSED_COUNT,
                                      base::NumberToString16(number));
@@ -67,19 +60,13 @@ NSString* GetDetailTextForPasswordCheckUIState(PasswordCheckUIState state,
           IDS_IOS_PASSWORD_CHECKUP_DISMISSED_COUNT, number));
     case PasswordCheckStateDisabled:
     case PasswordCheckStateDefault:
-      return [PasswordSettingsAppInterface isPasswordCheckupEnabled]
-                 ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_DESCRIPTION)
-                 : l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_DESCRIPTION);
+      return l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_DESCRIPTION);
     case PasswordCheckStateRunning:
-      return [PasswordSettingsAppInterface isPasswordCheckupEnabled]
-                 ? base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-                       IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT, number))
-                 : l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_DESCRIPTION);
+      return base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT, number));
     case PasswordCheckStateError:
     case PasswordCheckStateSignedOut:
-      return [PasswordSettingsAppInterface isPasswordCheckupEnabled]
-                 ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR)
-                 : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR);
+      return l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR);
   }
 }
 

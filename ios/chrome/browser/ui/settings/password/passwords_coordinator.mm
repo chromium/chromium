@@ -9,7 +9,6 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -36,7 +35,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_presentation_delegate.h"
@@ -57,7 +55,6 @@ using password_manager::WarningType;
 @interface PasswordsCoordinator () <
     AddPasswordCoordinatorDelegate,
     PasswordDetailsCoordinatorDelegate,
-    PasswordIssuesCoordinatorDelegate,
     PasswordCheckupCoordinatorDelegate,
     PasswordSettingsCoordinatorDelegate,
     PasswordsSettingsCommands,
@@ -83,12 +80,6 @@ using password_manager::WarningType;
 // Coordinator for Password Checkup.
 @property(nonatomic, strong)
     PasswordCheckupCoordinator* passwordCheckupCoordinator;
-
-// Coordinator for password issues.
-// TODO(crbug.com/1406871): Remove when kIOSPasswordCheckup is enabled by
-// default.
-@property(nonatomic, strong)
-    PasswordIssuesCoordinator* passwordIssuesCoordinator;
 
 // Coordinator for editing existing password details.
 @property(nonatomic, strong)
@@ -214,10 +205,8 @@ using password_manager::WarningType;
     [self recordPasswordManagerVisitIfNeeded];
   }
 
-  // When kIOSPasswordCheckup is enabled, start a password check.
-  if (password_manager::features::IsPasswordCheckupEnabled()) {
-    [self checkSavedPasswords];
-  }
+  // Start a password check.
+  [self checkSavedPasswords];
 }
 
 - (void)stop {
@@ -227,10 +216,6 @@ using password_manager::WarningType;
   [self.passwordCheckupCoordinator stop];
   self.passwordCheckupCoordinator.delegate = nil;
   self.passwordCheckupCoordinator = nil;
-
-  [self.passwordIssuesCoordinator stop];
-  self.passwordIssuesCoordinator.delegate = nil;
-  self.passwordIssuesCoordinator = nil;
 
   [self.passwordDetailsCoordinator stop];
   self.passwordDetailsCoordinator.delegate = nil;
@@ -268,23 +253,6 @@ using password_manager::WarningType;
                                            kPasswordSettings];
   self.passwordCheckupCoordinator.delegate = self;
   [self.passwordCheckupCoordinator start];
-}
-
-- (void)showPasswordIssues {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.passwordIssuesCoordinator);
-
-  [self stopReauthCoordinatorBeforeStartingChildCoordinator];
-
-  self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
-            initForWarningType:WarningType::kCompromisedPasswordsWarning
-      baseNavigationController:self.baseNavigationController
-                       browser:self.browser];
-  _passwordIssuesCoordinator.skipAuthenticationOnStart = YES;
-  _passwordIssuesCoordinator.delegate = self;
-  _passwordIssuesCoordinator.reauthModule = self.reauthModule;
-  [_passwordIssuesCoordinator start];
 }
 
 - (void)showDetailedViewForCredential:
@@ -440,19 +408,6 @@ using password_manager::WarningType;
                              browser:self.browser];
   self.widgetPromoInstructionsCoordinator.delegate = self;
   [self.widgetPromoInstructionsCoordinator start];
-}
-
-// TODO(crbug.com/1406871): Remove when kIOSPasswordCheckup is enabled by
-// default.
-#pragma mark - PasswordIssuesCoordinatorDelegate
-
-- (void)passwordIssuesCoordinatorDidRemove:
-    (PasswordIssuesCoordinator*)coordinator {
-  DCHECK_EQ(self.passwordIssuesCoordinator, coordinator);
-  [self.passwordIssuesCoordinator stop];
-  self.passwordIssuesCoordinator.delegate = nil;
-  self.passwordIssuesCoordinator = nil;
-  [self restartReauthCoordinator];
 }
 
 #pragma mark - PasswordCheckupCoordinatorDelegate
