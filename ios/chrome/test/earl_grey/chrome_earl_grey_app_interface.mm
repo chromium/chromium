@@ -30,6 +30,7 @@
 #import "components/sync/base/pref_names.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "components/sync/test/fake_server_http_post_provider.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "components/variations/variations_associated_data.h"
 #import "components/variations/variations_ids_provider.h"
@@ -798,6 +799,14 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type {
   return chrome_test_util::GetNumberOfSyncEntities(type);
+}
+
++ (void)disconnectFakeSyncServerNetwork {
+  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+}
+
++ (void)connectFakeSyncServerNetwork {
+  fake_server::FakeServerHttpPostProvider::EnableNetwork();
 }
 
 + (void)addFakeSyncServerBookmarkWithURL:(NSString*)URL title:(NSString*)title {

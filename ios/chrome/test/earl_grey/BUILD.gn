@@ -73,6 +73,7 @@ source_set("eg_app_support+eg2") {
     "//components/safe_browsing/core/common",
     "//components/search_engines",
     "//components/strings",
+    "//components/sync:test_support",
     "//components/sync/base",
     "//components/translate/core/browser",
     "//components/unified_consent",

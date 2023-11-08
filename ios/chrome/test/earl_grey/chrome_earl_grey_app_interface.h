@@ -386,6 +386,12 @@
 // Gets the number of entities of the given `type`.
 + (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type;
 
+// Forces every request to fail in a way that simulates a network failure.
++ (void)disconnectFakeSyncServerNetwork;
+
+// Undoes the effects of disconnectFakeSyncServerNetwork.
++ (void)connectFakeSyncServerNetwork;
+
 // Injects a bookmark into the fake sync server with `URL` and `title`.
 + (void)addFakeSyncServerBookmarkWithURL:(NSString*)URL title:(NSString*)title;
 
