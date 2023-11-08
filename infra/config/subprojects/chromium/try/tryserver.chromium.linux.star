@@ -271,6 +271,8 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
+        # crbug/940930
+        "chromium.enable_cleandead": 5,
     },
     gn_args = gn_args.config(
         configs = [
