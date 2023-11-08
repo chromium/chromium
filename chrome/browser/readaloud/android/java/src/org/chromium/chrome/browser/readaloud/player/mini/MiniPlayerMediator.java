@@ -53,4 +53,16 @@ public class MiniPlayerMediator {
     public void onVisibilityChanged(@VisibilityState int newState) {
         mModel.set(Properties.VISIBILITY, newState);
     }
+
+    void onHeightKnown(int heightPx) {
+        // TODO: implement
+    }
+
+    void onFullOpacityReached() {
+        // TODO: implement
+    }
+
+    void onZeroOpacityReached() {
+        // TODO: implement
+    }
 }

@@ -19,12 +19,15 @@ import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Interpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+
+import com.google.android.material.animation.ChildrenAlphaProperty;
 
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -37,14 +40,16 @@ import org.chromium.ui.util.ColorUtils;
 
 /** Convenience class for manipulating mini player UI layout. */
 public class MiniPlayerLayout extends LinearLayout {
-    private static final long SHOW_HIDE_DURATION_MS = 150L;
-    private static final Interpolator SHOW_HIDE_INTERPOLATOR =
+    private static final long FADE_DURATION_MS = 300L;
+    private static final Interpolator FADE_INTERPOLATOR =
             Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR;
 
     private TextView mTitle;
     private TextView mPublisher;
     private ProgressBar mProgressBar;
     private ImageView mPlayPauseView;
+    private FrameLayout mBackdrop;
+    private View mContents;
 
     // Layouts related to different playback states.
     private LinearLayout mNormalLayout;
@@ -54,12 +59,10 @@ public class MiniPlayerLayout extends LinearLayout {
     private @PlaybackListener.State int mLastPlaybackState;
     private boolean mEnableAnimations;
     private InteractionHandler mInteractionHandler;
-    private int mHeightPx;
-    private ObjectAnimator mTranslationYAnimator;
+    private ObjectAnimator mAnimator;
     private @VisibilityState int mFinalVisibility;
-    private boolean mPendingShowHideAnimation;
     private MiniPlayerMediator mMediator;
-    private long mNextAnimationPlayTime;
+    private float mFinalOpacity;
 
     /** Constructor for inflating from XML. */
     public MiniPlayerLayout(Context context, AttributeSet attrs) {
@@ -68,7 +71,7 @@ public class MiniPlayerLayout extends LinearLayout {
     }
 
     void destroy() {
-        destroyYTranslationAnimator();
+        destroyAnimator();
     }
 
     @Override
@@ -79,6 +82,8 @@ public class MiniPlayerLayout extends LinearLayout {
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mPlayPauseView = (ImageView) findViewById(R.id.play_button);
 
+        mBackdrop = (FrameLayout) findViewById(R.id.backdrop);
+        mContents = findViewById(R.id.mini_player_container);
         mNormalLayout = (LinearLayout) findViewById(R.id.normal_layout);
         mBufferingLayout = (LinearLayout) findViewById(R.id.buffering_layout);
         mErrorLayout = (LinearLayout) findViewById(R.id.error_layout);
@@ -95,64 +100,55 @@ public class MiniPlayerLayout extends LinearLayout {
         mProgressBar.setProgressTintList(ColorStateList.valueOf(progressBarColor));
 
         mLastPlaybackState = PlaybackListener.State.UNKNOWN;
-        mNextAnimationPlayTime = 0L;
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        int height = getHeight();
-        if (height != 0) {
-            mHeightPx = height;
+
+        int height = mBackdrop.getHeight();
+        if (height == 0) {
+            return;
         }
 
-        if (mPendingShowHideAnimation) {
-            runShowHideAnimation();
-            mPendingShowHideAnimation = false;
-        }
+        assert (mMediator != null)
+                : "onLayout() with nonzero height shouldn't happen before setMediator().";
+        mMediator.onHeightKnown(height);
     }
 
-    void updateVisibility(@VisibilityState int visibility) {
-        // If "showing" or "hiding", eventually the view will be "visible" or "gone".
-        if (visibility == VisibilityState.SHOWING) {
-            visibility = VisibilityState.VISIBLE;
-        } else if (visibility == VisibilityState.HIDING) {
-            visibility = VisibilityState.GONE;
-        }
-
-        // Stop now if no change is needed.
-        if (mFinalVisibility == visibility) {
-            return;
-        } else {
-            mFinalVisibility = visibility;
-        }
-
-        // If there's an animation running, it must be going in the wrong direction.
-        // Destroy it.
-        mNextAnimationPlayTime = 0L;
-        if (mTranslationYAnimator != null) {
-            // Record the old animation's progress so the new one can start from the same
-            // position rather than starting at fully shown or hidden.
-            mNextAnimationPlayTime =
-                    SHOW_HIDE_DURATION_MS - mTranslationYAnimator.getCurrentPlayTime();
-            destroyYTranslationAnimator();
-        }
-
-        // If animation is disabled, show or hide the view immediately and return.
-        if (!mEnableAnimations) {
-            setTranslationY(0);
-            setVisibility(mFinalVisibility == VisibilityState.VISIBLE ? View.VISIBLE : View.GONE);
-            notifyVisibilityChanged();
+    void changeOpacity(float startValue, float endValue) {
+        assert (mMediator != null)
+                : "Can't call changeOpacity() before setMediator() which should happen during"
+                        + " mediator init.";
+        if (endValue == mFinalOpacity) {
             return;
         }
+        mFinalOpacity = endValue;
 
-        // Otherwise kick off animations. Need to calculate view height at least once.
-        if (mHeightPx == 0) {
-            mPendingShowHideAnimation = true;
-            // Causes onLayout() to run.
-            setVisibility(View.INVISIBLE);
+        Runnable onFinished =
+                endValue == 1f ? mMediator::onFullOpacityReached : mMediator::onZeroOpacityReached;
+
+        if (mEnableAnimations) {
+            // TODO: handle case where existing animation is incomplete and needs to be reversed
+            destroyAnimator();
+            mAnimator =
+                    ObjectAnimator.ofFloat(
+                            mBackdrop, ChildrenAlphaProperty.CHILDREN_ALPHA, endValue);
+            mAnimator.setDuration(FADE_DURATION_MS);
+            mAnimator.setInterpolator(FADE_INTERPOLATOR);
+            mAnimator.addListener(
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            destroyAnimator();
+                            onFinished.run();
+                        }
+                    });
+            mAnimator.start();
         } else {
-            runShowHideAnimation();
+            mContents.setAlpha(endValue);
+            mProgressBar.setAlpha(endValue);
+            onFinished.run();
         }
     }
 
@@ -246,52 +242,15 @@ public class MiniPlayerLayout extends LinearLayout {
         findViewById(id).setOnClickListener((v) -> { handler.run(); });
     }
 
-    private void notifyVisibilityChanged() {
-        if (mMediator != null) {
-            mMediator.onVisibilityChanged(mFinalVisibility);
+    private void destroyAnimator() {
+        if (mAnimator != null) {
+            mAnimator.removeAllListeners();
+            mAnimator.cancel();
+            mAnimator = null;
         }
     }
 
-    private void runShowHideAnimation() {
-        int startTranslationY = mHeightPx;
-        int endTranslationY = 0;
-        if (mFinalVisibility == VisibilityState.GONE) {
-            startTranslationY = 0;
-            endTranslationY = mHeightPx;
-        }
-
-        setTranslationY(startTranslationY);
-        // View starts out VISIBLE for both show and hide.
-        setVisibility(View.VISIBLE);
-
-        mTranslationYAnimator = ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, endTranslationY);
-        mTranslationYAnimator.setDuration(SHOW_HIDE_DURATION_MS);
-        mTranslationYAnimator.setInterpolator(SHOW_HIDE_INTERPOLATOR);
-        mTranslationYAnimator.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        destroyYTranslationAnimator();
-                        if (mFinalVisibility == VisibilityState.GONE) {
-                            setVisibility(View.GONE);
-                        }
-                        notifyVisibilityChanged();
-                    }
-                });
-        // This call must come after setDuration().
-        mTranslationYAnimator.setCurrentPlayTime(mNextAnimationPlayTime);
-        mTranslationYAnimator.start();
-    }
-
-    private void destroyYTranslationAnimator() {
-        if (mTranslationYAnimator != null) {
-            mTranslationYAnimator.removeAllListeners();
-            mTranslationYAnimator.cancel();
-            mTranslationYAnimator = null;
-        }
-    }
-
-    ObjectAnimator getYTranslationAnimatorForTesting() {
-        return mTranslationYAnimator;
+    ObjectAnimator getAnimatorForTesting() {
+        return mAnimator;
     }
 }

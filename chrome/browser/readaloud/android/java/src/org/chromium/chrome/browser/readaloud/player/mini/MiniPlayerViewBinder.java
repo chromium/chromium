@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.readaloud.player.mini;
 
+import android.view.View;
+
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
+import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -50,7 +53,15 @@ public class MiniPlayerViewBinder {
     public static void bindMiniPlayerProperties(
             PropertyModel model, ViewHolder viewHolder, PropertyKey key) {
         if (key == Properties.VISIBILITY) {
-            viewHolder.view.updateVisibility(model.get(Properties.VISIBILITY));
+            // TODO: temporary measure to keep show and hide working during changes, remove
+            // once mediator changes are in place.
+            if (model.get(Properties.VISIBILITY) == VisibilityState.SHOWING) {
+                viewHolder.view.setVisibility(View.VISIBLE);
+                model.set(Properties.VISIBILITY, VisibilityState.VISIBLE);
+            } else if (model.get(Properties.VISIBILITY) == VisibilityState.HIDING) {
+                viewHolder.view.setVisibility(View.GONE);
+                model.set(Properties.VISIBILITY, VisibilityState.GONE);
+            }
 
         } else if (key == Properties.ANIMATE_VISIBILITY_CHANGES) {
             viewHolder.view.enableAnimations(model.get(Properties.ANIMATE_VISIBILITY_CHANGES));
@@ -63,6 +74,12 @@ public class MiniPlayerViewBinder {
 
         } else if (key == Properties.COMPOSITED_VIEW_VISIBLE) {
             viewHolder.sceneLayer.setIsVisible(model.get(Properties.COMPOSITED_VIEW_VISIBLE));
+        } else if (key == Properties.CONTENTS_OPAQUE) {
+            if (model.get(Properties.CONTENTS_OPAQUE)) {
+                viewHolder.view.changeOpacity(/* startValue= */ 0f, /* endValue= */ 1f);
+            } else {
+                viewHolder.view.changeOpacity(/* startValue= */ 1f, /* endValue= */ 0f);
+            }
         }
     }
 }
