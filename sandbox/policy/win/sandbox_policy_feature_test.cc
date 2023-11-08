@@ -39,6 +39,7 @@ MitigationFlags SandboxFeatureTest::GetExpectedMitigationFlags() {
       ::sandbox::MITIGATION_BOTTOM_UP_ASLR | ::sandbox::MITIGATION_DEP |
       ::sandbox::MITIGATION_DEP_NO_ATL_THUNK |
       ::sandbox::MITIGATION_EXTENSION_POINT_DISABLE |
+      ::sandbox::MITIGATION_FSCTL_DISABLED |
       ::sandbox::MITIGATION_HEAP_TERMINATE |
       ::sandbox::MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
       ::sandbox::MITIGATION_IMAGE_LOAD_NO_REMOTE |
