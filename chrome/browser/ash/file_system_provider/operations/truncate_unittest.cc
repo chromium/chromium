@@ -75,13 +75,13 @@ TEST_F(FileSystemProviderOperationsTruncateTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  TruncateRequestedOptions options;
-  ASSERT_TRUE(
-      TruncateRequestedOptions::Populate(options_as_value->GetDict(), options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kFilePath, options.file_path);
-  EXPECT_EQ(kTruncateLength, static_cast<double>(options.length));
+  auto options =
+      TruncateRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kFilePath, options->file_path);
+  EXPECT_EQ(kTruncateLength, static_cast<double>(options->length));
 }
 
 TEST_F(FileSystemProviderOperationsTruncateTest, Execute_NoListener) {

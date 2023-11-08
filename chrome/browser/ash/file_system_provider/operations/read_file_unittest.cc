@@ -120,14 +120,14 @@ TEST_F(FileSystemProviderOperationsReadFileTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  ReadFileRequestedOptions options;
-  ASSERT_TRUE(
-      ReadFileRequestedOptions::Populate(options_as_value->GetDict(), options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kFileHandle, options.open_request_id);
-  EXPECT_EQ(kOffset, static_cast<double>(options.offset));
-  EXPECT_EQ(kLength, options.length);
+  auto options =
+      ReadFileRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kFileHandle, options->open_request_id);
+  EXPECT_EQ(kOffset, static_cast<double>(options->offset));
+  EXPECT_EQ(kLength, options->length);
 }
 
 TEST_F(FileSystemProviderOperationsReadFileTest, Execute_NoListener) {

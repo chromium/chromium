@@ -72,12 +72,12 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  CreateFileRequestedOptions options;
-  ASSERT_TRUE(CreateFileRequestedOptions::Populate(options_as_value->GetDict(),
-                                                   options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kFilePath, options.file_path);
+  auto options =
+      CreateFileRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kFilePath, options->file_path);
 }
 
 TEST_F(FileSystemProviderOperationsCreateFileTest, Execute_NoListener) {

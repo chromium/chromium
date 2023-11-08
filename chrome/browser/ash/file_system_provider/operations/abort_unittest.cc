@@ -68,12 +68,11 @@ TEST_F(FileSystemProviderOperationsAbortTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  AbortRequestedOptions options;
-  ASSERT_TRUE(
-      AbortRequestedOptions::Populate(options_as_value->GetDict(), options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kOperationRequestId, options.operation_request_id);
+  auto options = AbortRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kOperationRequestId, options->operation_request_id);
 }
 
 TEST_F(FileSystemProviderOperationsAbortTest, Execute_NoListener) {

@@ -73,13 +73,13 @@ TEST_F(FileSystemProviderOperationsDeleteEntryTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  DeleteEntryRequestedOptions options;
-  ASSERT_TRUE(DeleteEntryRequestedOptions::Populate(options_as_value->GetDict(),
-                                                    options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kEntryPath, options.entry_path);
-  EXPECT_TRUE(options.recursive);
+  auto options =
+      DeleteEntryRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kEntryPath, options->entry_path);
+  EXPECT_TRUE(options->recursive);
 }
 
 TEST_F(FileSystemProviderOperationsDeleteEntryTest, Execute_NoListener) {

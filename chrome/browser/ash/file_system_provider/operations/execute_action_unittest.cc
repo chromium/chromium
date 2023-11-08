@@ -78,15 +78,15 @@ TEST_F(FileSystemProviderOperationsExecuteActionTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  ExecuteActionRequestedOptions options;
-  ASSERT_TRUE(ExecuteActionRequestedOptions::Populate(
-      options_as_value->GetDict(), options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  ASSERT_EQ(entry_paths_.size(), options.entry_paths.size());
-  EXPECT_EQ(entry_paths_[0].value(), options.entry_paths[0]);
-  EXPECT_EQ(entry_paths_[1].value(), options.entry_paths[1]);
-  EXPECT_EQ(kActionId, options.action_id);
+  auto options =
+      ExecuteActionRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  ASSERT_EQ(entry_paths_.size(), options->entry_paths.size());
+  EXPECT_EQ(entry_paths_[0].value(), options->entry_paths[0]);
+  EXPECT_EQ(entry_paths_[1].value(), options->entry_paths[1]);
+  EXPECT_EQ(kActionId, options->action_id);
 }
 
 TEST_F(FileSystemProviderOperationsExecuteActionTest, Execute_NoListener) {

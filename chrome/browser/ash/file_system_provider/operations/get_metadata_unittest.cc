@@ -291,13 +291,13 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  GetMetadataRequestedOptions options;
-  ASSERT_TRUE(GetMetadataRequestedOptions::Populate(options_as_value->GetDict(),
-                                                    options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kDirectoryPath, options.entry_path);
-  EXPECT_TRUE(options.thumbnail);
+  auto options =
+      GetMetadataRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kDirectoryPath, options->entry_path);
+  EXPECT_TRUE(options->thumbnail);
 }
 
 TEST_F(FileSystemProviderOperationsGetMetadataTest, Execute_NoListener) {

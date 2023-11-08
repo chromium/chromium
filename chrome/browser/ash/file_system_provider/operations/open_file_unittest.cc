@@ -111,14 +111,14 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  OpenFileRequestedOptions options;
-  ASSERT_TRUE(
-      OpenFileRequestedOptions::Populate(options_as_value->GetDict(), options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kFilePath, options.file_path);
+  auto options =
+      OpenFileRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kFilePath, options->file_path);
   EXPECT_EQ(extensions::api::file_system_provider::OpenFileMode::kRead,
-            options.mode);
+            options->mode);
 }
 
 TEST_F(FileSystemProviderOperationsOpenFileTest, Execute_NoListener) {
