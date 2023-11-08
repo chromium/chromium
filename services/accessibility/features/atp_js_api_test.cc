@@ -505,7 +505,7 @@ class AccessibilityPrivateJSApiTest : public AtpJSApiTest {
   ~AccessibilityPrivateJSApiTest() override = default;
 
   mojom::AssistiveTechnologyType GetATTypeForTest() const override {
-    return mojom::AssistiveTechnologyType::kSelectToSpeak;
+    return mojom::AssistiveTechnologyType::kChromeVox;
   }
 
   const std::vector<std::string> GetJSFilePathsToLoad() const override {
@@ -790,6 +790,51 @@ TEST_F(AccessibilityPrivateJSApiTest, SetVirtualKeyboardInvisible) {
     chrome.accessibilityPrivate.setVirtualKeyboardVisible(false);
   )JS");
   waiter.Run();
+}
+
+TEST_F(AccessibilityPrivateJSApiTest, GetDisplayNameForLocale) {
+  ExecuteJS(R"JS(
+    const locale1 = 'en-US';
+    const locale2 = 'es';
+    const notreal = '';
+
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+
+    let displayName = chrome.accessibilityPrivate.getDisplayNameForLocale(
+        locale2, locale1);
+    if (displayName !== 'Spanish') {
+      remote.log('Expected "' + displayName + '" to equal "Spanish"');
+      remote.testComplete(/*success=*/false);
+    }
+    displayName = chrome.accessibilityPrivate.getDisplayNameForLocale(
+        locale1, locale1);
+    if (!displayName.includes('English')) {
+      remote.log('Expected "' + displayName + '" to contain "English"');
+      remote.testComplete(/*success=*/false);
+    }
+    displayName = chrome.accessibilityPrivate.getDisplayNameForLocale(
+        locale2, locale2);
+    if (displayName !== 'español') {
+      remote.log('Expected "' + displayName + '" to equal "español"');
+      remote.testComplete(/*success=*/false);
+    }
+    displayName = chrome.accessibilityPrivate.getDisplayNameForLocale(
+        locale2, notreal);
+    if (displayName !== '') {
+      remote.log('Expected "' + displayName + '" to equal ""');
+      remote.testComplete(/*success=*/false);
+    }
+    displayName = chrome.accessibilityPrivate.getDisplayNameForLocale(
+        notreal, locale1);
+    if (displayName !== '') {
+      remote.log('Expected "' + displayName + '" to equal ""');
+      remote.testComplete(/*success=*/false);
+    }
+
+    remote.testComplete(/*success=*/ true);
+  )JS");
+
+  WaitForJSTestComplete();
 }
 
 class SpeechRecognitionJSApiTest : public AtpJSApiTest {

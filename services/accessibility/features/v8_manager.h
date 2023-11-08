@@ -77,6 +77,7 @@ class V8Environment : public BindingsIsolateHolder {
   void InstallAutomation(
       mojo::PendingAssociatedReceiver<mojom::Automation> automation,
       mojo::PendingRemote<mojom::AutomationClient> automation_client);
+  void InstallOSState();
   void AddV8Bindings();
 
   // Executes the given string as a Javascript script, and calls the
@@ -105,6 +106,11 @@ class V8Environment : public BindingsIsolateHolder {
   const scoped_refptr<base::SequencedTaskRunner> main_runner_;
   const base::WeakPtr<V8Manager> manager_;
 
+  // Sync API bindings need to be installed during AddV8Bindings(), because the
+  // IsolateScope and HandleScope are limited to that function.
+  // Track which APIs need to be installed.
+  bool os_state_needed_ = false;
+
   // Bindings wrappers for V8 APIs.
   // TODO(crbug.com/1355633): Add more APIs including TTS, SST, etc.
   std::unique_ptr<AutomationInternalBindings> automation_bindings_;
@@ -129,10 +135,11 @@ class V8Manager {
 
   // Various optional features that can be configured. All configuration must be
   // done before calling `FinishContextSetUp()`.
+  void ConfigureAutoclick(mojom::AccessibilityServiceClient* ax_service_client);
   void ConfigureAutomation(
       mojo::PendingAssociatedReceiver<mojom::Automation> automation,
       mojo::PendingRemote<mojom::AutomationClient> automation_client);
-  void ConfigureAutoclick(mojom::AccessibilityServiceClient* ax_service_client);
+  void ConfigureOSState();
   void ConfigureSpeechRecognition(
       mojom::AccessibilityServiceClient* ax_service_client);
   void ConfigureTts(mojom::AccessibilityServiceClient* ax_service_client);

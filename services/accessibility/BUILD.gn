@@ -48,6 +48,8 @@ source_set("lib") {
       "features/registered_wrappable.h",
       "features/speech_recognition_interface_binder.cc",
       "features/speech_recognition_interface_binder.h",
+      "features/sync_os_state_api_bindings.cc",
+      "features/sync_os_state_api_bindings.h",
       "features/text_decoder.cc",
       "features/text_decoder.h",
       "features/text_encoder.cc",

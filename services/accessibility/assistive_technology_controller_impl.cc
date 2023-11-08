@@ -152,6 +152,10 @@ void AssistiveTechnologyControllerImpl::CreateV8ManagerForTypeIfNoneExists(
                               std::move(automation_client));
   manager.ConfigureFileLoader(&file_loader_remote_);
   if (type == mojom::AssistiveTechnologyType::kChromeVox ||
+      type == mojom::AssistiveTechnologyType::kDictation) {
+    manager.ConfigureOSState();
+  }
+  if (type == mojom::AssistiveTechnologyType::kChromeVox ||
       type == mojom::AssistiveTechnologyType::kSelectToSpeak) {
     // TTS needs to know the type that is speaking.
     manager.ConfigureTts(this);

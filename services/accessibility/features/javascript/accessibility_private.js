@@ -127,6 +127,18 @@ class AtpAccessibilityPrivate {
   }
 
   /**
+   * Called to translate localeCodeToTranslate into a human-readable string in
+   * the locale specified by displayLocaleCode.
+   * @param {string} localeCodeToTranslate
+   * @param {string} displayLocaleCode
+   * @return {string} the human-readable locale string in the provided locale.
+   */
+  getDisplayNameForLocale(localeCodeToTranslate, displayLocaleCode) {
+    return chrome.syncOSState.getDisplayNameForLocale(
+        localeCodeToTranslate, displayLocaleCode);
+  }
+
+  /**
    * Opens a specified ChromeOS settings subpage. For example, to open a page
    * with the url 'chrome://settings/manageAccessibility/tts', pass in the
    * substring 'manageAccessibility/tts'.

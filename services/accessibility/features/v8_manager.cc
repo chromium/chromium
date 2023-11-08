@@ -24,11 +24,13 @@
 #include "services/accessibility/features/interface_binder.h"
 #include "services/accessibility/features/mojo/mojo.h"
 #include "services/accessibility/features/speech_recognition_interface_binder.h"
+#include "services/accessibility/features/sync_os_state_api_bindings.h"
 #include "services/accessibility/features/tts_interface_binder.h"
 #include "services/accessibility/features/user_interface_interface_binder.h"
 #include "services/accessibility/features/v8_bindings_utils.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom-forward.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-function.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-template.h"
 
@@ -105,6 +107,10 @@ void V8Environment::InstallAutomation(
     mojo::PendingRemote<mojom::AutomationClient> automation_client) {
   automation_bindings_ = std::make_unique<AutomationInternalBindings>(
       this, std::move(automation), std::move(automation_client));
+}
+
+void V8Environment::InstallOSState() {
+  os_state_needed_ = true;
 }
 
 void V8Environment::ExecuteScript(const std::string& script,
@@ -196,6 +202,15 @@ void V8Environment::AddV8Bindings() {
       BindingsUtils::CreateTextDecoderCallback);
 
   // TODO(crbug.com/1355633): Add other API bindings to the global template.
+  if (os_state_needed_) {
+    v8::Local<v8::ObjectTemplate> sync_os_state_template =
+        v8::ObjectTemplate::New(isolate);
+    sync_os_state_template->Set(
+        GetIsolate(), "getDisplayNameForLocale",
+        gin::CreateFunctionTemplate(
+            GetIsolate(), base::BindRepeating(&GetDisplayNameForLocale)));
+    chrome_template->Set(GetIsolate(), "syncOSState", sync_os_state_template);
+  }
 
   // Add the global template to the current context.
   v8::Local<v8::Context> context =
@@ -253,6 +268,11 @@ void V8Manager::ConfigureSpeechRecognition(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   interface_binders_.push_back(
       std::make_unique<SpeechRecognitionInterfaceBinder>(ax_service_client));
+}
+
+void V8Manager::ConfigureOSState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  v8_env_.AsyncCall(&V8Environment::InstallOSState);
 }
 
 void V8Manager::ConfigureTts(

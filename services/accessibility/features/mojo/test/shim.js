@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // The ATP V8 instance does not define 'self', which is needed by mojom.
-let self = this;
+const self = this;
 
 // ATP doesn't have console.* yet, so shim these over.
-let console = atpconsole;
+const console = atpconsole;
 console.assert = (check, message) => {
   if (!check) {
     atpconsole.error(message);
