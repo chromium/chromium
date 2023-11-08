@@ -1092,6 +1092,12 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
   const bool was_pip = old_window_state_type == WindowStateType::kPip;
   auto* const pip_controller = Shell::Get()->pip_controller();
   if (IsPip()) {
+    // Set this window to `PipController`.
+    // The window has to be set to the controller before
+    // `widget->Deactivate()` because this sometimes calls
+    // `PipController::UpdatePipBounds()`.
+    pip_controller->SetPipWindow(window_);
+
     CollisionDetectionUtils::MarkWindowPriorityForCollisionDetection(
         window_, CollisionDetectionUtils::RelativePriority::kPictureInPicture);
     // widget may not exit in some unit tests.
@@ -1104,12 +1110,6 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
     }
     wm::SetWindowVisibilityAnimationType(
         window_, WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT);
-
-    // Add this window to `PipController`.
-    // `window_state->NotifyPreStateTypeChange()` because that triggers
-    // `PipController::UpdatePipBounds()` which needs the target to be
-    // set.
-    pip_controller->SetPipWindow(window_);
 
     // There may already be a system ui window on the initial position.
     pip_controller->UpdatePipBounds();
