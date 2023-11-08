@@ -76,15 +76,24 @@ TEST_F(CastDialogMetricsTest, OnRecordSinkCountSinkView) {
   UIMediaSink sink1{mojom::MediaRouteProviderId::CAST};
   UIMediaSink sink2{mojom::MediaRouteProviderId::CAST};
   UIMediaSink sink3{mojom::MediaRouteProviderId::DIAL};
-  CastDialogSinkView sink_view1{
-      &profile_, sink1, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback()};
-  CastDialogSinkView sink_view2{
-      &profile_, sink2, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback()};
-  CastDialogSinkView sink_view3{
-      &profile_, sink3, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback()};
+  CastDialogSinkView sink_view1{&profile_,
+                                sink1,
+                                views::Button::PressedCallback(),
+                                views::Button::PressedCallback(),
+                                views::Button::PressedCallback(),
+                                views::Button::PressedCallback()};
+  CastDialogSinkView sink_view2{&profile_,
+                                sink2,
+                                views::Button::PressedCallback(),
+                                views::Button::PressedCallback(),
+                                views::Button::PressedCallback(),
+                                views::Button::PressedCallback()};
+  CastDialogSinkView sink_view3{&profile_,
+                                sink3,
+                                views::Button::PressedCallback(),
+                                views::Button::PressedCallback(),
+                                views::Button::PressedCallback(),
+                                views::Button::PressedCallback()};
   // The vector below doesn't contain any dangling pointers, but adding
   // `DanglingUntriaged` was necessary to match `OnRecordSinkCount` signature.
   std::vector<raw_ptr<CastDialogSinkView, DanglingUntriaged>> sink_views{

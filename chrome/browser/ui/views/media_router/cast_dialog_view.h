@@ -130,6 +130,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   void SelectSource(SourceType source);
 
   void SinkPressed(size_t index);
+  void IssuePressed(size_t index);
   void StopPressed(size_t index);
   void FreezePressed(size_t index);
 

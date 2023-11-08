@@ -143,14 +143,16 @@ TEST_F(CastDialogSinkViewTest, FreezableSink) {
   UIMediaSink sink_1 = CreateFreezableSink();
   CastDialogSinkView sink_view_1(
       &profile_, sink_1, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
   EXPECT_EQ(nullptr, sink_view_1.cast_sink_button_for_test());
   EXPECT_NE(nullptr, sink_view_1.freeze_button_for_test());
   EXPECT_NE(nullptr, sink_view_1.stop_button_for_test());
   EXPECT_NE(nullptr, sink_view_1.title_for_test());
   EXPECT_NE(nullptr, sink_view_1.subtitle_for_test());
   EXPECT_EQ(sink_1.friendly_name, sink_view_1.title_for_test()->GetText());
-  EXPECT_EQ(sink_1.status_text, sink_view_1.subtitle_for_test()->GetText());
+  EXPECT_EQ(sink_1.status_text,
+            sink_view_1.subtitle_for_test()->GetAccessibleName());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_VIEW_STOP),
             sink_view_1.stop_button_for_test()->GetText());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE),
@@ -159,13 +161,14 @@ TEST_F(CastDialogSinkViewTest, FreezableSink) {
   UIMediaSink sink_2 = CreateFreezableFrozenSink();
   CastDialogSinkView sink_view_2(
       &profile_, sink_2, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
   EXPECT_EQ(nullptr, sink_view_2.cast_sink_button_for_test());
   EXPECT_NE(nullptr, sink_view_2.freeze_button_for_test());
   EXPECT_NE(nullptr, sink_view_2.stop_button_for_test());
   EXPECT_NE(nullptr, sink_view_2.title_for_test());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_PAUSED),
-            sink_view_2.subtitle_for_test()->GetText());
+            sink_view_2.subtitle_for_test()->GetAccessibleName());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_VIEW_RESUME),
             sink_view_2.freeze_button_for_test()->GetText());
 }
@@ -179,7 +182,8 @@ TEST_F(CastDialogSinkViewTest, NonfreezableSink) {
   UIMediaSink sink = CreateNonfreezableSink();
   CastDialogSinkView sink_view(
       &profile_, sink, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
   EXPECT_EQ(nullptr, sink_view.cast_sink_button_for_test());
   EXPECT_EQ(nullptr, sink_view.freeze_button_for_test());
   EXPECT_NE(nullptr, sink_view.stop_button_for_test());
@@ -196,7 +200,8 @@ TEST_F(CastDialogSinkViewTest, SetEnabledState) {
   UIMediaSink sink_1 = CreateAvailableSink();
   CastDialogSinkView sink_view_1(
       &profile_, sink_1, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
 
   EXPECT_TRUE(sink_view_1.cast_sink_button_for_test()->GetEnabled());
   sink_view_1.SetEnabledState(false);
@@ -207,7 +212,8 @@ TEST_F(CastDialogSinkViewTest, SetEnabledState) {
   UIMediaSink sink_2 = CreateFreezableSink();
   CastDialogSinkView sink_view_2(
       &profile_, sink_2, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
 
   EXPECT_TRUE(sink_view_2.stop_button_for_test()->GetEnabled());
   sink_view_2.SetEnabledState(false);
@@ -221,7 +227,8 @@ TEST_F(CastDialogSinkViewTest, StopButton) {
   UIMediaSink sink_1 = CreateNonfreezableSink();
   CastDialogSinkView sink_view_1(
       &profile_, sink_1, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
   EXPECT_EQ(nullptr, sink_view_1.cast_sink_button_for_test());
   EXPECT_EQ(nullptr, sink_view_1.freeze_button_for_test());
   EXPECT_NE(nullptr, sink_view_1.stop_button_for_test());
@@ -233,7 +240,8 @@ TEST_F(CastDialogSinkViewTest, StopButton) {
   UIMediaSink sink_2 = CreateFreezableSink();
   CastDialogSinkView sink_view_2(
       &profile_, sink_2, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
   EXPECT_EQ(nullptr, sink_view_2.cast_sink_button_for_test());
   EXPECT_EQ(nullptr, sink_view_2.freeze_button_for_test());
   EXPECT_NE(nullptr, sink_view_2.stop_button_for_test());
@@ -261,22 +269,28 @@ TEST_F(CastDialogSinkViewTest, ButtonsAccessibleName) {
   // Create sink views for each sink.
   CastDialogSinkView sink_view_1(
       &profile_, sink_1, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
   CastDialogSinkView sink_view_2(
       &profile_, sink_2, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
   CastDialogSinkView sink_view_3(
       &profile_, sink_3, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
   CastDialogSinkView sink_view_4(
       &profile_, sink_4, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
   CastDialogSinkView sink_view_5(
       &profile_, sink_5, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
   CastDialogSinkView sink_view_6(
       &profile_, sink_6, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
+      views::Button::PressedCallback(), views::Button::PressedCallback(),
+      views::Button::PressedCallback());
 
   EXPECT_EQ(sink_view_1.freeze_button_for_test()->GetAccessibleName(),
             l10n_util::GetStringFUTF16(

@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -267,6 +268,8 @@ void CastDialogView::PopulateScrollView(const std::vector<UIMediaSink>& sinks) {
             profile_, sinks.at(i),
             base::BindRepeating(&CastDialogView::SinkPressed,
                                 base::Unretained(this), i),
+            base::BindRepeating(&CastDialogView::IssuePressed,
+                                base::Unretained(this), i),
             base::BindRepeating(&CastDialogView::StopPressed,
                                 base::Unretained(this), i),
             base::BindRepeating(&CastDialogView::FreezePressed,
@@ -322,16 +325,24 @@ void CastDialogView::SinkPressed(size_t index) {
   // sink() may get invalidated during CastDialogController::StartCasting()
   // due to a model update, so make a copy here.
   const UIMediaSink sink = sink_views_.at(index)->sink();
-  if (sink.route) {
-    // StopCasting() may trigger a model update and invalidate |sink|.
-    controller_->StopCasting(sink.route->media_route_id());
-  } else if (sink.issue) {
+  if (sink.issue) {
     controller_->ClearIssue(sink.issue->id());
   } else {
     absl::optional<MediaCastMode> cast_mode = GetCastModeToUse(sink);
     if (cast_mode) {
       controller_->StartCasting(sink.id, cast_mode.value());
     }
+  }
+}
+
+void CastDialogView::IssuePressed(size_t index) {
+  if (!controller_) {
+    return;
+  }
+  selected_sink_index_ = index;
+  const UIMediaSink sink = sink_views_.at(index)->sink();
+  if (sink.issue) {
+    controller_->ClearIssue(sink.issue->id());
   }
 }
 
@@ -343,6 +354,9 @@ void CastDialogView::StopPressed(size_t index) {
   const UIMediaSink sink = sink_views_.at(index)->sink();
   if (!sink.route) {
     return;
+  }
+  if (sink.issue) {
+    controller_->ClearIssue(sink.issue->id());
   }
   // StopCasting() may trigger a model update and invalidate |sink|.
   controller_->StopCasting(sink.route->media_route_id());
