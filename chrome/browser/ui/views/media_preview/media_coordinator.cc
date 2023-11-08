@@ -32,6 +32,10 @@ MediaCoordinator::MediaCoordinator(ViewType view_type,
     media_view->SetBackground(views::CreateThemedRoundedRectBackground(
         ui::kColorButtonBorder, kRoundedRadius));
   }
+
+  if (view_type != ViewType::kMicOnly) {
+    camera_coordinator_.emplace(*media_view, /*needs_borders=*/!is_subsection);
+  }
 }
 
 MediaCoordinator::~MediaCoordinator() = default;

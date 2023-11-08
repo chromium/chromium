@@ -4620,7 +4620,20 @@ static_library("ui") {
     sources += [
       "startup/web_app_info_recorder_utils.cc",
       "startup/web_app_info_recorder_utils.h",
+      "views/media_preview/camera_preview/camera_coordinator.cc",
+      "views/media_preview/camera_preview/camera_coordinator.h",
+      "views/media_preview/camera_preview/camera_mediator.cc",
+      "views/media_preview/camera_preview/camera_mediator.h",
+      "views/media_preview/camera_preview/camera_view_controller.cc",
+      "views/media_preview/camera_preview/camera_view_controller.h",
+      "views/media_preview/media_coordinator.cc",
+      "views/media_preview/media_coordinator.h",
+      "views/media_preview/media_view.cc",
+      "views/media_preview/media_view.h",
+      "views/media_preview/media_view_controller_base.cc",
+      "views/media_preview/media_view_controller_base.h",
     ]
+    deps += [ "//services/video_capture/public/mojom" ]
   }
 
   if (enable_webui_certificate_viewer) {
@@ -5290,12 +5303,6 @@ static_library("ui") {
       "views/login_handler_views.cc",
       "views/login_view.cc",
       "views/login_view.h",
-      "views/media_preview/media_coordinator.cc",
-      "views/media_preview/media_coordinator.h",
-      "views/media_preview/media_view.cc",
-      "views/media_preview/media_view.h",
-      "views/media_preview/media_view_controller_base.cc",
-      "views/media_preview/media_view_controller_base.h",
       "views/media_router/cast_dialog_access_code_cast_button.cc",
       "views/media_router/cast_dialog_access_code_cast_button.h",
       "views/media_router/cast_dialog_coordinator.cc",

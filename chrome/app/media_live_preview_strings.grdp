@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Media live preview specific strings (included from generated_resources.grd). -->
+<grit-part>
+
+  <!-- Camera strings -->
+  <message name="IDS_MEDIA_PREVIEW_CAMERA_ACCESSIBLE_NAME" desc="Text for accessability description of the camera selector combobox">
+    Camera
+  </message>
+
+  <message name="IDS_MEDIA_PREVIEW_NO_CAMERAS_FOUND" desc="Text shown when there are no cameras found connected. This is shown instead of video stream">
+    No camera connected
+  </message>
+
+  <message name="IDS_MEDIA_PREVIEW_NO_CAMERAS_FOUND_COMBOBOX" desc="Text shown when there are no cameras found connected. This is shown inside the combobx instead of list of devices">
+    Connect a camera
+  </message>
+
+</grit-part>

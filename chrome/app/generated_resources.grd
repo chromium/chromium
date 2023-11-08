@@ -291,6 +291,9 @@ are declared in tools/grit/grit_rule.gni.
       <!-- Global Media Controls specific strings -->
       <part file="gmc_strings.grdp" />
 
+      <!-- Media live preview specific strings -->
+      <part file="media_live_preview_strings.grdp" />
+
       <!-- Profiles specific strings -->
       <part file="profiles_strings.grdp" />
 

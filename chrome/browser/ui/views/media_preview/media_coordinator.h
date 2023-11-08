@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "chrome/browser/ui/views/media_preview/camera_preview/camera_coordinator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
@@ -25,6 +26,9 @@ class MediaCoordinator {
   MediaCoordinator(const MediaCoordinator&) = delete;
   MediaCoordinator& operator=(const MediaCoordinator&) = delete;
   ~MediaCoordinator();
+
+ private:
+  absl::optional<CameraCoordinator> camera_coordinator_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_COORDINATOR_H_
