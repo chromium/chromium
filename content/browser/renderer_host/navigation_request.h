@@ -22,6 +22,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/navigation_subresource_loader_params.h"
@@ -1093,6 +1094,20 @@ class CONTENT_EXPORT NavigationRequest
           bind_context) {
     DCHECK(!subresource_proxying_url_loader_service_bind_context_);
     subresource_proxying_url_loader_service_bind_context_ = bind_context;
+  }
+
+  void set_keep_alive_url_loader_factory_context(
+      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
+          factory_context) {
+    DCHECK(!keep_alive_url_loader_factory_context_);
+    keep_alive_url_loader_factory_context_ = factory_context;
+  }
+
+  void set_fetch_later_loader_factory_context(
+      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
+          factory_context) {
+    DCHECK(!fetch_later_loader_factory_context_);
+    fetch_later_loader_factory_context_ = factory_context;
   }
 
   // Helper for logging crash keys related to a NavigationRequest (e.g.
@@ -2620,6 +2635,20 @@ class CONTENT_EXPORT NavigationRequest
   // with the committed document.
   base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext>
       subresource_proxying_url_loader_service_bind_context_;
+
+  // A WeakPtr for the FactoryContext associated with the browser fetch
+  // keepalive loader factory for the committing document.
+  // This field will be set in `CommitNavigation()`, and can become null if the
+  // corresponding factory is destroyed.
+  // Upon `DidCommitNavigation()`, this field will be notified with the
+  // committed document.
+  base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
+      keep_alive_url_loader_factory_context_;
+  // A WeakPtr for the FactoryContext associated with the browser fetchlater
+  // loader factory for the committing document.
+  // See also `keep_alive_url_loader_factory_context_` for the timing to update.
+  base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
+      fetch_later_loader_factory_context_;
 
   scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
 

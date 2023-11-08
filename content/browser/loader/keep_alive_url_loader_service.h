@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/loader/keep_alive_url_loader.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -50,6 +51,56 @@ class PolicyContainerHost;
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 class CONTENT_EXPORT KeepAliveURLLoaderService {
  public:
+  // A context for the receiver of a `KeepAliveURLLoaderFactoriesBase`
+  // connection between a renderer and the browser.
+  //
+  // A FactoryContext is created whenever `BindFactory()` or
+  // `BindFetchLaterLoaderFactory()` is called by
+  // RenderFrameHostImpl::CommitNavigation(). It can also be cloned by the same
+  // corresponding renderer, or when new window or new child frame is created.
+  //
+  // See `mojo::ReceiverSetBase` for more details.
+  struct CONTENT_EXPORT FactoryContext {
+    FactoryContext(
+        scoped_refptr<network::SharedURLLoaderFactory> factory,
+        scoped_refptr<PolicyContainerHost> frame_policy_container_host);
+    // Called when a factory is cloned by URLLoaderFactory::Clone().
+    explicit FactoryContext(const std::unique_ptr<FactoryContext>& other);
+    ~FactoryContext();
+    // Not Copyable.
+    FactoryContext(const FactoryContext&) = delete;
+    FactoryContext& operator=(const FactoryContext&) = delete;
+
+    // Updates `weak_document_ptr` and other document-related fields.
+    void OnDidCommitNavigation(WeakDocumentPtr committed_document);
+
+    // The factory to use for the requests initiated from this context.
+    scoped_refptr<network::SharedURLLoaderFactory> factory;
+
+    // Upon NavigationRequest::DidCommitNavigation(), `weak_document_ptr` will
+    // be set to the document that this `BindContext` is associated with. It
+    // will become null whenever the document navigates away.
+    WeakDocumentPtr weak_document_ptr;
+
+    // The `PolicyContainerHost` of the document connecting to an implementation
+    // of `KeepAliveURLLoaderFactoriesBase` using this context.
+    //
+    // This field keeps the pointed object alive such that any pending keepalive
+    // redirect requests can still be verified against these same policies.
+    //
+    // When `this` is constructed, this field is set to the PolicyContainerHost
+    // of the requesting RenderFrameHostImpl, which may be inherited from its
+    // creator (See `RenderFrameHostImpl::InitializePolicyContainerHost()`):
+    // when a factory is cloned due to creating new window/new child frame,
+    // this field will initially inherit the same value; if the new window/new
+    // child frame commits a new document after that, this field will be updated
+    // by `OnDidCommitNavigation()`.
+    scoped_refptr<PolicyContainerHost> policy_container_host;
+
+    // This must be the last member.
+    base::WeakPtrFactory<FactoryContext> weak_ptr_factory{this};
+  };
+
   // `browser_context` owns the StoragePartition creating the instance of this
   // service. It must not be null and surpass the lifetime of this service.
   explicit KeepAliveURLLoaderService(BrowserContext* browser_context);
@@ -68,7 +119,10 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   //
   // `policy_container_host` is the policy host of the requester frame going to
   // use the remote of `receiver` to load requests. It must not be null.
-  void BindFactory(
+  //
+  // Returns a `FactoryContext` bound to the new factory connecting with
+  // `receiver`. The caller can update the context when necessary.
+  base::WeakPtr<FactoryContext> BindFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       scoped_refptr<network::SharedURLLoaderFactory>
           subresource_proxying_factory_bundle,
@@ -76,8 +130,9 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
 
   // Binds the pending FetchLaterLoaderFactory `receiver` with this service,
   // which uses `factory` to load FetchLater URL requests.
-  // See also `BindFactory()` for other parameters.
-  void BindFetchLaterLoaderFactory(
+  // See also `BindFactory()` for other parameters. Note that the returned
+  // `FactoryContext` here is different from the one of `BindFactory()`.
+  base::WeakPtr<FactoryContext> BindFetchLaterLoaderFactory(
       mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>
           receiver,
       scoped_refptr<network::SharedURLLoaderFactory>

@@ -358,12 +358,14 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
 
     // Remote: `remote_url_loader_factory`
     // Receiver: Held in `loader_service_`.
-    loader_service().BindFactory(
+    auto context = loader_service().BindFactory(
         remote_url_loader_factory.BindNewPipeAndPassReceiver(),
         network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->policy_container_host()
             ->Clone());
+    context->OnDidCommitNavigation(
+        static_cast<RenderFrameHostImpl*>(main_rfh())->GetWeakDocumentPtr());
   }
 
   network::TestURLLoaderFactory::PendingRequest* GetLastPendingRequest() {
@@ -1116,13 +1118,15 @@ class FetchLaterKeepAliveURLLoaderServiceTest
 
     // Remote: `remote_fetch_later_loader_factory`
     // Receiver: Held in `loader_service_`.
-    loader_service().BindFetchLaterLoaderFactory(
+    auto context = loader_service().BindFetchLaterLoaderFactory(
         remote_fetch_later_loader_factory
             .BindNewEndpointAndPassDedicatedReceiver(),
         network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->policy_container_host()
             ->Clone());
+    context->OnDidCommitNavigation(
+        static_cast<RenderFrameHostImpl*>(main_rfh())->GetWeakDocumentPtr());
   }
 };
 

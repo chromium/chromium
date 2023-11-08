@@ -7094,6 +7094,18 @@ void NavigationRequest::DidCommitNavigation(
     subresource_proxying_url_loader_service_bind_context_
         ->OnDidCommitNavigation(GetRenderFrameHost()->GetWeakDocumentPtr());
   }
+  if (keep_alive_url_loader_factory_context_) {
+    DCHECK(!IsSameDocument());
+
+    keep_alive_url_loader_factory_context_->OnDidCommitNavigation(
+        GetRenderFrameHost()->GetWeakDocumentPtr());
+  }
+  if (fetch_later_loader_factory_context_) {
+    DCHECK(!IsSameDocument());
+
+    fetch_later_loader_factory_context_->OnDidCommitNavigation(
+        GetRenderFrameHost()->GetWeakDocumentPtr());
+  }
 
   if (!pending_commit_metrics_.start_time.is_null()) {
     const bool is_for_mhtml = IsMhtmlMimeType(GetMimeType());

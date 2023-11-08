@@ -10614,10 +10614,12 @@ void RenderFrameHostImpl::CommitNavigation(
             blink::features::kKeepAliveInBrowserMigration)) {
       // Also setting up URLLoaderFactory for keepalive using the same loader
       // factories.
-      GetStoragePartition()->GetKeepAliveURLLoaderService()->BindFactory(
-          keep_alive_loader_factory.InitWithNewPipeAndPassReceiver(),
-          subresource_proxying_factory_bundle,
-          navigation_request->GetPolicyContainerHost());
+      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> context =
+          GetStoragePartition()->GetKeepAliveURLLoaderService()->BindFactory(
+              keep_alive_loader_factory.InitWithNewPipeAndPassReceiver(),
+              subresource_proxying_factory_bundle,
+              navigation_request->GetPolicyContainerHost());
+      navigation_request->set_keep_alive_url_loader_factory_context(context);
     }
     // Set up the fetchlater loader factory. It is used to proxy FetchLater
     // requests via the browser process.
@@ -10627,12 +10629,15 @@ void RenderFrameHostImpl::CommitNavigation(
         fetch_later_loader_factory;
     if (subresource_proxying_factory_bundle &&
         base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI)) {
-      GetStoragePartition()
-          ->GetKeepAliveURLLoaderService()
-          ->BindFetchLaterLoaderFactory(
-              fetch_later_loader_factory.InitWithNewEndpointAndPassReceiver(),
-              subresource_proxying_factory_bundle,
-              navigation_request->GetPolicyContainerHost());
+      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> context =
+          GetStoragePartition()
+              ->GetKeepAliveURLLoaderService()
+              ->BindFetchLaterLoaderFactory(
+                  fetch_later_loader_factory
+                      .InitWithNewEndpointAndPassReceiver(),
+                  subresource_proxying_factory_bundle,
+                  navigation_request->GetPolicyContainerHost());
+      navigation_request->set_fetch_later_loader_factory_context(context);
     }
 
     mojom::NavigationClient* navigation_client =
