@@ -234,7 +234,14 @@ void FederatedAuthRevokeRequest::OnRevokeResponse(
              /*should_delay_callback=*/false);
     return;
   }
+  // Matches the GrantSharingPermission() call in
+  // FederatedAuthRequestImpl::CompleteTokenRequest(). Note that the IDP origin
+  // cannot be an arbitrary origin, but rather needs to be a potentially
+  // trustworthy one.
+  url::Origin idp_origin = url::Origin::Create(options_->config->config_url);
   // TODO(crbug.com/1473134): revoke relevant permissions.
+  permission_delegate_->RevokeSharingPermission(origin_, embedding_origin_,
+                                                idp_origin, account_id);
   Complete(RevokeStatus::kSuccess, RevokeStatusForMetrics::kSuccess,
            /*should_delay_callback=*/false);
 }

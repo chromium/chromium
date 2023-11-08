@@ -83,6 +83,18 @@ void FederatedIdentityPermissionContext::GrantSharingPermission(
                                     account_id);
 }
 
+void FederatedIdentityPermissionContext::RevokeSharingPermission(
+    const url::Origin& relying_party_requester,
+    const url::Origin& relying_party_embedder,
+    const url::Origin& identity_provider,
+    const std::string& account_id) {
+  // TODO(crbug.com/1473134): ensure that a permission is revoked in this call
+  // if there is none matching the provided account id.
+  sharing_context_->RevokePermission(relying_party_requester,
+                                     relying_party_embedder, identity_provider,
+                                     account_id);
+}
+
 absl::optional<bool> FederatedIdentityPermissionContext::GetIdpSigninStatus(
     const url::Origin& idp_origin) {
   return idp_signin_context_->GetSigninStatus(idp_origin);

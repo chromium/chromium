@@ -63,6 +63,15 @@ class FederatedIdentityPermissionContextDelegate {
       const url::Origin& identity_provider,
       const std::string& account_id) = 0;
 
+  // Revokes a previously granted sharing permission. If there is no sharing
+  // permission associated with the given `account_id`, an arbitrary sharing
+  // permission is revoked.
+  virtual void RevokeSharingPermission(
+      const url::Origin& relying_party_requester,
+      const url::Origin& relying_party_embedder,
+      const url::Origin& identity_provider,
+      const std::string& account_id) = 0;
+
   // Returns whether the user is signed in with the IDP. If unknown, return
   // absl::nullopt.
   virtual absl::optional<bool> GetIdpSigninStatus(

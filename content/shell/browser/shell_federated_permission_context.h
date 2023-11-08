@@ -70,6 +70,10 @@ class ShellFederatedPermissionContext
                               const url::Origin& relying_party_embedder,
                               const url::Origin& identity_provider,
                               const std::string& account_id) override;
+  void RevokeSharingPermission(const url::Origin& relying_party_requester,
+                               const url::Origin& relying_party_embedder,
+                               const url::Origin& identity_provider,
+                               const std::string& account_id) override;
   absl::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override;
   void SetIdpSigninStatus(const url::Origin& idp_origin,

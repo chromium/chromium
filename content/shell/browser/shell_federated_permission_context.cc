@@ -130,6 +130,23 @@ void ShellFederatedPermissionContext::GrantSharingPermission(
       identity_provider.Serialize(), account_id));
 }
 
+void ShellFederatedPermissionContext::RevokeSharingPermission(
+    const url::Origin& relying_party_requester,
+    const url::Origin& relying_party_embedder,
+    const url::Origin& identity_provider,
+    const std::string& account_id) {
+  size_t removed = sharing_permissions_.erase(std::tuple(
+      relying_party_requester.Serialize(), relying_party_embedder.Serialize(),
+      identity_provider.Serialize(), account_id));
+  // If we did not remove any sharing permission, to preserve strong privacy
+  // guarantees of the FedCM API, remove an arbitrary sharing permission. This
+  // disabled auto re-authentication on that account and means revocation may
+  // not be invoked repeatedly after a single successful FedCM flow.
+  if (!removed && !sharing_permissions_.empty()) {
+    sharing_permissions_.erase(sharing_permissions_.begin());
+  }
+}
+
 absl::optional<bool> ShellFederatedPermissionContext::GetIdpSigninStatus(
     const url::Origin& idp_origin) {
   auto idp_signin_status = idp_signin_status_.find(idp_origin.Serialize());
