@@ -324,6 +324,10 @@ public class TrackingProtectionNoticeController {
                                 SingleCategorySettings.EXTRA_CATEGORY,
                                 SiteSettingsCategory.preferenceKey(
                                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES));
+                        fragmentArguments.putString(
+                                SingleCategorySettings.EXTRA_TITLE,
+                                mContext.getResources()
+                                        .getString(R.string.third_party_cookies_page_title));
                         mSettingsLauncher.launchSettingsActivity(
                                 mContext, SingleCategorySettings.class, fragmentArguments);
                     }
