@@ -592,6 +592,12 @@ void PasswordStoreAndroidBackend::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
+  // The android backend doesn't currently support notifying the store of
+  // sync changes. This currently only wired via the built-in backend being
+  // notified by the `PasswordSyncBridge` and generally
+  // applies to the account store. Support needs to be specifically implemented
+  // if desired. See crbug.com/1004777.
+  CHECK(!sync_enabled_or_disabled_cb);
   affiliated_match_helper_ = affiliated_match_helper;
   main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   stored_passwords_changed_ = std::move(remote_form_changes_received);

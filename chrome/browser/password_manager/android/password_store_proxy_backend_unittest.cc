@@ -229,25 +229,19 @@ TEST_F(PasswordStoreProxyBackendBaseTest, CallRemoteChangesOnlyForMainBackend) {
 }
 
 TEST_F(PasswordStoreProxyBackendBaseTest,
-       CallSyncCallbackOnlyForBuiltInBackend) {
+       CallSyncCallbackForTheBuiltInBackend) {
   base::MockCallback<base::RepeatingClosure> original_callback;
 
   // Both backends receive a callback that they trigger for new remote changes.
   base::RepeatingClosure built_in_sync_callback;
   EXPECT_CALL(built_in_backend(), InitBackend)
       .WillOnce(SaveArg<2>(&built_in_sync_callback));
-  base::RepeatingClosure android_sync_callback;
-  EXPECT_CALL(android_backend(), InitBackend)
-      .WillOnce(SaveArg<2>(&android_sync_callback));
+  EXPECT_CALL(android_backend(), InitBackend);
   proxy_backend().InitBackend(nullptr, base::DoNothing(),
                               original_callback.Get(), base::DoNothing());
 
   // With sync enabled, only the built-in backend calls the original callback.
   EnablePasswordSync();
-
-  EXPECT_CALL(original_callback, Run).Times(0);
-  android_sync_callback.Run();
-  testing::Mock::VerifyAndClearExpectations(&original_callback);
 
   EXPECT_CALL(original_callback, Run);
   built_in_sync_callback.Run();
@@ -256,10 +250,6 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
   // With sync is disabled, the built-in backend remains the only to call the
   // original callback.
   DisablePasswordSync();
-
-  EXPECT_CALL(original_callback, Run).Times(0);
-  android_sync_callback.Run();
-  testing::Mock::VerifyAndClearExpectations(&original_callback);
 
   EXPECT_CALL(original_callback, Run);
   built_in_sync_callback.Run();

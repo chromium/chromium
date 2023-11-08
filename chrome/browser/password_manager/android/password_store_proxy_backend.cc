@@ -44,21 +44,6 @@ bool ShouldErrorResultInFallback(PasswordStoreBackendError error) {
   }
 }
 
-bool IsBuiltInBackendSyncEnabled() {
-  return true;
-}
-
-void CallOnSyncEnabledOrDisabledForEnabledBackend(
-    bool originates_from_android,
-    base::RepeatingClosure sync_enabled_or_disabled_cb) {
-  if (IsBuiltInBackendSyncEnabled()) {
-    if (!originates_from_android) {
-      sync_enabled_or_disabled_cb.Run();
-    }
-    return;
-  }
-  sync_enabled_or_disabled_cb.Run();
-}
 
 using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;
 
@@ -104,9 +89,7 @@ void PasswordStoreProxyBackend::InitBackend(
           weak_ptr_factory_.GetWeakPtr(),
           CallbackOriginatesFromAndroidBackend(false),
           remote_form_changes_received),
-      base::BindRepeating(&CallOnSyncEnabledOrDisabledForEnabledBackend,
-                          /*originates_from_android=*/false,
-                          sync_enabled_or_disabled_cb),
+      std::move(sync_enabled_or_disabled_cb),
       base::BindOnce(pending_initialization_calls));
 
   android_backend_->InitBackend(
@@ -116,10 +99,7 @@ void PasswordStoreProxyBackend::InitBackend(
           weak_ptr_factory_.GetWeakPtr(),
           CallbackOriginatesFromAndroidBackend(true),
           std::move(remote_form_changes_received)),
-      base::BindRepeating(&CallOnSyncEnabledOrDisabledForEnabledBackend,
-                          /*originates_from_android=*/true,
-                          std::move(sync_enabled_or_disabled_cb)),
-      base::BindOnce(pending_initialization_calls));
+      base::NullCallback(), base::BindOnce(pending_initialization_calls));
 }
 
 void PasswordStoreProxyBackend::Shutdown(base::OnceClosure shutdown_completed) {
