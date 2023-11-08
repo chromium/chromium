@@ -1237,17 +1237,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.BrowserSupport.UnexpectedBrowserSupportInitialize"
-    enum="Boolean" expires_after="M122">
-  <owner>andreaorru@chromium.org</owner>
-  <owner>hidehiko@chromium.org</owner>
-  <summary>
-    Making sure nobody in the production calls
-    ash::standalone_browser::BrowserSupport::Initialize() in unexpected timing.
-    This entry will not have &quot;false&quot; status.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Calendar.CalendarKeyboardNavigationSource"
     enum="CalendarKeyboardNavigationSource" expires_after="2024-09-04">
   <owner>kradtke@chromium.org</owner>

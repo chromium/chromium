@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
@@ -73,15 +74,7 @@ void BrowserSupport::InitializeForPrimaryUser(
   // TODO(andreaorru): remove the following code once there's no more tests
   // that rely on it.
   if (g_instance) {
-    // We take metrics here to be sure that this code path is not used in
-    // production, as it should only happen in tests.
-    // TODO(andreaorru): remove the following code, once we're sure it's never
-    // used in production.
-    if (base::SysInfo::IsRunningOnChromeOS()) {
-      base::UmaHistogramBoolean(
-          "Ash.BrowserSupport.UnexpectedBrowserSupportInitialize", true);
-      base::debug::DumpWithoutCrashing();
-    }
+    CHECK_IS_TEST();
     Shutdown();
   }
 
