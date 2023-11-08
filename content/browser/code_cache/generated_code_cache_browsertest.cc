@@ -81,6 +81,9 @@ class CodeCacheBrowserTest
     if (IsBackgroundResourceFetchEnabled()) {
       feature_background_resource_fetch_.InitAndEnableFeature(
           blink::features::kBackgroundResourceFetch);
+    } else {
+      feature_background_resource_fetch_.InitAndDisableFeature(
+          blink::features::kBackgroundResourceFetch);
     }
   }
 
