@@ -47,8 +47,17 @@ network::mojom::FirstPartySetsReadyEventPtr MakeReadyEvent(
 
 const base::Value::Dict* GetOverridesPolicyForProfile(
     const PrefService* prefs) {
-  return prefs ? &prefs->GetDict(first_party_sets::kRelatedWebsiteSetsOverrides)
-               : nullptr;
+  if (!prefs) {
+    return nullptr;
+  }
+  // The value is declared as a dict, but we assume that the user may have
+  // modified the prefs file or the file may be corrupt.
+  const base::Value& value =
+      prefs->GetValue(first_party_sets::kRelatedWebsiteSetsOverrides);
+  if (!value.is_dict()) {
+    return nullptr;
+  }
+  return &value.GetDict();
 }
 
 bool GetEnabledStateForProfile(Profile* profile) {
