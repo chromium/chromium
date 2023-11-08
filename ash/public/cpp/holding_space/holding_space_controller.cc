@@ -7,7 +7,6 @@
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/check.h"
-#include "base/check_is_test.h"
 
 namespace ash {
 
@@ -48,31 +47,17 @@ HoldingSpaceController::HoldingSpaceController() {
   CHECK(!g_instance);
   g_instance = this;
 
-  // `SessionController` may not exist during tests.
-  if (auto* session_controller = SessionController::Get()) {
-    session_controller->AddObserver(this);
-  } else {
-    CHECK_IS_TEST();
-  }
+  SessionController::Get()->AddObserver(this);
 }
 
 HoldingSpaceController::~HoldingSpaceController() {
   CHECK_EQ(g_instance, this);
 
-  for (auto& observer : observers_) {
-    observer.OnHoldingSpaceControllerDestroying();
-  }
-
   SetClient(nullptr);
   SetModel(nullptr);
   g_instance = nullptr;
 
-  // `SessionController` may not exist during tests.
-  if (auto* session_controller = SessionController::Get()) {
-    session_controller->RemoveObserver(this);
-  } else {
-    CHECK_IS_TEST();
-  }
+  SessionController::Get()->RemoveObserver(this);
 }
 
 // static
