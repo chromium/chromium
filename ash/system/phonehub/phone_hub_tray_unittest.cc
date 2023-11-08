@@ -18,10 +18,12 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/fake_connection_scheduler.h"
+#include "chromeos/ash/components/phonehub/fake_icon_decoder.h"
 #include "chromeos/ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
@@ -849,6 +851,18 @@ TEST_F(PhoneHubTrayTest, ShowAndHideNudge) {
   EXPECT_TRUE(GetOnboardingUiTracker()->is_icon_clicked_when_nudge_visible());
   EXPECT_FALSE(
       Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kPhoneHubNudgeId));
+}
+
+TEST_F(PhoneHubTrayTest, EcheIconActivatesCallback) {
+  bool launched_app_window = false;
+  phone_hub_tray_->SetEcheIconActivationCallback(
+      base::BindLambdaForTesting([&]() { launched_app_window = true; }));
+  phone_hub_tray_->OnAppStreamUpdate(phonehub::proto::AppStreamUpdate());
+  phone_hub_manager_.fake_icon_decoder()->FinishLastCall();
+
+  LeftClickOn(phone_hub_tray_->eche_icon_);
+
+  EXPECT_TRUE(launched_app_window);
 }
 
 }  // namespace ash

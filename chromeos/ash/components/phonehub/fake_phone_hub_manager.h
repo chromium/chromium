@@ -103,6 +103,8 @@ class FakePhoneHubManager : public PhoneHubManager {
 
   FakePingManager* fake_ping_manager() { return &fake_ping_manager_; }
 
+  FakeIconDecoder* fake_icon_decoder() { return &fake_icon_decoder_; }
+
   void set_host_last_seen_timestamp(absl::optional<base::Time> timestamp) {
     host_last_seen_timestamp_ = timestamp;
   }
