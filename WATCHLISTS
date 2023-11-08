@@ -1073,7 +1073,7 @@
       'filepath': 'chrome/renderer/media/.*key_system|' \
                   'chrome/browser/media/.*(cdm|encrypted)|' \
                   'components/cdm/|' \
-                  'content/browser/media/cdm/|' \
+                  'content/browser/media/.*(cdm|key_system|media_license|encrypted)|' \
                   'media/base/android/.*drm|' \
                   'media/cdm/|' \
                   'third_party/widevine/cdm/'
