@@ -26,6 +26,7 @@ class Profile;
 namespace ash {
 
 class SyncConsentScreenView;
+class ScopedSessionRefresher;
 
 // This is Sync settings screen that is displayed as a part of user first
 // sign-in flow.
@@ -197,6 +198,9 @@ class SyncConsentScreen : public BaseScreen,
   // Manages sync service observer lifetime.
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
+
+  // Keeps cryptohome authsession alive.
+  std::unique_ptr<ScopedSessionRefresher> session_refresher_;
 
   // Primary user ind his Profile (if screen is shown).
   raw_ptr<const user_manager::User, ExperimentalAsh> user_ = nullptr;

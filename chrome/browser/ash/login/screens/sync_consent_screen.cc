@@ -32,6 +32,7 @@
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/prefs/pref_service.h"
@@ -254,9 +255,17 @@ void SyncConsentScreen::ShowImpl() {
   // If SyncScreenBehavior is unknown, this should show the loading throbber.
   if (view_)
     view_->Show(crosapi::browser_util::IsLacrosEnabled());
+
+  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
+    if (context()->extra_factors_token) {
+      session_refresher_ = AuthSessionStorage::Get()->KeepAlive(
+          context()->extra_factors_token.value());
+    }
+  }
 }
 
 void SyncConsentScreen::HideImpl() {
+  session_refresher_.reset();
   sync_service_observation_.Reset();
   timeout_waiter_.AbandonAndStop();
 }
