@@ -378,113 +378,6 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
       scoped_animation_duration_scale_mode_;
 };
 
-// HoldingSpaceWallpaperNudgeControllerTest ------------------------------------
-
-// Base class for tests that verify general Holding Space wallpaper nudge
-// behavior.
-class HoldingSpaceWallpaperNudgeControllerTest
-    : public HoldingSpaceWallpaperNudgeControllerTestBase {
- public:
-  HoldingSpaceWallpaperNudgeControllerTest()
-      : HoldingSpaceWallpaperNudgeControllerTestBase(
-            /*drop_to_pin_enabled=*/false,
-            /*rate_limiting_enabled=*/true,
-            base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
-};
-
-TEST_F(HoldingSpaceWallpaperNudgeControllerTest, HideBubbleOnHoldingSpaceOpen) {
-  // The holding space tray is always visible in the shelf when the
-  // predictability feature is enabled. Force disable it so that we verify that
-  // holding space visibility is updated by the
-  // `HoldingSpaceWallpaperNudgeController`.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kHoldingSpacePredictability);
-
-  // Set up a primary and secondary display and cache IDs.
-  UpdateDisplay("1024x768,1024x768");
-  const int64_t primary_display_id = GetPrimaryDisplay().id();
-  const int64_t secondary_display_id = GetSecondaryDisplay().id();
-
-  // Log in a regular user.
-  const AccountId& account_id = AccountId::FromUserEmail("user@test");
-  SimulateUserLogin(account_id);
-
-  // Register a model and client for holding space.
-  HoldingSpaceModel holding_space_model;
-  testing::StrictMock<MockHoldingSpaceClient> holding_space_client;
-  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
-      account_id, &holding_space_client, &holding_space_model);
-
-  // Configure the client to crack file system URLs. Note that this is only
-  // expected to occur when Files app data is dragged over the wallpaper.
-  EXPECT_CALL(holding_space_client, CrackFileSystemUrl)
-      .WillRepeatedly(Invoke([](const GURL& file_system_url) {
-        return base::FilePath(base::StrCat(
-            {"//path/to/", std::string(&file_system_url.spec().back())}));
-      }));
-
-  // Needed by the client to create the placeholder.
-  EXPECT_CALL(holding_space_client, IsDriveDisabled)
-      .WillRepeatedly(testing::Return(false));
-
-  // Create and show a widget on the primary display from which data can be
-  // drag-and-dropped.
-  auto widget = CreateTestWidgetForDisplayId(primary_display_id);
-  widget->SetContentsView(std::make_unique<DraggableView>(
-      base::BindLambdaForTesting([&](ui::OSExchangeData* data) {
-        data->SetString(u"Payload");
-        SetFilesAppData(data, u"file-system:a\nfile-system:b");
-      })));
-  widget->CenterWindow(gfx::Size(100, 100));
-  widget->Show();
-
-  // Set animation durations to zero to speed things up.
-  SetAnimationDurationMultiplier(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
-  // Mark the holding space feature as available since there is no holding
-  // space keyed service which would otherwise be responsible for doing so.
-  holding_space_prefs::MarkTimeOfFirstAvailability(
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
-
-  // Cache both shelves and holding space trays.
-  auto* const primary_shelf = GetShelfForDisplayId(primary_display_id);
-  auto* const secondary_shelf = GetShelfForDisplayId(secondary_display_id);
-  auto* const primary_tray = GetHoldingSpaceTrayForShelf(primary_shelf);
-  auto* const secondary_tray = GetHoldingSpaceTrayForShelf(secondary_shelf);
-
-  // Drag data from the `widget` to the wallpaper to show the nudge, then
-  // cancel the drag immediately.
-  MoveMouseTo(widget.get());
-  PressLeftButton();
-  MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
-  PressAndReleaseKey(ui::VKEY_ESCAPE);
-  ReleaseLeftButton();
-
-  // Expect only the primary display's holding space tray to have a help bubble.
-  EXPECT_TRUE(HasHelpBubble(primary_tray));
-  EXPECT_FALSE(HasHelpBubble(secondary_tray));
-
-  // Expect the state not to change at all if the secondary display's holding
-  // space bubble is opened, as it does not overlap with the help bubble.
-  secondary_tray->ShowBubble();
-  EXPECT_TRUE(HasHelpBubble(primary_tray));
-  EXPECT_FALSE(HasHelpBubble(secondary_tray));
-  secondary_tray->CloseBubble();
-
-  // Expect the help bubble to close if the primary display's holding space is
-  // opened, as that would overlap.
-  primary_tray->ShowBubble();
-  EXPECT_FALSE(HasHelpBubble(primary_tray));
-  EXPECT_FALSE(HasHelpBubble(secondary_tray));
-  primary_tray->CloseBubble();
-
-  // Clean up holding space controller.
-  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
-      account_id, /*client=*/nullptr, /*model=*/nullptr);
-}
-
 // HoldingSpaceWallpaperNudgeControllerDragAndDropTest -------------------------
 
 // Base class for drag-and-drop tests of the
@@ -562,10 +455,6 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerDragAndDropTest, DragAndDrop) {
               {"//path/to/", std::string(&file_system_url.spec().back())}));
         }));
   }
-
-  // Needed by the client to create the placeholder.
-  EXPECT_CALL(holding_space_client, IsDriveDisabled)
-      .WillRepeatedly(testing::Return(false));
 
   // Mark the holding space feature as available since there is no holding
   // space keyed service which would otherwise be responsible for doing so.
@@ -812,10 +701,6 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
         return base::FilePath(base::StrCat(
             {"//path/to/", std::string(&file_system_url.spec().back())}));
       }));
-
-  // Needed by the client to create the placeholder.
-  EXPECT_CALL(holding_space_client, IsDriveDisabled)
-      .WillRepeatedly(testing::Return(false));
 
   // Create and show a widget from which data can be drag-and-dropped.
   auto widget = CreateTestWidgetForDisplayId(display_id);
