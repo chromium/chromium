@@ -3469,15 +3469,6 @@ TEST_F(AttributionManagerImplTest,
   AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state(
       AttributionOsLevelManager::ApiState::kEnabled);
 
-  MockAttributionReportingContentBrowserClient browser_client;
-  EXPECT_CALL(
-      browser_client,
-      GetAttributionSupport(
-          ContentBrowserClient::AttributionReportingOsApiState::kEnabled,
-          testing::_))
-      .WillRepeatedly(
-          testing::Return(network::mojom::AttributionSupport::kWebAndOs));
-
   const GURL kRegistrationUrl("https://a.test/x");
 
   for (const bool is_os_source : {true, false}) {
@@ -3496,6 +3487,14 @@ TEST_F(AttributionManagerImplTest,
 
     EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
 
+    MockAttributionReportingContentBrowserClient browser_client;
+    EXPECT_CALL(
+        browser_client,
+        GetAttributionSupport(
+            ContentBrowserClient::AttributionReportingOsApiState::kEnabled,
+            testing::_))
+        .WillOnce(
+            testing::Return(network::mojom::AttributionSupport::kWebAndOs));
     EXPECT_CALL(browser_client,
                 IsAttributionReportingOperationAllowed(
                     _,

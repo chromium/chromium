@@ -103,14 +103,14 @@ public class AttributionOsLevelManager {
     }
 
     private MeasurementManagerFutures getManager() {
+        if (!supportsAttribution()) {
+            return null;
+        }
         if (sManagerForTesting != null) {
             return sManagerForTesting;
         }
         if (mManager != null) {
             return mManager;
-        }
-        if (!supportsAttribution()) {
-            return null;
         }
         try {
             mManager = MeasurementManagerFutures.from(ContextUtils.getApplicationContext());
