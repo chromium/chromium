@@ -31,6 +31,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/web_test/browser/leak_detector.h"
+#include "content/web_test/browser/web_test_tracing_controller.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/common/web_test_runtime_flags.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -124,10 +125,8 @@ class WebTestControlHost : public WebContentsObserver,
   WebTestControlHost(const WebTestControlHost&) = delete;
   WebTestControlHost& operator=(const WebTestControlHost&) = delete;
 
-  // True if the controller is ready for testing.
-  bool PrepareForWebTest(const TestInfo& test_info);
-  // True if the controller was reset successfully.
-  bool ResetBrowserAfterWebTest();
+  void PrepareForWebTest(const TestInfo& test_info);
+  void ResetBrowserAfterWebTest();
 
   // Allows WebTestControlHost to track all WebContents created by tests, either
   // by Javascript or by C++ code in the browser.
@@ -446,6 +445,8 @@ class WebTestControlHost : public WebContentsObserver,
       non_associated_receiver_bindings_;
 
   base::ScopedTempDir writable_directory_for_tests_;
+
+  absl::optional<WebTestTracingController> tracing_controller_;
 
   enum class NextPointerLockAction {
     kWillSucceed,

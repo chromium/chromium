@@ -562,6 +562,7 @@ class PathParser {
     '-crash-log.txt': 'crash_log',
     '-stderr.txt': 'stderr',
     '-command.txt': 'command',
+    '-trace.pftrace': 'trace',
   };
   static numCachedTests = 0;
   static numCachedArtifacts = 0;
@@ -692,6 +693,7 @@ class PathParser {
               }
             }
             if (responseJson.nextPageToken) {
+              // TODO: Don't resolve() until continuation is loaded.
               console.log('Requesting next page');
               PathParser.queryArtifacts(testResultPredicate,
                                         responseJson.nextPageToken);
@@ -1030,6 +1032,11 @@ const Report = {
           break;
         default:
           console.error("unexpected actual", test.actual);
+      }
+      let trace_link = pathParser.resultLink("-trace.pftrace");
+      if (trace_link && trace_link != "about:blank") {
+        toolbars.push(new SimpleLinkToolbar().createDom(
+          trace_link, "Perfetto trace file", "trace");
       }
     }
     if (test.has_stderr) {
