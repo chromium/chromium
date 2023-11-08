@@ -13,6 +13,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -508,9 +509,11 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 }
 
 // Tests that sandboxed extension frames are considered privileged
-// extension processes, since they execute within the same process (even
-// though they don't have direct API access). This isn't a security bug
+// extension processes. Historically they execute within the same process (even
+// though they don't have direct API access), so this isn't a security bug
 // since any compromised renderer could just access an un-sandboxed context.
+// But when IsolateSandboxedIframes is enabled, they do end up in a separate
+// process, and are still listed as privileged in the ProcessMap.
 // TODO(https://crbug.com/510122): This could change with out-of-process-
 // sandboxed-iframes.
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
@@ -531,7 +534,12 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   int main_frame_process_id = main_frame->GetProcess()->GetID();
   int sandboxed_frame_process_id = sandboxed_frame->GetProcess()->GetID();
 
-  EXPECT_EQ(main_frame_process_id, sandboxed_frame_process_id);
+  if (content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+    EXPECT_NE(main_frame_process_id, sandboxed_frame_process_id);
+  } else {
+    EXPECT_EQ(main_frame_process_id, sandboxed_frame_process_id);
+  }
+
   EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
       *extension, main_frame_process_id));
   EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
@@ -559,7 +567,11 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   content::RenderProcessHost& sandboxed_frame_process =
       *sandboxed_frame->GetProcess();
 
-  EXPECT_EQ(main_frame_process.GetID(), sandboxed_frame_process.GetID());
+  if (content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+    EXPECT_NE(main_frame_process.GetID(), sandboxed_frame_process.GetID());
+  } else {
+    EXPECT_EQ(main_frame_process.GetID(), sandboxed_frame_process.GetID());
+  }
 
   RunCanProcessHostContextTypeChecks(
       extension, main_frame_process,
