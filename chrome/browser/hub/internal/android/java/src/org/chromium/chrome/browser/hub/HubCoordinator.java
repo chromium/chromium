@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
@@ -27,6 +28,12 @@ public class HubCoordinator implements BackPressHandler {
     private final @NonNull HubLayoutController mHubLayoutController;
     private final @NonNull ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
     private final @NonNull ObservableSupplier<Pane> mFocusedPaneSupplier;
+
+    /**
+     * Generic callback that invokes {@link #updateHandleBackPressSupplier()}. This can be cast to
+     * an arbitrary {@link Callback} and the provided value is discarded.
+     */
+    private final @NonNull Callback<Object> mBackPressStateChangeCallback;
 
     /**
      * Warning: {@link mFocusedPaneSupplier#get()} may return null if no pane is focused or {@link
@@ -52,12 +59,13 @@ public class HubCoordinator implements BackPressHandler {
             @NonNull HubLayoutController hubLayoutController,
             @NonNull ObservableSupplier<Tab> currentTabSupplier) {
         Context context = containerView.getContext();
+        mBackPressStateChangeCallback = (ignored) -> updateHandleBackPressSupplier();
         mFocusedPaneSupplier = paneManager.getFocusedPaneSupplier();
         mFocusedPaneHandleBackPressSupplier =
                 new TransitiveObservableSupplier<>(
                         mFocusedPaneSupplier, p -> p.getHandleBackPressChangedSupplier());
         mFocusedPaneHandleBackPressSupplier.addObserver(
-                (handlesBackPress) -> updateHandleBackPressSupplier());
+                castCallback(mBackPressStateChangeCallback));
 
         mContainerView = containerView;
         mMainHubParent = LayoutInflater.from(context).inflate(R.layout.hub_layout, null);
@@ -76,10 +84,10 @@ public class HubCoordinator implements BackPressHandler {
         mPaneBackStackHandler = new PaneBackStackHandler(paneManager);
         mPaneBackStackHandler
                 .getHandleBackPressChangedSupplier()
-                .addObserver((handlesBackPress) -> updateHandleBackPressSupplier());
+                .addObserver(castCallback(mBackPressStateChangeCallback));
 
         mCurrentTabSupplier = currentTabSupplier;
-        mCurrentTabSupplier.addObserver((tab) -> updateHandleBackPressSupplier());
+        mCurrentTabSupplier.addObserver(castCallback(mBackPressStateChangeCallback));
 
         updateHandleBackPressSupplier();
     }
@@ -87,6 +95,15 @@ public class HubCoordinator implements BackPressHandler {
     /** Removes the hub from the layout tree and cleans up resources. */
     public void destroy() {
         mContainerView.removeView(mMainHubParent);
+
+        mFocusedPaneHandleBackPressSupplier.removeObserver(
+                castCallback(mBackPressStateChangeCallback));
+        mCurrentTabSupplier.removeObserver(castCallback(mBackPressStateChangeCallback));
+        mPaneBackStackHandler
+                .getHandleBackPressChangedSupplier()
+                .removeObserver(castCallback(mBackPressStateChangeCallback));
+        mPaneBackStackHandler.destroy();
+
         mHubToolbarCoordinator.destroy();
         mHubPaneHostCoordinator.destroy();
     }
@@ -130,10 +147,15 @@ public class HubCoordinator implements BackPressHandler {
         // 2) Whether the PaneBackStackHandler getHandleBackPressChangeSupplier is set. - DONE
         // 3) Whether Start Surface was the previous layout and we are not in incognito mode.
         // 4) Whether the current TabModel has a selected tab. - DONE
+
         boolean shouldHandleBackPress =
                 Boolean.TRUE.equals(mFocusedPaneHandleBackPressSupplier.get())
                         || mPaneBackStackHandler.getHandleBackPressChangedSupplier().get()
                         || mCurrentTabSupplier.get() != null;
         mHandleBackPressSupplier.set(shouldHandleBackPress);
+    }
+
+    private <T> Callback<T> castCallback(Callback callback) {
+        return (Callback<T>) callback;
     }
 }

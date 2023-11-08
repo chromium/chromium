@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -28,6 +29,7 @@ public class PaneBackStackHandler implements BackPressHandler {
     private final @NonNull PaneManager mPaneManager;
     private final @NonNull ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
     private final @NonNull LinkedList<Pane> mBackStack;
+    private final @NonNull Callback<Pane> mOnPaneFocusedCallback;
     private @Nullable Pane mCurrentPane;
 
     /**
@@ -41,10 +43,21 @@ public class PaneBackStackHandler implements BackPressHandler {
         mHandleBackPressSupplier.set(false);
 
         mBackStack = new LinkedList<>();
-        paneManager.getFocusedPaneSupplier().addObserver(this::onPaneFocused);
+
+        mOnPaneFocusedCallback = this::onPaneFocused;
+        paneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocusedCallback);
     }
 
-    /** Resets the back stack. */
+    /** Destroys the object cleaning up observers and the stack. */
+    public void destroy() {
+        reset();
+        mPaneManager.getFocusedPaneSupplier().removeObserver(mOnPaneFocusedCallback);
+    }
+
+    /**
+     * Resets the back stack to include no entries. Use when leaving the Hub and a full teardown is
+     * not performed.
+     */
     public void reset() {
         mHandleBackPressSupplier.set(false);
         mBackStack.clear();

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -62,13 +64,22 @@ public class PaneBackStackHandlerUnitTest {
                                 PaneId.BOOKMARKS, LazyOneshotSupplier.fromValue(mBookmarksPane));
 
         mPaneManager = new PaneManagerImpl(builder);
-        mBackStackHandler = new PaneBackStackHandler(mPaneManager);
-        ShadowLooper.runUiThreadTasks();
+    }
+
+    @After
+    public void tearDown() {
+        mBackStackHandler.destroy();
+        assertFalse(hasObservers(mPaneManager.getFocusedPaneSupplier()));
+        assertFalse(hasObservers(mMockPaneManagerPaneSupplier));
     }
 
     @Test
     @SmallTest
     public void testReset() {
+        mBackStackHandler = new PaneBackStackHandler(mPaneManager);
+        assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));
+        ShadowLooper.runUiThreadTasks();
+
         assertFalse(mBackStackHandler.getHandleBackPressChangedSupplier().get());
 
         // Focus each of three panes.
@@ -101,6 +112,10 @@ public class PaneBackStackHandlerUnitTest {
     @Test
     @SmallTest
     public void testBackStack() {
+        mBackStackHandler = new PaneBackStackHandler(mPaneManager);
+        assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));
+        ShadowLooper.runUiThreadTasks();
+
         assertFalse(mBackStackHandler.getHandleBackPressChangedSupplier().get());
 
         // Focus each of three panes.
@@ -129,6 +144,10 @@ public class PaneBackStackHandlerUnitTest {
     @Test
     @SmallTest
     public void testRepeatedlyFocusSamePane() {
+        mBackStackHandler = new PaneBackStackHandler(mPaneManager);
+        assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));
+        ShadowLooper.runUiThreadTasks();
+
         assertFalse(mBackStackHandler.getHandleBackPressChangedSupplier().get());
 
         // Focus the first pane twice.
@@ -158,6 +177,10 @@ public class PaneBackStackHandlerUnitTest {
     @Test
     @SmallTest
     public void testDeduplicatedOldEntries() {
+        mBackStackHandler = new PaneBackStackHandler(mPaneManager);
+        assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));
+        ShadowLooper.runUiThreadTasks();
+
         assertFalse(mBackStackHandler.getHandleBackPressChangedSupplier().get());
 
         // Focus tab switcher into bookmarks.
@@ -184,6 +207,7 @@ public class PaneBackStackHandlerUnitTest {
     @SmallTest
     public void testSkipOnFailToFocus() {
         mBackStackHandler = new PaneBackStackHandler(mMockPaneManager);
+        assertTrue(hasObservers(mMockPaneManagerPaneSupplier));
         ShadowLooper.runUiThreadTasks();
         assertFalse(mBackStackHandler.getHandleBackPressChangedSupplier().get());
 
@@ -221,6 +245,7 @@ public class PaneBackStackHandlerUnitTest {
     @SmallTest
     public void testCompletelyFailToFocus() {
         mBackStackHandler = new PaneBackStackHandler(mMockPaneManager);
+        assertTrue(hasObservers(mMockPaneManagerPaneSupplier));
         ShadowLooper.runUiThreadTasks();
         assertFalse(mBackStackHandler.getHandleBackPressChangedSupplier().get());
 
@@ -249,5 +274,9 @@ public class PaneBackStackHandlerUnitTest {
 
         assertEquals(BackPressResult.SUCCESS, mBackStackHandler.handleBackPress());
         assertFalse(mBackStackHandler.getHandleBackPressChangedSupplier().get());
+    }
+
+    private boolean hasObservers(ObservableSupplier<Pane> paneSupplier) {
+        return ((ObservableSupplierImpl<Pane>) paneSupplier).hasObservers();
     }
 }

@@ -102,6 +102,9 @@ public class HubCoordinatorUnitTest {
     public void tearDown() {
         mHubCoordinator.destroy();
         assertEquals(0, mRootView.getChildCount());
+        assertFalse(mTabSwitcherBackPressSupplier.hasObservers());
+        assertFalse(mIncognitoTabSwitcherBackPressSupplier.hasObservers());
+        assertFalse(mTabSupplier.hasObservers());
     }
 
     @Test
