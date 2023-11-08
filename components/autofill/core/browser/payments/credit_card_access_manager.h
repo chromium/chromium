@@ -204,10 +204,19 @@ class CreditCardAccessManager
 #endif
 
  private:
-  // TODO(crbug.com/1249665): Remove FRIEND and change everything to _ForTesting
-  // or public.
+  // TODO(crbug.com/1249665): Remove FRIEND and create test_api class to access
+  // private methods and variables.
   FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerBrowserTest,
                            NavigateFromPage_UnmaskedCardCacheResets);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+      RiskBasedMaskedServerCardUnmasking_AuthenticationRequired_FidoOnly);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+      RiskBasedMaskedServerCardUnmasking_AuthenticationRequired_CvcThenFido);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+      RiskBasedMaskedServerCardUnmasking_AuthenticationRequired_PreflightCallNotFinished);
   FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
                            PreflightCallRateLimited);
   FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
@@ -363,6 +372,12 @@ class CreditCardAccessManager
   // Helper function to fetch local or full server cards.
   void FetchLocalOrFullServerCard();
 
+  // Checks if Mandatory Re-auth is needed after the card has been returned. If
+  // needed, starts the device authentication flow before filling the form.
+  // Otherwise, directly fills the form.
+  void OnNonInteractiveAuthenticationSuccess(
+      CreditCard::RecordType record_type);
+
   // Invoked when CreditCardAccessManager stops waiting for UnmaskDetails to
   // return. If OnDidGetUnmaskDetails() has been invoked,
   // |get_unmask_details_returned| should be set to true.
@@ -487,6 +502,10 @@ class CreditCardAccessManager
       virtual_card_unmask_request_details_;
   payments::PaymentsClient::UnmaskResponseDetails
       virtual_card_unmask_response_details_;
+
+  // Struct to store response returned by CreditCardRiskBasedAuthenticator.
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
+      risk_based_authentication_response_;
 
   // Resets when PrepareToFetchCreditCard() is called, if not already reset.
   // Signaled when OnDidGetUnmaskDetails() is called or after timeout.

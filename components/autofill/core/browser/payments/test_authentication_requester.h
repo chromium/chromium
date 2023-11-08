@@ -82,6 +82,11 @@ class TestAuthenticationRequester
     return response_details_;
   }
 
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
+  risk_based_authentication_response() {
+    return risk_based_authentication_response_;
+  }
+
   payments::FullCardRequest::FailureType failure_type() {
     return failure_type_;
   }
@@ -103,6 +108,10 @@ class TestAuthenticationRequester
 
   // Unmask response returned from UnmaskCard request.
   payments::PaymentsClient::UnmaskResponseDetails response_details_;
+
+  // Authentication response returned from CreditCardRiskBasedAuthenticator.
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
+      risk_based_authentication_response_;
 
   base::WeakPtrFactory<TestAuthenticationRequester> weak_ptr_factory_{this};
 };

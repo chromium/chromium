@@ -425,11 +425,15 @@ bool UnmaskCardRequest::IsResponseComplete() {
     case AutofillClient::PaymentsRpcCardType::kUnknown:
       return false;
     case AutofillClient::PaymentsRpcCardType::kServerCard:
-      return !response_details_.real_pan.empty();
+      // When PAN is returned, the response is complete and no further
+      // authentication is needed. When PAN is not returned, the response has to
+      // contain context token in order to be considered a success.
+      return !response_details_.real_pan.empty() ||
+             !response_details_.context_token.empty();
     case AutofillClient::PaymentsRpcCardType::kVirtualCard:
-      // When pan is returned, it has to contain pan + expiry + cvv.
-      // When pan is not returned, it has to contain context token to indicate
-      // success.
+      // When the response contains a PAN, it must also contain expiration and
+      // CVV to be considered a success. When the response does not contain PAN,
+      // it must contain a context token instead.
       return IsAllCardInformationValidIncludingDcvv() ||
              CanPerformVirtualCardAuth();
   }

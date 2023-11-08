@@ -137,6 +137,49 @@ TEST_F(UnmaskCardRequestTest, DoesNotIncludeMerchantDomainWhenMissingField) {
   EXPECT_FALSE(IsIncludedInRequestContent("merchant_domain"));
 }
 
+// Test to ensure response is correctly parsed when the FIDO challenge is
+// returned with context token.
+TEST_F(UnmaskCardRequestTest, FidoChallengeReturned_ParseResponse) {
+  absl::optional<base::Value> response = base::JSONReader::Read(
+      "{\"fido_request_options\":{\"challenge\":\"fake_fido_challenge\"},"
+      "\"context_token\":\"fake_context_token\"}");
+  ASSERT_TRUE(response.has_value());
+  GetRequest()->ParseResponse(response->GetDict());
+
+  const PaymentsClient::UnmaskResponseDetails& response_details =
+      GetParsedResponse();
+  EXPECT_EQ("fake_context_token", response_details.context_token);
+  // Verify the FIDO request challenge is correctly parsed.
+  EXPECT_EQ("fake_fido_challenge",
+            *response_details.fido_request_options->FindString("challenge"));
+
+  // Verify that the response is considered complete.
+  EXPECT_TRUE(GetRequest()->IsResponseComplete());
+}
+
+// Test to ensure the response is complete when context token is returned but
+// PAN is not.
+TEST_F(UnmaskCardRequestTest, ContextTokenReturned) {
+  absl::optional<base::Value> response =
+      base::JSONReader::Read("{\"context_token\":\"fake_context_token\"}");
+  ASSERT_TRUE(response.has_value());
+  GetRequest()->ParseResponse(response->GetDict());
+
+  // Verify that the response is considered complete.
+  EXPECT_TRUE(GetRequest()->IsResponseComplete());
+}
+
+// Test that the response is not complete when both context token and real PAN
+// are not returned.
+TEST_F(UnmaskCardRequestTest, ContextTokenAndPanNotReturned) {
+  absl::optional<base::Value> response = base::JSONReader::Read("{}");
+  ASSERT_TRUE(response.has_value());
+  GetRequest()->ParseResponse(response->GetDict());
+
+  // Verify that the response is considered incomplete.
+  EXPECT_FALSE(GetRequest()->IsResponseComplete());
+}
+
 // Params of the VirtualCardUnmaskCardRequestTest:
 // -- autofill::CardUnmaskChallengeOptionType challenge_option_type
 // -- bool autofill_enable_email_otp_for_vcn_yellow_path

@@ -20,6 +20,12 @@ namespace autofill {
 
 namespace {
 constexpr std::string_view kTestNumber = "4234567890123456";
+// Base64 encoding of "This is a test challenge".
+constexpr std::string_view kTestChallenge = "VGhpcyBpcyBhIHRlc3QgY2hhbGxlbmdl";
+// Base64 encoding of "This is a test Credential ID".
+constexpr std::string_view kCredentialId =
+    "VGhpcyBpcyBhIHRlc3QgQ3JlZGVudGlhbCBJRC4=";
+constexpr std::string_view kGooglePaymentsRpid = "google.com";
 }  // namespace
 
 class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
@@ -38,15 +44,16 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
     card_ = test::GetMaskedServerCard();
   }
 
-  void OnUnmaskResponseReceived(AutofillClient::PaymentsRpcResult result,
-                                absl::string_view real_pan,
-                                AutofillClient::PaymentsRpcCardType card_type) {
-    payments::PaymentsClient::UnmaskResponseDetails response;
-    if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
-      response.real_pan = real_pan;
-      response.card_type = card_type;
-    }
-    authenticator_->OnUnmaskResponseReceivedForTesting(result, response);
+  base::Value::Dict GetTestRequestOptions() {
+    base::Value::Dict request_options;
+    request_options.Set("challenge", base::Value(kTestChallenge));
+    request_options.Set("relying_party_id", base::Value(kGooglePaymentsRpid));
+
+    base::Value::Dict key_info;
+    key_info.Set("credential_id", base::Value(kCredentialId));
+    request_options.Set("key_info", base::Value(base::Value::Type::LIST));
+    request_options.FindList("key_info")->Append(std::move(key_info));
+    return request_options;
   }
 
  protected:
@@ -76,13 +83,20 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, UnmaskRequestSetCorrectly) {
 TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardSuccess) {
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
-  // Simulate server returns success with card returned and invoke the callback.
-  OnUnmaskResponseReceived(AutofillClient::PaymentsRpcResult::kSuccess,
-                           kTestNumber,
-                           AutofillClient::PaymentsRpcCardType::kServerCard);
-  ASSERT_TRUE(requester_->did_succeed().has_value());
-  EXPECT_TRUE(requester_->did_succeed().value());
-  EXPECT_EQ(kTestNumber, base::UTF16ToUTF8(requester_->number()));
+  // Mock server response with valid masked server card information.
+  payments::PaymentsClient::UnmaskResponseDetails response;
+  response.card_type = AutofillClient::PaymentsRpcCardType::kServerCard;
+  response.real_pan = kTestNumber;
+
+  authenticator_->OnUnmaskResponseReceivedForTesting(
+      AutofillClient::PaymentsRpcResult::kSuccess, response);
+  EXPECT_EQ(requester_->risk_based_authentication_response().result,
+            CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
+                Result::kNoAuthenticationRequired);
+  EXPECT_EQ(
+      kTestNumber,
+      base::UTF16ToUTF8(
+          requester_->risk_based_authentication_response().card->number()));
 }
 
 // Test that risk-based authentication doesn't return the full PAN when the
@@ -90,13 +104,54 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardSuccess) {
 TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardFailure) {
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
-  // Simulate server returns failure and invoke the callback.
-  OnUnmaskResponseReceived(AutofillClient::PaymentsRpcResult::kPermanentFailure,
-                           kTestNumber,
-                           AutofillClient::PaymentsRpcCardType::kServerCard);
-  ASSERT_TRUE(requester_->did_succeed().has_value());
-  EXPECT_FALSE(requester_->did_succeed().value());
-  EXPECT_TRUE(requester_->number().empty());
+  // Payment server response when unmask request fails is empty.
+  payments::PaymentsClient::UnmaskResponseDetails response;
+
+  authenticator_->OnUnmaskResponseReceivedForTesting(
+      AutofillClient::PaymentsRpcResult::kPermanentFailure, response);
+  EXPECT_EQ(requester_->risk_based_authentication_response().result,
+            CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
+                Result::kError);
+}
+
+// Test that risk-based authentication determines authentication is required
+// when the server call succeeds and the PAN is not returned.
+TEST_F(CreditCardRiskBasedAuthenticatorTest,
+       AuthenticateServerCardSuccess_PanNotReturned) {
+  authenticator_->Authenticate(card_, requester_->GetWeakPtr());
+
+  // Mock server response with context token.
+  payments::PaymentsClient::UnmaskResponseDetails response;
+  response.context_token = "fake_context_token";
+
+  authenticator_->OnUnmaskResponseReceivedForTesting(
+      AutofillClient::PaymentsRpcResult::kSuccess, response);
+  EXPECT_EQ(requester_->risk_based_authentication_response().result,
+            CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
+                Result::kAuthenticationRequired);
+  EXPECT_FALSE(
+      requester_->risk_based_authentication_response().card.has_value());
+}
+
+// Test that risk-based authentication determines authentication is required
+// when the server call succeeds and the `fido_request_options` is returned.
+TEST_F(CreditCardRiskBasedAuthenticatorTest,
+       AuthenticateServerCardSuccess_FidoReturned) {
+  authenticator_->Authenticate(card_, requester_->GetWeakPtr());
+
+  // Mock server response with FIDO request options.
+  payments::PaymentsClient::UnmaskResponseDetails response;
+  response.fido_request_options = GetTestRequestOptions();
+
+  authenticator_->OnUnmaskResponseReceivedForTesting(
+      AutofillClient::PaymentsRpcResult::kSuccess, response);
+  EXPECT_EQ(requester_->risk_based_authentication_response().result,
+            CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
+                Result::kAuthenticationRequired);
+  EXPECT_FALSE(
+      requester_->risk_based_authentication_response().card.has_value());
+  EXPECT_TRUE(requester_->risk_based_authentication_response()
+                  .fido_request_options.has_value());
 }
 
 // Test a success risk based virtual card unmask request.

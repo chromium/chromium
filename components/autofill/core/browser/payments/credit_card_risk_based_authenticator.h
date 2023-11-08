@@ -22,19 +22,45 @@ class CreditCardRiskBasedAuthenticator {
  public:
   struct RiskBasedAuthenticationResponse {
     RiskBasedAuthenticationResponse();
+    RiskBasedAuthenticationResponse& operator=(
+        const RiskBasedAuthenticationResponse& other);
     ~RiskBasedAuthenticationResponse();
 
-    RiskBasedAuthenticationResponse& with_did_succeed(bool b) {
-      did_succeed = b;
+    // The outcome of the risk-based authentication.
+    enum class Result {
+      // Default value, should never be used.
+      kUnknown = 0,
+      // No further authentication is required. Also known as green path.
+      kNoAuthenticationRequired = 1,
+      // The user needs to complete further authentication to retrieve the card.
+      // Also known as yellow path.
+      kAuthenticationRequired = 2,
+      // The authentication failed. Also known as red path.
+      kError = 3,
+      kMaxValue = kError,
+    };
+
+    RiskBasedAuthenticationResponse& with_result(Result r) {
+      result = r;
       return *this;
     }
     RiskBasedAuthenticationResponse& with_card(CreditCard c) {
-      card = c;
+      card = std::move(c);
+      return *this;
+    }
+    RiskBasedAuthenticationResponse& with_fido_request_options(
+        base::Value::Dict v) {
+      fido_request_options = std::move(v);
+      return *this;
+    }
+    RiskBasedAuthenticationResponse& with_context_token(std::string s) {
+      context_token = std::move(s);
       return *this;
     }
 
-    // Whether the RPC call was successful.
-    bool did_succeed = false;
+    // The `result` will be used to notify requesters of the outcome of the
+    // risk-based authentication.
+    Result result = Result::kUnknown;
     // The `error_dialog_context` will be set if the RPC call fails, and is used
     // to render the error dialog in CreditCardAccessManager.
     AutofillErrorDialogContext error_dialog_context;
@@ -45,8 +71,6 @@ class CreditCardRiskBasedAuthenticator {
     // the card's real pan was not returned from the server side.
     // FIDO request options will be present only when FIDO is available.
     absl::optional<base::Value::Dict> fido_request_options;
-    // Challenge options returned by the server side for further authentication.
-    std::vector<CardUnmaskChallengeOption> card_unmask_challenge_options;
     // Stores the latest version of the context token, passed between Payments
     // calls and unmodified by Chrome.
     std::string context_token;
