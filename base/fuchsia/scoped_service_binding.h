@@ -19,7 +19,7 @@
 #include "base/base_export.h"
 #include "base/fuchsia/scoped_service_publisher.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sys {

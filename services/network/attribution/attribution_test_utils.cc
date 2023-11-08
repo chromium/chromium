@@ -12,7 +12,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
 #include "net/test/embedded_test_server/http_request.h"

@@ -5,7 +5,7 @@
 #include "ash/accelerators/accelerator_tracker.h"
 
 #include "ash/test/ash_test_base.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/metrics/user_action_tester.h"
 
 namespace ash {

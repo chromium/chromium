@@ -5,7 +5,7 @@
 #include "services/network/attribution/attribution_verification_mediator_metrics_recorder.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "services/network/attribution/attribution_verification_mediator.h"

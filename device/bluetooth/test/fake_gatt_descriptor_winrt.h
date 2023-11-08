@@ -15,7 +15,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 
 namespace device {

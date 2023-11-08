@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/notreached.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace google_apis::tasks {
 namespace {

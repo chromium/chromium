@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 #include "media/media_buildflags.h"
 

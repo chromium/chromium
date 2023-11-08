@@ -23,7 +23,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/version.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

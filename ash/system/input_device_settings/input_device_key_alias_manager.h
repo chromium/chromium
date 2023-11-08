@@ -10,7 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {

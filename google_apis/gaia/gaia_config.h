@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "google_apis/google_api_keys.h"
 

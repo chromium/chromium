@@ -6,7 +6,6 @@
 
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/win/scoped_hstring.h"
 #include "device/gamepad/test_support/fake_winrt_wgi_environment.h"
 

@@ -5,7 +5,7 @@
 #include "remoting/host/webauthn/remote_webauthn_caller_security_utils.h"
 
 #include "base/environment.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 

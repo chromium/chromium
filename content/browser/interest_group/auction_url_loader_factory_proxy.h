@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"

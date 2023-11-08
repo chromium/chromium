@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_SUPPORTS_LOADING_MODE_SUPPORTS_LOADING_MODE_PARSER_H_
 
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom-forward.h"
 
 namespace net {

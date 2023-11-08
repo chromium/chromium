@@ -14,7 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "device/gamepad/test_support/fake_igamepad.h"
 #include "device/gamepad/test_support/fake_iraw_game_controller.h"
 

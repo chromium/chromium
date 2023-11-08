@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service.h"

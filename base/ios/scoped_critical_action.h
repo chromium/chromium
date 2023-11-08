@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 

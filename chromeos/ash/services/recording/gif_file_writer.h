@@ -8,7 +8,7 @@
 #include <cstdint>
 
 #include "base/files/file.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chromeos/ash/services/recording/recording_file_io_helper.h"
 
 namespace recording {

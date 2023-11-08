@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 

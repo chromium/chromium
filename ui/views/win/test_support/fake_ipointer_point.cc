@@ -12,7 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
 #include "ui/views/win/test_support/fake_ipointer_point_properties.h"

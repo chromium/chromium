@@ -5,7 +5,7 @@
 #ifndef FUCHSIA_WEB_COMMON_INIT_LOGGING_H_
 #define FUCHSIA_WEB_COMMON_INIT_LOGGING_H_
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace base {
 class CommandLine;

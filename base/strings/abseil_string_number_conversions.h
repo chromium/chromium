@@ -6,7 +6,7 @@
 #define BASE_STRINGS_ABSEIL_STRING_NUMBER_CONVERSIONS_H_
 
 #include "base/base_export.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace base {

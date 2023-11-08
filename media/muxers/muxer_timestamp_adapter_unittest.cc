@@ -6,7 +6,7 @@
 #include <map>
 #include <memory>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"

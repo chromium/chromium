@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/rust_buildflags.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/rust/cxx/v1/crate/include/cxx.h"
 
 #if !BUILDFLAG(BUILD_RUST_BASE_CONVERSIONS)

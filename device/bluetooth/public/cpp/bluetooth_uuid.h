@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/win/windows_types.h"
 #endif  // BUILDFLAG(IS_WIN)
 

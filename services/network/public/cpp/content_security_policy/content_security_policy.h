@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_CONTENT_SECURITY_POLICY_CONTENT_SECURITY_POLICY_H_
 
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
 class GURL;

@@ -9,7 +9,7 @@
 #include <cstdint>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/common/extensions_export.h"
 

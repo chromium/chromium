@@ -96,7 +96,7 @@ constexpr BasicStringPiece<CharT> MakeBasicStringPiece(Iter begin, Iter end) {
 }
 
 // Explicit instantiations of MakeBasicStringPiece for the BasicStringPiece
-// aliases defined in base/strings/string_piece_forward.h
+// aliases defined in base/strings/string_piece.h
 template <typename Iter>
 constexpr StringPiece MakeStringPiece(Iter begin, Iter end) {
   return MakeBasicStringPiece<char>(begin, end);

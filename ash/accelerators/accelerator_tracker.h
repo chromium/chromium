@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_handler.h"
 

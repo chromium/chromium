@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 // String conversion functions.  By default, they're implemented with ICU, but
