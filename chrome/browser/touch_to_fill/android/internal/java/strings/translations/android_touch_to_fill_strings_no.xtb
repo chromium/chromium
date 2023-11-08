@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1220509181886849806">Vil du bruke det lagrede passordet?</translation>
-<translation id="1435940442311036198">Bruk en tilgangsnøkkel på en annen enhet</translation>
+<translation id="1435940442311036198">Bruk en passnøkkel på en annen enhet</translation>
 <translation id="1580351948163139119">Passord for <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Listen over legitimasjon som kan fylles ut ved å trykke, er åpnet i halv høyde.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
@@ -10,12 +10,12 @@
 <translation id="3399357656427473483">Listen over legitimasjon som kan fylles ut ved å trykke.</translation>
 <translation id="3653689374478248324">Du er i ferd med å logge på <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">Logg på</translation>
-<translation id="4598345735110653698">Administrer tilgangsnøkler</translation>
+<translation id="4598345735110653698">Administrer passnøkler</translation>
 <translation id="4907224763885298217">Bruk skjermlåsen</translation>
-<translation id="5012523644916800014">Administrer passord og tilgangsnøkler</translation>
+<translation id="5012523644916800014">Administrer passord og passnøkler</translation>
 <translation id="5441504010984421144">Listen over legitimasjon som kan fylles ut ved å trykke, er åpnet i full høyde.</translation>
-<translation id="5591247451101092906">Vil du bruke et lagret passord eller en lagret tilgangsnøkkel?</translation>
+<translation id="5591247451101092906">Vil du bruke et lagret passord eller en lagret passnøkkel?</translation>
 <translation id="5624120631404540903">Administrer passord</translation>
-<translation id="7736236483645733578">Tilgangsnøkkel for <ph name="USERNAME" /> – bruk skjermlåsen.</translation>
+<translation id="7736236483645733578">Passnøkkel for <ph name="USERNAME" /> – bruk skjermlåsen.</translation>
 <translation id="8891372124884726271">Listen over legitimasjon er lukket.</translation>
 </translationbundle>

@@ -610,7 +610,7 @@
 <translation id="2213606439339815911">Отримання записів…</translation>
 <translation id="2213612003795704869">Сторінку надруковано</translation>
 <translation id="2215632862494199917">Автомобільні шоу</translation>
-<translation id="2215727959747642672">Редагування файлу</translation>
+<translation id="2215727959747642672">Редагування файлів</translation>
 <translation id="2215963164070968490">Собаки</translation>
 <translation id="2218879909401188352">Зловмисники можуть використати сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, щоб установити небезпечні додатки, які шкодять пристроям, наприклад, додають приховані платежі за мобільний зв’язок або викрадають особисту інформацію. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Переглянути навчальний посібник знову</translation>
@@ -753,7 +753,7 @@
 <translation id="2544546346215446551">Адміністратор перезапустив ваш пристрій</translation>
 <translation id="2544644783021658368">Один документ</translation>
 <translation id="254524874071906077">Установити Chrome веб-переглядачем за умовчанням</translation>
-<translation id="2546283357679194313">Файли cookie й дані із сайтів</translation>
+<translation id="2546283357679194313">Файли cookie й дані сайтів</translation>
 <translation id="2547466893236767989">Веб-дизайн і розробка</translation>
 <translation id="254947805923345898">Недійсне значення правила.</translation>
 <translation id="2549836668759467704">Консультації з будівництва й підряди</translation>
@@ -1348,7 +1348,7 @@
 <translation id="3780694243617746492">Вихідний контейнер</translation>
 <translation id="3781428340399460090">Яскраво-рожевий</translation>
 <translation id="3783418713923659662">Mastercard</translation>
-<translation id="3784372983762739446">Пристрої Bluetooth</translation>
+<translation id="3784372983762739446">Пристрої з Bluetooth</translation>
 <translation id="3789155188480882154">Розмір 16</translation>
 <translation id="3789841737615482174">Установити</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> дюйм.)</translation>

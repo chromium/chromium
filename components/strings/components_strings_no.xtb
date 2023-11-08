@@ -235,7 +235,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1432581352905426595">Administrer søkemotorer</translation>
 <translation id="1433225466058025572">Prøv å flytte filene på nytt</translation>
 <translation id="1434317006812369578">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg mens du surfer, for eksempel Google Safe Browsing. Safe Browsing <ph name="BEGIN_LINK" />har nylig funnet skadelig programvare på <ph name="SITE" /><ph name="END_LINK" />, som er innebygd i nettstedet du prøver å besøke.</translation>
-<translation id="1435940442311036198">Bruk en tilgangsnøkkel på en annen enhet</translation>
+<translation id="1435940442311036198">Bruk en passnøkkel på en annen enhet</translation>
 <translation id="1436185428532214179">Kan be om å få redigere filer og mapper på enheten</translation>
 <translation id="1442386063175183758">Høyre vindusfals</translation>
 <translation id="1442987760062738829">Hull</translation>
@@ -2213,7 +2213,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5578606540385219379">Tjenesteleverandører</translation>
 <translation id="557886905979275351">Barberhøvler og barbermaskiner</translation>
 <translation id="5580958916614886209">Kontroller utløpsmåneden, og prøv igjen</translation>
-<translation id="558420943003240152">Administrer passord og tilgangsnøkler…</translation>
+<translation id="558420943003240152">Administrer passord og passnøkler…</translation>
 <translation id="5586446728396275693">Ingen adresser er lagret</translation>
 <translation id="5586831831248371458">Søk på <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5587987780934666589">Plattformbruker</translation>
@@ -2297,7 +2297,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5764920692828389743">Send til <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">For å se leveringsmetoder og -krav, velg en adresse</translation>
 <translation id="57689295674415555">Ble ikke det virtuelle kortnummeret fylt ut?</translation>
-<translation id="5772086939108830423">Bruk en tilgangsnøkkel på en annen enhet</translation>
+<translation id="5772086939108830423">Bruk en passnøkkel på en annen enhet</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5776574724412881956">Ble ikke det virtuelle kortet fylt inn? Klikk på detaljene for det virtuelle kortet for å kopiere dem til utklippstavlen. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Et eksperiment er slått på</translation>
@@ -2986,7 +2986,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7201591969684833065">Administratoren kan se</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å åpne en ny inkognitofane for privat surfing</translation>
 <translation id="7203375778433816396">Angi Chrome som systemets standardnettleser</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Ingen}=1{1 tilgangsnøkkel}other{# tilgangsnøkler}}</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Ingen}=1{1 passnøkkel}other{# passnøkler}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> retter seg ikke etter sikkerhetsstandardene.</translation>
 <translation id="7210993021468939304">Linux-aktivitet i beholderen, og kan installere og kjøre Linux-apper i beholderen</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Mer informasjon<ph name="END_LINK" /> om dette problemet.</translation>
@@ -3990,7 +3990,7 @@ Mer informasjon:
 <translation id="961930410699694996">Posisjon er tillatt denne gangen</translation>
 <translation id="962484866189421427">Dette innholdet kan prøve å installere villedende apper som gir seg ut for å være noe annet, eller samle inn data som kan brukes til å spore deg. <ph name="BEGIN_LINK" />Vis det likevel<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Alle brukere</translation>
-<translation id="964050462028070434">Administrer passord og tilgangsnøkler…</translation>
+<translation id="964050462028070434">Administrer passord og passnøkler…</translation>
 <translation id="96680173638229310">Biler og kjøretøy</translation>
 <translation id="969892804517981540">Offisiell delversjon</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ingen}=1{1 element}other{# elementer}}</translation>

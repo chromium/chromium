@@ -4286,7 +4286,7 @@
 <translation id="4412547955014928315"><ph name="SITE_NAME" /> とその下にあるすべてのサイトのサイトデータと権限を削除しますか？</translation>
 <translation id="4412632005703201014">Chrome アプリはプログレッシブ ウェブアプリに移行しています。この Chrome アプリは組織によりブラウザにインストールされたものです。アプリのリストからプログレッシブ ウェブアプリを開くには、まず Chrome アプリをアンインストールするよう管理者に依頼します。その間は、<ph name="EXTENSION_LAUNCH_URL" /> にアクセスして、ウェブで <ph name="EXTENSION_NAME" /> を開いてください。</translation>
 <translation id="4412698727486357573">ヘルプセンター</translation>
-<translation id="4412992751769744546">サードパーティの Cookie を許可</translation>
+<translation id="4412992751769744546">サードパーティの Cookie を許可する</translation>
 <translation id="4413087696295876280">ChromeOS Flex のデバイス情報とデータを読み取る</translation>
 <translation id="44141919652824029">接続された USB デバイスのリストを「<ph name="APP_NAME" />」が取得することを許可しますか？</translation>
 <translation id="4414232939543644979">新しいシークレット ウインドウ(&amp;I)</translation>
