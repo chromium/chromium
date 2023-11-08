@@ -10,6 +10,7 @@
 
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_auto_pad.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -129,6 +130,34 @@ webnn::Padding2d CalculatePadding2D(const OptionsType* options,
   }
   return padding;
 }
+
+// Helper to get padding sizes for convolution transpose 2d Node.
+webnn::Padding2d CalculateConvTransposePadding2D(
+    const blink::MLConvTranspose2dOptions* options,
+    uint32_t input_height,
+    uint32_t input_width,
+    uint32_t filter_height,
+    uint32_t filter_width,
+    uint32_t stride_height,
+    uint32_t stride_width,
+    uint32_t dilation_height,
+    uint32_t dilation_width,
+    uint32_t output_padding_height,
+    uint32_t output_padding_width);
+
+// Helper to get output sizes for convolution transpose 2d Node.
+webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
+    const blink::MLConvTranspose2dOptions* options,
+    uint32_t input_height,
+    uint32_t input_width,
+    uint32_t filter_height,
+    uint32_t filter_width,
+    uint32_t stride_height,
+    uint32_t stride_width,
+    uint32_t dilation_height,
+    uint32_t dilation_width,
+    uint32_t output_padding_height,
+    uint32_t output_padding_width);
 
 }  // namespace blink
 

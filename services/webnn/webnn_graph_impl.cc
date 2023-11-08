@@ -151,41 +151,77 @@ bool ValidateActivation(const mojom::ActivationPtr& activation) {
   NOTREACHED_NORETURN();
 }
 
-webnn::Conv2dAttributes ConvertToConv2dAttributes(
+const mojom::Operand* GetMojoOperand(const IdToOperandMap& id_to_operand_map,
+                                     uint64_t operand_id) {
+  const auto operand_iterator = id_to_operand_map.find(operand_id);
+  if (operand_iterator == id_to_operand_map.end()) {
+    // There is no operand for the id.
+    return nullptr;
+  }
+  return operand_iterator->second.get();
+}
+
+template <typename Conv2dAttributesType>
+Conv2dAttributesType ConvertToConv2dAttributes(
     const IdToOperandMap& id_to_operand_map,
-    const webnn::mojom::Conv2dPtr& conv2d) {
-  webnn::Conv2dAttributes component_attributes;
+    const webnn::mojom::Conv2dPtr& conv2d,
+    absl::optional<Operand> bias_operand) {
+  Conv2dAttributesType attributes_base;
   // Convert padding, strides, dilations.
   auto& mojo_padding = conv2d->padding;
-  component_attributes.padding = webnn::Padding2d{
+  attributes_base.padding = webnn::Padding2d{
       .beginning =
           webnn::Size2d<uint32_t>{.height = mojo_padding->beginning->height,
                                   .width = mojo_padding->beginning->width},
       .ending = webnn::Size2d<uint32_t>{.height = mojo_padding->ending->height,
                                         .width = mojo_padding->ending->width}};
-  component_attributes.strides = webnn::Size2d<uint32_t>{
+  attributes_base.strides = webnn::Size2d<uint32_t>{
       .height = conv2d->strides->height, .width = conv2d->strides->width};
-  component_attributes.dilations = webnn::Size2d<uint32_t>{
+  attributes_base.dilations = webnn::Size2d<uint32_t>{
       .height = conv2d->dilations->height, .width = conv2d->dilations->width};
 
-  // Convert groups, input and filter layout.
-  component_attributes.groups = conv2d->groups;
-  component_attributes.input_layout =
+  // Convert groups, input layout and bias.
+  attributes_base.groups = conv2d->groups;
+  attributes_base.input_layout =
       MojoInputOperandLayoutToComponent(conv2d->input_layout);
-  // The filter only supports default `Oihw` layout in mojo definition, other
-  // variants are being discussed in WebNN working group:
-  // https://github.com/webmachinelearning/webnn/issues/324.
-  component_attributes.filter_layout = webnn::Conv2dFilterOperandLayout::kOihw;
+  attributes_base.bias_operand = std::move(bias_operand);
 
-  // Convert to componment operand type with bias id.
-  auto& bias_operand_id = conv2d->bias_operand_id;
-  if (bias_operand_id) {
-    const auto bias_operand_iterator =
-        id_to_operand_map.find(bias_operand_id.value());
-    CHECK(bias_operand_iterator != id_to_operand_map.end());
-    component_attributes.bias_operand =
-        ConvertToComponentOperand(bias_operand_iterator->second.get());
+  return std::move(attributes_base);
+}
+
+webnn::Conv2dAttributes ConvertToConv2dAttributes(
+    const IdToOperandMap& id_to_operand_map,
+    const webnn::mojom::Conv2dPtr& conv2d,
+    absl::optional<Operand> bias_operand) {
+  return ConvertToConv2dAttributes<webnn::Conv2dAttributes>(
+      id_to_operand_map, conv2d, std::move(bias_operand));
+}
+
+webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
+    const IdToOperandMap& id_to_operand_map,
+    const webnn::mojom::Conv2dPtr& conv2d,
+    absl::optional<Operand> bias_operand) {
+  auto component_attributes =
+      ConvertToConv2dAttributes<webnn::ConvTranspose2dAttributes>(
+          id_to_operand_map, conv2d, std::move(bias_operand));
+
+  // Convert the output sizes that fetched from dimensions of output operand.
+  auto* output = GetMojoOperand(id_to_operand_map, conv2d->output_operand_id);
+  CHECK_EQ(output->dimensions.size(), 4u);
+  webnn::Size2d<uint32_t> output_sizes;
+  switch (conv2d->input_layout) {
+    case webnn::mojom::InputOperandLayout::kChannelsFirst:
+      // "channelsFirst": [batches, input_channels, height, width]
+      output_sizes.height = output->dimensions[2];
+      output_sizes.width = output->dimensions[3];
+      break;
+    case webnn::mojom::InputOperandLayout::kChannelsLast:
+      // "channelsLast": [batches, height, width, input_channels]
+      output_sizes.height = output->dimensions[1];
+      output_sizes.width = output->dimensions[2];
+      break;
   }
+  component_attributes.output_sizes = std::move(output_sizes);
 
   return component_attributes;
 }
@@ -251,16 +287,6 @@ webnn::SliceAttributes ConvertToSliceAttributes(
     component_attributes.sizes.push_back(start_and_size->size);
   }
   return component_attributes;
-}
-
-const mojom::Operand* GetMojoOperand(const IdToOperandMap& id_to_operand_map,
-                                     uint64_t operand_id) {
-  const auto operand_iterator = id_to_operand_map.find(operand_id);
-  if (operand_iterator == id_to_operand_map.end()) {
-    // There is no operand for the id.
-    return nullptr;
-  }
-  return operand_iterator->second.get();
 }
 
 bool ValidateUnaryOperation(const mojom::Operand* input,
@@ -357,10 +383,22 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
     // The conv2d operator is invalid.
     return false;
   }
-  auto& bias_operand_id = conv2d->bias_operand_id;
-  if (bias_operand_id && !id_to_operand_map.contains(bias_operand_id.value())) {
-    // Invalid bias operand.
+  if (output->dimensions.size() != 4) {
+    // The element of output dimensions should be 4.
     return false;
+  }
+
+  absl::optional<webnn::Operand> bias_operand;
+  auto& bias_operand_id = conv2d->bias_operand_id;
+  if (bias_operand_id) {
+    const auto bias_operand_iterator =
+        id_to_operand_map.find(bias_operand_id.value());
+    if (bias_operand_iterator == id_to_operand_map.end()) {
+      // Invalid bias operand.
+      return false;
+    }
+    bias_operand =
+        ConvertToComponentOperand(bias_operand_iterator->second.get());
   }
 
   // Validate the activation if the option is configured.
@@ -369,9 +407,25 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
     // The activation is invalid.
     return false;
   }
-  auto validated_output = ValidateConv2dAndInferOutput(
-      ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
-      ConvertToConv2dAttributes(id_to_operand_map, conv2d));
+
+  absl::optional<base::expected<Operand, std::string>> validated_output;
+  switch (conv2d->type) {
+    case mojom::Conv2d_Type::kDirect: {
+      validated_output = ValidateConv2dAndInferOutput(
+          ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
+          ConvertToConv2dAttributes(id_to_operand_map, conv2d,
+                                    std::move(bias_operand)));
+      break;
+    }
+
+    case mojom::Conv2d_Type::kTransposed: {
+      validated_output = ValidateConvTranspose2dAndInferOutput(
+          ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
+          ConvertToConvTranspose2dAttributes(id_to_operand_map, conv2d,
+                                             std::move(bias_operand)));
+      break;
+    }
+  }
   if (!validated_output.has_value()) {
     return false;
   }

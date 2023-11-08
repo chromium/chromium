@@ -120,6 +120,20 @@ webnn::Conv2dFilterOperandLayout BlinkConv2dFilterLayoutToComponent(
   NOTREACHED_NORETURN();
 }
 
+webnn::ConvTranspose2dFilterOperandLayout
+BlinkConvTranspose2dFilterLayoutToComponent(
+    blink::V8MLConvTranspose2dFilterOperandLayout::Enum type) {
+  switch (type) {
+    case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw:
+      return webnn::ConvTranspose2dFilterOperandLayout::kIohw;
+    case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kHwoi:
+      return webnn::ConvTranspose2dFilterOperandLayout::kHwoi;
+    case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi:
+      return webnn::ConvTranspose2dFilterOperandLayout::kOhwi;
+  }
+  NOTREACHED_NORETURN();
+}
+
 webnn::RoundingType BlinkRoundingTypeToComponent(
     blink::V8MLRoundingType::Enum type) {
   switch (type) {
@@ -159,10 +173,11 @@ webnn::ReduceKind BlinkReduceKindToComponent(
   }
 }
 
-base::expected<webnn::Conv2dAttributes, String> ConvertToConv2dAttributes(
-    const blink::MLConv2dOptions* options) {
+template <typename MLConv2dOptionsType, typename Conv2dAttributesType>
+base::expected<Conv2dAttributesType, String> ConvertToConv2dAttributesBase(
+    const MLConv2dOptionsType* options) {
+  Conv2dAttributesType attributes;
   CHECK(options);
-  webnn::Conv2dAttributes attributes;
   // If padding is not present, the values are assumed to be [0,0,0,0].
   auto padding = options->getPaddingOr({0, 0, 0, 0});
   if (padding.size() != 4) {
@@ -195,11 +210,58 @@ base::expected<webnn::Conv2dAttributes, String> ConvertToConv2dAttributes(
   attributes.groups = options->groups();
   attributes.input_layout =
       BlinkInputOperandLayoutToComponent(options->inputLayout().AsEnum());
-  attributes.filter_layout =
-      BlinkConv2dFilterLayoutToComponent(options->filterLayout().AsEnum());
   if (options->hasBias()) {
     attributes.bias_operand = ConvertToComponentOperand(options->bias());
   }
+
+  return std::move(attributes);
+}
+
+base::expected<webnn::Conv2dAttributes, String> ConvertToConv2dAttributes(
+    const blink::MLConv2dOptions* options) {
+  auto attributes =
+      ConvertToConv2dAttributesBase<blink::MLConv2dOptions,
+                                    webnn::Conv2dAttributes>(options);
+  if (!attributes.has_value()) {
+    return base::unexpected(attributes.error());
+  }
+  attributes.value().filter_layout =
+      BlinkConv2dFilterLayoutToComponent(options->filterLayout().AsEnum());
+
+  return attributes;
+}
+
+base::expected<webnn::ConvTranspose2dAttributes, String>
+ConvertToConvTranspose2dAttributes(
+    const blink::MLConvTranspose2dOptions* options) {
+  auto attributes =
+      ConvertToConv2dAttributesBase<blink::MLConvTranspose2dOptions,
+                                    webnn::ConvTranspose2dAttributes>(options);
+  if (!attributes.has_value()) {
+    return base::unexpected(attributes.error());
+  }
+
+  // If output padding is not present, the values are assumed to be [0,0].
+  const auto output_padding = options->getOutputPaddingOr({0, 0});
+  if (output_padding.size() != 2) {
+    return base::unexpected("The length of output padding should be 2.");
+  }
+  attributes.value().output_padding = webnn::Size2d<uint32_t>{
+      .height = output_padding[0], .width = output_padding[1]};
+
+  if (options->hasOutputSizes()) {
+    auto output_sizes = options->getOutputSizesOr({});
+    if (output_sizes.size() != 2) {
+      return base::unexpected("The length of output sizes should be 2.");
+    }
+    attributes.value().output_sizes = webnn::Size2d<uint32_t>{
+        .height = output_sizes[0], .width = output_sizes[1]};
+  }
+
+  attributes.value().filter_layout =
+      BlinkConvTranspose2dFilterLayoutToComponent(
+          options->filterLayout().AsEnum());
+
   return attributes;
 }
 
@@ -453,177 +515,6 @@ MLContext* MLGraphBuilder::GetContext() const {
   return ml_context_.Get();
 }
 
-// static
-absl::optional<webnn::PaddingSizes>
-MLGraphBuilder::CalculateConvTransposed2dPadding(
-    V8MLAutoPad::Enum auto_pad,
-    const uint32_t input_size,
-    const uint32_t filter_size,
-    const uint32_t stride,
-    const uint32_t dilation,
-    const uint32_t output_padding) {
-  auto checked_output_size =
-      base::MakeCheckedNum<uint32_t>(input_size) * stride;
-  auto checked_effective_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  auto checked_total_padding = stride * (input_size - 1) +
-                               checked_effective_filter_size + output_padding -
-                               checked_output_size;
-  base::CheckedNumeric<uint32_t> checked_padding_begin, checked_padding_end;
-  switch (auto_pad) {
-    case V8MLAutoPad::Enum::kSameUpper:
-      checked_padding_begin = checked_total_padding / 2;
-      checked_padding_end = (checked_total_padding + 1) / 2;
-      break;
-    case V8MLAutoPad::Enum::kSameLower:
-      checked_padding_begin = (checked_total_padding + 1) / 2;
-      checked_padding_end = checked_total_padding / 2;
-      break;
-    case V8MLAutoPad::Enum::kExplicit:
-      // The case has been ruled out before the function be called.
-      NOTREACHED_NORETURN()
-          << "Invalid auto pad value when calculating convTranspose2d padding.";
-  }
-  uint32_t padding_begin, padding_end;
-  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
-      !checked_padding_end.AssignIfValid(&padding_end)) {
-    return absl::nullopt;
-  }
-  return webnn::PaddingSizes({.begin = padding_begin, .end = padding_end});
-}
-
-// Calculate the output size for convTranspose2d based on WebNN spec:
-// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-convtranspose2d
-// Return the calculated output size if no error.
-base::expected<uint32_t, String> CalculateConvTranspose2dOutputSize(
-    const uint32_t input_size,
-    const uint32_t filter_size,
-    const uint32_t beginning_padding,
-    const uint32_t ending_padding,
-    const uint32_t stride,
-    const uint32_t dilation,
-    const uint32_t output_padding) {
-  // Calculate the dilated filter sizes.
-  auto checked_effective_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  if (!checked_effective_filter_size.IsValid()) {
-    return base::unexpected("The effective filter size is too large.");
-  }
-  auto checked_output_size =
-      (base::MakeCheckedNum<uint32_t>(input_size) - 1) * stride +
-      checked_effective_filter_size - beginning_padding - ending_padding +
-      output_padding;
-  // Check if the checked_output_size is valid.
-  if (!checked_output_size.IsValid()) {
-    return base::unexpected(
-        "The stride is too large or the input size is to small for padding.");
-  }
-
-  return checked_output_size.ValueOrDie();
-}
-
-// static
-base::expected<MLGraphBuilder::Size2D, String>
-MLGraphBuilder::ValidateAndCalculateConvTranspose2dOutputSizes(
-    const uint32_t input_height,
-    const uint32_t input_width,
-    const uint32_t filter_height,
-    const uint32_t filter_width,
-    const Vector<uint32_t>& padding,
-    const Vector<uint32_t>& strides,
-    const Vector<uint32_t>& dilations,
-    const Vector<uint32_t>& output_padding,
-    const V8MLAutoPad auto_pad) {
-  // Validate padding and get its values.
-  if (padding.size() != 4) {
-    return base::unexpected("The length of padding should be 4.");
-  }
-  uint32_t padding_beginning_height = padding[0];
-  uint32_t padding_ending_height = padding[1];
-  uint32_t padding_beginning_width = padding[2];
-  uint32_t padding_ending_width = padding[3];
-
-  // Validate strides and get its values.
-  if (strides.size() != 2) {
-    return base::unexpected("The length of strides should be 2.");
-  }
-  if (base::ranges::any_of(strides, [](uint32_t x) { return x == 0; })) {
-    return base::unexpected("All strides should be greater than 0.");
-  }
-  const uint32_t stride_height = strides[0];
-  const uint32_t stride_width = strides[1];
-
-  // Validate dilations and get its values.
-  if (dilations.size() != 2) {
-    return base::unexpected("The length of dilations should be 2.");
-  }
-  if (base::ranges::any_of(dilations, [](uint32_t x) { return x == 0; })) {
-    return base::unexpected("All dilations should be greater than 0.");
-  }
-  const uint32_t dilation_height = dilations[0];
-  const uint32_t dilation_width = dilations[1];
-
-  // Validate output padding and get its values.
-  if (output_padding.size() != 2) {
-    return base::unexpected("The length of outputPadding should be 2.");
-  }
-  const uint32_t outputPadding_height = output_padding[0];
-  const uint32_t outputPadding_width = output_padding[1];
-  if (outputPadding_height >= stride_height ||
-      outputPadding_width >= stride_width) {
-    return base::unexpected(
-        "The output padding must be smaller than the stride along the same "
-        "dimension.");
-  }
-
-  // When the autoPad is other than "explicit", the values in the
-  // options.padding array are ignored and the explicit padding values need to
-  // be calculated.
-  if (auto_pad != V8MLAutoPad::Enum::kExplicit) {
-    auto padding_sizes_height =
-        MLGraphBuilder::CalculateConvTransposed2dPadding(
-            auto_pad.AsEnum(), input_height, filter_height, stride_height,
-            dilation_height, outputPadding_height);
-    if (!padding_sizes_height) {
-      return base::unexpected(
-          "Overflow occurred when calculating the padding along the height "
-          "dimension.");
-    }
-    padding_beginning_height = padding_sizes_height->begin;
-    padding_ending_height = padding_sizes_height->end;
-    auto padding_sizes_width = MLGraphBuilder::CalculateConvTransposed2dPadding(
-        auto_pad.AsEnum(), input_width, filter_width, stride_width,
-        dilation_width, outputPadding_width);
-    if (!padding_sizes_width) {
-      return base::unexpected(
-          "Overflow occurred when calculating the padding along the width "
-          "dimension.");
-    }
-    padding_beginning_width = padding_sizes_width->begin;
-    padding_ending_width = padding_sizes_width->end;
-  }
-
-  auto output_height = CalculateConvTranspose2dOutputSize(
-      input_height, filter_height, padding_beginning_height,
-      padding_ending_height, stride_height, dilation_height,
-      outputPadding_height);
-  if (!output_height.has_value()) {
-    return base::unexpected("Failed to calculate the output height: " +
-                            output_height.error());
-  }
-
-  auto output_width = CalculateConvTranspose2dOutputSize(
-      input_width, filter_width, padding_beginning_width, padding_ending_width,
-      stride_width, dilation_width, outputPadding_width);
-  if (!output_width.has_value()) {
-    return base::unexpected("Failed to calculate the output width: " +
-                            output_width.error());
-  }
-
-  return Size2D(
-      {.height = output_height.value(), .width = output_width.value()});
-}
-
 MLOperand* MLGraphBuilder::input(String name,
                                  const MLOperandDescriptor* desc,
                                  ExceptionState& exception_state) {
@@ -756,190 +647,21 @@ MLOperand* MLGraphBuilder::convTranspose2d(
     const MLOperand* filter,
     const MLConvTranspose2dOptions* options,
     ExceptionState& exception_state) {
-  // Validate input operand and set its sizes.
-  const auto input_shape = input->Dimensions();
-  if (input_shape.size() != 4) {
+  auto convTranspose2d_attributes = ConvertToConvTranspose2dAttributes(options);
+  if (!convTranspose2d_attributes.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The input should be a 4-D tensor.");
+                                      convTranspose2d_attributes.error());
     return nullptr;
   }
-  // The input layout option specifies the layout format of the input tensor.
-  uint32_t input_batches, input_channels, input_height, input_width;
-  switch (options->inputLayout().AsEnum()) {
-    case V8MLInputOperandLayout::Enum::kNchw:
-      // "nchw": [batches, input_channels, height, width]
-      input_batches = input_shape[0];
-      input_channels = input_shape[1];
-      input_height = input_shape[2];
-      input_width = input_shape[3];
-      break;
-    case V8MLInputOperandLayout::Enum::kNhwc:
-      // "nhwc": [batches, height, width, input_channels]
-      input_batches = input_shape[0];
-      input_height = input_shape[1];
-      input_width = input_shape[2];
-      input_channels = input_shape[3];
-      break;
-  }
 
-  // Validate filter operand and set its sizes.
-  if (filter->Type() != input->Type()) {
+  auto validated_output = webnn::ValidateConvTranspose2dAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
+      std::move(convTranspose2d_attributes.value()));
+  if (!validated_output.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "The filter type doesn't match the input type.");
+        WTF::String::FromUTF8(validated_output.error()));
     return nullptr;
-  }
-  const auto filter_shape = filter->Dimensions();
-  if (filter_shape.size() != 4) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The filter should be a 4-D tensor.");
-    return nullptr;
-  }
-  // The filter layout specifies the filter layout format.
-  uint32_t filter_height, filter_width, output_channels, filter_input_channels;
-  switch (options->filterLayout().AsEnum()) {
-    case V8MLConvTranspose2dFilterOperandLayout::Enum::kHwoi:
-      // "hwoi": [height, width, output_channels, input_channels/groups]
-      filter_height = filter_shape[0];
-      filter_width = filter_shape[1];
-      output_channels = filter_shape[2];
-      filter_input_channels = filter_shape[3];
-      break;
-    case V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi:
-      // "ohwi": [output_channels, height, width, input_channels/groups]
-      output_channels = filter_shape[0];
-      filter_height = filter_shape[1];
-      filter_width = filter_shape[2];
-      filter_input_channels = filter_shape[3];
-      break;
-    case V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw:
-      // "iohw": [input_channels/groups, output_channels, height, width]
-      filter_input_channels = filter_shape[0];
-      output_channels = filter_shape[1];
-      filter_height = filter_shape[2];
-      filter_width = filter_shape[3];
-      break;
-  }
-  // Validate bias operand if it is present.
-  if (options->hasBias()) {
-    const auto bias_shape = options->bias()->Dimensions();
-    if (bias_shape.size() != 1) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "The bias should be a 1-D tensor.");
-      return nullptr;
-    }
-    if (bias_shape[0] != output_channels) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          String::Format("The bias shape should be [%u].", output_channels));
-      return nullptr;
-    }
-    if (options->bias()->Type() != input->Type()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "The bias type doesn't match input type.");
-      return nullptr;
-    }
-  }
-  // Validate groups.
-  if (options->groups() == 0) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The groups should be greater than 0.");
-    return nullptr;
-  }
-  if (input_channels % options->groups() != 0 ||
-      filter_input_channels != input_channels / options->groups()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The groups must evenly divide the input "
-                                      "channels to filter input channels.");
-    return nullptr;
-  }
-
-  // Validate and calculate output sizes.
-  uint32_t output_height, output_width;
-  if (options->hasOutputSizes()) {
-    const auto output_sizes = options->getOutputSizesOr({});
-    if (output_sizes.size() != 2) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "The length of outputSizes should be 2.");
-      return nullptr;
-    }
-    output_height = output_sizes[0];
-    output_width = output_sizes[1];
-    if (output_height == 0 || output_width == 0) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "All output sizes should be greater than 0.");
-      return nullptr;
-    }
-    // If strides is not present, the values are assumed to be [1,1].
-    const auto strides = options->getStridesOr({1, 1});
-    const auto calculated_output_sizes =
-        ValidateAndCalculateConvTranspose2dOutputSizes(
-            input_height, input_width, filter_height, filter_width,
-            // If padding is not present, the values are assumed to be
-            // [0,0,0,0].
-            options->getPaddingOr({0, 0, 0, 0}), strides,
-            // If dilations is not present, the values are assumed to be [1, 1].
-            options->getDilationsOr({1, 1}),
-            // Calculate the output sizes without the output padding.
-            {0, 0}, options->autoPad());
-    if (!calculated_output_sizes.has_value()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        calculated_output_sizes.error());
-      return nullptr;
-    }
-    auto calculated_output_height = calculated_output_sizes->height;
-    auto calculated_output_width = calculated_output_sizes->width;
-    if (output_height < calculated_output_height ||
-        output_height >= calculated_output_height + strides[0]) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "The height of output sizes is invalid.");
-      return nullptr;
-    }
-    if (output_width < calculated_output_width ||
-        output_width >= calculated_output_width + strides[1]) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "The width of output sizes is invalid.");
-      return nullptr;
-    }
-    ml_context_->LogConsoleWarning(
-        "When output sizes are specified, output padding argument is ignored");
-  } else {
-    const auto output_sizes = ValidateAndCalculateConvTranspose2dOutputSizes(
-        input_height, input_width, filter_height, filter_width,
-        // If padding is not present, the values are assumed to be [0,0,0,0].
-        options->getPaddingOr({0, 0, 0, 0}),
-        // If strides is not present, the values are assumed to be [1,1].
-        options->getStridesOr({1, 1}),
-        // If dilations is not present, the values are assumed to be [1, 1].
-        options->getDilationsOr({1, 1}),
-        // If outputPadding is not present, the values are assumed to be [0, 0].
-        options->getOutputPaddingOr({0, 0}), options->autoPad());
-    if (!output_sizes.has_value()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        output_sizes.error());
-      return nullptr;
-    }
-    output_height = output_sizes->height;
-    output_width = output_sizes->width;
-  }
-  // The input layout option specifies the layout format of the output tensor.
-  Vector<uint32_t> output_shape;
-  switch (options->inputLayout().AsEnum()) {
-    case V8MLInputOperandLayout::Enum::kNchw:
-      // "nchw": [batches, output_channels, height, width]
-      output_shape = {input_batches, output_channels, output_height,
-                      output_width};
-      break;
-    case V8MLInputOperandLayout::Enum::kNhwc:
-      // "nhwc": [batches, height, width, output_channels]
-      output_shape = {input_batches, output_height, output_width,
-                      output_channels};
-      break;
   }
   // Create convTranspose2d operator and its output operand. Connect the
   // convTranspose2d operator to its input and output operands.
@@ -950,7 +672,8 @@ MLOperand* MLGraphBuilder::convTranspose2d(
     inputs.push_back(options->bias());
   }
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, input->Type(), std::move(output_shape), convTranspose2d);
+      this, ComponentOperandTypeToBlink(validated_output.value().data_type),
+      Vector<uint32_t>(validated_output.value().dimensions), convTranspose2d);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       output.error());

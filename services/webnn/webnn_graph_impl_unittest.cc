@@ -440,6 +440,7 @@ TEST_F(WebNNGraphImplTest, ConcatTest) {
 }
 
 struct Conv2dTester {
+  mojom::Conv2d_Type type;
   OperandInfo input;
   OperandInfo filter;
   struct Conv2dAttributes {
@@ -475,8 +476,9 @@ struct Conv2dTester {
 
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    builder.BuildConv2d(input_operand_id, filter_operand_id, output_operand_id,
-                        std::move(attributes), bias_operand_id);
+    builder.BuildConv2d(type, input_operand_id, filter_operand_id,
+                        output_operand_id, std::move(attributes),
+                        bias_operand_id);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
@@ -484,7 +486,8 @@ struct Conv2dTester {
 TEST_F(WebNNGraphImplTest, Conv2dTest) {
   {
     // Test conv2d with default attributes.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
@@ -495,7 +498,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test conv2d for same upper or lower padding.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kInt8,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kInt8,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kInt8,
                             .dimensions = {1, 1, 3, 3}},
@@ -507,7 +511,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test conv2d with strides=2 and padding=1.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kInt8,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kInt8,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kInt8,
                             .dimensions = {1, 1, 3, 3}},
@@ -519,7 +524,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test depthwise conv2d by setting groups to input channels.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kInt8,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kInt8,
                            .dimensions = {1, 4, 2, 2}},
                  .filter = {.type = mojom::Operand::DataType::kInt8,
                             .dimensions = {4, 1, 2, 2}},
@@ -531,7 +537,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test conv2d with inputLayout="nchw" and filterLayout="oihw".
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kInt8,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kInt8,
                            .dimensions = {1, 2, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kInt8,
                             .dimensions = {1, 2, 3, 3}},
@@ -544,7 +551,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test conv2d with clamp activation.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
@@ -586,7 +594,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test conv2d with relu activation.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
@@ -598,7 +607,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test conv2d with sigmoid activation.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
@@ -610,7 +620,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test conv2d with softmax activation.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
@@ -622,7 +633,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test conv2d with tanh activation.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
@@ -647,7 +659,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test the invalid graph when the input is not a 4-D tensor.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
@@ -658,7 +671,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test the invalid graph when the filter is not a 4-D tensor.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 3, 3}},
@@ -670,7 +684,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   {
     // Test the invalid graph when the filter type doesn't match the input
     // type.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kInt32,
                             .dimensions = {1, 1, 3, 3}},
@@ -682,6 +697,7 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   {
     // Test the invalid graph when the bias type doesn't match input type.
     Conv2dTester{
+        .type = mojom::Conv2d_Type::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
         .filter = {.type = mojom::Operand::DataType::kFloat32,
@@ -698,6 +714,7 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
     // Test the invalid graph when the bias shape is not equal to
     // [output_channels].
     Conv2dTester{
+        .type = mojom::Conv2d_Type::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
         .filter = {.type = mojom::Operand::DataType::kFloat32,
@@ -712,8 +729,23 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
         .Test();
   }
   {
+    // Test the invalid graph when the number of filter input channels doesn't
+    // match the result of input channels divided by groups
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 5, 5}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.groups = 3},
+                 .output = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .expected = false}
+        .Test();
+  }
+  {
     // Test the invalid graph when the max value is less than the min value.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
@@ -728,7 +760,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test the invalid graph for the output shapes are not expected.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
@@ -739,7 +772,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
   }
   {
     // Test the invalid graph for output types don't match.
-    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+    Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
                  .filter = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
@@ -747,6 +781,338 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
                             .dimensions = {1, 1, 3, 3}},
                  .expected = false}
         .Test();
+  }
+  {
+    // Test the invalid graph for input operand == output operand.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
+    uint64_t filter_operand_id = builder.BuildInput(
+        "filter", {1, 1, 3, 3}, mojom::Operand::DataType::kFloat32);
+
+    builder.BuildConv2d(mojom::Conv2d_Type::kDirect, input_operand_id,
+                        filter_operand_id, input_operand_id,
+                        Conv2dTester::Conv2dAttributes{}, absl::nullopt);
+
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph for filter operand == output operand.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 1, 5, 5}, mojom::Operand::DataType::kFloat32);
+    uint64_t filter_operand_id = builder.BuildInput(
+        "filter", {1, 1, 3, 3}, mojom::Operand::DataType::kFloat32);
+
+    builder.BuildConv2d(mojom::Conv2d_Type::kDirect, input_operand_id,
+                        filter_operand_id, filter_operand_id,
+                        Conv2dTester::Conv2dAttributes{}, absl::nullopt);
+
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
+TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
+  {
+    // Test convTranspose2d with default attributes.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test convTranspose2d with input_layout = kChannelsLast.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 3, 3, 1}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.input_layout =
+                                    mojom::InputOperandLayout::kChannelsLast},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 5, 5, 1}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test convTranspose2d with padding = [1, 1, 1, 1].
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 5, 5}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.padding = {1, 1, 1, 1}},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test convTranspose2d with strides = [2, 2].
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 2, 3, 3}},
+                 .attributes = {.strides = {2, 2}},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 2, 7, 7}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test convTranspose2d with strides = [2, 2] and padding = [1, 1, 1, 1].
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.padding = {1, 1, 1, 1}, .strides = {2, 2}},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test convTranspose2d with group = 3.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.groups = 3},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 3, 5, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test convTranspose2d with clamp activation.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.activation = mojom::Activation::Tag::kClamp,
+                                .clamp_attributes =
+                                    ClampTester::ClampAttributes{
+                                        .min_value = 1.0, .max_value = 6.0}},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test convTranspose2d with relu activation.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.activation = mojom::Activation::Tag::kRelu},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test convTranspose2d with sigmoid activation.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.activation = mojom::Activation::Tag::kSigmoid},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test convTranspose2d with softmax activation.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.activation = mojom::Activation::Tag::kSoftmax},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test convTranspose2d with tanh activation.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.activation = mojom::Activation::Tag::kTanh},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 5, 5}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .output = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the input is not a 4-D tensor.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .output = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the filter is not a 4-D tensor.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 3, 3}},
+                 .output = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the number of input channels is not equal to
+    // the number of filter input channels.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3, 1, 3, 3}},
+                 .attributes = {.groups = 3},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 3, 5, 5}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the number of output channels doesn't match
+    // the result of filter output channels multiplied by groups
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.groups = 3},
+                 .output = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the filter type doesn't match the input
+    // type.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the bias type doesn't match input type.
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.bias =
+                           OperandInfo{.type = mojom::Operand::DataType::kInt32,
+                                       .dimensions = {1}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the bias shape is not equal to
+    // [output_channels].
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kTransposed,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.bias =
+                           OperandInfo{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the max value is less than the min value.
+    Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
+                 .input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 3, 3}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.activation = mojom::Activation::Tag::kClamp,
+                                .clamp_attributes =
+                                    ClampTester::ClampAttributes{
+                                        .min_value = 6.0, .max_value = 1.0}},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 5, 5}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for input operand == output operand.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 1, 3, 3}, mojom::Operand::DataType::kFloat32);
+    uint64_t filter_operand_id = builder.BuildInput(
+        "filter", {1, 1, 3, 3}, mojom::Operand::DataType::kFloat32);
+
+    builder.BuildConv2d(mojom::Conv2d_Type::kTransposed, input_operand_id,
+                        filter_operand_id, input_operand_id,
+                        Conv2dTester::Conv2dAttributes{}, absl::nullopt);
+
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph for filter operand == output operand.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 1, 3, 3}, mojom::Operand::DataType::kFloat32);
+    uint64_t filter_operand_id = builder.BuildInput(
+        "filter", {1, 1, 3, 3}, mojom::Operand::DataType::kFloat32);
+
+    builder.BuildConv2d(mojom::Conv2d_Type::kTransposed, input_operand_id,
+                        filter_operand_id, filter_operand_id,
+                        Conv2dTester::Conv2dAttributes{}, absl::nullopt);
+
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
 }
 
