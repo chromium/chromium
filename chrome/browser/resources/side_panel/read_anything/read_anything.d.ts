@@ -4,6 +4,11 @@
 
 /** @fileoverview Definitions for chrome.readingMode API */
 
+// Add non-standard function to element for TS to compile correctly.
+interface Element {
+  scrollIntoViewIfNeeded: () => void;
+}
+
 declare namespace chrome {
   export namespace readingMode {
     /////////////////////////////////////////////////////////////////////

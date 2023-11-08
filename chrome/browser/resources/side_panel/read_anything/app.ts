@@ -68,18 +68,18 @@ const previousReadHighlightClass = 'previous-read-highlight';
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
-class TwoWayMap extends Map {
-  #reverseMap;
+class TwoWayMap<K, V> extends Map<K, V> {
+  #reverseMap: Map<V, K>;
   constructor() {
     super();
     this.#reverseMap = new Map();
   }
-  override set(key: Node, value: number) {
+  override set(key: K, value: V) {
     super.set(key, value);
     this.#reverseMap.set(value, key);
     return this;
   }
-  keyFrom(value: number) {
+  keyFrom(value: V) {
     return this.#reverseMap.get(value);
   }
   override clear() {
@@ -172,7 +172,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and
   // AXNodeIDs are unique, so this is a two way map where either DOM node or
   // AXNodeID can be used to access the other.
-  private domNodeToAxNodeIdMap_: TwoWayMap = new TwoWayMap();
+  private domNodeToAxNodeIdMap_: TwoWayMap<Node, number> = new TwoWayMap();
 
   private scrollingOnSelection_: boolean;
   private hasContent_: boolean;
