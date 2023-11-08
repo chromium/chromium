@@ -350,6 +350,7 @@ AppPtr PluginVmApps::CreateApp(
   app->show_in_shelf = false;
   app->show_in_management = false;
   app->allow_uninstall = false;
+  app->allow_close = true;
   app->handles_intents = true;
   app->intent_filters = CreateIntentFilterForPluginVm(registration);
   return app;

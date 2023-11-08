@@ -51,6 +51,7 @@ AppPtr RemoteApps::CreateApp(const ash::RemoteAppsModel::AppInfo& info) {
   app->show_in_shelf = false;
   app->handles_intents = true;
   app->allow_uninstall = false;
+  app->allow_close = true;
   return app;
 }
 

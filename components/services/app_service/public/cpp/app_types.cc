@@ -130,6 +130,9 @@ bool App::operator==(const App& other) const {
   if (this->run_on_os_login != other.run_on_os_login) {
     return false;
   }
+  if (this->allow_close != other.allow_close) {
+    return false;
+  }
   if (this->app_size_in_bytes != other.app_size_in_bytes) {
     return false;
   }
@@ -200,6 +203,7 @@ AppPtr App::Clone() const {
     app->run_on_os_login = apps::RunOnOsLogin(run_on_os_login->login_mode,
                                               run_on_os_login->is_managed);
   }
+  app->allow_close = allow_close;
 
   app->app_size_in_bytes = app_size_in_bytes;
   app->data_size_in_bytes = data_size_in_bytes;

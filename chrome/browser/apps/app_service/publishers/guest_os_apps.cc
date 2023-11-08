@@ -159,6 +159,7 @@ AppPtr GuestOSApps::CreateApp(
   app->show_in_shelf = show;
   app->show_in_management = false;
   app->allow_uninstall = false;
+  app->allow_close = true;
 
   // Add intent filters based on file extensions.
   app->handles_intents = true;

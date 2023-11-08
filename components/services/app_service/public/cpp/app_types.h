@@ -224,6 +224,9 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // Whether the app runs on os login in a new window or not.
   absl::optional<RunOnOsLogin> run_on_os_login;
 
+  // Whether the app can be closed by the user.
+  absl::optional<bool> allow_close;
+
   // Storage space size for app and associated data.
   absl::optional<uint64_t> app_size_in_bytes;
   absl::optional<uint64_t> data_size_in_bytes;

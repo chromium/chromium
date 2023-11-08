@@ -125,6 +125,9 @@ class AppUpdateTest : public testing::Test {
   absl::optional<RunOnOsLogin> expect_run_on_os_login_;
   bool expect_run_on_os_login_changed_;
 
+  absl::optional<bool> expect_allow_close_;
+  bool expect_allow_close_changed_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   absl::optional<uint64_t> expect_app_size_in_bytes_;
@@ -170,6 +173,7 @@ class AppUpdateTest : public testing::Test {
     expect_resize_locked_changed_ = false;
     expect_window_mode_changed_ = false;
     expect_run_on_os_login_changed_ = false;
+    expect_allow_close_changed_ = false;
     expect_app_size_in_bytes_changed_ = false;
     expect_data_size_in_bytes_changed_ = false;
     expect_supported_locales_changed_ = false;
@@ -269,6 +273,9 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_run_on_os_login_, u.RunOnOsLogin());
     EXPECT_EQ(expect_run_on_os_login_changed_, u.RunOnOsLoginChanged());
 
+    EXPECT_EQ(expect_allow_close_, u.AllowClose());
+    EXPECT_EQ(expect_allow_close_changed_, u.AllowCloseChanged());
+
     EXPECT_EQ(account_id_, u.AccountId());
 
     EXPECT_EQ(expect_app_size_in_bytes_, u.AppSizeInBytes());
@@ -316,6 +323,7 @@ class AppUpdateTest : public testing::Test {
     expect_resize_locked_ = absl::nullopt;
     expect_window_mode_ = WindowMode::kUnknown;
     expect_run_on_os_login_ = absl::nullopt;
+    expect_allow_close_ = absl::nullopt;
     expect_app_size_in_bytes_ = absl::nullopt;
     expect_data_size_in_bytes_ = absl::nullopt;
     expect_supported_locales_.clear();
@@ -1093,6 +1101,30 @@ class AppUpdateTest : public testing::Test {
       AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_run_on_os_login_.value(),
                 state->run_on_os_login.value());
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // AllowClose tests.
+
+    if (state) {
+      state->allow_close = false;
+      expect_allow_close_ = false;
+      expect_allow_close_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->allow_close = true;
+      expect_allow_close_ = true;
+      expect_allow_close_changed_ = true;
+      expect_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_allow_close_, state->allow_close);
       ExpectNoChange();
       CheckExpects(u);
     }

@@ -1361,6 +1361,7 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
   }
 
   app->allow_uninstall = app_info.ready && !app_info.sticky;
+  app->allow_close = true;
 
   app->has_badge = app_notifications_.HasNotification(app_id);
   app->paused = paused_apps_.IsPaused(app_id);

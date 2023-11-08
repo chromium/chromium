@@ -102,6 +102,7 @@ AppPtr StandaloneBrowserApps::CreateStandaloneBrowserApp() {
   app->show_in_management = true;
   app->handles_intents = true;
   app->allow_uninstall = false;
+  app->allow_close = true;
   return app;
 }
 

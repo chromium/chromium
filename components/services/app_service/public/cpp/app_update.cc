@@ -199,6 +199,7 @@ bool MergeWithoutIconKey(App* state, const App* delta) {
   if (delta->run_on_os_login.has_value()) {
     state->run_on_os_login = CloneRunOnOsLogin(delta->run_on_os_login.value());
   }
+  SET_OPTIONAL_VALUE(allow_close);
 
   SET_OPTIONAL_VALUE(app_size_in_bytes);
   SET_OPTIONAL_VALUE(data_size_in_bytes);
@@ -267,9 +268,9 @@ bool AppUpdate::IsChanged(const App* state, const App* delta) {
          update.AllowUninstallChanged() || update.HasBadgeChanged() ||
          update.PausedChanged() || update.IntentFiltersChanged() ||
          update.ResizeLockedChanged() || update.WindowModeChanged() ||
-         update.RunOnOsLoginChanged() || update.AppSizeInBytesChanged() ||
-         update.DataSizeInBytesChanged() || update.SupportedLocalesChanged() ||
-         update.SelectedLocaleChanged();
+         update.RunOnOsLoginChanged() || update.AllowCloseChanged() ||
+         update.AppSizeInBytesChanged() || update.DataSizeInBytesChanged() ||
+         update.SupportedLocalesChanged() || update.SelectedLocaleChanged();
 }
 
 AppUpdate::AppUpdate(const App* state,
@@ -570,6 +571,14 @@ bool AppUpdate::RunOnOsLoginChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(run_on_os_login);
 }
 
+absl::optional<bool> AppUpdate::AllowClose() const {
+  GET_VALUE_WITH_FALLBACK(allow_close, absl::nullopt)
+}
+
+bool AppUpdate::AllowCloseChanged() const {
+  RETURN_OPTIONAL_VALUE_CHANGED(allow_close);
+}
+
 const ::AccountId& AppUpdate::AccountId() const {
   return *account_id_;
 }
@@ -665,6 +674,7 @@ operator<<(std::ostream& out, const AppUpdate& app) {
     out << "RunOnOsLoginMode: "
         << EnumToString(app.RunOnOsLogin().value().login_mode) << std::endl;
   }
+  out << "Allow Close: " << PRINT_OPTIONAL_BOOL(app.AllowClose()) << std::endl;
 
   out << "App Size: " << FormatBytes(app.AppSizeInBytes()) << std::endl;
   out << "Data Size: " << FormatBytes(app.DataSizeInBytes()) << std::endl;
