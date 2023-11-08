@@ -28,11 +28,23 @@ base::Value::Dict ReconnectParams::ToDict(const ReconnectParams& params) {
 
 ReconnectParams ReconnectParams::FromDict(const base::Value::Dict& dict) {
   ReconnectParams params;
-  params.support_id = *dict.FindString(kReconnectSupportId);
-  params.host_secret = *dict.FindString(kReconnectHostSecret);
-  params.private_key = *dict.FindString(kReconnectPrivateKey);
-  params.ftl_device_registration_id =
-      *dict.FindString(kReconnectFtlDeviceRegistrationId);
+  const std::string* support_id = dict.FindString(kReconnectSupportId);
+  if (support_id) {
+    params.support_id = *support_id;
+  }
+  const std::string* host_secret = dict.FindString(kReconnectHostSecret);
+  if (host_secret) {
+    params.host_secret = *host_secret;
+  }
+  const std::string* private_key = dict.FindString(kReconnectPrivateKey);
+  if (private_key) {
+    params.private_key = *private_key;
+  }
+  const std::string* ftl_device_registration_id =
+      dict.FindString(kReconnectFtlDeviceRegistrationId);
+  if (ftl_device_registration_id) {
+    params.ftl_device_registration_id = *ftl_device_registration_id;
+  }
 
   DCHECK(params.IsValid());
   return params;

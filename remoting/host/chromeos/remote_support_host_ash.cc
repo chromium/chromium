@@ -48,17 +48,20 @@ base::Value::Dict EnterpriseParamsToDict(
 ChromeOsEnterpriseParams EnterpriseParamsFromDict(
     const base::Value::Dict& dict) {
   return ChromeOsEnterpriseParams{
-      .suppress_user_dialogs = dict.FindBool(kSuppressUserDialogs).value(),
-      .suppress_notifications = dict.FindBool(kSuppressNotifications).value(),
-      .terminate_upon_input = dict.FindBool(kTerminateUponInput).value(),
+      .suppress_user_dialogs =
+          dict.FindBool(kSuppressUserDialogs).value_or(false),
+      .suppress_notifications =
+          dict.FindBool(kSuppressNotifications).value_or(false),
+      .terminate_upon_input =
+          dict.FindBool(kTerminateUponInput).value_or(false),
       .curtain_local_user_session =
-          dict.FindBool(kCurtainLocalUserSession).value(),
+          dict.FindBool(kCurtainLocalUserSession).value_or(false),
       .show_troubleshooting_tools =
-          dict.FindBool(kShowTroubleshootingTools).value(),
+          dict.FindBool(kShowTroubleshootingTools).value_or(false),
       .allow_troubleshooting_tools =
-          dict.FindBool(kAllowTroubleshootingTools).value(),
-      .allow_reconnections = dict.FindBool(kAllowReconnections).value(),
-      .allow_file_transfer = dict.FindBool(kAllowFileTransfer).value(),
+          dict.FindBool(kAllowTroubleshootingTools).value_or(false),
+      .allow_reconnections = dict.FindBool(kAllowReconnections).value_or(false),
+      .allow_file_transfer = dict.FindBool(kAllowFileTransfer).value_or(false),
   };
 }
 
@@ -74,8 +77,20 @@ base::Value::Dict SessionParamsToDict(
 mojom::SupportSessionParams SessionParamsFromDict(
     const base::Value::Dict& dict) {
   mojom::SupportSessionParams result;
-  result.user_name = *dict.FindString(kUserName);
-  result.authorized_helper = *dict.FindString(kAuthorizedHelper);
+  const std::string* user_name = dict.FindString(kUserName);
+  if (user_name) {
+    result.user_name = *user_name;
+  } else {
+    LOG(ERROR) << "SupportSessionParams missing field: " << kUserName;
+  }
+
+  const std::string* authorized_helper = dict.FindString(kAuthorizedHelper);
+  if (authorized_helper) {
+    result.authorized_helper = *authorized_helper;
+  } else {
+    LOG(ERROR) << "SupportSessionParams missing field: " << kAuthorizedHelper;
+  }
+
   return result;
 }
 
