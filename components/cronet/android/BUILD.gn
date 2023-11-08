@@ -479,9 +479,9 @@ android_library("cronet_impl_native_base_java") {
   srcjar_deps += [ ":cronet_jni_headers" ]
 }
 
-# cronet_impl_aosp_native_base_java.jar - native implementation of Cronet engine
+# httpengine_native_provider_base_java.jar - native implementation of Cronet engine
 # loaded from AOSP (only for Android U onwards)
-android_library("cronet_impl_aosp_native_base_java") {
+android_library("httpengine_native_provider_base_java") {
   sources = [
     "java/src/org/chromium/net/impl/AndroidBidirectionalStreamBuilderWrapper.java",
     "java/src/org/chromium/net/impl/AndroidBidirectionalStreamWrapper.java",
@@ -498,7 +498,7 @@ android_library("cronet_impl_aosp_native_base_java") {
     "java/src/org/chromium/net/impl/AndroidUrlResponseInfoWrapper.java",
     "java/src/org/chromium/net/impl/BidirectionalStreamCallbackWrapper.java",
     "java/src/org/chromium/net/impl/CronetExceptionTranslationUtils.java",
-    "java/src/org/chromium/net/impl/PlatformCronetProvider.java",
+    "java/src/org/chromium/net/impl/HttpEngineNativeProvider.java",
     "java/src/org/chromium/net/impl/UploadDataProviderWrapper.java",
     "java/src/org/chromium/net/impl/UrlRequestCallbackWrapper.java",
     "java/src/org/chromium/net/impl/UrlRequestStatusListenerWrapper.java",
@@ -518,10 +518,10 @@ android_library("cronet_impl_aosp_native_base_java") {
 # Groups all Cronet implementations and the common code into a single Java dependency.
 java_group("cronet_impl_all_java") {
   deps = [
-    ":cronet_impl_aosp_native_base_java",
     ":cronet_impl_common_base_java",
     ":cronet_impl_native_base_java",
     ":cronet_impl_platform_base_java",
+    ":httpengine_native_provider_base_java",
   ]
 }
 

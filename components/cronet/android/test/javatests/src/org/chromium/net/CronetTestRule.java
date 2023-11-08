@@ -30,10 +30,10 @@ import org.chromium.base.PathUtils;
 import org.chromium.net.httpflags.Flags;
 import org.chromium.net.httpflags.HttpFlagsInterceptor;
 import org.chromium.net.impl.CronetUrlRequestContext;
+import org.chromium.net.impl.HttpEngineNativeProvider;
 import org.chromium.net.impl.JavaCronetEngine;
 import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NativeCronetProvider;
-import org.chromium.net.impl.PlatformCronetProvider;
 import org.chromium.net.impl.UserAgent;
 
 import java.io.File;
@@ -648,7 +648,7 @@ public class CronetTestRule implements TestRule {
         AOSP_PLATFORM(
                 context ->
                         (ExperimentalCronetEngine.Builder)
-                                new PlatformCronetProvider(context).createBuilder());
+                                new HttpEngineNativeProvider(context).createBuilder());
 
         private final EngineBuilderSupplier mEngineSupplier;
 

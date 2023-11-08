@@ -15,16 +15,17 @@ import org.chromium.net.CronetProvider;
 import org.chromium.net.ExperimentalCronetEngine;
 
 /**
- * A Cronet provider implementation which loads the implementation from the Android platform.
+ * A Cronet provider implementation which loads the HttpEngine implementation from the Android
+ * platform.
  *
- * <p>Note that the platform provider doesn't provide functionality which was deemed to be too
- * implementation specific, namely access to the netlog and internal metrics. Additionally, support
- * for experimental features is not guaranteed (as with any other Cronet provider).
+ * <p>Note that the httpengine native provider doesn't provide functionality which was deemed to be
+ *  too implementation specific, namely access to the netlog and internal metrics. Additionally,
+ * support for experimental features is not guaranteed (as with any other Cronet provider).
  */
-public class PlatformCronetProvider extends CronetProvider {
-    public static final String PROVIDER_NAME_ANDROID_PLATFORM = "Android-Platform-Cronet-Provider";
+public class HttpEngineNativeProvider extends CronetProvider {
+    public static final String PROVIDER_NAME_HTTPENGINE_NATIVE = "HttpEngine-Native-Provider";
 
-    public PlatformCronetProvider(Context context) {
+    public HttpEngineNativeProvider(Context context) {
         super(context);
     }
 
@@ -37,7 +38,7 @@ public class PlatformCronetProvider extends CronetProvider {
 
     @Override
     public String getName() {
-        return PROVIDER_NAME_ANDROID_PLATFORM;
+        return PROVIDER_NAME_HTTPENGINE_NATIVE;
     }
 
     @Override
