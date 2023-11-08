@@ -6,8 +6,7 @@ import {assertArrayEquals, assertFalse, assertTrue} from 'chrome://webui-test/ch
 
 import {FileListSelectionModel} from './file_list_selection_model.js';
 
-/** @type {!FileListSelectionModel} */
-let selectionModel;
+let selectionModel: FileListSelectionModel;
 
 export function setUp() {
   selectionModel = new FileListSelectionModel();

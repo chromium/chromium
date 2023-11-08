@@ -5,45 +5,38 @@
 import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
+import {SelectionChangeEvent} from './list_selection_model.js';
+
 /**
  * Creates a new selection model that is to be used with lists. This only
  * allows a single index to be selected.
  */
 export class ListSingleSelectionModel extends EventTarget {
+  private length_: number;
+  // True if any item could be lead or anchor. False if only selected ones.
+  private independentLeadItem_: boolean = false;
+  private leadIndex_: number = -1;
+  private selectedIndex_: number = -1;
+  private selectedIndexBefore_: number = -1;
+  private changeCount_: number|null = null;
+
   /**
-   * @param {number=} opt_length The number items in the selection.
+   * @param length The number items in the selection.
    */
-  constructor(opt_length) {
+  constructor(length?: number) {
     super();
-    this.length_ = opt_length || 0;
-    this.selectedIndex = -1;
-
-    // True if any item could be lead or anchor. False if only selected ones.
-    this.independentLeadItem_ = false;
-
-    /** @private @type {number} */
-    this.leadIndex_ = -1;
-
-    /** @private @type {?number} */
-    this.selectedIndex_;
-
-    /** @private @type {?number} */
-    this.selectedIndexBefore_;
-
-    /** @private @type {?number} */
-    this.changeCount_;
+    this.length_ = length ?? 0;
   }
 
   /**
    * The number of items in the model.
-   * @type {number}
    */
   get length() {
     return this.length_;
   }
 
   /**
-   * @type {!Array<*>} The selected indexes.
+   *   The selected indexes.
    */
   get selectedIndexes() {
     const i = this.selectedIndex;
@@ -51,29 +44,23 @@ export class ListSingleSelectionModel extends EventTarget {
   }
 
   set selectedIndexes(indexes) {
-    this.selectedIndex = indexes.length ? indexes[0] : -1;
+    this.selectedIndex_ = indexes.length ? indexes[0]! : -1;
   }
 
   /**
    * Convenience getter which returns the first selected index.
    * Setter also changes lead and anchor indexes if value is nonegative.
-   * @type {number}
    */
-  get selectedIndex() {
-    // @ts-ignore: error TS2322: Type 'number | null' is not assignable to type
-    // 'number'.
+  get selectedIndex(): number {
     return this.selectedIndex_;
   }
 
-  set selectedIndex(selectedIndex) {
+  set selectedIndex(selectedIndex: number) {
     const oldSelectedIndex = this.selectedIndex;
     const i = Math.max(-1, Math.min(this.length_ - 1, selectedIndex));
 
     if (i !== oldSelectedIndex) {
       this.beginChange();
-      // @ts-ignore: error TS7022: 'selectedIndex_' implicitly has type 'any'
-      // because it does not have a type annotation and is referenced directly
-      // or indirectly in its own initializer.
       this.selectedIndex_ = i;
       this.leadIndex = i >= 0 ? i : this.leadIndex;
       this.endChange();
@@ -83,10 +70,10 @@ export class ListSingleSelectionModel extends EventTarget {
   /**
    * Selects a range of indexes, starting with {@code start} and ends with
    * {@code end}.
-   * @param {number} start The first index to select.
-   * @param {number} end The last index to select.
+   * @param start The first index to select.
+   * @param end The last index to select.
    */
-  selectRange(start, end) {
+  selectRange(start: number, end: number) {
     // Only select first index.
     this.selectedIndex = Math.min(start, end);
   }
@@ -117,10 +104,10 @@ export class ListSingleSelectionModel extends EventTarget {
 
   /**
    * Sets the selected state for an index.
-   * @param {number} index The index to set the selected state for.
-   * @param {boolean} b Whether to select the index or not.
+   * @param index The index to set the selected state for.
+   * @param b Whether to select the index or not.
    */
-  setIndexSelected(index, b) {
+  setIndexSelected(index: number, b: boolean) {
     // Only allow selection
     const oldSelected = index === this.selectedIndex_;
     if (oldSelected === b) {
@@ -136,10 +123,10 @@ export class ListSingleSelectionModel extends EventTarget {
 
   /**
    * Whether a given index is selected or not.
-   * @param {number} index The index to check.
-   * @return {boolean} Whether an index is selected.
+   * @param index The index to check.
+   * @return Whether an index is selected.
    */
-  getIndexSelected(index) {
+  getIndexSelected(index: number): boolean {
     return index === this.selectedIndex_;
   }
 
@@ -150,9 +137,6 @@ export class ListSingleSelectionModel extends EventTarget {
   beginChange() {
     if (!this.changeCount_) {
       this.changeCount_ = 0;
-      // @ts-ignore: error TS7022: 'selectedIndexBefore_' implicitly has type
-      // 'any' because it does not have a type annotation and is referenced
-      // directly or indirectly in its own initializer.
       this.selectedIndexBefore_ = this.selectedIndex_;
     }
     this.changeCount_++;
@@ -163,8 +147,7 @@ export class ListSingleSelectionModel extends EventTarget {
    * any changes were actually done.
    */
   endChange() {
-    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-    this.changeCount_--;
+    this.changeCount_!--;
     if (!this.changeCount_) {
       if (this.selectedIndexBefore_ !== this.selectedIndex_) {
         const beforeChange = this.createChangeEvent('beforeChange');
@@ -179,23 +162,19 @@ export class ListSingleSelectionModel extends EventTarget {
 
   /**
    * Creates event with specified name and fills its {changes} property.
-   * @param {string} eventName Event name.
+   * @param eventName Event name.
    */
-  createChangeEvent(eventName) {
-    const e = new Event(eventName);
+  createChangeEvent(eventName: string) {
+    const e = new Event(eventName) as SelectionChangeEvent;
     const indexes = [this.selectedIndexBefore_, this.selectedIndex_];
-    // @ts-ignore: error TS2339: Property 'changes' does not exist on type
-    // 'Event'.
     e.changes =
         indexes
-            .filter(function(index) {
+            .filter((index) => {
               return index !== -1;
             })
-            .map(function(index) {
-              // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
-              // because it does not have a type annotation.
+            .map((index) => {
               return {index: index, selected: index === this.selectedIndex_};
-            }, this);
+            });
 
     return e;
   }
@@ -203,7 +182,6 @@ export class ListSingleSelectionModel extends EventTarget {
   /**
    * The leadIndex is used with multiple selection and it is the index that
    * the user is moving using the arrow keys.
-   * @type {number}
    */
   get leadIndex() {
     return this.leadIndex_;
@@ -219,18 +197,16 @@ export class ListSingleSelectionModel extends EventTarget {
     }
   }
 
-  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
-  adjustIndex_(index) {
+  private adjustIndex_(index: number): number {
     index = Math.max(-1, Math.min(this.length_ - 1, index));
     if (!this.independentLeadItem_) {
-      index = this.selectedIndex;
+      index = this.selectedIndex!;
     }
     return index;
   }
 
   /**
    * The anchorIndex is used with multiple selection.
-   * @type {number}
    */
   get anchorIndex() {
     return this.leadIndex;
@@ -242,7 +218,6 @@ export class ListSingleSelectionModel extends EventTarget {
 
   /**
    * Whether the selection model supports multiple selected items.
-   * @type {boolean}
    */
   get multiple() {
     return false;
@@ -250,28 +225,24 @@ export class ListSingleSelectionModel extends EventTarget {
 
   /**
    * Adjusts the selection after reordering of items in the table.
-   * @param {!Array<number>} permutation The reordering permutation.
+   * @param permutation The reordering permutation.
    */
-  adjustToReordering(permutation) {
+  adjustToReordering(permutation: number[]) {
     if (this.leadIndex !== -1) {
-      // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
-      // to type 'number'.
-      this.leadIndex = permutation[this.leadIndex];
+      this.leadIndex = permutation[this.leadIndex]!;
     }
 
-    const oldSelectedIndex = this.selectedIndex;
+    const oldSelectedIndex = this.selectedIndex!;
     if (oldSelectedIndex !== -1) {
-      // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable
-      // to type 'number'.
-      this.selectedIndex = permutation[oldSelectedIndex];
+      this.selectedIndex = permutation[oldSelectedIndex]!;
     }
   }
 
   /**
    * Adjusts selection model length.
-   * @param {number} length New selection model length.
+   * @param length New selection model length.
    */
-  adjustLength(length) {
+  adjustLength(length: number) {
     this.length_ = length;
   }
 }

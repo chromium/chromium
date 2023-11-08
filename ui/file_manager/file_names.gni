@@ -145,7 +145,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/dialogs.js",
   "file_manager/foreground/js/ui/directory_tree.js",
   "file_manager/foreground/js/ui/drag_selector.js",
-  "file_manager/foreground/js/ui/file_list_selection_model.js",
   "file_manager/foreground/js/ui/file_manager_dialog_base.js",
   "file_manager/foreground/js/ui/file_manager_ui.js",
   "file_manager/foreground/js/ui/file_metadata_formatter.js",
@@ -157,7 +156,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/import_crostini_image_dialog.js",
   "file_manager/foreground/js/ui/install_linux_package_dialog.js",
   "file_manager/foreground/js/ui/list_container.js",
-  "file_manager/foreground/js/ui/list_single_selection_model.js",
   "file_manager/foreground/js/ui/menu.js",
   "file_manager/foreground/js/ui/menu_button.js",
   "file_manager/foreground/js/ui/menu_item.js",
@@ -266,11 +264,13 @@ ts_files = [
   # These lines will be removed at the end of the TS migration.
   # Foreground UI.
   "file_manager/foreground/js/ui/file_grid.ts",
+  "file_manager/foreground/js/ui/file_list_selection_model.ts",
   "file_manager/foreground/js/ui/file_table.ts",
   "file_manager/foreground/js/ui/file_table_list.ts",
   "file_manager/foreground/js/ui/grid.ts",
   "file_manager/foreground/js/ui/list.ts",
   "file_manager/foreground/js/ui/list_item.ts",
+  "file_manager/foreground/js/ui/list_single_selection_model.ts",
   "file_manager/foreground/js/ui/list_selection_controller.ts",
   "file_manager/foreground/js/ui/list_selection_model.ts",
   "file_manager/foreground/js/ui/splitter.ts",
@@ -516,6 +516,7 @@ ts_test_files = [
   # These lines will be removed at the end of the TS migration.
   # UI:
   "file_manager/foreground/js/ui/file_grid_unittest.ts",
+  "file_manager/foreground/js/ui/file_list_selection_model_unittest.ts",
   "file_manager/foreground/js/ui/file_table_list_unittest.ts",
   "file_manager/foreground/js/ui/file_table_unittest.ts",
   "file_manager/foreground/js/ui/grid_unittest.ts",
@@ -641,7 +642,6 @@ unittest_files = [
   "file_manager/foreground/js/ui/menu_button_unittest.js",
   "file_manager/foreground/js/ui/multi_menu_unittest.js",
   "file_manager/foreground/js/ui/position_util_unittest.js",
-  "file_manager/foreground/js/ui/file_list_selection_model_unittest.js",
   "file_manager/foreground/js/ui/directory_tree_unittest.js",
   "file_manager/foreground/js/navigation_list_model_unittest.js",
   "file_manager/foreground/js/directory_model_unittest.js",

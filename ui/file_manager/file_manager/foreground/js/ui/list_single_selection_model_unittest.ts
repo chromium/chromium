@@ -18,7 +18,7 @@ import {adjust} from './list_selection_model_test_util.js';
 function createSelectionModel(
     len: number, dependentLeadItem?: boolean): ListSingleSelectionModel {
   const sm = new ListSingleSelectionModel(len);
-  sm.independentLeadItem_ = !dependentLeadItem;
+  sm['independentLeadItem_'] = !dependentLeadItem;
   return sm;
 }
 

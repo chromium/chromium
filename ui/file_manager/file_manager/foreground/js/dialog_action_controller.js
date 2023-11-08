@@ -189,7 +189,8 @@ export class DialogActionController {
 
     const dm = this.directoryModel_.getFileList();
     for (let i = 0; i < selectedIndexes.length; i++) {
-      const entry = dm.item(selectedIndexes[i]);
+      const index = selectedIndexes[i];
+      const entry = index === undefined ? null : dm.item(index);
       if (!entry) {
         console.warn('Error locating selected file at index: ' + i);
         continue;
@@ -213,7 +214,7 @@ export class DialogActionController {
       throw new Error('Too many files selected!');
     }
 
-    const selectedEntry = dm.item(selectedIndexes[0]);
+    const selectedEntry = dm.item(selectedIndexes[0] ?? -1);
 
     if (isFolderDialogType(this.dialogType_)) {
       if (!selectedEntry.isDirectory) {

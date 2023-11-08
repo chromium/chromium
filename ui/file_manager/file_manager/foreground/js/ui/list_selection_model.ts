@@ -47,7 +47,6 @@ export class ListSelectionModel extends EventTarget {
   /**
    * The selected indexes.
    * Setter also changes lead and anchor indexes if value list is nonempty.
-   * @type {!Array<*>}
    */
   get selectedIndexes(): number[] {
     return Object.keys(this.selectedIndexes_).map(Number);
