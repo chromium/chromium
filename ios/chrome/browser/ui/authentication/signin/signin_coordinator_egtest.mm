@@ -248,7 +248,11 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
             (MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn)] ||
       [self isRunningTest:@selector(testAddAccountAutomatically)] ||
       [self isRunningTest:@selector(testCancelFromSyncOffLink)] ||
-      [self isRunningTest:@selector(testSignInOneUser)]) {
+      [self isRunningTest:@selector(testSignInOneUser)] ||
+      [self
+          isRunningTest:@selector
+          (testPrimaryAccountLabelUpdate_ReplaceSyncPromosWithSignInPromosDisabled
+              )]) {
     // TODO(crbug.com/1477295): Evaluate if these tests are relevant with
     // kReplaceSyncPromosWithSignInPromos enabled.
     config.features_disabled.push_back(
@@ -1614,6 +1618,53 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                                           kUnifiedConsentScrollViewIdentifier)]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   // Test no crash.
+}
+
+// Tests in the sign-in+sync consent dialog, that the primary button title is
+// "Add Account" when there is no account, and the title is updated to
+// "Yes, I'm In" once the account has been added.
+// This test can be removed once `ReplaceSyncPromosWithSignInPromos` flag is
+// removed.
+// Related to crbug.com/1497272.
+- (void)
+    testPrimaryAccountLabelUpdate_ReplaceSyncPromosWithSignInPromosDisabled {
+  // "Add Account" button matcher (with title and accessibility identifier).
+  id<GREYMatcher> addAccountButtonMatcher = grey_allOf(
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT)),
+      grey_accessibilityID(kAddAccountAccessibilityIdentifier), nil);
+  // "Yes, I'm In" button matcher (with title and accessibility identifier).
+  id<GREYMatcher> yesIamInButtonMatcher = grey_allOf(
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON)),
+      grey_accessibilityID(kConfirmationAccessibilityIdentifier), nil);
+  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Verify that the "Add Account" button is visible and the "Yes, I'm In" is
+  // not.
+  [[EarlGrey selectElementWithMatcher:addAccountButtonMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:yesIamInButtonMatcher]
+      assertWithMatcher:grey_notVisible()];
+  // Set up a fake identity to add and sign-in with.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
+  // Open Add Account screen.
+  [SigninEarlGreyUI tapAddAccountButton];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Verify that the "Yes, I'm In" button is visible and the "Add Account" is
+  // not.
+  [[EarlGrey selectElementWithMatcher:yesIamInButtonMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:addAccountButtonMatcher]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end
