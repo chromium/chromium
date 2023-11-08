@@ -95,12 +95,18 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
   # via global function pointer symbols, which hides the object dependency at
   # link time. On Mac, this results in undefined references to the intrinsic
   # symbols.
+  # TODO(aomedia:3511): Re-enable this build flag
+  # //build/config/compiler:default_init_stack_vars is removed from all libaom
+  # targets. It introduces -ftrivial-auto-var-init=pattern compiler flag and
+  # causes a huge performance issue (over 13% slowdown for AV1 real-time
+  # encoder) with initializing local variables on the stack.
   source_set("libaom_intrinsics_sse2") {
     # TODO(jianj): Align this with libvpx as this is not used there.
     check_includes = false
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libaom_config" ]
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
     if (!is_win || is_clang) {
       cflags = [ "-msse2" ]
     }
@@ -115,6 +121,7 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libaom_config" ]
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
     if (!is_win || is_clang) {
       cflags = [ "-msse3" ]
     }
@@ -126,6 +133,7 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libaom_config" ]
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
     if (!is_win || is_clang) {
       cflags = [ "-mssse3" ]
     }
@@ -140,6 +148,7 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libaom_config" ]
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
     if (!is_win || is_clang) {
       cflags = [ "-msse4.1" ]
     }
@@ -154,6 +163,7 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libaom_config" ]
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
     if (!is_win || is_clang) {
       cflags = [ "-msse4.2" ]
     }
@@ -165,6 +175,7 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libaom_config" ]
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
     if (is_win) {
       cflags = [ "/arch:AVX" ]
     } else {
@@ -178,6 +189,7 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libaom_config" ]
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
     if (is_win) {
       cflags = [ "/arch:AVX2" ]
     } else {
@@ -201,6 +213,7 @@ if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
       cflags = [ "-mfpu=neon" ]
     }
     configs += [ ":libaom_config" ]
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
 
     sources = aom_av1_common_intrin_neon
     sources += aom_dsp_common_intrin_neon
@@ -215,6 +228,7 @@ if (current_cpu == "arm64") {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libaom_config" ]
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
     if (!is_win || is_clang) {
       cflags = [ "-march=armv8-a+crc" ]
     }
@@ -226,6 +240,7 @@ if (current_cpu == "arm64") {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libaom_config" ]
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
     if (!is_win || is_clang) {
       cflags = [ "-march=armv8.2-a+dotprod" ]
     }
@@ -240,6 +255,7 @@ if (current_cpu == "arm64") {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     configs += [ ":libaom_config" ]
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
     if (!is_win || is_clang) {
       cflags = [ "-march=armv8.2-a+dotprod+i8mm" ]
     }
@@ -257,6 +273,7 @@ static_library("libaom") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
   configs += [ ":libaom_config" ]
+  configs -= [ "//build/config/compiler:default_init_stack_vars" ]
 
   sources = aom_av1_common_sources
   sources += aom_av1_decoder_sources
