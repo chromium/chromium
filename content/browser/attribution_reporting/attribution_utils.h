@@ -7,16 +7,14 @@
 
 #include <string>
 
-#include "content/common/content_export.h"
-
 namespace base {
 class ValueView;
 }  // namespace base
 
 namespace content {
 
-CONTENT_EXPORT std::string SerializeAttributionJson(base::ValueView body,
-                                                    bool pretty_print = false);
+std::string SerializeAttributionJson(base::ValueView body,
+                                     bool pretty_print = false);
 
 }  // namespace content
 

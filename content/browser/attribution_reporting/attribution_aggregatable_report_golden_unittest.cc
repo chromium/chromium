@@ -32,7 +32,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_task_environment.h"
@@ -155,8 +154,7 @@ class AttributionAggregatableReportGoldenLatestVersionTest
                      "AttributionReport::AggregatableAttributionData::kVersion,"
                      " actual output for "
                   << report_file << " is:\n"
-                  << SerializeAttributionJson(report.ReportBody(),
-                                              /*pretty_print=*/true);
+                  << report.ReportBody();
               run_loop.Quit();
             }));
 
