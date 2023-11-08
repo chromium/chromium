@@ -7,6 +7,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -55,8 +56,8 @@ class ShortcutFilenameMatcher {
 
  private:
   const std::wstring profile_shortcut_filename_;
-  const base::WStringPiece lnk_ext_;
-  base::WStringPiece profile_shortcut_name_;
+  const std::wstring_view lnk_ext_;
+  std::wstring_view profile_shortcut_name_;
 };
 
 // Returns the command-line flags to launch Chrome with the given profile.

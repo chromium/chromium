@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -63,7 +64,7 @@ enum class ServiceRollbackResult {
   kMaxValue = kSucceededRollbackOriginalServiceConfig,
 };
 
-std::wstring GetComRegistryPath(base::WStringPiece hive, const GUID& guid) {
+std::wstring GetComRegistryPath(std::wstring_view hive, const GUID& guid) {
   return base::StrCat(
       {L"Software\\Classes\\", hive, L"\\", base::win::WStringFromGUID(guid)});
 }

@@ -9,8 +9,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -215,7 +215,7 @@ class GoogleUpdateSettings {
   // Returns the effective update policy for |app_guid| as dictated by
   // Group Policy settings.  |is_overridden|, if non-nullptr, is populated with
   // true if an app-specific policy override is in force, or false otherwise.
-  static UpdatePolicy GetAppUpdatePolicy(base::WStringPiece app_guid,
+  static UpdatePolicy GetAppUpdatePolicy(std::wstring_view app_guid,
                                          bool* is_overridden);
 
   // Returns true if Chrome should be updated automatically by Google Update

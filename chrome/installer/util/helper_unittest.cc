@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -30,7 +32,7 @@ namespace {
 // instance.
 class ScopedEnvironmentOverride {
  public:
-  ScopedEnvironmentOverride(base::WStringPiece name, const wchar_t* new_value)
+  ScopedEnvironmentOverride(std::wstring_view name, const wchar_t* new_value)
       : name_(name) {
     std::array<wchar_t, MAX_PATH> value;
     value[0] = L'\0';

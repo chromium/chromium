@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_enumerator.h"
@@ -149,8 +150,9 @@ bool IsPinnedToTaskbarHelper::ShortcutHasUnpinToTaskbarVerb(
       error_count++;
       continue;
     }
-    if (base::WStringPiece(name.Get(), name.Length()) == verb_name)
+    if (std::wstring_view(name.Get(), name.Length()) == verb_name) {
       return true;
+    }
   }
 
   if (error_count == verb_count)

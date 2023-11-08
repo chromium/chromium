@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -746,7 +747,7 @@ bool ShortcutFilenameMatcher::IsCanonical(const std::wstring& filename) const {
   if (filename == profile_shortcut_filename_)
     return true;
 
-  base::WStringPiece shortcut_suffix = filename;
+  std::wstring_view shortcut_suffix = filename;
   if (!base::StartsWith(shortcut_suffix, profile_shortcut_name_))
     return false;
   shortcut_suffix.remove_prefix(profile_shortcut_name_.size());

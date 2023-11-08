@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WIN_CONFLICTS_MODULE_INFO_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -40,7 +41,7 @@ struct CertificateInfo {
 
 // Converts a given `guid` to a path to a COM class in-proc server key under
 // HKEY_CLASSES_ROOT.
-std::wstring GuidToClsid(base::WStringPiece guid);
+std::wstring GuidToClsid(std::wstring_view guid);
 
 // Extracts information about the certificate of the given |file|, populating
 // |certificate_info|. It is expected that |certificate_info| be freshly

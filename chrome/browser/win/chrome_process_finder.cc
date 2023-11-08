@@ -6,7 +6,9 @@
 
 #include <shellapi.h>
 #include <windows.h>
+
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -69,9 +71,9 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
   // Send the command line to the remote chrome window.
   // Format is "START\0<<<current directory>>>\0<<<commandline>>>".
   std::wstring to_send = base::StrCat(
-      {base::WStringPiece{L"START\0", 6}, cur_dir.value(),
-       base::WStringPiece{L"\0", 1}, new_command_line.GetCommandLineString(),
-       base::WStringPiece{L"\0", 1}});
+      {std::wstring_view{L"START\0", 6}, cur_dir.value(),
+       std::wstring_view{L"\0", 1}, new_command_line.GetCommandLineString(),
+       std::wstring_view{L"\0", 1}});
 
   // Allow the current running browser window to make itself the foreground
   // window (otherwise it will just flash in the taskbar).

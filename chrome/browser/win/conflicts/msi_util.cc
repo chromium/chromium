@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <string_view>
+
 // By default msi.h includes wincrypt.h which clashes with OpenSSL
 // (both define X509_NAME) so to be able to include
 // third_party/openssl (indirectly) in the same translation unit we
@@ -112,8 +114,8 @@ bool GetMsiComponentGuids(const std::wstring& msi_database_path,
 // but without directly calling it. This is because that function can trigger
 // the configuration of a product in some rare cases.
 // See https://crbug.com/860537.
-bool GetMsiComponentPath(base::WStringPiece product_guid,
-                         base::WStringPiece component_guid,
+bool GetMsiComponentPath(std::wstring_view product_guid,
+                         std::wstring_view component_guid,
                          const std::wstring& user_sid,
                          std::wstring* path) {
   // Internally, the Microsoft Installer uses a special formatting of the guids

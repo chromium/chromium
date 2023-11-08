@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -94,7 +95,7 @@ HRESULT CreateActivationFactory(wchar_t const (&class_name)[size],
                                 const IID& iid,
                                 void** factory) {
   ScopedHString ref_class_name =
-      ScopedHString::Create(base::WStringPiece(class_name, size - 1));
+      ScopedHString::Create(std::wstring_view(class_name, size - 1));
   return base::win::RoGetActivationFactory(ref_class_name.get(), iid, factory);
 }
 

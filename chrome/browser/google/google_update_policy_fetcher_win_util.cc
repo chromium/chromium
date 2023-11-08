@@ -6,6 +6,8 @@
 
 #include <OleCtl.h>
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/strings/string_piece.h"
@@ -21,19 +23,19 @@ namespace {
 // Returns a string Value from `scoped_bstr`.
 base::Value ValueFromScopedBStr(const base::win::ScopedBstr& scoped_bstr) {
   return base::Value(base::AsStringPiece16(
-      base::WStringPiece(scoped_bstr.Get(), scoped_bstr.Length())));
+      std::wstring_view(scoped_bstr.Get(), scoped_bstr.Length())));
 }
 
 policy::PolicySource GetPolicySource(BSTR source_bstr) {
-  constexpr base::WStringPiece kCloudSource = L"Device Management";
-  constexpr base::WStringPiece kDefaultSource = L"Default";
+  constexpr std::wstring_view kCloudSource = L"Device Management";
+  constexpr std::wstring_view kDefaultSource = L"Default";
   const auto source =
-      base::WStringPiece(source_bstr, ::SysStringLen(source_bstr));
+      std::wstring_view(source_bstr, ::SysStringLen(source_bstr));
   if (source == kCloudSource)
     return policy::POLICY_SOURCE_CLOUD;
   if (source == kDefaultSource)
     return policy::POLICY_SOURCE_ENTERPRISE_DEFAULT;
-  DCHECK_EQ(source, base::WStringPiece(L"Group Policy"));
+  DCHECK_EQ(source, std::wstring_view(L"Group Policy"));
   return policy::POLICY_SOURCE_PLATFORM;
 }
 

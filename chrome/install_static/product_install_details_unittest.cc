@@ -4,6 +4,8 @@
 
 #include "chrome/install_static/product_install_details.h"
 
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/i18n/case_conversion.h"
@@ -103,9 +105,9 @@ TEST(ProductInstallDetailsTest, PathIsInProgramFiles) {
 TEST(ProductInstallDetailsTest, GetInstallSuffix) {
   std::wstring suffix;
   struct TestData {
-    base::WStringPiece path_prefix;
-    base::WStringPiece path_suffix;
-    base::WStringPiece install_suffix;
+    std::wstring_view path_prefix;
+    std::wstring_view path_suffix;
+    std::wstring_view install_suffix;
   };
   constexpr TestData kData[] = {
       {L"", L"\\Application", L""},

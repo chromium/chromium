@@ -9,7 +9,10 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <winternl.h>
+
 #include <string>
+#include <string_view>
+
 #include "base/values.h"
 
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
@@ -700,7 +703,7 @@ HRESULT GetPathToDllFromHandle(HINSTANCE dll_handle,
     return hr;
   }
 
-  *path_to_dll = base::FilePath(base::WStringPiece(path, length));
+  *path_to_dll = base::FilePath(std::wstring_view(path, length));
   return S_OK;
 }
 

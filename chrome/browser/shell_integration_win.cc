@@ -14,6 +14,7 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -703,7 +704,7 @@ bool IsFirefoxDefaultBrowser() {
 
 std::string GetFirefoxProgIdSuffix() {
   const std::wstring app_cmd = GetHttpSchemeUserChoiceProgId();
-  static constexpr base::WStringPiece kFirefoxProgIdPrefix(L"FirefoxURL-");
+  static constexpr std::wstring_view kFirefoxProgIdPrefix(L"FirefoxURL-");
   if (base::StartsWith(app_cmd, kFirefoxProgIdPrefix,
                        base::CompareCase::SENSITIVE)) {
     // Returns the id that appears after the prefix "FirefoxURL-".

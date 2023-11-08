@@ -4,6 +4,7 @@
 
 #include "chrome/installer/setup/downgrade_cleanup.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -29,8 +30,8 @@
 
 namespace {
 
-constexpr base::WStringPiece kCleanupOperation = L"cleanup";
-constexpr base::WStringPiece kRevertCleaunpOperation = L"revert";
+constexpr std::wstring_view kCleanupOperation = L"cleanup";
+constexpr std::wstring_view kRevertCleaunpOperation = L"revert";
 
 // Returns the last version of Chrome which introduced breaking changes to the
 // installer, or no value if Chrome is not installed or the version installed
@@ -56,7 +57,7 @@ absl::optional<base::Version> GetLastBreakingInstallerVersion(HKEY reg_root) {
 std::wstring GetCleanupCommandLine(
     const std::wstring& cmd_line_with_placeholders,
     const base::Version& version,
-    base::WStringPiece operation) {
+    std::wstring_view operation) {
   DCHECK(version.IsValid());
   DCHECK(!cmd_line_with_placeholders.empty());
   DCHECK(operation == kCleanupOperation ||
