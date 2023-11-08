@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/label.h"
@@ -31,6 +32,8 @@ class Shelf;
 // rendered as a label, but reading such text literally will not always be
 // understandable.
 class IconizedLabel : public views::Label {
+  METADATA_HEADER(IconizedLabel, views::Label)
+
  public:
   void SetCustomAccessibleName(const std::u16string& name) {
     custom_accessible_name_ = name;
@@ -63,6 +66,8 @@ class IconizedLabel : public views::Label {
 // animated (for instance, when the `NotificationCenterTray` is hidden).
 class ASH_EXPORT TrayItemView : public views::View,
                                 public views::AnimationDelegateViews {
+  METADATA_HEADER(TrayItemView, views::View)
+
  public:
   class Observer : public base::CheckedObserver {
    public:

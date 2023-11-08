@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -39,6 +40,8 @@ class SizeRangeLayout;
 // The default BoxLayout will use a center alignment for both the main axis and
 // cross axis alignment.
 class ASH_EXPORT TriView : public views::View {
+  METADATA_HEADER(TriView, views::View)
+
  public:
   enum class Orientation {
     HORIZONTAL,

@@ -15,6 +15,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -65,6 +67,8 @@ DeleteObserverAfterRunning(AnimationCompletedCallback callback) {
 
 class HoldingSpaceScrollView : public views::ScrollView,
                                public views::ViewObserver {
+  METADATA_HEADER(HoldingSpaceScrollView, views::ScrollView)
+
  public:
   HoldingSpaceScrollView() {
     // `HoldingSpaceItemView`s draw a focus ring outside of their view bounds.
@@ -114,6 +118,9 @@ class HoldingSpaceScrollView : public views::ScrollView,
   base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
       this};
 };
+
+BEGIN_METADATA(HoldingSpaceScrollView)
+END_METADATA
 
 }  // namespace
 
@@ -532,5 +539,8 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
   if (placeholder_ || !container_->children().empty())
     MaybeAnimateIn();
 }
+
+BEGIN_METADATA(HoldingSpaceItemViewsSection)
+END_METADATA
 
 }  // namespace ash

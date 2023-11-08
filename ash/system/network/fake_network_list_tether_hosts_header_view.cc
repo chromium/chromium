@@ -8,6 +8,7 @@
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_tether_hosts_header_view.h"
 #include "base/feature_list.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -19,5 +20,8 @@ FakeNetworkListTetherHostsHeaderView::FakeNetworkListTetherHostsHeaderView(
 
 FakeNetworkListTetherHostsHeaderView::~FakeNetworkListTetherHostsHeaderView() =
     default;
+
+BEGIN_METADATA(FakeNetworkListTetherHostsHeaderView)
+END_METADATA
 
 }  // namespace ash

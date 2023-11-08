@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
@@ -23,14 +24,13 @@ namespace ash {
 // View containing the settings button that appears behind notification by
 // swiping.
 class ASH_EXPORT NotificationSwipeControlView : public views::View {
+  METADATA_HEADER(NotificationSwipeControlView, views::View)
+
  public:
   // Physical positions to show buttons in the swipe control. This is invariant
   // across RTL/LTR languages because buttons should be shown on one side which
   // is made uncovered by the overlapping view after user's swipe action.
   enum class ButtonPosition { RIGHT, LEFT };
-
-  // String to be returned by GetClassName() method.
-  static const char kViewClassName[];
 
   explicit NotificationSwipeControlView(
       message_center::MessageView* message_view);
@@ -38,9 +38,6 @@ class ASH_EXPORT NotificationSwipeControlView : public views::View {
   NotificationSwipeControlView& operator=(const NotificationSwipeControlView&) =
       delete;
   ~NotificationSwipeControlView() override;
-
-  // views::View
-  const char* GetClassName() const override;
 
   // Update the visibility of control buttons.
   void UpdateButtonsVisibility();

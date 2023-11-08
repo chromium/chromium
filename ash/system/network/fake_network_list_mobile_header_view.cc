@@ -6,6 +6,7 @@
 
 #include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_header_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -22,5 +23,8 @@ void FakeNetworkListMobileHeaderView::SetToggleState(bool enabled,
   is_toggle_on_ = is_on;
   set_toggle_state_count_++;
 }
+
+BEGIN_METADATA(FakeNetworkListMobileHeaderView)
+END_METADATA
 
 }  // namespace ash

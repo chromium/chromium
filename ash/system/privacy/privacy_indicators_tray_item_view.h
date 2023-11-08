@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 
 namespace gfx {
@@ -28,6 +29,8 @@ class Shelf;
 // is currently accessing camera/microphone.
 class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
                                                  public SessionObserver {
+  METADATA_HEADER(PrivacyIndicatorsTrayItemView, TrayItemView)
+
  public:
   enum AnimationState {
     // No animation is running.

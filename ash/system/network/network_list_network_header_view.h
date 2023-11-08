@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -22,6 +23,8 @@ class TrayNetworkStateModel;
 // implements the functionality shared between the headers of Mobile and Wifi
 // network headers.
 class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
+  METADATA_HEADER(NetworkListNetworkHeaderView, NetworkListHeaderView)
+
  public:
   class Delegate {
    public:

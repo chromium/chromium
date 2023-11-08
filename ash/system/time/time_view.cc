@@ -149,6 +149,9 @@ void VerticalDateView::UpdateIconAndLabelColorId(ui::ColorId color_id) {
       ui::ImageModel::FromVectorIcon(kCalendarBackgroundIcon, color_id));
 }
 
+BEGIN_METADATA(VerticalDateView)
+END_METADATA
+
 TimeView::TimeView(ClockLayout clock_layout, ClockModel* model, Type type)
     : model_(model), type_(type) {
   SetTimer(GetTimeToShow());

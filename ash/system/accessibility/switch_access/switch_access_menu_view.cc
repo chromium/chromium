@@ -17,6 +17,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/mojom/ax_node_data.mojom-shared.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/layout/table_layout.h"
 
@@ -159,5 +160,8 @@ void SwitchAccessMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 const char* SwitchAccessMenuView::GetClassName() const {
   return "SwitchAccessMenuView";
 }
+
+BEGIN_METADATA(SwitchAccessMenuView)
+END_METADATA
 
 }  // namespace ash

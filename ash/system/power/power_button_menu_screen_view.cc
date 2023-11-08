@@ -15,6 +15,7 @@
 #include "ash/system/power/power_button_menu_view.h"
 #include "ash/system/power/power_button_menu_view_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -404,5 +405,8 @@ gfx::Size PowerButtonMenuScreenView::GetMenuViewPreferredSize() {
     return power_button_menu_view_->GetPreferredSize();
   }
 }
+
+BEGIN_METADATA(PowerButtonMenuScreenView)
+END_METADATA
 
 }  // namespace ash

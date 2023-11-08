@@ -24,6 +24,7 @@
 #include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -45,6 +46,8 @@ constexpr auto kPaginationViewMargin = gfx::Insets::TLBR(0, 0, 8, 0);
 constexpr auto kSlidersContainerMargin = gfx::Insets::TLBR(4, 0, 0, 0);
 
 class AccessibilityFocusHelperView : public views::View {
+  METADATA_HEADER(AccessibilityFocusHelperView, views::View)
+
  public:
   explicit AccessibilityFocusHelperView(UnifiedSystemTrayController* controller)
       : controller_(controller) {}
@@ -64,6 +67,9 @@ class AccessibilityFocusHelperView : public views::View {
  private:
   raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 };
+
+BEGIN_METADATA(AccessibilityFocusHelperView)
+END_METADATA
 
 }  // namespace
 

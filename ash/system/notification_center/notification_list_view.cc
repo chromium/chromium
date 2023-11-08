@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -86,6 +87,8 @@ void SetupThroughputTrackerForAnimationSmoothness(
 // All children of NotificationListView should be MessageViewContainer.
 class NotificationListView::MessageViewContainer : public MessageView::Observer,
                                                    public views::View {
+  METADATA_HEADER(MessageViewContainer, views::View)
+
  public:
   MessageViewContainer(MessageView* message_view,
                        NotificationListView* list_view)
@@ -377,6 +380,9 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
   const raw_ptr<NotificationListView, ExperimentalAsh> list_view_;
   const raw_ptr<NotificationSwipeControlView, ExperimentalAsh> control_view_;
 };
+
+BEGIN_METADATA(NotificationListView, MessageViewContainer, views::View)
+END_METADATA
 
 NotificationListView::NotificationListView(
     NotificationCenterView* message_center_view)

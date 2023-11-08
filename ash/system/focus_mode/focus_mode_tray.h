@@ -8,6 +8,7 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -20,6 +21,8 @@ class TrayBubbleWrapper;
 // button is clicked.
 class FocusModeTray : public TrayBackgroundView,
                       public FocusModeController::Observer {
+  METADATA_HEADER(FocusModeTray, TrayBackgroundView)
+
  public:
   explicit FocusModeTray(Shelf* shelf);
   FocusModeTray(const FocusModeTray&) = delete;

@@ -22,6 +22,8 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -52,6 +54,8 @@ std::unique_ptr<views::BoxLayout> WithCrossAxisAlignment(
 // Header ----------------------------------------------------------------------
 
 class Header : public views::Button {
+  METADATA_HEADER(Header, views::Button)
+
  public:
   Header() {
     // Layout/Properties.
@@ -111,6 +115,9 @@ class Header : public views::Button {
   raw_ptr<views::ImageView, ExperimentalAsh> chevron_ = nullptr;
 };
 
+BEGIN_METADATA(Header)
+END_METADATA
+
 }  // namespace
 
 // DownloadsSection ------------------------------------------------------------
@@ -145,5 +152,8 @@ std::unique_ptr<HoldingSpaceItemView> DownloadsSection::CreateView(
     const HoldingSpaceItem* item) {
   return std::make_unique<HoldingSpaceItemChipView>(delegate(), item);
 }
+
+BEGIN_METADATA(DownloadsSection)
+END_METADATA
 
 }  // namespace ash

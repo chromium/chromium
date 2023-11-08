@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -503,5 +504,8 @@ void HoldingSpaceTrayChildBubble::OnAnimateOutCompleted(bool aborted) {
         }));
   }
 }
+
+BEGIN_METADATA(HoldingSpaceTrayChildBubble)
+END_METADATA
 
 }  // namespace ash

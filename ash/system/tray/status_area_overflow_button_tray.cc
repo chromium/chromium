@@ -99,6 +99,9 @@ void StatusAreaOverflowButtonTray::IconView::UpdateRotation() {
   SetTransform(transform);
 }
 
+BEGIN_METADATA(StatusAreaOverflowButtonTray, IconView, views::ImageView)
+END_METADATA
+
 StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
     : TrayBackgroundView(
           shelf,

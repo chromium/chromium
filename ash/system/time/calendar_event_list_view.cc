@@ -22,6 +22,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -65,6 +66,8 @@ constexpr int kChildEventListBetweenChildSpacing = 2;
 // A view that's displayed when the user selects a day cell from the calendar
 // month view that has no events. Clicking on it opens Google calendar.
 class CalendarEmptyEventListView : public PillButton {
+  METADATA_HEADER(CalendarEmptyEventListView, PillButton)
+
  public:
   explicit CalendarEmptyEventListView(CalendarViewController* controller)
       : PillButton(views::Button::PressedCallback(base::BindRepeating(
@@ -112,6 +115,9 @@ class CalendarEmptyEventListView : public PillButton {
   // Owned by the parent view. Guaranteed to outlive this.
   const raw_ptr<CalendarViewController, ExperimentalAsh> controller_;
 };
+
+BEGIN_METADATA(CalendarEmptyEventListView)
+END_METADATA
 
 CalendarEventListView::CalendarEventListView(
     CalendarViewController* calendar_view_controller)

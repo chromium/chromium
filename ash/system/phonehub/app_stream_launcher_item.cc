@@ -9,6 +9,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -43,6 +45,8 @@ void ConfigureLabel(views::Label* label, int line_height, int font_size) {
 }
 
 class AppNameLabel : public views::LabelButton {
+  METADATA_HEADER(AppNameLabel, views::LabelButton)
+
  public:
   explicit AppNameLabel(PressedCallback callback = PressedCallback(),
                         const std::u16string& text = std::u16string())
@@ -57,6 +61,9 @@ class AppNameLabel : public views::LabelButton {
   AppNameLabel(AppNameLabel&) = delete;
   AppNameLabel operator=(AppNameLabel&) = delete;
 };
+
+BEGIN_METADATA(AppNameLabel)
+END_METADATA
 
 }  // namespace
 
@@ -127,5 +134,8 @@ views::LabelButton* AppStreamLauncherItem::GetLabelForTest() {
 PhoneHubRecentAppButton* AppStreamLauncherItem::GetIconForTest() {
   return recent_app_button_;
 }
+
+BEGIN_METADATA(AppStreamLauncherItem)
+END_METADATA
 
 }  // namespace ash

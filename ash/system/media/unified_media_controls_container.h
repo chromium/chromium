@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MEDIA_UNIFIED_MEDIA_CONTROLS_CONTAINER_H_
 #define ASH_SYSTEM_MEDIA_UNIFIED_MEDIA_CONTROLS_CONTAINER_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -12,6 +13,8 @@ namespace ash {
 // Container view of UnifiedMediaControlsView. This manages the
 // visibility and expanded amount of the entire media controls view.
 class UnifiedMediaControlsContainer : public views::View {
+  METADATA_HEADER(UnifiedMediaControlsContainer, views::View)
+
  public:
   UnifiedMediaControlsContainer();
   ~UnifiedMediaControlsContainer() override = default;

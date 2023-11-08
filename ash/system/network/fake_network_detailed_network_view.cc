@@ -13,6 +13,7 @@
 #include "ash/system/network/network_list_network_item_view.h"
 #include "ash/system/network/network_list_view_controller_impl.h"
 #include "ash/system/network/network_list_wifi_header_view_impl.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -92,5 +93,8 @@ FakeNetworkDetailedNetworkView::AddTetherHostsSectionHeader() {
 void FakeNetworkDetailedNetworkView::UpdateScanningBarVisibility(bool visible) {
   last_scan_bar_visibility_ = visible;
 }
+
+BEGIN_METADATA(FakeNetworkDetailedNetworkView)
+END_METADATA
 
 }  // namespace ash

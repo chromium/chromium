@@ -11,6 +11,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/system/power/power_button_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 
@@ -24,6 +25,8 @@ class PowerButtonMenuCurtainView;
 // and a PowerButtonMenuView to display the menu.
 class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
                                              public display::DisplayObserver {
+  METADATA_HEADER(PowerButtonMenuScreenView, views::View)
+
  public:
   // |show_animation_done| is a callback for when the animation that shows the
   // power menu has finished.

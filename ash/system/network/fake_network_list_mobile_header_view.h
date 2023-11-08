@@ -8,12 +8,15 @@
 #include "ash/ash_export.h"
 #include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_header_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // Fake implementation of NetworkListMobileHeaderView
 class ASH_EXPORT FakeNetworkListMobileHeaderView
     : public NetworkListMobileHeaderView {
+  METADATA_HEADER(FakeNetworkListMobileHeaderView, NetworkListMobileHeaderView)
+
  public:
   explicit FakeNetworkListMobileHeaderView(
       NetworkListNetworkHeaderView::Delegate* delegate);

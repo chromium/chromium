@@ -33,6 +33,8 @@
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
@@ -88,6 +90,8 @@ enum PinState {
 
 // View that contains global media controls' title.
 class GlobalMediaControlsTitleView : public views::View {
+  METADATA_HEADER(GlobalMediaControlsTitleView, views::View)
+
  public:
   GlobalMediaControlsTitleView() {
     auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -145,6 +149,9 @@ class GlobalMediaControlsTitleView : public views::View {
   raw_ptr<views::ImageButton, ExperimentalAsh> pin_button_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
 };
+
+BEGIN_METADATA(GlobalMediaControlsTitleView)
+END_METADATA
 
 }  // namespace
 
@@ -210,6 +217,9 @@ void MediaTray::PinButton::ButtonPressed() {
           ? IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT
           : IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT));
 }
+
+BEGIN_METADATA(MediaTray, PinButton, IconButton)
+END_METADATA
 
 MediaTray::MediaTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kMediaPlayer) {
@@ -483,5 +493,8 @@ void MediaTray::AnchorUpdated() {
   GetBubbleView()->SetAnchorRect(
       shelf()->GetStatusAreaWidget()->GetMediaTrayAnchorRect());
 }
+
+BEGIN_METADATA(MediaTray)
+END_METADATA
 
 }  // namespace ash

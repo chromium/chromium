@@ -5,6 +5,7 @@
 #include "ash/system/phonehub/phone_hub_app_loading_icon.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -77,5 +78,8 @@ void AppLoadingIcon::StopLoadingAnimation() {
   animation_abort_handle_.reset();
   animation_initial_delay_timer_.Stop();
 }
+
+BEGIN_METADATA(AppLoadingIcon)
+END_METADATA
 
 }  // namespace ash

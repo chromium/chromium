@@ -8,12 +8,15 @@
 #include "ash/ash_export.h"
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_wifi_header_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // Fake implementation of NetworkListWifiHeaderView
 class ASH_EXPORT FakeNetworkListWifiHeaderView
     : public NetworkListWifiHeaderView {
+  METADATA_HEADER(FakeNetworkListWifiHeaderView, NetworkListWifiHeaderView)
+
  public:
   explicit FakeNetworkListWifiHeaderView(
       NetworkListNetworkHeaderView::Delegate* delegate);

@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -329,5 +330,8 @@ void PowerButtonMenuView::ButtonPressed(PowerButtonMenuActionType action,
   std::move(callback).Run();
   Shell::Get()->power_button_controller()->DismissMenu();
 }
+
+BEGIN_METADATA(PowerButtonMenuView)
+END_METADATA
 
 }  // namespace ash

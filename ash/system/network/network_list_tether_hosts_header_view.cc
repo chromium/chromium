@@ -8,6 +8,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/network/network_list_network_header_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -21,5 +22,8 @@ NetworkListTetherHostsHeaderView::NetworkListTetherHostsHeaderView(
 }
 
 NetworkListTetherHostsHeaderView::~NetworkListTetherHostsHeaderView() = default;
+
+BEGIN_METADATA(NetworkListTetherHostsHeaderView)
+END_METADATA
 
 }  // namespace ash

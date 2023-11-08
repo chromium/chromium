@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace gfx {
@@ -28,6 +29,8 @@ class UnifiedMediaControlsController;
 
 // Media controls view displayed in quick settings.
 class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
+  METADATA_HEADER(UnifiedMediaControlsView, views::Button)
+
  public:
   explicit UnifiedMediaControlsView(UnifiedMediaControlsController* controller);
   ~UnifiedMediaControlsView() override = default;
@@ -56,6 +59,8 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
   friend class UnifiedMediaControlsControllerTest;
 
   class MediaActionButton : public IconButton {
+    METADATA_HEADER(MediaActionButton, IconButton)
+
    public:
     MediaActionButton(UnifiedMediaControlsController* controller,
                       media_session::mojom::MediaSessionAction action,

@@ -15,6 +15,8 @@
 #include "components/media_message_center/media_notification_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -137,6 +139,9 @@ void UnifiedMediaControlsView::MediaActionButton::SetAction(
   SetTooltipText(accessible_name);
   SetVectorIcon(GetVectorIconForMediaAction(action));
 }
+
+BEGIN_METADATA(UnifiedMediaControlsView, MediaActionButton, IconButton)
+END_METADATA
 
 UnifiedMediaControlsView::UnifiedMediaControlsView(
     UnifiedMediaControlsController* controller)
@@ -369,5 +374,8 @@ SkPath UnifiedMediaControlsView::GetArtworkClipPath() {
                     kArtworkCornerRadius, kArtworkCornerRadius);
   return path;
 }
+
+BEGIN_METADATA(UnifiedMediaControlsView)
+END_METADATA
 
 }  // namespace ash
