@@ -896,33 +896,10 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   SetProperty(views::kElementIdentifierKey, kBrowserViewElementId);
 
-  // In order to do feature promos, the browser must have a UI and not be an
-  // "off-the-record" or in a demo or guest mode.
-  bool is_profile_type_without_iph =
-      GetIncognito() || GetGuestSession() || IsManagedGuestSession() ||
-      profiles::IsDemoSession() || profiles::IsChromeAppKioskSession();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  is_profile_type_without_iph |= profiles::IsWebKioskSession();
-#endif
-  if (!headless::IsHeadlessMode() && !is_profile_type_without_iph) {
-    if (UserEducationService* const user_education_service =
-            UserEducationServiceFactory::GetForBrowserContext(GetProfile())) {
-      RegisterChromeHelpBubbleFactories(
-          user_education_service->help_bubble_factory_registry());
-      MaybeRegisterChromeFeaturePromos(
-          user_education_service->feature_promo_registry());
-      MaybeRegisterChromeTutorials(user_education_service->tutorial_registry());
-      feature_promo_controller_ =
-          std::make_unique<BrowserFeaturePromoController>(
-              this,
-              feature_engagement::TrackerFactory::GetForBrowserContext(
-                  GetProfile()),
-              &user_education_service->feature_promo_registry(),
-              &user_education_service->help_bubble_factory_registry(),
-              &user_education_service->feature_promo_storage_service(),
-              &user_education_service->tutorial_service());
-    }
-  }
+  // Not all browsers do feature promos. Conditionally create one (or don't) for
+  // this browser window.
+  feature_promo_controller_ =
+      BrowserFeaturePromoController::MaybeCreateForBrowserView(this);
 
   browser_->tab_strip_model()->AddObserver(this);
   immersive_mode_controller_ = chrome::CreateImmersiveModeController(this);
