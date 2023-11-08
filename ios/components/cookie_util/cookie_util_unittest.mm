@@ -17,7 +17,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForCookiesTimeout;
@@ -91,8 +90,8 @@ TEST_F(CookieUtilTest, CreateCookieStore) {
   std::string cookie_line = base::SysNSStringToUTF8(cookie_name) + "=" +
                             base::SysNSStringToUTF8(cookie_value);
   auto canonical_cookie = net::CanonicalCookie::Create(
-      test_url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
-      /*cookie_partition_key=*/absl::nullopt);
+      test_url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt);
   cookie_store->SetCanonicalCookieAsync(std::move(canonical_cookie), test_url,
                                         options,
                                         net::CookieStore::SetCookiesCallback());

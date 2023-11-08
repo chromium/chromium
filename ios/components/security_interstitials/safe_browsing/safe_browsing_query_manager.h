@@ -6,6 +6,7 @@
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_QUERY_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -18,7 +19,6 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -70,7 +70,7 @@ class SafeBrowsingQueryManager
     // Whether an error page should be shown for the URL.
     bool show_error_page = false;
     // The UnsafeResource created for the URL check, if any.
-    absl::optional<security_interstitials::UnsafeResource> resource;
+    std::optional<security_interstitials::UnsafeResource> resource;
   };
 
   // Observer class for the query manager.
