@@ -26,6 +26,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
@@ -751,6 +752,9 @@ SkiaOutputSurfaceImpl::CreateImageContext(
       /*is_for_render_pass=*/false, raw_draw_if_possible);
 }
 
+DBG_FLAG_FBOOL("skia_gpu.swap_buffers.force_disable_makecurrent",
+               force_disable_makecurrent)
+
 void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!current_paint_);
@@ -777,8 +781,9 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   auto callback =
       base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SwapBuffers,
                      base::Unretained(impl_on_gpu_.get()), std::move(frame));
+  bool make_current = !force_disable_makecurrent();
   EnqueueGpuTask(std::move(callback), std::move(resource_sync_tokens_),
-                 /*make_current=*/true,
+                 make_current,
                  /*need_framebuffer=*/!dependency_->IsOffscreen());
 
   // Recreate |root_ddl_recorder_| after SwapBuffers has been scheduled on GPU
