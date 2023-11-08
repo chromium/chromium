@@ -19,9 +19,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#import "components/search_engines/default_search_manager.h"
-#import "components/search_engines/template_url.h"
-#import "components/search_engines/template_url_service.h"
+#import "components/search/search.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/features.h"
@@ -1176,14 +1174,7 @@
 }
 
 - (BOOL)isGoogleDefaultSearchEngine {
-  DCHECK(self.templateURLService);
-  const TemplateURL* defaultURL =
-      self.templateURLService->GetDefaultSearchProvider();
-  BOOL isGoogleDefaultSearchProvider =
-      defaultURL &&
-      defaultURL->GetEngineType(self.templateURLService->search_terms_data()) ==
-          SEARCH_ENGINE_GOOGLE;
-  return isGoogleDefaultSearchProvider;
+  return search::DefaultSearchProviderIsGoogle(self.templateURLService);
 }
 
 - (BOOL)isStartSurface {

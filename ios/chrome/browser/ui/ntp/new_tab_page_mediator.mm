@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/search/search.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -151,7 +153,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)setUp {
   _feedHeaderVisible = [self updatedFeedHeaderVisible];
   self.templateURLService->Load();
-  [self.headerConsumer setLogoIsShowing:[self isGoogleDefaultSearchEngine]];
+  [self.headerConsumer setLogoIsShowing:search::DefaultSearchProviderIsGoogle(
+                                            self.templateURLService)];
   [self.headerConsumer
       setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
   [self updateAccountImage];
@@ -236,7 +239,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     return;
   }
   _defaultSearchEngine = updatedDefaultSearchEngine;
-  [self.headerConsumer setLogoIsShowing:[self isGoogleDefaultSearchEngine]];
+  [self.headerConsumer setLogoIsShowing:search::DefaultSearchProviderIsGoogle(
+                                            self.templateURLService)];
   [self setFeedHeaderVisible:[self updatedFeedHeaderVisible]];
   [self.feedControlDelegate updateFeedForDefaultSearchEngineChanged];
 }
@@ -290,31 +294,14 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   // TODO(crbug.com/1085419): Add metrics.
 }
 
-// Returns YES if Google is selected as the default search engine.
-- (BOOL)isGoogleDefaultSearchEngine {
-  const TemplateURL* defaultURL =
-      self.templateURLService->GetDefaultSearchProvider();
-  return defaultURL && defaultURL->GetEngineType(
-                           self.templateURLService->search_terms_data()) ==
-                           SEARCH_ENGINE_GOOGLE;
-}
-
-// Returns YES if the feed should be hidden because of the user's search
-// engine choice.
-- (BOOL)hideFeedWithSearchChoice {
-  return IsIOSHideFeedWithSearchChoiceEnabled() &&
-         ![self isGoogleDefaultSearchEngine] &&
-         (!IsIOSHideFeedWithSearchChoiceTargeted() ||
-          self.templateURLService->IsEeaChoiceCountry());
-}
-
 // Returns an updated value for feedHeaderVisible.
 - (BOOL)updatedFeedHeaderVisible {
   return _prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
          _prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
          !IsFeedAblationEnabled() &&
          IsContentSuggestionsForSupervisedUserEnabled(_prefService) &&
-         !_isSafeMode && ![self hideFeedWithSearchChoice];
+         !_isSafeMode &&
+         !ShouldHideFeedWithSearchChoice(self.templateURLService);
 }
 
 // Sets whether the feed header should be visible.

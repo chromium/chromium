@@ -123,6 +123,7 @@ source_set("settings") {
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
