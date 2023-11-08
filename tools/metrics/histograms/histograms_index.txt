@@ -97,6 +97,7 @@ tools/metrics/histograms/metadata/navigation/histograms.xml
 tools/metrics/histograms/metadata/nearby/histograms.xml
 tools/metrics/histograms/metadata/net/enums.xml
 tools/metrics/histograms/metadata/net/histograms.xml
+tools/metrics/histograms/metadata/network/enums.xml
 tools/metrics/histograms/metadata/network/histograms.xml
 tools/metrics/histograms/metadata/new_tab_page/histograms.xml
 tools/metrics/histograms/metadata/notifications/histograms.xml
