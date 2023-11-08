@@ -55,7 +55,6 @@ source_set("tabs") {
     "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/ui/bookmarks",
-    "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/popup_menu/public",
