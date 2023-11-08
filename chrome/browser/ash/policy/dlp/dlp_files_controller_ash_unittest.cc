@@ -2274,7 +2274,7 @@ INSTANTIATE_TEST_SUITE_P(
     DlpFilesAppLaunchTest_ExtensionApp,
     ::testing::Values(
         std::make_tuple(apps::AppType::kStandaloneBrowserChromeApp,
-                        kStandaloneBrowserExtensionAppId),
+                        kStandaloneBrowserChromeAppId),
         std::make_tuple(apps::AppType::kExtension, kExtensionAppId),
         std::make_tuple(apps::AppType::kStandaloneBrowserExtension,
                         kStandaloneBrowserExtensionAppId),
