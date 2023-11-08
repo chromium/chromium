@@ -804,6 +804,15 @@ class SystemAccessProcessPrintBrowserTestBase
 #if BUILDFLAG(IS_WIN)
   void PrimeForPdfConversionErrorOnPageIndex(uint32_t page_index) {
     simulate_pdf_conversion_error_on_page_index_ = page_index;
+
+    // Queuing converted pages to be spooled occurs on the UI thread, while the
+    // actual spooling occurs on the worker thread.  The worker thread polls for
+    // pages, making it difficult to know if earlier pages that are successfully
+    // converted will get spooled before some other error causes the job to be
+    // canceled.  Do not use rendered page counts as part of any test
+    // expectations in this case.  Other events should be used to know when it
+    // is safe to terminate the test.
+    DisableCheckForOnRenderedPrintedPage();
   }
 #endif
 
@@ -865,6 +874,12 @@ class SystemAccessProcessPrintBrowserTestBase
     test_printing_context_factory()->SetAccessDeniedErrorOnDocumentDone(
         /*cause_errors=*/true);
   }
+
+#if BUILDFLAG(IS_WIN)
+  void DisableCheckForOnRenderedPrintedPage() {
+    check_for_rendered_printed_page_ = false;
+  }
+#endif
 
   void SetCheckForPrintPreviewDone(bool check) {
     check_for_print_preview_done_ = check;
@@ -1013,7 +1028,9 @@ class SystemAccessProcessPrintBrowserTestBase
     if (result == mojom::ResultCode::kSuccess) {
       render_printed_pages_count_++;
     }
-    CheckForQuit();
+    if (check_for_rendered_printed_page_) {
+      CheckForQuit();
+    }
   }
 #endif
 
@@ -1056,6 +1073,9 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 
   base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_WIN)
+  bool check_for_rendered_printed_page_ = true;
+#endif
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   bool check_for_print_preview_done_ = false;
   TestPrintJobWorker::PrintCallbacks test_print_job_worker_callbacks_;
@@ -1475,8 +1495,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
-                       // TODO(crbug.com/1491616): Re-enable this test
-                       DISABLED_StartPrintingPdfConversionFails) {
+                       StartPrintingPdfConversionFails) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForPdfConversionErrorOnPageIndex(/*page_index=*/1);
@@ -1514,13 +1533,12 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   // only for OOP.
   if (UseService()) {
     EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
-    // TODO(crbug.com/1008222)  Include Windows coverage of
-    // RenderPrintedDocument() once XPS print pipeline is added.
-    EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kFailed);
   } else {
     EXPECT_THAT(in_process_last_error_result_code(),
                 testing::Optional(mojom::ResultCode::kCanceled));
   }
+  // TODO(crbug.com/1500445):  Update expectation once an error is shown for
+  // this failure.
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
@@ -2323,13 +2341,12 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
   if (UseService()) {
     EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
-    // TODO(crbug.com/1008222)  Include Windows coverage of
-    // RenderPrintedDocument() once XPS print pipeline is added.
-    EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kFailed);
   } else {
     EXPECT_THAT(in_process_last_error_result_code(),
                 testing::Optional(mojom::ResultCode::kCanceled));
   }
+  // TODO(crbug.com/1500445):  Update expectation once an error is shown for
+  // this failure.
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
