@@ -23,6 +23,7 @@ source_set("inactive_tabs") {
     "//components/prefs/ios",
     "//components/sessions",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:serialisation",

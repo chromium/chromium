@@ -37,6 +37,7 @@ char const kIsShowingPDF[] = "pdf";
 char const kVideoPlaying[] = "avplay";
 char const kIncognitoTabCount[] = "OTRTabs";
 char const kRegularTabCount[] = "regTabs";
+char const kInactiveTabCount[] = "inactiveTabs";
 char const kConnectedScenes[] = "scenes";
 char const kForegroundScenes[] = "fgScenes";
 char const kDestroyingAndRebuildingIncognitoBrowserState[] =
@@ -185,6 +186,13 @@ void SetRegularTabCount(int tabCount) {
   [[CrashReportUserApplicationState sharedInstance] setValue:kRegularTabCount
                                                    withValue:tabCount];
   [[PreviousSessionInfo sharedInstance] updateCurrentSessionTabCount:tabCount];
+}
+
+void SetInactiveTabCount(int tabCount) {
+  [[CrashReportUserApplicationState sharedInstance] setValue:kInactiveTabCount
+                                                   withValue:tabCount];
+  [[PreviousSessionInfo sharedInstance]
+      updateCurrentSessionInactiveTabCount:tabCount];
 }
 
 void SetIncognitoTabCount(int tabCount) {

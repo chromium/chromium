@@ -71,6 +71,9 @@ void SetForegroundScenesCount(int connectedScenes);
 // Sets a key in browser_state dictionary to store the count of regular tabs.
 void SetRegularTabCount(int tabCount);
 
+// Sets a key in browser_state dictionary to store the count of inactive tabs.
+void SetInactiveTabCount(int tabCount);
+
 // Sets a key in browser_state dictionary to store the count of incognito tabs.
 void SetIncognitoTabCount(int tabCount);
 
