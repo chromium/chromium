@@ -44,9 +44,12 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, DispatchMetricTest) {
        ContextType::kServiceWorker,
        {}},
       // DidDispatchToAckSucceed
+      {"Extensions.Events.DidDispatchToAckSucceed.ExtensionPage",
+       ContextType::kFromManifest,  // event page
+       {"Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2"}},
       {"Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
        ContextType::kServiceWorker,
-       {}},
+       {"Extensions.Events.DidDispatchToAckSucceed.ExtensionPage"}},
   };
 
   for (const auto& test_case : test_cases) {
@@ -233,6 +236,9 @@ IN_PROC_BROWSER_TEST_P(EventMetricsDispatchToSenderBrowserTest,
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage",
       /*expected_count=*/0);
 
   // We do always log starting/finishing an external request.

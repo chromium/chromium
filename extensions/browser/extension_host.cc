@@ -179,6 +179,16 @@ void ExtensionHost::OnBackgroundEventDispatched(
     int event_id,
     EventDispatchSource dispatch_source) {
   CHECK(IsBackgroundPage());
+  // See ExtensionHost::OnEventAck() for an explanation on the restriction to
+  // this event flow.
+  if (dispatch_source == EventDispatchSource::kDispatchEventToProcess) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ExtensionHost::EmitLateAckedEventTask,
+                       weak_ptr_factory_.GetWeakPtr(), event_id),
+        kEventAckMetricTimeLimit);
+  }
+
   unacked_messages_[event_id] =
       UnackedEventData{event_name, dispatch_start_time, dispatch_source};
   for (auto& observer : observer_list_)
@@ -317,6 +327,18 @@ bool ExtensionHost::OnMessageReceived(const IPC::Message& message,
 }
 #endif
 
+void ExtensionHost::EmitLateAckedEventTask(int event_id) {
+  // If the event is still present then we haven't received the ack yet in
+  // `ExtensionHost::OnEventAck()`.
+  if (unacked_messages_.contains(event_id)) {
+    // TODO(crbug.com/1470045): Update this histogram once we have a way to ack
+    // only for lazy background page events. Until then this could be slightly
+    // inaccurate and not perfectly comparable to the service worker version.
+    base::UmaHistogramBoolean(
+        "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage", false);
+  }
+}
+
 void ExtensionHost::OnEventAck(
     int event_id,
     bool event_will_run_in_lazy_background_page_script) {
@@ -376,6 +398,22 @@ void ExtensionHost::OnEventAck(
           /*min=*/base::Microseconds(1), /*max=*/base::Minutes(5),
           /*buckets=*/100);
     }
+  }
+
+  // `DidDispatchToAckSucceed` is outside of the
+  // `event_will_run_in_lazy_background_page_script` condition because we
+  // can't exclude non-script extensions page contexts (e.g. popup scripts) yet
+  // so we have to emit this for all events to remain proportionate to the
+  // `false` emits.
+  bool late_ack =
+      (base::TimeTicks::Now() - unacked_message_data.dispatch_start_time) >
+      kEventAckMetricTimeLimit;
+  if (!late_ack) {
+    // Emit only if we're within the expected event ack time limit. We'll take
+    // care of the emit for a late ack via a delayed task we started on event
+    // dispatch.
+    base::UmaHistogramBoolean(
+        "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage", true);
   }
 
   EventRouter* router = EventRouter::Get(browser_context_);

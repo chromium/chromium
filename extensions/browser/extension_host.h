@@ -207,6 +207,11 @@ class ExtensionHost : public DeferredStartRenderHost,
     EventDispatchSource dispatch_source;
   };
 
+  // Emits a stale event ack metric if an event with `event_id` is not present
+  // in `unacked_messages_`. Meaning that the event was not yet acked by the
+  // renderer to the browser.
+  void EmitLateAckedEventTask(int event_id);
+
   // DeferredStartRenderHost:
   void CreateRendererNow() override;
 

@@ -69,6 +69,11 @@ enum class EventDispatchSource : int {
   kDispatchEventToSender,
 };
 
+// The upper bound of time allowed for event dispatch histograms. Also used in
+// histograms for determining when an event is "stale" (it has not been acked by
+// the renderer to the browser by this time).
+inline constexpr base::TimeDelta kEventAckMetricTimeLimit = base::Minutes(5);
+
 // TODO(lazyboy): Document how extension events work, including how listeners
 // are registered and how listeners are tracked in renderer and browser process.
 class EventRouter : public KeyedService,

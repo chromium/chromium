@@ -1224,6 +1224,18 @@ chromium-metrics-reviews@google.com.
     chosen based on when the majority of events are ack'd.
   </summary>
   <token key="BackgroundContextType">
+    <variant name="ExtensionPage"
+        summary="event page. However, unlike for other contexts that only
+                 emit if the the event fired in the background page of the
+                 extension, this will emit for all events that run in the
+                 event page extension renderer process (event page, tabs,
+                 popups, etc.). Note: this should not be used to perfectly
+                 compare against other contexts like service workers where
+                 the above is not true. But we are presuming that since the
+                 other pages that run in the process are persistent, they
+                 will generally never be stale and so won't skew the data
+                 significantly in the failure case and are therefore mostly
+                 comparable."/>
     <variant name="ExtensionServiceWorker2"
         summary="service worker. Replaced previous version because values
                  were inconsistent with excluding
