@@ -1170,6 +1170,9 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
     if (!WebAXObject::IsDirty(document)) {
       events.emplace_back(end_of_test);
     } else {
+      DLOG(ERROR) << "Had end of test event, but document is still dirty. "
+                     "Serialize post lifecycle: "
+                  << serialize_post_lifecycle_;
       // Document is still dirty, queue up another end of test and process
       // immediately.
       if (!serialize_post_lifecycle_) {
