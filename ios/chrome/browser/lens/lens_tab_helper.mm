@@ -35,7 +35,7 @@ void LensTabHelper::SetLensCommandsHandler(id<LensCommands> commands_handler) {
   commands_handler_ = commands_handler;
 }
 
-absl::optional<LensEntrypoint>
+std::optional<LensEntrypoint>
 LensTabHelper::EntryPointForGoogleChromeActionURLPath(NSString* path) {
   if ([path caseInsensitiveCompare:kWebSearchBarEntryPointPath] ==
       NSOrderedSame) {
@@ -44,7 +44,7 @@ LensTabHelper::EntryPointForGoogleChromeActionURLPath(NSString* path) {
              NSOrderedSame) {
     return LensEntrypoint::TranslateOnebox;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void LensTabHelper::ShouldAllowRequest(
@@ -54,7 +54,7 @@ void LensTabHelper::ShouldAllowRequest(
   if (request_info.target_frame_is_main &&
       [request.URL.scheme isEqualToString:kGoogleChromeActionScheme] &&
       [request.URL.host isEqualToString:kLensHost]) {
-    absl::optional<LensEntrypoint> entry_point =
+    std::optional<LensEntrypoint> entry_point =
         EntryPointForGoogleChromeActionURLPath(request.URL.path);
     if (entry_point) {
       OpenLensInputSelection(entry_point.value());

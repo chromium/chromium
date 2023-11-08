@@ -5,10 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_LENS_LENS_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_LENS_LENS_BROWSER_AGENT_H_
 
+#import <optional>
+
 #import "base/scoped_multi_source_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 enum class LensEntrypoint;
 class Browser;
@@ -42,7 +43,7 @@ class LensBrowserAgent : public BrowserObserver,
 
   // Returns the Lens entrypoint for the current WebState URL if it is a
   // Lens Web results URL from an enabled camera entrypoint.
-  absl::optional<LensEntrypoint> CurrentResultsEntrypoint() const;
+  std::optional<LensEntrypoint> CurrentResultsEntrypoint() const;
 
   // The Browser that this agent is attached to.
   Browser* browser_ = nullptr;

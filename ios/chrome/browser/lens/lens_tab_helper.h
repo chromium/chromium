@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_LENS_LENS_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_LENS_LENS_TAB_HELPER_H_
 
+#import <optional>
+
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 enum class LensEntrypoint;
 @protocol LensCommands;
@@ -27,7 +28,7 @@ class LensTabHelper : public web::WebStatePolicyDecider,
   void SetLensCommandsHandler(id<LensCommands> commands_handler);
 
   // Returns the entry point that the googlechromeaction:// url path points to.
-  static absl::optional<LensEntrypoint> EntryPointForGoogleChromeActionURLPath(
+  static std::optional<LensEntrypoint> EntryPointForGoogleChromeActionURLPath(
       NSString* path);
 
   // web::WebStatePolicyDecider:

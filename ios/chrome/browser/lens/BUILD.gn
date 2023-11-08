@@ -21,10 +21,7 @@ source_set("lens") {
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/web/public",
   ]
-  public_deps = [
-    "//base",
-    "//third_party/abseil-cpp:absl",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
