@@ -60,7 +60,7 @@ struct FlatHashSetPolicy;
 //   that the set is provided a compatible heterogeneous hashing function and
 //   equality operator.
 // * Invalidates any references and pointers to elements within the table after
-//   `rehash()`.
+//   `rehash()` and when the table is moved.
 // * Contains a `capacity()` member function indicating the number of element
 //   slots (open, deleted, and empty) within the hash set.
 // * Returns `void` from the `erase(iterator)` overload.
