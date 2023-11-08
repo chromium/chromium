@@ -173,17 +173,6 @@ class MultiStepImportMerger {
       AutofillProfile& profile,
       ProfileImportMetadata& import_metadata);
 
-  // Merging can fail if one profile fragment contains an observed country and
-  // the complemented country of the other profile disagrees with it.
-  // This function attempts to make `profile_a` and `profile_b` mergeable by
-  // removing the complemented country.
-  // If successful, true is returned and the complemented country removed.
-  bool MergeableByRemovingIncorrectlyComplementedCountry(
-      AutofillProfile& profile_a,
-      bool& complemented_profile_a,
-      AutofillProfile& profile_b,
-      bool& complemented_profile_b) const;
-
   // `ProfileImportMetadata` is used to log metrics on the user decision,
   // depending on features like invalid phone number removal. When combining two
   // profile fragments, we need to decide which features had an effect on the

@@ -3569,44 +3569,6 @@ TEST_P(FormDataImporterTest, MultiStepImport) {
   ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
 }
 
-// Tests that a complemented country is discarded in favour of an observed one.
-TEST_P(FormDataImporterTest, MultiStepImport_ComplementCountryEarly) {
-  // Import a profile fragment with country information.
-  TypeValuePairs type_value_pairs =
-      GetSplitDefaultProfileTypeValuePairs(/*part=*/1);
-  EXPECT_TRUE(base::Contains(
-      type_value_pairs,
-      std::pair<ServerFieldType, std::string>(ADDRESS_HOME_COUNTRY, "US")));
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
-
-  // Now import the second profile form fragment without a country field. The
-  // country is thus be complemented to the variation country "DE".
-  autofill_client_->SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
-  type_value_pairs = GetSplitDefaultProfileTypeValuePairs(/*part=*/2);
-  EXPECT_FALSE(base::Contains(type_value_pairs, ADDRESS_HOME_COUNTRY,
-                              [](auto& pair) { return pair.first; }));
-  form_structure = ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillDefaultToCityAndNumber)) {
-    ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
-  } else {
-    // The behavior of FormDataImporter is a bit broken:
-    // The first split of the form contains the country (US) and some other
-    // fields. The second split contains no country but a phone number.
-    // Therefore, the country is inferred from the geo IP and the US phone
-    // number is parsed with the assumption to read a DE number. The resulting
-    // phone number is not a valid US phone number even though the address
-    // profile is a US profile.
-    AutofillProfile expected_profile = ConstructDefaultProfile();
-    expected_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"0165 05550000");
-    ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                               {expected_profile});
-  }
-}
-
 // Tests that when multi-step complements are enabled, complete profiles those
 // import was accepted are added as a multi-step candidate. This enables
 // complementing the profile with additional information on further pages.
