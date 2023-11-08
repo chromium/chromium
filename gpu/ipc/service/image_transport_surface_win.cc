@@ -10,7 +10,7 @@
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
-#include "gpu/ipc/service/pass_through_image_transport_surface.h"
+#include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/dcomp_presenter.h"
 #include "ui/gl/direct_composition_support.h"
@@ -104,11 +104,7 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
       return nullptr;
   }
 
-  // |override_vsync_for_multi_window_swap| is needed because Present() blocks
-  // when multiple windows use swap interval 1 all the time.  With this flag the
-  // surface forces swap interval 0 when multiple windows are presenting.
-  return scoped_refptr<gl::GLSurface>(new PassThroughImageTransportSurface(
-      delegate, surface.get(), /*override_vsync_for_multi_window_swap=*/true));
+  return surface;
 }
 
 }  // namespace gpu

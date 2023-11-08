@@ -27,6 +27,8 @@
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_features.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_version_info.h"
 
@@ -46,6 +48,50 @@ NOINLINE void CheckForLoopFailures() {
 }
 
 }  // namespace
+
+class SkiaOutputDeviceGL::MultiSurfaceSwapBuffersTracker {
+ public:
+  // Returns true if multiple surface swaps detected.
+  bool TrackSwapBuffers() {
+    static int next_global_swap_generation = 0;
+    static int num_swaps_in_current_swap_generation = 0;
+    static int last_multi_window_swap_generation = 0;
+
+    // This code is a simple way of enforcing that we only vsync if one surface
+    // is swapping per frame. This provides single window cases a stable refresh
+    // while allowing multi-window cases to not slow down due to multiple syncs
+    // on a single thread. A better way to fix this problem would be to have
+    // each surface present on its own thread.
+
+    // If next global swap generation equals to our surface's next swap
+    // generation means we start new swap generation and this is first surface
+    // to swap.
+    if (next_global_swap_generation == next_surface_swap_generation_) {
+      // Start new generation.
+      next_global_swap_generation++;
+
+      // Store number of swaps in the previous generation.
+      if (num_swaps_in_current_swap_generation > 1) {
+        last_multi_window_swap_generation = next_global_swap_generation;
+      }
+      num_swaps_in_current_swap_generation = 0;
+    }
+
+    next_surface_swap_generation_ = next_global_swap_generation;
+    num_swaps_in_current_swap_generation++;
+
+    // Number of swap generations before vsync is re-enabled after we've stopped
+    // doing multiple swaps per frame.
+    constexpr int kMultiWindowSwapEnableVSyncDelay = 60;
+
+    return (num_swaps_in_current_swap_generation > 1) ||
+           (next_global_swap_generation - last_multi_window_swap_generation <
+            kMultiWindowSwapEnableVSyncDelay);
+  }
+
+ private:
+  int next_surface_swap_generation_ = 0;
+};
 
 SkiaOutputDeviceGL::SkiaOutputDeviceGL(
     gpu::SharedContextState* context_state,
@@ -147,6 +193,19 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   // scRGB linear
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_F16)] =
       kRGBA_F16_SkColorType;
+
+  if (features::UseGpuVsync()) {
+    // Historically we never disabled vsync on Android and it's very rare
+    // use-case to have multiple active windows there. On other platforms we
+    // disable GLSurface's VSync if we're swapping multiple surfaces per frame
+    // to prevent SwapBuffers from blocking and slowing down other windows.
+#if !BUILDFLAG(IS_ANDROID)
+    multisurface_swapbuffers_tracker_ =
+        std::make_unique<MultiSurfaceSwapBuffersTracker>();
+#endif
+  } else {
+    gl_surface_->SetVSyncEnabled(false);
+  }
 }
 
 SkiaOutputDeviceGL::~SkiaOutputDeviceGL() {
@@ -225,6 +284,12 @@ bool SkiaOutputDeviceGL::Reshape(const SkImageInfo& image_info,
 void SkiaOutputDeviceGL::Present(const absl::optional<gfx::Rect>& update_rect,
                                  BufferPresentedCallback feedback,
                                  OutputSurfaceFrame frame) {
+  if (multisurface_swapbuffers_tracker_) {
+    const bool multiple_surface_swaps =
+        multisurface_swapbuffers_tracker_->TrackSwapBuffers();
+    gl_surface_->SetVSyncEnabled(!multiple_surface_swaps);
+  }
+
   StartSwapBuffers({});
 
   gfx::Size surface_size =
