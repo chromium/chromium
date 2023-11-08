@@ -3905,6 +3905,9 @@
         <message name="IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION" desc="Information text to users that to proceed with the firmware update that they need to click on the Next button.">
           To proceed with the update, click Next.
         </message>
+        <message name="IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT" desc="Information text to users that the chosen update comes from the device manufacturer and hasn't been verified by Google." translateable="false">
+          This update is provided by the external device manufacturer and hasn't been verified by Google.
+        </message>
         <!-- Search Page -->
         <message name="IDS_FEEDBACK_TOOL_CONTINUE_BUTTON_LABEL" desc="Label of the continue button.">
           Continue

@@ -26,6 +26,8 @@ build_webui("build") {
     "update_card.ts",
   ]
 
+  icons_html_files = [ "icons.html" ]
+
   non_web_component_files = [
     "fake_data.ts",
     "fake_update_controller.ts",

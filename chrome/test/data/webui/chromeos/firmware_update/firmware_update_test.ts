@@ -158,6 +158,58 @@ export function firmwareUpdateAppTest() {
         fwConfirmDialog.shadowRoot!.querySelector('#confirmationDialog')));
   });
 
+  test('ConfirmationDialogShowsDisclaimerWhenFlagEnabled', async () => {
+    // Enable the v2 flag.
+    loadTimeData.overrideValues({
+      isFirmwareUpdateUIV2Enabled: true,
+    });
+
+    // Setup the app.
+    initializePage();
+    await flushTasks();
+    assert(page);
+
+    // Open dialog for first firmware update card.
+    let whenFired = eventToPromise('cr-dialog-open', page);
+    let button = strictQuery(
+        `#updateButton`, getUpdateCards()[0]!.shadowRoot, CrButtonElement);
+    button.click();
+    await flushTasks();
+    await whenFired;
+    let fwConfirmDialog = strictQuery(
+        'firmware-confirmation-dialog', page.shadowRoot, HTMLElement);
+
+    // The disclaimer should be displayed.
+    assertTrue(!!fwConfirmDialog.shadowRoot!.querySelector('#disclaimer'));
+
+    // Clear app element to reset the test.
+    page?.remove();
+    await flushTasks();
+
+    // Disable the v2 flag.
+    loadTimeData.overrideValues({
+      isFirmwareUpdateUIV2Enabled: false,
+    });
+
+    // Setup the app.
+    initializePage();
+    await flushTasks();
+    assert(page);
+
+    // Open dialog for first firmware update card.
+    whenFired = eventToPromise('cr-dialog-open', page);
+    button = strictQuery(
+        `#updateButton`, getUpdateCards()[0]!.shadowRoot, CrButtonElement);
+    button.click();
+    await flushTasks();
+    await whenFired;
+    fwConfirmDialog = strictQuery(
+        'firmware-confirmation-dialog', page.shadowRoot, HTMLElement);
+
+    // The disclaimer should not be displayed.
+    assertFalse(!!fwConfirmDialog.shadowRoot!.querySelector('#disclaimer'));
+  });
+
   test('OpenUpdateDialog', async () => {
     initializePage();
     await flushTasks();

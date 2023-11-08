@@ -69,7 +69,8 @@ void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
       {"restartingTitleText", IDS_FIRMWARE_RESTARTING_TITLE_TEXT},
       {"upToDate", IDS_FIRMWARE_UP_TO_DATE_TEXT},
       {"versionText", IDS_FIRMWARE_VERSION_TEXT},
-      {"proceedConfirmationText", IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION}};
+      {"proceedConfirmationText", IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION},
+      {"confirmationDisclaimer", IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
