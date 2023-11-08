@@ -200,6 +200,10 @@ void FedCmMetrics::RecordSignInStateMatchStatus(
     ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
+
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
   ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
   RecordUkm(fedcm_idp_builder);
 

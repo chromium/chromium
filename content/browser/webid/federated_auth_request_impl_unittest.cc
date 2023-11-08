@@ -1188,7 +1188,13 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   }
 
   void ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus status) {
-    auto entries = ukm_recorder()->GetEntriesByName(FedCmIdpEntry::kEntryName);
+    ExpectSignInStateMatchStatusUKMInternal(status, FedCmEntry::kEntryName);
+    ExpectSignInStateMatchStatusUKMInternal(status, FedCmIdpEntry::kEntryName);
+  }
+
+  void ExpectSignInStateMatchStatusUKMInternal(SignInStateMatchStatus status,
+                                               const char* entry_name) {
+    auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     ASSERT_FALSE(entries.empty()) << "No FedCm entry was recorded";
 
