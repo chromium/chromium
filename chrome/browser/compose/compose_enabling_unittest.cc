@@ -182,25 +182,6 @@ TEST_F(ComposeEnablingTest, EverythingEnabledTest) {
             base::ok());
 }
 
-TEST_F(ComposeEnablingTest, AlternateFlagEnabledTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
-  // Ensure alternate feature flag is on and normal feature flag is off.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /* enabled features */
-      {compose::features::kFillMultiLine,
-       compose::features::kEnableComposeNudge},
-      /* disabled features */
-      {compose::features::kEnableCompose});
-  // Sign in, with sync turned on.
-  SignIn(signin::ConsentLevel::kSync);
-  // Turn on MSBB.
-  SetMsbbState(true);
-  EXPECT_EQ(compose_enabling.IsEnabled(GetProfile(),
-                                       identity_test_env_.identity_manager()),
-            base::ok());
-}
-
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {
   ComposeEnabling compose_enabling(&mock_translate_language_provider_);
 

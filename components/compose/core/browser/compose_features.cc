@@ -18,10 +18,6 @@ BASE_FEATURE(kEnableComposeNudge,
              "ComposeNudge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFillMultiLine,
-             "FillMultiLine",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableComposeLanguageBypass,
              "ComposeLanguageBypass",
              base::FEATURE_DISABLED_BY_DEFAULT);

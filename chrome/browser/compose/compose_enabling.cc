@@ -63,8 +63,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled(
   }
 
   // Check that the feature flag is enabled.
-  if (!base::FeatureList::IsEnabled(compose::features::kEnableCompose) &&
-      !base::FeatureList::IsEnabled(compose::features::kFillMultiLine)) {
+  if (!base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
     DVLOG(2) << "feature not enabled ";
     return base::unexpected(compose::ComposeShowStatus::kGenericBlocked);
   }

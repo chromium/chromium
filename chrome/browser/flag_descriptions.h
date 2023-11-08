@@ -4481,9 +4481,6 @@ extern const char kDesktopPWAsUserLinkCapturingDescription[];
 extern const char kAttachLogsToAutofillRaterExtensionReportName[];
 extern const char kAttachLogsToAutofillRaterExtensionReportDescription[];
 
-extern const char kFillMultiLineName[];
-extern const char kFillMultiLineDescription[];
-
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
