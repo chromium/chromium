@@ -1128,6 +1128,18 @@ if (is_chromeos && is_chromeos_device) {
 }
 
 if (is_android) {
+  static_library("toolbar_manager_test_helper_android") {
+    testonly = true
+    sources = [
+      "../browser/toolbar_manager_test_helper_android.cc",
+      "../browser/toolbar_manager_test_helper_android.h",
+    ]
+    deps = [
+      ":test_support_jni_headers",
+      "//base:base",
+    ]
+  }
+
   test("android_browsertests") {
     configs += [ "//build/config:precompiled_headers" ]
     defines = [
@@ -1149,6 +1161,7 @@ if (is_android) {
       ":test_support_java",
       ":test_support_jni_headers",
       ":test_support_ui_android",
+      ":toolbar_manager_test_helper_android",
       "//build:chromeos_buildflags",
       "//chrome:chrome_android_core",
       "//chrome/android:delegate_public_impl_java",
@@ -1270,8 +1283,6 @@ if (is_android) {
       "../browser/storage/shared_storage_browsertest.cc",
       "../browser/subresource_filter/subresource_filter_browser_test_harness.cc",
       "../browser/subresource_filter/subresource_filter_browser_test_harness.h",
-      "../browser/toolbar_manager_test_helper_android.cc",
-      "../browser/toolbar_manager_test_helper_android.h",
       "../browser/trusted_vault/trusted_vault_encryption_keys_tab_helper_browsertest.cc",
       "../browser/ui/android/autofill/save_update_address_profile_flow_manager_browsertest.cc",
       "../browser/ui/android/hats/survey_client_android_browsertest.cc",
