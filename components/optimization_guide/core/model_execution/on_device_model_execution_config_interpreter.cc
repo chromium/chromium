@@ -11,6 +11,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 
 namespace optimization_guide {
 
@@ -125,8 +127,6 @@ OnDeviceModelExecutionConfigInterpreter::ConstructInputString(
     return absl::nullopt;
   }
 
-  // TODO(b/302402959): Make sure we have the type mapping?
-
   // Construct string.
   std::vector<std::string> substitutions;
   for (const auto& substitution : input_config.execute_substitutions()) {
@@ -138,8 +138,14 @@ OnDeviceModelExecutionConfigInterpreter::ConstructInputString(
 
       if (arg.has_raw_string()) {
         args.push_back(arg.raw_string());
+      } else if (arg.has_proto_field()) {
+        absl::optional<proto::Value> value =
+            GetProtoValue(request, arg.proto_field());
+        if (!value) {
+          return absl::nullopt;
+        }
+        args.push_back(GetStringFromValue(*value));
       }
-      // TODO(b/302402959): Add support for proto field.
     }
     if (static_cast<size_t>(substitution.expected_num_args()) != args.size()) {
       return absl::nullopt;

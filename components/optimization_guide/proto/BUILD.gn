@@ -50,3 +50,13 @@ if (is_android) {
     ]
   }
 }
+
+proto_library("compose_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/compose.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "compose.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
+}

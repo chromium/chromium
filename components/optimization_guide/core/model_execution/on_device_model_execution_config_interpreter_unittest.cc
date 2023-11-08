@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
+#include "components/optimization_guide/proto/features/compose.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -223,6 +224,58 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
 
   ASSERT_TRUE(maybe_string);
   EXPECT_EQ(*maybe_string, "hello this is a test");
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructInputStringFeatureWithProtoField) {
+  proto::OnDeviceModelExecutionConfig config;
+  auto* fc = config.add_feature_configs();
+  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  auto* input_config = fc->mutable_input_config();
+  input_config->set_request_base_name(
+      "optimization_guide.proto.ComposeRequest");
+  auto* substitution = input_config->add_execute_substitutions();
+  substitution->set_string_template("hello this is a test: %s %s");
+  substitution->set_expected_num_args(2);
+  auto* proto_field = substitution->add_args()->mutable_proto_field();
+  proto_field->add_proto_descriptors()->set_tag_number(2);
+  auto* proto_field2 = substitution->add_args()->mutable_proto_field();
+  proto_field2->add_proto_descriptors()->set_tag_number(3);
+  proto_field2->add_proto_descriptors()->set_tag_number(2);
+  UpdateInterpreterWithConfig(config);
+
+  proto::ComposeRequest request;
+  request.set_user_input("this is my input");
+  request.mutable_page_metadata()->set_page_title("nested");
+  auto maybe_string = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+
+  ASSERT_TRUE(maybe_string);
+  EXPECT_EQ(*maybe_string, "hello this is a test: this is my input nested");
+}
+
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructInputStringFeatureWithBadProtoField) {
+  proto::OnDeviceModelExecutionConfig config;
+  auto* fc = config.add_feature_configs();
+  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  auto* input_config = fc->mutable_input_config();
+  input_config->set_request_base_name(
+      "optimization_guide.proto.ComposeRequest");
+  auto* substitution = input_config->add_execute_substitutions();
+  substitution->set_string_template("hello this is a test: %s");
+  substitution->set_expected_num_args(1);
+  auto* proto_field = substitution->add_args()->mutable_proto_field();
+  proto_field->add_proto_descriptors()->set_tag_number(10000);
+  UpdateInterpreterWithConfig(config);
+
+  proto::ComposeRequest request;
+  request.set_user_input("this is my input");
+  request.mutable_page_metadata()->set_page_title("nested");
+  auto maybe_string = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+
+  EXPECT_FALSE(maybe_string.has_value());
 }
 
 }  // namespace

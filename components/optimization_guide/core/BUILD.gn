@@ -163,6 +163,9 @@ static_library("features") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+input_proto_descriptor_file = "$root_gen_dir/components/optimization_guide/proto/compose.descriptor"
+output_proto_descriptors_cc_file = "$root_gen_dir/components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.cc"
+
 static_library("core") {
   sources = [
     "access_token_helper.cc",
@@ -194,6 +197,9 @@ static_library("core") {
     "model_execution/model_execution_manager.h",
     "model_execution/on_device_model_execution_config_interpreter.cc",
     "model_execution/on_device_model_execution_config_interpreter.h",
+    "model_execution/on_device_model_execution_proto_descriptors.h",
+    "model_execution/on_device_model_execution_proto_value_utils.cc",
+    "model_execution/on_device_model_execution_proto_value_utils.h",
     "model_execution/on_device_model_service_controller.cc",
     "model_execution/on_device_model_service_controller.h",
     "model_execution/on_device_model_stream_receiver.cc",
@@ -245,6 +251,7 @@ static_library("core") {
     "top_host_provider.h",
     "url_pattern_with_wildcards.cc",
     "url_pattern_with_wildcards.h",
+    output_proto_descriptors_cc_file,
   ]
   if (build_with_tflite_lib) {
     sources += [
@@ -295,6 +302,7 @@ static_library("core") {
 
   deps = [
     ":bloomfilter",
+    ":on_device_model_execution_proto_generator",
     "//base",
     "//components/prefs",
     "//components/signin/public/identity_manager:identity_manager",
@@ -435,6 +443,7 @@ source_set("unit_tests") {
     "model_execution/model_execution_fetcher_unittest.cc",
     "model_execution/model_execution_manager_unittest.cc",
     "model_execution/on_device_model_execution_config_interpreter_unittest.cc",
+    "model_execution/on_device_model_execution_proto_value_utils_unittest.cc",
     "model_execution/on_device_model_service_controller_unittest.cc",
     "model_handler_unittest.cc",
     "model_quality/model_quality_log_entry_unittest.cc",
@@ -580,4 +589,24 @@ if (build_with_tflite_lib) {
       "//components/optimization_guide/proto:optimization_guide_proto",
     ]
   }
+}
+
+action("on_device_model_execution_proto_generator") {
+  script =
+      "//components/optimization_guide/tools/gen_on_device_proto_descriptors.py"
+
+  inputs = [ input_proto_descriptor_file ]
+  outputs = [ output_proto_descriptors_cc_file ]
+
+  args = [
+    "--input_file=" + rebase_path(input_proto_descriptor_file, root_build_dir),
+    "--output_cc=" +
+        rebase_path(output_proto_descriptors_cc_file, root_build_dir),
+    "--include=\"components/optimization_guide/proto/features/compose.pb.h\"",
+  ]
+
+  deps = [
+    "//components/optimization_guide/proto:compose_proto_descriptor",
+    "//third_party/protobuf:py_proto_runtime",
+  ]
 }
