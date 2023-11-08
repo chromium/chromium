@@ -2438,18 +2438,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ImageDecoders.Jpeg.ColorSpace" enum="JpegColorSpace"
-    expires_after="2022-11-13">
-  <owner>andrescj@chromium.org</owner>
-  <owner>mcasas@chromium.org</owner>
-  <summary>
-    JPEG color space of a decoded image as guessed by libjpeg_turbo. Recorded
-    after decoding is done by Blink's JPEG decoder (as opposed to, possibly, a
-    hardware decode accelerator). When the color space is YCbCr, the chroma
-    subsampling is also recorded.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Blink.ImplCompositorCommit.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

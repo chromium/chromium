@@ -33,26 +33,6 @@ class PLATFORM_EXPORT BitmapImageMetrics {
     kMaxValue = kREMOVED_JXL,
   };
 
-  // Categories for the JPEG color space histogram. Synced with 'JpegColorSpace'
-  // in src/tools/metrics/histograms/enums.xml. These values are persisted to
-  // logs. Entries should not be renumbered and numeric values should never be
-  // reused.
-  enum class JpegColorSpace {
-    kUnknown = 0,
-    kGrayscale = 1,
-    kRGB = 2,
-    kCMYK = 3,
-    kYCCK = 4,
-    kYCbCr410 = 5,
-    kYCbCr411 = 6,
-    kYCbCr420 = 7,
-    kYCbCr422 = 8,
-    kYCbCr440 = 9,
-    kYCbCr444 = 10,
-    kYCbCrOther = 11,
-    kMaxValue = kYCbCrOther,
-  };
-
   // |type| is the return value of ImageDecoder::FilenameExtension().
   static DecodedImageType StringToDecodedImageType(const String& type);
 
