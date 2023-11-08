@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 @RequiresApi(api = 34)
 @SuppressWarnings("Override")
@@ -19,6 +20,7 @@ class BidirectionalStreamCallbackWrapper implements android.net.http.Bidirection
 
     public BidirectionalStreamCallbackWrapper(
             org.chromium.net.BidirectionalStream.Callback backend) {
+        Objects.requireNonNull(backend, "Callback is required.");
         this.mBackend = backend;
     }
 

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 @RequiresApi(api = 34)
 @SuppressWarnings("Override")
@@ -18,6 +19,7 @@ class UrlRequestCallbackWrapper implements android.net.http.UrlRequest.Callback 
     private final org.chromium.net.UrlRequest.Callback mBackend;
 
     public UrlRequestCallbackWrapper(org.chromium.net.UrlRequest.Callback backend) {
+        Objects.requireNonNull(backend, "Callback is required.");
         this.mBackend = backend;
     }
 
