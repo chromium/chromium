@@ -13,13 +13,14 @@ namespace compose {
 const char kComposeResponseDurationOk[] = "Compose.Response.Duration.Ok";
 const char kComposeResponseDurationError[] = "Compose.Response.Duration.Error";
 const char kComposeResponseStatus[] = "Compose.Response.Status";
+const char kComposeShowStatus[] = "Compose.ContextMenu.ShowStatus";
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Compose.ContextMenu.CTR", event);
 }
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Compose.ContextMenu.ShowStatus", status);
+  UMA_HISTOGRAM_ENUMERATION(kComposeShowStatus, status);
 }
 
 void LogComposeRequestDuration(base::TimeDelta duration, bool is_valid) {

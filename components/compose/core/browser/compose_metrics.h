@@ -15,6 +15,7 @@ namespace compose {
 extern const char kComposeResponseDurationOk[];
 extern const char kComposeResponseDurationError[];
 extern const char kComposeResponseStatus[];
+extern const char kComposeShowStatus[];
 
 // Enum for calculating the CTR of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -47,7 +48,8 @@ enum class ComposeShowStatus {
   kDisabledMsbb = 3,
   kSignedOut = 4,
   kUnsupportedLanguage = 5,
-  kMaxValue = kUnsupportedLanguage,
+  kFormFieldInCrossOriginFrame = 6,
+  kMaxValue = kFormFieldInCrossOriginFrame,
 };
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);

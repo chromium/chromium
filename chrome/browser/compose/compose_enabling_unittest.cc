@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
@@ -459,6 +460,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuCrossOrigin) {
+  base::HistogramTester histogram_tester;
   ComposeEnabling compose_enabling(&mock_translate_language_provider_);
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
@@ -470,4 +472,9 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuCrossOrigin) {
   EXPECT_FALSE(compose_enabling.ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
       context_menu_params_));
+
+  // Check that a response result OK metric was emitted.
+  histogram_tester.ExpectUniqueSample(
+      compose::kComposeShowStatus,
+      compose::ComposeShowStatus::kFormFieldInCrossOriginFrame, 1);
 }

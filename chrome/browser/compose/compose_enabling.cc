@@ -171,7 +171,8 @@ ComposeEnabling::PageLevelChecks(Profile* profile,
   // sufficient for now. TODO(b/309162238) follow up on whether this is
   // sufficient long-term.
   if (top_level_frame_origin != element_frame_origin) {
-    return base::unexpected(compose::ComposeShowStatus::kGenericBlocked);
+    return base::unexpected(
+        compose::ComposeShowStatus::kFormFieldInCrossOriginFrame);
   }
 
   if (!base::FeatureList::IsEnabled(
