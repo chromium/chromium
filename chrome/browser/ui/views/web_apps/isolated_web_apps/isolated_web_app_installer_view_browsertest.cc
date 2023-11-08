@@ -58,6 +58,7 @@ const TestParam kTestParam[] = {
     {.test_suffix = "Disabled", .step = Step::kDisabled},
     {.test_suffix = "GetMetadata", .step = Step::kGetMetadata},
     {.test_suffix = "ConfirmInstall", .step = Step::kConfirmInstall},
+    {.test_suffix = "Install", .step = Step::kInstall},
 };
 
 class IsolatedWebAppInstallerViewUiPixelTest

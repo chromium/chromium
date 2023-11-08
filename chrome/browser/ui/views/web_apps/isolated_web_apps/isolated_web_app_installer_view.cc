@@ -265,12 +265,28 @@ void IsolatedWebAppInstallerView::ShowMetadataScreen(
 
 void IsolatedWebAppInstallerView::ShowInstallScreen(
     const SignedWebBundleMetadata& bundle_metadata) {
-  // TODO(crbug.com/1479140): Implement
+  auto progress_view = std::make_unique<views::BoxLayoutView>();
+  ConfigureBoxLayoutView(progress_view.get());
+  progress_view->SetInsideBorderInsets(
+      gfx::Insets::VH(0, kProgressViewHorizontalPadding));
+
+  views::ProgressBar* progress_bar =
+      progress_view->AddChildView(std::make_unique<views::ProgressBar>());
+  progress_view->AddChildView(CreateLabelWithContextAndStyle(
+      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY,
+      l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_INSTALL_PROGRESS)));
+
+  ShowScreen(std::make_unique<InstallerDialogView>(
+                 CreateImageModelFromBundleMetadata(bundle_metadata),
+                 bundle_metadata.app_name(), IDS_IWA_INSTALLER_INSTALL_SUBTITLE,
+                 /*subtitle_link=*/absl::nullopt, std::move(progress_view)),
+             progress_bar);
 }
 
 void IsolatedWebAppInstallerView::UpdateInstallProgress(double percent,
                                                         int minutes_remaining) {
-  // TODO(crbug.com/1479140): Implement
+  CHECK(progress_bar_);
+  progress_bar_->SetValue(percent / 100.0);
 }
 
 void IsolatedWebAppInstallerView::ShowInstallSuccessScreen(
@@ -284,6 +300,7 @@ void IsolatedWebAppInstallerView::ShowScreen(
   if (!initialized_) {
     initialized_ = true;
     views::LayoutProvider* provider = views::LayoutProvider::Get();
+    SetOrientation(views::BoxLayout::Orientation::kVertical);
     SetInsideBorderInsets(
         provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG));
   }

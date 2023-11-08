@@ -16417,6 +16417,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_DISABLED_SUBTITLE" desc="Subtitle of the feature disabled screen of the IWA installer. $1 = IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE">
       You security preferences do not allow installations of Isolated Apps. <ph name="CHANGE_PREFERENCE">$1<ex>Change your preferences</ex></ph>
     </message>
+    <message name="IDS_IWA_INSTALLER_INSTALL_SUBTITLE" desc="Subtitle of the installing screen of the IWA installer.">
+      Please wait while installation is in progress
+    </message>
+    <message name="IDS_IWA_INSTALLER_INSTALL_PROGRESS" desc="Subtitle of the installation progress bar on the installing screen of the IWA installer.">
+      Installing...
+    </message>
     <message name="IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE" desc="Subtitle of the pre-installation app info summary screen of the Isolated Web App installer">
       This application will be installed on your currently used Chrome profile. <ph name="MANAGE_PROFILES">$1<ex>Manage your Chrome profiles</ex></ph>
     </message>

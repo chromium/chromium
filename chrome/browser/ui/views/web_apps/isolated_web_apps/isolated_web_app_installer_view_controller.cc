@@ -236,6 +236,9 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
       break;
 
     case IsolatedWebAppInstallerModel::Step::kInstall:
+      IsolatedWebAppInstallerView::SetDialogButtons(
+          dialog_delegate_, IDS_APP_CANCEL,
+          /*accept_button_label_id=*/absl::nullopt);
       view_->ShowInstallScreen(model_->bundle_metadata());
       break;
 
