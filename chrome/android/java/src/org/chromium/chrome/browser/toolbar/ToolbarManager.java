@@ -548,7 +548,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         NewTabPageDelegate ntpDelegate = createNewTabPageDelegate(toolbarLayout);
         mLocationBarModel = new LocationBarModel(activity, ntpDelegate,
                 DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
-                IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid,
                 new LocationBarModel.OfflineStatus() {
                     @Override
                     public boolean isShowingTrustedOfflinePage(Tab tab) {
@@ -2139,12 +2138,24 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         boolean wasIncognito = mLocationBarModel.isIncognito();
         Tab previousTab = mLocationBarModel.getTab();
 
-        boolean isIncognito =
-                tab != null ? tab.isIncognito() : mTabModelSelector.isIncognitoSelected();
-        mLocationBarModel.setTab(tab, isIncognito);
+        Profile profile =
+                tab != null ? tab.getProfile() : mTabModelSelector.getCurrentModel().getProfile();
+        assert profile != null
+                : "Failed to get Profile when incognito = "
+                        + mTabModelSelector.isIncognitoSelected();
+        // TODO(crbug/1498999): Remove this Profile calculation fallback if no asserts are hit.
+        if (profile == null) {
+            assert tab == null;
+            profile =
+                    mTabModelSelector.isIncognitoSelected()
+                            ? IncognitoUtils.getIncognitoProfileFromWindowAndroid(mWindowAndroid)
+                            : Profile.getLastUsedRegularProfile();
+        }
 
+        mLocationBarModel.setTab(tab, profile);
         updateTabLoadingState(true);
 
+        boolean isIncognito = profile.isOffTheRecord();
         // This method is called prior to action mode destroy callback for incognito <-> normal
         // tab switch. Makes sure the action mode toolbar is hidden before selecting the new tab.
         if (previousTab != null && wasIncognito != isIncognito

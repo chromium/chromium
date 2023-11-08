@@ -289,7 +289,6 @@ public class LocationBarModelTest {
                     context,
                     NewTabPageDelegate.EMPTY,
                     DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
-                    window -> null,
                     new LocationBarModel.OfflineStatus() {},
                     SearchEngineLogoUtils.getInstance());
             initializeWithNative();
@@ -306,7 +305,7 @@ public class LocationBarModelTest {
                             return false;
                         }
                     };
-            setTab(tab, false);
+            setTab(tab, tab.getProfile());
         }
 
         private void setVisibleGurl(GURL gurl) {

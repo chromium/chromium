@@ -48,7 +48,6 @@ import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
@@ -114,14 +113,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     /**
-     * Provides non-primary incognito profile.
-     */
-    @FunctionalInterface
-    public interface ProfileProvider {
-        Profile getNonPrimaryOtrProfile(WindowAndroid window);
-    }
-
-    /**
      * Offline-related status of a given content.
      */
     public interface OfflineStatus {
@@ -143,18 +134,15 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private final Context mContext;
     private final NewTabPageDelegate mNtpDelegate;
     private final @NonNull UrlFormatter mUrlFormatter;
-    private final @NonNull ProfileProvider mProfileProvider;
     private final @NonNull OfflineStatus mOfflineStatus;
     private final SearchEngineLogoUtils mSearchEngineLogoUtils;
     // Always null if optimizations are disabled. Otherwise, non-null and unchanging following
-    // native init. Always tied to the mLastUsedNonOTRProfile which is safe because no underlying
+    // native init. Always tied to the original profile which is safe because no underlying
     // services have an incognito-specific instance.
-    @Nullable
-    private AutocompleteSchemeClassifier mChromeAutocompleteSchemeClassifier;
-    // Non-null and unchanging following native init. The last used non-OTR (or regular) profile
-    // can't change after this point because we don't support multi-profile on Android.
-    @Nullable
-    private Profile mLastUsedNonOTRProfile;
+    @Nullable private AutocompleteSchemeClassifier mChromeAutocompleteSchemeClassifier;
+    @Nullable private Profile mProfile;
+    private boolean mInitializedProfileDependentFeatures;
+
     @Nullable
     private LruCache<SpannableDisplayTextCacheKey, SpannableStringBuilder>
             mSpannableDisplayTextCache;
@@ -189,22 +177,23 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     /**
      * Default constructor for this class.
+     *
      * @param context The Context used for styling the toolbar visuals.
      * @param newTabPageDelegate Delegate used to access NTP.
-     * @param urlFormatter Formatter returning the formatted version of the original version
-     *        of URL of a distillation.
-     * @param profileProvider Interface returning non-primary OTR profile.
+     * @param urlFormatter Formatter returning the formatted version of the original version of URL
+     *     of a distillation.
      * @param offlineStatus Offline-related status provider.
      * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
      */
-    public LocationBarModel(Context context, NewTabPageDelegate newTabPageDelegate,
-            @NonNull UrlFormatter urlFormatter, @NonNull ProfileProvider profileProvider,
+    public LocationBarModel(
+            Context context,
+            NewTabPageDelegate newTabPageDelegate,
+            @NonNull UrlFormatter urlFormatter,
             @NonNull OfflineStatus offlineStatus,
             @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
         mContext = context;
         mNtpDelegate = newTabPageDelegate;
         mUrlFormatter = urlFormatter;
-        mProfileProvider = profileProvider;
         mOfflineStatus = offlineStatus;
         mPrimaryColor = ChromeColors.getDefaultThemeColor(context, false);
         mSearchEngineLogoUtils = searchEngineLogoUtils;
@@ -218,10 +207,17 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     public void initializeWithNative() {
         mOmniboxUpdatedConnectionSecurityIndicatorsEnabled = ChromeFeatureList.isEnabled(
                 ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS);
-        mLastUsedNonOTRProfile = Profile.getLastUsedRegularProfile();
         mNativeLocationBarModelAndroid = LocationBarModelJni.get().init(LocationBarModel.this);
         mSpannableDisplayTextCache = new LruCache<>(LRU_CACHE_SIZE);
-        mChromeAutocompleteSchemeClassifier = new ChromeAutocompleteSchemeClassifier(getProfile());
+    }
+
+    private void performProfileDependentInitializationIfRequired() {
+        if (mInitializedProfileDependentFeatures) return;
+        assert mProfile != null;
+        mInitializedProfileDependentFeatures = true;
+
+        mChromeAutocompleteSchemeClassifier =
+                new ChromeAutocompleteSchemeClassifier(getProfile().getOriginalProfile());
         recalculateFormattedUrls();
     }
 
@@ -251,16 +247,24 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      * Sets the tab that contains the information to be displayed in the toolbar.
      *
      * @param tab The tab associated currently with the toolbar.
-     * @param isIncognito Whether the incognito model is currently selected, which must match the
-     *                    passed in tab if non-null.
+     * @param profile The profile associated with the currently selected model, which must match the
+     *     passed in tab if non-null.
      */
-    public void setTab(Tab tab, boolean isIncognito) {
-        assert tab == null || tab.isIncognito() == isIncognito;
+    public void setTab(@Nullable Tab tab, @NonNull Profile profile) {
+        assert tab == null || tab.getProfile() == profile;
+        assert profile != null;
+
         mTab = tab;
+        mProfile = profile;
+        performProfileDependentInitializationIfRequired();
+
+        boolean isIncognito = profile.isOffTheRecord();
+
         if (mIsIncognito != isIncognito) {
             mIsIncognito = isIncognito;
             notifyIncognitoStateChanged();
         }
+
         updateUsingBrandColor();
         notifyTitleChanged();
         notifyUrlChanged();
@@ -539,20 +543,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public Profile getProfile() {
-        if (mIsIncognito) {
-            WindowAndroid windowAndroid = (mTab != null) ? mTab.getWindowAndroid() : null;
-            // If the mTab belongs to a CustomTabActivity then we return the non-primary OTR profile
-            // which is associated with it. For all other cases we return the primary OTR profile.
-            Profile nonPrimaryOtrProfile = mProfileProvider.getNonPrimaryOtrProfile(windowAndroid);
-            if (nonPrimaryOtrProfile != null) return nonPrimaryOtrProfile;
-
-            // When in overview mode with no open tabs, there has not been created an
-            // OTR profile yet.
-            assert mLastUsedNonOTRProfile.hasPrimaryOTRProfile() || isInOverviewAndShowingOmnibox();
-            // Return the primary OTR profile.
-            return mLastUsedNonOTRProfile.getPrimaryOTRProfile(/*createIfNeeded=*/true);
-        }
-        return mLastUsedNonOTRProfile;
+        return mProfile;
     }
 
     public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {

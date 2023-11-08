@@ -127,7 +127,6 @@ public final class ToolbarSecurityIconTest {
                                 context,
                                 NewTabPageDelegate.EMPTY,
                                 (url) -> url.getSpec(),
-                                (window) -> null,
                                 ToolbarUnitTestUtils.OFFLINE_STATUS,
                                 mSearchEngineLogoUtils));
         Profile.setLastUsedProfileForTesting(mMockProfile);
