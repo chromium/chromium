@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.7.0-alpha02.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@1.11.0-beta01.cr1
 package: chromium/third_party/android_deps/libs/com_google_android_material_material
 description: "Material Components for Android"
 data:
-- file: material-1.7.0-alpha02.aar
+- file: material-1.11.0-beta01.aar

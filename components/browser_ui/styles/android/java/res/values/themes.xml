@@ -74,5 +74,6 @@ found in the LICENSE file.
         <item name="colorOnPrimary">@color/baseline_primary_20</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
         <item name="colorOutline">@color/baseline_neutral_variant_60</item>
+        <item name="colorSurfaceContainerHighest">@color/default_bg_color_dark_elev_5_baseline</item>
     </style>
 </resources>

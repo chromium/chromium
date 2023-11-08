@@ -1010,7 +1010,7 @@ if (!limit_android_deps) {
   if (!defined(material_design_target)) {
     android_aar_prebuilt("com_google_android_material_material_java") {
       aar_path =
-          "libs/com_google_android_material_material/material-1.7.0-alpha02.aar"
+          "libs/com_google_android_material_material/material-1.11.0-beta01.aar"
       info_path = "libs/com_google_android_material_material/com_google_android_material_material.info"
       enable_bytecode_checks = false
 
@@ -1018,6 +1018,8 @@ if (!limit_android_deps) {
       # Please depend on //third_party/android_deps:material_design_java instead.
       visibility = [ "//third_party/android_deps:*" ]
       deps = [
+        ":com_google_errorprone_error_prone_annotations_java",
+        "//third_party/androidx:androidx_activity_activity_java",
         "//third_party/androidx:androidx_annotation_annotation_experimental_java",
         "//third_party/androidx:androidx_annotation_annotation_java",
         "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -1030,6 +1032,7 @@ if (!limit_android_deps) {
         "//third_party/androidx:androidx_fragment_fragment_java",
         "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
         "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+        "//third_party/androidx:androidx_resourceinspection_resourceinspection_annotation_java",
         "//third_party/androidx:androidx_transition_transition_java",
         "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
         "//third_party/androidx:androidx_viewpager2_viewpager2_java",
