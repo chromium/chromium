@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_flags.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -43,6 +44,8 @@ class HintBox;
 class ASH_EXPORT TouchCalibratorView : public views::View,
                                        public views::AnimationDelegateViews,
                                        public ui::LayerAnimationObserver {
+  METADATA_HEADER(TouchCalibratorView, views::View)
+
  public:
   // Different states of |TouchCalibratorView| in order.
   enum State {
