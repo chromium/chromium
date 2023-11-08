@@ -601,6 +601,20 @@
     'illo.elevated.base': '$cros.sys.illo.base',
     'illo.elevated.secondary': '$cros.sys.illo.secondary',
 
+    /*
+     * Gaming colors
+     *
+     * Gaming colors are static values here because they are always in the vibrant
+     * palette. So, they don't have a direct mapping to ref colors. Placeholder
+     * colors are in the vibrant palette with a purple seed color.
+     */
+    /* Primary 40 Vibrant */
+    'gaming-control-button-default': '#a100bc',
+    /* Primary 50 Vibrant */
+    'gaming-control-button-hover': '#c900eb',
+    /* Primary 80 Vibrant */
+    'gaming-control-button-border-hover': '#f9acff',
+
     /* Icon colors. */
     'file-ms-excel': '#16a765',
     'file-ms-word': '#4986e7',
