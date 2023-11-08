@@ -766,6 +766,13 @@ BASE_FEATURE(kHttpsFirstModeV2ForTypicallySecureUsers,
 // Enables automatically upgrading main frame navigations to HTTPS.
 BASE_FEATURE(kHttpsUpgrades, "HttpsUpgrades", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables HTTPS-First Mode by default in Incognito Mode, changing the binary
+// opt-in to HTTPS-First Mode with a tri-state setting (HFM everywhere, HFM in
+// Incognito, or no HFM) with HFM-in-Incognito the new default setting.
+BASE_FEATURE(kHttpsFirstModeIncognito,
+             "HttpsFirstModeIncognito",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_MAC)
 // Enables immersive fullscreen. The tab strip and toolbar are placed underneath
 // the titlebar. The tab strip and toolbar can auto hide and reveal.

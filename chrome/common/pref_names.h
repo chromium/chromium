@@ -91,6 +91,11 @@ inline constexpr char kHomePage[] = "homepage";
 // A boolean specifying whether HTTPS-Only Mode is enabled by the user.
 inline constexpr char kHttpsOnlyModeEnabled[] = "https_only_mode_enabled";
 
+// A boolean specifying whether HTTPS-First Mode (aka "HTTPS-Only Mode") is
+// enabled in Incognito Mode.
+inline constexpr char kHttpsFirstModeIncognito[] =
+    "https_first_mode_incognito_enabled";
+
 // A boolean specifying whether HTTPS-Only Mode is automatically enabled by
 // heuristics. Can only be set to true if this pref or kHttpsOnlyModeEnabled has
 // never been set before (true or false). If kHttpsOnlyModeEnabled is modified,

@@ -1943,6 +1943,11 @@ const char kStorageBucketsDescription[] =
     "multiple buckets of storage to organize their data, allowing user agents "
     "to delete each bucket independently of other buckets.";
 
+const char kHttpsFirstModeIncognitoName[] = "HTTPS-First Mode in Incognito";
+const char kHttpsFirstModeIncognitoDescription[] =
+    "Enable HTTPS-First Mode in Incognito as default setting and add as new "
+    "option in settings.";
+
 const char kHttpsFirstModeV2Name[] = "HTTPS-First Mode V2";
 const char kHttpsFirstModeV2Description[] =
     "Enable rearchitected version of HTTPS-First Mode.";

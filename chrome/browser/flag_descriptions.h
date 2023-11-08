@@ -1101,6 +1101,9 @@ extern const char kStorageBucketsDescription[];
 extern const char kHideIncognitoMediaMetadataName[];
 extern const char kHideIncognitoMediaMetadataDescription[];
 
+extern const char kHttpsFirstModeIncognitoName[];
+extern const char kHttpsFirstModeIncognitoDescription[];
+
 extern const char kHttpsFirstModeV2Name[];
 extern const char kHttpsFirstModeV2Description[];
 

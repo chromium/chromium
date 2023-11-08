@@ -44303,6 +44303,7 @@ from previous Chrome versions.
   <int value="-547763795" label="SystemEmojiPickerExtension:disabled"/>
   <int value="-547301855" label="SyncPseudoUSSSupervisedUsers:enabled"/>
   <int value="-547179727" label="AutofillEnableFIDOProgressDialog:enabled"/>
+  <int value="-546217920" label="HttpsFirstModeIncognito:enabled"/>
   <int value="-546188357" label="InitialNavigationEntry:enabled"/>
   <int value="-545624357"
       label="AutofillEnableMerchantOptOutErrorDialog:disabled"/>
@@ -46132,6 +46133,7 @@ from previous Chrome versions.
   <int value="336105835" label="CameraAppTimeLapse:disabled"/>
   <int value="336429189" label="DisallowUnsafeHttpDownloads:disabled"/>
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
+  <int value="337637199" label="HttpsFirstModeIncognito:disabled"/>
   <int value="338273848" label="CrOSSuspendToDiskAllowS4:disabled"/>
   <int value="338662897" label="AndroidNightModeTabReparenting:disabled"/>
   <int value="339388667" label="SyncAndroidPromosWithTitle:enabled"/>

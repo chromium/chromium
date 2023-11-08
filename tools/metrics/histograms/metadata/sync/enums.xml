@@ -418,6 +418,7 @@ chromium-metrics-reviews@google.com.
   <int value="100242" label="ReadAloudVoiceSettings"/>
   <int value="100243" label="ReadAloudSpeed"/>
   <int value="100244" label="ReadAloudHighlightingEnabled"/>
+  <int value="100245" label="HttpsFirstModeIncognito"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>

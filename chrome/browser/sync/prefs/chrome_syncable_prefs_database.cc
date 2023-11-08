@@ -299,6 +299,7 @@ enum {
   kReadAloudVoiceSettings = 100242,
   kReadAloudSpeed = 100243,
   kReadAloudHighlightingEnabled = 100244,
+  kHttpsFirstModeIncognito = 100245,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1327,6 +1328,10 @@ const auto& SyncablePreferences() {
           sync_preferences::MergeBehavior::kNone}},
         {prefs::kTrackingProtectionLevel,
          {syncable_prefs_ids::kTrackingProtectionLevel, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kHttpsFirstModeIncognito,
+         {syncable_prefs_ids::kHttpsFirstModeIncognito, syncer::PREFERENCES,
           sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone}},
   });
