@@ -827,12 +827,13 @@ class ChannelAssociatedGroupController
         // handle.
         DCHECK(!endpoint->client());
         DCHECK(endpoint->peer_closed());
-        MarkClosed(endpoint);
+        MarkClosedAndMaybeRemove(endpoint);
       } else {
-        MarkPeerClosed(endpoint);
+        MarkPeerClosedAndMaybeRemove(endpoint);
       }
     }
-    endpoints_.clear();
+
+    DCHECK(endpoints_.empty());
 
     GetMemoryDumpProvider().RemoveController(this);
   }
@@ -877,19 +878,15 @@ class ChannelAssociatedGroupController
     base::AutoLock locker(lock_);
     encountered_error_ = true;
 
-    std::vector<uint32_t> endpoints_to_remove;
     std::vector<scoped_refptr<Endpoint>> endpoints_to_notify;
     for (auto iter = endpoints_.begin(); iter != endpoints_.end();) {
       Endpoint* endpoint = iter->second.get();
       ++iter;
 
-      if (endpoint->client()) {
+      if (endpoint->client())
         endpoints_to_notify.push_back(endpoint);
-      }
 
-      if (MarkPeerClosed(endpoint)) {
-        endpoints_to_remove.push_back(endpoint->id());
-      }
+      MarkPeerClosedAndMaybeRemove(endpoint);
     }
 
     for (auto& endpoint : endpoints_to_notify) {
@@ -897,10 +894,6 @@ class ChannelAssociatedGroupController
       // check each client again here.
       if (endpoint->client())
         NotifyEndpointOfError(endpoint.get(), false /* force_async */);
-    }
-
-    for (uint32_t id : endpoints_to_remove) {
-      endpoints_.erase(id);
     }
   }
 
@@ -940,33 +933,19 @@ class ChannelAssociatedGroupController
     NotifyEndpointOfError(endpoint, false /* force_async */);
   }
 
-  // Marks `endpoint` as closed and returns true if and only if its peer was
-  // also already closed.
-  bool MarkClosed(Endpoint* endpoint) {
+  void MarkClosedAndMaybeRemove(Endpoint* endpoint) {
     lock_.AssertAcquired();
     endpoint->set_closed();
-    return endpoint->peer_closed();
-  }
-
-  // Marks `endpoint` as having a closed peer and returns true if and only if
-  // `endpoint` itself was also already closed.
-  bool MarkPeerClosed(Endpoint* endpoint) {
-    lock_.AssertAcquired();
-    endpoint->set_peer_closed();
-    endpoint->SignalSyncMessageEvent();
-    return endpoint->closed();
-  }
-
-  void MarkClosedAndMaybeRemove(Endpoint* endpoint) {
-    if (MarkClosed(endpoint)) {
+    if (endpoint->closed() && endpoint->peer_closed())
       endpoints_.erase(endpoint->id());
-    }
   }
 
   void MarkPeerClosedAndMaybeRemove(Endpoint* endpoint) {
-    if (MarkPeerClosed(endpoint)) {
+    lock_.AssertAcquired();
+    endpoint->set_peer_closed();
+    endpoint->SignalSyncMessageEvent();
+    if (endpoint->closed() && endpoint->peer_closed())
       endpoints_.erase(endpoint->id());
-    }
   }
 
   Endpoint* FindOrInsertEndpoint(mojo::InterfaceId id, bool* inserted) {
