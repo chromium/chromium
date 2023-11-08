@@ -102,7 +102,7 @@ function convertToPolicyInfo(policyName: string, value: {[key: string]: any}) {
         PolicyScope.SCOPE_USER_VAL,
     level: Number(LevelNamesToValues[value['level']]) ??
         PolicyLevel.LEVEL_MANDATORY_VAL,
-    value: JSON.stringify(value['value']),
+    value: value['value'],
   };
 
   return policy;
