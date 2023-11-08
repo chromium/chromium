@@ -133,6 +133,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/296913657
   "secagentd.ProcessEvents@amd64-generic",
 
+  # crbug.com/1500320
+  "lacros.ShelfLaunch",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
