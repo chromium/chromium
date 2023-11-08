@@ -72,6 +72,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
 
         for (Message message : mShownMessageItems.values()) {
             message.model.set(MessageCardViewProperties.IS_INCOGNITO, mIsIncognitoSupplier.get());
+            message.model.set(TabListModel.CardProperties.CARD_ALPHA, 1F);
         }
 
         return new ArrayList<>(mShownMessageItems.values());

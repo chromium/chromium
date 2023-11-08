@@ -795,8 +795,6 @@ public class TabSwitcherCoordinator
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
             if (!shouldAppendMessage(messages.get(i).model)) continue;
-            messages.get(i).model.set(TabListModel.CardProperties.CARD_ALPHA, 1F);
-
             if (messages.get(i).type == MessageService.MessageType.PRICE_MESSAGE) {
                 mTabListCoordinator.addSpecialListItem(
                         index, TabProperties.UiType.LARGE_MESSAGE, messages.get(i).model);
