@@ -98,6 +98,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.autofill.AutofillSelectionMenuItemProvider;
 import org.chromium.components.content_capture.OnscreenContentProvider;
+import org.chromium.components.embedder_support.util.TouchEventFilter;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.stylus_handwriting.StylusWritingController;
@@ -4579,6 +4580,7 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
+            if (TouchEventFilter.hasInvalidToolType(event)) return false;
             if (isDestroyed(NO_WARN)) return false;
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 mSettings.setSpatialNavigationEnabled(false);

@@ -75,6 +75,14 @@ android_library("util_java") {
   ]
 }
 
+# Intentionally separate to keep dependencies of content view small.
+# TODO(crbug.com/1493531): Remove this library.
+android_library("embedder_util_java") {
+  sources = [ "java/src/org/chromium/components/embedder_support/util/TouchEventFilter.java" ]
+
+  deps = [ "//base:base_java" ]
+}
+
 static_library("util") {
   sources = [
     "util/android_stream_reader_url_loader.cc",
@@ -135,6 +143,7 @@ static_library("view") {
 
 android_library("content_view_java") {
   deps = [
+    ":embedder_util_java",
     "//base:base_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

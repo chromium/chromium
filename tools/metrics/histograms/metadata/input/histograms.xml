@@ -45,6 +45,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Input.UnrecognizedToolType.Android" units="tool type"
+    expires_after="2024-01-15">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records unrecognized tool type values which are sent to Chrome or WebView
+    from Android. These tool types are either TOOL_TYPE_PALM which shouldn't be
+    sent by Android or some undocumented integer value being sent by a 3P
+    vendor.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.ActiveCount" units="units"
     expires_after="2024-03-17">
   <owner>myy@chromium.org</owner>
