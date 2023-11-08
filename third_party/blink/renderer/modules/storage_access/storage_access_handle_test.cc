@@ -17,8 +17,6 @@
 
 namespace blink {
 
-// TODO(crbug.com/1484966): Re-factor to not test all combinations as
-// exponential growth is fast.
 class StorageAccessHandleTest
     : public testing::TestWithParam<
           testing::tuple<bool, bool, bool, bool, bool, bool, bool, bool>> {
@@ -246,15 +244,30 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
       all() || estimate());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         StorageAccessHandleTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+// Test all handles.
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    StorageAccessHandleTest,
+    testing::ValuesIn(
+        std::vector<std::tuple<bool, bool, bool, bool, bool, bool, bool, bool>>{
+            // Nothing:
+            {false, false, false, false, false, false, false, false},
+            // All:
+            {true, false, false, false, false, false, false, false},
+            // Session Storage:
+            {false, true, false, false, false, false, false, false},
+            // Local Storage:
+            {false, false, true, false, false, false, false, false},
+            // IndexedDB:
+            {false, false, false, true, false, false, false, false},
+            // Web Locks:
+            {false, false, false, false, true, false, false, false},
+            // Cache Storage:
+            {false, false, false, false, false, true, false, false},
+            // Origin Private File System:
+            {false, false, false, false, false, false, true, false},
+            // Quota:
+            {false, false, false, false, false, false, false, true},
+        }));
 
 }  // namespace blink
