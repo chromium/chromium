@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       // Set id to the first children of `kPermissionsElementId` -
       // permissions view in PageInfo.
       NameChildView(PageInfoMainView::kPermissionsElementId,
-                    kFirstPermissionRow, 0),
+                    kFirstPermissionRow, 0u),
       // Verify the row label is Camera
       CheckViewProperty(
           kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,

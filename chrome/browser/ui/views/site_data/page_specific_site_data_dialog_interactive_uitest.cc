@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                             &observer),
       // Name the first row in the first-party section.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
-                                 kFirstPartyAllowedRow, 0)),
+                                 kFirstPartyAllowedRow, 0u)),
       // Verify no empty state label is present.
       InAnyContext(
           EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),

@@ -286,14 +286,14 @@ TEST_F(TabOrganizationTest, TabDataObserverTest) {
 // TabOrganization tests.
 
 TEST_F(TabOrganizationTest, TabOrganizationIDs) {
-  TabOrganization organization_1({}, {u"default_name"}, 0, absl::nullopt);
-  TabOrganization organization_2({}, {u"default_name"}, 0, absl::nullopt);
+  TabOrganization organization_1({}, {u"default_name"}, 0u, absl::nullopt);
+  TabOrganization organization_2({}, {u"default_name"}, 0u, absl::nullopt);
 
   EXPECT_NE(organization_1.organization_id(), organization_2.organization_id());
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
-  TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
+  TabOrganization organization({}, {u"default_name"}, 0u, absl::nullopt);
   EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 0);
   content::WebContents* web_contents = AddTab();
   std::unique_ptr<TabData> tab_data =
@@ -304,7 +304,7 @@ TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationRemovingTabData) {
-  TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
+  TabOrganization organization({}, {u"default_name"}, 0u, absl::nullopt);
   content::WebContents* web_contents = AddTab();
   std::unique_ptr<TabData> tab_data =
       std::make_unique<TabData>(tab_strip_model(), web_contents);
@@ -319,13 +319,13 @@ TEST_F(TabOrganizationTest, TabOrganizationRemovingTabData) {
 TEST_F(TabOrganizationTest, TabOrganizationChangingCurrentName) {
   std::u16string name_0 = u"name_0";
   std::u16string name_1 = u"name_1";
-  TabOrganization organization({}, {name_0, name_1}, 0, absl::nullopt);
+  TabOrganization organization({}, {name_0, name_1}, 0u, absl::nullopt);
   EXPECT_TRUE(absl::holds_alternative<size_t>(organization.current_name()));
   EXPECT_EQ(static_cast<int>(absl::get<size_t>(organization.current_name())),
             0);
   EXPECT_EQ(organization.GetDisplayName(), name_0);
 
-  organization.SetCurrentName(1);
+  organization.SetCurrentName(1u);
   EXPECT_TRUE(absl::holds_alternative<size_t>(organization.current_name()));
   EXPECT_EQ(static_cast<int>(absl::get<size_t>(organization.current_name())),
             1);
@@ -341,7 +341,7 @@ TEST_F(TabOrganizationTest, TabOrganizationChangingCurrentName) {
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationReject) {
-  TabOrganization reject_organization({}, {u"default_name"}, 0, absl::nullopt);
+  TabOrganization reject_organization({}, {u"default_name"}, 0u, absl::nullopt);
 
   reject_organization.Reject();
   EXPECT_EQ(reject_organization.choice(),
@@ -349,14 +349,14 @@ TEST_F(TabOrganizationTest, TabOrganizationReject) {
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationCHECKOnChangingUserChoiceTwice) {
-  TabOrganization organization({}, {u"default_name"}, 0,
+  TabOrganization organization({}, {u"default_name"}, 0u,
                                TabOrganization::UserChoice::ACCEPTED);
 
   EXPECT_DEATH(organization.Reject(), "");
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationIsValidForOrganizing) {
-  TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
+  TabOrganization organization({}, {u"default_name"}, 0u, absl::nullopt);
 
   content::WebContents* tab_1 = AddTab();
   std::unique_ptr<TabData> tab_data_1 =
@@ -471,7 +471,7 @@ TEST_F(TabOrganizationTest, TabOrganizationObserverTest) {
   std::unique_ptr<TabOrganization> organization =
       std::make_unique<TabOrganization>(
           std::vector<std::unique_ptr<TabData>>{},
-          std::vector<std::u16string>{u"Organization"}, 0, absl::nullopt);
+          std::vector<std::u16string>{u"Organization"}, 0u, absl::nullopt);
   TestObserver observer;
   observer.tab_organization_ = organization.get();
   organization->AddObserver(&observer);
@@ -548,7 +548,7 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionGetNextTabOrganization) {
   const std::u16string name = u"default_name";
   session->AddOrganizationForTesting(std::make_unique<TabOrganization>(
       std::vector<std::unique_ptr<TabData>>{},
-      std::vector<std::u16string>{name}, 0, absl::nullopt));
+      std::vector<std::u16string>{name}, 0u, absl::nullopt));
   const TabOrganization* const organization_1 =
       session->GetNextTabOrganization();
   EXPECT_NE(organization_1, nullptr);
@@ -572,7 +572,7 @@ TEST_F(TabOrganizationTest,
   std::unique_ptr<TabOrganization> organization =
       std::make_unique<TabOrganization>(
           std::vector<std::unique_ptr<TabData>>{},
-          std::vector<std::u16string>{u"Organization"}, 0, absl::nullopt);
+          std::vector<std::u16string>{u"Organization"}, 0u, absl::nullopt);
   organization->AddTabData(
       std::make_unique<TabData>(tab_strip_model(), AddTab(tab_strip_model())));
   organization->AddTabData(
@@ -601,7 +601,7 @@ TEST_F(TabOrganizationTest,
   const std::u16string name = u"default_name";
   session->AddOrganizationForTesting(std::make_unique<TabOrganization>(
       std::vector<std::unique_ptr<TabData>>{},
-      std::vector<std::u16string>{name}, 0, absl::nullopt));
+      std::vector<std::u16string>{name}, 0u, absl::nullopt));
   TabOrganization* const organization_1 = session->GetNextTabOrganization();
   EXPECT_NE(organization_1, nullptr);
   EXPECT_EQ(organization_1->GetDisplayName(), name);
