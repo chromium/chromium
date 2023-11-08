@@ -1,0 +1,12 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "enable_nacl": false,
+    "is_asan": true,
+    "is_clang": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "llvm_force_head_revision": true,
+    "symbol_level": 1
+  }
+}

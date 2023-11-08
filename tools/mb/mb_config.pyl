@@ -256,56 +256,10 @@
     },
 
     'chromium.clang': {
-      'CFI Linux CF': 'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient',
-      'CFI Linux ToT': 'clang_tot_cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on',
-      'CrWinAsan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_tot',
-      'CrWinAsan(dll)': 'asan_clang_shared_v8_heap_minimal_symbols_release_tot',
-
-      'ToTAndroid': 'android_clang_tot_release_minimal_symbols',
-      'ToTAndroid (dbg)': 'android_clang_tot_dbg',
-      'ToTAndroid x64': 'android_clang_tot_x64',
-      'ToTAndroid x86': 'android_clang_tot_x86',
-      'ToTAndroid64': 'android_clang_tot_release_arm64',
-      'ToTAndroidASan': 'android_clang_tot_asan',
-      'ToTAndroidCoverage x86': 'android_clang_tot_coverage_x86',
-      'ToTAndroidOfficial': 'android_clang_tot_official_arm64',
-      'ToTChromeOS': 'lacros_on_linux_tot_release',
-      'ToTChromeOS (dbg)': 'lacros_on_linux_tot_debug',
-      'ToTFuchsia x64': 'fuchsia_clang_tot_release_x64',
-      'ToTFuchsiaOfficial arm64': 'fuchsia_clang_tot_official_arm64',
-      'ToTLinux': 'clang_tot_linux_full_symbols_shared_release',
-      'ToTLinux (dbg)': 'clang_tot_shared_debug',
-      'ToTLinuxASan': 'clang_tot_asan_lsan_static_release',
-      'ToTLinuxASanLibfuzzer': 'libfuzzer_asan_clang_tot_release',
-      'ToTLinuxCoverage': 'clang_tot_coverage_minimal_symbols_release',
-      'ToTLinuxMSan': 'clang_tot_msan_release',
       'ToTLinuxOfficial': 'clang_tot_official',
-      'ToTLinuxPGO': 'clang_tot_official_pgo',
-      'ToTLinuxTSan': 'clang_tot_tsan_release',
-      'ToTLinuxUBSanVptr': 'clang_tot_ubsan_vptr_no_recover_hack_static_release',
-      'ToTMac': 'clang_tot_minimal_symbols_shared_release',
-      'ToTMac (dbg)': 'clang_tot_shared_debug',
-      'ToTMacASan': 'asan_disable_nacl_clang_tot_minimal_symbols_static_release',
-      'ToTMacArm64': 'clang_tot_minimal_symbols_release_arm64',
-      'ToTMacArm64PGO': 'clang_tot_official_pgo_arm64',
-      'ToTMacCoverage': 'clang_tot_coverage_minimal_symbols_release',
       'ToTMacOfficial': 'mac_clang_tot_official',
-      'ToTMacPGO': 'clang_tot_official_pgo_x64',
-      'ToTWin': 'clang_tot_minimal_symbols_static_release_x86',
-      'ToTWin(dbg)': 'clang_tot_shared_debug_x86',
-      'ToTWin(dll)': 'clang_tot_minimal_symbols_shared_release_x86_dcheck',
-      'ToTWin64': 'clang_tot_minimal_symbols_static_release',
-      'ToTWin64(dbg)': 'clang_tot_shared_debug',
-      'ToTWin64(dll)': 'clang_tot_shared_release_dcheck',
-      'ToTWin64PGO': 'clang_tot_official_pgo',
-      'ToTWinASanLibfuzzer': 'libfuzzer_windows_asan_clang_tot_release_bot',
-      'ToTWinArm64PGO': 'clang_tot_official_pgo_arm64',
       'ToTWinOfficial': 'clang_tot_win_official_full_symbols_static_x86',
       'ToTWinOfficial64': 'clang_tot_win_official_full_symbols_static',
-      'ToTWindowsCoverage': 'clang_tot_coverage_minimal_symbols_release',
-      'ToTiOS': 'ios_clang_tot_xctest',
-      'ToTiOSDevice': 'ios_clang_device_tot_xctest',
-      'linux-win_cross-rel': 'clang_tot_win_release_cross',
     },
 
     'chromium.coverage': {
@@ -1511,44 +1465,6 @@
       'android', 'clang', 'asan', 'release_trybot_reclient', 'strip_debug_info', 'minimal_symbols',
     ],
 
-    'android_clang_tot_asan': [
-      'android_without_codecs', 'clang_tot', 'asan', 'shared', 'debug', 'minimal_symbols',
-      'strip_debug_info',
-    ],
-
-    'android_clang_tot_coverage_x86': [
-      'android_without_codecs', 'clang_tot', 'shared', 'x86', 'release',
-      'dcheck_always_on', 'use_clang_coverage',
-    ],
-
-    'android_clang_tot_dbg': [
-      'android_without_codecs', 'clang_tot', 'shared', 'debug',
-    ],
-
-    'android_clang_tot_official_arm64': [
-      'android', 'release', 'static', 'minimal_symbols', 'official_optimize',
-      'clang_tot', 'arm64',
-    ],
-
-    'android_clang_tot_release_arm64': [
-      'android_without_codecs', 'clang_tot', 'release', 'arm64',
-    ],
-
-    'android_clang_tot_release_minimal_symbols': [
-      'android', 'release', 'static', 'minimal_symbols',
-      'strip_debug_info', 'clang_tot',
-    ],
-
-    'android_clang_tot_x64': [
-      'android_without_codecs', 'clang_tot', 'shared', 'x64', 'release',
-      'dcheck_always_on',
-    ],
-
-    'android_clang_tot_x86': [
-      'android_without_codecs', 'clang_tot', 'shared', 'x86', 'release',
-      'dcheck_always_on',
-    ],
-
     'android_cronet_debug_static_bot_arm64_reclient': [
       'android', 'cronet_android', 'debug_static_bot_reclient', 'arm64',
     ],
@@ -1911,20 +1827,8 @@
       'asan', 'fuzzer', 'static', 'v8_heap', 'minimal_symbols', 'release_bot_reclient',
     ],
 
-    'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_tot': [
-      'asan', 'clang_tot', 'fuzzer', 'static', 'v8_heap', 'minimal_symbols', 'release',
-    ],
-
-    'asan_clang_shared_v8_heap_minimal_symbols_release_tot': [
-      'asan', 'clang_tot', 'shared', 'v8_heap', 'minimal_symbols', 'release',
-    ],
-
     'asan_dcheck_disable_nacl_release_bot_reclient': [
       'asan', 'dcheck_always_on', 'disable_nacl', 'release_bot_reclient',
-    ],
-
-    'asan_disable_nacl_clang_tot_minimal_symbols_static_release': [
-      'asan', 'disable_nacl', 'clang_tot', 'minimal_symbols', 'static', 'release',
     ],
 
     'asan_disable_nacl_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient': [
@@ -2017,10 +1921,6 @@
     'centipede_asan_shared_release_bot_reclient': [
       'centipede', 'asan', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl',
       'optimize_for_fuzzing', 'shared_release_bot_reclient', 'disable_seed_corpus',
-    ],
-
-    'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient': [
-      'cfi_full', 'cfi_icall', 'cfi_diag', 'cfi_recover', 'thin_lto', 'release', 'static', 'reclient',
     ],
 
     'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient': [
@@ -2400,82 +2300,8 @@
       'release_bot_reclient', 'clang', 'use_clang_coverage', 'no_symbols', 'chrome_with_codecs',
     ],
 
-    'clang_tot_asan_lsan_static_release': [
-      'clang_tot', 'asan', 'lsan', 'static', 'release',
-    ],
-
-    'clang_tot_cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on': [
-      'clang_tot', 'cfi_full', 'cfi_icall', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on',
-    ],
-
-    'clang_tot_coverage_minimal_symbols_release': [
-      'clang_tot', 'use_clang_coverage', 'minimal_symbols', 'release',
-    ],
-
-    'clang_tot_linux_full_symbols_shared_release': [
-      # Enable debug info, as on official builders, to catch issues with
-      # optimized debug info.
-      'clang_tot', 'full_symbols', 'shared', 'release',
-    ],
-
-    'clang_tot_minimal_symbols_release_arm64': [
-      'clang_tot', 'minimal_symbols', 'arm64', 'release',
-    ],
-
-    'clang_tot_minimal_symbols_shared_release': [
-      'clang_tot', 'minimal_symbols', 'shared', 'release',
-    ],
-
-    'clang_tot_minimal_symbols_shared_release_x86_dcheck': [
-      'clang_tot', 'minimal_symbols', 'shared', 'release', 'x86', 'dcheck_always_on',
-    ],
-
-    'clang_tot_minimal_symbols_static_release': [
-      'clang_tot', 'minimal_symbols', 'static', 'release',
-    ],
-
-    'clang_tot_minimal_symbols_static_release_x86': [
-      'clang_tot', 'minimal_symbols', 'static', 'release', 'x86',
-    ],
-
-    'clang_tot_msan_release': [
-      'clang_tot', 'msan', 'release',
-    ],
-
     'clang_tot_official': [
       'clang_tot', 'official',
-    ],
-
-    'clang_tot_official_pgo': [
-      'clang_tot', 'official_optimize', 'no_symbols', 'pgo_phase_1',
-    ],
-
-    'clang_tot_official_pgo_arm64': [
-      'clang_tot', 'official_optimize', 'no_symbols', 'pgo_phase_1', 'arm64',
-    ],
-
-    'clang_tot_official_pgo_x64': [
-      'clang_tot', 'official_optimize', 'no_symbols', 'pgo_phase_1', 'x64',
-    ],
-
-    'clang_tot_shared_debug': [
-      'clang_tot', 'shared', 'debug',
-    ],
-
-    'clang_tot_shared_debug_x86': [
-      'clang_tot', 'shared', 'debug', 'x86',
-    ],
-
-    'clang_tot_shared_release_dcheck': [
-      'clang_tot', 'shared', 'release', 'dcheck_always_on',
-    ],
-
-    'clang_tot_tsan_release': [
-      'clang_tot', 'tsan', 'release',
-    ],
-
-    'clang_tot_ubsan_vptr_no_recover_hack_static_release': [
-      'clang_tot', 'ubsan_vptr_no_recover_hack', 'static', 'release',
     ],
 
     'clang_tot_win_official_full_symbols_static': [
@@ -2484,10 +2310,6 @@
 
     'clang_tot_win_official_full_symbols_static_x86': [
       'clang_tot', 'official', 'full_symbols', 'static', 'x86', 'win_linker_timing',
-    ],
-
-    'clang_tot_win_release_cross': [
-      'clang_tot', 'win_cross', 'minimal_symbols', 'shared', 'release', 'dcheck_always_on',
     ],
 
     'codesearch_gen_chromium_android_bot_reclient': [
@@ -2621,15 +2443,6 @@
     'fuchsia_clang_code_coverage_reclient': [
       'clang', 'fuchsia', 'fuchsia_code_coverage', 'no_symbols', 'release_bot_reclient',
       'use_clang_coverage',
-    ],
-
-    'fuchsia_clang_tot_official_arm64': [
-      'official_optimize', 'fuchsia', 'arm64', 'clang_tot', 'static',
-      'arm64_host',
-    ],
-
-    'fuchsia_clang_tot_release_x64': [
-      'fuchsia', 'release', 'clang_tot', 'static',
     ],
 
     'fuchsia_official_optimize_reclient': [
@@ -2915,14 +2728,6 @@
         'compile_only', 'debug_static_bot_reclient', 'ios', 'ios_catalyst', 'ios_cpu_x64',  'asan', 'libfuzzer',  'no_dsyms', 'no_remoting',
     ],
 
-    'ios_clang_device_tot_xctest': [
-      'clang_tot', 'ios', 'ios_device', 'ios_cpu_arm64', 'release', 'ios_chromium_cert', 'xctest',
-    ],
-
-    'ios_clang_tot_xctest': [
-      'clang_tot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'ios_disable_code_signing', 'release', 'static', 'xctest',
-    ],
-
     'ios_device_release_compile_only': [
       'ios_device_release_compile_only',
     ],
@@ -3012,18 +2817,6 @@
       'lacros_on_linux_release_trybot_reclient', 'clang', 'use_clang_coverage', 'use_cups', 'partial_code_coverage_instrumentation', 'use_dummy_lastchange',
     ],
 
-    'lacros_on_linux_tot_debug': [
-      'lacros_on_linux', 'debug', 'also_build_ash_chrome', 'clang_tot',
-    ],
-
-    'lacros_on_linux_tot_release': [
-      'lacros_on_linux', 'release', 'also_build_ash_chrome', 'clang_tot',
-    ],
-
-    'libfuzzer_asan_clang_tot_release': [
-      'libfuzzer', 'asan', 'clang_tot', 'release', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer',
-    ],
-
     'libfuzzer_asan_debug_bot_reclient': [
       'libfuzzer', 'asan', 'debug_bot_reclient', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
     ],
@@ -3085,10 +2878,6 @@
 
     'libfuzzer_ubsan_release_bot_reclient': [
       'libfuzzer', 'ubsan_security_non_vptr', 'release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus', 'shared',
-    ],
-
-    'libfuzzer_windows_asan_clang_tot_release_bot': [
-      'libfuzzer', 'asan', 'clang_tot', 'release', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'minimal_symbols',
     ],
 
     # Meant for local development of fuzzers where no reclient/goma is needed.
@@ -3913,10 +3702,6 @@
       'gn_args': 'use_cfi_icall=true',
     },
 
-    'cfi_recover': {
-      'gn_args': 'use_cfi_recover=true',
-    },
-
     'cfm': {
       'gn_args': 'is_cfm=true',
     },
@@ -4277,10 +4062,6 @@
 
     'ios_catalyst': {
       'gn_args': 'target_environment="catalyst"',
-    },
-
-    'ios_chromium_cert': {
-      'gn_args': 'ios_code_signing_identity_description=\"iPhone Developer\"',
     },
 
     'ios_cpu_arm64': {
@@ -4789,10 +4570,6 @@
     # For Android >=Q, only userdebug/eng
     'webview_trichrome': {
       'gn_args': 'system_webview_package_name="com.google.android.webview.debug"',
-    },
-
-    'win_cross': {
-      'gn_args': 'target_os="win"',
     },
 
     'win_linker_timing': {

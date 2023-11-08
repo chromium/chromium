@@ -7,6 +7,13 @@
 load("//lib/gn_args.star", "gn_args")
 
 gn_args.config(
+    "also_build_ash_chrome",
+    args = {
+        "also_build_ash_chrome": True,
+    },
+)
+
+gn_args.config(
     "also_build_lacros_chrome_for_architecture_amd64",
     args = {
         "also_build_lacros_chrome_for_architecture": "amd64",
@@ -18,10 +25,49 @@ gn_args.config(
     args_file = "//build/args/chromeos/amd64-generic-vm.gni",
 )
 
+# We build Android with codecs on most bots to ensure maximum test
+# coverage, but use 'android_without_codecs' on bots responsible for
+# building publicly advertised non-Official Android builds --
+# which are not allowed to have proprietary codecs enabled.
+gn_args.config(
+    "android",
+    configs = [
+        "android_without_codecs",
+        "chrome_with_codecs",
+    ],
+)
+
+# Builders never have a use for android:debuggable="true". They do not use
+# JWDP (java debugger), and do not need it to access application files
+# since they always use userdebug OS builds (which have root access).
+# android:debuggable="true" causes ART to run more slowly, so tests run
+# faster without it. https://crbug.com/1276429
+gn_args.config(
+    "android_without_codecs",
+    args = {
+        "target_os": "android",
+        "debuggable_apks": False,
+    },
+)
+
 gn_args.config(
     "arm64",
     args = {
         "target_cpu": "arm64",
+    },
+)
+
+gn_args.config(
+    "arm64_host",
+    args = {
+        "test_host_cpu": "arm64",
+    },
+)
+
+gn_args.config(
+    "asan",
+    args = {
+        "is_asan": True,
     },
 )
 
@@ -47,6 +93,44 @@ gn_args.config(
 )
 
 gn_args.config(
+    "cfi",
+    args = {
+        "is_cfi": True,
+    },
+)
+
+gn_args.config(
+    "cfi_diag",
+    args = {
+        "use_cfi_diag": True,
+    },
+)
+
+gn_args.config(
+    "cfi_full",
+    args = {
+        "use_cfi_cast": True,
+    },
+    configs = [
+        "cfi",
+    ],
+)
+
+gn_args.config(
+    "cfi_icall",
+    args = {
+        "use_cfi_icall": True,
+    },
+)
+
+gn_args.config(
+    "cfi_recover",
+    args = {
+        "use_cfi_recover": True,
+    },
+)
+
+gn_args.config(
     "chrome_with_codecs",
     args = {
         "proprietary_codecs": True,
@@ -57,10 +141,44 @@ gn_args.config(
 )
 
 gn_args.config(
+    "chromeos",
+    args = {
+        "target_os": "chromeos",
+    },
+)
+
+gn_args.config(
+    "chromeos_codecs",
+    args = {
+        "proprietary_codecs": True,
+    },
+    configs = [
+        "ffmpeg_branding_chromeos",
+    ],
+)
+
+gn_args.config(
     "chromeos_device",
     args = {
         "is_chromeos_device": True,
     },
+)
+
+gn_args.config(
+    "clang",
+    args = {
+        "is_clang": True,
+    },
+)
+
+gn_args.config(
+    "clang_tot",
+    args = {
+        "llvm_force_head_revision": True,
+    },
+    configs = [
+        "clang",
+    ],
 )
 
 gn_args.config(
@@ -155,6 +273,34 @@ gn_args.config(
 )
 
 gn_args.config(
+    "ffmpeg_branding_chromeos",
+    args = {
+        "ffmpeg_branding": "ChromeOS",
+    },
+)
+
+gn_args.config(
+    "fuchsia",
+    args = {
+        "target_os": "fuchsia",
+    },
+)
+
+gn_args.config(
+    "full_symbols",
+    args = {
+        "symbol_level": 2,
+    },
+)
+
+gn_args.config(
+    "fuzzer",
+    args = {
+        "enable_ipc_fuzzer": True,
+    },
+)
+
+gn_args.config(
     "goma",
     args = {
         "use_goma": True,
@@ -176,9 +322,47 @@ gn_args.config(
 )
 
 gn_args.config(
+    "ios_chromium_cert",
+    args = {
+        "ios_code_signing_identity_description": "iPhone Developer",
+    },
+)
+
+gn_args.config(
+    "ios_device",
+    args = {"target_environment": "device"},
+    configs = ["ios"],
+)
+
+# defaults to true under ios_sdk.gni
+gn_args.config(
+    "ios_disable_code_signing",
+    args = {
+        "ios_enable_code_signing": False,
+    },
+)
+
+gn_args.config(
     "ios_simulator",
     args = {"target_environment": "simulator"},
     configs = ["ios"],
+)
+
+gn_args.config(
+    "lacros_on_linux",
+    args = {
+        "chromeos_is_browser_only": True,
+    },
+    configs = [
+        "chromeos",
+    ],
+)
+
+gn_args.config(
+    "libfuzzer",
+    args = {
+        "use_libfuzzer": True,
+    },
 )
 
 gn_args.config(
@@ -192,9 +376,31 @@ gn_args.config(
 )
 
 gn_args.config(
+    "lsan",
+    args = {
+        "is_lsan": True,
+    },
+)
+
+gn_args.config(
     "minimal_symbols",
     args = {
         "symbol_level": 1,
+    },
+)
+
+gn_args.config(
+    "mojo_fuzzer",
+    args = {
+        "enable_mojom_fuzzer": True,
+    },
+)
+
+gn_args.config(
+    "msan",
+    args = {
+        "is_msan": True,
+        "msan_track_origins": 2,
     },
 )
 
@@ -227,6 +433,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "optimize_for_fuzzing",
+    args = {
+        "optimize_for_fuzzing": True,
+    },
+)
+
+gn_args.config(
     "ozone_headless",
     args = {
         "ozone_platform_headless": True,
@@ -245,6 +458,23 @@ gn_args.config(
     args = {
         "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
     },
+)
+
+gn_args.config(
+    "pdf_xfa",
+    args = {
+        "pdf_enable_xfa": True,
+    },
+)
+
+gn_args.config(
+    "pgo_phase_1",
+    args = {
+        "chrome_pgo_phase": 1,
+    },
+    configs = [
+        "v8_release_branch",
+    ],
 )
 
 gn_args.config(
@@ -311,11 +541,51 @@ gn_args.config(
 )
 
 gn_args.config(
+    "strip_debug_info",
+    args = {
+        "strip_debug_info": True,
+    },
+)
+
+gn_args.config(
+    "thin_lto",
+    args = {
+        "use_thin_lto": True,
+    },
+)
+
+gn_args.config(
     "try_builder",
     configs = [
         "dcheck_always_on",
         "minimal_symbols",
         "use_dummy_lastchange",
+    ],
+)
+
+gn_args.config(
+    "tsan",
+    args = {
+        "is_tsan": True,
+    },
+)
+
+gn_args.config(
+    "ubsan_vptr",
+    args = {
+        "is_ubsan_vptr": True,
+    },
+)
+
+# TODO(krasin): Remove when https://llvm.org/bugs/show_bug.cgi?id=25569
+# is fixed and just use ubsan_vptr instead.
+gn_args.config(
+    "ubsan_vptr_no_recover_hack",
+    args = {
+        "is_ubsan_no_recover": True,
+    },
+    configs = [
+        "ubsan_vptr",
     ],
 )
 
@@ -347,6 +617,28 @@ gn_args.config(
     args = {
         "use_v4l2_codec": True,
         "use_vaapi": False,
+    },
+)
+
+gn_args.config(
+    "v8_heap",
+    args = {
+        "v8_enable_verify_heap": True,
+    },
+)
+
+# V8 flag that disables v8_enable_runtime_call_stats on release branches.
+gn_args.config(
+    "v8_release_branch",
+    args = {
+        "is_on_release_branch": True,
+    },
+)
+
+gn_args.config(
+    "win_cross",
+    args = {
+        "target_os": "win",
     },
 )
 
