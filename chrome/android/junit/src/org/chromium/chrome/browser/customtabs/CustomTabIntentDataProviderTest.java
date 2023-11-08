@@ -7,6 +7,11 @@ package org.chromium.chrome.browser.customtabs;
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_HEIGHT_ADJUSTABLE;
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_HEIGHT_DEFAULT;
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_HEIGHT_FIXED;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_END;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_START;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR;
@@ -20,9 +25,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
-import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
-import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_START;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
 
 import android.app.Activity;
@@ -346,7 +348,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     public void testActivityBreakPoint_Custom() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 300);
+        intent.putExtra(CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, 300);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals("Break points do not match", 300, dataProvider.getActivityBreakPoint());
     }
@@ -354,7 +356,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     public void testActivityBreakPoint_Negative() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, -500);
+        intent.putExtra(CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, -500);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals("Break points do not match", 840, dataProvider.getActivityBreakPoint());
     }
@@ -373,7 +375,7 @@ public class CustomTabIntentDataProviderTest {
     public void testInitialActivityWidth_1Pdisabled() {
         ChromeFeatureList.sCctResizableSideSheet.setForTesting(false);
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
+        intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals("Width should be 0", 0, dataProvider.getInitialActivityWidth());
     }
@@ -383,7 +385,7 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
         ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(true);
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
+        intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.pixar.woody");
         CustomTabsConnection.setInstanceForTesting(connection);
@@ -396,7 +398,7 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
         ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(true);
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
+        intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.dc.joker");
         CustomTabsConnection.setInstanceForTesting(connection);
@@ -411,7 +413,7 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
         ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(false);
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
+        intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         when(connection.isFirstParty(any())).thenReturn(true);
         CustomTabsConnection.setInstanceForTesting(connection);
@@ -486,7 +488,7 @@ public class CustomTabIntentDataProviderTest {
         Intent intent =
                 new Intent()
                         .putExtra(
-                                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
+                                CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
                                 ACTIVITY_SIDE_SHEET_POSITION_DEFAULT);
         dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
@@ -498,7 +500,7 @@ public class CustomTabIntentDataProviderTest {
         intent =
                 new Intent()
                         .putExtra(
-                                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
+                                CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
                                 ACTIVITY_SIDE_SHEET_POSITION_START);
         dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
@@ -510,7 +512,7 @@ public class CustomTabIntentDataProviderTest {
         intent =
                 new Intent()
                         .putExtra(
-                                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
+                                CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
                                 ACTIVITY_SIDE_SHEET_POSITION_END);
         dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
@@ -761,17 +763,17 @@ public class CustomTabIntentDataProviderTest {
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
                 "Decoration types do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                 dataProvider.getActivitySideSheetDecorationType());
 
         // Decoration set higher than max
         intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_MAX + 1);
+                CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER + 1);
         var dataProvider2 = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
                 "Decoration types do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                 dataProvider2.getActivitySideSheetDecorationType());
     }
 
@@ -779,12 +781,12 @@ public class CustomTabIntentDataProviderTest {
     public void testActivityDecorationType_Shadow() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
+                CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
                 "Decoration types do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                 dataProvider.getActivitySideSheetDecorationType());
     }
 
@@ -792,12 +794,12 @@ public class CustomTabIntentDataProviderTest {
     public void testActivityDecorationType_DividerLine() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER);
+                CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
                 "Decoration types do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER,
                 dataProvider.getActivitySideSheetDecorationType());
     }
 
@@ -805,12 +807,12 @@ public class CustomTabIntentDataProviderTest {
     public void testActivityDecorationType_None() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE);
+                CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
                 "Decoration types do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE,
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE,
                 dataProvider.getActivitySideSheetDecorationType());
     }
 
@@ -818,12 +820,12 @@ public class CustomTabIntentDataProviderTest {
     public void testActivityRoundedCornersPosition_Default() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_DEFAULT);
+                CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_DEFAULT);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
                 "Rounded corners positions do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE,
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE,
                 dataProvider.getActivitySideSheetRoundedCornersPosition());
     }
 
@@ -831,12 +833,12 @@ public class CustomTabIntentDataProviderTest {
     public void testActivityRoundedCornersPosition_None() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+                CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
                 "Rounded corners positions do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE,
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE,
                 dataProvider.getActivitySideSheetRoundedCornersPosition());
     }
 
@@ -844,12 +846,12 @@ public class CustomTabIntentDataProviderTest {
     public void testActivityRoundedCornersPosition_Top() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+                CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertEquals(
                 "Rounded corners positions do not match",
-                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP,
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP,
                 dataProvider.getActivitySideSheetRoundedCornersPosition());
     }
 

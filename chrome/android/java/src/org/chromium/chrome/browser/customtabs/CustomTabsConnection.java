@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -1227,14 +1226,20 @@ public class CustomTabsConnection {
 
     /**
      * Called when the Custom Tab's layout has changed.
+     *
      * @param left The left coordinate of the custom tab window in pixels
      * @param top The top coordinate of the custom tab window in pixels
      * @param right The right coordinate of the custom tab window in pixels
      * @param bottom The bottom coordinate of the custom tab window in pixels
      * @param state The current layout state in which the Custom Tab is displayed.
      */
-    public void onActivityLayout(@Nullable CustomTabsSessionToken session, int left, int top,
-            int right, int bottom, @ActivityLayoutState int state) {
+    public void onActivityLayout(
+            @Nullable CustomTabsSessionToken session,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            @CustomTabsCallback.ActivityLayoutState int state) {
         Bundle args = new Bundle();
         args.putInt(ON_ACTIVITY_LAYOUT_LEFT_EXTRA, left);
         args.putInt(ON_ACTIVITY_LAYOUT_TOP_EXTRA, top);
@@ -1244,6 +1249,17 @@ public class CustomTabsConnection {
 
         if (safeExtraCallback(session, ON_ACTIVITY_LAYOUT_CALLBACK, args) && mLogRequests) {
             logCallback("extraCallback(" + ON_ACTIVITY_LAYOUT_CALLBACK + ")", args);
+        }
+
+        CustomTabsCallback callback = mClientManager.getCallbackForSession(session);
+        if (callback == null) return;
+        try {
+            callback.onActivityLayout(left, top, right, bottom, state, Bundle.EMPTY);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+            return;
         }
     }
 

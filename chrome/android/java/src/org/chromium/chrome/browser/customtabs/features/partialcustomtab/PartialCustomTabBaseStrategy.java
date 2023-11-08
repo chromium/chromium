@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
+import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -29,11 +29,11 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
+import androidx.browser.customtabs.CustomTabsCallback;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -311,8 +311,7 @@ public abstract class PartialCustomTabBaseStrategy
     }
 
     protected void invokeActivityLayoutCallback() {
-        @ActivityLayoutState
-        int activityLayoutState = getActivityLayoutState();
+        @CustomTabsCallback.ActivityLayoutState int activityLayoutState = getActivityLayoutState();
 
         // If we are in full screen then we manually need to set the values as we are using
         // MATCH_PARENT which has the value -1.
@@ -335,7 +334,7 @@ public abstract class PartialCustomTabBaseStrategy
 
     public abstract @StringRes int getTypeStringId();
 
-    protected abstract @ActivityLayoutState int getActivityLayoutState();
+    protected abstract @CustomTabsCallback.ActivityLayoutState int getActivityLayoutState();
 
     protected abstract void updatePosition();
 

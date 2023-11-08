@@ -8,11 +8,11 @@ import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.Px;
+import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -36,7 +36,11 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
     interface OnActivityLayoutCallback {
         /** The Custom Tab's layout has changed. */
         void onActivityLayout(
-                int left, int top, int right, int bottom, @ActivityLayoutState int state);
+                int left,
+                int top,
+                int right,
+                int bottom,
+                @CustomTabsCallback.ActivityLayoutState int state);
     }
 
     public static CustomTabHeightStrategy createStrategy(Activity activity,

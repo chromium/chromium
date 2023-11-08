@@ -4,7 +4,17 @@
 package org.chromium.customtabsclient;
 
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_HEIGHT_FIXED;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_END;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_START;
+import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_POSITION;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
@@ -114,10 +124,6 @@ public class MainActivity
     private static final int CHECKED = 1;
     private static final int BACKGROUND_INTERACT_OFF_VALUE = 2;
 
-    /** Extra that enables the maximization button on the side sheet Custom Tab toolbar. */
-    public static final String EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION =
-            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION";
-
     /**
      * Minimal height the bottom sheet CCT should show is half of the display height.
      */
@@ -173,28 +179,6 @@ public class MainActivity
     private @Px int mMaxWidth;
     private @Px int mInitialWidth;
 
-    public static final int ACTIVITY_SIDE_SHEET_POSITION_DEFAULT = 0;
-    public static final int ACTIVITY_SIDE_SHEET_POSITION_START = 1;
-    public static final int ACTIVITY_SIDE_SHEET_POSITION_END = 2;
-
-    public static final String EXTRA_ACTIVITY_SIDE_SHEET_POSITION =
-            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_POSITION";
-
-    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT = 0;
-    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE = 1;
-    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW = 2;
-    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER = 3;
-
-    public static final String EXTRA_ACTIVITY_SIDE_SHEEET_DECORATION_TYPE =
-            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_DECORATION_TYPE";
-
-    public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_DEFAULT = 0;
-    public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE = 1;
-    public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP = 2;
-
-    public static final String EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION =
-            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION";
-
     public static final String EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE =
             "androidx.browser.customtabs.extra.ACTIVITY_SCROLL_CONTENT_RESIZE";
     /**
@@ -235,6 +219,17 @@ public class MainActivity
         }
 
         @Override
+        public void onActivityLayout(
+                int left,
+                int top,
+                int right,
+                int bottom,
+                @ActivityLayoutState int state,
+                Bundle extras) {
+            logOnActivityLayout("onActivityLayout:", left, top, right, bottom, state);
+        }
+
+        @Override
         public void extraCallback(@NonNull String callbackName, @Nullable Bundle args) {
             if (args == null) return;
 
@@ -244,23 +239,41 @@ public class MainActivity
                 Log.w(TAG, "onResized: size = " + args.getInt("size"));
                 // CustomTabsConnection#ON_ACTIVITY_LAYOUT_CALLBACK
             } else if (callbackName.equals("onActivityLayout")) {
-                Log.w(TAG,
-                        "onActivityLayout:"
-                                // CustomTabsConnection#ON_ACTIVITY_LAYOUT_LEFT_EXTRA
-                                + " left = "
-                                + args.getInt("left")
-                                // CustomTabsConnection#ON_ACTIVITY_LAYOUT_TOP_EXTRA
-                                + " top = "
-                                + args.getInt("top")
-                                // CustomTabsConnection#ON_ACTIVITY_LAYOUT_RIGHT_EXTRA
-                                + " right = "
-                                + args.getInt("right")
-                                // CustomTabsConnection#ON_ACTIVITY_LAYOUT_BOTTOM_EXTRA
-                                + " bottom = "
-                                + args.getInt("bottom")
-                                // CustomTabsConnection#ON_ACTIVITY_LAYOUT_STATE_EXTRA
-                                + " state = " + args.getInt("state"));
+                logOnActivityLayout(
+                        "onActivityLayout extraCallback:",
+                        args.getInt("left"),
+                        args.getInt("top"),
+                        args.getInt("right"),
+                        args.getInt("bottom"),
+                        args.getInt("state"));
             }
+        }
+
+        private void logOnActivityLayout(
+                String callbackName,
+                int left,
+                int top,
+                int right,
+                int bottom,
+                @ActivityLayoutState int state) {
+            Log.w(
+                    TAG,
+                    callbackName
+                            // CustomTabsConnection#ON_ACTIVITY_LAYOUT_LEFT_EXTRA
+                            + " left = "
+                            + left
+                            // CustomTabsConnection#ON_ACTIVITY_LAYOUT_TOP_EXTRA
+                            + " top = "
+                            + top
+                            // CustomTabsConnection#ON_ACTIVITY_LAYOUT_RIGHT_EXTRA
+                            + " right = "
+                            + right
+                            // CustomTabsConnection#ON_ACTIVITY_LAYOUT_BOTTOM_EXTRA
+                            + " bottom = "
+                            + bottom
+                            // CustomTabsConnection#ON_ACTIVITY_LAYOUT_STATE_EXTRA
+                            + " state = "
+                            + state);
         }
     }
 
@@ -889,6 +902,15 @@ public class MainActivity
 
         if (isPCCT) {
             editor.putString(SHARED_PREF_CCT, "Partial CCT");
+            int pcctInitialWidthPx = mPcctInitialWidthSlider.getProgress();
+            if (pcctInitialWidthPx != 0) {
+                builder.setInitialActivityWidthPx(pcctInitialWidthPx);
+            }
+
+            int pcctBreakpointDp = mPcctBreakpointSlider.getProgress();
+            if (pcctBreakpointDp != 0) {
+                builder.setActivitySideSheetBreakpointDp(pcctBreakpointDp);
+            }
 
             customTabsIntent = builder.build();
             int toolbarCornerRadiusDp = mToolbarCornerRadiusSlider.getProgress();
@@ -899,20 +921,12 @@ public class MainActivity
                 customTabsIntent.intent.putExtra(
                         EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, pcctInitialHeightPx);
             }
-            int pcctInitialWidthPx = mPcctInitialWidthSlider.getProgress();
-            if (pcctInitialWidthPx != 0) {
-                customTabsIntent.intent.putExtra(
-                        "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_WIDTH_PX",
-                        pcctInitialWidthPx);
-            }
-            int pcctBreakpointDp = mPcctBreakpointSlider.getProgress();
-            customTabsIntent.intent.putExtra(
-                    "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_BREAKPOINT_DP",
-                    pcctBreakpointDp);
+
             if (mSideSheetMaxButtonCheckbox.isChecked()) {
                 customTabsIntent.intent.putExtra(
                         EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, true);
             }
+
             if (!mPcctHeightResizableCheckbox.isChecked()) {
                 customTabsIntent.intent.putExtra(
                         EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_FIXED);
@@ -923,15 +937,16 @@ public class MainActivity
                         BACKGROUND_INTERACT_OFF_VALUE);
             }
             if (mSideSheetRoundedCornerCheckbox.isChecked()) {
-                customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
-                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+                customTabsIntent.intent.putExtra(
+                        EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                        ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
             }
             if (mContentScrollCheckbox.isChecked()) {
                 customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE, true);
             }
             customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_POSITION, sideSheetPosition);
             customTabsIntent.intent.putExtra(
-                    EXTRA_ACTIVITY_SIDE_SHEEET_DECORATION_TYPE, decorationType);
+                    EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE, decorationType);
         } else {
             editor.putString(
                     SHARED_PREF_CCT, mCctType.equals("Incognito CCT") ? "Incognito CCT" : "CCT");
