@@ -85,8 +85,8 @@ void WaylandTouch::OnTouchDown(void* data,
 
   gfx::PointF location = self->connection_->MaybeConvertLocation(
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
-  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
-  self->delegate_->OnTouchPressEvent(window, location, timestamp, id,
+  self->delegate_->OnTouchPressEvent(window, location,
+                                     wl::EventMillisecondsToTimeTicks(time), id,
                                      EventDispatchPolicyForPlatform());
 }
 
@@ -99,9 +99,8 @@ void WaylandTouch::OnTouchUp(void* data,
   auto* self = static_cast<WaylandTouch*>(data);
   DCHECK(self);
 
-  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
-  self->delegate_->OnTouchReleaseEvent(timestamp, id,
-                                       EventDispatchPolicyForPlatform());
+  self->delegate_->OnTouchReleaseEvent(wl::EventMillisecondsToTimeTicks(time),
+                                       id, EventDispatchPolicyForPlatform());
 }
 
 // static
@@ -121,9 +120,9 @@ void WaylandTouch::OnTouchMotion(void* data,
   }
   gfx::PointF location = self->connection_->MaybeConvertLocation(
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), target);
-  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
-  self->delegate_->OnTouchMotionEvent(location, timestamp, id,
-                                      EventDispatchPolicyForPlatform());
+  self->delegate_->OnTouchMotionEvent(location,
+                                      wl::EventMillisecondsToTimeTicks(time),
+                                      id, EventDispatchPolicyForPlatform());
 }
 
 // static
