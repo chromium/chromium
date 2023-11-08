@@ -73,13 +73,25 @@ void RecordMetricsChromeSigninInterceptStarted() {
   signin_metrics::LogSignInOffered(access_point);
 }
 
-void RecordMetricsChromeSigninInterceptAccepted(base::TimeTicks start_time) {
+void RecordChromeSigninInterceptResult(base::TimeTicks start_time,
+                                       bool accepted) {
   CHECK_NE(start_time, base::TimeTicks());
-  base::UmaHistogramMediumTimes(
-      "Signin.Intercept.ChromeSignin.AcceptedResponseTime",
-      base::TimeTicks::Now() - start_time);
-  RecordSigninUserActionForAccessPoint(
-      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+  constexpr std::string_view kBaseResponseTimeHistogram =
+      "Signin.Intercept.ChromeSignin.ResponseTime";
+
+  std::string_view reaction = accepted ? "Accepted" : "Declined";
+  std::string reaction_time_histogram_name =
+      base::StrCat({kBaseResponseTimeHistogram, reaction});
+
+  base::UmaHistogramMediumTimes(reaction_time_histogram_name,
+                                base::TimeTicks::Now() - start_time);
+
+  // Only record user action on successful signin inputs.
+  if (accepted) {
+    RecordSigninUserActionForAccessPoint(
+        signin_metrics::AccessPoint::
+            ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+  }
 }
 
 }  // namespace
@@ -117,11 +129,13 @@ DiceWebSigninInterceptionBubbleView::CreateBubble(
 }
 
 DiceWebSigninInterceptionBubbleView::ScopedHandle::~ScopedHandle() {
-  if (!bubble_)
+  if (!bubble_) {
     return;  // The bubble was already closed, do nothing.
+  }
   views::Widget* widget = bubble_->GetWidget();
-  if (!widget)
+  if (!widget) {
     return;
+  }
   widget->CloseWithReason(
       bubble_->GetAccepted() ? views::Widget::ClosedReason::kAcceptButtonClicked
                              : views::Widget::ClosedReason::kUnspecified);
@@ -245,10 +259,9 @@ void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(
   }
 
   if (bubble_parameters_.interception_type ==
-          WebSigninInterceptor::SigninInterceptionType::kChromeSignin &&
-      result == SigninInterceptionResult::kAccepted) {
-    RecordMetricsChromeSigninInterceptAccepted(
-        chrome_signin_bubble_shown_time_);
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+    RecordChromeSigninInterceptResult(chrome_signin_bubble_shown_time_,
+                                      accepted_);
   }
 
   RecordInterceptionResult(bubble_parameters_, profile_, result);

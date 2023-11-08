@@ -557,7 +557,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
       signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
       1);
   histogram_tester.ExpectTotalCount(
-      "Signin.Intercept.ChromeSignin.AcceptedResponseTime", 1);
+      "Signin.Intercept.ChromeSignin.ResponseTimeAccepted", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.ResponseTimeDeclined", 0);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Signin_Impression_FromChromeSigninInterceptBubble"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -600,7 +602,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
       signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
       1);
   histogram_tester.ExpectTotalCount(
-      "Signin.Intercept.ChromeSignin.AcceptedResponseTime", 0);
+      "Signin.Intercept.ChromeSignin.ResponseTimeAccepted", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.ResponseTimeDeclined", 1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Signin_Impression_FromChromeSigninInterceptBubble"));
   EXPECT_EQ(0, user_action_tester.GetActionCount(

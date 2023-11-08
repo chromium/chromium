@@ -819,17 +819,6 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
-<histogram name="Signin.Intercept.ChromeSignin.AcceptedResponseTime" units="ms"
-    expires_after="2024-04-01">
-  <owner>rsult@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the time between the display of the Chrome Signin intercept bubble
-    and the user accepted response (response for declining the bubble will not
-    record a value).
-  </summary>
-</histogram>
-
 <histogram name="Signin.Intercept.ChromeSignin.AttemptsBeforeAccept"
     units="attempts" expires_after="2024-04-01">
   <owner>rsult@google.com</owner>
@@ -839,6 +828,20 @@ prefs when the profile is loaded.  -->
     Bubble before accepting it. The value is recorded when the user accepts the
     Chrome Signin intercept bubble.
   </summary>
+</histogram>
+
+<histogram name="Signin.Intercept.ChromeSignin.ResponseTime{Result}" units="ms"
+    expires_after="2024-04-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the time between the display of the Chrome Signin intercept bubble
+    and the user {Result} response by interacting with the bubble UI.
+  </summary>
+  <token key="Result">
+    <variant name="Accepted" summary="accepted"/>
+    <variant name="Declined" summary="declined"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.Intercept.FRE.Event"
