@@ -3797,6 +3797,7 @@ test("ash_unittests") {
     "wm/window_positioner_unittest.cc",
     "wm/window_positioning_utils_unittest.cc",
     "wm/window_preview_view_unittest.cc",
+    "wm/window_restore/informed_restore_dialog_unittest.cc",
     "wm/window_restore/window_restore_controller_unittest.cc",
     "wm/window_state_unittest.cc",
     "wm/window_transient_descendant_iterator_unittest.cc",
