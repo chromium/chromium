@@ -6760,7 +6760,7 @@
   {
     "name": "reduce-accept-language",
     "owners": [ "miketaylr@chromium.org", "victortan@chromium.org"],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "reengagement-notification",
