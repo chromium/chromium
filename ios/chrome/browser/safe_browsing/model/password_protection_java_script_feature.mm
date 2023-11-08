@@ -42,7 +42,7 @@ PasswordProtectionJavaScriptFeature::GetInstance() {
   return feature.get();
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 PasswordProtectionJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kTextEnteredHandlerName;
 }

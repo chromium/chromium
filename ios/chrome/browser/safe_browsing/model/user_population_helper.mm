@@ -31,7 +31,7 @@ safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserState(
       is_history_sync_active, is_signed_in,
       /*is_under_advanced_protection=*/false,
       GetApplicationContext()->GetBrowserPolicyConnector(),
-      /*num_profiles=*/absl::nullopt,
-      /*num_loaded_profiles=*/absl::nullopt,
-      /*num_open_profiles=*/absl::nullopt);
+      /*num_profiles=*/std::nullopt,
+      /*num_loaded_profiles=*/std::nullopt,
+      /*num_open_profiles=*/std::nullopt);
 }
