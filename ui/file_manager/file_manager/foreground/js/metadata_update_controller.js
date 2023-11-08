@@ -95,7 +95,7 @@ export class MetadataUpdateController {
     // @ts-ignore: error TS2339: Property 'entries' does not exist on type
     // 'Event'.
     this.updateStore_(event.entries);
-    this.listContainer_.dataModel.refreshGroupBySnapshot();
+    this.listContainer_.dataModel?.refreshGroupBySnapshot();
     // TODO(hirono): Specify property name instead of metadata type.
     this.listContainer_.currentView.updateListItemsMetadata(
         // @ts-ignore: error TS2339: Property 'entries' does not exist on type

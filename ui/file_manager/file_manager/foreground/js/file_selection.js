@@ -244,7 +244,7 @@ export class FileSelectionHandler extends EventTarget {
    * Update the UI when the selection model changes.
    */
   onFileSelectionChanged() {
-    const indexes = this.listContainer_.selectionModel.selectedIndexes;
+    const indexes = this.listContainer_.selectionModel?.selectedIndexes ?? [];
     const entries =
         indexes
             .map(

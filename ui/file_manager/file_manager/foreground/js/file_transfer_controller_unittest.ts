@@ -29,9 +29,9 @@ import {A11yAnnounce} from './ui/a11y_announce.js';
 import {Command} from './ui/command.js';
 import {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';
+import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {FileTable} from './ui/file_table.js';
-import {ListContainer} from './ui/list_container.js';
-import {ListSelectionModel} from './ui/list_selection_model.js';
+import {ListContainer, ListType} from './ui/list_container.js';
 
 class TestFileTransferController extends FileTransferController {
   isDocumentWideEvent() {
@@ -133,8 +133,8 @@ export function setUp() {
       document.querySelector<HTMLElement>('#list-container')!, table, grid,
       DialogType.FULL_PAGE);
   listContainer.dataModel = dataModel;
-  listContainer.selectionModel = new ListSelectionModel();
-  listContainer.setCurrentListType(ListContainer.ListType.DETAIL);
+  listContainer.selectionModel = new FileListSelectionModel();
+  listContainer.setCurrentListType(ListType.DETAIL);
 
   // Setup DirectoryTree elements.
   directoryTree =

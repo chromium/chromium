@@ -37,11 +37,11 @@ export class Table extends HTMLDivElement {
    * The table data model.
    *
    */
-  get dataModel(): ArrayDataModel {
-    return this.list.dataModel!;
+  get dataModel(): ArrayDataModel|null {
+    return this.list.dataModel;
   }
 
-  set dataModel(dataModel: ArrayDataModel) {
+  set dataModel(dataModel: ArrayDataModel|null) {
     assert(this.list_);
     if (this.list_.dataModel !== dataModel) {
       if (this.list_.dataModel) {
@@ -377,7 +377,9 @@ export class Table extends HTMLDivElement {
     const list = this.list;
     const listHeight = list.clientHeight;
 
-    const cm = this.columnModel_!;
+    assert(this.dataModel);
+    assert(this.columnModel_);
+    const cm = this.columnModel_;
     const dm = this.dataModel;
     const columnId = cm.getId(index)!;
     const doc = this.ownerDocument;

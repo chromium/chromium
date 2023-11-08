@@ -26,7 +26,7 @@ import {TaskController} from './task_controller.js';
 import {Command} from './ui/command.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FileTapHandler} from './ui/file_tap_handler.js';
-import {ListContainer} from './ui/list_container.js';
+import {EventType, ListType, ListTypesForUMA} from './ui/list_container.js';
 import {ListSelectionModel} from './ui/list_selection_model.js';
 
 /**
@@ -132,7 +132,7 @@ export class MainWindowComponent {
     ui.directoryTree.addEventListener(
         'keydown', this.onDirectoryTreeKeyDown_.bind(this));
     ui.listContainer.element.addEventListener(
-        ListContainer.EventType.TEXT_SEARCH, this.onTextSearch_.bind(this));
+        EventType.TEXT_SEARCH, this.onTextSearch_.bind(this));
     ui.listContainer.table.list.addEventListener(
         'dblclick', this.onDoubleClick_.bind(this));
     ui.listContainer.grid.addEventListener(
@@ -373,12 +373,12 @@ export class MainWindowComponent {
         return;
       }
     }
-    const listType = this.ui_.listContainer.currentListType ===
-            ListContainer.ListType.DETAIL ?
-        ListContainer.ListType.THUMBNAIL :
-        ListContainer.ListType.DETAIL;
+    const listType =
+        this.ui_.listContainer.currentListType === ListType.DETAIL ?
+        ListType.THUMBNAIL :
+        ListType.DETAIL;
     this.ui_.setCurrentListType(listType);
-    const msgId = listType === ListContainer.ListType.DETAIL ?
+    const msgId = listType === ListType.DETAIL ?
         'FILE_LIST_CHANGED_TO_LIST_VIEW' :
         'FILE_LIST_CHANGED_TO_LIST_THUMBNAIL_VIEW';
     this.ui_.speakA11yMessage(str(msgId));
@@ -388,7 +388,7 @@ export class MainWindowComponent {
     // explicitly show the tooltip.
     this.ui_.filesTooltip.updateTooltipText(
         /** @type {!HTMLElement} */ (this.ui_.toggleViewButton));
-    recordEnum('ToggleFileListType', listType, ListContainer.ListTypesForUMA);
+    recordEnum('ToggleFileListType', listType, ListTypesForUMA);
   }
 
   /**

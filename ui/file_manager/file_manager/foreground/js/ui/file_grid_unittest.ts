@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
@@ -169,6 +170,7 @@ export function testGetItemTop() {
   const grid = setupFileGrid();
   grid['getGroupHeadingHeight_'] = () => GROUP_HEADING_HEIGHT;
   const ROW_HEIGHT = FILE_ITEM_HEIGHT;
+  assert(grid.dataModel);
   // Enable group by modification time.
   groupByModificationTime(grid.dataModel);
   // Item 0,1 is in group #1/today, nothing is above it.
@@ -207,6 +209,7 @@ export function testGetItemTop() {
 // getItemIndex(), getFirstItemInRow().
 export function testGetItemPosition() {
   const grid = setupFileGrid();
+  assert(grid.dataModel);
   // Enable group by modification time.
   groupByModificationTime(grid.dataModel);
   // Check the comment in groupByModificationTime() for a visual illustration.
@@ -306,6 +309,7 @@ export function testGetAfterFillerHeight() {
   const grid = setupFileGrid();
   grid['getGroupHeadingHeight_'] = () => GROUP_HEADING_HEIGHT;
   const ROW_HEIGHT = FILE_ITEM_HEIGHT;
+  assert(grid.dataModel);
   // Enable group by modification time.
   groupByModificationTime(grid.dataModel);
   // Check the comment in groupByModificationTime() for a visual illustration.
@@ -363,6 +367,7 @@ export function testGetRowForListOffset() {
   const grid = setupFileGrid();
   grid['getGroupHeadingHeight_'] = () => GROUP_HEADING_HEIGHT;
   grid['paddingTop_'] = 0;  // To ease calculation.
+  assert(grid.dataModel);
   // Enable group by modification time.
   groupByModificationTime(grid.dataModel);
   // index                                       height      total height
@@ -395,6 +400,7 @@ export function testGetRowForListOffset() {
 
 export function testItemHeightForGroupByModificationTime() {
   const grid = setupFileGrid();
+  assert(grid.dataModel);
   // Enable group by modification time.
   groupByModificationTime(grid.dataModel);
 
@@ -410,6 +416,7 @@ export function testItemHeightForGroupByModificationTime() {
 
 export function testItemHeightForGroupByDirectory() {
   const grid = setupFileGrid();
+  assert(grid.dataModel);
   // Enable group by directory.
   groupByDirectory(grid.dataModel);
 
@@ -428,6 +435,7 @@ export function testItemHeightForGroupByDirectory() {
 
 export function testGetHitRowIndex() {
   const grid = setupFileGrid();
+  assert(grid.dataModel);
   // Enable group by directory.
   groupByDirectory(grid.dataModel);
   grid['getGroupHeadingHeight_'] = () => GROUP_HEADING_HEIGHT;
@@ -466,6 +474,7 @@ export function testGetHitRowIndex() {
 
 export function testGetHitColumnIndex() {
   const grid = setupFileGrid();
+  assert(grid.dataModel);
   // Enable group by directory.
   groupByDirectory(grid.dataModel);
   grid['getGroupHeadingHeight_'] = () => GROUP_HEADING_HEIGHT;
@@ -500,6 +509,7 @@ export function testGetHitColumnIndex() {
 // Test FileGridSelectionController's getIndexAbove() and getIndexBelow().
 export function testSelectionModelIndexMovement() {
   const grid = setupFileGrid();
+  assert(grid.dataModel);
   groupByDirectory(grid.dataModel);
   const sm = new FileGridSelectionController(
       new ListSelectionModel(grid.dataModel.length), grid);

@@ -44,7 +44,7 @@ import {FilesMenuItem} from './files_menu.js';
 import {GearMenu} from './gear_menu.js';
 import {ImportCrostiniImageDialog} from './import_crostini_image_dialog.js';
 import {InstallLinuxPackageDialog} from './install_linux_package_dialog.js';
-import {ListContainer} from './list_container.js';
+import {ListContainer, ListType} from './list_container.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
 import {MultiMenu} from './multi_menu.js';
@@ -634,9 +634,7 @@ export class FileManagerUI {
     let targetElement = null;
     if (this.dialogType_ == DialogType.SELECT_SAVEAS_FILE) {
       targetElement = this.dialogFooter.filenameInput;
-    } else if (
-        this.listContainer.currentListType !=
-        ListContainer.ListType.UNINITIALIZED) {
+    } else if (this.listContainer.currentListType !== ListType.UNINITIALIZED) {
       targetElement = this.listContainer.currentList;
     }
 
@@ -752,8 +750,7 @@ export class FileManagerUI {
    */
   relayout() {
     // May not be available during initialization.
-    if (this.listContainer.currentListType !==
-        ListContainer.ListType.UNINITIALIZED) {
+    if (this.listContainer.currentListType !== ListType.UNINITIALIZED) {
       this.listContainer.currentView.relayout();
     }
     if (!isNewDirectoryTreeEnabled() && this.directoryTree) {
@@ -822,12 +819,12 @@ export class FileManagerUI {
 
   /**
    * Sets the current list type.
-   * @param {ListContainer.ListType} listType New list type.
+   * @param {ListType} listType New list type.
    */
   setCurrentListType(listType) {
     this.listContainer.setCurrentListType(listType);
 
-    const isListView = (listType === ListContainer.ListType.DETAIL);
+    const isListView = (listType === ListType.DETAIL);
     this.toggleViewButton.classList.toggle('thumbnail', isListView);
 
     const label = isListView ? str('CHANGE_TO_THUMBNAILVIEW_BUTTON_LABEL') :

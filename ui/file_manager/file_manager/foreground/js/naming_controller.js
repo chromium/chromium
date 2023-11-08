@@ -17,7 +17,8 @@ import {renameEntry, validateEntryName, validateFileName} from './file_rename.js
 import {FileSelectionHandler} from './file_selection.js';
 import {ConfirmDialog} from './ui/dialogs.js';
 import {FilesAlertDialog} from './ui/files_alert_dialog.js';
-import {ListContainer} from './ui/list_container.js';
+import {ListContainer, ListType} from './ui/list_container.js';
+import {ListItem} from './ui/list_item.js';
 import {ListSelectionModel} from './ui/list_selection_model.js';
 
 /**
@@ -167,7 +168,8 @@ export class NamingController {
     this.isRemovableRoot_ = isRemovableRoot;
     this.volumeInfo_ = this.isRemovableRoot_ ? assert(volumeInfo) : null;
 
-    const selectedIndex = this.listContainer_.selectionModel.selectedIndex;
+    const selectedIndex =
+        this.listContainer_.selectionModel?.selectedIndex ?? -1;
     const item =
         this.listContainer_.currentList.getListItemByIndex(selectedIndex);
     if (!item) {
@@ -229,13 +231,12 @@ export class NamingController {
       return;
     }
 
-    const leadListItem = this.listContainer_.findListItemForNode(
-        this.listContainer_.renameInput);
-    if (this.listContainer_.currentListType == ListContainer.ListType.DETAIL) {
+    const leadListItem =
+        /** @type {ListItem} */ (this.listContainer_.findListItemForNode(
+            this.listContainer_.renameInput));
+    if (this.listContainer_.currentListType == ListType.DETAIL) {
       this.listContainer_.table.updateFileMetadata(leadListItem, leadEntry);
     }
-    // @ts-ignore: error TS2339: Property 'restoreLeadItem' does not exist on
-    // type 'List'.
     this.listContainer_.currentList.restoreLeadItem(leadListItem);
   }
 
@@ -302,8 +303,9 @@ export class NamingController {
     const entry = input.currentEntry;
     const newName = input.value;
 
-    const renamedItemElement = this.listContainer_.findListItemForNode(
-        this.listContainer_.renameInput);
+    const renamedItemElement =
+        /** @type {ListItem} */ (this.listContainer_.findListItemForNode(
+            this.listContainer_.renameInput));
     const nameNode = renamedItemElement.querySelector('.filename-label');
     // @ts-ignore: error TS18047: 'nameNode' is possibly 'null'.
     if (!newName || newName == nameNode.textContent) {

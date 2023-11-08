@@ -11,6 +11,7 @@ import {boolAttrSetter, decorate, PropertyChangeEvent} from '../../../common/js/
 import {createListItem, ListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
 import {ListSelectionModel} from './list_selection_model.js';
+import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 /**
  * @fileoverview This implements a list control.
@@ -111,7 +112,8 @@ export class List extends HTMLUListElement {
   protected itemConstructor_: (...args: any[]) => ListItem = createListItem;
 
   private dataModel_: ArrayDataModel|null = null;
-  private selectionModel_: ListSelectionModel|null = null;
+  private selectionModel_: ListSelectionModel|ListSingleSelectionModel|null =
+      null;
   private selectionController_: ListSelectionController|null = null;
 
   /**
@@ -156,7 +158,7 @@ export class List extends HTMLUListElement {
   /**
    * The data model driving the list.
    */
-  set dataModel(dataModel: ArrayDataModel) {
+  set dataModel(dataModel: ArrayDataModel|null) {
     if (this.dataModel_ === dataModel) {
       return;
     }
@@ -200,10 +202,10 @@ export class List extends HTMLUListElement {
   /**
    * The selection model to use.
    */
-  get selectionModel(): ListSelectionModel|null {
+  get selectionModel(): ListSelectionModel|ListSingleSelectionModel|null {
     return this.selectionModel_;
   }
-  set selectionModel(sm: ListSelectionModel) {
+  set selectionModel(sm: ListSelectionModel|ListSingleSelectionModel) {
     const oldSm = this.selectionModel_;
     if (oldSm === sm) {
       return;
@@ -908,7 +910,8 @@ export class List extends HTMLUListElement {
    * @param sm The underlying selection model.
    * @return The newly created selection controller.
    */
-  createSelectionController(sm: ListSelectionModel): ListSelectionController {
+  createSelectionController(sm: ListSelectionModel|
+                            ListSingleSelectionModel): ListSelectionController {
     return new ListSelectionController(sm);
   }
 

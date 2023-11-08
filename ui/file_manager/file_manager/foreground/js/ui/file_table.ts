@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {RateLimiter} from '../../../common/js/async_util.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
@@ -564,7 +565,7 @@ export class FileTable extends Table {
    * Sets list thumbnail loader.
    * @param listThumbnailLoader A list thumbnail loader.
    */
-  setListThumbnailLoader(listThumbnailLoader: ListThumbnailLoader) {
+  setListThumbnailLoader(listThumbnailLoader: ListThumbnailLoader|null) {
     if (this.listThumbnailLoader_) {
       this.listThumbnailLoader_.removeEventListener(
           'thumbnailLoaded', this.onThumbnailLoadedBound_);
@@ -628,6 +629,7 @@ export class FileTable extends Table {
   override fitColumn(index: number) {
     const render = this.columnModel.getRenderFunction(index);
     const MAXIMUM_ROWS_TO_MEASURE = 1000;
+    assert(this.dataModel);
 
     // Create a temporaty list item, put all cells into it and measure its
     // width. Then remove the item. It fits "list > *" CSS rules.
@@ -798,7 +800,7 @@ export class FileTable extends Table {
       return '';
     }
 
-    const entry = this.dataModel.item(index) as Entry | FilesAppEntry;
+    const entry = this.dataModel?.item(index) as Entry | FilesAppEntry;
     if (!entry) {
       return '';
     }
@@ -933,6 +935,8 @@ export class FileTable extends Table {
    */
   updateListItemsMetadata(type: string, entries: Entry[]) {
     const urls = entriesToURLs(entries);
+    assert(this.dataModel);
+    const dataModel = this.dataModel;
     const forEachCell =
         (selector: string,
          callback: (cell: HTMLElement, entry: Entry, item: ListItem|null) =>
@@ -942,7 +946,7 @@ export class FileTable extends Table {
             const cell = cells[i]!;
             const listItem = this.list.getListItemAncestor(cell);
             const index = listItem?.listIndex ?? 0;
-            const entry = this.dataModel.item(index);
+            const entry = dataModel.item(index);
             if (entry && urls.indexOf(entry.toURL()) !== -1) {
               callback.call(this, cell, entry, listItem);
             }

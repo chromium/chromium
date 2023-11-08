@@ -942,7 +942,7 @@ export function focusParentList(event: Event) {
  * @param metadataModel Cache to retrieve metadata.
  */
 export function updateCacheItemInlineStatus(
-    restoredItem: ListItem, dataModel: ArrayDataModel,
+    restoredItem: ListItem, dataModel: ArrayDataModel|null,
     metadataModel: MetadataModel) {
   if (!dataModel || !metadataModel) {
     console.error('dataModel or metadataModel unavailable.');

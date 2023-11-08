@@ -91,6 +91,7 @@ export class FileListSelectionModel extends ListSelectionModel {
 }
 
 export class FileListSingleSelectionModel extends ListSingleSelectionModel {
+  independentLeadItem: boolean = false;
   /**
    * Updates the check-select mode.
    * @param enabled True if check-select mode should be enabled.

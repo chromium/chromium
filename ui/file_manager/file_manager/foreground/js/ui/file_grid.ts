@@ -58,7 +58,7 @@ export class FileGrid extends Grid {
     return super.dataModel as FileListModel;
   }
 
-  override set dataModel(model: FileListModel) {
+  override set dataModel(model: FileListModel|null) {
     // The setter for dataModel is overridden to remove/add the 'splice'
     // listener for the current data model.
     if (this.dataModel) {
@@ -166,7 +166,7 @@ export class FileGrid extends Grid {
   /**
    * Sets list thumbnail loader.
    */
-  setListThumbnailLoader(listThumbnailLoader: ListThumbnailLoader) {
+  setListThumbnailLoader(listThumbnailLoader: ListThumbnailLoader|null) {
     if (this.listThumbnailLoader_) {
       this.listThumbnailLoader_.removeEventListener(
           'thumbnailLoaded', this.onThumbnailLoadedBound_);
@@ -254,7 +254,7 @@ export class FileGrid extends Grid {
         title.setAttribute('role', 'heading');
         title.innerText = startIndexToGroupLabel.get(i)!.label;
         title.classList.add(
-            'grid-title', `group-by-${fileListModel.groupByField}`);
+            'grid-title', `group-by-${fileListModel!.groupByField}`);
         this.insertBefore(title, item);
       }
     }
@@ -268,6 +268,7 @@ export class FileGrid extends Grid {
   }
 
   override getItemTop(index: number) {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
@@ -299,6 +300,7 @@ export class FileGrid extends Grid {
   }
 
   override getItemRow(index: number) {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
@@ -327,6 +329,7 @@ export class FileGrid extends Grid {
    * @param index The item index.
    */
   getItemColumn(index: number) {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
@@ -354,6 +357,7 @@ export class FileGrid extends Grid {
     if (row < 0 || column < 0 || column >= this.columns) {
       return -1;
     }
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
@@ -463,6 +467,7 @@ export class FileGrid extends Grid {
   }
 
   override getAfterFillerHeight(lastIndex: number) {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
     // Excluding the current index, because [firstIndex, lastIndex) is used
@@ -521,6 +526,7 @@ export class FileGrid extends Grid {
    * Returns the height of group heading.
    */
   private getGroupHeadingHeight_(groupIndex: number): number {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     // For FilesRefresh, we have an additional margin for non-first group, check
     // the CSS rule ".grid-title ~ .grid-title" for more information in the CSS
@@ -541,6 +547,7 @@ export class FileGrid extends Grid {
    * Returns the height of the item in the group based on the group value.
    */
   private getGroupItemHeight_(groupValue?: GroupValue): number {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     switch (fileListModel.groupByField) {
       case GROUP_BY_FIELD_DIRECTORY:
@@ -557,6 +564,7 @@ export class FileGrid extends Grid {
    * Returns the height of the item specified by the index.
    */
   protected override getItemHeightByIndex_(index: number): number {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     if (fileListModel.groupByField === GROUP_BY_FIELD_MODIFICATION_TIME) {
       return this.getFileItemHeight_();
@@ -604,6 +612,7 @@ export class FileGrid extends Grid {
    * @return Row index corresponding to the given offset.
    */
   private getRowForListOffset_(offset: number): number {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const innerOffset = Math.max(0, offset - this.paddingTop_);
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
@@ -850,6 +859,7 @@ export class FileGrid extends Grid {
   }
 
   private onSorted_() {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const hasGroupHeadingAfterSort = fileListModel.shouldShowGroupHeading();
     // Sort doesn't trigger redraw sometimes, e.g. if we sort by Name for now,
@@ -969,6 +979,7 @@ export class FileGrid extends Grid {
    * y.
    */
   private getHitRowIndex_(y: number, isStart: boolean): number {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
@@ -1138,6 +1149,7 @@ export class FileGridSelectionController extends GridSelectionController {
       // columns to get the column (index `col`), and `row + 1` must be the
       // last row of the group. We just need to return the last index of that
       // group.
+      assert(grid.dataModel);
       const groupBySnapshot = grid.dataModel.getGroupBySnapshot();
       let curRow = 0;
       for (const group of groupBySnapshot) {
