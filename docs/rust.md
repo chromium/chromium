@@ -105,6 +105,15 @@ patched with a couple of changes:
 //third_party/rust/foo/v4/patches/0002-Other-changes.diff
 ```
 
+The recommended procedure to create such patches is:
+
+1. Commit the plain new version of the crate to your local git branch
+2. Modify the crate as necessary
+3. Commit that modified version
+4. Use `git format-patch <unpatched version>` to generate the patch files
+5. Add the patch files in a new, third, commit
+6. Squash them, or rely on `git cl upload` doing so
+
 ### Updating existing third-party crates
 
 To update a crate "foo" to the latest version you must just re-import it at this
