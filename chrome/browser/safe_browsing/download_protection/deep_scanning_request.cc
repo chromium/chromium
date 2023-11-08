@@ -306,6 +306,23 @@ void LogDeepScanResult(DownloadCheckResult download_result,
   }
 }
 
+bool HasDecryptionFailedResult(
+    enterprise_connectors::ContentAnalysisResponse response) {
+  for (const auto& result : response.results()) {
+    if (result.tag() != "malware") {
+      continue;
+    }
+
+    if (result.status_error_message() ==
+        enterprise_connectors::ContentAnalysisResponse::Result::
+            DECRYPTION_FAILED) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 /* static */
@@ -598,9 +615,16 @@ void DeepScanningRequest::OnConsumerScanComplete(
     const base::FilePath& current_path,
     BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
+  bool is_invalid_password =
+      result == BinaryUploadService::Result::FILE_ENCRYPTED ||
+      (result == BinaryUploadService::Result::SUCCESS &&
+       DownloadItemWarningData::IsEncryptedArchive(item_) &&
+       HasDecryptionFailedResult(response));
+  bool is_success =
+      result == BinaryUploadService::Result::SUCCESS && !is_invalid_password;
   CHECK_EQ(trigger_, DeepScanTrigger::TRIGGER_CONSUMER_PROMPT);
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
-  if (result == BinaryUploadService::Result::SUCCESS) {
+  if (is_success) {
     request_tokens_.push_back(response.request_token());
     ResponseToDownloadCheckResult(response, &download_result);
     LogDeepScanEvent(item_, DeepScanEvent::kScanCompleted);
@@ -609,7 +633,7 @@ void DeepScanningRequest::OnConsumerScanComplete(
     LogDeepScanEvent(item_, DeepScanEvent::kScanFailed);
 
     if (base::FeatureList::IsEnabled(kDeepScanningEncryptedArchives) &&
-        result == BinaryUploadService::Result::FILE_ENCRYPTED) {
+        is_invalid_password) {
       // Since we now prompt the user for a password, FILE_ENCRYPTED indicates
       // the password was not correct. Instead of failing, ask the user to
       // correct the issue.
