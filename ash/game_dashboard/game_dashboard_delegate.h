@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "ui/aura/window.h"
 
 namespace ash {
 
@@ -27,6 +28,9 @@ class ASH_EXPORT GameDashboardDelegate {
 
   // Gets the app name by `app_id`.
   virtual std::string GetArcAppName(const std::string& app_id) const = 0;
+
+  // Records `ScalableIph::kGameWindowOpened` event.
+  virtual void RecordGameWindowOpenedEvent(aura::Window* window) = 0;
 };
 
 }  // namespace ash

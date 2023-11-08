@@ -8,6 +8,7 @@
 #include "ash/components/arc/mojom/app.mojom-shared.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/aura/window.h"
 
 class ChromeGameDashboardDelegate : public ash::GameDashboardDelegate {
  public:
@@ -20,6 +21,7 @@ class ChromeGameDashboardDelegate : public ash::GameDashboardDelegate {
   // ash::GameDashboardDelegate:
   void GetIsGame(const std::string& app_id, IsGameCallback callback) override;
   std::string GetArcAppName(const std::string& app_id) const override;
+  void RecordGameWindowOpenedEvent(aura::Window* window) override;
 
  private:
   // Callback when `IsGame` queries ARC to get the app category.

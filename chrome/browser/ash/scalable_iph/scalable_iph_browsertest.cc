@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "ash/test/test_widget_builder.h"
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
@@ -20,6 +25,7 @@
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager.h"
@@ -31,6 +37,7 @@
 #include "chrome/browser/ash/scalable_iph/scalable_iph_delegate_impl.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -51,9 +58,12 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/constants.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/event_generator_delegate_aura.h"
+#include "ui/aura/window.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
@@ -72,6 +82,7 @@ constexpr char kTestLogMessage[] = "test-log-message";
 constexpr char kTestLogMessagePattern[] = "*test-log-message*";
 constexpr char kScalableIphDebugLogTextUrl[] =
     "chrome-untrusted://scalable-iph-debug/log.txt";
+constexpr char16_t kTestGameWindowTitle[] = u"ScalableIphTestGameWindow";
 
 BASE_FEATURE(kScalableIphTestTwo,
              "ScalableIphTestTwo",
@@ -101,6 +112,16 @@ void SendSuspendDone() {
   chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent::IDLE);
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
+}
+
+std::unique_ptr<aura::Window> CreateAuraWindow(std::u16string window_title) {
+  ash::TestWidgetBuilder builder;
+  builder.SetWindowTitle(window_title);
+  builder.SetTestWidgetDelegate();
+  builder.SetContext(ash::Shell::GetPrimaryRootWindow());
+  builder.SetBounds(gfx::Rect(0, 0, 600, 400));
+  views::Widget* widget = builder.BuildOwnedByNativeWidget();
+  return std::unique_ptr<aura::Window>(widget->GetNativeWindow());
 }
 
 class IsOnlineValueWaiter {
@@ -192,6 +213,28 @@ class CupsPrintJobManagerWaiter : public ash::CupsPrintJobManager::Observer {
   raw_ptr<ash::CupsPrintJobManager> print_job_manager_;
   base::RunLoop run_loop_;
   int job_id_;
+};
+
+class ScalableIphBrowserTestGame : public ScalableIphBrowserTest {
+ public:
+  void AppendTestSpecificFeatures(
+      std::vector<base::test::FeatureRefAndParams>& enabled_features,
+      std::vector<base::test::FeatureRef>& disabled_features) override {
+    enabled_features.push_back(
+        base::test::FeatureRefAndParams(ash::features::kGameDashboard, {}));
+  }
+
+  void SetUpOnMainThread() override {
+    ScalableIphBrowserTest::SetUpOnMainThread();
+
+    CHECK(ash::GameDashboardController::Get())
+        << "Game dashboard has to be enabled for this test.";
+  }
+};
+
+class ScalableIphBrowserTestGameMultiUser : public ScalableIphBrowserTestGame {
+ public:
+  ScalableIphBrowserTestGameMultiUser() { enable_multi_user_ = true; }
 };
 
 class ScalableIphBrowserTestDebugOff : public ScalableIphBrowserTest {
@@ -838,6 +881,66 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, DISABLED_PrintJobCreated) {
   print_job_manager_waiter.Wait();
 }
 
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestGame, GameWindowOpened) {
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameGameWindowOpened));
+
+  std::unique_ptr<aura::Window> window = CreateAuraWindow(kTestGameWindowTitle);
+  window->SetProperty(ash::kAppIDKey,
+                      std::string(extension_misc::kGeForceNowAppId));
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestGameMultiUser,
+                       NoGameWindowOpenedForSecondaryUser) {
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameGameWindowOpened))
+      .Times(0);
+
+  // Login with secondary user and open a game window with the user.
+  ash::UserAddingScreen::Get()->Start();
+  CHECK(GetLoginManagerMixin()->LoginAndWaitForActiveSession(
+      GetSecondaryUserContext()));
+
+  std::unique_ptr<aura::Window> window = CreateAuraWindow(kTestGameWindowTitle);
+  window->SetProperty(ash::kAppIDKey,
+                      std::string(extension_misc::kGeForceNowAppId));
+  ash::MultiUserWindowManager* multi_user_window_manager =
+      MultiUserWindowManagerHelper::GetWindowManager();
+  CHECK(multi_user_window_manager);
+  multi_user_window_manager->SetWindowOwner(
+      window.get(), GetSecondaryUserContext().GetAccountId());
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestGameMultiUser,
+                       NoGameWindowOpenedTeleport) {
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameGameWindowOpened))
+      .Times(0);
+
+  // Login with secondary user and open a game window with the user.
+  ash::UserAddingScreen::Get()->Start();
+  CHECK(GetLoginManagerMixin()->LoginAndWaitForActiveSession(
+      GetSecondaryUserContext()));
+
+  std::unique_ptr<aura::Window> window = CreateAuraWindow(kTestGameWindowTitle);
+  ash::MultiUserWindowManager* multi_user_window_manager =
+      MultiUserWindowManagerHelper::GetWindowManager();
+  CHECK(multi_user_window_manager);
+  multi_user_window_manager->SetWindowOwner(
+      window.get(), GetSecondaryUserContext().GetAccountId());
+
+  // Teleport the window before app id is set.
+  multi_user_window_manager->ShowWindowForUser(
+      window.get(), GetPrimaryUserContext().GetAccountId());
+
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  CHECK(user_manager);
+  CHECK_EQ(user_manager->GetActiveUser()->GetAccountId(),
+           GetPrimaryUserContext().GetAccountId());
+
+  window->SetProperty(ash::kAppIDKey,
+                      std::string(extension_misc::kGeForceNowAppId));
+}
 // Logging feature is on by default in `ScalableIphBrowserTest`.
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, Log) {
   constexpr char kTestFileNamePattern[] = "*scalable_iph_browsertest.cc*";

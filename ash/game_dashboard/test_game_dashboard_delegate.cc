@@ -16,4 +16,7 @@ std::string TestGameDashboardDelegate::GetArcAppName(
   return std::string();
 }
 
+void TestGameDashboardDelegate::RecordGameWindowOpenedEvent(
+    aura::Window* window) {}
+
 }  // namespace ash

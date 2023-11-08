@@ -235,6 +235,7 @@ void GameDashboardController::RefreshWindowTracking(aura::Window* window,
       if (!context) {
         context = std::make_unique<GameDashboardContext>(window);
         RefreshForGameControlsFlags(window);
+        delegate_->RecordGameWindowOpenedEvent(window);
       }
     } else if (prev_is_game_property) {
       // The window was a game, but NOT anymore. This can happen if the user

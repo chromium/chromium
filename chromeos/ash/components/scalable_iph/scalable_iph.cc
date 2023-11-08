@@ -189,7 +189,7 @@ constexpr auto kShelfItemActivationEventsMap =
 
 constexpr base::TimeDelta kTimeTickEventInterval = base::Minutes(5);
 
-std::string GetEventName(ScalableIph::Event event, Logger* logger) {
+std::string GetEventName(ScalableIph::Event event) {
   // Use switch statement as you can get a compiler error if you forget to add a
   // conversion.
   switch (event) {
@@ -223,6 +223,8 @@ std::string GetEventName(ScalableIph::Event event, Logger* logger) {
       return kEventNameAppListItemActivationGooglePhotosAndroid;
     case ScalableIph::Event::kPrintJobCreated:
       return kEventNamePrintJobCreated;
+    case ScalableIph::Event::kGameWindowOpened:
+      return kEventNameGameWindowOpened;
   }
 }
 
@@ -827,7 +829,7 @@ void ScalableIph::RecordEventInternal(ScalableIph::Event event,
     return;
   }
 
-  const std::string event_name = GetEventName(event, GetLogger());
+  const std::string event_name = GetEventName(event);
   SCALABLE_IPH_LOG(GetLogger()) << "Recording event as " << event_name;
   tracker_->NotifyEvent(event_name);
 
@@ -973,8 +975,7 @@ bool ScalableIph::CheckTriggerEvent(
     return true;
   }
 
-  std::string trigger_event_name =
-      GetEventName(trigger_event.value(), GetLogger());
+  std::string trigger_event_name = GetEventName(trigger_event.value());
 
   const bool result = trigger_event_condition == trigger_event_name;
   SCALABLE_IPH_LOG(GetLogger())
@@ -1124,38 +1125,7 @@ const std::vector<const base::Feature*>& ScalableIph::GetFeatureList() const {
 }
 
 std::ostream& operator<<(std::ostream& out, ScalableIph::Event event) {
-  switch (event) {
-    case ScalableIph::Event::kFiveMinTick:
-      return out << "FiveMinTick";
-    case ScalableIph::Event::kUnlocked:
-      return out << "Unlocked";
-    case ScalableIph::Event::kAppListShown:
-      return out << "AppListShown";
-    case ScalableIph::Event::kAppListItemActivationYouTube:
-      return out << "AppListItemActivationYouTube";
-    case ScalableIph::Event::kAppListItemActivationGoogleDocs:
-      return out << "AppListItemActivationGoogleDocs";
-    case ScalableIph::Event::kAppListItemActivationGooglePhotosWeb:
-      return out << "AppListItemActivationGooglePhotosWeb";
-    case ScalableIph::Event::kOpenPersonalizationApp:
-      return out << "OpenPersonalizationApp";
-    case ScalableIph::Event::kShelfItemActivationGoogleDocs:
-      return out << "ShelfItemActivationGoogleDocs";
-    case ScalableIph::Event::kShelfItemActivationYouTube:
-      return out << "ShelfItemActivationYouTube";
-    case ScalableIph::Event::kShelfItemActivationGooglePhotosWeb:
-      return out << "ShelfItemActivationGooglePhotosWeb";
-    case ScalableIph::Event::kShelfItemActivationGooglePhotosAndroid:
-      return out << "ShelfItemActivationGooglePhotosAndroid";
-    case ScalableIph::Event::kShelfItemActivationGooglePlay:
-      return out << "ShelfItemActivationGooglePlay";
-    case ScalableIph::Event::kAppListItemActivationGooglePlayStore:
-      return out << "AppListItemActivationGooglePlayStore";
-    case ScalableIph::Event::kAppListItemActivationGooglePhotosAndroid:
-      return out << "AppListItemActivationGooglePhotosAndroid";
-    case ScalableIph::Event::kPrintJobCreated:
-      return out << "PrintJobCreated";
-  }
+  return out << GetEventName(event);
 }
 
 }  // namespace scalable_iph
