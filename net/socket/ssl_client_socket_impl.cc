@@ -861,6 +861,9 @@ int SSLClientSocketImpl::Init() {
     }
   }
 
+  SSL_set_alps_use_new_codepoint(
+      ssl_.get(), base::FeatureList::IsEnabled(features::kUseAlpsNewCodepoint));
+
   if (!ssl_config_.alpn_protos.empty()) {
     std::vector<uint8_t> wire_protos =
         SerializeNextProtos(ssl_config_.alpn_protos);

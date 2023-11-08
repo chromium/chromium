@@ -470,6 +470,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kReceiveEcn);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kNewCertPathBuilderIterationLimit);
 
+// Enables using the new ALPS codepoint to negotiate application settings.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseAlpsNewCodepoint);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

@@ -6044,17 +6044,21 @@ TEST_F(SSLClientSocketTest, ServerName) {
 
 class SSLClientSocketAlpsTest
     : public SSLClientSocketTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   SSLClientSocketAlpsTest()
       : client_alps_enabled_(std::get<0>(GetParam())),
-        server_alps_enabled_(std::get<1>(GetParam())) {}
+        server_alps_enabled_(std::get<1>(GetParam())),
+        client_use_new_alps_(std::get<2>(GetParam())) {}
   ~SSLClientSocketAlpsTest() override = default;
   const bool client_alps_enabled_;
   const bool server_alps_enabled_;
+  const bool client_use_new_alps_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, SSLClientSocketAlpsTest, Combine(Bool(), Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SSLClientSocketAlpsTest,
+                         Combine(Bool(), Bool(), Bool()));
 
 TEST_P(SSLClientSocketAlpsTest, Alps) {
   const std::string server_data = "server sends some test data";
@@ -6066,11 +6070,32 @@ TEST_P(SSLClientSocketAlpsTest, Alps) {
     server_config.application_settings[kProtoHTTP2] =
         std::vector<uint8_t>(server_data.begin(), server_data.end());
   }
+  // Configure the server to support whichever ALPS codepoint the client sent.
+  server_config.client_hello_callback_for_testing =
+      base::BindRepeating([](const SSL_CLIENT_HELLO* client_hello) {
+        const uint8_t* unused_extension_bytes;
+        size_t unused_extension_len;
+        int use_alps_new_codepoint = SSL_early_callback_ctx_extension_get(
+            client_hello, TLSEXT_TYPE_application_settings,
+            &unused_extension_bytes, &unused_extension_len);
+        SSL_set_alps_use_new_codepoint(client_hello->ssl,
+                                       use_alps_new_codepoint);
+        return true;
+      });
+
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLConfig client_config;
   client_config.alpn_protos = {kProtoHTTP2};
+
+  base::test::ScopedFeatureList feature_list;
+  if (client_use_new_alps_) {
+    feature_list.InitAndEnableFeature(features::kUseAlpsNewCodepoint);
+  } else {
+    feature_list.InitAndDisableFeature(features::kUseAlpsNewCodepoint);
+  }
+
   if (client_alps_enabled_) {
     client_config.application_settings[kProtoHTTP2] =
         std::vector<uint8_t>(client_data.begin(), client_data.end());

@@ -581,6 +581,21 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
           std::vector<uint8_t>(
               serialized_frame.data(),
               serialized_frame.data() + serialized_frame.size());
+
+      ssl_config_.client_hello_callback_for_testing =
+          base::BindRepeating([](const SSL_CLIENT_HELLO* client_hello) {
+            // Configure the server to use the ALPS codepoint that the client
+            // offered.
+            const uint8_t* unused_extension_bytes;
+            size_t unused_extension_len;
+            int use_alps_new_codepoint = SSL_early_callback_ctx_extension_get(
+                client_hello, TLSEXT_TYPE_application_settings,
+                &unused_extension_bytes, &unused_extension_len);
+            // Make sure we use the right ALPS codepoint.
+            SSL_set_alps_use_new_codepoint(client_hello->ssl,
+                                           use_alps_new_codepoint);
+            return true;
+          });
     }
   }
 

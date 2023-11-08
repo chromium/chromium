@@ -69,6 +69,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -652,7 +653,8 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     // represented in the various header counts.
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
-        "ClientHintsFormFactor,ClientHintsPrefersReducedTransparency",
+        "ClientHintsFormFactor,ClientHintsPrefersReducedTransparency,"
+        "UseAlpsNewCodepoint",
         "");
     return feature_list;
   }
@@ -3441,7 +3443,7 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     // sec-ch-dpr is not included.
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,AcceptCHFrame",
-        "ClientHintsDPR");
+        "ClientHintsDPR,UseAlpsNewCodepoint");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
     InProcessBrowserTest::SetUp();
@@ -4031,8 +4033,8 @@ class ClientHintsBrowserTestWithEmulatedMedia
   ClientHintsBrowserTestWithEmulatedMedia()
       : ClientHintsBrowserTestWithEmulatedMedia(
             "UserAgentClientHint,AcceptCHFrame,"
-            "ClientHintsPrefersReducedTransparency",
-            "") {}
+            "ClientHintsPrefersReducedTransparency,",
+            "UseAlpsNewCodepoint") {}
 
   ClientHintsBrowserTestWithEmulatedMedia(const std::string& enable_features,
                                           const std::string& disable_features)
