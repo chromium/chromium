@@ -14,11 +14,25 @@ import './tab_organization_shared_style.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './tab_organization_page.html.js';
 import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabOrganizationState} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
+
+const TRAILING_BODY_SPACING: number = 20;
+const TRAILING_FOOTER_SPACING: number = 28;
+
+export interface TabOrganizationPageElement {
+  $: {
+    contents: HTMLElement,
+    notStarted: HTMLElement,
+    inProgress: HTMLElement,
+    results: HTMLElement,
+    failure: HTMLElement,
+    footer: HTMLElement,
+  };
+}
 
 export class TabOrganizationPageElement extends PolymerElement {
   static get is() {
@@ -80,7 +94,6 @@ export class TabOrganizationPageElement extends PolymerElement {
   }
 
   private setSession_(session: TabOrganizationSession) {
-    this.setState_(session.state);
     this.sessionId_ = session.sessionId;
     this.error_ = session.error;
     if (session.state === TabOrganizationState.kSuccess) {
@@ -91,11 +104,43 @@ export class TabOrganizationPageElement extends PolymerElement {
     } else {
       this.organizationId_ = -1;
     }
+    // Wait for a rendering pass so the new state's scroll height is up to date
+    // with any new data.
+    afterNextRender(this, () => this.setState_(session.state));
   }
 
   private setState_(state: TabOrganizationState) {
     this.classList.toggle('changed-state', this.state_ !== state);
+    this.classList.toggle(
+        'from-not-started', this.state_ === TabOrganizationState.kNotStarted);
+    this.classList.toggle(
+        'from-in-progress', this.state_ === TabOrganizationState.kInProgress);
+    this.classList.toggle(
+        'from-success', this.state_ === TabOrganizationState.kSuccess);
+    this.classList.toggle(
+        'from-failure', this.state_ === TabOrganizationState.kFailure);
     this.state_ = state;
+
+    let contentsHeight = 0;
+    switch (state) {
+      case TabOrganizationState.kNotStarted:
+        contentsHeight = this.$.notStarted.scrollHeight + TRAILING_BODY_SPACING;
+        break;
+      case TabOrganizationState.kInProgress:
+        contentsHeight = this.$.inProgress.scrollHeight + TRAILING_BODY_SPACING;
+        break;
+      case TabOrganizationState.kSuccess:
+        contentsHeight = this.$.results.scrollHeight + TRAILING_BODY_SPACING;
+        break;
+      case TabOrganizationState.kFailure:
+        contentsHeight = this.$.failure.scrollHeight + TRAILING_BODY_SPACING;
+        if (this.showFooter_()) {
+          contentsHeight +=
+              this.$.footer.scrollHeight + TRAILING_FOOTER_SPACING;
+        }
+        break;
+    }
+    this.$.contents.style.height = contentsHeight + 'px';
   }
 
   private isState_(state: TabOrganizationState): boolean {
