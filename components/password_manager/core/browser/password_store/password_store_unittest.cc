@@ -984,6 +984,35 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
   store->ShutdownOnUIThread();
 }
 
+TEST_F(PasswordStoreTest, PasswordManagerTimeSinceInitMetric) {
+  base::HistogramTester histogram_tester;
+  scoped_refptr<PasswordStore> store = CreatePasswordStore();
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  MockPasswordStoreConsumer mock_consumer;
+  store->GetAllLogins(mock_consumer.GetWeakPtr());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.GetAllLogins.TimeSinceInit", 1000, 1);
+
+  task_environment_.FastForwardBy(base::Seconds(2));
+  store->GetAutofillableLogins(mock_consumer.GetWeakPtr());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.GetAutofillableLogins.TimeSinceInit", 3000, 1);
+
+  task_environment_.FastForwardBy(base::Seconds(3));
+  store->GetAllLoginsWithAffiliationAndBrandingInformation(
+      mock_consumer.GetWeakPtr());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.GetAllLoginsWithAffiliationAndBrandingInformation."
+      "TimeSinceInit",
+      6000, 1);
+
+  WaitForPasswordStore();
+  store->ShutdownOnUIThread();
+}
+
 // The 'bool' param corresponds to 'use_federated_login' in the test.
 class PasswordStoreFederationTest : public PasswordStoreTest,
                                     public testing::WithParamInterface<bool> {};

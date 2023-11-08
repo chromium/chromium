@@ -3645,6 +3645,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.{Function}.TimeSinceInit" units="units"
+    expires_after="M125">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Time passed since PasswordStore construction till PasswordStore::{Function}
+    call. Recorded on PasswordStore::{Function} call. Max value is 30 seconds.
+    This function helps to evaluate PasswordStore usage on start-up.
+  </summary>
+  <token key="Function">
+    <variant name="GetAllLogins" summary="GetAllLogins()"/>
+    <variant name="GetAllLoginsWithAffiliationAndBrandingInformation"
+        summary="GetAllLoginsWithAffiliationAndBrandingInformation()"/>
+    <variant name="GetAutofillableLogins" summary="GetAutofillableLogins()"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.{Location}.AuthenticationResult"
     enum="BooleanSuccess" expires_after="2024-04-28">
   <owner>vsemeniuk@google.com</owner>

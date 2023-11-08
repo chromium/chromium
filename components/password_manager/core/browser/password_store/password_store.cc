@@ -68,7 +68,7 @@ void InvokeCallbacksForSuspectedChanges(
 }  // namespace
 
 PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
-    : backend_(std::move(backend)) {}
+    : backend_(std::move(backend)), construction_time_(base::Time::Now()) {}
 
 void PasswordStore::Init(
     PrefService* prefs,
@@ -283,6 +283,8 @@ void PasswordStore::GetAutofillableLogins(
   backend_->GetAutofillableLoginsAsync(base::BindOnce(
       &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom, consumer,
       base::RetainedRef(this)));
+  UmaHistogramMediumTimes("PasswordManager.GetAutofillableLogins.TimeSinceInit",
+                          base::Time::Now() - construction_time_);
 }
 
 void PasswordStore::GetAllLogins(
@@ -295,6 +297,8 @@ void PasswordStore::GetAllLogins(
   backend_->GetAllLoginsAsync(base::BindOnce(
       &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom, consumer,
       base::RetainedRef(this)));
+  UmaHistogramMediumTimes("PasswordManager.GetAllLogins.TimeSinceInit",
+                          base::Time::Now() - construction_time_);
 }
 
 void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
@@ -309,6 +313,10 @@ void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
       base::RetainedRef(this));
   backend_->GetAllLoginsWithAffiliationAndBrandingAsync(
       std::move(consumer_reply));
+  UmaHistogramMediumTimes(
+      "PasswordManager.GetAllLoginsWithAffiliationAndBrandingInformation."
+      "TimeSinceInit",
+      base::Time::Now() - construction_time_);
 }
 
 SmartBubbleStatsStore* PasswordStore::GetSmartBubbleStatsStore() {

@@ -207,6 +207,8 @@ class PasswordStore : public PasswordStoreInterface {
   raw_ptr<PrefService> prefs_ = nullptr;
 
   InitStatus init_status_ = InitStatus::kUnknown;
+
+  base::Time construction_time_;
 };
 
 }  // namespace password_manager
