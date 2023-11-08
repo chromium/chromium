@@ -15,7 +15,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/events/event.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -56,10 +55,6 @@ class PopupCellView : public views::View {
   bool selected_ = false;
 
  private:
-  // Computes the actual `TimeTicks` at which the event occurred (taking latency
-  // into account) and runs the OnAccepted callback.
-  void RunOnAcceptedForEvent(const ui::Event& event);
-
   // The labels whose style is updated when the cell's selection status changes.
   std::vector<raw_ptr<views::Label>> tracked_labels_;
 
