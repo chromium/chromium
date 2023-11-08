@@ -114,26 +114,26 @@ struct BadgeData {
 };
 
 // Creates a `BadgeData` from the provided dict.
-absl::optional<BadgeData> BadgeDataFromDict(const base::Value::Dict& dict) {
+std::optional<BadgeData> BadgeDataFromDict(const base::Value::Dict& dict) {
   BadgeData badgeData;
 
-  absl::optional<int> impressionsRemaining =
+  std::optional<int> impressionsRemaining =
       dict.FindInt(kImpressionsRemainingKey);
   if (!impressionsRemaining) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   badgeData.impressionsRemaining = impressionsRemaining.value();
 
-  absl::optional<bool> isFeatureDrivenBadge =
+  std::optional<bool> isFeatureDrivenBadge =
       dict.FindBool(kIsFeatureDrivenBadgeKey);
   if (!isFeatureDrivenBadge) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   badgeData.isFeatureDrivenBadge = isFeatureDrivenBadge.value();
 
   const std::string* badgeType = dict.FindString(kBadgeTypeKey);
   if (!badgeType) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   badgeData.badgeType = [OverflowMenuDestination
       badgeTypeFromString:base::SysUTF8ToNSString(*badgeType)];
@@ -533,7 +533,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
         continue;
       }
 
-      absl::optional<BadgeData> badgeData = BadgeDataFromDict(value.GetDict());
+      std::optional<BadgeData> badgeData = BadgeDataFromDict(value.GetDict());
       if (!badgeData) {
         continue;
       }

@@ -16,7 +16,7 @@ TEST_F(OverflowMenuConstantsTest, DestinationConversion) {
   for (int value = 0;; value++) {
     overflow_menu::Destination destination =
         static_cast<overflow_menu::Destination>(value);
-    absl::optional<overflow_menu::Destination> finalExpectedDestination;
+    std::optional<overflow_menu::Destination> finalExpectedDestination;
     switch (destination) {
       case overflow_menu::Destination::Bookmarks:
         finalExpectedDestination = overflow_menu::Destination::Bookmarks;
@@ -76,7 +76,7 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
   for (int value = 0;; value++) {
     overflow_menu::ActionType actionType =
         static_cast<overflow_menu::ActionType>(value);
-    absl::optional<overflow_menu::ActionType> finalExpectedActionType;
+    std::optional<overflow_menu::ActionType> finalExpectedActionType;
     switch (actionType) {
       case overflow_menu::ActionType::Reload:
         finalExpectedActionType = overflow_menu::ActionType::Reload;

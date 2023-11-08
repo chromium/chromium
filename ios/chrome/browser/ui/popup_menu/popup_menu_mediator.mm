@@ -603,7 +603,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   ClipboardRecentContent* clipboardRecentContent =
       ClipboardRecentContent::GetInstance();
   clipboardRecentContent->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
+      base::BindOnce(^(std::optional<gfx::Image> optionalImage) {
         [weakSelf searchCopiedImage:optionalImage usingLens:NO];
       }));
 }
@@ -613,7 +613,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   ClipboardRecentContent* clipboardRecentContent =
       ClipboardRecentContent::GetInstance();
   clipboardRecentContent->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
+      base::BindOnce(^(std::optional<gfx::Image> optionalImage) {
         [weakSelf searchCopiedImage:optionalImage usingLens:YES];
       }));
 }
@@ -1149,7 +1149,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 // Searches the copied image. If `usingLens` is set, then the search will be
 // performed with Lens.
-- (void)searchCopiedImage:(absl::optional<gfx::Image>)optionalImage
+- (void)searchCopiedImage:(std::optional<gfx::Image>)optionalImage
                 usingLens:(BOOL)usingLens {
   if (!optionalImage)
     return;
