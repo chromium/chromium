@@ -41,7 +41,7 @@
 @implementation PostRestoreSignInProvider {
   syncer::SyncUserSettings* _syncUserSettings;
   PromoStyleViewController* _viewController;
-  absl::optional<AccountInfo> _accountInfo;
+  std::optional<AccountInfo> _accountInfo;
   bool _historySyncEnabled;
 }
 

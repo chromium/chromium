@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/debug/dump_without_crashing.h"
@@ -44,7 +46,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
 #import "ios/web/public/web_state_id.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using base::apple::ObjCCast;
@@ -149,7 +150,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 @implementation BaseGridViewController {
   // Tracks when the grid view is scrolling. Create a new instance to start
   // timing and reset to stop and log the associated time histogram.
-  absl::optional<ScopedScrollingTimeLogger> _scopedScrollingTimeLogger;
+  std::optional<ScopedScrollingTimeLogger> _scopedScrollingTimeLogger;
   // Items selected for editing.
   std::set<web::WebStateID> _selectedEditingItemIDs;
   // Items selected for editing which are shareable outside of the app.

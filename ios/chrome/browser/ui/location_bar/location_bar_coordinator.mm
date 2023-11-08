@@ -456,7 +456,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)searchCopiedImage {
   __weak LocationBarCoordinator* weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> image) {
+      base::BindOnce(^(std::optional<gfx::Image> image) {
         [weakSelf searchImage:std::move(image) usingLens:NO];
       }));
 }
@@ -464,7 +464,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)lensCopiedImage {
   __weak LocationBarCoordinator* weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> image) {
+      base::BindOnce(^(std::optional<gfx::Image> image) {
         [weakSelf searchImage:std::move(image) usingLens:YES];
       }));
 }
@@ -562,7 +562,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                          initWithDelegate:self.dragDropHandler]];
 }
 
-- (void)searchImage:(absl::optional<gfx::Image>)optionalImage
+- (void)searchImage:(std::optional<gfx::Image>)optionalImage
           usingLens:(BOOL)usingLens {
   if (!optionalImage)
     return;

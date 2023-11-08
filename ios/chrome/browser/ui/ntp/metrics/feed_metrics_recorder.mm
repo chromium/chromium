@@ -969,7 +969,7 @@ using feed::FeedUserActionType;
 
   // Do not save in newLastReportedArray dates > 28 days.
   for (NSUInteger i = 0; i < lastReportedArray.size(); ++i) {
-    absl::optional<base::Time> date = ValueToTime(lastReportedArray[i]);
+    std::optional<base::Time> date = ValueToTime(lastReportedArray[i]);
     if (!date.has_value()) {
       continue;
     }

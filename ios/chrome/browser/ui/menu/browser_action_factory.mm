@@ -362,8 +362,8 @@
 - (UIAction*)actionToSearchCopiedImage {
   __weak __typeof(self) weakSelf = self;
 
-  void (^clipboardAction)(absl::optional<gfx::Image>) =
-      ^(absl::optional<gfx::Image> optionalImage) {
+  void (^clipboardAction)(std::optional<gfx::Image>) =
+      ^(std::optional<gfx::Image> optionalImage) {
         if (!optionalImage || !weakSelf) {
           return;
         }
@@ -400,8 +400,8 @@
   id<LoadQueryCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), LoadQueryCommands);
 
-  void (^clipboardAction)(absl::optional<GURL>) =
-      ^(absl::optional<GURL> optionalURL) {
+  void (^clipboardAction)(std::optional<GURL>) =
+      ^(std::optional<GURL> optionalURL) {
         if (!optionalURL) {
           return;
         }
@@ -428,8 +428,8 @@
   id<LoadQueryCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), LoadQueryCommands);
 
-  void (^clipboardAction)(absl::optional<std::u16string>) =
-      ^(absl::optional<std::u16string> optionalText) {
+  void (^clipboardAction)(std::optional<std::u16string>) =
+      ^(std::optional<std::u16string> optionalText) {
         if (!optionalText) {
           return;
         }

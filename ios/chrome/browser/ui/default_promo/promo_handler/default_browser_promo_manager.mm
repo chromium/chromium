@@ -49,7 +49,7 @@ enum class DisplayedVideoPromo {
 
 // Tracks whether or not the Video promo Feature Engagement Tracker should be
 // dismissed.
-@property(nonatomic, assign) absl::optional<DisplayedVideoPromo>
+@property(nonatomic, assign) std::optional<DisplayedVideoPromo>
     displayedVideoPromoForFET;
 
 // Feature engagement tracker reference.

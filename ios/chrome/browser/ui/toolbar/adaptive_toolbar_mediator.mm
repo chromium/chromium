@@ -472,7 +472,7 @@
 
 /// Returns the UIMenuElement for the content of the pasteboard. Can return nil.
 - (UIMenuElement*)menuElementForPasteboard {
-  absl::optional<std::set<ClipboardContentType>> clipboardContentType =
+  std::optional<std::set<ClipboardContentType>> clipboardContentType =
       ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
 
   if (clipboardContentType.has_value()) {

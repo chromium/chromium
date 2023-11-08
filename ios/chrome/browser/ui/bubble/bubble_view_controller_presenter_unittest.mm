@@ -4,6 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_unittest_util.h"
@@ -13,7 +15,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 // Test fixture to test the BubbleViewControllerPresenter.
 class BubbleViewControllerPresenterTest : public PlatformTest {
@@ -63,7 +64,7 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
   // `dismissalCallback` has been invoked. Defaults to 0. Every time the
   // callback is invoked, `dismissalCallbackCount_` increments.
   int dismissalCallbackCount_;
-  absl::optional<feature_engagement::Tracker::SnoozeAction>
+  std::optional<feature_engagement::Tracker::SnoozeAction>
       dismissalCallbackAction_;
 };
 

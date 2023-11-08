@@ -38,7 +38,7 @@
 @end
 
 @implementation PostRestoreSignInViewController {
-  absl::optional<AccountInfo> _accountInfo;
+  std::optional<AccountInfo> _accountInfo;
 }
 
 #pragma mark - Initialization

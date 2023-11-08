@@ -563,7 +563,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     [menuElements addObjectsFromArray:suggestedActions];
   }
 
-  absl::optional<std::set<ClipboardContentType>> clipboard_content_types =
+  std::optional<std::set<ClipboardContentType>> clipboard_content_types =
       ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
 
   if (clipboard_content_types.has_value()) {
@@ -739,7 +739,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   LogCopyPasteInOmniboxForDefaultBrowserPromo();
   [self.delegate locationBarVisitCopyLinkTapped];
   ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
-      base::BindOnce(^(absl::optional<GURL> optionalURL) {
+      base::BindOnce(^(std::optional<GURL> optionalURL) {
         if (!optionalURL) {
           return;
         }
@@ -757,7 +757,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   LogCopyPasteInOmniboxForDefaultBrowserPromo();
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
-      base::BindOnce(^(absl::optional<std::u16string> optionalText) {
+      base::BindOnce(^(std::optional<std::u16string> optionalText) {
         if (!optionalText) {
           return;
         }

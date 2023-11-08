@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
 
 #import <StoreKit/StoreKit.h>
+
 #import <memory>
+#import <optional>
 
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
@@ -227,7 +229,6 @@
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -508,7 +509,7 @@ enum class ToolbarKind {
   // The coordinator that shows the Send Tab To Self UI.
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
   BookmarksCoordinator* _bookmarksCoordinator;
-  absl::optional<ToolbarKind> _nextToolbarToPresent;
+  std::optional<ToolbarKind> _nextToolbarToPresent;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
@@ -2136,7 +2137,7 @@ enum class ToolbarKind {
   }
 
   const ToolbarKind nextToolbarToPresent = *_nextToolbarToPresent;
-  _nextToolbarToPresent = absl::nullopt;
+  _nextToolbarToPresent = std::nullopt;
 
   switch (nextToolbarToPresent) {
     case ToolbarKind::kTextZoom:
