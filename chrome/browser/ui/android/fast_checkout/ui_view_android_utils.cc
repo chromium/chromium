@@ -99,7 +99,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutCreditCard(
           env, credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR)),
       ConvertUTF8ToJavaString(env,
                               payment_request_data.basic_card_issuer_network),
-      static_cast<jint>(credit_card.CardIconStringForAutofillSuggestion()),
+      static_cast<jint>(credit_card.CardIconForAutofillSuggestion()),
       ConvertUTF8ToJavaString(env, credit_card.billing_address_id()),
       ConvertUTF8ToJavaString(env, credit_card.server_id()),
       credit_card.instrument_id(),

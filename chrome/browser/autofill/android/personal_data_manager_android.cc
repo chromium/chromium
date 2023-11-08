@@ -98,7 +98,7 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       ConvertUTF8ToJavaString(env,
                               payment_request_data.basic_card_issuer_network),
       ResourceMapper::MapToJavaDrawableId(
-          GetIconResourceID(card.CardIconStringForAutofillSuggestion())),
+          GetIconResourceID(card.CardIconForAutofillSuggestion())),
       ConvertUTF8ToJavaString(env, card.billing_address_id()),
       ConvertUTF8ToJavaString(env, card.server_id()), card.instrument_id(),
       ConvertUTF16ToJavaString(env, card.CardNameAndLastFourDigits()),

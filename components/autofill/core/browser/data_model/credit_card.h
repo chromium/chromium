@@ -364,8 +364,7 @@ class CreditCard : public AutofillDataModel {
 
   // The icon to be used for the autofill suggestion. For example, icon for:
   // visa, american express, etc.
-  // TODO(crbug.com/1019660): Rename to "CardIconForAutofillSuggestion"
-  Suggestion::Icon CardIconStringForAutofillSuggestion() const;
+  Suggestion::Icon CardIconForAutofillSuggestion() const;
 
   // A label for this card formatted as 'IssuerNetwork ****2345'. By default,
   // the `obfuscation_length` is set to 4 which would add **** to the last four

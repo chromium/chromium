@@ -425,8 +425,7 @@
   }
 
   // Otherwise, try to get the default card icon
-  autofill::Suggestion::Icon icon =
-      creditCard->CardIconStringForAutofillSuggestion();
+  autofill::Suggestion::Icon icon = creditCard->CardIconForAutofillSuggestion();
   return icon == autofill::Suggestion::Icon::kNoIcon
              ? nil
              : ui::ResourceBundle::GetSharedInstance()

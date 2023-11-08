@@ -1106,7 +1106,7 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     const std::u16string& virtual_card_last_four = *it->second;
 
     Suggestion suggestion;
-    suggestion.icon = credit_card.CardIconStringForAutofillSuggestion();
+    suggestion.icon = credit_card.CardIconForAutofillSuggestion();
     suggestion.popup_item_id = PopupItemId::kVirtualCreditCardEntry;
     suggestion.payload = Suggestion::BackendId(credit_card.guid());
     suggestion.feature_for_iph =
@@ -1380,7 +1380,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
          FieldTypeGroup::kCreditCard);
 
   Suggestion suggestion;
-  suggestion.icon = credit_card.CardIconStringForAutofillSuggestion();
+  suggestion.icon = credit_card.CardIconForAutofillSuggestion();
   CHECK(suggestion.popup_item_id == PopupItemId::kAutocompleteEntry);
   suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
   suggestion.payload = Suggestion::BackendId(credit_card.guid());

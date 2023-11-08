@@ -1107,7 +1107,7 @@ CreditCard::ObfuscatedNumberWithVisibleLastFourDigitsForSplitFields() const {
   return std::u16string(12, kMidlineEllipsisPlainDot) + LastFourDigits();
 }
 
-Suggestion::Icon CreditCard::CardIconStringForAutofillSuggestion() const {
+Suggestion::Icon CreditCard::CardIconForAutofillSuggestion() const {
   return ConvertCardNetworkIntoIcon(network_);
 }
 
