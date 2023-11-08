@@ -44,7 +44,6 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
     UnusedSitePermissionsService* unused_site_permissions_service,
     NotificationPermissionsReviewService* notification_permissions_service,
     extensions::CWSInfoService* extension_info_service,
-    PasswordStatusCheckService* password_check_service,
     Profile* profile) {
   pref_service_ = std::move(pref_service);
   const base::Value::Dict& stored_notifications =
@@ -77,13 +76,6 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
                                      base::Unretained(extension_info_service),
                                      profile, true),
                  stored_notifications);
-  SetInfoElement(
-      safety_hub::SafetyHubModuleType::PASSWORDS,
-      MenuNotificationPriority::HIGH, base::Days(0),
-      base::BindRepeating(&PasswordStatusCheckService::GetCachedResult,
-                          base::Unretained(password_check_service)),
-      stored_notifications);
-
   // Listen for changes to the Safe Browsing pref to accommodate the trigger
   // logic.
   registrar_.Init(pref_service);
