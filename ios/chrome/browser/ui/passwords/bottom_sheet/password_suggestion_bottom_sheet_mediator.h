@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 
+#import <optional>
+
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_exit_reason.h"
-
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 struct FormActivityParams;
@@ -56,7 +56,7 @@ class GURL;
 
 // Return the credential associated with the form suggestion. It is an optional,
 // in case the credential can't be find.
-- (absl::optional<password_manager::CredentialUIEntry>)
+- (std::optional<password_manager::CredentialUIEntry>)
     getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion;
 
 // The bottom sheet suggestions consumer.

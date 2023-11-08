@@ -189,7 +189,7 @@ using ReauthenticationEvent::kSuccess;
   return [self.suggestions count] > 0;
 }
 
-- (absl::optional<password_manager::CredentialUIEntry>)
+- (std::optional<password_manager::CredentialUIEntry>)
     getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion {
   NSString* username = formSuggestion.value;
   if ([username containsString:kPasswordFormSuggestionSuffix]) {
@@ -210,8 +210,8 @@ using ReauthenticationEvent::kSuccess;
         return false;
       });
   return it != _credentials.end()
-             ? absl::optional<password_manager::CredentialUIEntry>(*it)
-             : absl::nullopt;
+             ? std::optional<password_manager::CredentialUIEntry>(*it)
+             : std::nullopt;
 }
 
 - (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason {

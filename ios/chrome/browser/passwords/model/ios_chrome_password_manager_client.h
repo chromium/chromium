@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_MANAGER_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -27,7 +28,6 @@
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ChromeBrowserState;
 
@@ -163,7 +163,7 @@ class IOSChromePasswordManagerClient
   // Recorder of metrics that is associated with the last committed navigation
   // of the tab owning this ChromePasswordManagerClient. May be unset at
   // times. Sends statistics on destruction.
-  absl::optional<password_manager::PasswordManagerMetricsRecorder>
+  std::optional<password_manager::PasswordManagerMetricsRecorder>
       metrics_recorder_;
 
   // Helper for performing logic that is common between

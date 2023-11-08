@@ -119,7 +119,7 @@ bool IsUpdateInfobar(PasswordInfobarType infobar_type) {
 using password_manager::PasswordFormManagerForUI;
 
 IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
-    absl::optional<std::string> account_to_store_password,
+    std::optional<std::string> account_to_store_password,
     bool password_update,
     password_manager::features_util::PasswordAccountStorageUserState
         account_storage_user_state,
@@ -167,7 +167,7 @@ NSString* IOSChromeSavePasswordInfoBarDelegate::GetURLHostText() const {
   return base::SysUTF8ToNSString(form_to_save_->GetURL().host());
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 IOSChromeSavePasswordInfoBarDelegate::GetAccountToStorePassword() const {
   return account_to_store_password_;
 }

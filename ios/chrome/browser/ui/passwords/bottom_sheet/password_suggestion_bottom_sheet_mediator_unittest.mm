@@ -325,7 +325,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, SuggestionUsernameHasSuffix) {
               popupItemId:autofill::PopupItemId::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
-  absl::optional<password_manager::CredentialUIEntry> credential =
+  std::optional<password_manager::CredentialUIEntry> credential =
       [mediator_ getCredentialForFormSuggestion:suggestion];
   EXPECT_TRUE(credential.has_value());
   EXPECT_EQ(credential.value(), expectedCredential);
@@ -352,7 +352,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
               popupItemId:autofill::PopupItemId::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
-  absl::optional<password_manager::CredentialUIEntry> credential =
+  std::optional<password_manager::CredentialUIEntry> credential =
       [mediator_ getCredentialForFormSuggestion:suggestion];
   EXPECT_TRUE(credential.has_value());
   EXPECT_EQ(credential.value(), expectedCredential);

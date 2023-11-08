@@ -118,7 +118,7 @@ int GetPasswordCountForWarningType(
 }
 
 NSString* FormatElapsedTimeSinceLastCheck(
-    absl::optional<base::Time> last_completed_check,
+    std::optional<base::Time> last_completed_check,
     bool use_title_case) {
   if (!last_completed_check.has_value()) {
     // The title case format is only used in the Password Checkup Homepage as of

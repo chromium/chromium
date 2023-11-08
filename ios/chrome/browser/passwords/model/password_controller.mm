@@ -9,6 +9,7 @@
 #import <algorithm>
 #import <map>
 #import <memory>
+#import <optional>
 #import <string>
 #import <utility>
 #import <vector>
@@ -80,7 +81,6 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -445,7 +445,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   PrefService* prefs = self.browserState->GetPrefs();
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browserState);
-  const absl::optional<std::string> accountToStorePassword =
+  const std::optional<std::string> accountToStorePassword =
       password_manager::sync_util::GetAccountForSaving(prefs, syncService);
   const password_manager::features_util::PasswordAccountStorageUserState
       accountStorageUserState = password_manager::features_util::

@@ -144,7 +144,7 @@ PasswordCheckState IOSChromePasswordCheckManager::GetPasswordCheckState()
       bulk_leak_check_service_adapter_.GetBulkLeakCheckState());
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 IOSChromePasswordCheckManager::GetLastPasswordCheckTime() const {
   if (!user_prefs_->HasPrefPath(
           password_manager::prefs::kLastTimePasswordCheckCompleted)) {

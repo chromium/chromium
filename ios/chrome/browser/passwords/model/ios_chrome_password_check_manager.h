@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_CHECK_MANAGER_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_CHECK_MANAGER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -62,7 +64,7 @@ class IOSChromePasswordCheckManager
   PasswordCheckState GetPasswordCheckState() const;
 
   // The elapsed time since one of the insecure checks was last performed.
-  absl::optional<base::Time> GetLastPasswordCheckTime() const;
+  std::optional<base::Time> GetLastPasswordCheckTime() const;
 
   // Obtains all insecure credentials that are present in the password store.
   std::vector<password_manager::CredentialUIEntry> GetInsecureCredentials()
@@ -149,7 +151,7 @@ class IOSChromePasswordCheckManager
   base::Time start_time_;
 
   // Store when the last weak or reuse check was completed.
-  absl::optional<base::Time> last_completed_weak_or_reuse_check_;
+  std::optional<base::Time> last_completed_weak_or_reuse_check_;
 
   // Pref service.
   const raw_ptr<PrefService> user_prefs_;

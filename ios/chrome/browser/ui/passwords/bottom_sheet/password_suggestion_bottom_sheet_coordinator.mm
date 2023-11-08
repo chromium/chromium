@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
 
+#import <optional>
+
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -20,7 +22,6 @@
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/scoped_password_suggestion_bottom_sheet_reauth_module_override.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/web/public/web_state.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordDetails;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
@@ -136,7 +137,7 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
 - (void)displayPasswordDetailsForFormSuggestion:
     (FormSuggestion*)formSuggestion {
   [self.mediator logExitReason:kShowPasswordDetails];
-  absl::optional<password_manager::CredentialUIEntry> credential =
+  std::optional<password_manager::CredentialUIEntry> credential =
       [self.mediator getCredentialForFormSuggestion:formSuggestion];
 
   __weak __typeof(self) weakSelf = self;
