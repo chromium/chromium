@@ -18,6 +18,7 @@ source_set("configs") {
     "//chrome/browser/ui:ui",
     "//components/lens:buildflags",
     "//content/public/browser",
+    "//extensions/buildflags:buildflags",
     "//printing/buildflags",
     "//skia",
     "//third_party/abseil-cpp:absl",

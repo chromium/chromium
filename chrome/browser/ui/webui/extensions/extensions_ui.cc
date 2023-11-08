@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
@@ -445,6 +446,22 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
 }
 
 }  // namespace
+
+ExtensionsUIConfig::ExtensionsUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIExtensionsHost) {}
+
+ExtensionsUIConfig::~ExtensionsUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+ExtensionsUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                          const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  if (profile->IsGuestSession()) {
+    return std::make_unique<PageNotAvailableForGuestUI>(
+        web_ui, chrome::kChromeUIExtensionsHost);
+  }
+  return std::make_unique<ExtensionsUI>(web_ui);
+}
 
 ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
     : WebUIController(web_ui),

@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
@@ -19,6 +20,17 @@ class PrefRegistrySyncable;
 }
 
 namespace extensions {
+
+class ExtensionsUIConfig : public content::WebUIConfig {
+ public:
+  ExtensionsUIConfig();
+  ~ExtensionsUIConfig() override;
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
 
 class ExtensionsUI : public content::WebUIController {
  public:
