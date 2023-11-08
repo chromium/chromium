@@ -182,11 +182,6 @@ bool IsSpecialSymbol(char16_t c);
 // Returns true if 'type' is a username in a password-less form.
 bool IsSingleUsernameType(autofill::ServerFieldType type);
 
-#if BUILDFLAG(IS_ANDROID)
-// Checks that the feature is enabled.
-bool UsesUPMForLocalM2(PrefService* prefs);
-#endif
-
 }  // namespace password_manager_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_UTIL_H_

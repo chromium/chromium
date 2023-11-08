@@ -280,6 +280,9 @@ class PasswordManagerUtilTest : public testing::Test {
         password_manager::prefs::kSavePasswordsSuspendedByError, false);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kAutoSignInEnabledGMS, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+        false);
 #endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     pref_service_.registry()->RegisterBooleanPref(
@@ -868,24 +871,6 @@ TEST_F(PasswordManagerUtilTest, CanUseBiometricAuthAndroidAutomotive) {
   }
 
   EXPECT_TRUE(CanUseBiometricAuth(authenticator_.get(), &mock_client_));
-}
-
-TEST_F(PasswordManagerUtilTest, UsesUPMForLocalM2FalseWhenFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-
-  EXPECT_FALSE(UsesUPMForLocalM2(&pref_service_));
-}
-
-TEST_F(PasswordManagerUtilTest, UsesUPMForLocalM2TrueWhenFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-
-  EXPECT_TRUE(UsesUPMForLocalM2(&pref_service_));
 }
 
 #endif

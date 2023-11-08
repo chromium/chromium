@@ -205,9 +205,12 @@ public class PasswordManagerHelper {
         Profile profile = Profile.getLastUsedRegularProfile();
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         PrefService prefService = UserPrefs.get(profile);
-        return syncService != null && hasChosenToSyncPasswords(syncService)
-                && !prefService.getBoolean(
-                        Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS)
+        // TODO(crbug.com/1327294): Reevaluate if passing the syncService instead of the boolean is
+        // better.
+        // TODO(crbug.com/1327294): Move the syncService and backend presence checks in the util.
+        boolean isPwdSyncEnabled = hasChosenToSyncPasswords(syncService);
+        return syncService != null
+                && PasswordManagerUtilBridge.canUseUPMBackend(isPwdSyncEnabled, prefService)
                 && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
     }
 

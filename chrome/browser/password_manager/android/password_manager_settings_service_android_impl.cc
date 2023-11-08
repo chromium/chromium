@@ -8,10 +8,11 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge_helper.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -26,7 +27,8 @@
 using password_manager::PasswordManagerSetting;
 using password_manager::PasswordSettingsUpdaterAndroidBridgeHelper;
 using password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords;
-using password_manager_util::UsesUPMForLocalM2;
+using password_manager_android_util::UsesUPMForLocal;
+using password_manager_upm_eviction::IsCurrentUserEvicted;
 
 namespace {
 
@@ -76,11 +78,6 @@ bool HasChosenToSyncPreferences(const syncer::SyncService* sync_service) {
              syncer::UserSelectableType::kPreferences);
 }
 
-bool IsUnenrolledFromUPM(PrefService* pref_service) {
-  return pref_service->GetBoolean(
-      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
-}
-
 // In error cases, the UPM can set the kSavePasswordsSuspendedByError
 // pref to temporarily prevent password saves. If the user doesn't use GMS,
 // saving keeps working and only the syncing of changes is delayed.
@@ -89,7 +86,7 @@ bool ShouldSuspendPasswordSavingDueToError(PrefService* pref_service,
   // Ensure the user is still enrolled. Evicted users can still save normally.
   bool is_pwd_sync_enabled =
       IsSyncFeatureEnabledIncludingPasswords(sync_service);
-  return is_pwd_sync_enabled && !IsUnenrolledFromUPM(pref_service) &&
+  return is_pwd_sync_enabled && !IsCurrentUserEvicted(pref_service) &&
          pref_service->GetBoolean(
              password_manager::prefs::kSavePasswordsSuspendedByError);
 }
@@ -297,7 +294,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
   // Android.
   is_password_sync_enabled_ = IsSyncFeatureEnabledIncludingPasswords(sync);
 
-  if (is_password_sync_enabled_ && IsUnenrolledFromUPM(pref_service_)) {
+  if (is_password_sync_enabled_ && IsCurrentUserEvicted(pref_service_)) {
     return;
   }
 
@@ -308,8 +305,8 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
   // Users not syncing passwords that have local storage support ignore
   // unenrollment and need to fetch new settings from the local backend to
   // replace the account ones.
-  if (!is_password_sync_enabled_ && IsUnenrolledFromUPM(pref_service_) &&
-      !UsesUPMForLocalM2(pref_service_)) {
+  if (!is_password_sync_enabled_ && IsCurrentUserEvicted(pref_service_) &&
+      !UsesUPMForLocal(pref_service_)) {
     return;
   }
 
@@ -334,11 +331,11 @@ void PasswordManagerSettingsServiceAndroidImpl::UpdateSettingFetchState(
 void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
   CHECK(bridge_helper_);
   // This code would not be executed for syncing users who are unenrolled.
-  CHECK(!is_password_sync_enabled_ || !IsUnenrolledFromUPM(pref_service_));
+  CHECK(!is_password_sync_enabled_ || !IsCurrentUserEvicted(pref_service_));
   absl::optional<SyncingAccount> account = absl::nullopt;
   bool is_final_fetch_for_local_user_without_upm =
       fetch_after_sync_status_change_in_progress_ &&
-      !is_password_sync_enabled_ && !UsesUPMForLocalM2(pref_service_);
+      !is_password_sync_enabled_ && !UsesUPMForLocal(pref_service_);
   if (is_password_sync_enabled_ || is_final_fetch_for_local_user_without_upm) {
     // Note: This method also handles the case where the previously-syncing
     // account has just signed out. So the account can't be queried via
@@ -356,7 +353,7 @@ void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
 
 void PasswordManagerSettingsServiceAndroidImpl::
     OnUnenrollmentPreferenceChanged() {
-  if (!IsUnenrolledFromUPM(pref_service_)) {
+  if (!IsCurrentUserEvicted(pref_service_)) {
     // Perform actions that are usually done on startup, but were skipped
     // for the evicted users.
     RequestSettingsFromBackend();
@@ -369,16 +366,6 @@ bool PasswordManagerSettingsServiceAndroidImpl::UsesUPMBackend() const {
   if (!bridge_helper_) {
     return false;
   }
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  bool is_pwd_sync_enabled =
-      IsSyncFeatureEnabledIncludingPasswords(sync_service_);
-  bool is_unenrolled = IsUnenrolledFromUPM(pref_service_);
-  if (is_pwd_sync_enabled && is_unenrolled) {
-    return false;
-  }
-  if (is_pwd_sync_enabled) {
-    return true;
-  }
-  return UsesUPMForLocalM2(pref_service_);
+  return password_manager_android_util::CanUseUPMBackend(
+      is_password_sync_enabled_, pref_service_);
 }

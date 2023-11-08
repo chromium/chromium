@@ -52,6 +52,8 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
 import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge.PasswordStoreObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -121,6 +123,8 @@ public class SafetyCheckMediatorTest {
 
     // TODO(crbug.com/1346235): Use fake instead of mocking
     @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
+
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
 
     private SafetyCheckMediator mMediator;
 
@@ -275,11 +279,20 @@ public class SafetyCheckMediatorTest {
     @Before
     public void setUp() throws PasswordCheckBackendException {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(
+                PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
         configureMockSyncService();
 
         PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
         when(mBackendSupportHelperMock.isUpdateNeeded()).thenReturn(false);
+
+        // Availability of the UPM backend will be checked by the SafetyCheckMediator using
+        // PasswordManagerHelper so the bridge method needs to be mocked.
+        // The parameter mUseGmsApi currently means that the mock SyncService will be configured to
+        // sync passwords, which so far is the only case in which the GMS APIs can be used.
+        when(mPasswordManagerUtilBridgeNativeMock.canUseUPMBackend(mUseGmsApi, mPrefService))
+                .thenReturn(mUseGmsApi);
 
         mJniMocker.mock(SafetyCheckBridgeJni.TEST_HOOKS, mSafetyCheckBridge);
         Profile.setLastUsedProfileForTesting(mProfile);

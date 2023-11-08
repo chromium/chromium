@@ -132,6 +132,8 @@ public class PasswordManagerHelperTest {
 
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+
     @Mock private SyncService mSyncServiceMock;
 
     @Mock private SettingsLauncher mSettingsLauncherMock;
@@ -154,6 +156,7 @@ public class PasswordManagerHelperTest {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS))
@@ -266,6 +269,8 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(true, mPrefService))
+                .thenReturn(true);
 
         assertTrue(PasswordManagerHelper.canUseUpm());
     }
@@ -324,6 +329,8 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(true, mPrefService))
+                .thenReturn(true);
 
         // TODO(crbug.com/1327578): Replace with fakes
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
@@ -1518,6 +1525,10 @@ public class PasswordManagerHelperTest {
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
         when(mSyncServiceMock.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+        // Set the adequate PasswordManagerUtilBridge response for canUseUPMBackend for a syncing
+        // user.
+        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(true, mPrefService))
+                .thenReturn(true);
     }
 
     private void setUpSuccessfulIntentFetchingForAccount() {
