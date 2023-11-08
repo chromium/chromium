@@ -125,7 +125,8 @@ std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue(
   traced_value->SetBoolean("cancelable", cancelable());
   // If int overflows occurs, the static_cast may not work correctly.
   traced_value->SetInteger("interactionId", static_cast<int>(interactionId()));
-  traced_value->SetInteger("nodeId", target_->GetDomNodeId());
+  traced_value->SetInteger(
+      "nodeId", target_ ? target_->GetDomNodeId() : kInvalidDOMNodeId);
   traced_value->SetString("frame",
                           String::FromUTF8(GetFrameIdForTracing(frame)));
   return traced_value;

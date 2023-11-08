@@ -148,9 +148,6 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
 
     timing_ = CreateCompositableTiming();
     compositor_timing_ = CompositorAnimations::CompositorTiming();
-    // Make sure the CompositableTiming is really compositable, otherwise
-    // most other tests will fail.
-    ASSERT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
 
     keyframe_vector2_ = CreateCompositableFloatKeyframeVector(2);
     keyframe_animation_effect2_ =
@@ -164,6 +161,10 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
 
     timeline_ = GetDocument().Timeline();
     timeline_->ResetForTesting();
+
+    // Make sure the CompositableTiming is really compositable, otherwise
+    // most other tests will fail.
+    ASSERT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
 
     // Using will-change ensures that this object will need paint properties.
     // Having an animation would normally ensure this but these tests don't

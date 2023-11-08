@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_BUFFER_H_
 
+#include <algorithm>
+
 #include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -40,7 +42,9 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
     if (UNLIKELY(!contents.Data())) {
       OOM_CRASH(byte_length);
     }
-    memcpy(contents.Data(), source, byte_length);
+    const uint8_t* source_bytes = static_cast<const uint8_t*>(source);
+    std::copy(source_bytes, source_bytes + byte_length,
+              static_cast<uint8_t*>(contents.Data()));
     return Create(std::move(contents));
   }
 
