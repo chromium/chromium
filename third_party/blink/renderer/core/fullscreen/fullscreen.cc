@@ -351,9 +351,7 @@ bool AllowedToRequestFullscreen(Document& document) {
     return true;
 
   // The algorithm is triggered by a fullscreen request capability delegation.
-  if (RuntimeEnabledFeatures::CapabilityDelegationFullscreenRequestEnabled(
-          document.GetExecutionContext()) &&
-      document.domWindow()->IsFullscreenRequestTokenActive()) {
+  if (document.domWindow()->IsFullscreenRequestTokenActive()) {
     return true;
   }
 

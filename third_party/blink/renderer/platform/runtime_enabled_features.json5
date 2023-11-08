@@ -561,11 +561,6 @@
       status: "experimental",
     },
     {
-      name: "CapabilityDelegationFullscreenRequest",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "CaptureController",
       status: {"Android": "", "default": "stable"},
       base_feature: "none",
