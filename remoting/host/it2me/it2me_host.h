@@ -207,6 +207,9 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // connection is allowed. Enterprise connections use a separate policy.
   const char* GetRemoteSupportPolicyKey() const;
 
+  // Indicates whether the session allows a ChromeOS admin to reconnect.
+  bool SessionSupportsReconnections() const;
+
   // Caller supplied fields.
   std::unique_ptr<ChromotingHostContext> host_context_;
   base::WeakPtr<It2MeHost::Observer> observer_;
@@ -221,6 +224,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   std::string support_id_;
   std::string host_secret_;
+  std::string ftl_device_registration_id_;
   scoped_refptr<RsaKeyPair> host_key_pair_;
   std::unique_ptr<RegisterSupportHostRequest> register_request_;
   std::unique_ptr<HostStatusLogger> host_status_logger_;

@@ -113,11 +113,19 @@ void It2MeHost::set_reconnect_params(ReconnectParams reconnect_params) {
 #endif
 }
 
+bool It2MeHost::SessionSupportsReconnections() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  return is_enterprise_session() &&
+         chrome_os_enterprise_params_->allow_reconnections;
+#else
+  return false;
+#endif
+}
+
 absl::optional<ReconnectParams> It2MeHost::CreateReconnectParams() const {
   absl::optional<ReconnectParams> reconnect_params;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  if (!is_enterprise_session() ||
-      !chrome_os_enterprise_params_->allow_reconnections) {
+  if (!SessionSupportsReconnections()) {
     return reconnect_params;
   }
   // This function is meant to be queried just after the remote client connects,
@@ -128,8 +136,7 @@ absl::optional<ReconnectParams> It2MeHost::CreateReconnectParams() const {
   reconnect_params->support_id = support_id_;
   reconnect_params->host_secret = host_secret_;
   reconnect_params->private_key = host_key_pair_->ToString();
-  signal_strategy_->GetLocalAddress().GetFtlInfo(
-      nullptr, &reconnect_params->ftl_device_registration_id);
+  reconnect_params->ftl_device_registration_id = ftl_device_registration_id_;
 #endif
 
   return reconnect_params;
@@ -247,8 +254,7 @@ void It2MeHost::ConnectOnNetworkThread(
                        base::Unretained(this)));
   } else {
     // Reconnections are only allowed for Chrome OS enterprise sessions.
-    CHECK(is_enterprise_session());
-    CHECK(chrome_os_enterprise_params_->allow_reconnections);
+    CHECK(SessionSupportsReconnections());
 
     // Regenerate the key pair from the private key.
     host_key_pair_ = RsaKeyPair::FromString(reconnect_params_->private_key);
@@ -662,6 +668,13 @@ void It2MeHost::OnReceivedSupportID(const std::string& support_id,
   std::string access_code = support_id_ + host_secret_;
   std::string access_code_hash =
       protocol::GetSharedSecretHash(support_id_, access_code);
+
+  if (SessionSupportsReconnections()) {
+    // Retrieve the registration id now that signaling is connected. This id
+    // will be required if the admin needs to reconnect.
+    signal_strategy_->GetLocalAddress().GetFtlInfo(
+        /*username=*/nullptr, &ftl_device_registration_id_);
+  }
 
   std::string local_certificate = host_key_pair_->GenerateCertificate();
   if (local_certificate.empty()) {
