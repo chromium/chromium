@@ -5,7 +5,7 @@ include_rules = [
   "+content/public/browser",
   "+content/public/test",
   "+mojo/public/cpp/bindings",
-  "+services/video_capture/public/mojom/video_effects_manager.mojom.h",
+  "+services/video_capture/public/mojom",
   "+third_party/mediapipe/buildflags.h",
   "+third_party/mediapipe/src",
   "+ui/gfx/geometry",
