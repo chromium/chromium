@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/view.h"
 
@@ -22,6 +23,8 @@ inline constexpr int kAshWebViewChildWebViewId = 41;
 // A view which wraps a views::WebView (and associated WebContents) to work
 // around dependency restrictions in Ash.
 class ASH_PUBLIC_EXPORT AshWebView : public views::View {
+  METADATA_HEADER(AshWebView, views::View)
+
  public:
   // Initialization parameters which dictate how an instance of AshWebView
   // should behave.
