@@ -2110,4 +2110,28 @@ public class BookmarkManagerMediatorTest {
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
         verify(mRecyclerView).announceForAccessibility("Showing visual view");
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testDestroyDuringPendingRefresh() {
+        // Remove test impl from setUp, to resume paused behavior.
+        ShadowPostTask.reset();
+
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        verify(mBookmarkModel, times(1)).getChildIds(mFolderId1);
+        verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3);
+
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        BookmarkModelObserver observer = mBookmarkModelObserverArgumentCaptor.getValue();
+        doReturn(Arrays.asList(mFolderId2)).when(mBookmarkModel).getChildIds(mFolderId1);
+        observer.bookmarkModelChanged();
+
+        // Hasn't updated for changes yet, the refresh is pending.
+        verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3);
+
+        mMediator.onDestroy();
+        // Now give the pending task time to run. It should no-op, and not crash.
+        ShadowLooper.idleMainLooper();
+    }
 }

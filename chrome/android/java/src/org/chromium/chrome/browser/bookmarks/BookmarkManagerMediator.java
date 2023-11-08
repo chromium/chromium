@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -114,10 +115,6 @@ class BookmarkManagerMediator
 
     private final BookmarkModelObserver mBookmarkModelObserver =
             new BookmarkModelObserver() {
-                private final PendingRunnable mPendingRefresh =
-                        new PendingRunnable(
-                                TaskTraits.UI_DEFAULT, BookmarkManagerMediator.this::refresh);
-
                 @Override
                 public void bookmarkNodeChildrenReordered(BookmarkItem node) {
                     if (!mIsBookmarkModelReorderingInProgress) {
@@ -392,6 +389,10 @@ class BookmarkManagerMediator
     private final SnackbarManager mSnackbarManager;
     private final ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
     private final Set<PowerBookmarkType> mCurrentPowerFilter = new HashSet<>();
+    private final CallbackController mCallbackController = new CallbackController();
+    private final PendingRunnable mPendingRefresh =
+            new PendingRunnable(
+                    TaskTraits.UI_DEFAULT, mCallbackController.makeCancelable(this::refresh));
 
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
@@ -525,6 +526,7 @@ class BookmarkManagerMediator
 
         mBookmarkUndoController.destroy();
         mBookmarkQueryHandler.destroy();
+        mCallbackController.destroy();
 
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
 
@@ -1086,6 +1088,7 @@ class BookmarkManagerMediator
 
     /** Refresh the list of bookmarks within the currently visible folder. */
     private void refresh() {
+        assert !mIsDestroyed;
         if (!mStateStack.isEmpty()) {
             notifyUi(mStateStack.peek(), /* preserveFolderBookmarksOnEmptySearch= */ false);
         }
