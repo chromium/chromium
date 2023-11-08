@@ -1126,7 +1126,7 @@ BASE_FEATURE(kRemoveSupervisedUsersOnStartup,
 // Enables extensions module in Safety Check.
 BASE_FEATURE(kSafetyCheckExtensions,
              "SafetyCheckExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables notification permission module in Safety Check.
 BASE_FEATURE(kSafetyCheckNotificationPermissions,
