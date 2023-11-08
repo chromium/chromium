@@ -58,7 +58,7 @@ std::unique_ptr<net::CanonicalCookie> CanonicalCookieFromSystemCookie(
       // When iOS begins to support 'Priority' and 'SameParty' attributes, pass
       // them through here.
       net::COOKIE_PRIORITY_DEFAULT, false /* SameParty */,
-      absl::nullopt /* partition_key */, net::CookieSourceScheme::kUnset,
+      std::nullopt /* partition_key */, net::CookieSourceScheme::kUnset,
       url::PORT_UNSPECIFIED);
 }
 
