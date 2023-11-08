@@ -97,7 +97,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 // URLs present in the hints request. If null, then the verification is not
 // done.
 
-@property absl::optional<base::flat_set<std::string>>
+@property std::optional<base::flat_set<std::string>>
     expect_hints_request_for_hosts_and_urls_;
 @end
 

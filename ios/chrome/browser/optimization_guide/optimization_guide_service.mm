@@ -283,7 +283,7 @@ void OptimizationGuideService::OnBrowsingDataRemoved() {
 #pragma mark - optimization_guide::OptimizationGuideModelProvider implementation
 void OptimizationGuideService::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const absl::optional<optimization_guide::proto::Any>& model_metadata,
+    const std::optional<optimization_guide::proto::Any>& model_metadata,
     optimization_guide::OptimizationTargetModelObserver* observer) {
   if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     prediction_manager_->AddObserverForOptimizationTargetModel(

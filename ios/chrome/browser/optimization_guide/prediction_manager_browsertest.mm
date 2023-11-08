@@ -179,7 +179,7 @@ class PredictionManagerTestBase : public PlatformTest {
     OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            absl::nullopt, model_file_observer);
+            std::nullopt, model_file_observer);
   }
 
   void SetComponentUpdatesEnabled(bool enabled) {
@@ -390,7 +390,7 @@ class PredictionManagerModelDownloadingBrowserTest
         browser_state ? browser_state : browser_state_.get())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/absl::nullopt, model_file_observer_.get());
+            /*model_metadata=*/std::nullopt, model_file_observer_.get());
   }
 
   // Sets up the model observer to receive valid ModelInfo.

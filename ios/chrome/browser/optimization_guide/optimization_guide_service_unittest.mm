@@ -147,7 +147,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
 
   void SimulateNavigation(
       NavigationContextAndData* context_and_data,
-      const absl::optional<GURL> redirect_url = absl::nullopt) {
+      const std::optional<GURL> redirect_url = std::nullopt) {
     return SimulateNavigationInBrowserState(
         context_and_data, optimization_guide_service_, redirect_url);
   }
@@ -155,7 +155,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
   void SimulateNavigationInBrowserState(
       NavigationContextAndData* context_and_data,
       OptimizationGuideService* optimization_guide_service,
-      const absl::optional<GURL> redirect_url = absl::nullopt) {
+      const std::optional<GURL> redirect_url = std::nullopt) {
     std::vector<GURL> navigation_redirect_chain;
     navigation_redirect_chain.push_back(
         context_and_data->navigation_context_->GetUrl());
