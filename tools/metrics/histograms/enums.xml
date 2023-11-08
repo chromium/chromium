@@ -17663,6 +17663,7 @@ Called by update_debug_scenarios.py.-->
   <int value="79" label="networkPanelFilterBarRedesign"/>
   <int value="80" label="breadcrumbsPerformancePanel"/>
   <int value="81" label="trackContextMenu"/>
+  <int value="82" label="autofillView"/>
   <int value="83" label="sourcesFrameIndentationMarkersTemporarilyDisable"/>
 </enum>
 
@@ -18168,6 +18169,7 @@ Called by update_debug_scenarios.py.-->
   <int value="64" label="Application - Preloading"/>
   <int value="65" label="Application - Bounce Tracking Mitigations"/>
   <int value="66" label="Drawer - Resource Loading"/>
+  <int value="67" label="Drawer - Autofill"/>
 </enum>
 
 <enum name="DevToolsRecordingAssertion">
