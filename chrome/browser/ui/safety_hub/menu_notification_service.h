@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
@@ -68,6 +69,7 @@ class SafetyHubMenuNotificationService : public KeyedService {
       UnusedSitePermissionsService* unused_site_permissions_service,
       NotificationPermissionsReviewService* notification_permissions_service,
       extensions::CWSInfoService* extension_info_service,
+      PasswordStatusCheckService* password_check_service,
       Profile* profile);
   SafetyHubMenuNotificationService(const SafetyHubMenuNotificationService&) =
       delete;
@@ -124,6 +126,7 @@ class SafetyHubMenuNotificationService : public KeyedService {
            "notification-permissions"},
           {safety_hub::SafetyHubModuleType::SAFE_BROWSING, "safe-browsing"},
           {safety_hub::SafetyHubModuleType::EXTENSIONS, "extensions"},
+          {safety_hub::SafetyHubModuleType::PASSWORDS, "passwords"},
       };
 
   // Preference service that persists the notifications.

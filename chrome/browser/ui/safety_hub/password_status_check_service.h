@@ -69,7 +69,7 @@ class PasswordStatusCheckService
 
   // Returns the latest PasswordStatusCheckResult that is available in memory.
   // TODO(crbug.com/1443466): This will be a SafetyHubService implementation.
-  const PasswordStatusCheckResult& GetCachedResult() const;
+  absl::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
 
   // Testing functions.
   bool IsObservingSavedPasswordsPresenterForTesting() const {
