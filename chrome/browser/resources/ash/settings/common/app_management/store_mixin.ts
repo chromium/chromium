@@ -10,7 +10,10 @@
 import {makeStoreClientMixin, StoreClientInterface} from 'chrome://resources/cr_elements/store_client/store_client.js';
 
 import {AppManagementActions} from './actions.js';
+import {initStoreAndListeners} from './api_listener.js';
 import {AppManagementPageState, AppManagementStore} from './store.js';
+
+initStoreAndListeners();
 
 export interface AppManagementStoreMixinInterface extends
     StoreClientInterface<AppManagementPageState, AppManagementActions> {}

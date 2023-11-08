@@ -4,7 +4,6 @@
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createInitialState} from 'chrome://resources/cr_components/app_management/util.js';
-import {assert} from 'chrome://resources/js/assert.js';
 
 import {addApp, AppManagementActions, changeApp, removeApp} from './actions.js';
 import {AppManagementBrowserProxy} from './browser_proxy.js';
@@ -12,8 +11,11 @@ import {AppManagementStore} from './store.js';
 
 let initialized = false;
 
-async function init(): Promise<void> {
-  assert(!initialized);
+export async function initStoreAndListeners(): Promise<void> {
+  if (initialized) {
+    return;
+  }
+  initialized = true;
 
   // Call two async functions and wait for both of them.
   const getAppsPromise =
@@ -36,8 +38,6 @@ async function init(): Promise<void> {
   callbackRouter.onAppAdded.addListener(onAppAdded);
   callbackRouter.onAppChanged.addListener(onAppChanged);
   callbackRouter.onAppRemoved.addListener(onAppRemoved);
-
-  initialized = true;
 }
 
 function dispatch(action: AppManagementActions): void {
@@ -55,5 +55,3 @@ function onAppChanged(app: App): void {
 function onAppRemoved(appId: string): void {
   dispatch(removeApp(appId));
 }
-
-init();
