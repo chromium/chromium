@@ -214,6 +214,14 @@
     visibility: hidden;
   }
 
+  :host-context([is-editing-submitted-input_]) #bodyAndFooter {
+    /* Ensure there's always enough height to show the edit flow. The edit flow
+     * overlays over the existing content, and sometimes, the existing content
+     * is not tall enough to show the textarea and buttons (eg. the error
+     * state). */
+    min-height: 141px;
+  }
+
   #editContainer {
     box-sizing: border-box;
     display: flex;
