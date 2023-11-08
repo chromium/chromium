@@ -48,6 +48,7 @@
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/enterprise/data_controls/component.h"
@@ -651,7 +652,7 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_ErrorResponse) {
   base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
   ASSERT_TRUE(files_controller_);
   files_controller_->FilterDisallowedUploads(
-      selected_files, DlpFileDestination(GURL(kExampleUrl1)),
+      selected_files, DlpFileDestination(data_controls::Component::kArc),
       future.GetCallback());
 
   ASSERT_EQ(3u, future.Get().size());
@@ -671,7 +672,7 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_ErrorResponse) {
                                            request.files_paths().end());
   EXPECT_THAT(requested_files,
               testing::UnorderedElementsAreArray(expected_requested_files));
-  EXPECT_EQ(kExampleUrl1, request.destination_url());
+  EXPECT_EQ(::dlp::ARC, request.destination_component());
   EXPECT_EQ(::dlp::FileAction::UPLOAD, request.file_action());
   EXPECT_FALSE(request.has_io_task_id());
 }
