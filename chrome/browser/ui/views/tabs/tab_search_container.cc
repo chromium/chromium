@@ -54,6 +54,9 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
   if (features::IsTabOrganization()) {
     tab_organization_service_ = TabOrganizationServiceFactory::GetForProfile(
         tab_strip_controller->GetProfile());
+  }
+
+  if (tab_organization_service_) {
     tab_organization_service_->AddObserver(this);
     // TODO(1469126): Consider hiding the button when the request has started,
     // vs. when the button as clicked.

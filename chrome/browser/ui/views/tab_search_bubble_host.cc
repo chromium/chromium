@@ -87,7 +87,9 @@ TabSearchBubbleHost::~TabSearchBubbleHost() {
   if (features::IsTabOrganization()) {
     auto* const tab_organization_service =
         TabOrganizationServiceFactory::GetForProfile(profile_);
-    tab_organization_service->RemoveObserver(this);
+    if (tab_organization_service) {
+      tab_organization_service->RemoveObserver(this);
+    }
   }
 }
 

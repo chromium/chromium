@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
@@ -132,7 +133,16 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       "recentlyClosedDefaultItemDisplayCount",
       features::kTabSearchRecentlyClosedDefaultItemDisplayCount.Get());
 
-  source->AddBoolean("tabOrganizationEnabled", features::IsTabOrganization());
+  bool tab_organization_enabled = false;
+  if (features::IsTabOrganization()) {
+    const auto* const tab_organization_service =
+        TabOrganizationServiceFactory::GetForProfile(profile);
+    if (tab_organization_service) {
+      tab_organization_enabled = true;
+    }
+  }
+  source->AddBoolean("tabOrganizationEnabled", tab_organization_enabled);
+
   source->AddInteger("tabIndex", TabIndex());
   source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());
 

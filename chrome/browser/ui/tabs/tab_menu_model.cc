@@ -14,6 +14,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -147,9 +148,13 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   }
 
   if (features::IsTabOrganization()) {
-    AddItemWithStringId(TabStripModel::CommandOrganizeTabs,
-                        IDS_TAB_CXMENU_ORGANIZE_TABS);
-    SetIsNewFeatureAt(GetItemCount() - 1, true);
+    auto* const tab_organization_service =
+        TabOrganizationServiceFactory::GetForProfile(tab_strip->profile());
+    if (tab_organization_service) {
+      AddItemWithStringId(TabStripModel::CommandOrganizeTabs,
+                          IDS_TAB_CXMENU_ORGANIZE_TABS);
+      SetIsNewFeatureAt(GetItemCount() - 1, true);
+    }
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
