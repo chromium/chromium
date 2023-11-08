@@ -18,22 +18,31 @@ class Label;
 
 namespace arc::input_overlay {
 
-// Create name tag with title and sub-title as:
+// Create name tag with title and sub-title.
+//
+// For EditingList (`for_editing_list`=true):
 // +----------------+
 // |icon |Title|    |
 // |     |Sub-title||
 // +----------------+
+//
+// For ButtonOptionsMenu (`for_editing_list`=false):
+// +----------------+
+// ||Title|         |
+// |icon |Sub-title||
+// +----------------+
 class NameTag : public views::View {
  public:
-  static std::unique_ptr<NameTag> CreateNameTag(const std::u16string& title);
+  static std::unique_ptr<NameTag> CreateNameTag(const std::u16string& title,
+                                                bool for_editing_list);
 
-  NameTag();
+  explicit NameTag(bool for_editing_list);
   NameTag(const NameTag&) = delete;
   NameTag& operator=(const NameTag&) = delete;
   ~NameTag() override;
 
   void SetTitle(const std::u16string& title);
-  void SetSubtitle(const std::u16string& sub_title);
+  void SetMaximumWidth(int available_width);
 
   // Set state depending on `is_error`. If `is_error` true, `error_tooltip` is
   // tooltip text for `error_icon_`.
@@ -46,11 +55,12 @@ class NameTag : public views::View {
 
   void Init();
 
-  void SetTextColor(ui::ColorId color_id);
-
   raw_ptr<views::ImageView> error_icon_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> subtitle_label_ = nullptr;
+
+  // True if this view is in EditingList. Otherwise, it is in ButtonOptionsMenu.
+  bool for_editing_list_;
 };
 
 }  // namespace arc::input_overlay

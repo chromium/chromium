@@ -10,7 +10,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
-#include "ash/style/rounded_container.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -62,11 +61,10 @@ class ButtonOptionsActionEdit : public ActionEditView {
   ButtonOptionsActionEdit(DisplayOverlayController* controller, Action* action)
       : ActionEditView(controller,
                        action,
-                       ash::RoundedContainer::Behavior::kBottomRounded) {
+                       /*is_editing_list=*/false) {
     // TODO(b/274690042): Replace the hardcoded string with a localized string.
-    auto* title_string =
-        (action_->is_new() ? u"Select a key" : u"Selected key");
-    name_tag_->SetTitle(title_string);
+    name_tag_->SetTitle(action_->is_new() ? u"Assign a keyboard a key:"
+                                          : u"Assigned keyboard key:");
     labels_view_->set_should_update_title(false);
   }
   ButtonOptionsActionEdit(const ButtonOptionsActionEdit&) = delete;
@@ -77,7 +75,7 @@ class ButtonOptionsActionEdit : public ActionEditView {
   void OnActionInputBindingUpdated() override {
     ActionEditView::OnActionInputBindingUpdated();
     // TODO(b/274690042): Replace the hardcoded string with a localized string.
-    name_tag_->SetTitle(u"Selected key");
+    name_tag_->SetTitle(u"Assigned keyboard key:");
   }
 
  private:
@@ -149,6 +147,23 @@ ButtonOptionsMenu::ButtonOptionsMenu(DisplayOverlayController* controller,
 
 ButtonOptionsMenu::~ButtonOptionsMenu() {
   controller_->RemoveTouchInjectorObserver(this);
+}
+
+void ButtonOptionsMenu::UpdateWidget() {
+  auto* widget = GetWidget();
+  DCHECK(widget);
+
+  controller_->UpdateWidgetBoundsInRootWindow(
+      widget,
+      gfx::Rect(action_->action_view()->CalculateAttachViewPositionInRootWindow(
+                    /*available_bounds=*/CalculateAvailableBounds(
+                        /*root_window=*/controller_->touch_injector()
+                            ->window()
+                            ->GetRootWindow()),
+                    /*window_content_origin=*/
+                    controller_->touch_injector()->content_bounds().origin(),
+                    /*attached_view=*/this),
+                GetPreferredSize()));
 }
 
 void ButtonOptionsMenu::Init() {
@@ -269,7 +284,7 @@ void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
   RemoveChildViewT(action_edit_);
   action_edit_ = AddChildViewAt(
       std::make_unique<ButtonOptionsActionEdit>(controller_, action_), *index);
-  controller_->UpdateButtonOptionsMenuWidgetBounds(action_);
+  UpdateWidget();
 }
 
 void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {

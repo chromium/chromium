@@ -121,7 +121,7 @@ class DisplayOverlayController : public ui::EventHandler,
 
   // Update widget bounds if the view content is changed or the app window
   // bounds are changed.
-  void UpdateButtonOptionsMenuWidgetBounds(Action* action);
+  void UpdateButtonOptionsMenuWidgetBounds();
   void UpdateInputMappingWidgetBounds();
   void UpdateEditingListWidgetBounds();
 

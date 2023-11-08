@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 
-#include "ash/style/rounded_container.h"
 #include "ui/views/controls/button/button.h"
 
 namespace arc::input_overlay {
@@ -25,7 +24,7 @@ class ActionEditView : public views::Button {
  public:
   ActionEditView(DisplayOverlayController* controller,
                  Action* action,
-                 ash::RoundedContainer::Behavior container_type);
+                 bool is_editing_list);
   ActionEditView(const ActionEditView&) = delete;
   ActionEditView& operator=(const ActionEditView&) = delete;
   ~ActionEditView() override;

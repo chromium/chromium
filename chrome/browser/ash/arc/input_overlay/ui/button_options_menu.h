@@ -50,6 +50,8 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   ButtonOptionsMenu& operator=(const ButtonOptionsMenu&) = delete;
   ~ButtonOptionsMenu() override;
 
+  void UpdateWidget();
+
   Action* action() const { return action_; }
 
  private:

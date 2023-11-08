@@ -695,7 +695,7 @@ void DisplayOverlayController::AddButtonOptionsMenuWidget(Action* action) {
       /*accept_events=*/true, /*is_floating=*/true);
   button_options_widget_->SetContentsView(
       std::make_unique<ButtonOptionsMenu>(this, action));
-  UpdateButtonOptionsMenuWidgetBounds(action);
+  UpdateButtonOptionsMenuWidgetBounds();
 
   button_options_widget_->ShowInactive();
 }
@@ -723,7 +723,7 @@ void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
 
   if (is_visible) {
     if (auto* menu = GetButtonOptionsMenu()) {
-      UpdateButtonOptionsMenuWidgetBounds(menu->action());
+      UpdateButtonOptionsMenuWidgetBounds();
     }
     button_options_widget_->ShowInactive();
   } else {
@@ -782,7 +782,7 @@ void DisplayOverlayController::AddDeleteEditShortcutWidget(
 
   auto* window = delete_edit_shortcut_widget_->GetNativeWindow();
   window->parent()->StackChildAtTop(window);
-  delete_edit_shortcut_widget_->Show();
+  delete_edit_shortcut_widget_->ShowInactive();
 }
 
 void DisplayOverlayController::RemoveDeleteEditShortcutWidget() {
@@ -802,21 +802,14 @@ void DisplayOverlayController::MayShowEduNudgeForEditingTip() {
   }
 }
 
-void DisplayOverlayController::UpdateButtonOptionsMenuWidgetBounds(
-    Action* action) {
+void DisplayOverlayController::UpdateButtonOptionsMenuWidgetBounds() {
+  // There is no `button_options_widget_` in view mode.
   if (!button_options_widget_) {
     return;
   }
 
   if (auto* menu = GetButtonOptionsMenu()) {
-    UpdateWidgetBoundsInRootWindow(
-        button_options_widget_.get(),
-        gfx::Rect(
-            action->action_view()->CalculateAttachViewPositionInRootWindow(
-                CalculateAvailableBounds(
-                    touch_injector_->window()->GetRootWindow()),
-                touch_injector_->content_bounds().origin(), menu),
-            menu->GetPreferredSize()));
+    menu->UpdateWidget();
   }
 }
 

@@ -7,12 +7,15 @@
 #include "base/check_op.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
@@ -170,8 +173,6 @@ void EditLabels::UpdateNameTag() {
     key_string = u"unassigned";
   }
 
-  name_tag_->SetSubtitle(labels_.size() == 1 ? u"Key " + key_string
-                                             : u"Keys " + key_string);
   name_tag_->SetState(
       // The name tag is not set to be in an error state if it was newly
       // created.

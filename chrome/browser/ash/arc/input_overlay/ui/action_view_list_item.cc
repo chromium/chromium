@@ -17,7 +17,7 @@ ActionViewListItem::ActionViewListItem(DisplayOverlayController* controller,
                                        Action* action)
     : ActionEditView(controller,
                      action,
-                     ash::RoundedContainer::Behavior::kAllRounded) {}
+                     /*is_editing_list=*/true) {}
 
 ActionViewListItem::~ActionViewListItem() = default;
 
