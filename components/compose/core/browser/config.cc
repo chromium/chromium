@@ -10,8 +10,6 @@
 
 namespace compose {
 namespace {
-Config g_config;
-
 // Override any parameters that may be provided by Finch.
 void OverrideFieldTrialParams(Config& config) {
   config.input_min_words = base::GetFieldTrialParamByFeatureAsInt(
