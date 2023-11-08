@@ -75,8 +75,10 @@ class DefaultRemotingService
   }
 
   void ReconnectToSession(remoting::SessionId session_id,
+                          const std::string& oauth_access_token,
                           StartSessionCallback callback) override {
-    return GetSupportHost().ReconnectToSession(session_id, std::move(callback));
+    return GetSupportHost().ReconnectToSession(session_id, oauth_access_token,
+                                               std::move(callback));
   }
 
  private:
@@ -286,7 +288,7 @@ class CrdAdminSessionController::CrdHostSession : private CrdSessionObserver {
       CRD_LOG(INFO) << "Attempting to resume reconnectable session";
 
       remoting_service_->ReconnectToSession(
-          id.value(),
+          id.value(), "TODO(joedow): Provide real oauth access token",
           base::BindOnce(&CrdHostSession::OnStartSupportSessionResponse,
                          weak_factory_.GetWeakPtr()));
     } else {

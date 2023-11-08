@@ -250,7 +250,8 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
   mojom::StartSupportSessionResponsePtr ReconnectToSession(
       SessionId id = kEnterpriseSessionId) {
     TestFuture<mojom::StartSupportSessionResponsePtr> connect_result;
-    support_host().ReconnectToSession(id, connect_result.GetCallback());
+    support_host().ReconnectToSession(id, "faux access token",
+                                      connect_result.GetCallback());
     return connect_result.Take();
   }
 

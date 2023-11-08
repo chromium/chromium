@@ -61,7 +61,9 @@ class RemoteSupportHostAsh {
 
   // Allows the caller to resume the given remote support session.
   // `callback` is called with the result.
-  void ReconnectToSession(SessionId session_id, StartSessionCallback callback);
+  void ReconnectToSession(SessionId session_id,
+                          const std::string& access_token,
+                          StartSessionCallback callback);
 
  private:
   void StartSession(

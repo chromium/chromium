@@ -151,6 +151,7 @@ void RemoteSupportHostAsh::StartSession(
 }
 
 void RemoteSupportHostAsh::ReconnectToSession(SessionId session_id,
+                                              const std::string& access_token,
                                               StartSessionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -167,7 +168,6 @@ void RemoteSupportHostAsh::ReconnectToSession(SessionId session_id,
 
   LOG(INFO) << "CRD: Retrieving details for reconnectable session id:"
             << session_id;
-  std::string access_token = "TODO(joedow): Provide real access token";
   session_storage_->RetrieveSession(base::BindOnce(
       &RemoteSupportHostAsh::OnSessionRetrieved, weak_ptr_factory_.GetWeakPtr(),
       session_id, access_token, std::move(callback)));

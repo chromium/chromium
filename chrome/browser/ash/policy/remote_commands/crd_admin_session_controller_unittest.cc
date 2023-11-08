@@ -113,7 +113,7 @@ class RemotingServiceMock
   MOCK_METHOD(void, GetReconnectableSessionId, (SessionIdCallback));
   MOCK_METHOD(void,
               ReconnectToSession,
-              (remoting::SessionId, StartSessionCallback));
+              (remoting::SessionId, const std::string&, StartSessionCallback));
 };
 
 // Wrapper around the `RemotingServiceMock`, solving the lifetime issue
@@ -140,8 +140,10 @@ class RemotingServiceWrapper
   }
 
   void ReconnectToSession(remoting::SessionId session_id,
+                          const std::string& oauth_access_token,
                           StartSessionCallback callback) override {
-    implementation_->ReconnectToSession(session_id, std::move(callback));
+    implementation_->ReconnectToSession(session_id, oauth_access_token,
+                                        std::move(callback));
   }
 
  private:
@@ -677,8 +679,10 @@ TEST_F(CrdAdminSessionControllerTest,
       .WillOnce([&](auto callback) { std::move(callback).Run(kSessionId); });
 
   // And next we should use this session id to reconnect.
-  EXPECT_CALL(remoting_service(), ReconnectToSession(kSessionId, testing::_))
-      .WillOnce([&](remoting::SessionId, StartSupportSessionCallback callback) {
+  EXPECT_CALL(remoting_service(),
+              ReconnectToSession(kSessionId, testing::_, testing::_))
+      .WillOnce([&](remoting::SessionId, const std::string&,
+                    StartSupportSessionCallback callback) {
         std::move(callback).Run(
             StartSupportSessionResponse::NewObserver(BindObserver()));
       });
