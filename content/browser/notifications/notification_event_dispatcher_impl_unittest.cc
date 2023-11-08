@@ -89,7 +89,8 @@ class NotificationEventDispatcherImplTest : public RenderViewHostTestHarness {
   NotificationEventDispatcherImplTest& operator=(
       const NotificationEventDispatcherImplTest&) = delete;
 
-  ~NotificationEventDispatcherImplTest() override { delete dispatcher_; }
+  // NotificationEventDispatcherImpl singleton will handle clean-up by itself.
+  ~NotificationEventDispatcherImplTest() override { dispatcher_ = nullptr; }
 
   // Waits until the task runner managing the Mojo connection has finished.
   void WaitForMojoTasksToComplete() { task_environment()->RunUntilIdle(); }
@@ -104,7 +105,7 @@ class NotificationEventDispatcherImplTest : public RenderViewHostTestHarness {
   };
   // Using a raw pointer because NotificationEventDispatcherImpl is a singleton
   // with private constructor and destructor, so unique_ptr is not an option.
-  raw_ptr<NotificationEventDispatcherImpl, DanglingUntriaged> dispatcher_;
+  raw_ptr<NotificationEventDispatcherImpl> dispatcher_;
 };
 
 TEST_F(NotificationEventDispatcherImplTest,
