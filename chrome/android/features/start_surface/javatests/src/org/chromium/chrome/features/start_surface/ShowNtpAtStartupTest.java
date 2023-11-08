@@ -219,8 +219,7 @@ public class ShowNtpAtStartupTest {
 
         waitForNtpLoaded(cta.getActivityTab());
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup mvTilesLayout =
-                ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        ViewGroup mvTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
         // Verifies that 1 row MV tiles are shown when "Start surface on tablet" flag is enabled.
         Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesCarouselLayout);
     }
@@ -238,8 +237,7 @@ public class ShowNtpAtStartupTest {
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup mvTilesLayout =
-                ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        ViewGroup mvTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
         // Verifies that 2 row MV tiles are shown when "Start surface on tablet" flag is disabled.
         Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesGridLayout);
     }
@@ -333,17 +331,15 @@ public class ShowNtpAtStartupTest {
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup mvTilesLayout =
-                ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        ViewGroup mvTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
         // Verifies that 1 row MV tiles are shown when "Start surface on tablet" flag is enabled.
         Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesCarouselLayout);
 
         Resources res = cta.getResources();
         int expectedTwoSideMarginPortrait =
-                res.getDimensionPixelSize(org.chromium.chrome.R.dimen.tile_grid_layout_bleed);
+                res.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed);
         int expectedTwoSideMarginLandscape =
-                res.getDimensionPixelSize(org.chromium.chrome.R.dimen.ntp_search_box_start_margin)
-                                * 2
+                res.getDimensionPixelSize(R.dimen.ntp_search_box_start_margin) * 2
                         + expectedTwoSideMarginPortrait;
 
         // Verifies there is additional margin added for the fake search box in landscape mode,
@@ -368,17 +364,14 @@ public class ShowNtpAtStartupTest {
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup mvTilesLayout =
-                ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        ViewGroup mvTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
         // Verifies that 2 row MV tiles are shown when "Start surface on tablet" flag is disabled.
         Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesGridLayout);
 
         Resources res = cta.getResources();
         int expectedTwoSideMargin =
-                res.getDimensionPixelSize(org.chromium.chrome.R.dimen.ntp_search_box_start_margin)
-                                * 2
-                        + res.getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.tile_grid_layout_bleed);
+                res.getDimensionPixelSize(R.dimen.ntp_search_box_start_margin) * 2
+                        + res.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed);
 
         // Verifies there is additional margin added for the fake search box in both landscape
         // and portrait modes.
@@ -459,20 +452,13 @@ public class ShowNtpAtStartupTest {
         Resources res = cta.getResources();
 
         int expectedContainerTwoSideMarginLandscape =
-                res.getDimensionPixelSize(org.chromium.chrome.R.dimen.ntp_search_box_start_margin)
-                                * 2
-                        + res.getDimensionPixelSize(
-                                        org.chromium.chrome.R.dimen.tile_grid_layout_bleed)
-                                / 2
-                                * 2;
+                res.getDimensionPixelSize(R.dimen.ntp_search_box_start_margin) * 2
+                        + res.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed) / 2 * 2;
         int expectedContainerTwoSideMarginPortrait =
-                res.getDimensionPixelSize(org.chromium.chrome.R.dimen.tile_grid_layout_bleed)
-                        / 2
-                        * 2;
+                res.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed) / 2 * 2;
         int expectedContainerRightExtraMargin =
                 res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen
-                                .mvt_container_to_ntp_right_extra_margin_two_feed_tablet);
+                        R.dimen.mvt_container_to_ntp_right_extra_margin_two_feed_tablet);
         // Verifies the margins of the module most visited tiles and its inner view are correct.
         verifyMostVisitedTileMargin(
                 expectedContainerTwoSideMarginLandscape,
@@ -484,17 +470,13 @@ public class ShowNtpAtStartupTest {
                 ntp);
 
         int expectedMvtBottomMargin =
-                res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.mvt_container_bottom_margin_tablet);
+                res.getDimensionPixelSize(R.dimen.mvt_container_bottom_margin_tablet);
         int expectedSingleTabCardTopMargin =
-                -res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.ntp_single_tab_card_top_margin);
+                -res.getDimensionPixelSize(R.dimen.ntp_single_tab_card_top_margin);
         int expectedSingleTabCardBottomMargin =
-                res.getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.ntp_single_tab_card_bottom_margin)
+                res.getDimensionPixelSize(R.dimen.ntp_single_tab_card_bottom_margin)
                         - res.getDimensionPixelOffset(
-                                org.chromium.chrome.R.dimen
-                                        .feed_header_tab_list_view_top_bottom_margin);
+                                R.dimen.feed_header_tab_list_view_top_bottom_margin);
         // Verifies the vertical margins of the module most visited tiles and single tab card are
         // correct.
         verifyMvtAndSingleTabCardVerticalMargins(
@@ -523,8 +505,7 @@ public class ShowNtpAtStartupTest {
         Resources res = cta.getResources();
 
         int expectedMvtBottomMargin =
-                res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.mvt_container_bottom_margin_tablet);
+                res.getDimensionPixelSize(R.dimen.mvt_container_bottom_margin_tablet);
         // Verifies the vertical margins of the module most visited tiles is correct.
         verifyMvtAndSingleTabCardVerticalMargins(
                 expectedMvtBottomMargin, 0, 0, /* isNtpHomepage= */ false, ntp);
@@ -548,16 +529,12 @@ public class ShowNtpAtStartupTest {
         Resources res = cta.getResources();
 
         int expectedContainerTwoSideMargin =
-                res.getDimensionPixelSize(org.chromium.chrome.R.dimen.ntp_search_box_start_margin)
-                                * 2
-                        + res.getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.tile_grid_layout_bleed);
+                res.getDimensionPixelSize(R.dimen.ntp_search_box_start_margin) * 2
+                        + res.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed);
         int expectedLandScapeEdgeMargin =
-                res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.tile_grid_layout_landscape_edge_margin_tablet);
+                res.getDimensionPixelSize(R.dimen.tile_grid_layout_landscape_edge_margin_tablet);
         int expectedPortraitEdgeMargin =
-                res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.tile_grid_layout_portrait_edge_margin_tablet);
+                res.getDimensionPixelSize(R.dimen.tile_grid_layout_portrait_edge_margin_tablet);
         // Verifies the margins of the module most visited tiles and its inner view are correct.
         verifyMostVisitedTileMargin(
                 expectedContainerTwoSideMargin,
@@ -569,17 +546,13 @@ public class ShowNtpAtStartupTest {
                 ntp);
 
         int expectedMvtBottomMargin =
-                res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.mvt_container_bottom_margin_tablet);
+                res.getDimensionPixelSize(R.dimen.mvt_container_bottom_margin_tablet);
         int expectedSingleTabCardTopMargin =
-                -res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.ntp_single_tab_card_top_margin);
+                -res.getDimensionPixelSize(R.dimen.ntp_single_tab_card_top_margin);
         int expectedSingleTabCardBottomMargin =
-                res.getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.ntp_single_tab_card_bottom_margin)
+                res.getDimensionPixelSize(R.dimen.ntp_single_tab_card_bottom_margin)
                         - res.getDimensionPixelOffset(
-                                org.chromium.chrome.R.dimen
-                                        .feed_header_tab_list_view_top_bottom_margin);
+                                R.dimen.feed_header_tab_list_view_top_bottom_margin);
         // Verifies the vertical margins of the module most visited tiles and single tab card are
         // correct.
         verifyMvtAndSingleTabCardVerticalMargins(
@@ -611,14 +584,11 @@ public class ShowNtpAtStartupTest {
         Resources res = cta.getResources();
 
         int expectedSingleTabCardTopMargin =
-                -res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.ntp_single_tab_card_top_margin);
+                -res.getDimensionPixelSize(R.dimen.ntp_single_tab_card_top_margin);
         int expectedSingleTabCardBottomMargin =
-                res.getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.ntp_single_tab_card_bottom_margin)
+                res.getDimensionPixelSize(R.dimen.ntp_single_tab_card_bottom_margin)
                         - res.getDimensionPixelOffset(
-                                org.chromium.chrome.R.dimen
-                                        .feed_header_tab_list_view_top_bottom_margin);
+                                R.dimen.feed_header_tab_list_view_top_bottom_margin);
         // Verifies the vertical margins of the module most visited tiles and single tab card are
         // correct.
         verifySingleTabCardVerticalMargins(
@@ -649,14 +619,11 @@ public class ShowNtpAtStartupTest {
         Resources res = cta.getResources();
 
         int expectedSingleTabCardTopMargin =
-                -res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.ntp_single_tab_card_top_margin);
+                -res.getDimensionPixelSize(R.dimen.ntp_single_tab_card_top_margin);
         int expectedSingleTabCardBottomMargin =
-                res.getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.ntp_single_tab_card_bottom_margin)
+                res.getDimensionPixelSize(R.dimen.ntp_single_tab_card_bottom_margin)
                         - res.getDimensionPixelOffset(
-                                org.chromium.chrome.R.dimen
-                                        .feed_header_tab_list_view_top_bottom_margin);
+                                R.dimen.feed_header_tab_list_view_top_bottom_margin);
         // Verifies the vertical margins of the module most visited tiles and single tab card are
         // correct.
         verifySingleTabCardVerticalMargins(
@@ -768,17 +735,13 @@ public class ShowNtpAtStartupTest {
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup mvTilesLayout =
-                ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        ViewGroup mvTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
         // Verifies that 1 row MV tiles are shown when "Start surface on tablet" flag is enabled.
         Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesCarouselLayout);
 
         Resources res = cta.getResources();
         int expectedTwoSideMargin =
-                2
-                        * res.getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen
-                                        .ntp_search_box_lateral_margin_tablet_polish);
+                2 * res.getDimensionPixelSize(R.dimen.ntp_search_box_lateral_margin_tablet_polish);
 
         // Verifies there is additional margin added for the fake search box.
         verifyFakeSearchBoxWidth(expectedTwoSideMargin, expectedTwoSideMargin, ntp);
@@ -801,19 +764,16 @@ public class ShowNtpAtStartupTest {
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup mvTilesLayout =
-                ntp.getView().findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        ViewGroup mvTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
         // Verifies that 1 row MV tiles are shown when "Start surface on tablet" flag is enabled.
         Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesCarouselLayout);
 
         Resources res = cta.getResources();
         int expectedContainerTwoSideMargin = 0;
         int expectedMvtLayoutEdgeMargin =
-                res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet_polish);
+                res.getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet_polish);
         int expectedMvtLayoutIntervalMargin =
-                res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen.tile_view_padding_interval_tablet_polish);
+                res.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet_polish);
 
         verifyMostVisitedTileMarginForSurfacePolish(
                 expectedContainerTwoSideMargin,
@@ -849,9 +809,8 @@ public class ShowNtpAtStartupTest {
             boolean isScrollable,
             NewTabPage ntp) {
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
-        View mvTilesContainer =
-                ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_container);
-        View mvTilesLayout = ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        View mvTilesContainer = ntpLayout.findViewById(R.id.mv_tiles_container);
+        View mvTilesLayout = ntpLayout.findViewById(R.id.mv_tiles_layout);
         View mvTileItem1 = ((ViewGroup) mvTilesLayout).getChildAt(0);
         View mvTileItem2 = ((ViewGroup) mvTilesLayout).getChildAt(1);
         int mvTilesItemWidth = mvTileItem1.getWidth();
@@ -933,14 +892,12 @@ public class ShowNtpAtStartupTest {
                     "The width of the most visited tiles layout is wrong.",
                     mvtContainerWidth <= mvTilesLayoutWidth);
             int tileNum =
-                    ((ViewGroup) ntpLayout.findViewById(org.chromium.chrome.R.id.mv_tiles_layout))
-                            .getChildCount();
+                    ((ViewGroup) ntpLayout.findViewById(R.id.mv_tiles_layout)).getChildCount();
             int minIntervalMargin =
                     ntpLayout
                             .getResources()
                             .getDimensionPixelOffset(
-                                    org.chromium.chrome.R.dimen
-                                            .tile_carousel_layout_min_interval_margin_tablet);
+                                    R.dimen.tile_carousel_layout_min_interval_margin_tablet);
             boolean isHalfMvt =
                     tileNum * mvTilesItemWidth + (tileNum - 1) * minIntervalMargin
                             > mvtContainerWidth;
@@ -1038,8 +995,7 @@ public class ShowNtpAtStartupTest {
             boolean isNtpHomepage,
             NewTabPage ntp) {
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
-        View mvTilesContainer =
-                ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_container);
+        View mvTilesContainer = ntpLayout.findViewById(R.id.mv_tiles_container);
         Assert.assertEquals(
                 "The bottom margin of the most visited tiles container is wrong.",
                 expectedMvtBottomMargin,
@@ -1058,8 +1014,7 @@ public class ShowNtpAtStartupTest {
             NewTabPage ntp) {
         if (!isNtpHomepage) return;
         View singleTabCardContainer =
-                ntp.getNewTabPageLayout()
-                        .findViewById(org.chromium.chrome.test.R.id.tab_switcher_module_container);
+                ntp.getNewTabPageLayout().findViewById(R.id.tab_switcher_module_container);
         MarginLayoutParams singleTabCardContainerMarginParams =
                 (MarginLayoutParams) singleTabCardContainer.getLayoutParams();
         Assert.assertEquals(
@@ -1101,7 +1056,7 @@ public class ShowNtpAtStartupTest {
     private void verifyFakeSearchBoxWidth(
             int expectedLandScapeWidth, int expectedPortraitWidth, NewTabPage ntp) {
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
-        View searchBoxLayout = ntpLayout.findViewById(org.chromium.chrome.test.R.id.search_box);
+        View searchBoxLayout = ntpLayout.findViewById(R.id.search_box);
 
         // Start off in landscape screen orientation.
         mActivityTestRule
@@ -1128,9 +1083,8 @@ public class ShowNtpAtStartupTest {
             int expectedIntervalMargin,
             NewTabPage ntp) {
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
-        View mvtContainer =
-                ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_container);
-        View mvTilesLayout = ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        View mvtContainer = ntpLayout.findViewById(R.id.mv_tiles_container);
+        View mvTilesLayout = ntpLayout.findViewById(R.id.mv_tiles_layout);
         int mvt1LeftMargin =
                 ((MarginLayoutParams) ((ViewGroup) mvTilesLayout).getChildAt(0).getLayoutParams())
                         .leftMargin;
