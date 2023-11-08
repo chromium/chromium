@@ -318,12 +318,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
-  gfx::Rect BorderBoundingBox() const final {
-    NOT_DESTROYED();
-    gfx::Rect bounding_box = ToEnclosingRect(PhysicalLinesBoundingBox());
-    return gfx::Rect(bounding_box.size());
-  }
-
   void DirtyLinesFromChangedChild(LayoutObject*) final;
 
   // TODO(leviw): This should probably be an int. We don't snap equivalent lines

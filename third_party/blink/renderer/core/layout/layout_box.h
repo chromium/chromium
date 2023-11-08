@@ -281,8 +281,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // TODO(crbug.com/962299): This method snaps to pixels incorrectly because
   // PhysicalLocation() is not the correct paint offset.
-  gfx::Rect PixelSnappedBorderBoxRect() const {
+  gfx::Rect DeprecatedPixelSnappedBorderBoxRect() const {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled());
     return gfx::Rect(PixelSnappedBorderBoxSize(PhysicalLocation()));
   }
   // TODO(crbug.com/962299): This method is only correct when |offset| is the
@@ -290,10 +291,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   gfx::Size PixelSnappedBorderBoxSize(const PhysicalOffset& offset) const {
     NOT_DESTROYED();
     return ToPixelSnappedSize(Size().ToLayoutSize(), offset.ToLayoutPoint());
-  }
-  gfx::Rect BorderBoundingBox() const final {
-    NOT_DESTROYED();
-    return PixelSnappedBorderBoxRect();
   }
 
   // The content area of the box (excludes padding - and intrinsic padding for

@@ -3006,12 +3006,12 @@ gfx::RectF ComputedStyleUtils::ReferenceBoxForTransform(
   if (layout_object.IsSVGChild()) {
     return TransformHelper::ComputeReferenceBox(layout_object);
   }
-  if (layout_object.IsBox()) {
-    const auto& layout_box = To<LayoutBox>(layout_object);
-    if (pixel_snap_box == kUsePixelSnappedBox) {
-      return gfx::RectF(layout_box.PixelSnappedBorderBoxRect());
+  if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
+    if (pixel_snap_box == kDontUsePixelSnappedBox ||
+        RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled()) {
+      return gfx::RectF(layout_box->PhysicalBorderBoxRect());
     }
-    return gfx::RectF(layout_box.PhysicalBorderBoxRect());
+    return gfx::RectF(layout_box->DeprecatedPixelSnappedBorderBoxRect());
   }
   return gfx::RectF();
 }

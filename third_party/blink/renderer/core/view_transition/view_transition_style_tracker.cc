@@ -1208,11 +1208,14 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
                            LayoutUnit(entry_size->blockSize()))
             : PhysicalSize(LayoutUnit(entry_size->blockSize()),
                            LayoutUnit(entry_size->inlineSize()));
-  } else if (auto* box_model = DynamicTo<LayoutBoxModelObject>(layout_object)) {
+  } else if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
     border_box_size_in_css_space =
-        PhysicalSize(box_model->BorderBoundingBox().size());
-    // Size BorderBoundingBox is in Layout space, we need to convert to CSS
-    // space.
+        RuntimeEnabledFeatures::ReferenceBoxNoPixelSnappingEnabled()
+            ? layout_inline->PhysicalLinesBoundingBox().size
+            : PhysicalSize(
+                  ToEnclosingRect(layout_inline->PhysicalLinesBoundingBox())
+                      .size());
+    // Convert to CSS pixels instead of layout pixels.
     border_box_size_in_css_space.Scale(1.f / device_pixel_ratio_);
   }
 
