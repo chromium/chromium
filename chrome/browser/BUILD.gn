@@ -527,8 +527,6 @@ static_library("browser") {
     "external_protocol/external_protocol_handler.h",
     "external_protocol/external_protocol_observer.cc",
     "external_protocol/external_protocol_observer.h",
-    "fast_checkout/fast_checkout_features.cc",
-    "fast_checkout/fast_checkout_features.h",
     "feature_engagement/tracker_factory.cc",
     "feature_engagement/tracker_factory.h",
     "feature_guide/notifications/feature_notification_guide_service_factory.cc",

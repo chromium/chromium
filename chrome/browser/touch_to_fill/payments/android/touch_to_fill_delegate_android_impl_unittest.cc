@@ -6,7 +6,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -502,8 +501,6 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillFailsIfFastCheckoutWasShown) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kFastCheckout);
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
   autofill::MockFastCheckoutClient* fast_checkout_client =
       static_cast<autofill::MockFastCheckoutClient*>(

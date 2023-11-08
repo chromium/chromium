@@ -4,8 +4,6 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/mock_fast_checkout_capabilities_fetcher.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -82,11 +80,7 @@ class MockPersonalDataManager : public autofill::PersonalDataManager {
 class FastCheckoutTriggerValidatorTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  FastCheckoutTriggerValidatorTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFastCheckout},
-        /*disabled_features=*/{});
-  }
+  FastCheckoutTriggerValidatorTest() = default;
 
  protected:
   void SetUp() override {
@@ -152,7 +146,6 @@ class FastCheckoutTriggerValidatorTest
   autofill::AutofillProfile profile_;
   autofill::CreditCard credit_card_;
   autofill::FormData form_;
-  base::test::ScopedFeatureList feature_list_;
   autofill::TestAutofillClientInjector<MockAutofillClient>
       autofill_client_injector_;
   autofill::TestAutofillDriverInjector<autofill::TestContentAutofillDriver>
@@ -167,13 +160,6 @@ class FastCheckoutTriggerValidatorTest
 
 TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_AllChecksPass_ReturnsTrue) {
   EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kSuccess);
-}
-
-TEST_F(FastCheckoutTriggerValidatorTest,
-       ShouldRun_FeatureDisabled_ReturnsFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(::features::kFastCheckout);
-  EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kUnsupportedFieldType);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest,

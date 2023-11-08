@@ -5,7 +5,6 @@
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
 
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
-#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -31,13 +30,6 @@ FastCheckoutTriggerOutcome FastCheckoutTriggerValidatorImpl::ShouldRun(
     const autofill::AutofillManager& autofill_manager) const {
   LogAutofillInternals(
       "Start of checking whether a Fast Checkout run should be permitted.");
-
-  // Trigger only on supported platforms.
-  if (!base::FeatureList::IsEnabled(::features::kFastCheckout)) {
-    LogAutofillInternals(
-        "not triggered because FastCheckout flag is disabled.");
-    return FastCheckoutTriggerOutcome::kUnsupportedFieldType;
-  }
 
   // Trigger only if there is no ongoing run.
   if (is_running) {

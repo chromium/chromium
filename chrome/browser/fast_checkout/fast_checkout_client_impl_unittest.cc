@@ -10,11 +10,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
-#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
 #include "chrome/browser/fast_checkout/mock_fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -246,9 +244,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
  public:
   FastCheckoutClientImplTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitWithFeatures({features::kFastCheckout}, {});
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
  protected:
   void SetUp() override {
@@ -330,7 +326,6 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
         autofill_manager()->fast_checkout_delegate());
   }
 
-  base::test::ScopedFeatureList feature_list_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
 
   // Sets up test data, calls `TryToStart(..)` and `OnOptionsSelected(..)`.
