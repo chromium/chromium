@@ -792,6 +792,16 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
   ProcessInterceptionOrWait(info, false);
 }
 
+void DiceWebSigninInterceptor::OnExtendedAccountInfoRemoved(
+    const AccountInfo& info) {
+  if (info.account_id != account_id_) {
+    return;
+  }
+  RecordSigninInterceptionHeuristicOutcome(
+      SigninInterceptionHeuristicOutcome::kAbortSignedOut);
+  Reset();
+}
+
 void DiceWebSigninInterceptor::OnInterceptionInfoFetchTimeout() {
   account_info_update_observation_.Reset();
   if (!intercepted_account_profile_separation_policies_.has_value()) {

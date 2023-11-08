@@ -1563,6 +1563,35 @@ TEST_F(DiceWebSigninInterceptorTest, WaitForAccountInfoTimeout) {
   task_environment()->FastForwardBy(base::Seconds(5));
 }
 
+TEST_F(DiceWebSigninInterceptorTest, AccountInfoRemovedWhileWaiting) {
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "bob@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  EXPECT_FALSE(interceptor()
+                   ->GetHeuristicOutcome(/*is_new_account=*/true,
+                                         /*is_sync_signin=*/false,
+                                         account_info.email,
+                                         /*entry=*/nullptr)
+                   .has_value());
+  MaybeIntercept(account_info.account_id);
+  // Delegate was not called yet, interception is in progress.
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+
+  // Clear primary account.
+  identity_test_env()->EnableRemovalOfExtendedAccountInfo();
+  identity_test_env()->RemoveRefreshTokenForAccount(account_info.account_id);
+
+  // Interception is cancelled.
+  EXPECT_FALSE(interceptor()->is_interception_in_progress());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kAbortSignedOut, 1);
+}
+
 TEST_F(DiceWebSigninInterceptorTest,
        WaitForAccountCapabilitiesTimeout_CustomInterceptForSupervisedUser) {
   base::test::ScopedFeatureList scoped_list;

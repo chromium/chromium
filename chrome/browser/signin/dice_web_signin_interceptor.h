@@ -196,6 +196,7 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
   // Called when one or more of the async info fetches times out.
   void OnInterceptionInfoFetchTimeout();

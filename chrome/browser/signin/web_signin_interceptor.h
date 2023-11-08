@@ -84,7 +84,11 @@ enum class SigninInterceptionHeuristicOutcome {
   // in to Chrome.
   kInterceptChromeSignin = 19,
 
-  kMaxValue = kInterceptChromeSignin,
+  // Interception aborted:
+  // The user signed out while the interception was in progress.
+  kAbortSignedOut = 20,
+
+  kMaxValue = kAbortSignedOut,
 };
 
 // User selection in the interception bubble.

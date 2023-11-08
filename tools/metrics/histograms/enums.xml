@@ -65075,6 +65075,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="17" label="Intercept: forced enterprise profile switch"/>
   <int value="18" label="Abort: tab closed"/>
   <int value="19" label="Intercept: chrome sign in"/>
+  <int value="20" label="Abort: signed out during interception"/>
 </enum>
 
 <enum name="SigninInterceptResult">
