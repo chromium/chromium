@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
-#import <vector>
-
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <MaterialComponents/MaterialSnackbar.h>
+
+#import <optional>
+#import <vector>
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
@@ -114,7 +115,6 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -899,34 +899,34 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           _browser->GetBrowserState());
 
   // Update Chrome check.
-  absl::optional<UpdateChromeSafetyCheckState> overrideUpdateChromeState =
+  std::optional<UpdateChromeSafetyCheckState> overrideUpdateChromeState =
       experimental_flags::GetUpdateChromeSafetyCheckState();
 
   state.updateChromeState = overrideUpdateChromeState.value_or(
       safetyCheckManager->GetUpdateChromeCheckState());
 
   // Password check.
-  absl::optional<PasswordSafetyCheckState> overridePasswordState =
+  std::optional<PasswordSafetyCheckState> overridePasswordState =
       experimental_flags::GetPasswordSafetyCheckState();
 
   state.passwordState = overridePasswordState.value_or(
       safetyCheckManager->GetPasswordCheckState());
 
   // Safe Browsing check.
-  absl::optional<SafeBrowsingSafetyCheckState> overrideSafeBrowsingState =
+  std::optional<SafeBrowsingSafetyCheckState> overrideSafeBrowsingState =
       experimental_flags::GetSafeBrowsingSafetyCheckState();
 
   state.safeBrowsingState = overrideSafeBrowsingState.value_or(
       safetyCheckManager->GetSafeBrowsingCheckState());
 
   // Insecure credentials.
-  absl::optional<int> overrideWeakPasswordsCount =
+  std::optional<int> overrideWeakPasswordsCount =
       experimental_flags::GetSafetyCheckWeakPasswordsCount();
 
-  absl::optional<int> overrideReusedPasswordsCount =
+  std::optional<int> overrideReusedPasswordsCount =
       experimental_flags::GetSafetyCheckReusedPasswordsCount();
 
-  absl::optional<int> overrideCompromisedPasswordsCount =
+  std::optional<int> overrideCompromisedPasswordsCount =
       experimental_flags::GetSafetyCheckCompromisedPasswordsCount();
 
   bool passwordCountsOverride = overrideWeakPasswordsCount.has_value() ||
@@ -965,7 +965,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Returns the last run time of the Safety Check, regardless if the check was
 // started from the Safety Check (Magic Stack) module, or the Safety Check
 // Settings UI.
-- (absl::optional<base::Time>)latestSafetyCheckRunTimestamp {
+- (std::optional<base::Time>)latestSafetyCheckRunTimestamp {
   IOSChromeSafetyCheckManager* safetyCheckManager =
       IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
           _browser->GetBrowserState());
@@ -986,8 +986,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
   // Only return the Last Run Time if the run happened within the last 24hr.
   return lastRunAge <= kSafetyCheckRunThreshold
-             ? absl::optional<base::Time>(lastRunTime)
-             : absl::nullopt;
+             ? std::optional<base::Time>(lastRunTime)
+             : std::nullopt;
 }
 
 - (void)configureConsumer {

@@ -164,7 +164,7 @@ int CheckIssuesCount(SafetyCheckState* state) {
   return invalid_check_count;
 }
 
-bool CanRunSafetyCheck(absl::optional<base::Time> last_run_time) {
+bool CanRunSafetyCheck(std::optional<base::Time> last_run_time) {
   // The Safety Check should be run if it's never been run before.
   if (!last_run_time.has_value()) {
     return true;
@@ -180,7 +180,7 @@ bool CanRunSafetyCheck(absl::optional<base::Time> last_run_time) {
 }
 
 NSString* FormatElapsedTimeSinceLastSafetyCheck(
-    absl::optional<base::Time> last_run_time) {
+    std::optional<base::Time> last_run_time) {
   if (!last_run_time.has_value()) {
     return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
   }
