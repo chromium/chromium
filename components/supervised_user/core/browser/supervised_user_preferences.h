@@ -31,6 +31,9 @@ bool IsChildAccountStatusKnown(const PrefService& pref_service);
 // is no dedicated method for the feature (e.g IsURLFilteringEnabled).
 bool IsChildAccount(const PrefService& pref_service);
 
+// Returns true if the extensions permissions parental control is enabled.
+bool AreExtensionsPermissionsEnabled(const PrefService& pref_service);
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_PREFERENCES_H_

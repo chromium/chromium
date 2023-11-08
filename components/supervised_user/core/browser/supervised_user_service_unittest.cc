@@ -116,35 +116,6 @@ TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
   EXPECT_TRUE(service_->IsURLFilteringEnabled());
 }
 
-TEST_F(SupervisedUserServiceTest,
-       AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagDisabled) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(service_->AreExtensionsPermissionsEnabled());
-#else
-  EXPECT_FALSE(service_->AreExtensionsPermissionsEnabled());
-#endif
-}
-
-TEST_F(SupervisedUserServiceTest,
-       AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagEnabled) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list(
-      kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  EXPECT_TRUE(service_->AreExtensionsPermissionsEnabled());
-#else
-  EXPECT_FALSE(service_->AreExtensionsPermissionsEnabled());
-#endif
-}
-
 TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   base::HistogramTester histogram_tester;
 
@@ -318,10 +289,6 @@ TEST_F(SupervisedUserServiceTestUnsupervised, IsURLFilteringEnabled) {
       kFilterWebsitesForSupervisedUsersOnDesktopAndIOS));
 
   EXPECT_FALSE(service_->IsURLFilteringEnabled());
-}
-
-TEST_F(SupervisedUserServiceTestUnsupervised, AreExtensionsPermissionsEnabled) {
-  EXPECT_FALSE(service_->AreExtensionsPermissionsEnabled());
 }
 
 // TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg

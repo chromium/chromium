@@ -72,8 +72,7 @@
 #include "ui/gfx/skbitmap_operations.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace extensions {
@@ -396,10 +395,6 @@ ExtensionInfoGenerator::ExtensionInfoGenerator(
       warning_service_(WarningService::Get(browser_context)),
       error_console_(ErrorConsole::Get(browser_context)),
       image_loader_(ImageLoader::Get(browser_context)),
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-      supervised_user_service_(
-          SupervisedUserServiceFactory::GetForBrowserContext(browser_context)),
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
       pending_image_loads_(0u) {
 }
 
@@ -620,7 +615,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   bool permissions_increase =
       (disable_reasons & disable_reason::DISABLE_PERMISSIONS_INCREASE) != 0;
   info->disable_reasons.parent_disabled_permissions =
-      supervised_user_service_->AreExtensionsPermissionsEnabled() &&
+      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs()) &&
       !profile->GetPrefs()->GetBoolean(
           prefs::kSupervisedUserExtensionsMayRequestPermissions) &&
       (custodian_approval_required || permissions_increase);

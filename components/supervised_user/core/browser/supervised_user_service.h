@@ -99,9 +99,6 @@ class SupervisedUserService : public KeyedService,
   // is empty, or the empty string if there is no second custodian.
   std::string GetSecondCustodianName() const;
 
-  // Returns true if the extensions permissions parental control is enabled.
-  bool AreExtensionsPermissionsEnabled() const;
-
   // Returns true if the URL filtering parental control is enabled.
   bool IsURLFilteringEnabled() const;
 

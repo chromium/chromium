@@ -70,8 +70,7 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
 #include "extensions/browser/api/management/management_api.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -507,10 +506,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
   // Check if the supervised user is allowed to install extensions.
   // NOTE: we do not block themes.
   if (!dummy_extension_->is_theme()) {
-    supervised_user::SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile_);
-
-    if (service->AreExtensionsPermissionsEnabled()) {
+    if (supervised_user::AreExtensionsPermissionsEnabled(
+            *profile_->GetPrefs())) {
       SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
           ManagementAPI::GetFactoryInstance()
               ->Get(profile_)
@@ -667,9 +664,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
 bool WebstorePrivateBeginInstallWithManifest3Function::
     PromptForParentApproval() {
-  supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile_);
-  DCHECK(service->AreExtensionsPermissionsEnabled());
+  DCHECK(
+      supervised_user::AreExtensionsPermissionsEnabled(*profile_->GetPrefs()));
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents) {
     // The browser window has gone away.
@@ -729,13 +725,12 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
     case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS: {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
       // TODO(b/202064235): The only user of this branch is ChromeOs v1 flow.
-      supervised_user::SupervisedUserService* service =
-          SupervisedUserServiceFactory::GetForProfile(profile_);
       // Handle parent permission for child accounts on ChromeOS.
       if (!dummy_extension_->is_theme()  // Parent permission not required for
                                          // theme installation
           && g_browser_process->profile_manager()->IsValidProfile(profile_) &&
-          service->AreExtensionsPermissionsEnabled()) {
+          supervised_user::AreExtensionsPermissionsEnabled(
+              *profile_->GetPrefs())) {
         if (PromptForParentApproval()) {
           // If are showing parent permission dialog, return instead of
           // break, so that we don't release the ref below.
@@ -893,10 +888,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (!dummy_extension_->is_theme()) {
-    supervised_user::SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile_);
     const bool requires_parent_permission =
-        service->AreExtensionsPermissionsEnabled();
+        supervised_user::AreExtensionsPermissionsEnabled(*profile_->GetPrefs());
     // We don't prompt for parent permission for themes, so no need
     // to configure the install prompt to indicate that this is a child
     // asking a parent for installation permission.
@@ -1186,10 +1179,8 @@ WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context()));
-  if (!service->AreExtensionsPermissionsEnabled()) {
+  auto* profile = Profile::FromBrowserContext(browser_context());
+  if (!supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs())) {
     return RespondNow(BuildResponse(false));
   }
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());

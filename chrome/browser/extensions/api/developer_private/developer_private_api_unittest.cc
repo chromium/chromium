@@ -43,6 +43,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -75,10 +76,9 @@
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace extensions {
 
@@ -3114,11 +3114,9 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
   base::FilePath path = data_dir().AppendASCII("simple_with_popup");
   api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(&path);
 
-  supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile());
-  EXPECT_NE(service, nullptr);
   if (extensions_permissions_for_supervised_users_on_desktop()) {
-    EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
+    EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(
+        *profile()->GetPrefs()));
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
@@ -3127,7 +3125,8 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
     EXPECT_THAT(error, testing::HasSubstr("Child account"));
   } else {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-    EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
+    EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(
+        *profile()->GetPrefs()));
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
@@ -3135,7 +3134,8 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
         function.get(), "[]", profile());
     EXPECT_THAT(error, testing::HasSubstr("Child account"));
 #else
-    EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
+    EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(
+        *profile()->GetPrefs()));
 #endif
   }
 }

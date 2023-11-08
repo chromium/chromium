@@ -132,20 +132,6 @@ bool SupervisedUserService::IsURLFilteringEnabled() const {
 #endif
 }
 
-bool SupervisedUserService::AreExtensionsPermissionsEnabled() const {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return supervised_user::IsChildAccount(user_prefs_.get());
-#else
-  return supervised_user::IsChildAccount(user_prefs_.get()) &&
-         base::FeatureList::IsEnabled(
-             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif
-#else
-  return false;
-#endif
-}
-
 bool SupervisedUserService::HasACustodian() const {
   return !GetCustodianEmailAddress().empty() ||
          !GetSecondCustodianEmailAddress().empty();

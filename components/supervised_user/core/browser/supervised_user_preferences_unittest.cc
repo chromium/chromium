@@ -4,8 +4,10 @@
 
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
@@ -117,6 +119,82 @@ TEST_F(SupervisedUserPreferencesTest, IsChildAccountNonSupervisedUser) {
   pref_service_.SetString(prefs::kSupervisedUserId, std::string());
   EXPECT_FALSE(supervised_user::IsChildAccount(pref_service_));
 }
+
+enum class ExtensionsPermissionStatus { kEnabled, kDisabled };
+
+// Tests for the method AreExtensionsPermissionsEnabled which
+// depends on enabling platform-specific feature flags.
+class SupervisedUserPreferencesTestWithExtensionsPermissionsFeature
+    : public ::testing::Test,
+      public testing::WithParamInterface<ExtensionsPermissionStatus> {
+ public:
+  void SetUp() override {
+    auto* registry = pref_service_.registry();
+    supervised_user::RegisterProfilePrefs(registry);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    if (AreExtensionsPermitted()) {
+      feature_list_.InitAndEnableFeature(
+          supervised_user::
+              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          supervised_user::
+              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+    }
+#endif
+  }
+
+  bool AreExtensionsPermitted() const {
+    return GetParam() == ExtensionsPermissionStatus::kEnabled;
+  }
+
+ protected:
+  TestingPrefServiceSimple pref_service_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(SupervisedUserPreferencesTestWithExtensionsPermissionsFeature,
+       AreExtensionsPermissionsEnabledWithSupervisedUser) {
+  pref_service_.SetString(prefs::kSupervisedUserId,
+                          supervised_user::kChildAccountSUID);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_EQ(supervised_user::AreExtensionsPermissionsEnabled(pref_service_),
+            AreExtensionsPermitted());
+#else
+  EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(pref_service_));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
+
+TEST_P(SupervisedUserPreferencesTestWithExtensionsPermissionsFeature,
+       AreExtensionsPermissionsEnabledWithNonSupervisedUser) {
+  pref_service_.SetString(prefs::kSupervisedUserId, std::string());
+
+  EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(pref_service_));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupervisedUserPreferencesTestWithExtensionsPermissionsFeature,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    testing::Values(ExtensionsPermissionStatus::kEnabled,
+                    ExtensionsPermissionStatus::kDisabled),
+#else
+    // ChromeOS has supervised user extension permissions on by default.
+    testing::Values(ExtensionsPermissionStatus::kEnabled),
+#endif
+    [](const testing::TestParamInfo<ExtensionsPermissionStatus> info) {
+      // Generate the test suffix from boolean param.
+      switch (info.param) {
+        case ExtensionsPermissionStatus::kEnabled:
+          return "with_enabled_extension_permissions";
+        case ExtensionsPermissionStatus::kDisabled:
+          return "with_disabled_extension_permissions";
+      }
+    });
 
 }  // namespace
 }  // namespace supervised_user

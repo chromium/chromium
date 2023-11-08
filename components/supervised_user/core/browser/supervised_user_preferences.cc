@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
@@ -172,6 +173,20 @@ bool IsChildAccountStatusKnown(const PrefService& pref_service) {
 
 bool IsChildAccount(const PrefService& pref_service) {
   return pref_service.GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
+}
+
+bool AreExtensionsPermissionsEnabled(const PrefService& pref_service) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  return supervised_user::IsChildAccount(pref_service);
+#else
+  return supervised_user::IsChildAccount(pref_service) &&
+         base::FeatureList::IsEnabled(
+             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace supervised_user
