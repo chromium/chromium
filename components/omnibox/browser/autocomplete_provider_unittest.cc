@@ -1616,6 +1616,45 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL_SearchboxStatsOnly) {
     EXPECT_EQ("2456j1j4", expected.experiment_stats());
   }
 
+#if BUILDFLAG(IS_IOS)
+  {  // Test top omnibox position in experiment stats v2.
+    AutocompleteMatch match_copy = match;
+    controller_->SetSteadyStateOmniboxPosition(
+        metrics::OmniboxEventProto::TOP_POSITION);
+    url = GetDestinationURL(match_copy, base::Milliseconds(2456));
+    EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNOIDBBgBIF8&", url.path());
+    // Make sure searchbox_stats is serialized and encoded correctly.
+    std::string serialized_proto;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        "EgZjaHJvbWXSAQgyNDU2ajFqNOIDBBgBIF8",
+        base::Base64UrlDecodePolicy::DISALLOW_PADDING, &serialized_proto));
+    omnibox::metrics::ChromeSearchboxStats expected;
+    expected.ParseFromString(serialized_proto);
+    EXPECT_EQ(1, expected.experiment_stats_v2_size());
+    EXPECT_EQ(95, expected.experiment_stats_v2(0).type_int());
+    EXPECT_EQ(1, expected.experiment_stats_v2(0).int_value());
+  }
+  {  // Test bottom omnibox position in experiment stats v2.
+    AutocompleteMatch match_copy = match;
+    controller_->SetSteadyStateOmniboxPosition(
+        metrics::OmniboxEventProto::BOTTOM_POSITION);
+    url = GetDestinationURL(match_copy, base::Milliseconds(2456));
+    EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNOIDBBgCIF8&", url.path());
+    // Make sure searchbox_stats is serialized and encoded correctly.
+    std::string serialized_proto;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        "EgZjaHJvbWXSAQgyNDU2ajFqNOIDBBgCIF8",
+        base::Base64UrlDecodePolicy::DISALLOW_PADDING, &serialized_proto));
+    omnibox::metrics::ChromeSearchboxStats expected;
+    expected.ParseFromString(serialized_proto);
+    EXPECT_EQ(1, expected.experiment_stats_v2_size());
+    EXPECT_EQ(95, expected.experiment_stats_v2(0).type_int());
+    EXPECT_EQ(2, expected.experiment_stats_v2(0).int_value());
+  }
+  controller_->SetSteadyStateOmniboxPosition(
+      metrics::OmniboxEventProto::UNKNOWN_POSITION);
+#endif
+
   // Test experiment stats v2 set.
   omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2 experiment_stats_v2;
   experiment_stats_v2.set_type_int(10001);

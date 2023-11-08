@@ -728,8 +728,8 @@ void AutocompleteController::
 
   // Append the ExperimentStatsV2 to the AQS parameter to be logged in
   // searchbox_stats.proto's experiment_stats_v2 field.
+  std::vector<std::string> experiment_stats_v2_strings;
   if (zero_suggest_provider_) {
-    std::vector<std::string> experiment_stats_v2_strings;
     for (const auto& experiment_stat_v2 :
          zero_suggest_provider_->experiment_stats_v2s()) {
       // The string value consists of suggestion type/subtype pairs delimited
@@ -746,11 +746,28 @@ void AutocompleteController::
       reported_experiment_stats_v2->set_type_int(experiment_stat_v2.type_int());
       reported_experiment_stats_v2->set_string_value(value);
     }
-    if (!experiment_stats_v2_strings.empty()) {
-      // 'j' is used as a delimiter between individual experiment stat entries.
-      match->search_terms_args->assisted_query_stats +=
-          "." + base::JoinString(experiment_stats_v2_strings, "j");
-    }
+  }
+#if BUILDFLAG(IS_IOS)
+  // Append the omnibox position when it's set to experiment_stats_v2.
+  if (steady_state_omnibox_position_ !=
+      metrics::OmniboxEventProto::UNKNOWN_POSITION) {
+    const auto omnibox_position_stat = GetOmniboxPositionExperimentStatsV2();
+    auto* reported_experiment_stats_v2 =
+        match->search_terms_args->searchbox_stats.add_experiment_stats_v2();
+    reported_experiment_stats_v2->set_type_int(
+        omnibox_position_stat.type_int());
+    reported_experiment_stats_v2->set_int_value(
+        omnibox_position_stat.int_value());
+    experiment_stats_v2_strings.push_back(
+        base::NumberToString(omnibox_position_stat.type_int()) + "i" +
+        base::NumberToString(omnibox_position_stat.int_value()));
+  }
+#endif
+
+  if (!experiment_stats_v2_strings.empty()) {
+    // 'j' is used as a delimiter between individual experiment stat entries.
+    match->search_terms_args->assisted_query_stats +=
+        "." + base::JoinString(experiment_stats_v2_strings, "j");
   }
 
   SetMatchDestinationURL(match);
@@ -1606,6 +1623,30 @@ size_t AutocompleteController::InjectAdHocMatch(AutocompleteMatch match) {
 void AutocompleteController::SetSteadyStateOmniboxPosition(
     metrics::OmniboxEventProto::OmniboxPosition position) {
   steady_state_omnibox_position_ = position;
+}
+
+const omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2
+AutocompleteController::GetOmniboxPositionExperimentStatsV2() const {
+  // Field number of the omnibox position in
+  // SearchboxStats::ExperimentStatsV2::StatType.
+  constexpr int kOmniboxPositionFieldNumber = 95;
+  // Value of the enum in SearchboxStats::OmniboxPosition.
+  constexpr int kTopOmniboxValue = 1;
+  constexpr int kBottomOmniboxValue = 2;
+
+  omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2 experiment_stats_v2;
+  experiment_stats_v2.set_type_int(kOmniboxPositionFieldNumber);
+  switch (steady_state_omnibox_position_) {
+    case metrics::OmniboxEventProto::TOP_POSITION:
+      experiment_stats_v2.set_int_value(kTopOmniboxValue);
+      break;
+    case metrics::OmniboxEventProto::BOTTOM_POSITION:
+      experiment_stats_v2.set_int_value(kBottomOmniboxValue);
+      break;
+    default:
+      break;
+  }
+  return experiment_stats_v2;
 }
 
 bool AutocompleteController::ShouldRunProvider(

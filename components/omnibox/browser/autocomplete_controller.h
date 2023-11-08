@@ -439,6 +439,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   void MaybeCleanSuggestionsForKeywordMode(const std::u16string& input,
                                            AutocompleteResult* result);
 
+  // Get the experiment stats v2 entry for the omnibox position. Used on iOS.
+  const omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2
+  GetOmniboxPositionExperimentStatsV2() const;
+
   base::ObserverList<Observer> observers_;
 
   // The client passed to the providers.
