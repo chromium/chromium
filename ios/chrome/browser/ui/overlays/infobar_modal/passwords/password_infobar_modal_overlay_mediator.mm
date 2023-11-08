@@ -60,7 +60,7 @@
                                                  withString:@"•"
                                             startingAtIndex:0]];
   [_consumer setUnmaskedPassword:password];
-  absl::optional<std::string> account_string =
+  std::optional<std::string> account_string =
       delegate_->GetAccountToStorePassword();
   NSString* details_text =
       account_string

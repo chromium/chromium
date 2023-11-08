@@ -104,7 +104,7 @@
 
   NSString* title = base::SysUTF16ToNSString(delegate->GetMessageText());
 
-  absl::optional<std::string> account_string =
+  std::optional<std::string> account_string =
       delegate->GetAccountToStorePassword();
   NSString* subtitle =
       account_string ? l10n_util::GetNSStringF(

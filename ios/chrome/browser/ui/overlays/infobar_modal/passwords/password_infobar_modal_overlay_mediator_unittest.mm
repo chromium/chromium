@@ -51,7 +51,7 @@ class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
   void InitInfobar(
-      absl::optional<std::string> account_to_store_password = absl::nullopt) {
+      std::optional<std::string> account_to_store_password = std::nullopt) {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypePasswordSave,
         MockIOSChromeSavePasswordInfoBarDelegate::Create(

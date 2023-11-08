@@ -6,6 +6,9 @@
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_INFOBAR_MODAL_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_OVERLAY_REQUEST_CONFIG_H_
 
 #import <UIKit/UIKit.h>
+
+#include <optional>
+
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
@@ -63,7 +66,7 @@ class SaveAddressProfileModalRequestConfig
 
   bool is_migration_to_account() const { return is_migration_to_account_; }
 
-  absl::optional<std::u16string> user_email() const { return user_email_; }
+  std::optional<std::u16string> user_email() const { return user_email_; }
 
   bool is_profile_an_account_profile() const {
     return is_profile_an_account_profile_;
@@ -108,7 +111,7 @@ class SaveAddressProfileModalRequestConfig
   bool is_profile_an_account_profile_ = false;
 
   // Denotes the email address of the signed-in account.
-  absl::optional<std::u16string> user_email_;
+  std::optional<std::u16string> user_email_;
 
   // Denotes the profile description shown in the migration prompt.
   std::u16string profile_description_for_migration_prompt_;
