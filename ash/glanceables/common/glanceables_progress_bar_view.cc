@@ -8,6 +8,7 @@
 
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -48,5 +49,8 @@ GlanceablesProgressBarView::GlanceablesProgressBarView() {
 void GlanceablesProgressBarView::UpdateProgressBarVisibility(bool visible) {
   progress_bar_->SetVisible(visible);
 }
+
+BEGIN_METADATA(GlanceablesProgressBarView)
+END_METADATA
 
 }  // namespace ash

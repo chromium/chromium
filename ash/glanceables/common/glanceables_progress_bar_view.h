@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace views {
@@ -17,6 +18,8 @@ namespace ash {
 
 // Container for infinite `views::ProgressBar` used in glanceables bubbles.
 class ASH_EXPORT GlanceablesProgressBarView : public views::FlexLayoutView {
+  METADATA_HEADER(GlanceablesProgressBarView, views::FlexLayoutView)
+
  public:
   GlanceablesProgressBarView();
   GlanceablesProgressBarView(const GlanceablesProgressBarView&) = delete;
