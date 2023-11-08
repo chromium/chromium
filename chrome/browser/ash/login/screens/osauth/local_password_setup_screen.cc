@@ -87,7 +87,7 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
       case WizardContext::AuthChangeFlow::kRecovery:
         password_factor_editor.UpdateLocalPassword(
             GetToken(), password,
-            base::BindOnce(&LocalPasswordSetupScreen::OnSetLocalPassword,
+            base::BindOnce(&LocalPasswordSetupScreen::OnUpdateLocalPassword,
                            weak_factory_.GetWeakPtr()));
         break;
     }
