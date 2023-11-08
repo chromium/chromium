@@ -17663,6 +17663,7 @@ Called by update_debug_scenarios.py.-->
   <int value="79" label="networkPanelFilterBarRedesign"/>
   <int value="80" label="breadcrumbsPerformancePanel"/>
   <int value="81" label="trackContextMenu"/>
+  <int value="83" label="sourcesFrameIndentationMarkersTemporarilyDisable"/>
 </enum>
 
 <enum name="DevToolsIssueCreated">
