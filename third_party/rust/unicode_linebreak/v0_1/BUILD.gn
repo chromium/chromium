@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "unicode_linebreak"
   epoch = "0.1"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/unicode_linebreak/v0_1/crate/build.rs",
@@ -39,4 +35,8 @@ cargo_crate("lib") {
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
   build_script_outputs = [ "tables.rs" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }

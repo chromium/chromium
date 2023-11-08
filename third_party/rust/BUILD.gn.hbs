@@ -8,9 +8,9 @@
 import("//build/rust/cargo_crate.gni")
 
 {{#each rules}}
-{{#if this.1.concrete}}
-cargo_crate("{{this.0}}") {
-  {{#with this.1.concrete}}
+{{#if this.detail.crate}}
+cargo_crate("{{this.name}}") {
+  {{#with this.detail.crate}}
   {{#if crate_name}}
   crate_name = "{{crate_name}}"
   {{/if}}
@@ -18,12 +18,6 @@ cargo_crate("{{this.0}}") {
   epoch = "{{epoch}}"
   {{/if}}
   crate_type = "{{crate_type}}"
-  {{#unless public_visibility}}
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
-  {{/unless}}
   crate_root = "{{crate_root}}"
   sources = [
     {{#each sources}}
@@ -142,16 +136,22 @@ cargo_crate("{{this.0}}") {
   output_dir = "{{output_dir}}"
   {{/if}}
   {{/with}}
+  {{#unless this.gn_visibility.public}}
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  {{/unless}}
 }
 {{/if}}
-{{#if this.1.group}}
-group("{{this.0}}") {
-  {{#with this.1.group}}
-  public_deps = [":{{concrete_target}}"]
-  {{#if testonly}}
+{{#if this.detail.testonly_alias}}
+group("{{this.name}}") {
+  {{#with this.detail.testonly_alias}}
+  public_deps = [":{{real_target}}"]
+  {{/with}}
+  {{#if this.gn_visibility.testonly}}
   testonly = true
   {{/if}}
-  {{/with}}
 }
 {{/if}}
 {{/each}}

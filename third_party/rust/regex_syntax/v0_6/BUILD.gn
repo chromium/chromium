@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "regex_syntax"
   epoch = "0.6"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/regex_syntax/v0_6/crate/benches/bench.rs",
@@ -73,4 +69,8 @@ cargo_crate("lib") {
     "unicode-script",
     "unicode-segment",
   ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }

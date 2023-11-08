@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "rand_pcg"
   epoch = "0.3"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/rand_pcg/v0_3/crate/src/lib.rs",
@@ -41,6 +37,10 @@ cargo_crate("lib") {
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/rand_core/v0_6:lib" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }
 group("test_support") {
   public_deps = [ ":lib" ]

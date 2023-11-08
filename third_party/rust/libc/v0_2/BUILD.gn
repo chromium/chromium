@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "libc"
   epoch = "0.2"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/libc/v0_2/crate/build.rs",
@@ -259,4 +255,8 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }

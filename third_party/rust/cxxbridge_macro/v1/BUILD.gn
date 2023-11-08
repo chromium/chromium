@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "cxxbridge_macro"
   epoch = "1"
   crate_type = "proc-macro"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/cxxbridge_macro/v1/crate/src/clang.rs",
@@ -74,4 +70,8 @@ cargo_crate("lib") {
     "//third_party/rust/quote/v1:lib",
     "//third_party/rust/syn/v2:lib",
   ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }

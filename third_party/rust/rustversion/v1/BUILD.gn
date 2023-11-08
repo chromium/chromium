@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "rustversion"
   epoch = "1"
   crate_type = "proc-macro"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/rustversion/v1/crate/build/build.rs",
@@ -59,4 +55,8 @@ cargo_crate("lib") {
   build_root = "crate/build/build.rs"
   build_sources = [ "crate/build/build.rs" ]
   build_script_outputs = [ "version.rs" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }

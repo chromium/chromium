@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "rand_chacha"
   epoch = "0.3"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/rand_chacha/v0_3/crate/src/chacha.rs",
@@ -42,4 +38,8 @@ cargo_crate("lib") {
     "//third_party/rust/rand_core/v0_6:lib",
   ]
   features = [ "std" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }

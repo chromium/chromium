@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "anyhow"
   epoch = "1"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/anyhow/v1/crate/build.rs",
@@ -69,6 +65,10 @@ cargo_crate("lib") {
   features = [ "std" ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }
 group("test_support") {
   public_deps = [ ":lib" ]

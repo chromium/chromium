@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "ppv_lite86"
   epoch = "0.2"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/ppv_lite86/v0_2/crate/src/generic.rs",
@@ -41,4 +37,8 @@ cargo_crate("lib") {
     "simd",
     "std",
   ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }

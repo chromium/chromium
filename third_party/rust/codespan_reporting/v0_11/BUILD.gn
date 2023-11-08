@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "codespan_reporting"
   epoch = "0.11"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/codespan_reporting/v0_11/crate/examples/custom_files.rs",
@@ -51,4 +47,8 @@ cargo_crate("lib") {
     "//third_party/rust/termcolor/v1:lib",
     "//third_party/rust/unicode_width/v0_1:lib",
   ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }

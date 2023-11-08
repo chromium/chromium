@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "aho_corasick"
   epoch = "0.7"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/aho_corasick/v0_7/crate/src/ahocorasick.rs",
@@ -58,4 +54,8 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/memchr/v2:lib" ]
   features = [ "std" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }

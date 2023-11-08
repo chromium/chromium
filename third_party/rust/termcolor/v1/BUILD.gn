@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "termcolor"
   epoch = "1"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [ "//third_party/rust/termcolor/v1/crate/src/lib.rs" ]
   inputs = [ "//third_party/rust/termcolor/v1/crate/README.md" ]
@@ -35,4 +31,8 @@ cargo_crate("lib") {
   if (is_win) {
     deps += [ "//third_party/rust/winapi_util/v0_1:lib" ]
   }
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }

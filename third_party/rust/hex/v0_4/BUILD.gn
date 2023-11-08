@@ -11,10 +11,6 @@ cargo_crate("lib") {
   crate_name = "hex"
   epoch = "0.4"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
   sources = [
     "//third_party/rust/hex/v0_4/crate/benches/hex.rs",
@@ -42,6 +38,10 @@ cargo_crate("lib") {
     "alloc",
     "std",
   ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }
 group("test_support") {
   public_deps = [ ":lib" ]
