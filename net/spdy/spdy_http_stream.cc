@@ -444,7 +444,7 @@ void SpdyHttpStream::SendEmptyBody() {
   CHECK(!HasUploadData());
   CHECK(spdy_session_->EndStreamWithDataFrame());
 
-  auto buffer = base::MakeRefCounted<IOBuffer>(/* buffer_size = */ 0);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(/* buffer_size = */ 0);
   stream_->SendData(buffer.get(), /* length = */ 0, NO_MORE_DATA_TO_SEND);
 }
 

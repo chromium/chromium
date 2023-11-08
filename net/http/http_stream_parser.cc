@@ -112,10 +112,10 @@ bool ShouldTryReadingOnUploadError(int error_code) {
 // // size() == BytesRemaining() == BytesConsumed() == 0.
 // // data() points to the beginning of the buffer.
 //
-class HttpStreamParser::SeekableIOBuffer : public IOBuffer {
+class HttpStreamParser::SeekableIOBuffer : public IOBufferWithSize {
  public:
   explicit SeekableIOBuffer(int capacity)
-      : IOBuffer(capacity), real_data_(data_), capacity_(capacity) {}
+      : IOBufferWithSize(capacity), real_data_(data_), capacity_(capacity) {}
 
   // DidConsume() changes the |data_| pointer so that |data_| always points
   // to the first unconsumed byte.
@@ -245,8 +245,8 @@ int HttpStreamParser::SendRequest(
   if (ShouldMergeRequestHeadersAndBody(request, request_->upload_data_stream)) {
     int merged_size = static_cast<int>(
         request_headers_length_ + request_->upload_data_stream->size());
-    scoped_refptr<IOBuffer> merged_request_headers_and_body =
-        base::MakeRefCounted<IOBuffer>(merged_size);
+    auto merged_request_headers_and_body =
+        base::MakeRefCounted<IOBufferWithSize>(merged_size);
     // We'll repurpose |request_headers_| to store the merged headers and
     // body.
     request_headers_ = base::MakeRefCounted<DrainableIOBuffer>(

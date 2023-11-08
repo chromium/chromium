@@ -273,7 +273,7 @@ void TestTransactionConsumer::DidFinish(int result) {
 
 void TestTransactionConsumer::Read() {
   state_ = State::kReading;
-  read_buf_ = base::MakeRefCounted<IOBuffer>(1024);
+  read_buf_ = base::MakeRefCounted<IOBufferWithSize>(1024);
   int result =
       trans_->Read(read_buf_.get(), 1024,
                    base::BindOnce(&TestTransactionConsumer::OnIOComplete,
@@ -668,7 +668,7 @@ int ReadTransaction(HttpTransaction* trans, std::string* result) {
   std::string content;
   do {
     TestCompletionCallback callback;
-    scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(256);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
     rv = trans->Read(buf.get(), 256, callback.callback());
     if (rv == ERR_IO_PENDING) {
       rv = callback.WaitForResult();

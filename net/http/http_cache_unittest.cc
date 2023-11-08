@@ -619,7 +619,7 @@ void CreateTruncatedEntry(std::string raw_headers, MockHttpCache* cache) {
   // Set the last argument for this to be an incomplete request.
   EXPECT_TRUE(MockHttpCache::WriteResponseInfo(entry, &response, true, true));
 
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(100);
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(100);
   int len = static_cast<int>(base::strlcpy(buf->data(),
                                            "rg: 00-09 rg: 10-19 ", 100));
   TestCompletionCallback cb;
@@ -1385,7 +1385,7 @@ TEST_F(HttpCacheTest, ReleaseBuffer) {
   ASSERT_THAT(cache.CreateTransaction(&trans), IsOk());
 
   const int kBufferSize = 10;
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(kBufferSize);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
   ReleaseBufferCompletionCallback cb(buffer.get());
 
   int rv = trans->Start(&request, cb.callback(), NetLogWithSource());
@@ -3204,8 +3204,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationDifferentRanges) {
     // Start writing to the cache so that MockDiskEntry::CouldBeSparse() returns
     // true.
     const int kBufferSize = 5;
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(kBufferSize);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
     ReleaseBufferCompletionCallback cb(buffer.get());
     c->result = c->trans->Read(buffer.get(), kBufferSize, cb.callback());
     EXPECT_EQ(kBufferSize, cb.GetResult(c->result));
@@ -3353,8 +3352,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationCacheLockTimeout) {
     // Start writing to the cache so that MockDiskEntry::CouldBeSparse() returns
     // true.
     const int kBufferSize = 5;
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(kBufferSize);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
     ReleaseBufferCompletionCallback cb(buffer.get());
     c->result = c->trans->Read(buffer.get(), kBufferSize, cb.callback());
     EXPECT_EQ(kBufferSize, cb.GetResult(c->result));
@@ -3448,8 +3446,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationCouldntConditionalize) {
     base::RunLoop().RunUntilIdle();
 
     const int kBufferSize = 5;
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(kBufferSize);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
     ReleaseBufferCompletionCallback cb(buffer.get());
     c->result = c->trans->Read(buffer.get(), kBufferSize, cb.callback());
     EXPECT_EQ(kBufferSize, cb.GetResult(c->result));
@@ -3536,8 +3533,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationCouldConditionalize) {
     base::RunLoop().RunUntilIdle();
 
     const int kBufferSize = 5;
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(kBufferSize);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
     ReleaseBufferCompletionCallback cb(buffer.get());
     c->result = c->trans->Read(buffer.get(), kBufferSize, cb.callback());
     EXPECT_EQ(kBufferSize, cb.GetResult(c->result));
@@ -3612,8 +3608,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationOverlappingRanges) {
     // Start writing to the cache so that MockDiskEntry::CouldBeSparse() returns
     // true.
     const int kBufferSize = 5;
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(kBufferSize);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
     ReleaseBufferCompletionCallback cb(buffer.get());
     c->result = c->trans->Read(buffer.get(), kBufferSize, cb.callback());
     EXPECT_EQ(kBufferSize, cb.GetResult(c->result));
@@ -3716,8 +3711,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationRestartDoneHeaders) {
     // Start writing to the cache so that MockDiskEntry::CouldBeSparse() returns
     // true.
     const int kBufferSize = 10;
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(kBufferSize);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
     ReleaseBufferCompletionCallback cb(buffer.get());
     c->result = c->trans->Read(buffer.get(), kBufferSize, cb.callback());
     EXPECT_EQ(kBufferSize, cb.GetResult(c->result));
@@ -4458,7 +4452,7 @@ TEST_F(HttpCacheTest, SimpleGET_HangingCacheWriteCleanup) {
   result = callback.GetResult(result);
 
   // Read the first byte.
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(1);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(1);
   ReleaseBufferCompletionCallback buffer_callback(buffer.get());
   result = transaction->Read(buffer.get(), 1, buffer_callback.callback());
   EXPECT_EQ(1, buffer_callback.GetResult(result));
@@ -4469,7 +4463,7 @@ TEST_F(HttpCacheTest, SimpleGET_HangingCacheWriteCleanup) {
       mock_cache.disk_cache()->GetDiskEntryRef(cache_key);
   entry->SetDefer(MockDiskEntry::DEFER_WRITE);
 
-  buffer = base::MakeRefCounted<IOBuffer>(1);
+  buffer = base::MakeRefCounted<IOBufferWithSize>(1);
   ReleaseBufferCompletionCallback buffer_callback2(buffer.get());
   result = transaction->Read(buffer.get(), 1, buffer_callback2.callback());
   EXPECT_EQ(ERR_IO_PENDING, result);
@@ -4532,8 +4526,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingCancelWriter) {
   for (int i = 0; i < 2; i++) {
     auto& c = context_list[i];
     const int kBufferSize = 5;
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(kBufferSize);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
     ReleaseBufferCompletionCallback cb(buffer.get());
     c->result = c->trans->Read(buffer.get(), kBufferSize, cb.callback());
     EXPECT_EQ(ERR_IO_PENDING, c->result);
@@ -4624,8 +4617,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingNetworkReadFailed) {
   for (int i = 0; i < 2; i++) {
     auto& c = context_list[i];
     const int kBufferSize = 5;
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(kBufferSize);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
     c->result =
         c->trans->Read(buffer.get(), kBufferSize, c->callback.callback());
     EXPECT_EQ(ERR_IO_PENDING, c->result);
@@ -4649,7 +4641,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingNetworkReadFailed) {
   // Invoke Read on the 3rd transaction and it should get the error code back.
   auto& c = context_list[2];
   const int kBufferSize = 5;
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(kBufferSize);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
   c->result = c->trans->Read(buffer.get(), kBufferSize, c->callback.callback());
   EXPECT_EQ(ERR_INTERNET_DISCONNECTED, c->result);
 }
@@ -4702,7 +4694,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingCacheWriteFailed) {
   en->Close();
   const int kBufferSize = 5;
   std::vector<scoped_refptr<IOBuffer>> buffer(
-      3, base::MakeRefCounted<IOBuffer>(kBufferSize));
+      3, base::MakeRefCounted<IOBufferWithSize>(kBufferSize));
   for (int i = 0; i < 2; i++) {
     auto& c = context_list[i];
     c->result =
@@ -4855,7 +4847,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingSuccess) {
   // Initiate Read from two writers.
   const int kBufferSize = 5;
   std::vector<scoped_refptr<IOBuffer>> buffer(
-      3, base::MakeRefCounted<IOBuffer>(kBufferSize));
+      3, base::MakeRefCounted<IOBufferWithSize>(kBufferSize));
   for (int i = 0; i < 2; i++) {
     auto& c = context_list[i];
     c->result =
@@ -4938,7 +4930,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingHuge) {
   // Initiate Read from first transaction.
   const int kBufferSize = 5;
   std::vector<scoped_refptr<IOBuffer>> buffer(
-      kNumTransactions, base::MakeRefCounted<IOBuffer>(kBufferSize));
+      kNumTransactions, base::MakeRefCounted<IOBufferWithSize>(kBufferSize));
   auto& c = context_list[0];
   c->result =
       c->trans->Read(buffer[0].get(), kBufferSize, c->callback.callback());
@@ -5048,7 +5040,7 @@ TEST_F(HttpCacheTest, SimpleGET_ExtraRead) {
 
   // Perform an extra Read.
   const int kBufferSize = 10;
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(kBufferSize);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
   c.result = c.trans->Read(buffer.get(), kBufferSize, c.callback.callback());
   EXPECT_EQ(0, c.result);
 }
@@ -5093,8 +5085,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelWriter) {
   {
     auto& c = context_list[0];
     const int kBufferSize = 5;
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(kBufferSize);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
     ReleaseBufferCompletionCallback cb(buffer.get());
     c->result = c->trans->Read(buffer.get(), kBufferSize, cb.callback());
     EXPECT_EQ(kBufferSize, cb.GetResult(c->result));
@@ -5356,8 +5347,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritersFailWrite) {
     } else {
       // Read should lead to a failure being returned.
       const int kBufferSize = 5;
-      scoped_refptr<IOBuffer> buffer =
-          base::MakeRefCounted<IOBuffer>(kBufferSize);
+      auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
       ReleaseBufferCompletionCallback cb(buffer.get());
       c->result = c->trans->Read(buffer.get(), kBufferSize, cb.callback());
       EXPECT_EQ(ERR_CACHE_WRITE_FAILURE, cb.GetResult(c->result));
@@ -5862,7 +5852,7 @@ TEST_F(HttpCacheTest, SimpleGET_AbandonedCacheRead) {
     rv = callback.WaitForResult();
   ASSERT_THAT(rv, IsOk());
 
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(256);
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
   rv = trans->Read(buf.get(), 256, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -9461,7 +9451,7 @@ TEST_F(HttpCacheTest, GET_Previous206_NotSparse) {
       HttpUtil::AssembleRawHeaders(raw_headers));
   EXPECT_TRUE(MockHttpCache::WriteResponseInfo(entry, &response, true, false));
 
-  scoped_refptr<IOBuffer> buf(base::MakeRefCounted<IOBuffer>(500));
+  auto buf(base::MakeRefCounted<IOBufferWithSize>(500));
   int len = static_cast<int>(base::strlcpy(buf->data(),
                                            kRangeGET_TransactionOK.data, 500));
   TestCompletionCallback cb;
@@ -9507,7 +9497,7 @@ TEST_F(HttpCacheTest, RangeGET_Previous206_NotSparse_2) {
       HttpUtil::AssembleRawHeaders(raw_headers));
   EXPECT_TRUE(MockHttpCache::WriteResponseInfo(entry, &response, true, false));
 
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(500);
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(500);
   int len = static_cast<int>(base::strlcpy(buf->data(),
                                            kRangeGET_TransactionOK.data, 500));
   TestCompletionCallback cb;
@@ -9548,7 +9538,7 @@ TEST_F(HttpCacheTest, GET_Previous206_NotValidation) {
       HttpUtil::AssembleRawHeaders(raw_headers));
   EXPECT_TRUE(MockHttpCache::WriteResponseInfo(entry, &response, true, false));
 
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(500);
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(500);
   int len = static_cast<int>(base::strlcpy(buf->data(),
                                            kRangeGET_TransactionOK.data, 500));
   TestCompletionCallback cb;
@@ -10489,7 +10479,7 @@ TEST_F(HttpCacheTest, RangeGET_DontTruncate) {
   rv = trans->Start(request.get(), cb.callback(), NetLogWithSource());
   EXPECT_EQ(0, cb.GetResult(rv));
 
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(10);
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(10);
   rv = trans->Read(buf.get(), 10, cb.callback());
   EXPECT_EQ(10, cb.GetResult(rv));
 
@@ -10516,7 +10506,7 @@ TEST_F(HttpCacheTest, RangeGET_DontTruncate2) {
   rv = trans->Start(request.get(), cb.callback(), NetLogWithSource());
   EXPECT_EQ(0, cb.GetResult(rv));
 
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(10);
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(10);
   rv = trans->Read(buf.get(), 10, cb.callback());
   EXPECT_EQ(10, cb.GetResult(rv));
 
@@ -10879,7 +10869,7 @@ TEST_F(HttpCacheTest, GET_CancelIncompleteResource) {
   EXPECT_THAT(c->callback.GetResult(rv), IsOk());
 
   // Read 20 bytes from the cache, and 10 from the net.
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(100);
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(100);
   rv = c->trans->Read(buf.get(), 20, c->callback.callback());
   EXPECT_EQ(20, c->callback.GetResult(rv));
   rv = c->trans->Read(buf.get(), 10, c->callback.callback());
@@ -11894,7 +11884,7 @@ TEST_F(HttpCacheTest, FilterCompletion) {
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     EXPECT_THAT(callback.GetResult(rv), IsOk());
 
-    scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(256);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
     rv = trans->Read(buf.get(), 256, callback.callback());
     EXPECT_GT(callback.GetResult(rv), 0);
 
@@ -11957,7 +11947,7 @@ TEST_F(HttpCacheTest, StopCachingDeletesEntry) {
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     EXPECT_THAT(callback.GetResult(rv), IsOk());
 
-    scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(256);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
     rv = trans->Read(buf.get(), 10, callback.callback());
     EXPECT_EQ(10, callback.GetResult(rv));
 
@@ -11995,7 +11985,7 @@ TEST_F(HttpCacheTest, StopCachingThenDoneReadingDeletesEntry) {
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     EXPECT_THAT(callback.GetResult(rv), IsOk());
 
-    scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(256);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
     rv = trans->Read(buf.get(), 10, callback.callback());
     EXPECT_EQ(10, callback.GetResult(rv));
 
@@ -12073,7 +12063,7 @@ TEST_F(HttpCacheTest, StopCachingSavesEntry) {
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     EXPECT_THAT(callback.GetResult(rv), IsOk());
 
-    scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(256);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
     rv = trans->Read(buf.get(), 10, callback.callback());
     EXPECT_EQ(callback.GetResult(rv), 10);
 
@@ -12116,7 +12106,7 @@ TEST_F(HttpCacheTest, StopCachingTruncatedEntry) {
     int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
     EXPECT_THAT(callback.GetResult(rv), IsOk());
 
-    scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(256);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
     rv = trans->Read(buf.get(), 10, callback.callback());
     EXPECT_EQ(callback.GetResult(rv), 10);
 
@@ -12385,7 +12375,7 @@ TEST_P(HttpCacheHugeResourceTest,
     // to reduce the number of reads and speed up the test.
     const int kBufferSize = 1024 * 1024 * 10;
     scoped_refptr<net::IOBuffer> buf =
-        base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+        base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
     rv = http_transaction->Read(buf.get(), kBufferSize, callback.callback());
     rv = callback.GetResult(rv);
 

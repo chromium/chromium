@@ -1883,7 +1883,7 @@ int SpdySession::DoRead() {
 
   CHECK(socket_);
   read_state_ = READ_STATE_DO_READ_COMPLETE;
-  read_buffer_ = base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  read_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   int rv = socket_->ReadIfReady(
       read_buffer_.get(), kReadBufferSize,
       base::BindOnce(&SpdySession::PumpReadLoop, weak_factory_.GetWeakPtr(),

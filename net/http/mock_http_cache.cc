@@ -698,7 +698,7 @@ bool MockHttpCache::ReadResponseInfo(disk_cache::Entry* disk_entry,
   int size = disk_entry->GetDataSize(0);
 
   TestCompletionCallback cb;
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(size);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(size);
   int rv = disk_entry->ReadData(0, 0, buffer.get(), size, cb.callback());
   rv = cb.GetResult(rv);
   EXPECT_EQ(size, rv);

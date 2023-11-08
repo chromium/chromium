@@ -226,7 +226,7 @@ int HttpProxyClientSocket::PrepareForAuthRestart() {
   // If the auth request had a body, need to drain it before reusing the socket.
   if (!http_stream_parser_->IsResponseBodyComplete()) {
     next_state_ = STATE_DRAIN_BODY;
-    drain_buf_ = base::MakeRefCounted<IOBuffer>(kDrainBodyBufferSize);
+    drain_buf_ = base::MakeRefCounted<IOBufferWithSize>(kDrainBodyBufferSize);
     return OK;
   }
 

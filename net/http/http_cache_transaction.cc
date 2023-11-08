@@ -1544,7 +1544,7 @@ int HttpCache::Transaction::DoCacheReadResponse() {
   TransitionToState(STATE_CACHE_READ_RESPONSE_COMPLETE);
 
   io_buf_len_ = entry_->GetEntry()->GetDataSize(kResponseInfoIndex);
-  read_buf_ = base::MakeRefCounted<IOBuffer>(io_buf_len_);
+  read_buf_ = base::MakeRefCounted<IOBufferWithSize>(io_buf_len_);
 
   net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_READ_INFO);
   BeginDiskCacheAccessTimeCount();

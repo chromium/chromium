@@ -385,7 +385,7 @@ void HttpNetworkTransaction::PrepareForAuthRestart(HttpAuth::Target target) {
     // it first.
     if (!stream_->IsResponseBodyComplete()) {
       next_state_ = STATE_DRAIN_BODY_FOR_AUTH_RESTART;
-      read_buf_ = base::MakeRefCounted<IOBuffer>(
+      read_buf_ = base::MakeRefCounted<IOBufferWithSize>(
           kDrainBodyBufferSize);  // A bit bucket.
       read_buf_len_ = kDrainBodyBufferSize;
       return;

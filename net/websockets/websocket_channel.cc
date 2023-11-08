@@ -719,7 +719,7 @@ ChannelState WebSocketChannel::HandleFrameByState(
     case WebSocketFrameHeader::kOpCodePing:
       DVLOG(1) << "Got Ping of size " << payload.size();
       if (state_ == CONNECTED) {
-        auto buffer = base::MakeRefCounted<IOBuffer>(payload.size());
+        auto buffer = base::MakeRefCounted<IOBufferWithSize>(payload.size());
         base::ranges::copy(payload, buffer->data());
         return SendFrameInternal(true, WebSocketFrameHeader::kOpCodePong,
                                  std::move(buffer), payload.size());
@@ -939,10 +939,10 @@ ChannelState WebSocketChannel::SendClose(uint16_t code,
     // Special case: translate kWebSocketErrorNoStatusReceived into a Close
     // frame with no payload.
     DCHECK(reason.empty());
-    body = base::MakeRefCounted<IOBuffer>();
+    body = base::MakeRefCounted<IOBufferWithSize>();
   } else {
     const size_t payload_length = kWebSocketCloseCodeLength + reason.length();
-    body = base::MakeRefCounted<IOBuffer>(payload_length);
+    body = base::MakeRefCounted<IOBufferWithSize>(payload_length);
     size = payload_length;
     base::WriteBigEndian(body->data(), code);
     static_assert(sizeof(code) == kWebSocketCloseCodeLength,

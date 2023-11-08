@@ -368,7 +368,7 @@ std::vector<std::unique_ptr<WebSocketFrame>> CreateFrameVector(
     result_header.masked = (source_frame.masked == MASKED);
     result_header.payload_length = frame_length;
     if (source_frame.data) {
-      auto buffer = base::MakeRefCounted<IOBuffer>(frame_length);
+      auto buffer = base::MakeRefCounted<IOBufferWithSize>(frame_length);
       result_frame_data->push_back(buffer);
       std::copy(source_frame.data, source_frame.data + frame_length,
                 buffer->data());
@@ -605,7 +605,7 @@ class EchoeyFakeWebSocketStream : public FakeWebSocketStream {
   int WriteFrames(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
                   CompletionOnceCallback callback) override {
     for (const auto& frame : *frames) {
-      auto buffer = base::MakeRefCounted<IOBuffer>(
+      auto buffer = base::MakeRefCounted<IOBufferWithSize>(
           static_cast<size_t>(frame->header.payload_length));
       std::copy(frame->payload, frame->payload + frame->header.payload_length,
                 buffer->data());
@@ -788,7 +788,7 @@ std::vector<char> AsVector(base::StringPiece s) {
 // convenient to be able to specify data as a string, but the
 // WebSocketEventInterface requires the IOBuffer type.
 scoped_refptr<IOBuffer> AsIOBuffer(base::StringPiece s) {
-  auto buffer = base::MakeRefCounted<IOBuffer>(s.size());
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(s.size());
   base::ranges::copy(s, buffer->data());
   return buffer;
 }
@@ -2250,7 +2250,7 @@ TEST_F(WebSocketChannelEventInterfaceTest, ReadBinaryFramesAre8BitClean) {
   WebSocketFrameHeader& frame_header = frame->header;
   frame_header.final = true;
   frame_header.payload_length = kBinaryBlobSize;
-  auto buffer = base::MakeRefCounted<IOBuffer>(kBinaryBlobSize);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(kBinaryBlobSize);
   memcpy(buffer->data(), kBinaryBlob, kBinaryBlobSize);
   frame->payload = buffer->data();
   std::vector<std::unique_ptr<WebSocketFrame>> frames;

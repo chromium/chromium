@@ -2758,8 +2758,7 @@ TEST_F(SpdySessionTest, ReadDataWithoutYielding) {
   ASSERT_EQ(32 * 1024, kYieldAfterBytesRead);
   const int kPayloadSize = kYieldAfterBytesRead / 4 - spdy::kFrameHeaderSize;
   TestDataStream test_stream;
-  scoped_refptr<IOBuffer> payload =
-      base::MakeRefCounted<IOBuffer>(kPayloadSize);
+  auto payload = base::MakeRefCounted<IOBufferWithSize>(kPayloadSize);
   char* payload_data = payload->data();
   test_stream.GetBytes(payload_data, kPayloadSize);
 
@@ -2973,8 +2972,7 @@ TEST_F(SpdySessionTest, TestYieldingDuringReadData) {
   ASSERT_EQ(32 * 1024, kYieldAfterBytesRead);
   const int kPayloadSize = kYieldAfterBytesRead / 4 - spdy::kFrameHeaderSize;
   TestDataStream test_stream;
-  scoped_refptr<IOBuffer> payload =
-      base::MakeRefCounted<IOBuffer>(kPayloadSize);
+  auto payload = base::MakeRefCounted<IOBufferWithSize>(kPayloadSize);
   char* payload_data = payload->data();
   test_stream.GetBytes(payload_data, kPayloadSize);
 
@@ -3068,16 +3066,15 @@ TEST_F(SpdySessionTest, TestYieldingDuringAsyncReadData) {
   TestDataStream test_stream;
   const int kEightKPayloadSize =
       kYieldAfterBytesRead / 4 - spdy::kFrameHeaderSize;
-  scoped_refptr<IOBuffer> eightk_payload =
-      base::MakeRefCounted<IOBuffer>(kEightKPayloadSize);
+  auto eightk_payload =
+      base::MakeRefCounted<IOBufferWithSize>(kEightKPayloadSize);
   char* eightk_payload_data = eightk_payload->data();
   test_stream.GetBytes(eightk_payload_data, kEightKPayloadSize);
 
   // Build buffer of 2k size.
   TestDataStream test_stream2;
   const int kTwoKPayloadSize = kEightKPayloadSize - 6 * 1024;
-  scoped_refptr<IOBuffer> twok_payload =
-      base::MakeRefCounted<IOBuffer>(kTwoKPayloadSize);
+  auto twok_payload = base::MakeRefCounted<IOBufferWithSize>(kTwoKPayloadSize);
   char* twok_payload_data = twok_payload->data();
   test_stream2.GetBytes(twok_payload_data, kTwoKPayloadSize);
 

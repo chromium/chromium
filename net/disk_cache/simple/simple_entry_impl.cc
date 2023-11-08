@@ -480,7 +480,7 @@ int SimpleEntryImpl::WriteData(int stream_index,
     // here to avoid paying the price of the RefCountedThreadSafe atomic
     // operations.
     if (buf) {
-      op_buf = base::MakeRefCounted<IOBuffer>(buf_len);
+      op_buf = base::MakeRefCounted<net::IOBufferWithSize>(buf_len);
       std::copy(buf->data(), buf->data() + buf_len, op_buf->data());
     }
     op_callback = CompletionOnceCallback();

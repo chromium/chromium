@@ -265,7 +265,7 @@ class WebSocketBasicStreamSocketWriteTest
     const size_t payload_size =
         kWriteFrameSize - (WebSocketFrameHeader::kBaseHeaderSize +
                            WebSocketFrameHeader::kMaskingKeyLength);
-    auto buffer = base::MakeRefCounted<IOBuffer>(payload_size);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(payload_size);
     frame_buffers_.push_back(buffer);
     memcpy(buffer->data(), kWriteFrame + kWriteFrameSize - payload_size,
            payload_size);
@@ -970,7 +970,7 @@ TEST_F(WebSocketBasicStreamSocketTest, WriteNonNulMask) {
       std::make_unique<WebSocketFrame>(WebSocketFrameHeader::kOpCodeText);
   const std::string unmasked_payload = "graphics";
   const size_t payload_size = unmasked_payload.size();
-  auto buffer = base::MakeRefCounted<IOBuffer>(payload_size);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(payload_size);
   memcpy(buffer->data(), unmasked_payload.data(), payload_size);
   frame->payload = buffer->data();
   WebSocketFrameHeader& header = frame->header;

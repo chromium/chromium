@@ -731,8 +731,7 @@ TEST(HttpStreamParser, AsyncSingleChunkAndAsyncSocket) {
   ASSERT_THAT(callback.WaitForResult(), IsOk());
 
   // Finally, attempt to read the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(ERR_IO_PENDING,
             parser.ReadResponseBody(body_buffer.get(), kBodySize,
                                     callback.callback()));
@@ -808,8 +807,7 @@ TEST(HttpStreamParser, SyncSingleChunkAndAsyncSocket) {
   ASSERT_THAT(callback.WaitForResult(), IsOk());
 
   // Finally, attempt to read the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(ERR_IO_PENDING,
             parser.ReadResponseBody(body_buffer.get(), kBodySize,
                                     callback.callback()));
@@ -908,8 +906,7 @@ TEST(HttpStreamParser, AsyncChunkAndAsyncSocketWithMultipleChunks) {
   ASSERT_THAT(callback.WaitForResult(), IsOk());
 
   // Finally, attempt to read the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(ERR_IO_PENDING,
             parser.ReadResponseBody(body_buffer.get(), kBodySize,
                                     callback.callback()));
@@ -985,8 +982,7 @@ TEST(HttpStreamParser, AsyncEmptyChunkedUpload) {
   ASSERT_THAT(callback.WaitForResult(), IsOk());
 
   // Finally, attempt to read the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(ERR_IO_PENDING,
             parser.ReadResponseBody(body_buffer.get(), kBodySize,
                                     callback.callback()));
@@ -1061,8 +1057,7 @@ TEST(HttpStreamParser, SyncEmptyChunkedUpload) {
   ASSERT_THAT(callback.WaitForResult(), IsOk());
 
   // Finally, attempt to read the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(ERR_IO_PENDING,
             parser.ReadResponseBody(body_buffer.get(), kBodySize,
                                     callback.callback()));
@@ -1286,8 +1281,7 @@ class SimpleGetRunner {
 
   std::string ReadBody(int user_buf_len, int* read_lengths) {
     TestCompletionCallback callback;
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(user_buf_len);
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(user_buf_len);
     int rv;
     int i = 0;
     std::string body;
@@ -1747,8 +1741,8 @@ TEST(HttpStreamParser, NonInformationalResponseStart) {
             first_response_start_time);
 
   // [seq=4] The parser reads the response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(response_body.size());
+  auto body_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(response_body.size());
   int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
                                        callback.callback());
   EXPECT_THAT(callback.GetResult(result), response_body.size());
@@ -1872,8 +1866,8 @@ TEST(HttpStreamParser, ReceivedBytesIncludesContinueHeader) {
             parser.non_informational_response_start_time());
 
   // [seq=8] The parser reads the non-informational response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(response_body.size());
+  auto body_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(response_body.size());
   int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
                                        callback.callback());
   EXPECT_THAT(callback.GetResult(result), response_body.size());
@@ -2013,8 +2007,8 @@ TEST(HttpStreamParser, EarlyHints) {
             parser.non_informational_response_start_time());
 
   // [seq=10] The parser reads the non-informational response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(response_body.size());
+  auto body_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(response_body.size());
   int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
                                        callback.callback());
   EXPECT_THAT(callback.GetResult(result), response_body.size());
@@ -2130,8 +2124,8 @@ TEST(HttpStreamParser, MixedResponseHeaders) {
             parser.non_informational_response_start_time());
 
   // [seq=6] The parser reads the non-informational response body.
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(response_body.size());
+  auto body_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(response_body.size());
   int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
                                        callback.callback());
   EXPECT_THAT(callback.GetResult(result), response_body.size());
@@ -2186,8 +2180,7 @@ TEST(HttpStreamParser, ReadAfterUnownedObjectsDestroyed) {
   request_headers.reset();
   response_info.reset();
 
-  scoped_refptr<IOBuffer> body_buffer =
-      base::MakeRefCounted<IOBuffer>(kBodySize);
+  auto body_buffer = base::MakeRefCounted<IOBufferWithSize>(kBodySize);
   ASSERT_EQ(kBodySize, parser.ReadResponseBody(
       body_buffer.get(), kBodySize, callback.callback()));
 

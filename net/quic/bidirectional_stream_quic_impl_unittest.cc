@@ -820,8 +820,7 @@ TEST_P(BidirectionalStreamQuicImplTest, GetRequest) {
   request.end_stream_on_headers = true;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->set_trailers_expected(true);
@@ -921,16 +920,14 @@ TEST_P(BidirectionalStreamQuicImplTest, LoadTimingTwoRequests) {
   request.priority = DEFAULT_PRIORITY;
 
   // Start first request.
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->Start(&request, net_log_with_source(),
                   session()->CreateHandle(destination_));
 
   // Start second request.
-  scoped_refptr<IOBuffer> read_buffer2 =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer2 = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate2 =
       std::make_unique<TestDelegateBase>(read_buffer2.get(), kReadBufferSize);
   delegate2->Start(&request, net_log_with_source(),
@@ -1007,8 +1004,7 @@ TEST_P(BidirectionalStreamQuicImplTest, CoalesceDataBuffersNotHeadersFrame) {
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->DoNotSendRequestHeadersAutomatically();
@@ -1121,8 +1117,7 @@ TEST_P(BidirectionalStreamQuicImplTest,
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->DoNotSendRequestHeadersAutomatically();
@@ -1228,8 +1223,7 @@ TEST_P(BidirectionalStreamQuicImplTest,
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->DoNotSendRequestHeadersAutomatically();
@@ -1325,8 +1319,7 @@ TEST_P(BidirectionalStreamQuicImplTest,
   request.priority = DEFAULT_PRIORITY;
   request.extra_headers.SetHeader("cookie", std::string(2048, 'A'));
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate = std::make_unique<DeleteStreamDelegate>(
       read_buffer.get(), kReadBufferSize, DeleteStreamDelegate::ON_FAILED);
   delegate->DoNotSendRequestHeadersAutomatically();
@@ -1361,8 +1354,7 @@ TEST_P(BidirectionalStreamQuicImplTest,
   request.priority = DEFAULT_PRIORITY;
   request.extra_headers.SetHeader("cookie", std::string(2048, 'A'));
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate = std::make_unique<DeleteStreamDelegate>(
       read_buffer.get(), kReadBufferSize, DeleteStreamDelegate::ON_FAILED);
   delegate->DoNotSendRequestHeadersAutomatically();
@@ -1406,8 +1398,7 @@ TEST_P(BidirectionalStreamQuicImplTest, PostRequest) {
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->Start(&request, net_log_with_source(),
@@ -1487,8 +1478,7 @@ TEST_P(BidirectionalStreamQuicImplTest, EarlyDataOverrideRequest) {
   request.end_stream_on_headers = true;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->set_trailers_expected(true);
@@ -1590,8 +1580,7 @@ TEST_P(BidirectionalStreamQuicImplTest, InterleaveReadDataAndSendData) {
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->Start(&request, net_log_with_source(),
@@ -1681,8 +1670,7 @@ TEST_P(BidirectionalStreamQuicImplTest, ServerSendsRstAfterHeaders) {
   request.end_stream_on_headers = true;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->Start(&request, net_log_with_source(),
@@ -1733,8 +1721,7 @@ TEST_P(BidirectionalStreamQuicImplTest, ServerSendsRstAfterReadData) {
   request.end_stream_on_headers = true;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->Start(&request, net_log_with_source(),
@@ -1797,8 +1784,7 @@ TEST_P(BidirectionalStreamQuicImplTest, SessionClosedBeforeReadData) {
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->Start(&request, net_log_with_source(),
@@ -1856,8 +1842,7 @@ TEST_P(BidirectionalStreamQuicImplTest, SessionClosedBeforeStartConfirmed) {
   session()->connection()->CloseConnection(
       quic::QUIC_NO_ERROR, "test", quic::ConnectionCloseBehavior::SILENT_CLOSE);
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->Start(&request, net_log_with_source(),
@@ -1880,8 +1865,7 @@ TEST_P(BidirectionalStreamQuicImplTest, SessionClosedBeforeStartNotConfirmed) {
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->Start(&request, net_log_with_source(),
@@ -1905,8 +1889,7 @@ TEST_P(BidirectionalStreamQuicImplTest, SessionCloseDuringOnStreamReady) {
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate = std::make_unique<DeleteStreamDelegate>(
       read_buffer.get(), kReadBufferSize, DeleteStreamDelegate::ON_FAILED);
   delegate->Start(&request, net_log_with_source(),
@@ -1937,8 +1920,7 @@ TEST_P(BidirectionalStreamQuicImplTest, DeleteStreamDuringOnStreamReady) {
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate = std::make_unique<DeleteStreamDelegate>(
       read_buffer.get(), kReadBufferSize,
       DeleteStreamDelegate::ON_STREAM_READY);
@@ -1970,8 +1952,7 @@ TEST_P(BidirectionalStreamQuicImplTest, DeleteStreamAfterReadData) {
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->Start(&request, net_log_with_source(),
@@ -2027,8 +2008,7 @@ TEST_P(BidirectionalStreamQuicImplTest, DeleteStreamDuringOnHeadersReceived) {
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate = std::make_unique<DeleteStreamDelegate>(
       read_buffer.get(), kReadBufferSize,
       DeleteStreamDelegate::ON_HEADERS_RECEIVED);
@@ -2077,8 +2057,7 @@ TEST_P(BidirectionalStreamQuicImplTest, DeleteStreamDuringOnDataRead) {
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate = std::make_unique<DeleteStreamDelegate>(
       read_buffer.get(), kReadBufferSize, DeleteStreamDelegate::ON_DATA_READ);
   delegate->Start(&request, net_log_with_source(),
@@ -2138,8 +2117,7 @@ TEST_P(BidirectionalStreamQuicImplTest, AsyncFinRead) {
   request.end_stream_on_headers = false;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
 
@@ -2206,8 +2184,7 @@ TEST_P(BidirectionalStreamQuicImplTest, DeleteStreamDuringOnTrailersReceived) {
   request.end_stream_on_headers = true;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate = std::make_unique<DeleteStreamDelegate>(
       read_buffer.get(), kReadBufferSize,
       DeleteStreamDelegate::ON_TRAILERS_RECEIVED);
@@ -2275,8 +2252,7 @@ TEST_P(BidirectionalStreamQuicImplTest, ReleaseStreamFails) {
   request.end_stream_on_headers = true;
   request.priority = DEFAULT_PRIORITY;
 
-  scoped_refptr<IOBuffer> read_buffer =
-      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
       std::make_unique<TestDelegateBase>(read_buffer.get(), kReadBufferSize);
   delegate->set_trailers_expected(true);

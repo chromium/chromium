@@ -317,7 +317,7 @@ DnsResponse::DnsResponse(
       std::accumulate(additional_records.begin(), additional_records.end(),
                       response_size, do_accumulation);
 
-  auto io_buffer = base::MakeRefCounted<IOBuffer>(response_size);
+  auto io_buffer = base::MakeRefCounted<IOBufferWithSize>(response_size);
   base::BigEndianWriter writer(io_buffer->data(), response_size);
   success &= WriteHeader(&writer, header);
   DCHECK(success);
@@ -358,14 +358,15 @@ DnsResponse::DnsResponse(
 }
 
 DnsResponse::DnsResponse()
-    : io_buffer_(base::MakeRefCounted<IOBuffer>(dns_protocol::kMaxUDPSize + 1)),
+    : io_buffer_(base::MakeRefCounted<IOBufferWithSize>(
+          dns_protocol::kMaxUDPSize + 1)),
       io_buffer_size_(dns_protocol::kMaxUDPSize + 1) {}
 
 DnsResponse::DnsResponse(scoped_refptr<IOBuffer> buffer, size_t size)
     : io_buffer_(std::move(buffer)), io_buffer_size_(size) {}
 
 DnsResponse::DnsResponse(size_t length)
-    : io_buffer_(base::MakeRefCounted<IOBuffer>(length)),
+    : io_buffer_(base::MakeRefCounted<IOBufferWithSize>(length)),
       io_buffer_size_(length) {}
 
 DnsResponse::DnsResponse(const void* data, size_t length, size_t answer_offset)

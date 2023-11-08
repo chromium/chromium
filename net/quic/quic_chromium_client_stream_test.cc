@@ -222,8 +222,8 @@ class QuicChromiumClientStreamTest
   }
 
   void ReadData(std::string_view expected_data) {
-    scoped_refptr<IOBuffer> buffer =
-        base::MakeRefCounted<IOBuffer>(expected_data.length() + 1);
+    auto buffer =
+        base::MakeRefCounted<IOBufferWithSize>(expected_data.length() + 1);
     EXPECT_EQ(static_cast<int>(expected_data.length()),
               stream_->Read(buffer.get(), expected_data.length() + 1));
     EXPECT_EQ(expected_data,
@@ -351,7 +351,7 @@ TEST_P(QuicChromiumClientStreamTest, Handle) {
                                      callback.callback()));
 
   std::vector<scoped_refptr<IOBuffer>> buffers = {
-      base::MakeRefCounted<IOBuffer>(10)};
+      base::MakeRefCounted<IOBufferWithSize>(10)};
   std::vector<int> lengths = {10};
   EXPECT_EQ(
       ERR_CONNECTION_CLOSED,
@@ -426,7 +426,7 @@ TEST_P(QuicChromiumClientStreamTest, OnDataAvailable) {
 
   // Read the body and verify that it arrives correctly.
   TestCompletionCallback callback;
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
   EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
@@ -441,7 +441,7 @@ TEST_P(QuicChromiumClientStreamTest, OnDataAvailableAfterReadBody) {
 
   // Start to read the body.
   TestCompletionCallback callback;
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(2 * data_len);
   EXPECT_EQ(ERR_IO_PENDING,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
 
@@ -492,7 +492,7 @@ TEST_P(QuicChromiumClientStreamTest, OnDataAvailableWithError) {
 
   // Start to read the body.
   TestCompletionCallback callback;
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(2 * data_len);
   EXPECT_EQ(
       ERR_IO_PENDING,
       handle_->ReadBody(
@@ -553,7 +553,7 @@ TEST_P(QuicChromiumClientStreamTest, OnTrailers) {
 
   // Read the body and verify that it arrives correctly.
   TestCompletionCallback callback;
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
   EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
@@ -600,7 +600,7 @@ TEST_P(QuicChromiumClientStreamTest, MarkTrailersConsumedWhenNotifyDelegate) {
 
   // Read the body and verify that it arrives correctly.
   TestCompletionCallback callback;
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
   EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
@@ -654,7 +654,7 @@ TEST_P(QuicChromiumClientStreamTest, ReadAfterTrailersReceivedButNotDelivered) {
 
   // Read the body and verify that it arrives correctly.
   TestCompletionCallback callback;
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
   EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
@@ -869,7 +869,7 @@ TEST_P(QuicChromiumClientStreamTest, HeadersAndDataBeforeHandle) {
 
   // Now explicitly read the data.
   int data_len = std::size(data) - 1;
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(data_len + 1);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(data_len + 1);
   ASSERT_EQ(data_len, stream2->Read(buffer.get(), data_len + 1));
   EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
 }

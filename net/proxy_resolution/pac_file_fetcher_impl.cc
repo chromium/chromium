@@ -316,7 +316,7 @@ void PacFileFetcherImpl::OnReadCompleted(URLRequest* request, int num_bytes) {
 
 PacFileFetcherImpl::PacFileFetcherImpl(URLRequestContext* url_request_context)
     : url_request_context_(url_request_context),
-      buf_(base::MakeRefCounted<IOBuffer>(kBufSize)),
+      buf_(base::MakeRefCounted<IOBufferWithSize>(kBufSize)),
       max_response_bytes_(kDefaultMaxResponseBytes),
       max_duration_(kDefaultMaxDuration) {
   DCHECK(url_request_context);

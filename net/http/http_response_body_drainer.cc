@@ -26,7 +26,7 @@ HttpResponseBodyDrainer::~HttpResponseBodyDrainer() = default;
 
 void HttpResponseBodyDrainer::Start(HttpNetworkSession* session) {
   session_ = session;
-  read_buf_ = base::MakeRefCounted<IOBuffer>(kDrainBodyBufferSize);
+  read_buf_ = base::MakeRefCounted<IOBufferWithSize>(kDrainBodyBufferSize);
   next_state_ = STATE_DRAIN_RESPONSE_BODY;
   int rv = DoLoop(OK);
 

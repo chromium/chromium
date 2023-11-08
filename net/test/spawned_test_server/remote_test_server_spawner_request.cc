@@ -71,7 +71,7 @@ class RemoteTestServerSpawnerRequest::Core : public URLRequest::Delegate {
 RemoteTestServerSpawnerRequest::Core::Core()
     : event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
              base::WaitableEvent::InitialState::NOT_SIGNALED),
-      read_buffer_(base::MakeRefCounted<IOBuffer>(kBufferSize)) {
+      read_buffer_(base::MakeRefCounted<IOBufferWithSize>(kBufferSize)) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 

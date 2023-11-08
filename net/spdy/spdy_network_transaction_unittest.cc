@@ -2256,7 +2256,7 @@ TEST_P(SpdyNetworkTransactionTest, StartTransactionOnReadCallback) {
   rv = callback.WaitForResult();
 
   const int kSize = 3000;
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(kSize);
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(kSize);
   rv = trans->Read(
       buf.get(), kSize,
       base::BindOnce(&SpdyNetworkTransactionTest::StartTransactionCallback,
@@ -2305,7 +2305,7 @@ TEST_P(SpdyNetworkTransactionTest, DeleteSessionOnReadCallback) {
   // Setup a user callback which will delete the session, and clear out the
   // memory holding the stream object. Note that the callback deletes trans.
   const int kSize = 3000;
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(kSize);
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(kSize);
   rv = trans->Read(
       buf.get(), kSize,
       base::BindOnce(&SpdyNetworkTransactionTest::DeleteSessionCallback,
@@ -3643,8 +3643,7 @@ TEST_P(SpdyNetworkTransactionTest, BufferFull) {
   do {
     // Read small chunks at a time.
     const int kSmallReadSize = 3;
-    scoped_refptr<IOBuffer> buf =
-        base::MakeRefCounted<IOBuffer>(kSmallReadSize);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(kSmallReadSize);
     rv = trans->Read(buf.get(), kSmallReadSize, read_callback.callback());
     if (rv == ERR_IO_PENDING) {
       data.Resume();
@@ -3724,8 +3723,7 @@ TEST_P(SpdyNetworkTransactionTest, Buffering) {
   do {
     // Read small chunks at a time.
     const int kSmallReadSize = 14;
-    scoped_refptr<IOBuffer> buf =
-        base::MakeRefCounted<IOBuffer>(kSmallReadSize);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(kSmallReadSize);
     rv = trans->Read(buf.get(), kSmallReadSize, read_callback.callback());
     if (rv == ERR_IO_PENDING) {
       data.Resume();
@@ -3805,8 +3803,7 @@ TEST_P(SpdyNetworkTransactionTest, BufferedAll) {
   do {
     // Read small chunks at a time.
     const int kSmallReadSize = 14;
-    scoped_refptr<IOBuffer> buf =
-        base::MakeRefCounted<IOBuffer>(kSmallReadSize);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(kSmallReadSize);
     rv = trans->Read(buf.get(), kSmallReadSize, read_callback.callback());
     if (rv > 0) {
       EXPECT_EQ(kSmallReadSize, rv);
@@ -3882,8 +3879,7 @@ TEST_P(SpdyNetworkTransactionTest, BufferedClosed) {
     // Allocate a large buffer to allow buffering. If a single read fills the
     // buffer, no buffering happens.
     const int kLargeReadSize = 1000;
-    scoped_refptr<IOBuffer> buf =
-        base::MakeRefCounted<IOBuffer>(kLargeReadSize);
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(kLargeReadSize);
     rv = trans->Read(buf.get(), kLargeReadSize, read_callback.callback());
     if (rv == ERR_IO_PENDING) {
       data.Resume();
@@ -3953,7 +3949,7 @@ TEST_P(SpdyNetworkTransactionTest, BufferedCancelled) {
   TestCompletionCallback read_callback;
 
   const int kReadSize = 256;
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(kReadSize);
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(kReadSize);
   rv = trans->Read(buf.get(), kReadSize, read_callback.callback());
   ASSERT_EQ(ERR_IO_PENDING, rv) << "Unexpected read: " << rv;
 
@@ -5446,7 +5442,7 @@ TEST_P(SpdyNetworkTransactionTest, WindowUpdateSent) {
 
   // Issue a read which will cause a WINDOW_UPDATE to be sent and window
   // size increased to default.
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(kTargetSize);
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(kTargetSize);
   EXPECT_EQ(static_cast<int>(kTargetSize),
             trans->Read(buf.get(), kTargetSize, CompletionOnceCallback()));
   EXPECT_EQ(static_cast<int>(stream_max_recv_window_size),

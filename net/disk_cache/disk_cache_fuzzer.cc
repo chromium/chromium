@@ -109,8 +109,8 @@ struct InitGlobals {
 
     // Re-using this buffer for write operations may technically be against
     // IOBuffer rules but it shouldn't cause any actual problems.
-    buffer_ =
-        base::MakeRefCounted<net::IOBuffer>(static_cast<size_t>(kMaxEntrySize));
+    buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(
+        static_cast<size_t>(kMaxEntrySize));
     CacheTestFillBuffer(buffer_->data(), kMaxEntrySize, false);
 
 #define CREATE_IO_CALLBACK(IO_TYPE) \
@@ -698,8 +698,7 @@ void DiskCacheLPMFuzzer::RunCommands(
         uint32_t offset = wd.offset() % kMaxEntrySize;
         size_t size = wd.size() % kMaxEntrySize;
         bool async = wd.async();
-        scoped_refptr<net::IOBuffer> buffer =
-            base::MakeRefCounted<net::IOBuffer>(size);
+        auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(size);
 
         net::TestCompletionCallback tcb;
         net::CompletionOnceCallback cb =
@@ -762,8 +761,7 @@ void DiskCacheLPMFuzzer::RunCommands(
           offset %= kMaxEntrySize;
         size_t size = rsd.size() % kMaxEntrySize;
         bool async = rsd.async();
-        scoped_refptr<net::IOBuffer> buffer =
-            base::MakeRefCounted<net::IOBuffer>(size);
+        auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(size);
 
         net::TestCompletionCallback tcb;
         net::CompletionOnceCallback cb =
