@@ -3,22 +3,23 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ListSelectionModel} from './list_selection_model.js';
+import {ListSelectionModel, SelectionChangeEvent} from './list_selection_model.js';
 
 import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {adjust, range} from './list_selection_model_test_util.js';
 // clang-format on
 
 /**
- * @param {number} len size of the selection model.
- * @param {boolean=} dependentLeadItem inverse value for `independentLeadItem`
+ * @param len size of the selection model.
+ * @param dependentLeadItem inverse value for `independentLeadItem`
  *     defaults to true.
- * @return {!ListSelectionModel}
  */
-function createSelectionModel(len, dependentLeadItem) {
+function createSelectionModel(
+    len: number, dependentLeadItem?: boolean): ListSelectionModel {
   const sm = new ListSelectionModel(len);
-  sm.independentLeadItem = !dependentLeadItem;
+  sm['independentLeadItem'] = !dependentLeadItem;
   return sm;
 }
 
@@ -266,30 +267,30 @@ export function testLeadAndAnchor2() {
 export function testSelectAll() {
   const sm = createSelectionModel(10);
 
-  let changes = null;
+  let changes: SelectionChangeEvent['changes']|null = null;
   sm.addEventListener('change', function(e) {
-    // @ts-ignore: error TS2339: Property 'changes' does not exist on type
-    // 'Event'.
-    changes = e.changes;
+    const event = e as SelectionChangeEvent;
+    changes = event.changes;
   });
 
   sm.selectAll();
 
+  assert(changes);
   assertArrayEquals(range(0, 9), sm.selectedIndexes);
-  // @ts-ignore: error TS7006: Parameter 'change' implicitly has an 'any' type.
-  assertArrayEquals(range(0, 9), changes.map(function(change) {
-    return change.index;
-  }));
+  assertArrayEquals(
+      range(0, 9),
+      (changes as SelectionChangeEvent['changes']).map(function(change) {
+        return change.index;
+      }));
 }
 
 export function testSelectAllOnEmptyList() {
   const sm = createSelectionModel(0);
 
-  let changes = null;
+  let changes: SelectionChangeEvent['changes']|null = null;
   sm.addEventListener('change', function(e) {
-    // @ts-ignore: error TS2339: Property 'changes' does not exist on type
-    // 'Event'.
-    changes = e.changes;
+    const event = e as SelectionChangeEvent;
+    changes = event.changes;
   });
 
   sm.selectAll();

@@ -11,12 +11,12 @@ import {adjust} from './list_selection_model_test_util.js';
 // clang-format on
 
 /**
- * @param {number} len size of the selection model.
- * @param {boolean=} dependentLeadItem inverse value for `independentLeadItem_`
+ * @param len size of the selection model.
+ * @param dependentLeadItem inverse value for `independentLeadItem_`
  *     defaults to true.
- * @return {!ListSingleSelectionModel}
  */
-function createSelectionModel(len, dependentLeadItem) {
+function createSelectionModel(
+    len: number, dependentLeadItem?: boolean): ListSingleSelectionModel {
   const sm = new ListSingleSelectionModel(len);
   sm.independentLeadItem_ = !dependentLeadItem;
   return sm;

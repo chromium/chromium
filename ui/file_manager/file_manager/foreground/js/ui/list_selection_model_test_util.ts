@@ -9,11 +9,10 @@ import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 /**
  * Creates an array spanning a range of integer values.
- * @param {number} start The first number in the range.
- * @param {number} end The last number in the range inclusive.
- * @return {!Array<number>}
+ * @param start The first number in the range.
+ * @param end The last number in the range inclusive.
  */
-export function range(start, end) {
+export function range(start: number, end: number): number[] {
   const a = [];
   for (let i = start; i <= end; i++) {
     a.push(i);
@@ -23,13 +22,14 @@ export function range(start, end) {
 
 /**
  * Modifies a selection model.
- * @param {!ListSelectionModel|!ListSingleSelectionModel} model The
- * selection model to adjust.
- * @param {number} index Starting index of the edit.
- * @param {number} removed Number of entries to remove from the list.
- * @param {number} added Number of entries to add to the list.
+ * @param model The selection model to adjust.
+ * @param index Starting index of the edit.
+ * @param removed Number of entries to remove from the list.
+ * @param added Number of entries to add to the list.
  */
-export function adjust(model, index, removed, added) {
+export function adjust(
+    model: ListSelectionModel|ListSingleSelectionModel, index: number,
+    removed: number, added: number) {
   const permutation = [];
   for (let i = 0; i < index; i++) {
     permutation.push(i);

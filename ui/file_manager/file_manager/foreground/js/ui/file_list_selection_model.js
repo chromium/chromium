@@ -47,7 +47,7 @@ export class FileListSelectionModel extends ListSelectionModel {
       // If force lead index when there is no lead, because doesn't make sense
       // to not have lead when there is selection.
       if (this.leadIndex < 0) {
-        this.leadIndex = this.selectedIndexes[0];
+        this.leadIndex = /** @type {number} */ (this.selectedIndexes[0]);
       }
     }
   }
@@ -77,7 +77,7 @@ export class FileListSelectionModel extends ListSelectionModel {
     // Call the superclass function.
     super.adjustToReordering(permutation);
     // Leave check-select mode if all items have been deleted.
-    if (oldSelectedItemsCount && !newSelectedItemsCount && this.length_) {
+    if (oldSelectedItemsCount && !newSelectedItemsCount && this.length) {
       this.isCheckSelectMode_ = false;
     }
   }
