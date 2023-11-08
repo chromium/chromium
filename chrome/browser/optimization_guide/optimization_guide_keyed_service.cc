@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/pref_names.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -127,6 +128,16 @@ OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
     return push_notification_manager;
   }
   return nullptr;
+}
+
+void OptimizationGuideKeyedService::
+    SimulateBrowserRestartForControllerTesting() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!model_execution_features_controller_) {
+    return;
+  }
+  model_execution_features_controller_
+      ->SimulateBrowserRestartForTesting();  // IN-TEST
 }
 
 OptimizationGuideKeyedService::OptimizationGuideKeyedService(
@@ -302,9 +313,9 @@ void OptimizationGuideKeyedService::Initialize() {
   if (browser_context_ && !browser_context_->IsOffTheRecord() &&
       !profile->IsGuestSession()) {
     model_execution_features_controller_ =
-        std::make_unique<optimization_guide::internal::
-                             OptimizationGuideModelExecutionFeaturesController>(
-            profile->GetPrefs());
+        std::make_unique<optimization_guide::ModelExecutionFeaturesController>(
+            profile->GetPrefs(),
+            IdentityManagerFactory::GetForProfile(profile));
   }
 }
 
@@ -480,11 +491,30 @@ bool OptimizationGuideKeyedService::IsSettingVisible(
   return model_execution_features_controller_->IsSettingVisible(feature);
 }
 
-bool OptimizationGuideKeyedService::IsSettingEnabled(
+bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
     optimization_guide::proto::ModelExecutionFeature feature) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!model_execution_features_controller_) {
     return false;
   }
-  return model_execution_features_controller_->IsSettingEnabled(feature);
+  return model_execution_features_controller_
+      ->ShouldFeatureBeCurrentlyEnabledForUser(feature);
+}
+
+void OptimizationGuideKeyedService::AddModelExecutionSettingsEnabledObserver(
+    optimization_guide::SettingsEnabledObserver* observer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!model_execution_features_controller_) {
+    return;
+  }
+  model_execution_features_controller_->AddObserver(observer);
+}
+
+void OptimizationGuideKeyedService::RemoveModelExecutionSettingsEnabledObserver(
+    optimization_guide::SettingsEnabledObserver* observer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!model_execution_features_controller_) {
+    return;
+  }
+  model_execution_features_controller_->RemoveObserver(observer);
 }
