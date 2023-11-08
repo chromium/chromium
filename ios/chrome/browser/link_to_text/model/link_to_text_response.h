@@ -7,10 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/time/time.h"
+#import <optional>
+
+#import "base/time/time.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "ios/chrome/browser/link_to_text/model/link_generation_outcome.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
 
 namespace base {
@@ -42,7 +43,7 @@ class WebState;
 // Error which occurred when trying to generate a link. Empty when `payload`
 // has a value.
 @property(nonatomic, readonly)
-    absl::optional<shared_highlighting::LinkGenerationError>
+    std::optional<shared_highlighting::LinkGenerationError>
         error;
 
 // Source ID for the associated WebState.

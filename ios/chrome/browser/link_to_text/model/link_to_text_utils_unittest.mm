@@ -21,12 +21,12 @@ TEST_F(LinkToTextUtilsTest, ParseStatus) {
        ++i) {
     LinkGenerationOutcome expected_outcome =
         static_cast<LinkGenerationOutcome>(i);
-    absl::optional<double> status = static_cast<double>(i);
+    std::optional<double> status = static_cast<double>(i);
     EXPECT_EQ(expected_outcome, ParseStatus(status).value());
   }
 
   // Invalid values.
-  EXPECT_FALSE(ParseStatus(absl::nullopt).has_value());
+  EXPECT_FALSE(ParseStatus(std::nullopt).has_value());
   EXPECT_FALSE(ParseStatus(-1).has_value());
   EXPECT_FALSE(
       ParseStatus(static_cast<int>(LinkGenerationOutcome::kMaxValue) + 1)

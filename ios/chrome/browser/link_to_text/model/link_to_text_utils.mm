@@ -12,16 +12,15 @@ using shared_highlighting::LinkGenerationError;
 
 namespace link_to_text {
 
-absl::optional<LinkGenerationOutcome> ParseStatus(
-    absl::optional<double> status) {
+std::optional<LinkGenerationOutcome> ParseStatus(std::optional<double> status) {
   if (!status.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int status_value = static_cast<int>(status.value());
   if (status_value < 0 ||
       status_value > static_cast<int>(LinkGenerationOutcome::kMaxValue)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return static_cast<LinkGenerationOutcome>(status_value);
