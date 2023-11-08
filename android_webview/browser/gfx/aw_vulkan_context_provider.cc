@@ -153,7 +153,6 @@ bool AwVulkanContextProvider::Globals::Initialize(
       .fDeviceFeatures2 = params->device_features_2,
       .fMemoryAllocator = gpu::CreateGrVkMemoryAllocator(device_queue.get()),
       .fGetProc = get_proc,
-      .fOwnsInstanceAndDevice = false,
   };
   gr_context = GrDirectContexts::MakeVulkan(backend_context);
   if (!gr_context) {
