@@ -1454,9 +1454,6 @@ export class Authenticator extends EventTarget {
    * @private
    */
   isWebviewEvent_(e) {
-    // Note: <webview> prints error message to console if |contentWindow| is
-    // not defined.
-    // TODO(dzhioev): remove the message. http://crbug.com/469522
     const webviewWindow = this.webview_.contentWindow;
     return !!webviewWindow && webviewWindow === e.source;
   }
