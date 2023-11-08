@@ -77,6 +77,7 @@
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_csp_context.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -423,6 +424,13 @@ void AddAdditionalRequestHeaders(
   if (frame_tree_node->frame_tree().is_prerendering()) {
     headers->SetHeader("Sec-Purpose", "prefetch;prerender");
     headers->SetHeader("Purpose", "prefetch");
+  } else if (frame_tree_node->frame_tree().page_delegate()->IsInPreviewMode()) {
+    // Preview mode sends similar request so that it is compatible with
+    // prerendering as we can as possible, but adds `preview` for sites that
+    // need to identify the preview case from prerendering.
+    // Do not send the `Purpose` header as the preview mode is new and don't
+    // need to be careful about the compatibility breakage here.
+    headers->SetHeader("Sec-Purpose", "prefetch;prerender;preview");
   }
 }
 
