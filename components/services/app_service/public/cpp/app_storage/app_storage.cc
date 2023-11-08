@@ -193,6 +193,7 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
   IS_APP_VALUE_CHANGED_FOR_ENUM(window_mode, WindowMode::kUnknown)
 
   IS_APP_VALUE_CHANGED(run_on_os_login)
+  IS_APP_VALUE_CHANGED(allow_close)
 
   // TODO(crbug.com/1385932): Add other files in the App structure.
   return false;

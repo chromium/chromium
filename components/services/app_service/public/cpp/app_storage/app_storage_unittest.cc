@@ -203,6 +203,7 @@ class AppStorageTest : public testing::Test {
     app2->window_mode = WindowMode::kBrowser;
     app2->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kNotRun,
                                          /*is_managed=*/false);
+    app2->allow_close = false;
 
     apps.push_back(std::move(app2));
 
@@ -233,6 +234,7 @@ class AppStorageTest : public testing::Test {
   MODIFY_FIELD(window_mode, WindowMode::kWindow)
   MODIFY_FIELD(run_on_os_login,
                RunOnOsLogin(RunOnOsLoginMode::kNotRun, /*is_managed=*/false))
+  MODIFY_FIELD(allow_close, false)
 
   void ModifyIconKey(absl::optional<IconKey> icon_key) {
     AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
@@ -399,6 +401,7 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
   VERIFY_MODIFY_FIELD(window_mode, WindowMode::kWindow);
   VERIFY_MODIFY_FIELD(run_on_os_login, RunOnOsLogin(RunOnOsLoginMode::kNotRun,
                                                     /*is_managed=*/false));
+  VERIFY_MODIFY_FIELD(allow_close, false);
 
   // Verify for the none icon effect.
   IconKey icon_key1(IconEffects::kNone);

@@ -53,6 +53,7 @@ constexpr char kAllowUninstallKey[] = "allow_uninstall";
 constexpr char kIntentFiltersKey[] = "intent_filters";
 constexpr char kWindowModeKey[] = "window_mode";
 constexpr char kRunOnOsLoginKey[] = "run_on_os_login";
+constexpr char kAllowCloseKey[] = "allow_close";
 
 absl::optional<std::string> GetStringValueFromDict(
     const base::Value::Dict& dict,
@@ -258,6 +259,7 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
     SetKey(app, &App::intent_filters, kIntentFiltersKey, dict);
     SetKey(app, &App::window_mode, kWindowModeKey, dict);
     SetKey(app, &App::run_on_os_login, kRunOnOsLoginKey, dict);
+    SetKey(app, &App::allow_close, kAllowCloseKey, dict);
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info_dict.Set(app->app_id, std::move(dict));
@@ -378,6 +380,8 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
 
     app->run_on_os_login =
         ConvertDictToRunOnOsLogin(value->FindDict(kRunOnOsLoginKey));
+
+    app->allow_close = value->FindBool(kAllowCloseKey);
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info->apps.push_back(std::move(app));

@@ -147,6 +147,7 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->window_mode = WindowMode::kBrowser;
     app2->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kNotRun,
                                          /*is_managed=*/true);
+    app2->allow_close = false;
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
