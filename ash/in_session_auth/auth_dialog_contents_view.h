@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -29,6 +30,8 @@ class LoginPinInputView;
 // Contains the debug views that allows the developer to interact with the
 // AuthDialogController.
 class AuthDialogContentsView : public views::View {
+  METADATA_HEADER(AuthDialogContentsView, views::View)
+
  public:
   // Flags which describe the set of currently visible auth methods.
   enum AuthMethods {

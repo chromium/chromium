@@ -22,6 +22,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -88,6 +90,8 @@ int GetViewIdForPinNumber(int number) {
 
 // A base class for pin button in the pin keyboard.
 class BasePinButton : public views::View {
+  METADATA_HEADER(BasePinButton, views::View)
+
  public:
   BasePinButton(const gfx::Size& size,
                 const std::u16string& accessible_name,
@@ -205,10 +209,15 @@ class BasePinButton : public views::View {
   base::RepeatingClosure on_press_;
 };
 
+BEGIN_METADATA(BasePinButton)
+END_METADATA
+
 }  // namespace
 
 // A PIN button that displays a digit number and corresponding letter mapping.
 class LoginPinView::DigitPinButton : public BasePinButton {
+  METADATA_HEADER(DigitPinButton, BasePinButton)
+
  public:
   DigitPinButton(int value,
                  bool show_sub_label,
@@ -252,8 +261,13 @@ class LoginPinView::DigitPinButton : public BasePinButton {
   raw_ptr<views::Label, ExperimentalAsh> sub_label_ = nullptr;
 };
 
+BEGIN_METADATA(LoginPinView, DigitPinButton, BasePinButton)
+END_METADATA
+
 // A PIN button that displays backspace icon.
 class LoginPinView::BackspacePinButton : public BasePinButton {
+  METADATA_HEADER(BackspacePinButton, BasePinButton)
+
  public:
   BackspacePinButton(const gfx::Size& size,
                      const base::RepeatingClosure& on_press)
@@ -393,8 +407,13 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
           base::Unretained(this)));
 };
 
+BEGIN_METADATA(LoginPinView, BackspacePinButton, BasePinButton)
+END_METADATA
+
 // A PIN button to press to submit the PIN / password.
 class LoginPinView::SubmitPinButton : public BasePinButton {
+  METADATA_HEADER(SubmitPinButton, BasePinButton)
+
  public:
   SubmitPinButton(const gfx::Size& size, const base::RepeatingClosure& on_press)
       : BasePinButton(size,
@@ -423,6 +442,9 @@ class LoginPinView::SubmitPinButton : public BasePinButton {
           base::BindRepeating(&LoginPinView::SubmitPinButton::UpdateImage,
                               base::Unretained(this)));
 };
+
+BEGIN_METADATA(LoginPinView, SubmitPinButton, BasePinButton)
+END_METADATA
 
 // static
 gfx::Size LoginPinView::TestApi::GetButtonSize(Style style) {
@@ -536,5 +558,8 @@ NonAccessibleView* LoginPinView::BuildAndAddRow() {
   rows_.push_back(row);
   return row;
 }
+
+BEGIN_METADATA(LoginPinView)
+END_METADATA
 
 }  // namespace ash

@@ -29,6 +29,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -144,6 +145,8 @@ constexpr base::TimeDelta kHidePasswordAfterDelay = base::Seconds(5);
 // The login password row contains the password textfield and different buttons
 // and indicators (display password, caps lock enabled).
 class LoginPasswordView::LoginPasswordRow : public views::View {
+  METADATA_HEADER(LoginPasswordRow, views::View)
+
  public:
   explicit LoginPasswordRow() {
     const bool is_jelly = chromeos::features::IsJellyEnabled();
@@ -163,9 +166,14 @@ class LoginPasswordView::LoginPasswordRow : public views::View {
   LoginPasswordRow& operator=(const LoginPasswordRow&) = delete;
 };
 
+BEGIN_METADATA(LoginPasswordView, LoginPasswordRow, views::View)
+END_METADATA
+
 // A textfield that selects all text on focus and allows to switch between
 // show/hide password modes.
 class LoginPasswordView::LoginTextfield : public views::Textfield {
+  METADATA_HEADER(LoginTextfield, views::Textfield)
+
  public:
   LoginTextfield(base::RepeatingClosure on_focus_closure,
                  base::RepeatingClosure on_blur_closure)
@@ -246,8 +254,13 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
   base::RepeatingClosure on_tab_focus_closure_;
 };
 
+BEGIN_METADATA(LoginPasswordView, LoginTextfield, views::Textfield)
+END_METADATA
+
 class LoginPasswordView::DisplayPasswordButton
     : public views::ToggleImageButton {
+  METADATA_HEADER(DisplayPasswordButton, views::ToggleImageButton)
+
  public:
   explicit DisplayPasswordButton(views::Button::PressedCallback callback)
       : ToggleImageButton(std::move(callback)) {
@@ -284,6 +297,11 @@ class LoginPasswordView::DisplayPasswordButton
   DisplayPasswordButton& operator=(const DisplayPasswordButton&) = delete;
   ~DisplayPasswordButton() override = default;
 };
+
+BEGIN_METADATA(LoginPasswordView,
+               DisplayPasswordButton,
+               views::ToggleImageButton)
+END_METADATA
 
 LoginPasswordView::TestApi::TestApi(LoginPasswordView* view) : view_(view) {}
 
