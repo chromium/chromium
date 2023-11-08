@@ -120,8 +120,8 @@ static LocalFrame* GetLocalFrameRoot(v8::Isolate* isolate) {
           frame ? frame->RecordReplayId() : 0,
           frame ? frame->IsDetached() : -1,
           (frame && !frame->IsDetached()) ? frame->IsProvisional() : -1,
-          frame ? frame->IsCrossOriginToParentOrOuterDocument() : -1,
-          frame ? frame->GetDocument()->Url().GetString().Utf8().c_str() : ""
+          (frame && !frame->IsDetached()) ? frame->IsCrossOriginToParentOrOuterDocument() : -1,
+          (frame && !frame->IsDetached()) ? frame->GetDocument()->Url().GetString().Utf8().c_str() : ""
       );
       frame = gCurrentRootFrame;
     }
@@ -139,8 +139,8 @@ static LocalFrame* GetLocalFrameRoot(v8::Isolate* isolate) {
         frame ? frame->RecordReplayId() : 0,
         frame ? frame->IsDetached() : -1,
         (frame && !frame->IsDetached()) ? frame->IsProvisional() : -1,
-        frame ? frame->IsCrossOriginToParentOrOuterDocument() : -1,
-        frame ? frame->GetDocument()->Url().GetString().Utf8().c_str() : "");
+        (frame && !frame->IsDetached()) ? frame->IsCrossOriginToParentOrOuterDocument() : -1,
+        (frame && !frame->IsDetached()) ? frame->GetDocument()->Url().GetString().Utf8().c_str() : "");
   }
   return frame;
 }
