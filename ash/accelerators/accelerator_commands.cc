@@ -1564,6 +1564,10 @@ void ToggleResizeLockMenu() {
 }
 
 void ToggleMessageCenterBubble() {
+  if (!features::IsQsRevampEnabled()) {
+    HandleToggleSystemTrayBubbleInternal(/*focus_message_center=*/true);
+    return;
+  }
   aura::Window* target_root = Shell::GetRootWindowForNewWindows();
   NotificationCenterTray* tray = RootWindowController::ForWindow(target_root)
                                      ->GetStatusAreaWidget()
@@ -1682,11 +1686,24 @@ void UnpinWindow() {
 
 void VolumeDown() {
   auto* audio_handler = CrasAudioHandler::Get();
-  // Only plays the audio if unmuted.
-  if (!audio_handler->IsOutputMuted()) {
-    AcceleratorController::PlayVolumeAdjustmentSound();
+  if (features::IsQsRevampEnabled()) {
+    // Only plays the audio if unmuted.
+    if (!audio_handler->IsOutputMuted()) {
+      AcceleratorController::PlayVolumeAdjustmentSound();
+    }
+    audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
+    return;
   }
-  audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
+
+  if (audio_handler->IsOutputMuted()) {
+    audio_handler->SetOutputVolumePercent(0);
+  } else {
+    if (audio_handler->IsOutputVolumeBelowDefaultMuteLevel())
+      audio_handler->SetOutputMute(true);
+    else
+      AcceleratorController::PlayVolumeAdjustmentSound();
+    audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
+  }
 }
 
 void VolumeMute() {
@@ -1705,11 +1722,27 @@ void VolumeMuteToggle() {
 void VolumeUp() {
   auto* audio_handler = CrasAudioHandler::Get();
   bool play_sound = false;
+  if (features::IsQsRevampEnabled()) {
+    if (audio_handler->IsOutputMuted()) {
+      audio_handler->SetOutputMute(false);
+    }
+    play_sound = audio_handler->GetOutputVolumePercent() != 100;
+    audio_handler->IncreaseOutputVolumeByOneStep(kStepPercentage);
+
+    if (play_sound) {
+      AcceleratorController::PlayVolumeAdjustmentSound();
+    }
+    return;
+  }
+
   if (audio_handler->IsOutputMuted()) {
     audio_handler->SetOutputMute(false);
+    audio_handler->AdjustOutputVolumeToAudibleLevel();
+    play_sound = true;
+  } else {
+    play_sound = audio_handler->GetOutputVolumePercent() != 100;
+    audio_handler->IncreaseOutputVolumeByOneStep(kStepPercentage);
   }
-  play_sound = audio_handler->GetOutputVolumePercent() != 100;
-  audio_handler->IncreaseOutputVolumeByOneStep(kStepPercentage);
 
   if (play_sound) {
     AcceleratorController::PlayVolumeAdjustmentSound();

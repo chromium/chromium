@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -179,11 +180,20 @@ TEST_F(AcceleratorCommandsAudioTest, VolumeSetToZeroAndThenMute) {
   // Volume down again, should decrease to zero and mute.
   PressAndReleaseKey(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
   EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 0);
-  // Output node mute state will not change.
-  EXPECT_FALSE(audio_handler->IsOutputMuted());
+  // For QsRevamp: output node mute state will not change.
+  if (features::IsQsRevampEnabled()) {
+    EXPECT_FALSE(audio_handler->IsOutputMuted());
+  } else {
+    EXPECT_TRUE(audio_handler->IsOutputMuted());
+  }
 }
 
 TEST_F(AcceleratorCommandsAudioTest, ChangeVolumeAfterMuted) {
+  // This behavior is for QsRevamp.
+  if (!features::IsQsRevampEnabled()) {
+    return;
+  }
+
   SetUpAudioNode();
   auto* audio_handler = CrasAudioHandler::Get();
   // Make sure that output node is in mute state.
