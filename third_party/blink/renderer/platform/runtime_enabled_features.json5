@@ -2499,6 +2499,10 @@
       status: "test",
       base_feature: "none",
     },
+    {
+      name: "MessagePortCloseEvent",
+      status: "test",
+    },
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
     {

@@ -109,6 +109,8 @@ class CORE_EXPORT MessagePort : public EventTarget,
   // ExecutionContextLifecycleObserver implementation.
   void ContextDestroyed() override { close(); }
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(close, kClose)
+
   void setOnmessage(EventListener* listener) {
     SetAttributeEventListener(event_type_names::kMessage, listener);
     start();
