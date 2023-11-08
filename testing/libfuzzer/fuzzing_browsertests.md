@@ -21,7 +21,7 @@ just in case.
 
 # Writing an in process fuzz case
 
-* Use the template `chrome/test/in_process_fuzz_test.gni`
+* Use the template `chrome/test/fuzzing/in_process_fuzzer.gni`
 * Provide a source code file which inherits from `InProcessFuzzTest`. This
   must override the `Fuzz` method. You'll find that your base class inherits
   from the full browser test infrastructure, so you can do anything you'd

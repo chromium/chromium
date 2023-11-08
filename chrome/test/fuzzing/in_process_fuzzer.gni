@@ -54,7 +54,7 @@ template("in_process_fuzzer") {
       # Again, these are full browser tests, so it needs a fairly high memory
       # limit so that it runs correctly.
       libfuzzer_options = [
-        "rss_limit_mb=4096",
+        "rss_limit_mb=8192",
 
         # This is for test-only. Remove once crbug.com/1471427 is fixed.
         "fork=0",
