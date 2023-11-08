@@ -567,12 +567,17 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)reloadDataSource {
   GridSnapshot* snapshot = [[GridSnapshot alloc] init];
+
+  // Open Tabs section.
   [snapshot appendSectionsWithIdentifiers:@[ kGridOpenTabsSectionIdentifier ]];
+  NSMutableArray<GridItemIdentifier*>* itemIdentifiers =
+      [NSMutableArray arrayWithCapacity:self.items.count];
   for (TabSwitcherItem* item in self.items) {
-    GridItemIdentifier* itemIdentifier =
-        [GridItemIdentifier tabIdentifier:item];
-    [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]];
+    [itemIdentifiers addObject:[GridItemIdentifier tabIdentifier:item]];
   }
+  [snapshot appendItemsWithIdentifiers:itemIdentifiers];
+
+  // Optional Suggested Actions section.
   if (self.showingSuggestedActions) {
     [snapshot
         appendSectionsWithIdentifiers:@[ kSuggestedActionsSectionIdentifier ]];
@@ -580,6 +585,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
         [GridItemIdentifier suggestedActionsIdentifier];
     [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]];
   }
+
   [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
 }
 
