@@ -302,10 +302,11 @@
   --cr-toggle-unchecked-ripple-color: var(--cros-sys-hover_on_prominent);
   /* TODO(b/266837484) Replace with cros.sys.app-elevation1 when available */
   --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
-
-  /* Focus state */
-  --cr-toggle-ripple-ring: 2px solid var(--cros-sys-focus_ring);
   --cr-toggle-ripple-diameter: 32px;
+}
+
+:host-context(body.jelly-enabled) cr-toggle:focus {
+  --cr-toggle-ripple-ring: 2px solid var(--cros-sys-focus_ring);
 }
 
 :host-context([cros][chrome-refresh-2023]) cr-toggle {
@@ -326,7 +327,8 @@
 
   /* Disabled state */
   --cr-toggle-disabled-opacity: var(--cros-disabled-opacity);
+}
 
-  /* Focused state */
+:host-context([cros][chrome-refresh-2023]) cr-toggle:focus {
   --cr-toggle-ripple-ring: none;
 }
