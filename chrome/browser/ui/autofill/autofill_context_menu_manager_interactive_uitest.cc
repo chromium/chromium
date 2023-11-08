@@ -78,7 +78,7 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
     render_view_context_menu_->Init();
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
-            nullptr, render_view_context_menu_.get(), nullptr, nullptr);
+            nullptr, render_view_context_menu_.get(), nullptr);
 
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                  true);
@@ -169,6 +169,22 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Close the feedback dialog.
   feedback_dialog->GetWidget()->Close();
+}
+
+// Regression test for crbug.com/1493774.
+IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
+                       TabMoveToOtherBrowserDoesNotCrash) {
+  // Create another browser.
+  Browser* other_browser = CreateBrowser(browser()->profile());
+
+  // Move the tab to the other browser.
+  other_browser->tab_strip_model()->InsertWebContentsAt(
+      0, browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0),
+      AddTabTypes::ADD_ACTIVE);
+  ASSERT_EQ(other_browser->tab_strip_model()->count(), 2);
+
+  // Close the first browser.
+  CloseBrowserSynchronously(browser());
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
