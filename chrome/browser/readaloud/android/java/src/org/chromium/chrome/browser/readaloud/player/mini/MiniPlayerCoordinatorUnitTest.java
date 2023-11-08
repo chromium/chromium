@@ -56,6 +56,7 @@ public class MiniPlayerCoordinatorUnitTest {
     @Mock private MiniPlayerLayout mLayout;
     @Mock private MiniPlayerMediator mMediator;
     @Mock private ReadAloudMiniPlayerSceneLayer mSceneLayer;
+    private PropertyModel mSharedModel;
     private PropertyModel mModel;
 
     private MiniPlayerCoordinator mCoordinator;
@@ -68,11 +69,14 @@ public class MiniPlayerCoordinatorUnitTest {
         doReturn(mLayoutInflater)
                 .when(mContextForInflation)
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
+        mSharedModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
+        mModel = new PropertyModel.Builder(Properties.ALL_KEYS).build();
         mJniMocker.mock(ReadAloudMiniPlayerSceneLayerJni.TEST_HOOKS, mSceneLayerNativeMock);
         doReturn(123456789L).when(mSceneLayerNativeMock).init(any());
+        doReturn(mModel).when(mMediator).getModel();
         mCoordinator =
-                new MiniPlayerCoordinator(mModel, mMediator, mLayout, mSceneLayer, mLayoutManager);
+                new MiniPlayerCoordinator(
+                        mSharedModel, mMediator, mLayout, mSceneLayer, mLayoutManager);
     }
 
     @Test
@@ -84,7 +88,7 @@ public class MiniPlayerCoordinatorUnitTest {
                 new MiniPlayerCoordinator(
                         mActivity,
                         mContextForInflation,
-                        mModel,
+                        mSharedModel,
                         mBrowserControlsSizer,
                         mLayoutManager);
         verify(mViewStub).inflate();
@@ -118,37 +122,28 @@ public class MiniPlayerCoordinatorUnitTest {
     @Test
     public void testBindPlaybackState() {
         mCoordinator.show(/* animate= */ true);
-        mModel.set(PlayerProperties.PLAYBACK_STATE, PlaybackListener.State.PLAYING);
+        mSharedModel.set(PlayerProperties.PLAYBACK_STATE, PlaybackListener.State.PLAYING);
         verify(mLayout).onPlaybackStateChanged(eq(PlaybackListener.State.PLAYING));
     }
 
     @Test
     public void testBindTitle() {
         mCoordinator.show(/* animate= */ true);
-        mModel.set(PlayerProperties.TITLE, TITLE);
+        mSharedModel.set(PlayerProperties.TITLE, TITLE);
         verify(mLayout).setTitle(eq(TITLE));
     }
 
     @Test
     public void testBindPublisher() {
         mCoordinator.show(/* animate= */ true);
-        mModel.set(PlayerProperties.PUBLISHER, PUBLISHER);
+        mSharedModel.set(PlayerProperties.PUBLISHER, PUBLISHER);
         verify(mLayout).setPublisher(eq(PUBLISHER));
     }
 
     @Test
     public void testBindProgress() {
         mCoordinator.show(/* animate= */ true);
-        mModel.set(PlayerProperties.PROGRESS, 0.5f);
+        mSharedModel.set(PlayerProperties.PROGRESS, 0.5f);
         verify(mLayout).setProgress(eq(0.5f));
-    }
-
-    @Test
-    public void testBindVisibility() {
-        mModel.set(PlayerProperties.MINI_PLAYER_VISIBILITY, VisibilityState.SHOWING);
-        verify(mLayout).updateVisibility(eq(VisibilityState.SHOWING));
-
-        mModel.set(PlayerProperties.MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES, true);
-        verify(mLayout).enableAnimations(eq(true));
     }
 }

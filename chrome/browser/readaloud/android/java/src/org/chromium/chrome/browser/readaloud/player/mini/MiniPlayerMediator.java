@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.readaloud.player.mini;
 
+import android.view.View;
+
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
-import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -14,25 +15,34 @@ public class MiniPlayerMediator {
     private final PropertyModel mModel;
     private final BrowserControlsSizer mBrowserControlsSizer;
 
-    MiniPlayerMediator(PropertyModel model, BrowserControlsSizer browserControlsSizer) {
-        mModel = model;
+    MiniPlayerMediator(BrowserControlsSizer browserControlsSizer) {
+        mModel =
+                new PropertyModel.Builder(Properties.ALL_KEYS)
+                        .with(Properties.VISIBILITY, VisibilityState.GONE)
+                        .with(Properties.ANDROID_VIEW_VISIBILITY, View.GONE)
+                        .with(Properties.COMPOSITED_VIEW_VISIBLE, false)
+                        .with(Properties.MEDIATOR, this)
+                        .build();
         mBrowserControlsSizer = browserControlsSizer;
-        mModel.set(PlayerProperties.MINI_PLAYER_MEDIATOR, this);
+    }
+
+    PropertyModel getModel() {
+        return mModel;
     }
 
     @VisibilityState
     int getVisibility() {
-        return mModel.get(PlayerProperties.MINI_PLAYER_VISIBILITY);
+        return mModel.get(Properties.VISIBILITY);
     }
 
     void show(boolean animate) {
-        mModel.set(PlayerProperties.MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES, animate);
-        mModel.set(PlayerProperties.MINI_PLAYER_VISIBILITY, VisibilityState.SHOWING);
+        mModel.set(Properties.ANIMATE_VISIBILITY_CHANGES, animate);
+        mModel.set(Properties.VISIBILITY, VisibilityState.SHOWING);
     }
 
     void dismiss(boolean animate) {
-        mModel.set(PlayerProperties.MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES, animate);
-        mModel.set(PlayerProperties.MINI_PLAYER_VISIBILITY, VisibilityState.HIDING);
+        mModel.set(Properties.ANIMATE_VISIBILITY_CHANGES, animate);
+        mModel.set(Properties.VISIBILITY, VisibilityState.HIDING);
     }
 
     /**
@@ -41,6 +51,6 @@ public class MiniPlayerMediator {
      * @param newState New visibility.
      */
     public void onVisibilityChanged(@VisibilityState int newState) {
-        mModel.set(PlayerProperties.MINI_PLAYER_VISIBILITY, newState);
+        mModel.set(Properties.VISIBILITY, newState);
     }
 }

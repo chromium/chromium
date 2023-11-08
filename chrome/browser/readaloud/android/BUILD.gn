@@ -202,6 +202,7 @@ android_library("player_java") {
     "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerLayout.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerMediator.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/mini/MiniPlayerViewBinder.java",
+    "java/src/org/chromium/chrome/browser/readaloud/player/mini/Properties.java",
   ]
   deps = [
     ":java_resources",
