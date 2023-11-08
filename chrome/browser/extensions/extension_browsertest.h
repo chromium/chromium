@@ -363,8 +363,11 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kDontActivate);
 
-  bool ExecuteScriptInBackgroundPageNoWait(const std::string& extension_id,
-                                           const std::string& script);
+  bool ExecuteScriptInBackgroundPageNoWait(
+      const std::string& extension_id,
+      const std::string& script,
+      browsertest_util::ScriptUserActivation script_user_activation =
+          browsertest_util::ScriptUserActivation::kDontActivate);
 
   // Get the ServiceWorkerContext for the default browser's profile.
   content::ServiceWorkerContext* GetServiceWorkerContext();

@@ -858,9 +858,10 @@ std::string ExtensionBrowserTest::ExecuteScriptInBackgroundPageDeprecated(
 
 bool ExtensionBrowserTest::ExecuteScriptInBackgroundPageNoWait(
     const std::string& extension_id,
-    const std::string& script) {
+    const std::string& script,
+    browsertest_util::ScriptUserActivation script_user_activation) {
   return browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      profile(), extension_id, script);
+      profile(), extension_id, script, script_user_activation);
 }
 
 content::ServiceWorkerContext* ExtensionBrowserTest::GetServiceWorkerContext() {

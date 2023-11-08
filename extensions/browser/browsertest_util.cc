@@ -45,11 +45,13 @@ base::Value ExecuteScriptInBackgroundPage(
   return value;
 }
 
-bool ExecuteScriptInBackgroundPageNoWait(content::BrowserContext* context,
-                                         const std::string& extension_id,
-                                         const std::string& script) {
+bool ExecuteScriptInBackgroundPageNoWait(
+    content::BrowserContext* context,
+    const std::string& extension_id,
+    const std::string& script,
+    ScriptUserActivation script_user_activation) {
   return BackgroundScriptExecutor::ExecuteScriptAsync(
-      context, extension_id, script, ScriptUserActivation::kActivate);
+      context, extension_id, script, script_user_activation);
 }
 
 std::string ExecuteScriptInBackgroundPageDeprecated(
