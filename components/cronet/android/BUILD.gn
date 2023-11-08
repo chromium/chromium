@@ -506,7 +506,6 @@ android_library("httpengine_native_provider_base_java") {
 
   deps = [
     ":cronet_api_java",
-    ":cronet_impl_common_base_java",
     "//base:base_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -691,6 +690,14 @@ android_java_prebuilt("package_impl_fake_java") {
   ]
 }
 
+android_java_prebuilt("package_httpengine_native_provider_java") {
+  jar_path = "$_package_dir/httpengine_native_provider_java.jar"
+  deps = [
+    ":package_api_java",
+    ":repackage_httpengine_native_provider",
+  ]
+}
+
 template("jar_src") {
   action_with_pydeps(target_name) {
     _rebased_src_search_dirs =
@@ -798,6 +805,12 @@ jar_src("jar_cronet_impl_util_java_source") {
   jar_path = "$_package_dir/cronet_impl_util_java-src.jar"
 }
 
+jar_src("jar_httpengine_native_provider_java_source") {
+  src_search_dirs = [ "java/src" ]
+  source_deps = [ ":httpengine_native_provider_base_java" ]
+  jar_path = "$_package_dir/httpengine_native_provider_java-src.jar"
+}
+
 # List of patterns of .class files to exclude from the jar.
 _jar_excluded_patterns = [
   # Excludes Android support libraries crbug.com/832770.
@@ -857,6 +870,11 @@ repackage_jars("repackage_fake") {
 repackage_jars("repackage_util") {
   output = "$_package_dir/cronet_impl_util_java.jar"
   deps = [ ":cronet_impl_java_util_java" ]
+}
+
+repackage_jars("repackage_httpengine_native_provider") {
+  output = "$_package_dir/httpengine_native_provider_java.jar"
+  deps = [ ":httpengine_native_provider_base_java" ]
 }
 
 # See crbug.com/1005836 for more info on why repackage_native requires 2 extra
@@ -1677,6 +1695,7 @@ copy("cronet_package_copy") {
     ":cronet_impl_common_base_java",
     ":cronet_impl_fake_base_java",
     ":cronet_impl_platform_base_java",
+    ":httpengine_native_provider_base_java",
   ]
 }
 
@@ -1876,9 +1895,11 @@ group("cronet_package_android") {
       ":jar_cronet_impl_native_java_source",
       ":jar_cronet_impl_platform_java_source",
       ":jar_cronet_sample_source",
+      ":jar_httpengine_native_provider_java_source",
       ":repackage_api",
       ":repackage_common",
       ":repackage_fake",
+      ":repackage_httpengine_native_provider",
       ":repackage_native",
       ":repackage_platform",
     ]
