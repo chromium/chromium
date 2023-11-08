@@ -88,7 +88,6 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       dynamic_scheduler_deadlines_percentile_(
           features::IsDynamicSchedulerEnabledForDraw()) {
   begin_frame_deadline_timer_.SetTaskRunner(task_runner);
-  frame_boost_deadline_timer_.SetTaskRunner(task_runner);
   if (dynamic_cc_deadlines_percentile_.has_value())
     begin_frame_source_->SetDynamicBeginFrameDeadlineOffsetSource(this);
   begin_frame_deadline_closure_ = base::BindRepeating(
@@ -267,19 +266,7 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
   // Schedule the deadline.
   current_begin_frame_args_ = save_args;
   if (hint_session_) {
-    base::TimeDelta target_duration = ComputeAdpfTarget(save_args);
-    hint_session_->UpdateTargetDuration(target_duration);
-    if (base::FeatureList::IsEnabled(features::kEnableADPFMidFrameBoost)) {
-      base::TimeTicks frame_boost_deadline =
-          args.frame_time +
-          target_duration *
-              features::kADPFMidFrameBoostDurationMultiplier.Get();
-      frame_boost_deadline_timer_.Start(
-          FROM_HERE, frame_boost_deadline,
-          base::BindOnce(&DisplayScheduler::OnFrameBoostDeadline,
-                         base::Unretained(this)),
-          base::subtle::DelayPolicy::kPrecise);
-    }
+    hint_session_->UpdateTargetDuration(ComputeAdpfTarget(save_args));
   }
 
   base::TimeDelta delta;
@@ -517,9 +504,6 @@ bool DisplayScheduler::AttemptDrawAndSwap() {
   inside_begin_frame_deadline_interval_ = false;
   begin_frame_deadline_timer_.Stop();
   begin_frame_deadline_task_time_ = base::TimeTicks();
-  // The frame is complete, cancel the timer to avoid the unneeded mid frame
-  // boost (regardless of whether we actually drew anything).
-  frame_boost_deadline_timer_.Stop();
 
   if (ShouldDraw()) {
     if (pending_swaps_ < MaxPendingSwaps())
@@ -541,12 +525,6 @@ void DisplayScheduler::OnBeginFrameDeadline() {
 
   bool did_draw = AttemptDrawAndSwap();
   DidFinishFrame(did_draw);
-}
-
-void DisplayScheduler::OnFrameBoostDeadline() {
-  if (hint_session_) {
-    hint_session_->BoostMidFrame();
-  }
 }
 
 void DisplayScheduler::DidFinishFrame(bool did_draw) {

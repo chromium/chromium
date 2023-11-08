@@ -282,13 +282,6 @@ const base::FeatureParam<base::TimeDelta> kADPFBoostTimeout{
     &kEnableADPFScrollBoost, "adpf_boost_mode_timeout",
     base::Milliseconds(200)};
 
-// If enabled, Chrome uses ADPF(Android Dynamic Performance Framework) to
-// request more CPU resources in the middle of a frame production if the frame
-// is taking longer than expected.
-BASE_FEATURE(kEnableADPFMidFrameBoost,
-             "EnableADPFMidFrameBoost",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Allows delegating transforms over Wayland when it is also supported by Ash.
 BASE_FEATURE(kDelegateTransforms,
              "DelegateTransforms",
@@ -298,11 +291,6 @@ BASE_FEATURE(kDelegateTransforms,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-// The deadline for requesting a boost in the middle of a frame production is
-// this multiplier * ADPF target_duration.
-const base::FeatureParam<double> kADPFMidFrameBoostDurationMultiplier{
-    &kEnableADPFMidFrameBoost, "adpf_mid_frame_boost_multiplier", 1.0};
 
 // If enabled, Chrome includes the Renderer Main thread(s) into the
 // ADPF(Android Dynamic Performance Framework) hint session.
