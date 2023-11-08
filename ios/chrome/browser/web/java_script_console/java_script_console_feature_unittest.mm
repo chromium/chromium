@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
 
 #import <memory>
+#import <optional>
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -20,7 +21,6 @@
 #import "ios/web/public/web_state.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -60,13 +60,13 @@ class FakeJavaScriptConsoleFeatureDelegate
       web::WebState* web_state,
       web::WebFrame* sender_frame,
       const JavaScriptConsoleMessage& message) override {
-    last_received_message_ = absl::optional<JavaScriptConsoleMessage>(
+    last_received_message_ = std::optional<JavaScriptConsoleMessage>(
         JavaScriptConsoleMessage(message));
     last_received_web_frame_ = sender_frame;
     last_received_web_state_ = web_state;
   }
 
-  absl::optional<JavaScriptConsoleMessage> last_received_message_;
+  std::optional<JavaScriptConsoleMessage> last_received_message_;
   web::WebFrame* last_received_web_frame_ = nullptr;
   web::WebState* last_received_web_state_ = nullptr;
 };

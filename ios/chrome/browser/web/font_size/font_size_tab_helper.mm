@@ -175,7 +175,7 @@ void FontSizeTabHelper::LogZoomEvent(Zoom zoom) const {
   }
 }
 
-absl::optional<double> FontSizeTabHelper::NewMultiplierAfterZoom(
+std::optional<double> FontSizeTabHelper::NewMultiplierAfterZoom(
     Zoom zoom) const {
   static const std::vector<double> kZoomMultipliers = {
       0.5, 2.0 / 3.0, 0.75, 0.8, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0,
@@ -191,7 +191,7 @@ absl::optional<double> FontSizeTabHelper::NewMultiplierAfterZoom(
           return multiplier;
         }
       }
-      return absl::nullopt;
+      return std::nullopt;
     }
     case ZOOM_OUT: {
       double current_multiplier = GetCurrentUserZoomMultiplier();
@@ -201,7 +201,7 @@ absl::optional<double> FontSizeTabHelper::NewMultiplierAfterZoom(
           return multiplier;
         }
       }
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 }
@@ -215,7 +215,7 @@ bool FontSizeTabHelper::CanUserZoomOut() const {
 }
 
 bool FontSizeTabHelper::CanUserResetZoom() const {
-  absl::optional<double> new_multiplier = NewMultiplierAfterZoom(ZOOM_RESET);
+  std::optional<double> new_multiplier = NewMultiplierAfterZoom(ZOOM_RESET);
   return new_multiplier.has_value() &&
          new_multiplier.value() != GetCurrentUserZoomMultiplier();
 }

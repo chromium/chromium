@@ -100,7 +100,7 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
   DCHECK_EQ(web_state_, web_state);
 
   // Check if this page requested "nointentdetection".
-  absl::optional<bool> has_no_intent_detection =
+  std::optional<bool> has_no_intent_detection =
       metadata.FindBool("hasNoIntentDetection");
   if (!has_no_intent_detection || has_no_intent_detection.value()) {
     return;
@@ -163,7 +163,7 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
 
 void AnnotationsTabHelper::ApplyDeferredProcessing(
     int seq_id,
-    absl::optional<std::vector<web::TextAnnotation>> deferred) {
+    std::optional<std::vector<web::TextAnnotation>> deferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   web::ContentWorld content_world =

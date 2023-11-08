@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
 
+#import <optional>
 #import <string>
 
 #import "base/base64.h"
@@ -14,7 +15,6 @@
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 const char kScriptName[] = "image_fetch";
@@ -62,7 +62,7 @@ void ImageFetchJavaScriptFeature::GetImageData(web::WebState* web_state,
   CallJavaScriptFunction(main_frame, "imageFetch.getImageData", parameters);
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 ImageFetchJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptHandlerName;
 }
@@ -82,7 +82,7 @@ void ImageFetchJavaScriptFeature::ScriptMessageReceived(
   }
 
   const base::Value::Dict& message_dict = message->GetDict();
-  const absl::optional<double> id_key = message_dict.FindDouble("id");
+  const std::optional<double> id_key = message_dict.FindDouble("id");
   if (!id_key) {
     return;
   }
