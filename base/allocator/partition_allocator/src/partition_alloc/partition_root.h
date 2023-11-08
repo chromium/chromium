@@ -181,6 +181,10 @@ struct PartitionOptions {
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   ThreadIsolationOption thread_isolation;
 #endif
+
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+  EnableToggle use_pool_offset_freelists = kDisabled;
+#endif
 };
 
 // When/if free lists should be "straightened" when calling
@@ -264,6 +268,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
     ThreadIsolationOption thread_isolation;
+#endif
+
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+    bool use_pool_offset_freelists = false;
 #endif
 
 #if PA_CONFIG(EXTRAS_REQUIRED)
@@ -838,6 +846,12 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     // here.
     return *scheduler_loop_quarantine;
   }
+
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+  PA_ALWAYS_INLINE bool uses_pool_offset_freelists() const {
+    return settings.use_pool_offset_freelists;
+  }
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
  private:
   static inline StraightenLargerSlotSpanFreeListsMode
