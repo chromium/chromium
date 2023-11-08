@@ -26,8 +26,5 @@ source_set("grit_header_parsing") {
     "grit_header_parsing.cc",
     "grit_header_parsing.h",
   ]
-  public_deps = [
-    "//base",
-    "//third_party/abseil-cpp:absl",
-  ]
+  public_deps = [ "//base" ]
 }
