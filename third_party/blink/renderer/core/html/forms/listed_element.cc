@@ -55,9 +55,6 @@ namespace blink {
 namespace {
 
 void InvalidateShadowIncludingAncestorForms(ContainerNode& insertion_point) {
-  if (!RuntimeEnabledFeatures::AutofillShadowDOMEnabled())
-    return;
-
   // Let any forms in the shadow including ancestors know that this
   // ListedElement has changed. Don't include any forms inside the same
   // TreeScope know because that relationship isn't tracked by listed elements

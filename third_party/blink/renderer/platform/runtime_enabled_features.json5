@@ -376,12 +376,6 @@
       public: true,
     },
     {
-      // Makes autofill look across shadow boundaries when collecting form
-      // controls to fill.
-      name: "AutofillShadowDOM",
-      status: "stable",
-    },
-    {
       name: "AutomationControlled",
       base_feature: "none",
       public: true,

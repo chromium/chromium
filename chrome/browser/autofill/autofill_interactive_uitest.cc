@@ -536,8 +536,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     // "fr" instead of "en").
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kAutofillShadowDOM,
-         features::kAutofillTextAreaChangeEvents},
+        {features::kAutofillTextAreaChangeEvents},
         /*disabled_features=*/{features::kAutofillPageLanguageDetection});
   }
   ~AutofillInteractiveTestBase() override = default;

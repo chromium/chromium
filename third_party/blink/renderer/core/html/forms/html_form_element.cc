@@ -778,8 +778,6 @@ void HTMLFormElement::CollectListedElements(
 // because of lazy evaluation.
 const ListedElement::List& HTMLFormElement::ListedElements(
     bool include_shadow_trees) const {
-  if (!RuntimeEnabledFeatures::AutofillShadowDOMEnabled())
-    include_shadow_trees = false;
   bool collect_shadow_inputs =
       include_shadow_trees && listed_elements_including_shadow_trees_are_dirty_;
 
