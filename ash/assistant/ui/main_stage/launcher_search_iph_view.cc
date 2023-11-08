@@ -176,7 +176,7 @@ LauncherSearchIphView::LauncherSearchIphView(
         PillButton::Type::kDefaultLargeWithoutIcon);
   }
 
-  if (is_in_tablet_mode) {
+  if (is_in_tablet_mode || !show_assistant_chip_) {
     box_layout_view->SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshControlBackgroundColorInactive, kBackgroundRadiusTablet));
   } else {
