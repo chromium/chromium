@@ -957,6 +957,16 @@
     Cancel
   </message>
 
+  <!-- Autofill credit card delete dialog -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_CREDIT_CARD_DELETE_CONFIRMATION_TITLE" desc="Title for the confirmation dialog displayed when the user clicks on the delete button while editing card information." formatter_data="android_java">
+      Delete card
+    </message>
+    <message name="IDS_AUTOFILL_CREDIT_CARD_DELETE_CONFIRMATION_DESCRIPTION" desc="Description for the confirmation dialog displayed when the user clicks on the delete button while editing card information." formatter_data="android_java">
+      This payment method will be deleted from this device
+    </message>
+  </if>
+
   <!-- Autofill credit card preferences -->
   <if expr="is_android">
     <message name="IDS_AUTOFILL_EDIT_CREDIT_CARD" desc="Button that allows the user to edit a card that can be automatically filled into web page forms. This can be either credit, debit, or prepaid card. [CHAR_LIMIT=32]" formatter_data="android_java">
