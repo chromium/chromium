@@ -84,6 +84,7 @@ lorgnette::ListScannersResponse CreateListScannersResponse(
     const std::string& model = "MX3100") {
   lorgnette::ScannerInfo scanner = CreateLorgnetteScanner(name, model);
   lorgnette::ListScannersResponse response;
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
   *response.add_scanners() = std::move(scanner);
   return response;
 }
@@ -688,6 +689,8 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListLorgnette) {
                      SecureScannerFilter::kIncludeUnsecureScanners);
   WaitForResult();
   ASSERT_TRUE(list_scanners_response());
+  EXPECT_EQ(list_scanners_response()->result(),
+            lorgnette::OPERATION_RESULT_SUCCESS);
   ASSERT_EQ(list_scanners_response().value().scanners_size(), 1);
   EXPECT_FALSE(
       list_scanners_response().value().scanners(0).device_uuid().empty());
@@ -799,6 +802,8 @@ TEST_F(LorgnetteScannerManagerTest,
                      SecureScannerFilter::kIncludeUnsecureScanners);
   WaitForResult();
   ASSERT_TRUE(list_scanners_response());
+  EXPECT_EQ(list_scanners_response()->result(),
+            lorgnette::OPERATION_RESULT_SUCCESS);
   ASSERT_EQ(list_scanners_response().value().scanners_size(), 2);
   EXPECT_FALSE(
       list_scanners_response().value().scanners(0).device_uuid().empty());
@@ -815,6 +820,7 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListLocalOnlyFilter) {
   info.set_connection_type(lorgnette::CONNECTION_USB);
   info.set_secure(false);
   *response.add_scanners() = std::move(info);
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
 
   // This scanner should get filtered out because it's a network scanner.
   GetLorgnetteManagerClient()->SetListScannersResponse(response);
@@ -825,6 +831,8 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListLocalOnlyFilter) {
                      SecureScannerFilter::kIncludeUnsecureScanners);
   WaitForResult();
   ASSERT_TRUE(list_scanners_response());
+  EXPECT_EQ(list_scanners_response()->result(),
+            lorgnette::OPERATION_RESULT_SUCCESS);
   ASSERT_EQ(list_scanners_response().value().scanners_size(), 1);
   EXPECT_EQ(list_scanners_response().value().scanners(0).name(),
             kLorgnetteUsbDeviceName);
@@ -838,6 +846,7 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListSecureOnlyFilter) {
   info.set_connection_type(lorgnette::CONNECTION_USB);
   info.set_secure(false);
   *response.add_scanners() = std::move(info);
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
 
   GetLorgnetteManagerClient()->SetListScannersResponse(response);
   fake_zeroconf_scanner_detector()->AddDetections({CreateZeroconfScanner()});
@@ -847,6 +856,8 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListSecureOnlyFilter) {
                      SecureScannerFilter::kSecureScannersOnly);
   WaitForResult();
   ASSERT_TRUE(list_scanners_response());
+  EXPECT_EQ(list_scanners_response()->result(),
+            lorgnette::OPERATION_RESULT_SUCCESS);
   ASSERT_EQ(list_scanners_response().value().scanners_size(), 1);
   EXPECT_EQ(list_scanners_response().value().scanners(0).name(),
             "airscan:escl:Test MX3100:https://192.168.0.3:5/");
@@ -861,6 +872,7 @@ TEST_F(LorgnetteScannerManagerTest,
   info.set_connection_type(lorgnette::CONNECTION_USB);
   info.set_secure(false);
   *response.add_scanners() = std::move(info);
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
 
   // This scanner should get filtered out because it's a network scanner.
   GetLorgnetteManagerClient()->SetListScannersResponse(response);
@@ -871,6 +883,8 @@ TEST_F(LorgnetteScannerManagerTest,
                      SecureScannerFilter::kSecureScannersOnly);
   WaitForResult();
   ASSERT_TRUE(list_scanners_response());
+  EXPECT_EQ(list_scanners_response()->result(),
+            lorgnette::OPERATION_RESULT_SUCCESS);
   ASSERT_EQ(list_scanners_response().value().scanners_size(), 0);
 }
 

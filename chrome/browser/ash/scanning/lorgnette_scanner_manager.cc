@@ -532,6 +532,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
                               const lorgnette::ListScannersResponse& response,
                               GetScannerInfoListCallback callback) {
     lorgnette::ListScannersResponse combined_results;
+    combined_results.set_result(response.result());
 
     for (const auto& scanner : response.scanners()) {
       if (ShouldIncludeScanner(scanner, local_only, secure_only)) {

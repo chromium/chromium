@@ -73,6 +73,7 @@ lorgnette::ListScannersResponse CreateListScannersResponse() {
   scanner.set_type("Type");
 
   lorgnette::ListScannersResponse response;
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
   *response.add_scanners() = std::move(scanner);
 
   return response;
@@ -1007,6 +1008,7 @@ TEST_F(LorgnetteManagerClientTest, AsyncDiscoverySession) {
                 break;
               }
               case lorgnette::ScannerListChangedSignal::SESSION_ENDING:
+                actual_response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
                 run_loop.Quit();
                 break;
               default:

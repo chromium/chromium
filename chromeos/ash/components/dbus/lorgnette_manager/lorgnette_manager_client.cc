@@ -793,6 +793,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!response.has_value()) {
+      // TODO(b/277049005): Set the proper result code once this is disentangled
+      // from the synchronous ListScanners response.
       std::move(callback).Run(absl::nullopt);
       return;
     }
@@ -917,6 +919,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
         // needs to be updated to actually remove devices.
         break;
       case lorgnette::ScannerListChangedSignal::ENUM_COMPLETE: {
+        session.response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
         lorgnette::StopScannerDiscoveryRequest request;
         request.set_session_id(session.session_id);
         StopScannerDiscovery(request, base::DoNothing());
