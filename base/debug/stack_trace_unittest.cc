@@ -348,9 +348,9 @@ NOINLINE static std::unique_ptr<StackBuffer> CopyCurrentStackAndRewritePointers(
 }
 
 template <size_t Depth>
-NOINLINE void ExpectStackFramePointers(const void** frames,
-                                       size_t max_depth,
-                                       bool copy_stack) {
+NOINLINE NOOPT void ExpectStackFramePointers(const void** frames,
+                                             size_t max_depth,
+                                             bool copy_stack) {
 code_start:
   // Calling __builtin_frame_address() forces compiler to emit
   // frame pointers, even if they are not enabled.
@@ -366,9 +366,9 @@ code_end:
 }
 
 template <>
-NOINLINE void ExpectStackFramePointers<1>(const void** frames,
-                                          size_t max_depth,
-                                          bool copy_stack) {
+NOINLINE NOOPT void ExpectStackFramePointers<1>(const void** frames,
+                                                size_t max_depth,
+                                                bool copy_stack) {
 code_start:
   // Calling __builtin_frame_address() forces compiler to emit
   // frame pointers, even if they are not enabled.

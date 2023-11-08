@@ -51,6 +51,15 @@
 #define NOINLINE
 #endif
 
+// Annotate a function indicating it should not be optimized.
+#if defined(__clang__) && HAS_ATTRIBUTE(optnone)
+#define NOOPT [[clang::optnone]]
+#elif defined(COMPILER_GCC) && HAS_ATTRIBUTE(optimize)
+#define NOOPT __attribute__((optimize(0)))
+#else
+#define NOOPT
+#endif
+
 #if defined(__clang__) && defined(NDEBUG) && HAS_ATTRIBUTE(always_inline)
 #define ALWAYS_INLINE [[clang::always_inline]] inline
 #elif defined(COMPILER_GCC) && defined(NDEBUG) && HAS_ATTRIBUTE(always_inline)
