@@ -749,9 +749,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // Shows the Safety Check page and starts the Safety Check for `referrer`.
 - (void)showSafetyCheckAndStartSafetyCheck:
     (password_manager::PasswordCheckReferrer)referrer {
-  if ([self.topViewController isKindOfClass:[SafetyCheckCoordinator class]]) {
-    // The top view controller is already the Safety Check panel.
-    // No need to open it.
+  if ([self.topViewController isKindOfClass:[SafetyCheckCoordinator class]] ||
+      [self.safetyCheckCoordinator.baseViewController isBeingDismissed]) {
+    // Do not open the Safety Check panel if:
+    // [1] The top view controller is already the Safety Check panel, or
+    // [2] The Safety Check view controller is currently being dismissed.
     return;
   }
   DCHECK(!self.safetyCheckCoordinator);
