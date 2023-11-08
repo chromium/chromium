@@ -90,6 +90,7 @@
   <div id="body">
     <tab-organization-not-started id="notStarted"
         shown$="[[isState_(tabOrganizationStateEnum_.kNotStarted, state_)]]"
+        on-sync-change="updateContentsHeight_"
         on-sync-click="onSyncClick_"
         on-sign-in-click="onSignInClick_"
         on-settings-click="onSettingsClick_"

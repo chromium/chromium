@@ -74,6 +74,7 @@ export class TabOrganizationPageElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.updateContentsHeight_();
     this.apiProxy_.getTabOrganizationSession().then(
         ({session}) => this.setSession_(session));
     const callbackRouter = this.apiProxy_.getCallbackRouter();
@@ -120,9 +121,12 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.classList.toggle(
         'from-failure', this.state_ === TabOrganizationState.kFailure);
     this.state_ = state;
+    this.updateContentsHeight_();
+  }
 
+  private updateContentsHeight_() {
     let contentsHeight = 0;
-    switch (state) {
+    switch (this.state_) {
       case TabOrganizationState.kNotStarted:
         contentsHeight = this.$.notStarted.scrollHeight + TRAILING_BODY_SPACING;
         break;
