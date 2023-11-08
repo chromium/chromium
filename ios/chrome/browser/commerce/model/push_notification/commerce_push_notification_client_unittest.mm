@@ -119,7 +119,7 @@ const bookmarks::BookmarkNode* PrepareSubscription(
 
   commerce::ProductInfo product_info;
   product_info.title = kBookmarkTitle;
-  absl::optional<commerce::ProductInfo> optional_product_info;
+  std::optional<commerce::ProductInfo> optional_product_info;
   optional_product_info.emplace(product_info);
   shopping_service->SetResponseForGetProductInfoForUrl(optional_product_info);
   return product;

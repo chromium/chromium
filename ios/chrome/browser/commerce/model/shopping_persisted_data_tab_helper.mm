@@ -70,7 +70,7 @@ ShoppingPersistedDataTabHelper::~ShoppingPersistedDataTabHelper() {
 ShoppingPersistedDataTabHelper::PriceDrop::PriceDrop()
     : current_price(nil),
       previous_price(nil),
-      offer_id(absl::nullopt),
+      offer_id(std::nullopt),
       url(GURL(std::string())),
       timestamp(base::Time::UnixEpoch()) {}
 
@@ -232,7 +232,7 @@ ShoppingPersistedDataTabHelper::GetCurrencyFormatter(
 
 void ShoppingPersistedDataTabHelper::ParseProto(
     const GURL& url,
-    const absl::optional<commerce::PriceTrackingData>& price_metadata) {
+    const std::optional<commerce::PriceTrackingData>& price_metadata) {
   if (!price_metadata) {
     return;
   }
