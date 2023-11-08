@@ -73,6 +73,7 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   }
 
   void TearDown() override {
+    profile_ = nullptr;
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
     fake_user_manager_.Reset();
@@ -103,7 +104,7 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   std::unique_ptr<BrowserManager::ScopedUnsetAllKeepAliveForTesting>
       scoped_unset_all_keep_alive_;
 
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 };
 
 // Test that KeepAlive is registered on session start if an extension that

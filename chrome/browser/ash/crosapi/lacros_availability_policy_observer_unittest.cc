@@ -59,6 +59,7 @@ class LacrosAvailabilityPolicyObserverTest : public testing::Test {
   }
 
   void TearDown() override {
+    primary_profile_ = nullptr;
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
     ash::SessionManagerClient::Shutdown();
@@ -111,8 +112,7 @@ class LacrosAvailabilityPolicyObserverTest : public testing::Test {
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<user_manager::User, ExperimentalAsh> test_user_ = nullptr;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      primary_profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
 };
 
 using ash::standalone_browser::LacrosAvailability;
