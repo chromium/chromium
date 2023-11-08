@@ -370,6 +370,9 @@ Revision: ${revision}
 EOF
 }
 
+# Fetch the latest tags; used in creating vpx_version.h.
+git -C "${LIBVPX_SRC_DIR}" fetch --tags
+
 find_duplicates
 
 echo "Create temporary directory."
