@@ -1118,11 +1118,12 @@ BASE_FEATURE(kLCPPLazyLoadImagePreload,
              "LCPPLazyLoadImagePreload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<LcppPreloadLazyLoadImageType>::Option
-    lcpp_preload_lazy_load_image[] = {
-        {LcppPreloadLazyLoadImageType::kNone, "none"},
-        {LcppPreloadLazyLoadImageType::kNativeLazyLoading,
-         "native_lazy_loading"},
+const base::FeatureParam<
+    LcppPreloadLazyLoadImageType>::Option lcpp_preload_lazy_load_image[] = {
+    {LcppPreloadLazyLoadImageType::kNone, "none"},
+    {LcppPreloadLazyLoadImageType::kNativeLazyLoading, "native_lazy_loading"},
+    {LcppPreloadLazyLoadImageType::kCustomLazyLoading, "custom_lazy_loading"},
+    {LcppPreloadLazyLoadImageType::kAll, "all"},
 };
 const base::FeatureParam<LcppPreloadLazyLoadImageType>
     kLCPCriticalPathPredictorPreloadLazyLoadImageType{

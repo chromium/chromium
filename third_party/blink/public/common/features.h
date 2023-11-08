@@ -641,7 +641,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPLazyLoadImagePreload);
 // crbug.com/1498777 for more details.
 enum class LcppPreloadLazyLoadImageType {
   kNone,
+  // Browser-level lazy loading via loading attributes.
+  // https://html.spec.whatwg.org/#lazy-loading-attributes
   kNativeLazyLoading,
+  // Lazy loading via JavaScript, which is usually provided with the dynamic src
+  // URL insersion via IntersectionObserver. Image URLs are typically located
+  // in data-src attributes, and this option creates preload requests to that
+  // URLs.
+  kCustomLazyLoading,
+  kAll,
 };
 BLINK_COMMON_EXPORT extern const base::FeatureParam<
     LcppPreloadLazyLoadImageType>

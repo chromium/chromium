@@ -65,6 +65,7 @@
     "crossorigin",
     "csp",
     "data",
+    "data-src",
     "datetime",
     "declare",
     "decoding",

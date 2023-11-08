@@ -169,16 +169,29 @@ class TokenPreloadScanner::StartTagScanner {
   STACK_ALLOCATED();
 
  public:
-  StartTagScanner(const StringImpl* tag_impl,
-                  MediaValuesCached* media_values,
-                  SubresourceIntegrity::IntegrityFeatures features,
-                  TokenPreloadScanner::ScannerType scanner_type,
-                  const HashSet<String>* disabled_image_types)
+  StartTagScanner(
+      const StringImpl* tag_impl,
+      MediaValuesCached* media_values,
+      SubresourceIntegrity::IntegrityFeatures features,
+      TokenPreloadScanner::ScannerType scanner_type,
+      const HashSet<String>* disabled_image_types,
+      features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type)
       : tag_impl_(tag_impl),
         media_values_(media_values),
         integrity_features_(features),
         scanner_type_(scanner_type),
-        disabled_image_types_(disabled_image_types) {
+        disabled_image_types_(disabled_image_types),
+        preload_lazy_load_image_type_(preload_lazy_load_image_type) {
+    switch (preload_lazy_load_image_type_) {
+      case features::LcppPreloadLazyLoadImageType::kCustomLazyLoading:
+      case features::LcppPreloadLazyLoadImageType::kAll:
+        use_data_src_attr_match_for_image_ = true;
+        break;
+      case features::LcppPreloadLazyLoadImageType::kNone:
+      case features::LcppPreloadLazyLoadImageType::kNativeLazyLoading:
+        use_data_src_attr_match_for_image_ = false;
+        break;
+    }
     if (Match(tag_impl_, html_names::kImgTag) ||
         Match(tag_impl_, html_names::kSourceTag) ||
         Match(tag_impl_, html_names::kLinkTag)) {
@@ -434,6 +447,10 @@ class TokenPreloadScanner::StartTagScanner {
       attributionsrc_attr_set_ = true;
     } else if (Match(attribute_name, html_names::kSharedstoragewritableAttr)) {
       shared_storage_writable_ = true;
+    } else if (use_data_src_attr_match_for_image_ &&
+               Match(attribute_name, html_names::kDataSrcAttr) &&
+               img_src_url_.IsNull()) {
+      img_src_url_ = attribute_value;
     }
   }
 
@@ -578,10 +595,19 @@ class TokenPreloadScanner::StartTagScanner {
       return false;
     }
 
-    if (is_potentially_lcp_element &&
-        document_parameters.preload_lazy_load_image_type ==
-            features::LcppPreloadLazyLoadImageType::kNativeLazyLoading) {
-      return false;
+    // LCPP experiment in crbug.com/1498777. If the image is potentially a LCP
+    // element, the scanner doesn't mark it as a deferable image regardless of
+    // whether it has loading="lazy" attribute or not, in order to make the LCP
+    // image load completion faster.
+    if (is_potentially_lcp_element) {
+      switch (document_parameters.preload_lazy_load_image_type) {
+        case features::LcppPreloadLazyLoadImageType::kNativeLazyLoading:
+        case features::LcppPreloadLazyLoadImageType::kCustomLazyLoading:
+        case features::LcppPreloadLazyLoadImageType::kAll:
+          return false;
+        case features::LcppPreloadLazyLoadImageType::kNone:
+          break;
+      }
     }
 
     return loading_attr_value_ == LoadingAttributeValue::kLazy;
@@ -782,6 +808,8 @@ class TokenPreloadScanner::StartTagScanner {
   bool shared_storage_writable_ = false;
   absl::optional<float> resource_width_;
   absl::optional<float> resource_height_;
+  features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type_;
+  bool use_data_src_attr_match_for_image_ = false;
 };
 
 TokenPreloadScanner::TokenPreloadScanner(
@@ -1035,7 +1063,8 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
       MediaValuesCached* media_values = EnsureMediaValues();
       StartTagScanner scanner(
           tag_impl, media_values, document_parameters_->integrity_features,
-          scanner_type_, &document_parameters_->disabled_image_types);
+          scanner_type_, &document_parameters_->disabled_image_types,
+          document_parameters_->preload_lazy_load_image_type);
       scanner.ProcessAttributes(token.Attributes());
 
       if (in_picture_ && media_values->Width()) {
