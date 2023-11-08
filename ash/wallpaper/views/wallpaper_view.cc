@@ -17,6 +17,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -324,5 +325,8 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
 
   return wallpaper_widget;
 }
+
+BEGIN_METADATA(WallpaperView)
+END_METADATA
 
 }  // namespace ash
