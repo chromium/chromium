@@ -1881,7 +1881,14 @@ class WebAuthCrossDomainTest : public WebAuthBrowserTestBase {
       device::kWebAuthnRelatedOrigin};
 };
 
-IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Create) {
+// TODO(https://crbug.com/1500554): Enable test when MacOS failure is fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Create DISABLED_Create
+#else
+#define MAYBE_Create Create
+#endif
+
+IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, MAYBE_Create) {
   CreateParameters parameters;
   parameters.rp_id = "foo.com";
   test_client()->set_webauthn_origins_response(
@@ -1905,7 +1912,14 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, CreateBadContentType) {
   EXPECT_EQ(kRpIdContentTypeMessage, result);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, CreateBadOrigin) {
+// TODO(https://crbug.com/1500554): Enable test when MacOS failure is fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreateBadOrigin DISABLED_CreateBadOrigin
+#else
+#define MAYBE_CreateBadOrigin CreateBadOrigin
+#endif
+
+IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, MAYBE_CreateBadOrigin) {
   CreateParameters parameters;
   parameters.rp_id = "foo.com";
   test_client()->set_webauthn_origins_response("application/json",
@@ -1930,7 +1944,14 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Timeout) {
   EXPECT_EQ(kNotAllowedErrorMessage, result);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Get) {
+// TODO(https://crbug.com/1500554): Enable test when MacOS failure is fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Get DISABLED_Get
+#else
+#define MAYBE_Get Get
+#endif
+
+IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, MAYBE_Get) {
   const uint8_t kCredentialId[] = {0x61, 0x6C, 0x6C, 0x6F, 0x77, 0x65,
                                    0x64, 0x43, 0x72, 0x65, 0x64, 0x65,
                                    0x6E, 0x74, 0x69, 0x61, 0x6C};
