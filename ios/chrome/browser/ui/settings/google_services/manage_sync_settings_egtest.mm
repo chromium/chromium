@@ -334,6 +334,41 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
 }
 
+// Tests the unsynced data dialog shows when there are unsynced bookmarks. Also
+// verifies that the user is signed out when the dialog Delete and Sign Out
+// button is tapped. kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)
+    testDeleteAndSignOutFromUnsyncedDataDialogInCaseOfUnsyncedBookmarks_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncBookmarksIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  SignOutFromAccountSettings();
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_AND_DELETE_BUTTON)]
+      performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedOut];
+
+  // Re-connect the fake sync server to the network to be able to sign-in when
+  // the test gets run repeatedly.
+  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+}
+
 // Tests that data type settings carry over signing out.
 - (void)testDataTypeSettingsCarryOverSignOut_SyncToSigninEnabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
