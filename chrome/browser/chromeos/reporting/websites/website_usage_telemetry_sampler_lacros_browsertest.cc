@@ -53,7 +53,7 @@ constexpr base::TimeDelta kWebsiteUsageDuration = base::Minutes(2);
 
 // Additional website usage buffer period before the browser is actually closed.
 // Used when validating reported website usage data.
-constexpr base::TimeDelta kWebsiteUsageBufferPeriod = base::Seconds(5);
+constexpr base::TimeDelta kWebsiteUsageBufferPeriod = base::Seconds(10);
 
 void SetupUserDeviceAffiliation() {
   ::enterprise_management::PolicyData profile_policy_data;

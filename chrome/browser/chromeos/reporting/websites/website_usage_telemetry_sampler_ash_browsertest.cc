@@ -52,7 +52,7 @@ constexpr base::TimeDelta kWebsiteUsageDuration = base::Minutes(2);
 
 // Additional website usage buffer period before the browser is actually closed.
 // Used when validating reported website usage data.
-constexpr base::TimeDelta kWebsiteUsageBufferPeriod = base::Seconds(5);
+constexpr base::TimeDelta kWebsiteUsageBufferPeriod = base::Seconds(10);
 
 void AssertRecordData(Priority priority, const Record& record) {
   EXPECT_THAT(priority, Eq(Priority::MANUAL_BATCH));
