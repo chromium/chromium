@@ -170,6 +170,7 @@ ComposeEnabling::PageLevelChecks(Profile* profile,
   // sufficient for now. TODO(b/309162238) follow up on whether this is
   // sufficient long-term.
   if (top_level_frame_origin != element_frame_origin) {
+    DVLOG(2) << "cross frame origin not supported";
     return base::unexpected(
         compose::ComposeShowStatus::kFormFieldInCrossOriginFrame);
   }
