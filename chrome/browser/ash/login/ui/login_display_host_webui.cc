@@ -1072,6 +1072,11 @@ void LoginDisplayHostWebUI::StartCryptohomeRecovery(
   NOTREACHED();
 }
 
+void LoginDisplayHostWebUI::RunLocalAuthentication(
+    std::unique_ptr<UserContext> user_context) {
+  NOTREACHED();
+}
+
 void LoginDisplayHostWebUI::StartBrowserDataMigration() {
   NOTREACHED();
 }

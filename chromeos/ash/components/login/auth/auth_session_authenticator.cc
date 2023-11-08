@@ -147,8 +147,9 @@ void AuthSessionAuthenticator::RemoveStaleUserForEphemeral(
     std::unique_ptr<UserContext> original_context,
     AuthSessionIntent intent,
     StartAuthSessionCallback callback) {
-  if (auth_session_id.empty())
+  if (auth_session_id.empty()) {
     NOTREACHED() << "Auth session should exist";
+  }
   LOGIN_LOG(EVENT) << "Deleting stale ephemeral user";
   user_data_auth::RemoveRequest remove_request;
   remove_request.set_auth_session_id(auth_session_id);
@@ -309,14 +310,25 @@ void AuthSessionAuthenticator::DoCompleteLogin(
         // If Local passwords are enabled, password setup would
         // happen later in OOBE flow.
       }
-    // In addition to factors suitable for authentication, fetch a set of
-    // supported factor types for new users.
-    steps.push_back(
-        base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
-                       auth_factor_editor_->AsWeakPtr()));
+      // In addition to factors suitable for authentication, fetch a set of
+      // supported factor types for new users.
+      steps.push_back(
+          base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
+                         auth_factor_editor_->AsWeakPtr()));
     }       // challenge-response
   } else {  // existing user
     if (!challenge_response_auth) {
+      // Password-based login
+      if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
+        const auto& factors = context->GetAuthFactorsData();
+        if (!factors.FindOnlinePasswordFactor() &&
+            !factors.FindRecoveryFactor()) {
+          // User has knowledge factor other than online password and recovery
+          // flow can't be used
+          NotifyLocalAuthenticationRequired(std::move(context));
+          return;
+        }
+      }
       // We are sure that password is correct, so intercept authentication
       // failure events and treat them as password change signals.
       error_callback = base::BindOnce(
@@ -954,8 +966,9 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
     AuthFailure::FailureReason default_error,
     std::unique_ptr<UserContext> context,
     AuthenticationError error) {
-  if (!consumer_)
+  if (!consumer_) {
     return;
+  }
   DCHECK_EQ(error.get_origin(), AuthenticationError::Origin::kCryptohome);
   DCHECK_NE(error.get_cryptohome_code(),
             user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
@@ -987,8 +1000,9 @@ void AuthSessionAuthenticator::HandlePasswordChangeDetected(
   if (error.get_cryptohome_code() ==
       user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED) {
     LOGIN_LOG(EVENT) << "Password change detected";
-    if (!consumer_)
+    if (!consumer_) {
       return;
+    }
     if (ash::features::IsCryptohomeRecoveryEnabled()) {
       consumer_->OnPasswordChangeDetected(std::move(context));
     } else {
@@ -997,6 +1011,15 @@ void AuthSessionAuthenticator::HandlePasswordChangeDetected(
     return;
   }
   std::move(fallback).Run(std::move(context), std::move(error));
+}
+
+void AuthSessionAuthenticator::NotifyLocalAuthenticationRequired(
+    std::unique_ptr<UserContext> context) {
+  LOGIN_LOG(EVENT) << "Local authentication required";
+  if (!consumer_) {
+    return;
+  }
+  consumer_->OnLocalAuthenticationRequired(std::move(context));
 }
 
 void AuthSessionAuthenticator::HandleMigrationRequired(
@@ -1011,8 +1034,9 @@ void AuthSessionAuthenticator::HandleMigrationRequired(
       user_data_auth::CRYPTOHOME_ERROR_MOUNT_PREVIOUS_MIGRATION_INCOMPLETE;
   if (migration_required || incomplete_migration) {
     LOGIN_LOG(EVENT) << "Old encryption detected";
-    if (!consumer_)
+    if (!consumer_) {
       return;
+    }
     consumer_->OnOldEncryptionDetected(std::move(context),
                                        incomplete_migration);
     return;
@@ -1031,22 +1055,25 @@ void AuthSessionAuthenticator::NotifyAuthSuccess(
                                          context->GetAuthSessionId());
   }
 
-  if (consumer_)
+  if (consumer_) {
     consumer_->OnAuthSuccess(*context);
+  }
 }
 
 void AuthSessionAuthenticator::NotifyGuestSuccess(
     std::unique_ptr<UserContext> context) {
   LOGIN_LOG(EVENT) << "Logged in as guest";
-  if (consumer_)
+  if (consumer_) {
     consumer_->OnOffTheRecordAuthSuccess();
+  }
 }
 
 void AuthSessionAuthenticator::NotifyFailure(
     AuthFailure::FailureReason reason,
     std::unique_ptr<UserContext> context) {
-  if (consumer_)
+  if (consumer_) {
     consumer_->OnAuthFailure(AuthFailure(reason));
+  }
 }
 
 void AuthSessionAuthenticator::CheckOwnershipOperation(

@@ -92,8 +92,8 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
     LocalAuthenticationRequestWidget* local_authentication_request_widget =
         LocalAuthenticationRequestWidget::Get();
     if (local_authentication_request_widget) {
-      local_authentication_request_widget->Close(
-          false /* validation success */);
+      local_authentication_request_widget->Close(false /* validation success */,
+                                                 nullptr);
     }
     scoped_user_manager_.reset();
     SystemSaltGetter::Shutdown();
@@ -135,7 +135,7 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
   }
 
   // Called when LocalAuthenticationRequestView finished processing.
-  void OnFinished(bool access_granted) {
+  void OnFinished(bool access_granted, std::unique_ptr<UserContext> context) {
     access_granted ? ++successful_validation_ : ++close_action_;
   }
 

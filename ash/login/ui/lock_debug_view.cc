@@ -396,7 +396,8 @@ class LockDebugView::DebugDataDispatcherTransformer
                                            account_id);
 
     Shell::Get()->local_authentication_request_controller()->ShowWidget(
-        base::BindOnce([](bool bla) {}), std::move(user_context));
+        base::BindOnce([](bool bla, std::unique_ptr<UserContext> ctx) {}),
+        std::move(user_context));
   }
 
   // Cycles fingerprint state for the user at |user_index|.

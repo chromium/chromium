@@ -101,6 +101,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
                                        bool show_password_error) override;
   void StartCryptohomeRecovery(
       std::unique_ptr<UserContext> user_context) override;
+  void RunLocalAuthentication(
+      std::unique_ptr<UserContext> user_context) override;
   void StartBrowserDataMigration() override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
@@ -182,6 +184,11 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   // Consumer kiosk owner authentication functions.
   void CheckOwnerCredentials(const UserContext& user_context);
   void OnOwnerSigninSuccess();
+
+  // Result callback for local authentication dialog.
+  void OnLocalAuthenticationCompleted(
+      bool success,
+      std::unique_ptr<UserContext> user_context);
 
   // Sets an extra flag that can hide/unhide offline login link if the offline
   // login timer has expired for a focused user.

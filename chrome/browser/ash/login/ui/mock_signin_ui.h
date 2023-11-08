@@ -50,6 +50,10 @@ class MockSigninUI : public SigninUI {
               (std::unique_ptr<UserContext> user_context),
               (override));
   MOCK_METHOD(void,
+              RunLocalAuthentication,
+              (std::unique_ptr<UserContext> user_context),
+              (override));
+  MOCK_METHOD(void,
               ShowSigninError,
               (SigninError, const std::string&),
               (override));

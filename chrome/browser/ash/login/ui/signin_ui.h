@@ -82,6 +82,10 @@ class SigninUI {
   virtual void StartCryptohomeRecovery(
       std::unique_ptr<UserContext> user_context) = 0;
 
+  // Runs an extra step of local authentication.
+  virtual void RunLocalAuthentication(
+      std::unique_ptr<UserContext> user_context) = 0;
+
   virtual void ShowSigninError(SigninError error,
                                const std::string& details) = 0;
 

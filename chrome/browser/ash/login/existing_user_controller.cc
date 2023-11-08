@@ -1010,6 +1010,23 @@ void ExistingUserController::OnPasswordChangeDetectedImpl(
       std::move(user_context));
 }
 
+void ExistingUserController::OnLocalAuthenticationRequired(
+    std::unique_ptr<UserContext> user_context) {
+  GetLoginDisplayHost()->GetSigninUI()->RunLocalAuthentication(
+      std::move(user_context));
+}
+
+void ExistingUserController::ResumeAfterLocalAuthentication(
+    std::unique_ptr<UserContext> user_context) {
+  CHECK(login_performer_);
+  login_performer_->LoginAuthenticated(std::move(user_context));
+}
+
+void ExistingUserController::OnLocalAuthenticationCancelled() {
+  login_performer_.reset(nullptr);
+  PerformLoginFinishedActions(true /* start auto login timer */);
+}
+
 void ExistingUserController::OnOldEncryptionDetected(
     std::unique_ptr<UserContext> user_context,
     bool has_incomplete_migration) {

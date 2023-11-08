@@ -41,6 +41,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthStatusConsumer
   // actually handling it.
   virtual void OnPasswordChangeDetectedFor(const AccountId& account);
 
+  // User have successfully went through online authentication, but
+  // user has only local knowledge factor, so extra "local authentication"
+  // step is required.
+  virtual void OnLocalAuthenticationRequired(
+      std::unique_ptr<UserContext> user_context);
+
   // The cryptohome is encrypted in old format and needs migration.
   virtual void OnOldEncryptionDetected(std::unique_ptr<UserContext> context,
                                        bool has_incomplete_migration);

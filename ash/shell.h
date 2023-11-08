@@ -198,7 +198,7 @@ class NightLightControllerImpl;
 class OcclusionTrackerPauser;
 class OverviewController;
 class ParentAccessController;
-class LocalAuthenticationRequestControllerImpl;
+class LocalAuthenticationRequestController;
 class PartialMagnifierController;
 class PciePeripheralNotificationController;
 class UsbPeripheralNotificationController;
@@ -605,7 +605,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   LocaleUpdateControllerImpl* locale_update_controller() {
     return locale_update_controller_.get();
   }
-  LocalAuthenticationRequestControllerImpl*
+  LocalAuthenticationRequestController*
   local_authentication_request_controller() {
     return local_authentication_request_controller_.get();
   }
@@ -1038,7 +1038,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<NearbyShareControllerImpl> nearby_share_controller_;
   std::unique_ptr<NearbyShareDelegate> nearby_share_delegate_;
   std::unique_ptr<ParentAccessController> parent_access_controller_;
-  std::unique_ptr<LocalAuthenticationRequestControllerImpl>
+  std::unique_ptr<LocalAuthenticationRequestController>
       local_authentication_request_controller_;
   std::unique_ptr<PciePeripheralNotificationController>
       pcie_peripheral_notification_controller_;

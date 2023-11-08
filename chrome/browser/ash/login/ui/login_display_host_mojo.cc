@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/login/login_utils.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
@@ -361,6 +362,29 @@ void LoginDisplayHostMojo::StartCryptohomeRecovery(
   DCHECK(GetOobeUI());
   wizard_controller_->ShowCryptohomeRecoveryScreen(std::move(user_context));
   ShowDialog();
+}
+
+void LoginDisplayHostMojo::RunLocalAuthentication(
+    std::unique_ptr<UserContext> user_context) {
+  HideDialog();
+  Shell::Get()->local_authentication_request_controller()->ShowWidget(
+      base::BindOnce(&LoginDisplayHostMojo::OnLocalAuthenticationCompleted,
+                     weak_factory_.GetWeakPtr()),
+      std::move(user_context));
+}
+
+void LoginDisplayHostMojo::OnLocalAuthenticationCompleted(
+    bool success,
+    std::unique_ptr<UserContext> user_context) {
+  if (!success) {
+    existing_user_controller_->OnLocalAuthenticationCancelled();
+    // While dialog itself is already hidden, this call should
+    // correctly reset all associated data.
+    HideOobeDialog();
+    return;
+  }
+  existing_user_controller_->ResumeAfterLocalAuthentication(
+      std::move(user_context));
 }
 
 void LoginDisplayHostMojo::StartBrowserDataMigration() {

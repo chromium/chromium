@@ -33,8 +33,9 @@ LoginPerformer::LoginPerformer(Delegate* delegate,
 LoginPerformer::~LoginPerformer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Deleting LoginPerformer";
-  if (authenticator_.get())
+  if (authenticator_.get()) {
     authenticator_->SetConsumer(NULL);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -132,6 +133,15 @@ void LoginPerformer::OnPasswordChangeDetected(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&LoginPerformer::NotifyPasswordChangeDetected,
+                     weak_factory_.GetWeakPtr(), std::move(user_context)));
+}
+
+void LoginPerformer::OnLocalAuthenticationRequired(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&LoginPerformer::NotifyLocalAuthenticationRequired,
                      weak_factory_.GetWeakPtr(), std::move(user_context)));
 }
 
@@ -307,6 +317,14 @@ void LoginPerformer::NotifyPasswordChangeDetected(
   DCHECK(delegate_);
   DCHECK(user_context);
   delegate_->OnPasswordChangeDetected(std::move(user_context));
+}
+
+void LoginPerformer::NotifyLocalAuthenticationRequired(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(delegate_);
+  DCHECK(user_context);
+  delegate_->OnLocalAuthenticationRequired(std::move(user_context));
 }
 
 void LoginPerformer::NotifyOldEncryptionDetected(

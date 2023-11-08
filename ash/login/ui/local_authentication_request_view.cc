@@ -117,13 +117,12 @@ LocalAuthenticationRequestView::TestApi::state() const {
 }
 
 LocalAuthenticationRequestView::LocalAuthenticationRequestView(
-    OnLocalAuthenticationCompleted on_local_authentication_completed,
+    LocalAuthenticationCallback local_authentication_callback,
     const std::u16string& title,
     const std::u16string& description,
     Delegate* delegate,
     std::unique_ptr<UserContext> user_context)
-    : on_local_authentication_completed_(
-          std::move(on_local_authentication_completed)),
+    : local_authentication_callback_(std::move(local_authentication_callback)),
       delegate_(delegate),
       default_title_(title),
       default_description_(description),
@@ -353,8 +352,10 @@ std::u16string LocalAuthenticationRequestView::GetAccessibleWindowTitle()
 
 void LocalAuthenticationRequestView::OnClose() {
   delegate_->OnClose();
+  auth_performer_.InvalidateCurrentAttempts();
   if (LocalAuthenticationRequestWidget::Get()) {
-    LocalAuthenticationRequestWidget::Get()->Close(false /* success */);
+    LocalAuthenticationRequestWidget::Get()->Close(false /* success */,
+                                                   std::move(user_context_));
   }
 }
 
@@ -387,8 +388,7 @@ void LocalAuthenticationRequestView::OnAuthSubmit(
   // Create a copy of `user_context_` so that we don't lose it to std::move
   // for future auth attempts
   auth_performer_.AuthenticateWithPassword(
-      key_label.value(), base::UTF16ToUTF8(password),
-      std::make_unique<UserContext>(*user_context_),
+      key_label.value(), base::UTF16ToUTF8(password), std::move(user_context_),
       base::BindOnce(&LocalAuthenticationRequestView::OnAuthComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -400,7 +400,7 @@ void LocalAuthenticationRequestView::OnAuthComplete(
     LOG(ERROR) << "An error happened during the attempt to validate "
                   "the password: "
                << authentication_error.value().get_cryptohome_code();
-
+    user_context_ = std::move(user_context);
     UpdateState(
         LocalAuthenticationRequestViewState::kError, default_title_,
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD));
@@ -409,7 +409,8 @@ void LocalAuthenticationRequestView::OnAuthComplete(
                              true /*send_native_event*/);
     SetInputEnabled(true);
   } else {
-    LocalAuthenticationRequestWidget::Get()->Close(true /* success */);
+    LocalAuthenticationRequestWidget::Get()->Close(true /* success */,
+                                                   std::move(user_context));
   }
 }
 

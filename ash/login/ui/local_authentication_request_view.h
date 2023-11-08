@@ -45,9 +45,6 @@ enum class LocalAuthenticationRequestViewState {
 class ASH_EXPORT LocalAuthenticationRequestView
     : public views::DialogDelegateView {
  public:
-  using OnLocalAuthenticationRequestDone =
-      base::OnceCallback<void(bool success)>;
-
   class Delegate {
    public:
     virtual void OnClose() = 0;
@@ -75,7 +72,7 @@ class ASH_EXPORT LocalAuthenticationRequestView
   // Creates local authentication request view that will enable the user to
   // authenticate with a local authentication.
   LocalAuthenticationRequestView(
-      OnLocalAuthenticationCompleted on_local_authentication_completed,
+      LocalAuthenticationCallback local_authentication_callback,
       const std::u16string& title,
       const std::u16string& description,
       Delegate* delegate,
@@ -124,7 +121,7 @@ class ASH_EXPORT LocalAuthenticationRequestView
   void UpdatePreferredSize();
 
   // Callback to close the UI.
-  OnLocalAuthenticationCompleted on_local_authentication_completed_ =
+  LocalAuthenticationCallback local_authentication_callback_ =
       base::NullCallback();
 
   // Returns the view dimensions.

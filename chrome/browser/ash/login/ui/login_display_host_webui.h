@@ -97,6 +97,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                                        bool show_password_error) override;
   void StartCryptohomeRecovery(
       std::unique_ptr<UserContext> user_context) override;
+  void RunLocalAuthentication(
+      std::unique_ptr<UserContext> user_context) override;
   void StartBrowserDataMigration() override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;

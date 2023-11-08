@@ -29,4 +29,9 @@ void AuthStatusConsumer::OnOldEncryptionDetected(
   NOTREACHED();
 }
 
+void AuthStatusConsumer::OnLocalAuthenticationRequired(
+    std::unique_ptr<UserContext> user_context) {
+  NOTREACHED();
+}
+
 }  // namespace ash
