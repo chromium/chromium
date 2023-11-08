@@ -46,6 +46,7 @@
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
@@ -215,6 +216,10 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       LOG(ERROR) << "ContextResult::kSurfaceFailure: Failed to create surface.";
       return gpu::ContextResult::kSurfaceFailure;
     }
+    if (!features::UseGpuVsync()) {
+      surface_->SetVSyncEnabled(false);
+    }
+
     if (init_params.attribs.enable_swap_timestamps_if_supported &&
         surface_->SupportsSwapTimestamps())
       surface_->SetEnableSwapTimestamps();
