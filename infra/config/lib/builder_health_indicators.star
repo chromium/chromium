@@ -33,6 +33,11 @@ _default_thresholds = struct(
     ),
 )
 
+_default_spec = struct(
+    thresholds = _default_thresholds,
+    contact_team_email = "",
+)
+
 _blank_thresholds = struct(
     infra_fail_rate = struct(
         average = None,
@@ -50,7 +55,7 @@ _blank_thresholds = struct(
 
 DEFAULT = struct(_default = "_default")
 
-def spec(**kwargs):
+def thresholds(**kwargs):
     return structs.evolve(_blank_thresholds, **kwargs)
 
 def modified_default(**kwargs):
@@ -59,11 +64,15 @@ def modified_default(**kwargs):
 def _exempted_from_contact(bucket, builder):
     return builder in _exempted_from_contact_builders.get(bucket, [])
 
-def register_health_spec(bucket, name, spec, contact_team_email):
+def register_health_spec(bucket, name, thresholds, contact_team_email):
     if not contact_team_email and not _exempted_from_contact(bucket, name):
         fail("Builder " + name + " must have a contact_team_email. All new builders must specify a team email for contact in case the builder stops being healthy or providing value.")
 
-    if spec:
+    if thresholds:
+        spec = struct(
+            thresholds = thresholds,
+            contact_team_email = contact_team_email,
+        )
         health_spec_key = _HEALTH_SPEC.add(
             bucket,
             name,
@@ -82,8 +91,8 @@ def _generate_health_specs(ctx):
         specs.setdefault(bucket, {})[builder] = node.props
 
     result = {
-        "_default": _default_thresholds,
-        "thresholds": specs,
+        "_default": _default_spec,
+        "specs": specs,
     }
 
     ctx.output["health-specs/health-specs.json"] = json.indent(json.encode(result), indent = "  ")
@@ -968,7 +977,7 @@ _exempted_from_contact_builders = {
 
 health_spec = struct(
     DEFAULT = DEFAULT,
-    spec = spec,
+    spec = thresholds,
     modified_default = modified_default,
 )
 
