@@ -10,6 +10,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -33,6 +34,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final PropertyModel mModel;
+    private final SeekBar mSeekBar;
     private View mContentView;
     private OptionsMenuSheetContent mOptionsMenu;
 
@@ -68,6 +70,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
                 .findViewById(R.id.readaloud_seek_forward_button)
                 .setContentDescription(res.getString(R.string.readaloud_forward, FORWARD_SECONDS));
         setSpeed(DEFAULT_INITIAL_SPEED);
+        mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
     }
 
     public void show() {
@@ -112,6 +115,10 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         setOnClickListener(R.id.readaloud_seek_forward_button, handler::onSeekForwardClick);
         setOnClickListener(R.id.readaloud_expanded_player_publisher, handler::onPublisherClick);
         setOnClickListener(R.id.readaloud_more_button, this::showOptionsMenu);
+
+        SeekBar seekBar =
+                (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
+        seekBar.setOnSeekBarChangeListener(handler.getSeekBarChangeListener());
     }
 
     @SuppressWarnings({"SetTextI18n", "DefaultLocale"})
@@ -138,6 +145,13 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
             playButton.setContentDescription(
                     mContext.getResources().getString(R.string.readaloud_play));
         }
+    }
+
+    /**
+     * @param percentProgress out of 1.0
+     */
+    public void setProgress(float percent) {
+        mSeekBar.setProgress((int) (percent * mSeekBar.getMax()), true);
     }
 
     @Nullable

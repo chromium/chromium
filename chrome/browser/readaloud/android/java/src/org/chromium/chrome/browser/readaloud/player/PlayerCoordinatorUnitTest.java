@@ -17,6 +17,7 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.junit.Before;
@@ -68,6 +69,7 @@ public class PlayerCoordinatorUnitTest {
     @Mock private View mForwardButton;
     @Mock private View mBackButton;
     @Mock private Resources mResources;
+    @Mock private SeekBar mSeekBar;
     private MockPrefServiceHelper mMockPrefServiceHelper;
 
     private PlayerCoordinator mPlayerCoordinator;
@@ -102,6 +104,9 @@ public class PlayerCoordinatorUnitTest {
         doReturn(Mockito.mock(TextView.class))
                 .when(mExpandedPlayerContentView)
                 .findViewById(anyInt());
+        doReturn(Mockito.mock(SeekBar.class))
+                .when(mExpandedPlayerContentView)
+                .findViewById(R.id.readaloud_expanded_player_seek_bar);
 
         doReturn(mMenu).when(mLayoutInflater).inflate(eq(R.layout.readaloud_menu), any());
         doReturn(Mockito.mock(TextView.class)).when(mMenu).findViewById(anyInt());

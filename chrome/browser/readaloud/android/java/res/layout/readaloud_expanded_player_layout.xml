@@ -89,13 +89,20 @@ found in the LICENSE file.
         </LinearLayout>
 
         <!-- Seek bar and times. -->
-        <!-- TODO replace with working bar -->
-        <View
+        <SeekBar
             android:id="@+id/readaloud_expanded_player_seek_bar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/readaloud_expanded_player_seek_bar_height"
             android:layout_marginTop="@dimen/readaloud_expanded_player_seek_bar_margin_top"
-            android:background="?attr/colorSurfaceVariant"/>
+            android:padding="0dp"
+            android:paddingEnd="0dp"
+            android:paddingStart="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/readaloud_expanded_player_seek_bar_scrubber_handle_height"
+            android:max="1000"
+            android:progress="0"
+            android:maxHeight="@dimen/readaloud_expanded_player_seek_bar_height"
+            android:progressDrawable="@drawable/seekbar_style"
+            android:thumb="@drawable/scrubber_select_handle"
+            android:splitTrack="false"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

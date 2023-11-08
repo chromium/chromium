@@ -138,6 +138,12 @@ public class ExpandedPlayerCoordinatorUnitTest {
     }
 
     @Test
+    public void testBindProgress() {
+        mModel.set(PlayerProperties.PROGRESS, 0.5f);
+        verify(mSheetContent).setProgress(eq(0.5f));
+    }
+
+    @Test
     public void testBindSpeed() {
         mModel.set(PlayerProperties.SPEED, 2f);
         verify(mSheetContent).setSpeed(eq(2f));

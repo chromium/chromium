@@ -8,6 +8,7 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSE
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
 
+import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import androidx.annotation.Nullable;
@@ -39,6 +40,23 @@ class PlayerMediator implements InteractionHandler {
                     mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
                     mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
                 }
+            };
+    private final OnSeekBarChangeListener mSeekBarChangeListener =
+            new OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (!fromUser) {
+                        return;
+                    }
+                    float percent = (float) progress / (float) seekBar.getMax();
+                    mPlayback.seek((long) (mModel.get(PlayerProperties.DURATION_NANOS) * percent));
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {}
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {}
             };
 
     private Playback mPlayback;
@@ -135,8 +153,7 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public OnSeekBarChangeListener getSeekBarChangeListener() {
-        // TODO implement
-        return null;
+        return mSeekBarChangeListener;
     }
 
     @Override

@@ -15,6 +15,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -54,6 +55,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     private ImageView mBackButton;
     private ImageView mForwardButton;
     private ImageView mPlayPauseButton;
+    private SeekBar mSeekbar;
     private View mContentView;
     private Activity mActivity;
 
@@ -77,6 +79,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         mBackButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_back_button);
         mForwardButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_forward_button);
         mPlayPauseButton = (ImageView) mContentView.findViewById(R.id.readaloud_play_pause_button);
+        mSeekbar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
         mContent =
                 new ExpandedPlayerSheetContent(
                         mContext, mBottomSheetController, mContentView, mModel);
@@ -168,6 +171,15 @@ public class ExpandedPlayerSheetContentUnitTest {
 
         mContent.setPlaying(false);
         assertEquals("Play", mPlayPauseButton.getContentDescription());
+    }
+
+    @Test
+    public void testSetProgress() {
+        mContent.setProgress(0.5f);
+        assertEquals(mSeekbar.getProgress(), (int) (mSeekbar.getMax() * 0.5f));
+
+        mContent.setProgress(0.75f);
+        assertEquals(mSeekbar.getProgress(), (int) (mSeekbar.getMax() * 0.75f));
     }
 
     @Test

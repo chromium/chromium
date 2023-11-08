@@ -15,6 +15,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,7 +63,9 @@ public class PlayerMediatorUnitTest {
     @Mock private PlayerCoordinator mPlayerCoordinator;
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mPlaybackMetadata;
+    @Mock private SeekBar mSeekbar;
     private MockPrefServiceHelper mMockPrefServiceHelper;
+    private OnSeekBarChangeListener mOnSeekBarChangeListener;
 
     @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
 
@@ -186,6 +190,7 @@ public class PlayerMediatorUnitTest {
         mDelegate = new TestPlayerDelegate();
         mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
         mMediator = new PlayerMediator(mPlayerCoordinator, mDelegate, mModel);
+        mOnSeekBarChangeListener = mMediator.getSeekBarChangeListener();
     }
 
     @Test
@@ -350,6 +355,19 @@ public class PlayerMediatorUnitTest {
 
         mMediator.onHighlightingChange(true);
         assertTrue(ReadAloudPrefs.isHighlightingEnabled(prefs));
+    }
+
+    @Test
+    public void testOnProgressChanged() {
+        mMediator.setPlayback(mPlayback);
+        mModel.set(PlayerProperties.DURATION_NANOS, 100L);
+        // if not from user, make sure doesn't seek playback
+        mOnSeekBarChangeListener.onProgressChanged(mSeekbar, 20, false);
+        verify(mPlayback, never()).seek(anyLong());
+
+        // from user, so should seek
+        mOnSeekBarChangeListener.onProgressChanged(mSeekbar, 20, true);
+        verify(mPlayback).seek(anyLong());
     }
 
     @Test
