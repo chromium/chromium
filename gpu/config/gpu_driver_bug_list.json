@@ -3654,6 +3654,7 @@
         "type": "win"
       },
       "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
       "driver_version": {
         "op": "<",
         "value": "30.0.100.9667"
@@ -3670,6 +3671,7 @@
         "type": "win"
       },
       "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
       "intel_gpu_generation": {
         "op": "<",
         "value": "11"
