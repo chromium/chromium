@@ -7,15 +7,11 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-const char* kInputSwitched = "StatusArea_Audio_SwitchInputDevice";
-const char* kOutputSwitched = "StatusArea_Audio_SwitchOutputDevice";
-const char* kInputOverridden = "StatusArea_Audio_AutoInputSelectionOverridden";
-const char* kOutputOverridden =
-    "StatusArea_Audio_AutoOutputSelectionOverridden";
-
 namespace ash {
+
 namespace {
 
 class AudioDeviceSelectionTest : public AudioDeviceSelectionTestBase {};
@@ -37,10 +33,16 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     ASSERT_EQ(ActiveInputNodeId(), input2.id);
     ASSERT_EQ(ActiveOutputNodeId(), output4.id);
     // Automatic switches should not generate events.
-    EXPECT_EQ(actions.GetActionCount(kInputSwitched), 0);
-    EXPECT_EQ(actions.GetActionCount(kOutputSwitched), 0);
-    EXPECT_EQ(actions.GetActionCount(kInputOverridden), 0);
-    EXPECT_EQ(actions.GetActionCount(kOutputOverridden), 0);
+    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchInput),
+              0);
+    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchOutput),
+              0);
+    EXPECT_EQ(actions.GetActionCount(
+                  CrasAudioHandler::kUserActionSwitchInputOverridden),
+              0);
+    EXPECT_EQ(actions.GetActionCount(
+                  CrasAudioHandler::kUserActionSwitchOutputOverridden),
+              0);
   }
 
   {
@@ -48,10 +50,16 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     Select(input1);
     ASSERT_EQ(ActiveInputNodeId(), input1.id);
     ASSERT_EQ(ActiveOutputNodeId(), output4.id);
-    EXPECT_EQ(actions.GetActionCount(kInputSwitched), 1);
-    EXPECT_EQ(actions.GetActionCount(kOutputSwitched), 0);
-    EXPECT_EQ(actions.GetActionCount(kInputOverridden), 1);
-    EXPECT_EQ(actions.GetActionCount(kOutputOverridden), 0);
+    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchInput),
+              1);
+    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchOutput),
+              0);
+    EXPECT_EQ(actions.GetActionCount(
+                  CrasAudioHandler::kUserActionSwitchInputOverridden),
+              1);
+    EXPECT_EQ(actions.GetActionCount(
+                  CrasAudioHandler::kUserActionSwitchOutputOverridden),
+              0);
   }
 
   {
@@ -59,10 +67,16 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     Select(output3);
     ASSERT_EQ(ActiveInputNodeId(), input1.id);
     ASSERT_EQ(ActiveOutputNodeId(), output3.id);
-    EXPECT_EQ(actions.GetActionCount(kInputSwitched), 0);
-    EXPECT_EQ(actions.GetActionCount(kOutputSwitched), 1);
-    EXPECT_EQ(actions.GetActionCount(kInputOverridden), 0);
-    EXPECT_EQ(actions.GetActionCount(kOutputOverridden), 1);
+    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchInput),
+              0);
+    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchOutput),
+              1);
+    EXPECT_EQ(actions.GetActionCount(
+                  CrasAudioHandler::kUserActionSwitchInputOverridden),
+              0);
+    EXPECT_EQ(actions.GetActionCount(
+                  CrasAudioHandler::kUserActionSwitchOutputOverridden),
+              1);
   }
 
   {
@@ -71,11 +85,17 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     Select(output4);
     ASSERT_EQ(ActiveInputNodeId(), input2.id);
     ASSERT_EQ(ActiveOutputNodeId(), output4.id);
-    EXPECT_EQ(actions.GetActionCount(kInputSwitched), 1);
-    EXPECT_EQ(actions.GetActionCount(kOutputSwitched), 1);
+    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchInput),
+              1);
+    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchOutput),
+              1);
     // Switching back and forth should not be counted.
-    EXPECT_EQ(actions.GetActionCount(kInputOverridden), 0);
-    EXPECT_EQ(actions.GetActionCount(kOutputOverridden), 0);
+    EXPECT_EQ(actions.GetActionCount(
+                  CrasAudioHandler::kUserActionSwitchInputOverridden),
+              0);
+    EXPECT_EQ(actions.GetActionCount(
+                  CrasAudioHandler::kUserActionSwitchOutputOverridden),
+              0);
   }
 
   {
@@ -84,9 +104,12 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     Plug(input1);
     ASSERT_EQ(ActiveInputNodeId(), input2.id);
     Select(input1);
-    EXPECT_EQ(actions.GetActionCount(kInputSwitched), 1);
+    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchInput),
+              1);
     // Switching after the system decides to do nothing, should be counted.
-    EXPECT_EQ(actions.GetActionCount(kInputOverridden), 1);
+    EXPECT_EQ(actions.GetActionCount(
+                  CrasAudioHandler::kUserActionSwitchInputOverridden),
+              1);
   }
 
   {
@@ -95,9 +118,12 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     Plug(output3);
     ASSERT_EQ(ActiveOutputNodeId(), output4.id);
     Select(output3);
-    EXPECT_EQ(actions.GetActionCount(kOutputSwitched), 1);
+    EXPECT_EQ(actions.GetActionCount(CrasAudioHandler::kUserActionSwitchOutput),
+              1);
     // Switching after the system decides to do nothing, should be counted.
-    EXPECT_EQ(actions.GetActionCount(kOutputOverridden), 1);
+    EXPECT_EQ(actions.GetActionCount(
+                  CrasAudioHandler::kUserActionSwitchOutputOverridden),
+              1);
   }
 }
 
@@ -145,4 +171,5 @@ TEST_F(AudioDeviceSelectionTest, DevicePrefEviction) {
 }
 
 }  // namespace
+
 }  // namespace ash

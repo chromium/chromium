@@ -145,6 +145,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   static constexpr char kNoiseCancellationEnabledSourceHistogramName[] =
       "Cras.NoiseCancellationEnabledSource";
 
+  // A series of user action metrics to record when user switches the
+  // input/output audio device and if this switch overrides the system decision.
+  static constexpr char kUserActionSwitchInput[] =
+      "StatusArea_Audio_SwitchInputDevice";
+  static constexpr char kUserActionSwitchOutput[] =
+      "StatusArea_Audio_SwitchOutputDevice";
+  static constexpr char kUserActionSwitchInputOverridden[] =
+      "StatusArea_Audio_AutoInputSelectionOverridden";
+  static constexpr char kUserActionSwitchOutputOverridden[] =
+      "StatusArea_Audio_AutoOutputSelectionOverridden";
+
   class AudioObserver {
    public:
     AudioObserver(const AudioObserver&) = delete;

@@ -1041,18 +1041,16 @@ void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
                                        DeviceActivateType activate_by) {
   if (activate_by == ACTIVATE_BY_USER) {
     if (active_device.is_input) {
-      base::RecordAction(
-          base::UserMetricsAction("StatusArea_Audio_SwitchInputDevice"));
+      base::RecordAction(base::UserMetricsAction(kUserActionSwitchInput));
       if (!input_device_selected_by_user_) {
-        base::RecordAction(base::UserMetricsAction(
-            "StatusArea_Audio_AutoInputSelectionOverridden"));
+        base::RecordAction(
+            base::UserMetricsAction(kUserActionSwitchInputOverridden));
       }
     } else {
-      base::RecordAction(
-          base::UserMetricsAction("StatusArea_Audio_SwitchOutputDevice"));
+      base::RecordAction(base::UserMetricsAction(kUserActionSwitchOutput));
       if (!output_device_selected_by_user_) {
-        base::RecordAction(base::UserMetricsAction(
-            "StatusArea_Audio_AutoOutputSelectionOverridden"));
+        base::RecordAction(
+            base::UserMetricsAction(kUserActionSwitchOutputOverridden));
       }
     }
   }
