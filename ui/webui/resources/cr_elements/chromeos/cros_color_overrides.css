@@ -114,6 +114,10 @@
   --cr-secondary-text-color: var(--cros-sys-on_surface_variant);
 }
 
+:host-context([cros][chrome-refresh-2023]) {
+  --cr-focus-outline-color: var(--cros-sys-focus_ring);
+}
+
 /* Button */
 :host-context(body.jelly-enabled) cr-button {
   /* Default button colors */
