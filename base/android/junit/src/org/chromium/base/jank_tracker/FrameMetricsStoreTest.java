@@ -87,4 +87,39 @@ public class FrameMetricsStoreTest {
         assertArrayEquals(new long[] {20_000_000L, 8_000_000L}, metrics.durationsNs);
         assertArrayEquals(new boolean[] {true, true}, metrics.isJanky);
     }
+
+    @Test
+    public void restartScenario() {
+        // This test is setup to mainly test removeUnusedFrames() method codepaths.
+        FrameMetricsStore store = new FrameMetricsStore();
+        store.initialize();
+
+        store.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+
+        long frame_start_vsync_ts = 1_000_000L;
+        store.addFrameMeasurement(10_000_000L, false, frame_start_vsync_ts);
+        store.addFrameMeasurement(12_000_000L, true, frame_start_vsync_ts + 1);
+
+        JankMetrics metrics = store.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+
+        assertArrayEquals(new long[] {10_000_000L, 12_000_000L}, metrics.durationsNs);
+        assertArrayEquals(new boolean[] {false, true}, metrics.isJanky);
+
+        store.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+
+        store.addFrameMeasurement(10_000_100L, true, frame_start_vsync_ts + 2);
+        store.addFrameMeasurement(11_000_100L, false, frame_start_vsync_ts + 3);
+
+        store.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
+
+        store.addFrameMeasurement(12_000_100L, false, frame_start_vsync_ts + 4);
+
+        metrics = store.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+        assertArrayEquals(new long[] {10_000_100L, 11_000_100L, 12_000_100L}, metrics.durationsNs);
+        assertArrayEquals(new boolean[] {true, false, false}, metrics.isJanky);
+
+        metrics = store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
+        assertArrayEquals(new long[] {12_000_100L}, metrics.durationsNs);
+        assertArrayEquals(new boolean[] {false}, metrics.isJanky);
+    }
 }

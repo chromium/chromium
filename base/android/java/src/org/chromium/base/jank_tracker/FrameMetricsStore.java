@@ -40,6 +40,17 @@ public class FrameMetricsStore {
     // Zero if no FrameMetrics have been received.
     private final HashMap<Integer, Long> mScenarioPreviousFrameTimestampNs = new HashMap<>();
 
+    public FrameMetricsStore() {
+        // Add 0 to mTimestampNS array. This simplifies handling edge case when starting a scenario
+        // and we don't have any frame metrics stored. Adding 0 also makes sure the array stays in
+        // sorted order since the actual metrics received will have larger vsync start timestamps.
+        mTimestampsNs.add(0L);
+        // Add arbitrary values to related arrays as well since we always want them to be of same
+        // size.
+        mTotalDurationsNs.add(0L);
+        mIsJanky.add(false);
+    }
+
     // Convert an enum value to string to use as an UMA histogram name, changes to strings should be
     // reflected in android/histograms.xml and base/android/jank_
     public static String scenarioToString(@JankScenario int scenario) {
@@ -101,17 +112,9 @@ public class FrameMetricsStore {
             // Make a unique ID for each scenario for tracing.
             TraceEvent.startAsync(
                     "JankCUJ:" + scenarioToString(scenario), TRACE_EVENT_TRACK_ID + scenario);
-
             // Scenarios are tracked based on the latest stored timestamp to allow fast lookups
-            // (find index of [timestamp] vs find first index that's >= [timestamp]). In case there
-            // are no stored timestamps then we hardcode the scenario's starting timestamp to 0L,
-            // this is handled as a special case in stopTrackingScenario by returning all stored
-            // frames.
-            Long startingTimestamp = 0L;
-            if (!mTimestampsNs.isEmpty()) {
-                startingTimestamp = mTimestampsNs.get(mTimestampsNs.size() - 1);
-            }
-
+            // (find index of [timestamp] vs find first index that's >= [timestamp]).
+            Long startingTimestamp = mTimestampsNs.get(mTimestampsNs.size() - 1);
             mScenarioPreviousFrameTimestampNs.put(scenario, startingTimestamp);
         }
     }
@@ -146,21 +149,14 @@ public class FrameMetricsStore {
                 return new JankMetrics();
             }
 
-            int startingIndex;
-            // Starting timestamp may be 0 if a scenario starts without any frames stored, in this
-            // case return all frames.
-            if (previousFrameTimestamp == 0) {
-                startingIndex = 0;
-            } else {
-                startingIndex = mTimestampsNs.indexOf(previousFrameTimestamp);
-                // The scenario starts with the frame after the tracking timestamp.
-                startingIndex++;
+            int startingIndex = mTimestampsNs.indexOf(previousFrameTimestamp);
+            // The scenario starts with the frame after the tracking timestamp.
+            startingIndex++;
 
-                // If startingIndex is out of bounds then we haven't recorded any frames since
-                // tracking started, return an empty FrameMetrics object.
-                if (startingIndex >= mTimestampsNs.size()) {
-                    return new JankMetrics();
-                }
+            // If startingIndex is out of bounds then we haven't recorded any frames since
+            // tracking started, return an empty FrameMetrics object.
+            if (startingIndex >= mTimestampsNs.size()) {
+                return new JankMetrics();
             }
 
             // Ending index is exclusive, so this is not out of bounds.
@@ -196,9 +192,9 @@ public class FrameMetricsStore {
     private void removeUnusedFrames() {
         if (mScenarioPreviousFrameTimestampNs.isEmpty()) {
             TraceEvent.instant("removeUnusedFrames", Long.toString(mTimestampsNs.size()));
-            mTimestampsNs.clear();
-            mTotalDurationsNs.clear();
-            mIsJanky.clear();
+            mTimestampsNs.subList(1, mTimestampsNs.size()).clear();
+            mTotalDurationsNs.subList(1, mTotalDurationsNs.size()).clear();
+            mIsJanky.subList(1, mIsJanky.size()).clear();
             return;
         }
 
@@ -219,9 +215,9 @@ public class FrameMetricsStore {
         }
         TraceEvent.instant("removeUnusedFrames", Long.toString(firstUsedIndex));
 
-        mTimestampsNs.subList(0, firstUsedIndex).clear();
-        mTotalDurationsNs.subList(0, firstUsedIndex).clear();
-        mIsJanky.subList(0, firstUsedIndex).clear();
+        mTimestampsNs.subList(1, firstUsedIndex).clear();
+        mTotalDurationsNs.subList(1, firstUsedIndex).clear();
+        mIsJanky.subList(1, firstUsedIndex).clear();
     }
 
     private long findFirstUsedTimestamp() {
