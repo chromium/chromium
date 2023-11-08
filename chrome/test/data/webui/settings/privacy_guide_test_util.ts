@@ -4,6 +4,7 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting, SettingsPrivacyGuidePageElement, NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
 import {Router, routes, SettingsPrefsElement, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -143,7 +144,10 @@ export function setupPrivacyGuidePageForTest(
     page: SettingsPrivacyGuidePageElement,
     syncBrowserProxy: TestSyncBrowserProxy): void {
   setSafeBrowsingSetting(page, SafeBrowsingSetting.STANDARD);
-  setCookieSetting(page, CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO);
+  // TODO(b:306414714): Remove once 3pcd launched.
+  if (!loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+    setCookieSetting(page, CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO);
+  }
   setupSync({
     syncBrowserProxy: syncBrowserProxy,
     syncOn: true,
