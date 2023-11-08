@@ -230,7 +230,9 @@ const NGLayoutResult* GridLayoutAlgorithm::LayoutInternal() {
     grid_sizing_tree = grid_data->grid_sizing_tree.CopyForFragmentation();
     intrinsic_block_size = grid_data->intrinsic_block_size;
   } else {
-    grid_sizing_tree = BuildGridSizingTree(&oof_children);
+    grid_sizing_tree = node_.ChildLayoutBlockedByDisplayLock()
+                           ? BuildGridSizingTreeIgnoringChildren()
+                           : BuildGridSizingTree(&oof_children);
     ComputeGridGeometry(grid_sizing_tree, &intrinsic_block_size);
 
     // Subgridded items must be laid out by their parent.
