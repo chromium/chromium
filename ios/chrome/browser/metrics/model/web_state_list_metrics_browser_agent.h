@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_WEB_STATE_LIST_METRICS_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_WEB_STATE_LIST_METRICS_BROWSER_AGENT_H_
 
+#import "base/scoped_observation.h"
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
@@ -12,6 +13,7 @@
 #import "ios/web/public/web_state_observer.h"
 
 class AllWebStateObservationForwarder;
+class SessionRestorationService;
 class SessionMetrics;
 
 class WebStateListMetricsBrowserAgent
@@ -67,6 +69,10 @@ class WebStateListMetricsBrowserAgent
 
   // Whether metric recording is paused (for session restoration).
   bool metric_collection_paused_ = false;
+
+  // Observation for SessionRestorationService events.
+  base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
+      session_restoration_service_observation_{this};
 
   std::unique_ptr<AllWebStateObservationForwarder> web_state_forwarder_;
 };

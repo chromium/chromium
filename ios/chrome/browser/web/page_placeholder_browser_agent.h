@@ -6,14 +6,16 @@
 #define IOS_CHROME_BROWSER_WEB_PAGE_PLACEHOLDER_BROWSER_AGENT_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ios/chrome/browser/sessions/session_restoration_observer.h"
 #include "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
+class SessionRestorationService;
+
 // Browser agent used to add or cancel a page placeholder for next navigation.
 class PagePlaceholderBrowserAgent final
-    : public BrowserObserver,
-      public BrowserUserData<PagePlaceholderBrowserAgent>,
+    : public BrowserUserData<PagePlaceholderBrowserAgent>,
       public SessionRestorationObserver {
  public:
   ~PagePlaceholderBrowserAgent() final;
@@ -26,9 +28,6 @@ class PagePlaceholderBrowserAgent final
 
   // Cancels the page placeholder.
   void CancelPagePlaceholder();
-
-  // BrowserObserver implementation.
-  void BrowserDestroyed(Browser* browser) final;
 
   // SessionRestorationObserver implementation.
   void WillStartSessionRestoration(Browser* browser) final;
@@ -43,6 +42,10 @@ class PagePlaceholderBrowserAgent final
 
   // The Browser this object is attached to.
   raw_ptr<Browser> browser_ = nullptr;
+
+  // Observation for SessionRestorationService events.
+  base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
+      session_restoration_service_observation_{this};
 
   // True if waiting for a foreground tab due to expectNewForegroundTab.
   bool expecting_foreground_tab_ = false;

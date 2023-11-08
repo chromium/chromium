@@ -102,10 +102,8 @@ void LegacySessionRestorationService::Disconnect(Browser* browser) {
   browser_agent->SaveSession(/* immediately */ true);
   browser_agent->RemoveObserver(this);
 
-  // Force disconnection of the SessionRestorationBrowserAgent, but do
-  // no destroy it (as client still directly register as observer with
-  // it instead of the SessionRestorationService).
-  static_cast<BrowserObserver*>(browser_agent)->BrowserDestroyed(browser);
+  // Destroy the SessionRestorationBrowserAgent for browser.
+  SessionRestorationBrowserAgent::RemoveFromBrowser(browser);
 }
 
 std::unique_ptr<web::WebState>

@@ -10,6 +10,7 @@
 #import <vector>
 
 #import "base/containers/circular_deque.h"
+#import "base/scoped_observation.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_metrics.h"
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
@@ -20,6 +21,7 @@
 #import "ios/web/public/web_state_observer.h"
 
 class PrerenderService;
+class SessionRestorationService;
 class WebStateList;
 
 namespace web {
@@ -204,6 +206,10 @@ class TabUsageRecorderBrowserAgent
   // The PrerenderService used to check whether a tab is pre-rendering. May
   // be null during unit testing.
   PrerenderService* prerender_service_;
+
+  // Observation for SessionRestorationService events.
+  base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
+      session_restoration_service_observation_{this};
 
   // Observers for NSNotificationCenter notifications.
   __strong id<NSObject> application_backgrounding_observer_;

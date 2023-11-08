@@ -6,20 +6,18 @@
 #define IOS_CHROME_BROWSER_FAVICON_FAVICON_BROWSER_AGENT_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ios/chrome/browser/sessions/session_restoration_observer.h"
-#include "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+
+class SessionRestorationService;
 
 // A BrowserAgent that prepares WebStates to fetch their favicon after
 // a session restoration.
-class FaviconBrowserAgent final : public BrowserObserver,
-                                  public BrowserUserData<FaviconBrowserAgent>,
+class FaviconBrowserAgent final : public BrowserUserData<FaviconBrowserAgent>,
                                   public SessionRestorationObserver {
  public:
   ~FaviconBrowserAgent() final;
-
-  // BrowserObserver implementation.
-  void BrowserDestroyed(Browser* browser) final;
 
   // SessionRestorationObserver implementation.
   void WillStartSessionRestoration(Browser* browser) final;
@@ -34,6 +32,10 @@ class FaviconBrowserAgent final : public BrowserObserver,
 
   // The Browser this object is attached to.
   raw_ptr<Browser> browser_;
+
+  // Observation for SessionRestorationService events.
+  base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
+      session_restoration_service_observation_{this};
 
   BROWSER_USER_DATA_KEY_DECL();
 };

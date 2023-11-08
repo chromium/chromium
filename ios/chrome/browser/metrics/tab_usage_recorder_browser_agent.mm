@@ -11,7 +11,8 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_observer_helper.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -39,7 +40,9 @@ TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)
     web_state->AddObserver(this);
   }
 
-  AddSessionRestorationObserver(browser, this);
+  ChromeBrowserState* browser_state = browser->GetBrowserState();
+  session_restoration_service_observation_.Observe(
+      SessionRestorationServiceFactory::GetForBrowserState(browser_state));
 
   // Register for backgrounding and foregrounding notifications. It is safe for
   // the block to capture a pointer to `this` as they are unregistered in the
@@ -75,7 +78,7 @@ void TabUsageRecorderBrowserAgent::BrowserDestroyed(Browser* browser) {
 
   web_state_list_->RemoveObserver(this);
   browser->RemoveObserver(this);
-  RemoveSessionRestorationObserver(browser, this);
+  session_restoration_service_observation_.Reset();
   if (application_backgrounding_observer_) {
     [[NSNotificationCenter defaultCenter]
         removeObserver:application_backgrounding_observer_];

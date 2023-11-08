@@ -34,21 +34,6 @@ source_set("restoration_observer") {
   public_deps = [ "//base" ]
 }
 
-source_set("restoration_observer_helper") {
-  sources = [
-    "session_restoration_observer_helper.h",
-    "session_restoration_observer_helper.mm",
-  ]
-  deps = [
-    ":restoration_agent",
-    ":restoration_observer",
-    ":session_restoration_service",
-    ":session_restoration_service_factory",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/web/common:features",
-  ]
-}
-
 source_set("restoration_agent") {
   sources = [
     "session_restoration_browser_agent.h",
@@ -334,7 +319,6 @@ source_set("unit_tests") {
     "session_loading_unittest.mm",
     "session_migration_unittest.mm",
     "session_restoration_browser_agent_unittest.mm",
-    "session_restoration_observer_helper_unittest.mm",
     "session_restoration_scroll_observer_unittest.mm",
     "session_restoration_service_factory_unittest.cc",
     "session_restoration_service_impl_unittest.mm",
@@ -350,7 +334,6 @@ source_set("unit_tests") {
     ":resources_unit_tests",
     ":restoration_agent",
     ":restoration_observer",
-    ":restoration_observer_helper",
     ":serialisation",
     ":session_constants",
     ":session_internal_util",
