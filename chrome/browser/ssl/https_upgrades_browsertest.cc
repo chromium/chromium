@@ -2828,3 +2828,79 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBrowserTest, PrefStatesRecorded) {
   histograms()->ExpectTotalCount(
       "Security.HttpsFirstMode.SettingEnabledAtStartup", 1);
 }
+
+// A simple test fixture that constructs a HistogramTester (so that it gets
+// initialized before browser startup). Used for testing pref tracking logic.
+// Variant of HttpsUpgradesPrefsBrowserTest but with the HttpsFirstModeIncognito
+// feature enabled.
+class HttpsUpgradesPrefsIncognitoEnabledBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  HttpsUpgradesPrefsIncognitoEnabledBrowserTest() = default;
+  ~HttpsUpgradesPrefsIncognitoEnabledBrowserTest() override = default;
+
+ protected:
+  void SetUp() override {
+    // Feature flag must be enabled before SetUp() continues.
+    feature_list_.InitAndEnableFeature(features::kHttpsFirstModeIncognito);
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetPref(bool enabled) {
+    auto* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(prefs::kHttpsOnlyModeEnabled, enabled);
+  }
+
+  bool GetPref() const {
+    auto* prefs = browser()->profile()->GetPrefs();
+    return prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+  }
+
+  base::HistogramTester* histograms() { return &histograms_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histograms_;
+};
+
+// Tests that the HTTPS-First Mode pref is recorded at startup and when changed,
+// when the HFM-in-Incognito feature flag is enabled. This test requires
+// restarting the browser to test the "at startup" metric in order for the
+// preference state to be set up before the HttpsFirstModeService is created.
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsIncognitoEnabledBrowserTest,
+                       PRE_PrefStatesRecorded) {
+  // The default pref states is true in Incognito, which should get recorded
+  // when the initial browser instance is started here.
+  histograms()->ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartup2",
+      HttpsFirstModeSetting::kEnabledIncognito, 1);
+
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
+                                                  "Incognito"));
+
+  // Change the full HFM pref to true. This should get recorded in the
+  // histogram.
+  SetPref(true);
+  histograms()->ExpectUniqueSample("Security.HttpsFirstMode.SettingChanged2",
+                                   HttpsFirstModeSetting::kEnabledFull, 1);
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
+                                                  "Enabled"));
+}
+
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsIncognitoEnabledBrowserTest,
+                       PrefStatesRecorded) {
+  // Restarting the browser from the PRE_ test should record the startup pref
+  // histogram. Checking the unique count also ensures that other profile types
+  // (e.g. the ChromeOS sign-in profile) don't cause double-counting.
+  EXPECT_TRUE(GetPref());
+  histograms()->ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartup2",
+      HttpsFirstModeSetting::kEnabledFull, 1);
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
+                                                  "Enabled"));
+
+  // Open an Incognito window. Startup metrics should not get recorded.
+  CreateIncognitoBrowser();
+  histograms()->ExpectTotalCount(
+      "Security.HttpsFirstMode.SettingEnabledAtStartup2", 1);
+}

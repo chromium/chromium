@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
+#include <string_view>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
@@ -93,6 +95,7 @@ const char kHttpsFirstModeServiceName[] = "HttpsFirstModeService";
 const char kHttpsFirstModeSyntheticFieldTrialName[] =
     "HttpsFirstModeClientSetting";
 const char kHttpsFirstModeSyntheticFieldTrialEnabledGroup[] = "Enabled";
+const char kHttpsFirstModeSyntheticFieldTrialIncognitoGroup[] = "Incognito";
 const char kHttpsFirstModeSyntheticFieldTrialDisabledGroup[] = "Disabled";
 
 // We don't need to protect this with a lock since it's only set while
@@ -181,6 +184,20 @@ base::Time GetTimestamp(const base::Value::Dict& dict, const char* key) {
   return base::Time();
 }
 
+std::string GetSyntheticFieldTrialGroupName(HttpsFirstModeSetting setting) {
+  switch (setting) {
+    case HttpsFirstModeSetting::kEnabledFull:
+      return kHttpsFirstModeSyntheticFieldTrialEnabledGroup;
+    case HttpsFirstModeSetting::kEnabledIncognito:
+      return kHttpsFirstModeSyntheticFieldTrialIncognitoGroup;
+    case HttpsFirstModeSetting::kDisabled:
+      return kHttpsFirstModeSyntheticFieldTrialDisabledGroup;
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
 }  // namespace
 
 // static
@@ -214,6 +231,10 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
       prefs::kHttpsOnlyModeEnabled,
       base::BindRepeating(&HttpsFirstModeService::OnHttpsFirstModePrefChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kHttpsFirstModeIncognito,
+      base::BindRepeating(&HttpsFirstModeService::OnHttpsFirstModePrefChanged,
+                          base::Unretained(this)));
 
   // Track Advanced Protection status.
   if (base::FeatureList::IsEnabled(
@@ -231,14 +252,21 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
 
   // Make sure the pref state is logged and the synthetic field trial state is
   // created at startup (as the pref may never change over the session).
-  bool enabled = profile_->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  base::UmaHistogramBoolean("Security.HttpsFirstMode.SettingEnabledAtStartup",
-                            enabled);
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      kHttpsFirstModeSyntheticFieldTrialName,
-      enabled ? kHttpsFirstModeSyntheticFieldTrialEnabledGroup
-              : kHttpsFirstModeSyntheticFieldTrialDisabledGroup,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  HttpsFirstModeSetting setting = GetCurrentSetting();
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+    base::UmaHistogramEnumeration(
+        "Security.HttpsFirstMode.SettingEnabledAtStartup2", setting);
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kHttpsFirstModeSyntheticFieldTrialName,
+        GetSyntheticFieldTrialGroupName(setting));
+  } else {
+    bool fully_enabled = setting == HttpsFirstModeSetting::kEnabledFull;
+    base::UmaHistogramBoolean("Security.HttpsFirstMode.SettingEnabledAtStartup",
+                              fully_enabled);
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kHttpsFirstModeSyntheticFieldTrialName,
+        GetSyntheticFieldTrialGroupName(setting));
+  }
 
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE, base::BindOnce(&HttpsFirstModeService::AfterStartup,
@@ -275,13 +303,22 @@ void HttpsFirstModeService::
 HttpsFirstModeService::~HttpsFirstModeService() = default;
 
 void HttpsFirstModeService::OnHttpsFirstModePrefChanged() {
-  bool enabled = profile_->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  base::UmaHistogramBoolean("Security.HttpsFirstMode.SettingChanged", enabled);
-  // Update synthetic field trial group registration.
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      kHttpsFirstModeSyntheticFieldTrialName,
-      enabled ? kHttpsFirstModeSyntheticFieldTrialEnabledGroup
-              : kHttpsFirstModeSyntheticFieldTrialDisabledGroup);
+  HttpsFirstModeSetting setting = GetCurrentSetting();
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+    base::UmaHistogramEnumeration("Security.HttpsFirstMode.SettingChanged2",
+                                  setting);
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kHttpsFirstModeSyntheticFieldTrialName,
+        GetSyntheticFieldTrialGroupName(setting));
+  } else {
+    bool fully_enabled = setting == HttpsFirstModeSetting::kEnabledFull;
+    base::UmaHistogramBoolean("Security.HttpsFirstMode.SettingChanged",
+                              fully_enabled);
+    // Update synthetic field trial group registration.
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kHttpsFirstModeSyntheticFieldTrialName,
+        GetSyntheticFieldTrialGroupName(setting));
+  }
 
   // Reset the allowlist when the pref changes. A user going from HTTPS-Upgrades
   // to HTTPS-First Mode shouldn't inherit the set of allowlisted sites (or
@@ -487,6 +524,17 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(
     return;
   }
   // Don't change the state otherwise.
+}
+
+HttpsFirstModeSetting HttpsFirstModeService::GetCurrentSetting() const {
+  if (profile_->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
+    return HttpsFirstModeSetting::kEnabledFull;
+  } else if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
+             profile_->GetPrefs()->GetBoolean(
+                 prefs::kHttpsFirstModeIncognito)) {
+    return HttpsFirstModeSetting::kEnabledIncognito;
+  }
+  return HttpsFirstModeSetting::kDisabled;
 }
 
 void HttpsFirstModeService::SetClockForTesting(base::Clock* clock) {

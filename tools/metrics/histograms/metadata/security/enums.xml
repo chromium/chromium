@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="HttpsFirstModeSetting">
+  <int value="0" label="Disabled"/>
+  <int value="2" label="Fully enabled"/>
+  <int value="3" label="Enabled in Incognito"/>
+</enum>
+
 <enum name="NewAcceptedDeviceType">
   <int value="0" label="Device which has valid name and id"/>
   <int value="1" label="Ephemeral device stored base on IP address"/>

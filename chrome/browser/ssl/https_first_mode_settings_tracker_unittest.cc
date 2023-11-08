@@ -742,3 +742,75 @@ TEST_F(TypicallySecureUserTest, HFMEnabled) {
   EXPECT_TRUE(
       profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
 }
+
+// Tests the pref update observer callback.
+TEST_F(HttpsFirstModeSettingsTrackerTest, PrefUpdated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHttpsFirstModeIncognito);
+
+  base::HistogramTester histograms;
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  // Creating the HttpsFirstModeService should emit the "setting at startup"
+  // histogram.
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartup", false, 1);
+
+  // Enable HTTPS-First Mode pref, check that the setting-change histogram was
+  // emitted.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged", 1);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged", true,
+                               1);
+
+  // Disable the pref and check the histogram.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged", false,
+                               1);
+}
+
+// Tests the pref update observer callback, with the HttpsFirstModeIncognito
+// feature flag enabled (which changes the setting to be a tri-state that
+// controls two boolean preferences).
+TEST_F(HttpsFirstModeSettingsTrackerTest, PrefUpdatedIncognitoEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpsFirstModeIncognito);
+  // Pref is registered as true by default.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstModeIncognito, true);
+
+  base::HistogramTester histograms;
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  // Creating the HttpsFirstModeService should emit the "setting at startup"
+  // histogram.
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartup2",
+      HttpsFirstModeSetting::kEnabledIncognito, 1);
+
+  // Set prefs as though the user had toggled on "Warn for all insecure
+  // navigations". Enable HTTPS-First Mode pref, check that the
+  // setting-change histogram was emitted.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstModeIncognito, true);
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 1);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kEnabledFull, 1);
+
+  // Set prefs as though the user had changed the toggle to "Warn in Incognito".
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstModeIncognito, true);
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 2);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kEnabledIncognito, 1);
+
+  // Disable prefs as though the user had disabled HTTP warnings entirely.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstModeIncognito, false);
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 3);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kDisabled, 1);
+}

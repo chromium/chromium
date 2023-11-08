@@ -29,6 +29,15 @@ class SiteEngagementService;
 
 class StatefulSSLHostStateDelegate;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class HttpsFirstModeSetting {
+  kDisabled = 0,
+  kEnabledIncognito = 1,
+  kEnabledFull = 2,
+  kMaxValue = kEnabledFull,
+};
+
 // A `KeyedService` that tracks changes to the HTTPS-First Mode pref for each
 // profile. This is currently used for:
 // - Recording pref state in metrics and registering the client for a synthetic
@@ -77,6 +86,8 @@ class HttpsFirstModeService
   // `done_callback` before returning.
   void MaybeEnableHttpsFirstModeForEngagedSites(
       base::OnceClosure done_callback);
+
+  HttpsFirstModeSetting GetCurrentSetting() const;
 
   // Sets the clock for use in tests.
   void SetClockForTesting(base::Clock* clock);
