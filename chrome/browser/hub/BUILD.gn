@@ -42,6 +42,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/layouts:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:guava_android_java",

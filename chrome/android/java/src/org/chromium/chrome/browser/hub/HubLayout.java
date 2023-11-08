@@ -27,6 +27,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -65,25 +67,29 @@ import java.util.Collections;
  * capture and animations it may transiently host a {@link StaticTabSceneLayer}.
  */
 public class HubLayout extends Layout implements HubLayoutController {
-    private SceneLayer mCurrentSceneLayer;
-    /** Scene layer to facilitate thumbnail capture prior to starting a transition animation. */
-    private StaticTabSceneLayer mTabSceneLayer;
-    /** An empty scene layer used to avoid drawing anything. */
-    private SceneLayer mEmptySceneLayer;
 
-    private final LayoutStateProvider mLayoutStateProvider;
-    private final ViewGroup mRootView;
-    private final HubController mHubController;
-    private final PaneManager mPaneManager;
-    private final HubLayoutScrimController mScrimController;
-
-    private HubLayoutAnimationRunner mCurrentAnimationRunner;
+    private final @NonNull LayoutStateProvider mLayoutStateProvider;
+    private final @NonNull ViewGroup mRootView;
+    private final @NonNull HubController mHubController;
+    private final @NonNull PaneManager mPaneManager;
+    private final @NonNull HubLayoutScrimController mScrimController;
 
     /**
-     * The previous {@link LayoutType}, valid between {@link #show(long, boolean)} and
-     * {@link #doneShowing()}.
+     * The previous {@link LayoutType}, valid between {@link #show(long, boolean)} and {@link
+     * #doneShowing()}.
      */
-    private @LayoutType int mPreviousLayoutType;
+    private final @NonNull ObservableSupplierImpl<Integer> mPreviousLayoutTypeSupplier =
+            new ObservableSupplierImpl<>();
+
+    private @Nullable SceneLayer mCurrentSceneLayer;
+
+    /** Scene layer to facilitate thumbnail capture prior to starting a transition animation. */
+    private @Nullable StaticTabSceneLayer mTabSceneLayer;
+
+    /** An empty scene layer used to avoid drawing anything. */
+    private @Nullable SceneLayer mEmptySceneLayer;
+
+    private @Nullable HubLayoutAnimationRunner mCurrentAnimationRunner;
 
     /**
      * Create the {@link Layout} to show the Hub on.
@@ -102,6 +108,8 @@ public class HubLayout extends Layout implements HubLayoutController {
             @NonNull LayoutStateProvider layoutStateProvider,
             @NonNull HubLayoutDependencyHolder dependencyHolder) {
         super(context, updateHost, renderHost);
+        mPreviousLayoutTypeSupplier.set(layoutStateProvider.getActiveLayoutType());
+
         mLayoutStateProvider = layoutStateProvider;
         // This is the R.id.tab_switcher_view_holder. It is used by tablets for the tab switcher,
         // but in that case it is the animated object and is opaque. Here we will animate the
@@ -139,6 +147,11 @@ public class HubLayout extends Layout implements HubLayoutController {
         // redundant work.
         // TODO(crbug/1495121): Find a way to remove the tabId parameter from start hiding.
         startHiding(Tab.INVALID_TAB_ID);
+    }
+
+    @Override
+    public ObservableSupplier<Integer> getPreviousLayoutTypeSupplier() {
+        return mPreviousLayoutTypeSupplier;
     }
 
     @Override
@@ -184,7 +197,7 @@ public class HubLayout extends Layout implements HubLayoutController {
         super.contextChanged(context);
         // This is called before show() and before getActiveLayoutType() changes so we can know what
         // layout the Hub is showing from.
-        mPreviousLayoutType = mLayoutStateProvider.getActiveLayoutType();
+        mPreviousLayoutTypeSupplier.set(mLayoutStateProvider.getActiveLayoutType());
     }
 
     @Override
@@ -209,7 +222,7 @@ public class HubLayout extends Layout implements HubLayoutController {
         HubLayoutAnimatorProvider animatorProvider = createShowAnimatorProvider(containerView);
 
         Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
-        if (mPreviousLayoutType == LayoutType.BROWSING) {
+        if (mPreviousLayoutTypeSupplier.get() == LayoutType.BROWSING) {
             final Tab currentTab = mTabModelSelector.getCurrentTab();
             createLayoutTabForTabId(getIdForTab(currentTab));
             mCurrentSceneLayer = mTabSceneLayer;
@@ -249,7 +262,6 @@ public class HubLayout extends Layout implements HubLayoutController {
     public void doneShowing() {
         super.doneShowing();
         mCurrentSceneLayer = mEmptySceneLayer;
-        mPreviousLayoutType = LayoutType.NONE;
         mCurrentAnimationRunner = null;
         resetLayoutTabs(/* clearVisibleIds= */ true);
     }
@@ -487,7 +499,7 @@ public class HubLayout extends Layout implements HubLayoutController {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return TranslateHubLayoutAnimationFactory.createTranslateUpAnimatorProvider(
                     containerView, mScrimController, TRANSLATE_DURATION_MS);
-        } else if (mPreviousLayoutType == LayoutType.START_SURFACE || pane == null) {
+        } else if (mPreviousLayoutTypeSupplier.get() == LayoutType.START_SURFACE || pane == null) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                     containerView, FADE_DURATION_MS);
         }

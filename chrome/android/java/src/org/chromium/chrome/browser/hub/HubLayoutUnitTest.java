@@ -612,6 +612,7 @@ public class HubLayoutUnitTest {
     private void startShowing(@LayoutType int fromLayout, boolean animate) {
         when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(fromLayout);
         mHubLayout.contextChanged(mActivity);
+        assertEquals(fromLayout, mHubLayout.getPreviousLayoutTypeSupplier().get().intValue());
 
         mHubLayout.show(FAKE_TIME, animate);
     }

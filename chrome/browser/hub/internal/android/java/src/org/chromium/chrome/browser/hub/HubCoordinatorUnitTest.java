@@ -33,6 +33,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.ui.base.TestActivity;
@@ -41,6 +42,7 @@ import org.chromium.ui.base.TestActivity;
 @RunWith(BaseRobolectricTestRunner.class)
 public class HubCoordinatorUnitTest {
     private static final int TAB_ID = 7;
+    private static final int INCOGNITO_TAB_ID = 9;
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -49,6 +51,7 @@ public class HubCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
+    @Mock private Tab mIncognitoTab;
     @Mock private HubLayoutController mHubLayoutController;
     @Mock private Pane mTabSwitcherPane;
     @Mock private Pane mIncognitoTabSwitcherPane;
@@ -58,6 +61,8 @@ public class HubCoordinatorUnitTest {
     private ObservableSupplierImpl<Boolean> mIncognitoTabSwitcherBackPressSupplier =
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Integer> mPreviousLayoutTypeSupplier =
+            new ObservableSupplierImpl<>();
     private PaneManager mPaneManager;
     private FrameLayout mRootView;
     private HubCoordinator mHubCoordinator;
@@ -71,6 +76,11 @@ public class HubCoordinatorUnitTest {
         when(mIncognitoTabSwitcherPane.getHandleBackPressChangedSupplier())
                 .thenReturn(mIncognitoTabSwitcherBackPressSupplier);
         when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mIncognitoTab.getId()).thenReturn(INCOGNITO_TAB_ID);
+        when(mIncognitoTab.isIncognito()).thenReturn(true);
+        when(mHubLayoutController.getPreviousLayoutTypeSupplier())
+                .thenReturn(mPreviousLayoutTypeSupplier);
 
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -103,6 +113,7 @@ public class HubCoordinatorUnitTest {
         mHubCoordinator.destroy();
         assertEquals(0, mRootView.getChildCount());
         assertFalse(mTabSwitcherBackPressSupplier.hasObservers());
+        assertFalse(mPreviousLayoutTypeSupplier.hasObservers());
         assertFalse(mIncognitoTabSwitcherBackPressSupplier.hasObservers());
         assertFalse(mTabSupplier.hasObservers());
     }
@@ -208,11 +219,33 @@ public class HubCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testBackNavigationStartSurfacePreviousLayoutType() {
+        assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        mTabSupplier.set(mTab);
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        mPreviousLayoutTypeSupplier.set(LayoutType.START_SURFACE);
+        assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        mTabSupplier.set(mIncognitoTab);
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        mPreviousLayoutTypeSupplier.set(LayoutType.NONE);
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        mTabSupplier.set(mTab);
+        assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    @SmallTest
     public void testBackNavigationPriority() {
         when(mIncognitoTabSwitcherPane.handleBackPress())
                 .thenReturn(BackPressResult.SUCCESS)
                 .thenReturn(BackPressResult.FAILURE);
         mIncognitoTabSwitcherBackPressSupplier.set(true);
+        mPreviousLayoutTypeSupplier.set(LayoutType.START_SURFACE);
         mTabSupplier.set(mTab);
 
         assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
@@ -227,6 +260,11 @@ public class HubCoordinatorUnitTest {
         // Between pane naviation.
         assertEquals(BackPressResult.SUCCESS, mHubCoordinator.handleBackPress());
         assertEquals(mTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
+        assertFalse(mHubCoordinator.getHandleBackPressChangedSupplier().get());
+
+        // Start surface special case.
+        assertEquals(BackPressResult.FAILURE, mHubCoordinator.handleBackPress());
+        mPreviousLayoutTypeSupplier.set(LayoutType.NONE);
         assertTrue(mHubCoordinator.getHandleBackPressChangedSupplier().get());
 
         // Exit Hub navigation.

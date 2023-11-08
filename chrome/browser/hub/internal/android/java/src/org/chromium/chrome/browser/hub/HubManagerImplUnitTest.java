@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -51,6 +52,7 @@ public class HubManagerImplUnitTest {
     @Mock private Tab mTab;
     @Mock private Pane mTabSwitcherPane;
     @Mock private HubLayoutController mHubLayoutController;
+    @Mock private ObservableSupplier<Integer> mPreviousLayoutTypeSupplier;
 
     private Activity mActivity;
     private FrameLayout mRootView;
@@ -58,7 +60,10 @@ public class HubManagerImplUnitTest {
 
     @Before
     public void setUp() {
+        when(mHubLayoutController.getPreviousLayoutTypeSupplier())
+                .thenReturn(mPreviousLayoutTypeSupplier);
         when(mTab.getId()).thenReturn(TAB_ID);
+
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
