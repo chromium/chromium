@@ -93,16 +93,6 @@ INSTANTIATE_TEST_SUITE_P(
 
         PrecedenceOverAutocompleteParams{
             .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kAddressLine1And2,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kNone,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_STREET_NAME,
-            .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .expected_result = UNKNOWN_TYPE},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kRecognized,
             .server_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kNone,
@@ -110,16 +100,6 @@ INSTANTIATE_TEST_SUITE_P(
             .server_type = NAME_FIRST,
             .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER,
             .expected_result = ADDRESS_HOME_HOUSE_NUMBER},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kRecognized,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kNone,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_STREET_NAME,
-            .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .expected_result = UNKNOWN_TYPE},
 
         PrecedenceOverAutocompleteParams{
             .heuristic_precedence_scope =
@@ -153,16 +133,6 @@ INSTANTIATE_TEST_SUITE_P(
 
         PrecedenceOverAutocompleteParams{
             .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kAddressLine1And2,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kAddressLine1And2,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .heuristic_type = ADDRESS_HOME_STREET_NAME,
-            .expected_result = UNKNOWN_TYPE},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kRecognized,
             .server_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kAddressLine1And2,
@@ -170,16 +140,6 @@ INSTANTIATE_TEST_SUITE_P(
             .server_type = ADDRESS_HOME_STREET_NAME,
             .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER,
             .expected_result = ADDRESS_HOME_HOUSE_NUMBER},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kRecognized,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kAddressLine1And2,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .heuristic_type = ADDRESS_HOME_STREET_NAME,
-            .expected_result = UNKNOWN_TYPE},
 
         PrecedenceOverAutocompleteParams{
             .heuristic_precedence_scope =
@@ -213,42 +173,12 @@ INSTANTIATE_TEST_SUITE_P(
 
         PrecedenceOverAutocompleteParams{
             .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kRecognized,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kRecognized,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .heuristic_type = ADDRESS_HOME_STREET_NAME,
-            .expected_result = UNKNOWN_TYPE},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kSpecified,
             .server_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kRecognized,
             .html_field_type = HtmlFieldType::kGivenName,
             .server_type = ADDRESS_HOME_STREET_NAME,
             .heuristic_type = NAME_FIRST,
-            .expected_result = ADDRESS_HOME_STREET_NAME},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kSpecified,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kRecognized,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .heuristic_type = NAME_FIRST,
-            .expected_result = UNKNOWN_TYPE},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kSpecified,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kSpecified,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .heuristic_type = ADDRESS_HOME_STREET_NAME,
             .expected_result = ADDRESS_HOME_STREET_NAME},
 
         PrecedenceOverAutocompleteParams{
@@ -420,12 +350,6 @@ INSTANTIATE_TEST_SUITE_P(
             .server_type = ADDRESS_HOME_LINE2,
             .heuristic_type = ADDRESS_HOME_OVERFLOW,
             .expected_result = ADDRESS_HOME_OVERFLOW},
-        // Final type is unknown if the html type is not valid.
-        AutofillLocalHeuristicsOverridesParams{
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_CITY,
-            .heuristic_type = ADDRESS_HOME_ADMIN_LEVEL2,
-            .expected_result = UNKNOWN_TYPE},
         // Test non-override behaviour.
         AutofillLocalHeuristicsOverridesParams{
             .html_field_type = HtmlFieldType::kStreetAddress,

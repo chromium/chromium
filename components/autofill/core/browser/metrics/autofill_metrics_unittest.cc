@@ -8649,7 +8649,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
       HtmlFieldType::kUnrecognized, HtmlFieldType::kPostalCode,
       HtmlFieldType::kUnrecognized};
   std::vector<ServerFieldType> overall_types{
-      NAME_LAST, NAME_MIDDLE, NAME_MIDDLE, ADDRESS_HOME_ZIP, UNKNOWN_TYPE};
+      NAME_LAST, NAME_MIDDLE, NAME_MIDDLE, ADDRESS_HOME_ZIP, EMAIL_ADDRESS};
   std::vector<AutofillMetrics::AutocompleteState> autocomplete_states{
       AutofillMetrics::AutocompleteState::kValid,
       AutofillMetrics::AutocompleteState::kValid,

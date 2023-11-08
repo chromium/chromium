@@ -1524,7 +1524,8 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 // Test that no autofill suggestions are returned for a field with an
-// unrecognized autocomplete attribute.
+// unrecognized autocomplete attribute on desktop.
+// On mobile, the keyboard accessory is shown unconditionally.
 TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_UnrecognizedAttribute) {
   // Set up our form data.
@@ -1555,10 +1556,14 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, form.fields[1]);
   external_delegate()->CheckSuggestionCount(form.fields[1].global_id(), 2);
 
-  // No suggestions should not be provided for the third field because of its
-  // unrecognized autocomplete attribute.
   GetAutofillSuggestions(form, form.fields[2]);
+  // For the third field, suggestions should only be shown on mobile due to the
+  // unrecognized autocomplete attribute.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  external_delegate()->CheckSuggestionCount(form.fields[2].global_id(), 2);
+#else
   external_delegate()->CheckNoSuggestions(form.fields[2].global_id());
+#endif
 }
 
 // Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
@@ -6352,12 +6357,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    // The overall_type of the field "Email" is UNKNOWN_TYPE, because its
-    // html_type is unrecognized.
-    ServerFieldType overall_type =
-        autofill_field_ptr->parseable_label() == u"Email"
-            ? UNKNOWN_TYPE
-            : autofill_field_ptr->heuristic_type();
+    ServerFieldType overall_type = autofill_field_ptr->heuristic_type();
     std::vector<AutofillField::FieldLogEventType> expected_events =
         ToFieldTypeEvents(autofill_field_ptr->heuristic_type(), overall_type);
     if (autofill_field_ptr->parseable_label() != u"Middle name") {

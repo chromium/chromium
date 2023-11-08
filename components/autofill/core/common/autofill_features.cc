@@ -123,7 +123,7 @@ BASE_FEATURE(kAutofillDeferSubmissionClassificationAfterAjax,
 // TODO(crbug.com/1446318): Remove the feature when the experiment is completed.
 BASE_FEATURE(kAutofillPredictionsForAutocompleteUnrecognized,
              "AutofillPredictionsForAutocompleteUnrecognized",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kAutofillImportFromAutocompleteUnrecognized{
     &kAutofillPredictionsForAutocompleteUnrecognized,
     "import_from_autocomplete_unrecognized", false};
@@ -135,12 +135,12 @@ const base::FeatureParam<bool> kAutofillImportFromAutocompleteUnrecognized{
 // TODO(crbug.com/1446318): Remove when launched.
 BASE_FEATURE(kAutofillFallbackForAutocompleteUnrecognized,
              "AutofillFallbackForAutocompleteUnrecognized",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // If true, the context menu entry is shown for all address fields.
 const base::FeatureParam<bool>
     kAutofillFallForAutocompleteUnrecognizedOnAllAddressField{
         &kAutofillFallbackForAutocompleteUnrecognized,
-        "show_on_all_address_fields", false};
+        "show_on_all_address_fields", true};
 
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
@@ -750,7 +750,7 @@ const char kAutofillUseMobileLabelDisambiguationParameterShowOne[] = "show-one";
 // TODO(crbug.com/1446318): Remove when launched.
 BASE_FEATURE(kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile,
              "AutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 namespace test {

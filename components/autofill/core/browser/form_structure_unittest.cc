@@ -983,7 +983,7 @@ TEST_F(FormStructureTestImpl,
          .is_autofillable = true,
          .should_be_queried = true,
          .field_count = 4,
-         .autofill_count = 3},
+         .autofill_count = 4},
         {.expected_heuristic_type = {NAME_FIRST, NAME_MIDDLE, NAME_LAST,
                                      EMAIL_ADDRESS}}}});
 }
@@ -5843,9 +5843,8 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_AuthorDefinedTypes) {
   EXPECT_EQ(EMAIL_ADDRESS, forms[0]->field(0)->server_type());
   EXPECT_EQ(EMAIL_ADDRESS, forms[0]->field(0)->Type().GetStorableType());
   EXPECT_EQ(ACCOUNT_CREATION_PASSWORD, forms[0]->field(1)->server_type());
-  // TODO(crbug.com/613666): Should be a properly defined type, and not
-  // UNKNOWN_TYPE.
-  EXPECT_EQ(UNKNOWN_TYPE, forms[0]->field(1)->Type().GetStorableType());
+  EXPECT_EQ(ACCOUNT_CREATION_PASSWORD,
+            forms[0]->field(1)->Type().GetStorableType());
 }
 
 // Tests that, when the flag is off, we will not set the predicted type to
