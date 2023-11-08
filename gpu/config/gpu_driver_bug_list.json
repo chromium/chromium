@@ -3784,6 +3784,7 @@
         "type": "win"
       },
       "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
       "features": [
         "avoid_consecutive_keyframes_for_vp9"
       ]
