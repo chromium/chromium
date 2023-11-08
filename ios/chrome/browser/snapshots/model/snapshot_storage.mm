@@ -420,10 +420,6 @@ bool IsGreySnapshotOptimizationNoCacheEnabled() {
   return [_fileManager greyImagePathForSnapshotID:snapshotID];
 }
 
-- (base::FilePath)legacyImagePathForSnapshotID:(NSString*)snapshotID {
-  return [_fileManager legacyImagePathForSnapshotID:snapshotID];
-}
-
 - (void)greyImageForSnapshotID:(SnapshotID)snapshotID
                       callback:(void (^)(UIImage*))callback {
   DCHECK(snapshotID.valid());

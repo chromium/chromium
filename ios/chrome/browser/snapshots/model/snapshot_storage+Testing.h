@@ -20,8 +20,6 @@ class FilePath;
 - (base::FilePath)imagePathForSnapshotID:(SnapshotID)snapshotID;
 // Returns the file path to the greyscale snapshot of `snapshotID`.
 - (base::FilePath)greyImagePathForSnapshotID:(SnapshotID)snapshotID;
-// Returns the file path to the legacy color snapshot of `snapshotID`.
-- (base::FilePath)legacyImagePathForSnapshotID:(NSString*)snapshotID;
 // Requests the grey snapshot for `snapshotID`. If the image is already loaded
 // in memory, this will immediately call back with `callback`. Otherwise, only
 // uses `callback` for the most recent caller. The callback is not guaranteed to
