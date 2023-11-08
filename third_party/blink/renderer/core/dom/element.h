@@ -821,7 +821,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // focusable (using the mouse). This method can be called when layout is not
   // clean, but the method might trigger a lifecycle update in that case. This
   // method will not trigger a lifecycle update if layout is already clean.
-  virtual bool IsFocusable() const;
+  // If the |disallow_layout_updates_for_accessibility_only| argument is true,
+  // which should only be used by a11y code, layout updates will never be
+  // performed.
+  virtual bool IsFocusable(
+      bool disallow_layout_updates_for_accessibility_only = false) const;
 
   // IsKeyboardFocusable is true for the subset of mouse focusable elements (for
   // which IsFocusable() is true) that are in the tab cycle. This method
@@ -1334,7 +1338,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Similar to IsFocusableStyle, except that it will ensure that any deferred
   // work to create layout objects is completed (e.g. in display-locked trees).
   bool IsFocusableStyleAfterUpdate() const;
-
+  // Similar to IsFocusableStyle, except that it will *never* trigger a style
+  // update. Only call this method if the lifecycle does not need to be updated.
+  bool IsFocusableStyleNoLifecycleUpdate() const;
   // Is the node descendant of this in something clickable/activatable, such
   // that we shouldn't handle events targeting it?
   bool IsClickableControl(Node*);

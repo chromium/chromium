@@ -231,6 +231,20 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
   }
 }
 
+bool HTMLDialogElement::IsFocusable(
+    bool disallow_layout_updates_for_accessibility_only) const {
+  // TODO(crbug.com/1499838) HTMLDialogElement should only need to override
+  // SupportsFocus() to be always-true, and should not need to override
+  // IsFocusable() at all. Dialog focus behavior is to focus the dialog itself
+  // if there are no focusable descendants, which means they support focus.
+  // However, making SupportsFocus always true makes dialogs always keyboard
+  // focusable, and that breaks things.
+  if (UNLIKELY(disallow_layout_updates_for_accessibility_only)) {
+    return isConnected() && IsFocusableStyleNoLifecycleUpdate();
+  }
+  return isConnected() && IsFocusableStyleAfterUpdate();
+}
+
 class DialogCloseWatcherEventListener : public NativeEventListener {
  public:
   explicit DialogCloseWatcherEventListener(HTMLDialogElement* dialog)

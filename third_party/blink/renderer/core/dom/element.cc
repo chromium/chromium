@@ -6107,7 +6107,18 @@ bool Element::IsKeyboardFocusable() const {
          IsScrollableContainerThatShouldBeKeyboardFocusable();
 }
 
-bool Element::IsFocusable() const {
+bool Element::IsFocusableStyleNoLifecycleUpdate() const {
+  DCHECK(!NeedsStyleRecalc()) << this;
+  DocumentLifecycle::DisallowTransitionScope scope(GetDocument().Lifecycle());
+  return IsFocusableStyle();
+}
+
+bool Element::IsFocusable(
+    bool disallow_layout_updates_for_accessibility_only) const {
+  if (UNLIKELY(disallow_layout_updates_for_accessibility_only)) {
+    return isConnected() && IsFocusableStyleNoLifecycleUpdate() &&
+           SupportsFocus();
+  }
   return isConnected() && IsFocusableStyleAfterUpdate() && SupportsFocus();
 }
 
