@@ -1129,7 +1129,7 @@ bool AutofillSuggestionGenerator::WasProfileSuggestionPreviouslyHidden(
     const FormStructure& form,
     const AutofillField& field,
     Suggestion::BackendId backend_id,
-    const std::vector<FieldFillingSkipReason>& skip_reasons) {
+    const ServerFieldTypeSet& field_types) {
   constexpr ServerFieldTypeSet street_address_field_types = {
       ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
       ADDRESS_HOME_LINE3};
@@ -1139,17 +1139,12 @@ bool AutofillSuggestionGenerator::WasProfileSuggestionPreviouslyHidden(
     // the other fields.
     return false;
   }
-  ServerFieldTypeSet suggestion_field_types_without_address_types;
-  for (size_t i = 0; i < form.field_count(); ++i) {
-    // Include only non-street-address types, since those types were originally
-    // ignored.
-    ServerFieldType type = form.field(i)->Type().GetStorableType();
-    if (skip_reasons[i] == FieldFillingSkipReason::kNotSkipped &&
-        !street_address_field_types.count(type)) {
-      suggestion_field_types_without_address_types.insert(type);
+  ServerFieldTypeSet suggestion_field_types_without_address_types = field_types;
+  for (ServerFieldType field_type : field_types) {
+    if (street_address_field_types.contains(field_type)) {
+      suggestion_field_types_without_address_types.erase(field_type);
     }
   }
-
   // Get the profiles to be suggested when we remove address field types. This
   // way if the profile represented by `backend_id` is not included we can
   // conclude that it was hidden previously and is only showing now because

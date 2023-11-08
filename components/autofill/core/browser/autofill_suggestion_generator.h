@@ -154,15 +154,14 @@ class AutofillSuggestionGenerator {
   // Checks whether the suggestion accepted by the user, generated from the
   // profile with `backend_id`, would've been hidden prior to landing the
   // feature `kAutofillUseAddressRewriterInProfileSubsetComparison`.
-  // `skip_reasons` denotes for each field if it is relevant for the current
-  // suggestion or not.
+  // `field_types` denotes the types relevant for the current suggestion.
   // TODO(crbug/1439742): Remove when
   // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
   bool WasProfileSuggestionPreviouslyHidden(
       const FormStructure& form,
       const AutofillField& field,
       Suggestion::BackendId backend_id,
-      const std::vector<FieldFillingSkipReason>& skip_reasons);
+      const ServerFieldTypeSet& field_types);
 
  protected:
   // Creates a suggestion for the given `credit_card`. `virtual_card_option`

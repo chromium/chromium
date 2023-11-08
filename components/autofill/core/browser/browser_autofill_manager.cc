@@ -1071,9 +1071,16 @@ bool BrowserAutofillManager::WasSuggestionPreviouslyHidden(
           : std::vector<FieldFillingSkipReason>(
                 form_structure->field_count(),
                 FieldFillingSkipReason::kNotSkipped);
+  ServerFieldTypeSet suggestion_field_types;
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
+    if (skip_reasons[i] == FieldFillingSkipReason::kNotSkipped) {
+      suggestion_field_types.insert(
+          form_structure->field(i)->Type().GetStorableType());
+    }
+  }
   return suggestion_generator_->WasProfileSuggestionPreviouslyHidden(
       CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field), backend_id,
-      skip_reasons);
+      suggestion_field_types);
 }
 
 void BrowserAutofillManager::OnTextFieldDidChangeImpl(
