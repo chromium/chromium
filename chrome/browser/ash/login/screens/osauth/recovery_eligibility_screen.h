@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOVERY_ELIGIBILITY_SCREEN_H_
-#define CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOVERY_ELIGIBILITY_SCREEN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_RECOVERY_ELIGIBILITY_SCREEN_H_
+#define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_RECOVERY_ELIGIBILITY_SCREEN_H_
 
-#include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 
 #include "base/functional/callback.h"
 
@@ -14,7 +14,7 @@ namespace ash {
 // This pseudo-screen checks if user is eligible for setting up recovery factor
 // and sets up relevant data in WizardContext for Consolidated TOS screen.
 // This screen has no UI, it just encapsulates decision logic.
-class RecoveryEligibilityScreen : public BaseScreen {
+class RecoveryEligibilityScreen : public BaseOSAuthSetupScreen {
  public:
   enum class Result { PROCEED, NOT_APPLICABLE };
   static std::string GetResultString(Result result);
@@ -32,12 +32,17 @@ class RecoveryEligibilityScreen : public BaseScreen {
  private:
   // BaseScreen:
   void ShowImpl() override;
-  void HideImpl() override;
   bool MaybeSkip(WizardContext& context) override;
 
+  void InspectContext(UserContext* user_context);
+  void ProcessOptions();
+
+  bool recovery_supported_ = false;
+
   ScreenExitCallback exit_callback_;
+  base::WeakPtrFactory<RecoveryEligibilityScreen> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOVERY_ELIGIBILITY_SCREEN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_RECOVERY_ELIGIBILITY_SCREEN_H_

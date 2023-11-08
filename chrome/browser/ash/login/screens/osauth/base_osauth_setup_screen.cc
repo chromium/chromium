@@ -100,6 +100,10 @@ void BaseOSAuthSetupScreen::InspectContextAndContinue(
     }
     return;
   }
+  if (!context()->extra_factors_token.has_value()) {
+    std::move(inspect_callback).Run(nullptr);
+    return;
+  }
   auto token = GetToken();
   CHECK(AuthSessionStorage::Get()->IsValid(token));
   AuthSessionStorage::Get()->BorrowAsync(

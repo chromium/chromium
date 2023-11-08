@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/recovery_eligibility_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,7 +52,7 @@ bool RecoveryEligibilityScreen::ShouldSkipRecoverySetupBecauseOfPolicy() {
 
 RecoveryEligibilityScreen::RecoveryEligibilityScreen(
     const ScreenExitCallback& exit_callback)
-    : BaseScreen(RecoveryEligibilityView::kScreenId,
+    : BaseOSAuthSetupScreen(RecoveryEligibilityView::kScreenId,
                  OobeScreenPriority::DEFAULT),
       exit_callback_(exit_callback) {}
 
@@ -62,24 +63,6 @@ bool RecoveryEligibilityScreen::MaybeSkip(WizardContext& wizard_context) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
-  std::unique_ptr<UserContext> user_context;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    if (!wizard_context.extra_factors_token.has_value()) {
-      exit_callback_.Run(Result::NOT_APPLICABLE);
-      return true;
-    }
-    if (!ash::AuthSessionStorage::Get()->IsValid(
-            wizard_context.extra_factors_token.value())) {
-      exit_callback_.Run(Result::NOT_APPLICABLE);
-      return true;
-    }
-  } else {
-    if (!wizard_context.extra_factors_auth_session.get()) {
-      exit_callback_.Run(Result::NOT_APPLICABLE);
-      return true;
-    }
-  }
-
   if (wizard_context.skip_post_login_screens_for_tests) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
@@ -88,21 +71,25 @@ bool RecoveryEligibilityScreen::MaybeSkip(WizardContext& wizard_context) {
 }
 
 void RecoveryEligibilityScreen::ShowImpl() {
-  const UserContext* user_context = nullptr;
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    CHECK(context()->extra_factors_token.has_value());
-    auto* storage = ash::AuthSessionStorage::Get();
-    auto& token = context()->extra_factors_token.value();
-    CHECK(storage->IsValid(token));
-    user_context = storage->Peek(token);
-  } else {
-    user_context = context()->extra_factors_auth_session.get();
-  }
+  InspectContextAndContinue(
+      base::BindOnce(&RecoveryEligibilityScreen::InspectContext,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&RecoveryEligibilityScreen::ProcessOptions,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
-  CHECK(user_context);
+void RecoveryEligibilityScreen::InspectContext(UserContext* user_context) {
+  if (!user_context) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return;
+  }
   auto supported_factors =
       user_context->GetAuthFactorsConfiguration().get_supported_factors();
-  if (supported_factors.Has(cryptohome::AuthFactorType::kRecovery)) {
+  recovery_supported_ = supported_factors.Has(cryptohome::AuthFactorType::kRecovery);
+}
+
+void RecoveryEligibilityScreen::ProcessOptions() {
+  if (recovery_supported_) {
     context()->recovery_setup.is_supported = true;
     // Don't ask about recovery consent for managed users - use the policy value
     // instead.
@@ -115,7 +102,5 @@ void RecoveryEligibilityScreen::ShowImpl() {
   }
   exit_callback_.Run(Result::PROCEED);
 }
-
-void RecoveryEligibilityScreen::HideImpl() {}
 
 }  // namespace ash

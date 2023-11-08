@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/recovery_eligibility_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
 
 #include <string>
 #include <utility>
@@ -126,8 +126,6 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
 
   void ContinueScreenExit() {
     original_callback_.Run(result_.value());
-    if (screen_exit_callback_)
-      std::move(screen_exit_callback_).Run();
   }
 
   void ShowScreen() {
@@ -147,6 +145,8 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
  private:
   void HandleScreenExit(RecoveryEligibilityScreen::Result result) {
     result_ = result;
+    if (screen_exit_callback_)
+      std::move(screen_exit_callback_).Run();
   }
 
   base::test::ScopedFeatureList feature_list_;
