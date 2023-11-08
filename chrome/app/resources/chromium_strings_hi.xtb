@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1001716830750249114">Chromium की वर्शन सेटिंग पर जाएं</translation>
 <translation id="1026101648481255140">इंस्टॉल करने की प्रोसेस को दोबारा चालू करें</translation>
 <translation id="1029669172902658969">&amp;ChromiumOS को अपडेट करने के लिए, उसे फिर से लॉन्च करें</translation>
 <translation id="1040916596585577953">Chromium आपको इस एक्सटेंशन की जांच करने का सुझाव देता है</translation>
@@ -32,6 +33,7 @@
 आपने वेबसाइटों और ऐप्लिकेशन को जो अनुमतियां दी हैं वे इस खाते पर लागू हो सकती हैं. <ph name="SETTINGS_LINK_BEGIN" />सेटिंग<ph name="SETTINGS_LINK_END" /> में जाकर, अपने Google खातों को मैनेज किया जा सकता है.</translation>
 <translation id="1640672724030957280">डाउनलोड हो रहा है...</translation>
 <translation id="1708666629004767631">क्रोमियम का एक नया और सुरक्षित वर्शन उपलब्ध है.</translation>
+<translation id="1715127912119967311">इन सुविधाओं को बेहतर बनाने में मदद करने के लिए, Chromium उनके साथ होने वाले आपके इंटरैक्शन Google को भेजता है. इस डेटा को समीक्षा करने वाले व्यक्ति पढ़ सकते हैं, प्रोसेस कर सकते हैं, और इसकी व्याख्या कर सकते हैं.</translation>
 <translation id="17264556997921157">आपके पास अपनी पसंद के उन विषयों को देखने और हटाने का विकल्प होता है जिनका इस्तेमाल करके, साइटें आपको विज्ञापन दिखाती हैं. Chromium आपके हाल के ब्राउज़िंग इतिहास के आधार पर, आपकी पसंद के विषयों का अनुमान लगाता है.</translation>
 <translation id="1733725117201708356">Chromium जल्द ही ब्राउज़िंग डेटा को मिटा देगा</translation>
 <translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" /> में रीस्टार्ट होगा</translation>

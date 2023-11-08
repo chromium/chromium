@@ -737,6 +737,7 @@
 <translation id="4864369630010738180">Մուտք...</translation>
 <translation id="4866368707455379617">Չհաջողվեց տեղադրել «<ph name="MODULE" />» բաղադրիչը Chrome-ի համար</translation>
 <translation id="4871568871368204250">Անջատել համաժամացումը</translation>
+<translation id="4874961007154620743">Այս պարամետրը անջատելու դեպքում էլ կտեսնեք լոկալ հուշումներ Chrome-ից</translation>
 <translation id="4875775213178255010">Բովանդակության առաջարկներ</translation>
 <translation id="4877678010818027629">Մտնել ինկոգնիտո ռեժիմ</translation>
 <translation id="4878404682131129617">Չհաջողվեց կապ հաստատել պրոքսի սերվերի միջոցով</translation>
@@ -1556,6 +1557,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> լեզվի փաթեթը պատրաստ է</translation>
 <translation id="8937772741022875483">Հեռացնե՞լ Chrome-ի պատմությունը Թվային բարեկեցությունից</translation>
+<translation id="893938492099608175">Ձեր կարգավորումներից կախված՝ Chrome-ը կարող է նաև ուղարկել քուքիներ, ձեր ընթացիկ URL-ը և ձեր տեղադրությունը</translation>
 <translation id="8942627711005830162">Բացել նոր պատուհանում</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> լեզուն հնարավոր չէ ներբեռնել։ Փորձեք ավելի ուշ։</translation>
 <translation id="8955719471735800169">Հետ դեպի վերև</translation>

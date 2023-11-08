@@ -5939,7 +5939,7 @@
 <translation id="5698462638680260399">登录后才能使用密码</translation>
 <translation id="5698878456427040674">检查所选账号是否受支持。</translation>
 <translation id="570043786759263127">Google Play 应用和服务</translation>
-<translation id="5700761515355162635">允许使用第三方 Cookie</translation>
+<translation id="5700761515355162635">已允许使用第三方 Cookie</translation>
 <translation id="5700836101007545240">“添加连接”功能已由您的管理员停用</translation>
 <translation id="5701080607174488915">从服务器获取政策时出错。</translation>
 <translation id="5701212929149679556">移动网络漫游</translation>
@@ -6557,6 +6557,7 @@
 <translation id="6194333736420234626">付款方式(&amp;P)</translation>
 <translation id="6195005504600220730">读取您的浏览器、操作系统和设备的相关信息</translation>
 <translation id="6195155925303302899">居中对齐</translation>
+<translation id="6195163219142236913">第三方 Cookie 受限</translation>
 <translation id="6195693561221576702">无法在此设备上设置离线演示模式。</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6196854373336333322">“<ph name="EXTENSION_NAME" />”扩展程序控制了您的代理设置，也就是说，它可以更改、中断或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>
