@@ -101,10 +101,10 @@
   // NSToolbarFullScreenWindow should never become the key window, otherwise
   // the browser window will appear inactive. Activate the browser window
   // when this happens.
-  if (remote_cocoa::IsNSToolbarFullScreenWindow(notify.object)) {
-    if ([self isOnActiveSpace]) {
-      [self makeKeyAndOrderFront:nil];
-    }
+  NSWindow* toolbarWindow = notify.object;
+  if (toolbarWindow.parentWindow == self &&
+      remote_cocoa::IsNSToolbarFullScreenWindow(toolbarWindow)) {
+    [self makeKeyAndOrderFront:nil];
   }
 }
 
