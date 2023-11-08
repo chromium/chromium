@@ -5,20 +5,31 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
+import android.provider.Browser;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.IntentUtils;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.content_settings.CookieControlsMode;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.widget.ChromeImageView;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
  * A 3-state radio group Preference used for the Third-Party Cookies subpage of SiteSettings.
@@ -55,17 +66,30 @@ public class TriStateCookieSettingsPreference extends Preference
         public boolean cookieControlsModeEnforced;
         // Whether First Party Sets are enabled.
         public boolean isFirstPartySetsDataAccessEnabled;
+        // Whether the offboarding notice should be shown in the Settings
+        public boolean shouldShowTrackingProtectionOffboardingCard;
+        // CustomTabIntentHelper to launch intents in CCT.
+        public BaseSiteSettingsFragment.CustomTabIntentHelper customTabIntentHelper;
     }
+
+    public static final String TP_LEARN_MORE_URL =
+            "https://support.google.com/chrome/?p=tracking_protection";
 
     // Keeps the params that are applied to the UI if the params are set before the UI is ready.
     private Params mInitializationParams;
 
     // UI Elements.
+    private MaterialCardViewNoShadow mTPOffboardingNotice;
+    private ChromeImageView mTPOffboardingNoticeIcon;
+    private TextViewWithClickableSpans mTPOffboardingSummary;
+    private ChromeImageView mTPOffboardingCloseIcon;
     private RadioButtonWithDescription mAllowButton;
     private RadioButtonWithDescription mBlockThirdPartyIncognitoButton;
     private RadioButtonWithDescription mBlockThirdPartyButton;
     private RadioGroup mRadioGroup;
     private TextViewWithCompoundDrawables mManagedView;
+
+    private BaseSiteSettingsFragment.CustomTabIntentHelper mCustomTabIntentHelper;
 
     // Sometimes UI is initialized before the initializationParams are set. We keep this viewHolder
     // to properly adjust UI once initializationParams are set. See crbug.com/1371236.
@@ -92,6 +116,7 @@ public class TriStateCookieSettingsPreference extends Preference
             configureRadioButtons(state);
         } else {
             mInitializationParams = state;
+            mCustomTabIntentHelper = mInitializationParams.customTabIntentHelper;
         }
     }
 
@@ -136,9 +161,12 @@ public class TriStateCookieSettingsPreference extends Preference
                 (TextViewWithCompoundDrawables) holder.findViewById(R.id.managed_disclaimer_text);
 
         if (mInitializationParams != null) {
+            maybeShowOffboardingCard();
             setRadioButtonsVisibility(mInitializationParams);
             configureRadioButtons(mInitializationParams);
         }
+
+        // maybeShowOffboardingCard();
     }
 
     private Resources getResources() {
@@ -174,6 +202,37 @@ public class TriStateCookieSettingsPreference extends Preference
             mBlockThirdPartyButton =
                     (RadioButtonWithDescription) mViewHolder.findViewById(R.id.block_third_party);
         }
+    }
+
+    private void maybeShowOffboardingCard() {
+        if (mInitializationParams.shouldShowTrackingProtectionOffboardingCard) {
+            mTPOffboardingNotice =
+                    (MaterialCardViewNoShadow) mViewHolder.findViewById(R.id.offboarding_card);
+            mTPOffboardingSummary =
+                    (TextViewWithClickableSpans) mViewHolder.findViewById(R.id.card_summary);
+            mTPOffboardingCloseIcon = (ChromeImageView) mViewHolder.findViewById(R.id.close_icon);
+            mTPOffboardingNoticeIcon =
+                    (ChromeImageView) mViewHolder.findViewById(R.id.card_main_icon);
+            mTPOffboardingNotice.setVisibility(View.VISIBLE);
+            mTPOffboardingSummary.setText(
+                    SpanApplier.applySpans(
+                            getResources()
+                                    .getString(
+                                            R.string.tracking_protection_settings_rollback_notice),
+                            new SpanApplier.SpanInfo(
+                                    "<link>",
+                                    "</link>",
+                                    new NoUnderlineClickableSpan(
+                                            getContext(), this::onLearnMoreClicked))));
+            mTPOffboardingSummary.setOnClickListener(this::onLearnMoreClicked);
+            mTPOffboardingCloseIcon.setOnClickListener(this::onOffboardingCardCloseClick);
+            mTPOffboardingNoticeIcon.setImageDrawable(
+                    SettingsUtils.getTintedIcon(getContext(), R.drawable.infobar_warning));
+        }
+    }
+
+    private void onOffboardingCardCloseClick(View button) {
+        mTPOffboardingNotice.setVisibility(View.GONE);
     }
 
     private void setBlockThirdPartyCookieDescription(Params params) {
@@ -272,5 +331,23 @@ public class TriStateCookieSettingsPreference extends Preference
     public boolean isButtonCheckedForTesting(@CookieControlsMode int state) {
         assert getButton(state) != null;
         return getButton(state).isChecked();
+    }
+
+    private void onLearnMoreClicked(View view) {
+        openUrlInCct(TP_LEARN_MORE_URL);
+    }
+
+    private void openUrlInCct(String url) {
+        assert (mCustomTabIntentHelper != null) : "CCT helpers must be set before opening a link";
+        CustomTabsIntent customTabIntent =
+                new CustomTabsIntent.Builder().setShowTitle(true).build();
+        customTabIntent.intent.setData(Uri.parse(url));
+        Intent intent =
+                mCustomTabIntentHelper.createCustomTabActivityIntent(
+                        getContext(), customTabIntent.intent);
+        intent.setPackage(getContext().getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+        IntentUtils.safeStartActivity(getContext(), intent);
     }
 }

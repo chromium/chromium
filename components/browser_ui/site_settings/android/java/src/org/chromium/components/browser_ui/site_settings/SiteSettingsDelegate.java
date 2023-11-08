@@ -196,4 +196,9 @@ public interface SiteSettingsDelegate {
      * Called when the view this delegate is assigned to gets destroyed.
      */
     void onDestroyView();
+
+    /**
+     * @return whether the Tracking Protection offboarding notice should be shown in the Settings.
+     */
+    boolean shouldShowSettingsOffboardingNotice();
 }

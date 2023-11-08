@@ -506,8 +506,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
         }
         if (fragment instanceof BaseSiteSettingsFragment) {
-            ((BaseSiteSettingsFragment) fragment)
-                    .setSiteSettingsDelegate(new ChromeSiteSettingsDelegate(this, mProfile));
+            BaseSiteSettingsFragment baseSiteSettingsFragment =
+                    ((BaseSiteSettingsFragment) fragment);
+            baseSiteSettingsFragment.setSiteSettingsDelegate(
+                    new ChromeSiteSettingsDelegate(this, mProfile));
+            baseSiteSettingsFragment.setCustomTabIntentHelper(
+                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof SafetyCheckSettingsFragment) {
             SafetyCheckCoordinator.create((SafetyCheckSettingsFragment) fragment,

@@ -1163,8 +1163,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             infoText.setSummary(R.string.website_settings_cookie_info);
         } else if (mCategory.getType() == SiteSettingsCategory.Type.SITE_DATA) {
             infoText.setSummary(R.string.website_settings_site_data_page_description);
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
-            infoText.setSummary(R.string.website_settings_third_party_cookies_page_description);
         } else if (mCategory.getType() == SiteSettingsCategory.Type.STORAGE_ACCESS) {
             infoText.setSummary(getStorageAccessSummary());
         } else {
@@ -1353,6 +1351,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled();
         params.isFirstPartySetsDataAccessEnabled =
                 getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled();
+        params.shouldShowTrackingProtectionOffboardingCard =
+                getSiteSettingsDelegate().shouldShowSettingsOffboardingNotice();
+        params.customTabIntentHelper = getCustomTabIntentHelper();
         triStateCookieToggle.setState(params);
     }
 
