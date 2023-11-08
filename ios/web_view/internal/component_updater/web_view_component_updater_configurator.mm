@@ -8,6 +8,7 @@
 #import <stdint.h>
 
 #import <memory>
+#import <optional>
 #import <string>
 #import <vector>
 
@@ -30,7 +31,6 @@
 #import "components/update_client/update_query_params.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ios_web_view {
 
@@ -71,9 +71,9 @@ class WebViewConfigurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
-  absl::optional<bool> IsMachineExternallyManaged() const override;
+  std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  absl::optional<base::FilePath> GetCrxCachePath() const override;
+  std::optional<base::FilePath> GetCrxCachePath() const override;
 
  private:
   friend class base::RefCountedThreadSafe<WebViewConfigurator>;
@@ -219,7 +219,7 @@ WebViewConfigurator::GetProtocolHandlerFactory() const {
   return configurator_impl_.GetProtocolHandlerFactory();
 }
 
-absl::optional<bool> WebViewConfigurator::IsMachineExternallyManaged() const {
+std::optional<bool> WebViewConfigurator::IsMachineExternallyManaged() const {
   return configurator_impl_.IsMachineExternallyManaged();
 }
 
@@ -228,10 +228,10 @@ WebViewConfigurator::GetUpdaterStateProvider() const {
   return configurator_impl_.GetUpdaterStateProvider();
 }
 
-absl::optional<base::FilePath> WebViewConfigurator::GetCrxCachePath() const {
+std::optional<base::FilePath> WebViewConfigurator::GetCrxCachePath() const {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_CACHE, &path)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return path.Append(FILE_PATH_LITERAL("ios_webview_crx_cache"));
 }

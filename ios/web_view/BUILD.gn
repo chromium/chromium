@@ -410,7 +410,6 @@ ios_web_view_deps = [
   "//net:extras",
   "//services/metrics/public/cpp:metrics_cpp",
   "//services/network:network_service",
-  "//third_party/abseil-cpp:absl",
   "//ui/base",
   "//ui/display",
   "//url",

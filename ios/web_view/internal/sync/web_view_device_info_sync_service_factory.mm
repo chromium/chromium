@@ -42,29 +42,29 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   bool GetSendTabToSelfReceivingEnabled() const override { return false; }
 
   // syncer::DeviceInfoSyncClient:
-  absl::optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
+  std::optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
       const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // syncer::DeviceInfoSyncClient:
-  absl::optional<std::string> GetFCMRegistrationToken() const override {
+  std::optional<std::string> GetFCMRegistrationToken() const override {
     if (sync_invalidations_service_) {
       return sync_invalidations_service_->GetFCMRegistrationToken();
     }
     // If the service is not enabled, then the registration token must be empty,
-    // not unknown (absl::nullopt). This is needed to reset previous token if
+    // not unknown (std::nullopt). This is needed to reset previous token if
     // the invalidations have been turned off.
     return std::string();
   }
 
   // syncer::DeviceInfoSyncClient:
-  absl::optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
+  std::optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
     if (sync_invalidations_service_) {
       return sync_invalidations_service_->GetInterestedDataTypes();
     }
     // If the service is not enabled, then the list of types must be empty, not
-    // unknown (absl::nullopt). This is needed to reset previous types if the
+    // unknown (std::nullopt). This is needed to reset previous types if the
     // invalidations have been turned off.
     return syncer::ModelTypeSet();
   }

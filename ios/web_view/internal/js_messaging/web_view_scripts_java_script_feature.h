@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_JS_MESSAGING_WEB_VIEW_SCRIPTS_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_VIEW_INTERNAL_JS_MESSAGING_WEB_VIEW_SCRIPTS_JAVA_SCRIPT_FEATURE_H_
 
+#import <optional>
+
 #import "base/supports_user_data.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
@@ -29,8 +31,8 @@ class WebViewScriptsJavaScriptFeature : public base::SupportsUserData::Data,
   static WebViewScriptsJavaScriptFeature* FromBrowserState(
       web::BrowserState* browser_state);
 
-  void SetScripts(absl::optional<std::string> all_frames_script,
-                  absl::optional<std::string> main_frame_script);
+  void SetScripts(std::optional<std::string> all_frames_script,
+                  std::optional<std::string> main_frame_script);
 
  private:
   const std::vector<const FeatureScript> GetScripts() const override;
@@ -38,8 +40,8 @@ class WebViewScriptsJavaScriptFeature : public base::SupportsUserData::Data,
   // The browser state associated with this feature.
   web::BrowserState* browser_state_;
 
-  absl::optional<std::string> all_frames_script_;
-  absl::optional<std::string> main_frame_script_;
+  std::optional<std::string> all_frames_script_;
+  std::optional<std::string> main_frame_script_;
 };
 
 #endif  // IOS_WEB_VIEW_INTERNAL_JS_MESSAGING_WEB_VIEW_SCRIPTS_JAVA_SCRIPT_FEATURE_H_

@@ -39,8 +39,8 @@ WebViewScriptsJavaScriptFeature::FromBrowserState(
 }
 
 void WebViewScriptsJavaScriptFeature::SetScripts(
-    absl::optional<std::string> all_frames_script,
-    absl::optional<std::string> main_frame_script) {
+    std::optional<std::string> all_frames_script,
+    std::optional<std::string> main_frame_script) {
   all_frames_script_ = all_frames_script;
   main_frame_script_ = main_frame_script;
 
