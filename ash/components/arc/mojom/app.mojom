@@ -100,6 +100,8 @@ enum InstallPriority {
 };
 
 // ARC package locale-related info.
+// NOTE: All locales here are sent as is, and not guaranteed to have correspondent ICU display name
+// translation. Displaying this to user will require special handling.
 struct PackageLocaleInfo {
   // These are the locales explicitly mentioned by the app to be supported.
   // Should not be empty.
