@@ -957,6 +957,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void SetIsMinimalMode(bool minimal) override;
 
+  bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const override;
+
 #if !BUILDFLAG(IS_ANDROID)
   void BindVideoEffectsManager(
       const std::string& device_id,

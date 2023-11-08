@@ -325,17 +325,14 @@ void MediaDevicesDispatcherHost::ProduceSubCaptureTargetId(
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          [](GlobalRenderFrameHostId render_frame_host_id,
+          [](GlobalRenderFrameHostId rfh_id,
              media::mojom::SubCaptureTargetType type) {
-            RenderFrameHostImpl* const rfh =
-                RenderFrameHostImpl::FromID(render_frame_host_id);
-            if (!rfh || !rfh->IsActive()) {
+            WebContents* const wc =
+                SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(
+                    rfh_id);
+            if (!wc) {
               return std::string();  // Might have been asynchronously closed.
             }
-
-            WebContents* const wc =
-                WebContents::FromRenderFrameHost(rfh->GetMainFrame());
-            DCHECK(wc);
 
             // No-op if already created.
             SubCaptureTargetIdWebContentsHelper::CreateForWebContents(wc);
