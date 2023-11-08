@@ -84,7 +84,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 @property(nonatomic, assign) BOOL expandSizeTooLarge;
 
 // Keep track of the minimized state height.
-@property(nonatomic, assign) absl::optional<CGFloat> minimizedStateHeight;
+@property(nonatomic, assign) std::optional<CGFloat> minimizedStateHeight;
 
 @end
 
@@ -163,7 +163,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
   if (self.traitCollection.preferredContentSizeCategory !=
       previousTraitCollection.preferredContentSizeCategory) {
-    self.minimizedStateHeight = absl::nullopt;
+    self.minimizedStateHeight = std::nullopt;
     [self updateHeight];
   }
 }

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_CHROME_AUTOFILL_CLIENT_IOS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -168,7 +169,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
  private:
   // Returns the account email of the signed-in user, or nullopt if there is no
   // signed-in user.
-  absl::optional<std::u16string> GetUserEmail();
+  std::optional<std::u16string> GetUserEmail();
 
   PrefService* pref_service_;
   syncer::SyncService* sync_service_;

@@ -143,7 +143,7 @@ NSError* PrepareAutofillProfileWithValues(
 @implementation AutomationAppInterface
 
 + (NSError*)setAutofillAutomationProfile:(NSString*)profileJSON {
-  absl::optional<base::Value> readResult =
+  std::optional<base::Value> readResult =
       base::JSONReader::Read(base::SysNSStringToUTF8(profileJSON));
   if (!readResult.has_value()) {
     return testing::NSErrorWithLocalizedDescription(

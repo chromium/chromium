@@ -14,7 +14,7 @@ constexpr char kScriptName[] = "bottom_sheet";
 constexpr char kScriptMessageName[] = "BottomSheetMessage";
 }  // namespace
 
-absl::optional<std::string>
+std::optional<std::string>
 AutofillBottomSheetJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptMessageName;
 }

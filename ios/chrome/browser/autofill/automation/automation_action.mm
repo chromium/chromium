@@ -227,7 +227,7 @@
 // dictionary. Will raise a test failure if the key is missing or the value is
 // empty.
 - (int)intFromDictionaryWithKey:(const std::string&)key {
-  absl::optional<int> expectedTypeValue = self.actionDictionary.FindInt(key);
+  std::optional<int> expectedTypeValue = self.actionDictionary.FindInt(key);
   GREYAssert(expectedTypeValue, @"%s is missing in action.", key.c_str());
 
   return *expectedTypeValue;

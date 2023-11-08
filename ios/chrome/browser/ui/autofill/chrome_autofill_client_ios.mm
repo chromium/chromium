@@ -553,7 +553,7 @@ void ChromeAutofillClientIOS::LoadRiskData(
       base::SysNSStringToUTF8(ios::provider::GetRiskData()));
 }
 
-absl::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
+std::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browser_state_);
   DCHECK(authenticationService);
@@ -562,7 +562,7 @@ absl::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
   if (identity) {
     return base::SysNSStringToUTF16(identity.userEmail);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace autofill
