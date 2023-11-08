@@ -637,5 +637,10 @@ TEST(EventReportWindowsTest, Serialize) {
   }
 }
 
+TEST(EventReportWindowsTest, LastTriggerTimeForReportTime) {
+  const base::Time time = base::Time::Now();
+  EXPECT_EQ(LastTriggerTimeForReportTime(time), time - base::Milliseconds(1));
+}
+
 }  // namespace
 }  // namespace attribution_reporting

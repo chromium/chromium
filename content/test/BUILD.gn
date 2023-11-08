@@ -2316,7 +2316,6 @@ test("content_unittests") {
     "../browser/attribution_reporting/attribution_storage_sql_migrations_unittest.cc",
     "../browser/attribution_reporting/attribution_storage_sql_unittest.cc",
     "../browser/attribution_reporting/attribution_storage_unittest.cc",
-    "../browser/attribution_reporting/attribution_utils_unittest.cc",
     "../browser/attribution_reporting/privacy_math_unittest.cc",
     "../browser/attribution_reporting/rate_limit_table_unittest.cc",
     "../browser/background_fetch/background_fetch_cross_origin_filter_unittest.cc",

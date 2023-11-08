@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "net/http/http_request_headers.h"

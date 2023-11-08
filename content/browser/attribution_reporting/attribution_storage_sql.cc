@@ -59,7 +59,6 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/privacy_math.h"
@@ -685,7 +684,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
           windows.ReportTimeAtWindow(source_time, fake_report.window_index);
       // The last trigger time will always fall within a report window, no
       // matter the report window's start time.
-      base::Time trigger_time = LastTriggerTimeForReportTime(report_time);
+      base::Time trigger_time =
+          attribution_reporting::LastTriggerTimeForReportTime(report_time);
       DCHECK_EQ(windows.ComputeReportTime(source_time, trigger_time),
                 report_time);
 

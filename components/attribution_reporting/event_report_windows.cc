@@ -317,4 +317,14 @@ bool EventReportWindows::IsValidForExpiry(base::TimeDelta expiry) const {
   return start_time_ <= expiry && *end_times_.rbegin() <= expiry;
 }
 
+base::Time LastTriggerTimeForReportTime(base::Time report_time) {
+  // TODO(apaseltiner): `base::Time` has microsecond resolution, so we should
+  // probably use `base::Microseconds(1)` instead.
+  constexpr base::TimeDelta kWindowTinyOffset = base::Milliseconds(1);
+
+  // `kWindowTinyOffset` is needed as the window is not selected right at
+  // `report_time`.
+  return report_time - kWindowTinyOffset;
+}
+
 }  // namespace attribution_reporting
