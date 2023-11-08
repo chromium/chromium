@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/capture_result.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
@@ -19,6 +20,7 @@
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "components/paint_preview/common/version.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -171,10 +173,11 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   metadata->set_url(expected_url.spec());
   metadata->set_version(kPaintPreviewVersion);
   auto* chromeVersion = metadata->mutable_chrome_version();
-  chromeVersion->set_major(CHROME_VERSION_MAJOR);
-  chromeVersion->set_minor(CHROME_VERSION_MINOR);
-  chromeVersion->set_build(CHROME_VERSION_BUILD);
-  chromeVersion->set_patch(CHROME_VERSION_PATCH);
+  const auto& current_chrome_version = version_info::GetVersion();
+  chromeVersion->set_major(current_chrome_version.components()[0]);
+  chromeVersion->set_minor(current_chrome_version.components()[1]);
+  chromeVersion->set_build(current_chrome_version.components()[2]);
+  chromeVersion->set_patch(current_chrome_version.components()[3]);
   PaintPreviewFrameProto* main_frame = expected_proto.mutable_root_frame();
   main_frame->set_is_main_frame(true);
   main_frame->set_scroll_offset_x(5);

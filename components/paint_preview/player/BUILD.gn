@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/version.gni")
-
 source_set("player") {
   sources = [
     "bitmap_request.cc",
@@ -19,6 +17,7 @@ source_set("player") {
     "//components/paint_preview/common",
     "//components/paint_preview/common/proto",
     "//components/paint_preview/public",
+    "//components/version_info",
     "//mojo/public/cpp/bindings",
     "//ui/accessibility",
     "//ui/gfx/geometry",
@@ -27,13 +26,6 @@ source_set("player") {
 
   public_deps =
       [ "//components/services/paint_preview_compositor/public/mojom" ]
-
-  defines = [
-    "CHROME_VERSION_MAJOR=" + chrome_version_major,
-    "CHROME_VERSION_MINOR=" + chrome_version_minor,
-    "CHROME_VERSION_BUILD=" + chrome_version_build,
-    "CHROME_VERSION_PATCH=" + chrome_version_patch,
-  ]
 }
 
 source_set("unit_tests") {
