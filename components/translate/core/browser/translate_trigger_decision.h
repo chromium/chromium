@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_TRIGGER_DECISION_H_
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_TRIGGER_DECISION_H_
 
+#include <string>
 #include <vector>
 #include "components/translate/core/browser/translate_browser_metrics.h"
 
