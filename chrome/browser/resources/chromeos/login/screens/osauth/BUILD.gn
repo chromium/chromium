@@ -10,12 +10,24 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [
+    ":apply_online_password",
     ":cryptohome_recovery_setup",
     ":fingerprint_setup",
     ":local_password_setup",
     ":password_selection",
     ":pin_setup",
   ]
+}
+
+js_library("apply_online_password") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/apply_online_password.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/dialogs:oobe_loading_dialog",
+  ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("cryptohome_recovery_setup") {
@@ -107,6 +119,7 @@ js_library("pin_setup") {
 
 html_to_js("web_components") {
   js_files = [
+    "apply_online_password.js",
     "cryptohome_recovery_setup.js",
     "fingerprint_setup.js",
     "local_password_setup.js",

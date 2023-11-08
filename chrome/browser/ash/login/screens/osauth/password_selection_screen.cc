@@ -46,10 +46,16 @@ std::string PasswordSelectionScreen::GetResultString(Result result) {
       return BaseScreen::kNotApplicable;
     case Result::BACK:
       return "Back";
-    case Result::LOCAL_PASSWORD:
-      return "LocalPassword";
-    case Result::GAIA_PASSWORD:
-      return "GaiaPassword";
+    case Result::LOCAL_PASSWORD_CHOICE:
+      return "LocalPasswordChoice";
+    case Result::GAIA_PASSWORD_CHOICE:
+      return "GaiaPasswordChoice";
+    case Result::LOCAL_PASSWORD_FORCED:
+      return "LocalPasswordForced";
+    case Result::GAIA_PASSWORD_FALLBACK:
+      return "GaiaPasswordFallback";
+    case Result::GAIA_PASSWORD_ENTERPRISE:
+      return "GaiaPasswordEnterprise";
   }
 }
 
@@ -75,11 +81,6 @@ void PasswordSelectionScreen::ShowImpl() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PasswordSelectionScreen::HideImpl() {
-  online_password_ = absl::nullopt;
-  BaseOSAuthSetupScreen::HideImpl();
-}
-
 void PasswordSelectionScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionBack) {
@@ -89,12 +90,12 @@ void PasswordSelectionScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionLocalPassword) {
     LOG(WARNING) << "Choice : Local password";
     context()->knowledge_factor_setup.local_password_forced = false;
-    exit_callback_.Run(Result::LOCAL_PASSWORD);
+    exit_callback_.Run(Result::LOCAL_PASSWORD_CHOICE);
     return;
   }
   if (action_id == kUserActionGaiaPassword) {
     LOG(WARNING) << "Choice : Online password";
-    SetOnlinePassword();
+    exit_callback_.Run(Result::GAIA_PASSWORD_CHOICE);
     return;
   }
   BaseScreen::OnUserAction(args);
@@ -114,18 +115,16 @@ void PasswordSelectionScreen::InspectContext(UserContext* user_context) {
   }
   CHECK(user_context->HasAuthFactorsConfiguration());
   auth_factors_config_ = user_context->GetAuthFactorsConfiguration();
-  online_password_ = user_context->GetOnlinePassword();
+  has_online_password_ = user_context->GetOnlinePassword().has_value();
 }
 
 void PasswordSelectionScreen::ProcessOptions() {
-  bool has_online_password = online_password_.has_value();
-
   if (context()->skip_post_login_screens_for_tests) {
     LOG(WARNING) << "Skipping post-login screens, assuming that user has "
                     "online password";
-    CHECK(has_online_password)
+    CHECK(has_online_password_)
         << "Skipping post-login screens requires non-empty GAIA password";
-    SetOnlinePassword();
+    exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
     return;
   }
 
@@ -138,17 +137,17 @@ void PasswordSelectionScreen::ProcessOptions() {
 
   if (IsUserEnterpriseManaged()) {
     LOG(WARNING) << "Managed user must use online password.";
-    CHECK(has_online_password)
+    CHECK(has_online_password_)
         << "Managed users should have online password by this point";
-    SetOnlinePassword();
+    exit_callback_.Run(Result::GAIA_PASSWORD_ENTERPRISE);
     return;
   }
 
-  if (!has_online_password) {
+  if (!has_online_password_) {
     LOG(WARNING)
         << "User does not have online password, forcing local password";
     context()->knowledge_factor_setup.local_password_forced = true;
-    exit_callback_.Run(Result::LOCAL_PASSWORD);
+    exit_callback_.Run(Result::LOCAL_PASSWORD_FORCED);
     return;
   }
   EstablishKnowledgeFactorGuard(
@@ -158,32 +157,6 @@ void PasswordSelectionScreen::ProcessOptions() {
 
 void PasswordSelectionScreen::ShowPasswordChoice() {
   view_->ShowPasswordChoice();
-}
-
-void PasswordSelectionScreen::SetOnlinePassword() {
-  CHECK(online_password_.has_value());
-  view_->ShowProgress();
-
-  auth::mojom::PasswordFactorEditor& password_factor_editor =
-      auth::GetPasswordFactorEditor(
-          quick_unlock::QuickUnlockFactory::GetDelegate(),
-          g_browser_process->local_state());
-
-  password_factor_editor.SetOnlinePassword(
-      GetToken(), online_password_.value().value(),
-      base::BindOnce(&PasswordSelectionScreen::OnOnlinePasswordSet,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PasswordSelectionScreen::OnOnlinePasswordSet(
-    auth::mojom::ConfigureResult result) {
-  if (result != auth::mojom::ConfigureResult::kSuccess) {
-    // TODO(b/291808449): Error handling.
-    LOG(ERROR) << "Could not set online password";
-  } else {
-    exit_callback_.Run(Result::GAIA_PASSWORD);
-  }
-  return;
 }
 
 }  // namespace ash

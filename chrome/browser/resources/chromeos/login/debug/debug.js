@@ -856,6 +856,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
+      id: 'apply-online-password',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'local-password-setup',
       kind: ScreenKind.NORMAL,
       states: [
@@ -1767,7 +1771,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       id: 'quick-start',
       kind: ScreenKind.NORMAL,
       handledSteps:
-        'verification,connecting_to_wifi,gaia_credentials,fido_assertion_received',
+          'verification,connecting_to_wifi,gaia_credentials,fido_assertion_received',
       states: [
         {
           id: 'PinVerification',

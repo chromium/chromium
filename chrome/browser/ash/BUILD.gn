@@ -1903,6 +1903,8 @@ source_set("ash") {
     "login/screens/os_install_screen.h",
     "login/screens/os_trial_screen.cc",
     "login/screens/os_trial_screen.h",
+    "login/screens/osauth/apply_online_password_screen.cc",
+    "login/screens/osauth/apply_online_password_screen.h",
     "login/screens/osauth/base_osauth_setup_screen.cc",
     "login/screens/osauth/base_osauth_setup_screen.h",
     "login/screens/osauth/local_password_setup_screen.cc",

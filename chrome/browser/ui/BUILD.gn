@@ -3146,6 +3146,8 @@ static_library("ui") {
       "webui/ash/login/os_install_screen_handler.h",
       "webui/ash/login/os_trial_screen_handler.cc",
       "webui/ash/login/os_trial_screen_handler.h",
+      "webui/ash/login/osauth/apply_online_password_screen_handler.cc",
+      "webui/ash/login/osauth/apply_online_password_screen_handler.h",
       "webui/ash/login/packaged_license_screen_handler.cc",
       "webui/ash/login/packaged_license_screen_handler.h",
       "webui/ash/login/parental_handoff_screen_handler.cc",

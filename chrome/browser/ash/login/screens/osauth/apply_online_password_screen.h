@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_PASSWORD_SELECTION_SCREEN_H_
-#define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_PASSWORD_SELECTION_SCREEN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_APPLY_ONLINE_PASSWORD_SCREEN_H_
+#define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_APPLY_ONLINE_PASSWORD_SCREEN_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -16,32 +16,29 @@ namespace ash {
 
 class UserContext;
 
-class PasswordSelectionScreenView;
+class ApplyOnlinePasswordScreenView;
 
-// Controller for the Password Selection Screen, which allows the user to choose
-// between the local password or Gaia password setup.
-class PasswordSelectionScreen : public BaseOSAuthSetupScreen {
+// Screen that sets up (creates or updates) user's Online password as
+// their cryptohome Knowledge factor.
+class ApplyOnlinePasswordScreen : public BaseOSAuthSetupScreen {
  public:
-  using TView = PasswordSelectionScreenView;
+  using TView = ApplyOnlinePasswordScreenView;
   enum class Result {
-    NOT_APPLICABLE,
-    BACK,
-    LOCAL_PASSWORD_CHOICE,
-    LOCAL_PASSWORD_FORCED,
-    GAIA_PASSWORD_FALLBACK,
-    GAIA_PASSWORD_CHOICE,
-    GAIA_PASSWORD_ENTERPRISE,
+    kNotApplicable,
+    kSuccess,
+    kError,
   };
 
   static std::string GetResultString(Result result);
   using ScreenExitCallback = base::RepeatingCallback<void(Result)>;
 
-  PasswordSelectionScreen(base::WeakPtr<PasswordSelectionScreenView> view,
-                          ScreenExitCallback exit_callback);
-  ~PasswordSelectionScreen() override;
+  ApplyOnlinePasswordScreen(base::WeakPtr<ApplyOnlinePasswordScreenView> view,
+                            ScreenExitCallback exit_callback);
+  ~ApplyOnlinePasswordScreen() override;
 
-  PasswordSelectionScreen(const PasswordSelectionScreen&) = delete;
-  PasswordSelectionScreen& operator=(const PasswordSelectionScreen&) = delete;
+  ApplyOnlinePasswordScreen(const ApplyOnlinePasswordScreen&) = delete;
+  ApplyOnlinePasswordScreen& operator=(const ApplyOnlinePasswordScreen&) =
+      delete;
 
   ScreenExitCallback get_exit_callback_for_testing() { return exit_callback_; }
   void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
@@ -51,26 +48,23 @@ class PasswordSelectionScreen : public BaseOSAuthSetupScreen {
  protected:
   // BaseScreen:
   void ShowImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void HideImpl() override;
   bool MaybeSkip(WizardContext& context) override;
 
  private:
   void InspectContext(UserContext* user_context);
-  void ProcessOptions();
-  void ShowPasswordChoice();
-
   void SetOnlinePassword();
   void OnOnlinePasswordSet(auth::mojom::ConfigureResult result);
 
   // Values obtained from UserContext in `InspectContext`
-  bool has_online_password_ = false;
+  absl::optional<OnlinePassword> online_password_;
   AuthFactorsConfiguration auth_factors_config_;
 
-  base::WeakPtr<PasswordSelectionScreenView> view_ = nullptr;
+  base::WeakPtr<ApplyOnlinePasswordScreenView> view_ = nullptr;
   ScreenExitCallback exit_callback_;
-  base::WeakPtrFactory<PasswordSelectionScreen> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ApplyOnlinePasswordScreen> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_PASSWORD_SELECTION_SCREEN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_APPLY_ONLINE_PASSWORD_SCREEN_H_

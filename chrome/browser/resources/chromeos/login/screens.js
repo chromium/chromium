@@ -47,6 +47,7 @@ import './screens/common/tpm_error.js';
 import './screens/common/user_allowlist_check_screen.js';
 import './screens/common/wrong_hwid.js';
 // COMMON SCREENS USED TO SET UP AUTHENTICATION
+import './screens/osauth/apply_online_password.js';
 import './screens/osauth/cryptohome_recovery_setup.js';
 import './screens/osauth/fingerprint_setup.js';
 import './screens/osauth/local_password_setup.js';
@@ -87,6 +88,11 @@ export const commonScreensList = [
     tag: 'assistant-optin-element',
     id: 'assistant-optin-flow',
     condition: 'isOobeAssistantEnabled',
+  },
+  {
+    tag: 'apply-online-password-element',
+    id: 'apply-online-password',
+    condition: 'isOobeConsumersLocalPasswordsEnabled',
   },
   {tag: 'autolaunch-element', id: 'autolaunch'},
   {

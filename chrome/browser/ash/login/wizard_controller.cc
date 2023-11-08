@@ -95,6 +95,7 @@
 #include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/screens/offline_login_screen.h"
 #include "chrome/browser/ash/login/screens/online_authentication_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/apply_online_password_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_password_setup_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
@@ -185,6 +186,7 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/osauth/apply_online_password_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
@@ -921,6 +923,11 @@ WizardController::CreateScreens() {
         base::BindRepeating(&WizardController::OnPasswordSelectionScreenExit,
                             weak_factory_.GetWeakPtr())));
 
+    append(std::make_unique<ApplyOnlinePasswordScreen>(
+        oobe_ui->GetView<ApplyOnlinePasswordScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnApplyOnlinePasswordScreenExit,
+                            weak_factory_.GetWeakPtr())));
+
     append(std::make_unique<LocalPasswordSetupScreen>(
         oobe_ui->GetView<LocalPasswordSetupHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnLocalPasswordSetupScreenExit,
@@ -1022,6 +1029,10 @@ void WizardController::ShowConsumerUpdateScreen() {
 
 void WizardController::ShowLocalPasswordSetupScreen() {
   SetCurrentScreen(GetScreen(LocalPasswordSetupView::kScreenId));
+}
+
+void WizardController::ShowApplyOnlinePasswordScreen() {
+  SetCurrentScreen(GetScreen(ApplyOnlinePasswordScreenView::kScreenId));
 }
 
 void WizardController::ShowEnrollmentScreen() {
@@ -1326,21 +1337,6 @@ void WizardController::OnConsumerUpdateScreenExit(
     AdvanceToScreen(GaiaView::kScreenId);
   } else {
     AdvanceToScreen(PrefToScreenId(screen_name));
-  }
-}
-
-void WizardController::OnLocalPasswordSetupScreenExit(
-    LocalPasswordSetupScreen::Result result) {
-  OnScreenExit(LocalPasswordSetupView::kScreenId,
-               LocalPasswordSetupScreen::GetResultString(result));
-  switch (result) {
-    case LocalPasswordSetupScreen::Result::kBack:
-      ShowPasswordSelectionScreen();
-      return;
-    case LocalPasswordSetupScreen::Result::kDone:
-    case LocalPasswordSetupScreen::Result::kNotApplicable:
-      ShowFingerprintSetupScreen();
-      return;
   }
 }
 
@@ -2209,12 +2205,43 @@ void WizardController::OnPasswordSelectionScreenExit(
       DCHECK(did_go_back);
       return;
     }
-    case PasswordSelectionScreen::Result::LOCAL_PASSWORD:
+    case PasswordSelectionScreen::Result::LOCAL_PASSWORD_CHOICE:
+    case PasswordSelectionScreen::Result::LOCAL_PASSWORD_FORCED:
       ShowLocalPasswordSetupScreen();
       return;
-    case PasswordSelectionScreen::Result::GAIA_PASSWORD:
-      // TODO(b/291808449): Screen should set up GAIA password
-      // itself, proceed to next step.
+    case PasswordSelectionScreen::Result::GAIA_PASSWORD_CHOICE:
+    case PasswordSelectionScreen::Result::GAIA_PASSWORD_FALLBACK:
+    case PasswordSelectionScreen::Result::GAIA_PASSWORD_ENTERPRISE:
+      ShowApplyOnlinePasswordScreen();
+      return;
+  }
+}
+
+void WizardController::OnLocalPasswordSetupScreenExit(
+    LocalPasswordSetupScreen::Result result) {
+  OnScreenExit(LocalPasswordSetupView::kScreenId,
+               LocalPasswordSetupScreen::GetResultString(result));
+  switch (result) {
+    case LocalPasswordSetupScreen::Result::kBack:
+      ShowPasswordSelectionScreen();
+      return;
+    case LocalPasswordSetupScreen::Result::kDone:
+    case LocalPasswordSetupScreen::Result::kNotApplicable:
+      ShowFingerprintSetupScreen();
+      return;
+  }
+}
+
+void WizardController::OnApplyOnlinePasswordScreenExit(
+    ApplyOnlinePasswordScreen::Result result) {
+  OnScreenExit(ApplyOnlinePasswordScreenView::kScreenId,
+               ApplyOnlinePasswordScreen::GetResultString(result));
+  switch (result) {
+    case ApplyOnlinePasswordScreen::Result::kError:
+      // TODO: show error
+      return;
+    case ApplyOnlinePasswordScreen::Result::kSuccess:
+    case ApplyOnlinePasswordScreen::Result::kNotApplicable:
       ShowFingerprintSetupScreen();
       return;
   }
