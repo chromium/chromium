@@ -16,6 +16,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/image_model.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
@@ -32,11 +34,19 @@ constexpr char kLongTitleString[] =
     "Test Notification's Very Very Very Very Very Very Very Very Very Very "
     "Very Very Very Very Very Very Very Very Very Very Very Very Very Very "
     "Very Very Very Very Long Multiline Title";
+constexpr char kLongMessageString[] =
+    "Test Notification's Very Very Very Very Very Very Very Very Very Very "
+    "Very Very Very Very Very Very Very Very Very Very Very Very Very Very "
+    "Very Very Very Very Long Message";
 
 constexpr char kShortTitleScreenshot[] = "ash_notification_short_title";
 constexpr char kMediumTitleScreenshot[] =
     "ash_notification_multiline_medium_title";
 constexpr char kLongTitleScreenshot[] = "ash_notification_multiline_long_title";
+
+const ui::ImageModel test_green_icon = ui::ImageModel::FromImageSkia(
+    CreateSolidColorTestImage(gfx::Size(/*width=*/48, /*height=*/48),
+                              SK_ColorGREEN));
 
 // The types of the primary display size.
 enum class DisplayType {
@@ -123,9 +133,7 @@ TEST_F(AshNotificationViewPixelTest, CollapsedNoMessage) {
   // Create a notification with no message, and open the notification center
   // bubble to view it.
   const std::string id = test_api()->AddCustomNotification(
-      u"Notification title", u"",
-      ui::ImageModel::FromImageSkia(CreateSolidColorTestImage(
-          gfx::Size(/*width=*/45, /*height=*/45), SK_ColorGREEN)));
+      u"Notification title", u"", test_green_icon);
   test_api()->ToggleBubble();
 
   // Make sure the notification is collapsed.
@@ -137,7 +145,7 @@ TEST_F(AshNotificationViewPixelTest, CollapsedNoMessage) {
   // Verify with a pixel test that the notification's title is vertically
   // centered.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "collapsed_no_message", /*revision_number=*/2, notification_view));
+      "collapsed_no_message", /*revision_number=*/4, notification_view));
 }
 
 // Tests that a progress notification does not have its title vertically
@@ -158,7 +166,7 @@ TEST_F(AshNotificationViewPixelTest, ProgressCollapsed) {
   // Verify with a pixel test that the notification's title is not vertically
   // centered.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "progress_collapsed", /*revision_number=*/1, notification_view));
+      "progress_collapsed", /*revision_number=*/3, notification_view));
 }
 
 // Tests the control buttons UI for the case of a notification with just the
@@ -234,9 +242,7 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   const std::string title = GetTitle();
 
   const std::string id = test_api()->AddCustomNotification(
-      base::UTF8ToUTF16(title), u"Notification Content",
-      ui::ImageModel::FromImageSkia(CreateSolidColorTestImage(
-          gfx::Size(/*width=*/45, /*height=*/45), SK_ColorGREEN)));
+      base::UTF8ToUTF16(title), u"Notification Content", test_green_icon);
 
   test_api()->ToggleBubble();
 
@@ -249,7 +255,58 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   // Compare pixels.
   const std::string screenshot_name = GetScreenshotName();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      screenshot_name, /*revision_number=*/6, notification_view));
+      screenshot_name, /*revision_number=*/8, notification_view));
+}
+
+class AshNotificationViewCollapsedLongTextPixelTest
+    : public AshNotificationViewPixelTest,
+      public testing::WithParamInterface<
+          std::tuple<bool /*whether there is an icon*/,
+                     bool /*whether there is a settings control button*/>> {
+ public:
+  bool HasIcon() { return std::get<0>(GetParam()); }
+  bool HasSettingsControlButton() { return std::get<1>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AshNotificationViewCollapsedLongTextPixelTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+// Tests the spacing between long, elided title/message text content and the
+// next element of the notification (either icon or expand/collapse button).
+// Also parameterized by the presence/absence of the settings control button.
+TEST_P(AshNotificationViewCollapsedLongTextPixelTest, ElidedTextSpacing) {
+  // Generate a notification with a long title and message, and view it in the
+  // notification center. Also add a second notification so that the main
+  // notification is automatically in its collapsed state when the bubble is
+  // toggled.
+  message_center::RichNotificationData optional_fields;
+  if (HasSettingsControlButton()) {
+    optional_fields.settings_button_handler =
+        message_center::SettingsButtonHandler::DELEGATE;
+  }
+  const std::string id = test_api()->AddCustomNotification(
+      base::UTF8ToUTF16(std::string(kLongTitleString)),
+      base::UTF8ToUTF16(std::string(kLongMessageString)),
+      /*icon=*/HasIcon() ? test_green_icon : ui::ImageModel(),
+      /*display_source=*/u"", /*url=*/GURL(),
+      /*notifier_id=*/message_center::NotifierId(), optional_fields);
+  test_api()->AddNotification();
+  test_api()->ToggleBubble();
+
+  // Verify that the notification is collapsed.
+  auto* notification_view = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForId(id));
+  ASSERT_FALSE(notification_view->IsExpanded());
+
+  // Hover the mouse over the notification so that the control buttons are
+  // visible when taking a screenshot.
+  GetEventGenerator()->MoveMouseTo(
+      notification_view->GetBoundsInScreen().CenterPoint(), /*count=*/10);
+
+  // Verify the spacing with a pixel test.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "elided_text_spacing", /*revision_number=*/0, notification_view));
 }
 
 class ScreenCaptureNotificationPixelTest
