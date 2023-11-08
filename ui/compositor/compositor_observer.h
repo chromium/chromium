@@ -11,7 +11,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/compositor/compositor_export.h"
 
-#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/buildflags.h"
 #endif
 
@@ -49,13 +49,13 @@ class COMPOSITOR_EXPORT CompositorObserver {
   // Called when a child of the compositor is resizing.
   virtual void OnCompositingChildResizing(Compositor* compositor) {}
 
-#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(OZONE_PLATFORM_X11)
   // Called when a swap with new size is completed.
   virtual void OnCompositingCompleteSwapWithNewSize(ui::Compositor* compositor,
                                                     const gfx::Size& size) {}
 #endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // BUILFFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_LINUX)
 
   // Called at the top of the compositor's destructor, to give observers a
   // chance to remove themselves.

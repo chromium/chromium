@@ -68,6 +68,7 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
     callback_.Run(size);
   }
 #endif  // BUILDFLAG(OZONE_PLATFORM_X11)
+
   void OnCompositingShuttingDown(ui::Compositor* compositor) override {
     DCHECK_EQ(compositor, compositor_);
     compositor_->RemoveObserver(this);
