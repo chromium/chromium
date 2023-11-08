@@ -2549,9 +2549,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 #endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 
 #if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
-                       // TODO(crbug.com/1500113): Re-enable this test
-                       DISABLED_OpenPdfInPreview) {
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest, OpenPdfInPreview) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
@@ -2575,9 +2573,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     SetNumExpectedMessages(/*num=*/5);
   } else {
     // The expected events for this are:
-    // 1.  Wait for the one print job to be destroyed, to ensure printing
+    // 1.  Update printer settings.
+    // 2.  Wait for the one print job to be destroyed, to ensure printing
     //     finished cleanly before completing the test.
-    SetNumExpectedMessages(/*num=*/1);
+    SetNumExpectedMessages(/*num=*/2);
   }
   OpenPdfInPreviewOnceReadyAndLoaded();
 
@@ -3470,8 +3469,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
 
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
-                       // TODO(crbug.com/1500113): Re-enable this test
-                       DISABLED_OpenPdfInPreviewFromPrintPreview) {
+                       OpenPdfInPreviewFromPrintPreview) {
   AddPrinter("printer_name");
 
   ASSERT_TRUE(embedded_test_server()->Started());
@@ -3504,9 +3502,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
       // The expected events for this are:
       // 1.  The document is composited for content analysis.
       // 2.  The print job used for scanning is destroyed.
-      // 3.  Wait for the actual printing job to be destroyed, to ensure
+      // 3.  Update printer settings.
+      // 4.  Wait for the actual printing job to be destroyed, to ensure
       //     printing finished cleanly before completing the test.
-      SetNumExpectedMessages(/*num=*/3);
+      SetNumExpectedMessages(/*num=*/4);
     }
     OpenPdfInPreviewOnceReadyAndLoaded();
   } else {
@@ -3768,8 +3767,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
 
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
-                       // TODO(crbug.com/1500113): Re-enable this test
-                       DISABLED_OpenPdfInPreviewFromPrintPreview) {
+                       OpenPdfInPreviewFromPrintPreview) {
   AddPrinter("printer_name");
 
   if (UseService() && !PrintAllowedOrNonBlockingPolicy()) {
