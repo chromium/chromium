@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/fileapi/recent_model.h"
 
 #include <algorithm>
-#include <iterator>
 #include <string>
 #include <utility>
 
@@ -82,8 +81,6 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
 }
 
 }  // namespace
-
-const char RecentModel::kLoadHistogramName[] = "FileBrowser.Recent.LoadTotal";
 
 // static
 RecentModel* RecentModel::GetForProfile(Profile* profile) {

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -39,6 +38,10 @@ class RecentModelFactory;
 // All member functions must be called on the UI thread.
 class RecentModel : public KeyedService {
  public:
+  // The name of the histogram used to record user metrics about total time
+  // it took to fetch recent files.
+  static constexpr char kLoadHistogramName[] = "FileBrowser.Recent.LoadTotal";
+
   using FileType = RecentSource::FileType;
 
   // Stores all parameters that identify either the current or cached search
@@ -98,11 +101,6 @@ class RecentModel : public KeyedService {
 
  private:
   friend class RecentModelFactory;
-  friend class RecentModelTest;
-  friend class RecentModelCacheTest;
-  FRIEND_TEST_ALL_PREFIXES(RecentModelTest, GetRecentFiles_UmaStats);
-
-  static const char kLoadHistogramName[];
 
   explicit RecentModel(Profile* profile);
   explicit RecentModel(std::vector<std::unique_ptr<RecentSource>> sources,
