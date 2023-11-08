@@ -783,11 +783,25 @@ void Clean(UpdaterScope scope) {
     }
   }
 
-  for (const auto& [iid, interface_name] : JoinVectors(
-           GetSideBySideInterfaces(scope), GetActiveInterfaces(scope))) {
-    EXPECT_TRUE(DeleteRegKey(root, GetComIidRegistryPath(iid)));
-    EXPECT_TRUE(DeleteRegKey64(root, GetComIidRegistryPath(iid)));
-    EXPECT_TRUE(DeleteRegKeyCOM(root, GetComTypeLibRegistryPath(iid)));
+  // To avoid `TYPE_E_CANTLOADLIBRARY` errors due to a failed cleanup of a
+  // previous user test run, this code cleans up both system and user
+  // interface/typelib entries when running system tests.
+  for (const UpdaterScope interface_scope : [&]() -> std::vector<UpdaterScope> {
+         if (IsSystemInstall(scope)) {
+           return {scope, UpdaterScope::kUser};
+         } else {
+           return {scope};
+         }
+       }()) {
+    for (const auto& [iid, interface_name] :
+         JoinVectors(GetSideBySideInterfaces(interface_scope),
+                     GetActiveInterfaces(interface_scope))) {
+      const HKEY interface_root = UpdaterScopeToHKeyRoot(interface_scope);
+      EXPECT_TRUE(DeleteRegKey(interface_root, GetComIidRegistryPath(iid)));
+      EXPECT_TRUE(DeleteRegKey64(interface_root, GetComIidRegistryPath(iid)));
+      EXPECT_TRUE(
+          DeleteRegKeyCOM(interface_root, GetComTypeLibRegistryPath(iid)));
+    }
   }
 
   if (!IsSystemInstall(scope)) {
