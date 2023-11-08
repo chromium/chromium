@@ -71,9 +71,7 @@ export function play(key: SoundKey): AsyncJobInfo {
     const audioStopped = new WaitableEvent();
     const events = ['ended', 'pause'];
     function onAudioStopped() {
-      // TODO(b/223338160): A temporary workaround to avoid shutter sound being
-      // recorded.
-      setTimeout(() => audioStopped.signal(), 200);
+      audioStopped.signal();
       for (const event of events) {
         el.removeEventListener(event, onAudioStopped);
       }

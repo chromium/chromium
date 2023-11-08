@@ -43,7 +43,7 @@ import {
   Resolution,
   VideoType,
 } from '../../type.js';
-import {getFpsRangeFromConstraints} from '../../util.js';
+import {getFpsRangeFromConstraints, sleep} from '../../util.js';
 import {WaitableEvent} from '../../waitable_event.js';
 import {StreamConstraints} from '../stream_constraints.js';
 import {StreamManager} from '../stream_manager.js';
@@ -471,6 +471,9 @@ export class Video extends ModeBase {
   private async playPauseEffect(toBePaused: boolean): Promise<void> {
     state.set(state.State.RECORDING_UI_PAUSED, toBePaused);
     await sound.play(toBePaused ? 'recordPause' : 'recordStart').result;
+    // TODO(b/223338160): A temporary workaround to avoid shutter sound being
+    // recorded.
+    await sleep(200);
   }
 
   /**
@@ -545,6 +548,9 @@ export class Video extends ModeBase {
     }
 
     await sound.play('recordStart').result;
+    // TODO(b/223338160): A temporary workaround to avoid shutter sound being
+    // recorded.
+    await sleep(200);
     if (this.stopped) {
       throw new CanceledError('Recording stopped');
     }
