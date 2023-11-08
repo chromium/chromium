@@ -12,7 +12,7 @@ shared_library_with_jni("libchrome_junit_tests") {
   enable_target = is_robolectric
   java_targets = [
     "//chrome/android:chrome_junit_tests",
-    "//chrome/browser/touch_to_fill/android:touch_to_fill_junit_tests",
+    "//chrome/browser/touch_to_fill/password_manager/android:touch_to_fill_junit_tests",
   ]
 
   # Ensure all users of this library include themselves in java_targets.
