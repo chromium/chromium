@@ -67,6 +67,10 @@ template("in_process_fuzzer") {
 
         # Browser tests are big
         "address_space_limit_mb=0",
+
+        # For testing. Those fuzzers are extremely slow on ClusterFuzz, and
+        # using this option doesn't help.
+        "fork_server=0",
       ]
 
       if (defined(invoker.asan_options)) {
