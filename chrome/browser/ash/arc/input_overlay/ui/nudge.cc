@@ -11,6 +11,8 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/nudge_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -42,6 +44,8 @@ constexpr int kIconSize = 20;
 constexpr int kIconTextSpace = 12;
 
 class Dot : public views::View {
+  METADATA_HEADER(Dot, views::View)
+
  public:
   explicit Dot(ui::ColorId color_id) : color_id_(color_id) {}
 
@@ -66,6 +70,9 @@ class Dot : public views::View {
  private:
   const ui::ColorId color_id_;
 };
+
+BEGIN_METADATA(Dot)
+END_METADATA
 
 }  // namespace
 
@@ -140,5 +147,8 @@ void Nudge::UpdateBounds() {
   widget->SetBounds(gfx::Rect(anchor_point, GetPreferredSize()));
   widget->StackAtTop();
 }
+
+BEGIN_METADATA(Nudge)
+END_METADATA
 
 }  // namespace arc::input_overlay

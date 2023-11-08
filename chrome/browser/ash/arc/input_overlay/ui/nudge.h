@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -31,6 +32,8 @@ class DisplayOverlayController;
 // ||icon|  |text| |
 // +---------------+
 class Nudge : public views::View, public views::WidgetObserver {
+  METADATA_HEADER(Nudge, views::View)
+
  public:
   Nudge(DisplayOverlayController* controller,
         views::View* anchor_view,
