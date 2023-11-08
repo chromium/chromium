@@ -182,7 +182,9 @@ DispatchResponse FedCmHandler::SelectAccount(const String& in_dialogId,
   return DispatchResponse::InvalidParams("Invalid account index");
 }
 
-DispatchResponse FedCmHandler::ConfirmIdpLogin(const String& in_dialogId) {
+DispatchResponse FedCmHandler::ClickDialogButton(
+    const String& in_dialogId,
+    const FedCm::DialogButton& in_dialogButton) {
   if (in_dialogId != dialog_id_) {
     return DispatchResponse::InvalidParams(
         "Dialog ID does not match current dialog");
@@ -191,16 +193,21 @@ DispatchResponse FedCmHandler::ConfirmIdpLogin(const String& in_dialogId) {
   auto* auth_request = GetFederatedAuthRequest();
   if (!auth_request) {
     return DispatchResponse::ServerError(
-        "dismissDialog called while no FedCm dialog is shown");
+        "clickDialogButton called while no FedCm dialog is shown");
   }
 
   FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
-  if (type != FederatedAuthRequestImpl::kConfirmIdpLogin) {
-    return DispatchResponse::ServerError(
-        "dismissDialog called while no confirm IDP login dialog is shown");
+  // TODO(crbug.com/1499341): Add support for clicking error dialog buttons.
+  if (in_dialogButton == FedCm::DialogButtonEnum::ConfirmIdpLoginContinue) {
+    if (type != FederatedAuthRequestImpl::kConfirmIdpLogin) {
+      return DispatchResponse::ServerError(
+          "clickDialogButton called with ConfirmIdpLoginContinue while no "
+          "confirm IDP login dialog is shown");
+    }
+    auth_request->AcceptConfirmIdpLoginDialogForDevtools();
+    return DispatchResponse::Success();
   }
-  auth_request->AcceptConfirmIdpLoginDialogForDevtools();
-  return DispatchResponse::Success();
+  return DispatchResponse::InvalidParams("Invalid dialog button");
 }
 
 DispatchResponse FedCmHandler::DismissDialog(const String& in_dialogId,

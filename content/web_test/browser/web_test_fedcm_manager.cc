@@ -113,19 +113,25 @@ void WebTestFedCmManager::DismissFedCmDialog(
   }
 }
 
-void WebTestFedCmManager::ConfirmIdpLogin(ConfirmIdpLoginCallback callback) {
+void WebTestFedCmManager::ClickFedCmDialogButton(
+    blink::test::mojom::DialogButton button,
+    ClickFedCmDialogButtonCallback callback) {
   FederatedAuthRequestImpl* auth_request = GetAuthRequestImpl();
   if (!auth_request) {
     std::move(callback).Run(false);
     return;
   }
-  if (auth_request->GetDialogType() !=
-      FederatedAuthRequestImpl::kConfirmIdpLogin) {
+  if (button == blink::test::mojom::DialogButton::kConfirmIdpLoginContinue) {
+    if (auth_request->GetDialogType() !=
+        FederatedAuthRequestImpl::kConfirmIdpLogin) {
+      std::move(callback).Run(false);
+      return;
+    }
+    auth_request->AcceptConfirmIdpLoginDialogForDevtools();
+    std::move(callback).Run(true);
+  } else {
     std::move(callback).Run(false);
-    return;
   }
-  auth_request->AcceptConfirmIdpLoginDialogForDevtools();
-  std::move(callback).Run(true);
 }
 
 FederatedAuthRequestImpl* WebTestFedCmManager::GetAuthRequestImpl() {

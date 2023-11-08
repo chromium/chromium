@@ -27,11 +27,11 @@ Status ExecuteSelectAccount(Session* session,
                             std::unique_ptr<base::Value>* value,
                             Timeout* timeout);
 
-Status ExecuteConfirmIdpLogin(Session* session,
-                              WebView* web_view,
-                              const base::Value::Dict& params,
-                              std::unique_ptr<base::Value>* value,
-                              Timeout* timeout);
+Status ExecuteClickDialogButton(Session* session,
+                                WebView* web_view,
+                                const base::Value::Dict& params,
+                                std::unique_ptr<base::Value>* value,
+                                Timeout* timeout);
 
 Status ExecuteGetAccounts(Session* session,
                           WebView* web_view,

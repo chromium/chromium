@@ -7626,7 +7626,8 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
 
     self._accounts = self._default_accounts
 
-    self._driver.ConfirmIdpLogin(self._vendor_id)
+    self._driver.ClickFedCmDialogButton(self._vendor_id,
+                                        "ConfirmIdpLoginContinue")
 
     self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
     accounts = self._driver.GetAccounts()

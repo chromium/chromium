@@ -62,11 +62,11 @@ Status ExecuteSelectAccount(Session* session,
   return status;
 }
 
-Status ExecuteConfirmIdpLogin(Session* session,
-                              WebView* web_view,
-                              const base::Value::Dict& params,
-                              std::unique_ptr<base::Value>* value,
-                              Timeout* timeout) {
+Status ExecuteClickDialogButton(Session* session,
+                                WebView* web_view,
+                                const base::Value::Dict& params,
+                                std::unique_ptr<base::Value>* value,
+                                Timeout* timeout) {
   FedCmTracker* tracker = nullptr;
   Status status = web_view->GetFedCmTracker(&tracker);
   if (!status.IsOk()) {
@@ -75,12 +75,16 @@ Status ExecuteConfirmIdpLogin(Session* session,
   if (!tracker->HasDialog()) {
     return Status(kNoSuchAlert);
   }
+  if (!params.FindString("dialogButton")) {
+    return Status(kInvalidArgument, "dialogButton must be specified");
+  }
 
   base::Value::Dict command_params;
   command_params.Set("dialogId", tracker->GetLastDialogId());
+  command_params.Set("dialogButton", *params.FindString("dialogButton"));
 
   std::unique_ptr<base::Value> result;
-  status = web_view->SendCommandAndGetResult("FedCm.confirmIdpLogin",
+  status = web_view->SendCommandAndGetResult("FedCm.clickDialogButton",
                                              command_params, &result);
   tracker->DialogClosed();
   return status;

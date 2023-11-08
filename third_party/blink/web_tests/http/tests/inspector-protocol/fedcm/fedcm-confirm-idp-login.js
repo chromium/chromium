@@ -33,7 +33,7 @@
     testRunner.fail("Wrong dialog type");
     return;
   }
-  dp.FedCm.confirmIdpLogin({dialogId: msg.params.dialogId});
+  dp.FedCm.clickDialogButton({dialogId: msg.params.dialogId, dialogButton: "ConfirmIdpLoginContinue"});
 
   // Now wait for the account chooser dialog.
   msg = await dp.FedCm.onceDialogShown();

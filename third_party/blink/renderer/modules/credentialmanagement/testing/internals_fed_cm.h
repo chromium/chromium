@@ -13,6 +13,7 @@ class ExceptionState;
 class Internals;
 class ScriptPromise;
 class ScriptState;
+class V8DialogButton;
 
 class InternalsFedCm {
   STATIC_ONLY(InternalsFedCm);
@@ -25,7 +26,9 @@ class InternalsFedCm {
                                           int account_index,
                                           ExceptionState&);
   static ScriptPromise dismissFedCmDialog(ScriptState*, Internals&);
-  static ScriptPromise confirmIdpLogin(ScriptState*, Internals&);
+  static ScriptPromise clickFedCmDialogButton(ScriptState*,
+                                              Internals&,
+                                              const V8DialogButton& button);
 };
 
 }  // namespace blink

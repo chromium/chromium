@@ -542,8 +542,8 @@
     return internals.dismissFedCmDialog();
   }
 
-  window.test_driver_internal.confirm_idp_login = async function() {
-    return internals.confirmIdpLogin();
+  window.test_driver_internal.click_fedcm_dialog_button = async function(dialog_button) {
+    return internals.clickFedCmDialogButton(dialog_button);
   }
 
   window.test_driver_internal.create_virtual_sensor = function(

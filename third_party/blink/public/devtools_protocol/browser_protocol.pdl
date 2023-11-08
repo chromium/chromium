@@ -11615,12 +11615,17 @@ experimental domain FedCm
       SignIn
       SignUp
 
-  # Whether the dialog shown is an account chooser or an auto re-authentication dialog.
+  # The types of FedCM dialogs.
   type DialogType extends string
     enum
       AccountChooser
       AutoReauthn
       ConfirmIdpLogin
+
+  # The buttons on the FedCM dialog.
+  type DialogButton extends string
+    enum
+      ConfirmIdpLoginContinue
 
   # Corresponds to IdentityRequestAccount
   type Account extends object
@@ -11661,11 +11666,10 @@ experimental domain FedCm
       string dialogId
       integer accountIndex
 
-  # Only valid if the dialog type is ConfirmIdpLogin. Acts as if the user had
-  # clicked the continue button.
-  command confirmIdpLogin
+  command clickDialogButton
     parameters
       string dialogId
+      DialogButton dialogButton
 
   command dismissDialog
     parameters
