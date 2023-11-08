@@ -190,6 +190,8 @@ void DestroyUnserializedContext(uintptr_t context) {
 Message CreateUnserializedMessage(
     std::unique_ptr<internal::UnserializedMessageContext> context,
     MojoCreateMessageFlags create_message_flags) {
+  context->header()->trace_nonce =
+      static_cast<uint32_t>(base::trace_event::GetNextGlobalTraceId());
   ScopedMessageHandle handle;
   MojoResult rv = CreateMessage(&handle, create_message_flags);
   DCHECK_EQ(MOJO_RESULT_OK, rv);
