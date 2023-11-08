@@ -12,12 +12,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/animation/ink_drop_state.h"
-#include "ui/views/controls/image_view.h"
+
+namespace views {
+class ImageView;
+}  // namespace views
 
 namespace ash {
 struct ShelfItem;
@@ -68,22 +70,17 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   ~ShelfAppButton() override;
 
-  // Updates the icon image to display for this entry.
-  void UpdateIconImage();
+  // Sets the image to display for this entry.
+  void SetImage(const gfx::ImageSkia& image);
 
   // Retrieve the image to show proxy operations.
   gfx::ImageSkia GetImage() const;
 
-  // Gets the resized icon image represented by `icon_image_model_` without the
-  // shadow.
+  // Gets the resized `icon_image_` without the shadow.
   gfx::ImageSkia GetIconImage() const;
 
-  // Sets the `icon_image_model_` for this entry. If |is_placeholder_icon| is
-  // true, the |main_image| will be ignored and this entry will be assigned a
-  // placeholder vector icon. This method also SetHostBadgeImage() depending on
-  // `has_host_badge` and then calls into UpdateIconImage().
-  void SetMainAndMaybeHostBadgeImage(const gfx::ImageSkia& main_image,
-                                     bool is_placeholder_icon,
+  // Calls SetImage(), and SetHostBadgeImage() depending on `has_host_badge`.
+  void SetMainAndMaybeHostBadgeImage(const gfx::ImageSkia& image,
                                      const gfx::ImageSkia& host_badge_image);
 
   // |state| is or'd into the current state.
@@ -259,8 +256,8 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   gfx::ShadowValues icon_shadows_;
 
-  // The model image for this app button.
-  ui::ImageModel icon_image_model_;
+  // The bitmap image for this app button.
+  gfx::ImageSkia icon_image_;
 
   // The bitmap image for the host badge icon if this is an App Shortcut.
   gfx::ImageSkia host_badge_image_;

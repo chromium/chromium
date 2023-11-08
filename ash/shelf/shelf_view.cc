@@ -1062,8 +1062,7 @@ views::View* ShelfView::CreateViewForItem(const ShelfItem& item) {
 
 void ShelfView::UpdateButton(ShelfAppButton* button, const ShelfItem& item) {
   button->ReflectItemStatus(item);
-  button->SetMainAndMaybeHostBadgeImage(item.image, item.has_placeholder_icon,
-                                        item.badge_image);
+  button->SetMainAndMaybeHostBadgeImage(item.image, item.badge_image);
   button->SetNotificationBadgeColor(item.notification_badge_color);
   button->SetAccessibleName(item.accessible_name);
   button->SchedulePaint();
