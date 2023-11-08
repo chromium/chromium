@@ -612,19 +612,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [super viewDidLoad];
 
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-
-  // Hardcode navigation bar style for iOS 14 and under to workaround bug that
-  // navigation bar height not adjusting consistently across subviews. Should be
-  // removed once iOS 14 is deprecated.
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    UINavigationBarAppearance* appearance =
-        [[UINavigationBarAppearance alloc] init];
-    [appearance configureWithOpaqueBackground];
-    self.navigationBar.standardAppearance = appearance;
-    self.navigationBar.compactAppearance = appearance;
-    self.navigationBar.scrollEdgeAppearance = appearance;
-  }
-
   self.toolbar.translucent = NO;
   self.navigationBar.barTintColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
