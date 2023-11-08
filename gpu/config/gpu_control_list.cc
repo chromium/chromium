@@ -654,15 +654,10 @@ base::Value::List GpuControlList::Entry::GetFeatureNames(
   return feature_names;
 }
 
-GpuControlList::GpuControlList(const GpuControlListData& data)
-    : entry_count_(data.entry_count),
-      entries_(data.entries),
-      max_entry_id_(0),
-      needs_more_info_(false),
-      control_list_logging_enabled_(false) {
-  DCHECK_LT(0u, entry_count_);
+GpuControlList::GpuControlList(base::span<const Entry> data) : entries_(data) {
+  DCHECK(!entries_.empty());
   // Assume the newly last added entry has the largest ID.
-  max_entry_id_ = entries_[entry_count_ - 1].id;
+  max_entry_id_ = entries_.back().id;
 }
 
 GpuControlList::~GpuControlList() = default;
@@ -699,7 +694,7 @@ std::set<int32_t> GpuControlList::MakeDecision(GpuControlList::OsType os,
   if (pos != std::string::npos)
     processed_os_version = processed_os_version.substr(0, pos);
 
-  for (size_t ii = 0; ii < entry_count_; ++ii) {
+  for (size_t ii = 0; ii < entries_.size(); ++ii) {
     const Entry& entry = entries_[ii];
     DCHECK_NE(0u, entry.id);
     if (!entry.AppliesToTestGroup(target_test_group))
@@ -744,7 +739,6 @@ std::vector<uint32_t> GpuControlList::GetEntryIDsFromIndices(
     const std::vector<uint32_t>& entry_indices) const {
   std::vector<uint32_t> ids;
   for (auto index : entry_indices) {
-    DCHECK_LT(index, entry_count_);
     ids.push_back(entries_[index].id);
   }
   return ids;
@@ -753,7 +747,6 @@ std::vector<uint32_t> GpuControlList::GetEntryIDsFromIndices(
 std::vector<std::string> GpuControlList::GetDisabledExtensions() {
   std::set<std::string> disabled_extensions;
   for (auto index : active_entries_) {
-    DCHECK_LT(index, entry_count_);
     const Entry& entry = entries_[index];
     for (size_t ii = 0; ii < entry.disabled_extension_size; ++ii) {
       disabled_extensions.insert(entry.disabled_extensions[ii]);
@@ -766,7 +759,6 @@ std::vector<std::string> GpuControlList::GetDisabledExtensions() {
 std::vector<std::string> GpuControlList::GetDisabledWebGLExtensions() {
   std::set<std::string> disabled_webgl_extensions;
   for (auto index : active_entries_) {
-    DCHECK_LT(index, entry_count_);
     const Entry& entry = entries_[index];
     for (size_t ii = 0; ii < entry.disabled_webgl_extension_size; ++ii) {
       disabled_webgl_extensions.insert(entry.disabled_webgl_extensions[ii]);
@@ -780,7 +772,6 @@ void GpuControlList::GetReasons(base::Value::List& problem_list,
                                 const std::string& tag,
                                 const std::vector<uint32_t>& entries) const {
   for (auto index : entries) {
-    DCHECK_LT(index, entry_count_);
     const Entry& entry = entries_[index];
     base::Value::Dict problem;
 
@@ -803,7 +794,7 @@ void GpuControlList::GetReasons(base::Value::List& problem_list,
 }
 
 size_t GpuControlList::num_entries() const {
-  return entry_count_;
+  return entries_.size();
 }
 
 uint32_t GpuControlList::max_entry_id() const {

@@ -58,8 +58,8 @@ class GpuBlocklistTest : public testing::Test {
         0,        // exceptions count
         nullptr,  // exceptions
     }};
-    GpuControlListData data(1, kTestEntries);
-    std::unique_ptr<GpuBlocklist> blocklist = GpuBlocklist::Create(data);
+    std::unique_ptr<GpuBlocklist> blocklist =
+        GpuBlocklist::Create(kTestEntries);
     std::set<int> type =
         blocklist->MakeDecision(GpuBlocklist::kOsMacosx, "10.12.3", gpu_info());
     EXPECT_EQ(1u, type.size());

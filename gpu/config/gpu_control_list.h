@@ -12,14 +12,13 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/values.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {
-struct GpuControlListData;
 struct GPUInfo;
 
 class GPU_EXPORT GpuControlList {
@@ -275,7 +274,7 @@ class GPU_EXPORT GpuControlList {
         const std::string& control_list_logging_name) const;
   };
 
-  explicit GpuControlList(const GpuControlListData& data);
+  explicit GpuControlList(base::span<const GpuControlList::Entry> data);
   virtual ~GpuControlList();
 
   // Collects system information and combines them with gpu_info and control
@@ -349,33 +348,24 @@ class GPU_EXPORT GpuControlList {
   // Gets the current OS type.
   static OsType GetOsType();
 
-  size_t entry_count_;
-  raw_ptr<const Entry, AllowPtrArithmetic> entries_;
+  // These always point to built-in arrays of constants, so raw_ptr doesn't
+  // add any protection but costs some overhead.
+  base::span<const Entry> entries_;
+
   // This records all the entries that are applicable to the current user
   // machine.  It is updated everytime MakeDecision() is called and is used
   // later by GetDecisionEntries().
   std::vector<uint32_t> active_entries_;
 
-  uint32_t max_entry_id_;
+  uint32_t max_entry_id_ = 0;
 
-  bool needs_more_info_;
+  bool needs_more_info_ = false;
 
   // The features a GpuControlList recognizes and handles.
   FeatureMap feature_map_;
 
-  bool control_list_logging_enabled_;
+  bool control_list_logging_enabled_ = false;
   std::string control_list_logging_name_;
-};
-
-struct GPU_EXPORT GpuControlListData {
-  size_t entry_count;
-  raw_ptr<const GpuControlList::Entry, AllowPtrArithmetic> entries;
-
-  GpuControlListData() : entry_count(0u), entries(nullptr) {}
-
-  GpuControlListData(size_t a_entry_count,
-                     const GpuControlList::Entry* a_entries)
-      : entry_count(a_entry_count), entries(a_entries) {}
 };
 
 }  // namespace gpu

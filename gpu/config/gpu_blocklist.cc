@@ -9,21 +9,20 @@
 
 namespace gpu {
 
-GpuBlocklist::GpuBlocklist(const GpuControlListData& data)
+GpuBlocklist::GpuBlocklist(base::span<const GpuControlList::Entry> data)
     : GpuControlList(data) {}
 
 GpuBlocklist::~GpuBlocklist() = default;
 
 // static
 std::unique_ptr<GpuBlocklist> GpuBlocklist::Create() {
-  GpuControlListData data(kSoftwareRenderingListEntryCount,
-                          kSoftwareRenderingListEntries);
-  return Create(data);
+  return Create(base::make_span(kSoftwareRenderingListEntries,
+                                kSoftwareRenderingListEntryCount));
 }
 
 // static
 std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
-    const GpuControlListData& data) {
+    base::span<const GpuControlList::Entry> data) {
   std::unique_ptr<GpuBlocklist> list(new GpuBlocklist(data));
   list->AddSupportedFeature("accelerated_2d_canvas",
                             GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS);
