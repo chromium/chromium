@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
@@ -526,33 +527,13 @@ void ShelfAppButton::SetShadowedImage(const gfx::ImageSkia& image) {
       image, icon_shadows_));
 }
 
-void ShelfAppButton::SetImage(const gfx::ImageSkia& image) {
-  if (image.isNull()) {
-    // TODO: need an empty image.
-    icon_view_->SetImage(image);
-    icon_image_ = gfx::ImageSkia();
-    return;
-  }
-  icon_image_ = image;
-
-  gfx::Size preferred_size = GetPreferredIconSize();
-
+void ShelfAppButton::UpdateIconImage() {
   if (has_host_badge_) {
-    if (image.size() == preferred_size) {
-      icon_view_->SetImage(image);
-      return;
-    }
-    icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-        image, skia::ImageOperations::RESIZE_BEST, preferred_size));
+    icon_view_->SetImage(GetIconImage());
     return;
   }
 
-  if (image.size() == preferred_size) {
-    SetShadowedImage(image);
-    return;
-  }
-  SetShadowedImage(gfx::ImageSkiaOperations::CreateResizedImage(
-      image, skia::ImageOperations::RESIZE_BEST, preferred_size));
+  SetShadowedImage(GetIconImage());
 }
 
 gfx::ImageSkia ShelfAppButton::GetImage() const {
@@ -560,12 +541,24 @@ gfx::ImageSkia ShelfAppButton::GetImage() const {
 }
 
 gfx::ImageSkia ShelfAppButton::GetIconImage() const {
-  const gfx::Size preferred_size = GetPreferredSize();
-  if (icon_image_.size() == preferred_size)
-    return icon_image_;
+  gfx::ImageSkia icon_image;
+  if (icon_image_model_.IsImage()) {
+    icon_image = icon_image_model_.GetImage().AsImageSkia();
+  } else if (icon_image_model_.IsVectorIcon()) {
+    auto* color_provider = GetColorProvider();
+    if (!color_provider) {
+      color_provider = shelf_view_->GetColorProvider();
+    }
+    icon_image = ui::ThemedVectorIcon(icon_image_model_.GetVectorIcon())
+                     .GetImageSkia(color_provider);
+  }
+  const gfx::Size preferred_size = GetPreferredIconSize();
+  if (icon_image.size() == preferred_size) {
+    return icon_image;
+  }
 
   return gfx::ImageSkiaOperations::CreateResizedImage(
-      icon_image_, skia::ImageOperations::RESIZE_BEST, GetPreferredIconSize());
+      icon_image, skia::ImageOperations::RESIZE_BEST, preferred_size);
 }
 
 void ShelfAppButton::SetHostBadgeImage(const gfx::ImageSkia& host_badge_image) {
@@ -584,13 +577,21 @@ void ShelfAppButton::SetHostBadgeImage(const gfx::ImageSkia& host_badge_image) {
 }
 
 void ShelfAppButton::SetMainAndMaybeHostBadgeImage(
-    const gfx::ImageSkia& image,
+    const gfx::ImageSkia& main_image,
+    bool has_placeholder_icon,
     const gfx::ImageSkia& host_badge_image) {
   // `has_host_badge_` needs to be set before SetImage(), since image size is
   // set depending on the boolean logic.
   has_host_badge_ = !host_badge_image.isNull();
-  SetImage(image);
+  if (is_promise_app_ && has_placeholder_icon) {
+    icon_image_model_ = ui::ImageModel(ui::ImageModel::FromVectorIcon(
+        ash::kPlaceholderAppIcon, cros_tokens::kCrosSysPrimary));
+  } else {
+    icon_image_model_ =
+        ui::ImageModel(ui::ImageModel::FromImageSkia(main_image));
+  }
   SetHostBadgeImage(host_badge_image);
+  UpdateIconImage();
 }
 
 void ShelfAppButton::AddState(State state) {
@@ -721,16 +722,15 @@ void ShelfAppButton::ReflectItemStatus(const ShelfItem& item) {
   else
     ClearState(ShelfAppButton::STATE_NOTIFICATION);
 
-  app_status_ = item.app_status;
-
   is_promise_app_ = item.is_promise_app;
 
   package_id_ = item.package_id;
 
   // Progress is incremental always by server side implementation. Do not use
   // equal for comparing progress as float point errors may surface.
-  if (progress_ < item.progress) {
+  if (progress_ < item.progress || app_status_ != item.app_status) {
     progress_ = item.progress;
+    app_status_ = item.app_status;
     UpdateProgressRingBounds();
   }
 
@@ -1222,9 +1222,11 @@ gfx::Size ShelfAppButton::GetPreferredIconSize() const {
                             : shelf_view_->GetButtonIconSize() *
                                   GetAdjustedIconScaleForProgressRing();
 
+  const gfx::Size current_icon_size = icon_image_model_.Size();
+
   // Resize the image maintaining our aspect ratio.
-  float aspect_ratio = static_cast<float>(icon_image_.width()) /
-                       static_cast<float>(icon_image_.height());
+  float aspect_ratio = static_cast<float>(current_icon_size.width()) /
+                       static_cast<float>(current_icon_size.height());
   int height = icon_size;
   int width = static_cast<int>(aspect_ratio * height);
   if (width > icon_size) {
@@ -1240,7 +1242,7 @@ void ShelfAppButton::ScaleAppIcon(bool scale_up) {
 
   if (scale_up) {
     icon_scale_ = kAppIconScale;
-    SetImage(icon_image_);
+    UpdateIconImage();
     icon_view_->layer()->SetTransform(GetScaleTransform(kAppIconScale));
   }
   ui::ScopedLayerAnimationSettings settings(icon_view_->layer()->GetAnimator());
@@ -1276,7 +1278,7 @@ void ShelfAppButton::ScaleAppIcon(bool scale_up) {
 
 void ShelfAppButton::OnImplicitAnimationsCompleted() {
   icon_scale_ = 1.0f;
-  SetImage(icon_image_);
+  UpdateIconImage();
   icon_view_->layer()->SetTransform(gfx::Transform());
   if (notification_indicator_)
     notification_indicator_->layer()->SetTransform(gfx::Transform());
