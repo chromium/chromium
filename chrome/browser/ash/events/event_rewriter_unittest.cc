@@ -205,6 +205,12 @@ constexpr TestKeyEvent APressed(ui::EventFlags flags = ui::EF_NONE) {
           ui::DomKey::Constant<'a'>::Character, ui::VKEY_A, flags};
 }
 
+constexpr TestKeyEvent UnidentifiedAPressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::US_A, ui::DomKey::UNIDENTIFIED,
+          ui::VKEY_A, flags};
+}
+
 constexpr TestKeyEvent BPressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::US_B,
           ui::DomKey::Constant<'b'>::Character, ui::VKEY_B, flags};
@@ -228,6 +234,134 @@ constexpr TestKeyEvent LControlPressed(ui::EventFlags flags = ui::EF_NONE) {
 constexpr TestKeyEvent RControlPressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::CONTROL_RIGHT, ui::DomKey::CONTROL,
           ui::VKEY_CONTROL, flags | ui::EF_CONTROL_DOWN};
+}
+
+constexpr TestKeyEvent LAltPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::ALT_LEFT, ui::DomKey::ALT,
+          ui::VKEY_MENU, flags | ui::EF_ALT_DOWN};
+}
+
+constexpr TestKeyEvent RAltPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::ALT_RIGHT, ui::DomKey::ALT,
+          ui::VKEY_MENU, flags | ui::EF_ALT_DOWN};
+}
+
+// Hereafter, numpad key events.
+
+constexpr TestKeyEvent Numpad0Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD0,
+          ui::DomKey::Constant<'0'>::Character, ui::VKEY_NUMPAD0, flags};
+}
+
+constexpr TestKeyEvent Numpad1Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD1,
+          ui::DomKey::Constant<'1'>::Character, ui::VKEY_NUMPAD1, flags};
+}
+
+constexpr TestKeyEvent Numpad2Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD2,
+          ui::DomKey::Constant<'2'>::Character, ui::VKEY_NUMPAD2, flags};
+}
+
+constexpr TestKeyEvent Numpad3Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD3,
+          ui::DomKey::Constant<'3'>::Character, ui::VKEY_NUMPAD3, flags};
+}
+
+constexpr TestKeyEvent Numpad4Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD4,
+          ui::DomKey::Constant<'4'>::Character, ui::VKEY_NUMPAD4, flags};
+}
+
+constexpr TestKeyEvent Numpad5Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD5,
+          ui::DomKey::Constant<'5'>::Character, ui::VKEY_NUMPAD5, flags};
+}
+
+constexpr TestKeyEvent Numpad6Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD6,
+          ui::DomKey::Constant<'6'>::Character, ui::VKEY_NUMPAD6, flags};
+}
+
+constexpr TestKeyEvent Numpad7Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD7,
+          ui::DomKey::Constant<'7'>::Character, ui::VKEY_NUMPAD7, flags};
+}
+
+constexpr TestKeyEvent Numpad8Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD8,
+          ui::DomKey::Constant<'8'>::Character, ui::VKEY_NUMPAD8, flags};
+}
+
+constexpr TestKeyEvent Numpad9Pressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD9,
+          ui::DomKey::Constant<'9'>::Character, ui::VKEY_NUMPAD9, flags};
+}
+
+constexpr TestKeyEvent NumpadDecimalPressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD_DECIMAL,
+          ui::DomKey::Constant<'.'>::Character, ui::VKEY_DECIMAL, flags};
+}
+
+constexpr TestKeyEvent NumpadInsertPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD0, ui::DomKey::INSERT,
+          ui::VKEY_INSERT, flags};
+}
+
+constexpr TestKeyEvent NumpadDeletePressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD_DECIMAL, ui::DomKey::DEL,
+          ui::VKEY_DELETE, flags};
+}
+
+constexpr TestKeyEvent NumpadEndPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD1, ui::DomKey::END,
+          ui::VKEY_END, flags};
+}
+
+constexpr TestKeyEvent NumpadArrowDownPressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD2, ui::DomKey::ARROW_DOWN,
+          ui::VKEY_DOWN, flags};
+}
+
+constexpr TestKeyEvent NumpadPageDownPressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD3, ui::DomKey::PAGE_DOWN,
+          ui::VKEY_NEXT, flags};
+}
+
+constexpr TestKeyEvent NumpadArrowLeftPressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD4, ui::DomKey::ARROW_LEFT,
+          ui::VKEY_LEFT, flags};
+}
+
+constexpr TestKeyEvent NumpadClearPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD5, ui::DomKey::CLEAR,
+          ui::VKEY_CLEAR, flags};
+}
+
+constexpr TestKeyEvent NumpadArrowRightPressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD6, ui::DomKey::ARROW_RIGHT,
+          ui::VKEY_RIGHT, flags};
+}
+
+constexpr TestKeyEvent NumpadHomePressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD7, ui::DomKey::HOME,
+          ui::VKEY_HOME, flags};
+}
+
+constexpr TestKeyEvent NumpadArrowUpPressed(
+    ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD8, ui::DomKey::ARROW_UP,
+          ui::VKEY_UP, flags};
+}
+
+constexpr TestKeyEvent NumpadPageUpPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::NUMPAD9, ui::DomKey::PAGE_UP,
+          ui::VKEY_PRIOR, flags};
 }
 
 std::string EventTypeToString(ui::EventType type) {
@@ -385,6 +519,10 @@ constexpr TestKeyboard kExternalAppleKeyboard = {
     /*has_custom_top_row=*/false,
 };
 
+constexpr TestKeyboard kChromeKeyboardVariants[] = {
+    kInternalChromeKeyboard,
+    kExternalChromeKeyboard,
+};
 constexpr TestKeyboard kNonAppleKeyboardVariants[] = {
     kInternalChromeKeyboard,  kInternalChromeCustomLayoutKeyboard,
     kExternalChromeKeyboard,  kExternalChromeCustomLayoutKeyboard,
@@ -513,9 +651,6 @@ class EventRewriterTest : public ChromeAshTestBase {
              key_event->key_code(), key_event->flags(),
              key_event->scan_code()}};
   }
-
-  void TestRewriteNumPadKeys();
-  void TestRewriteNumPadKeysOnAppleKeyboard();
 
   // Parameterized version of test depending on feature flag values. The feature
   // kUseSearchClickForRightClick determines if this should test for alt-click
@@ -757,11 +892,6 @@ TEST_F(EventRewriterTest, TestRewriteCommandToControl) {
   scoped_feature_list_.InitAndDisableFeature(
       features::kInputDeviceSettingsSplit);
 
-  auto UnidentifiedAPressed = [](ui::EventFlags flags) -> TestKeyEvent {
-    return {ui::ET_KEY_PRESSED, ui::DomCode::US_A, ui::DomKey::UNIDENTIFIED,
-            ui::VKEY_A, flags};
-  };
-
   // First, test non Apple keyboards, they should all behave the same.
   for (const auto& keyboard : kNonAppleKeyboardVariants) {
     SCOPED_TRACE(keyboard.name);
@@ -858,25 +988,15 @@ TEST_F(EventRewriterTest, ModifiersNotRemappedWhenSuppressed) {
                       ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kAlt);
 
-  delegate_->SuppressModifierKeyRewrites(false);
-
   // Pressing Control + B should now be remapped to Alt + B.
-  CheckKeyTestCase(source(),
-                   {ui::ET_KEY_PRESSED,
-                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
-                     ui::DomKey::Constant<'b'>::Character},
-                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_ALT_DOWN,
-                     ui::DomKey::Constant<'b'>::Character}});
-
-  delegate_->SuppressModifierKeyRewrites(true);
+  delegate_->SuppressModifierKeyRewrites(false);
+  EXPECT_EQ(BPressed(ui::EF_ALT_DOWN),
+            RunRewriter(BPressed(ui::EF_CONTROL_DOWN)));
 
   // Pressing Control + B should no longer be remapped.
-  CheckKeyTestCase(source(),
-                   {ui::ET_KEY_PRESSED,
-                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
-                     ui::DomKey::Constant<'b'>::Character},
-                    {ui::VKEY_B, ui::DomCode::US_B, ui::EF_CONTROL_DOWN,
-                     ui::DomKey::Constant<'b'>::Character}});
+  delegate_->SuppressModifierKeyRewrites(true);
+  EXPECT_EQ(BPressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(BPressed(ui::EF_CONTROL_DOWN)));
 }
 
 TEST_F(EventRewriterTest, TestRewriteExternalMetaKey) {
@@ -890,35 +1010,27 @@ TEST_F(EventRewriterTest, TestRewriteExternalMetaKey) {
 
   // By default, the Meta key on all keyboards, internal, external Chrome OS
   // branded keyboards, and Generic keyboards should produce Search.
-  TestNonAppleKeyboardVariants({
-      // VKEY_A, Win modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_COMMAND_DOWN,
-        ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_COMMAND_DOWN,
-        ui::DomKey::UNIDENTIFIED}},
+  for (const auto& keyboard : kNonAppleKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-      // VKEY_A, Alt+Win modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
-        ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
-        ui::DomKey::UNIDENTIFIED}},
+    // VKEY_A, Win modifier.
+    EXPECT_EQ(UnidentifiedAPressed(ui::EF_COMMAND_DOWN),
+              RunRewriter(UnidentifiedAPressed(ui::EF_COMMAND_DOWN)));
 
-      // VKEY_LWIN (left Windows key), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META}},
+    // VKEY_A, Alt+Win modifier.
+    EXPECT_EQ(UnidentifiedAPressed(ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
+              RunRewriter(
+                  UnidentifiedAPressed(ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN)));
 
-      // VKEY_RWIN (right Windows key), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
-        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
-        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META}},
-  });
+    // VKEY_LWIN (left Windows key), Alt modifier.
+    EXPECT_EQ(LWinPressed(ui::EF_ALT_DOWN),
+              RunRewriter(LWinPressed(ui::EF_ALT_DOWN)));
+
+    // VKEY_RWIN (right Windows key), Alt modifier.
+    EXPECT_EQ(RWinPressed(ui::EF_ALT_DOWN),
+              RunRewriter(RWinPressed(ui::EF_ALT_DOWN)));
+  }
 
   // Both preferences for Search on Chrome keyboards, and external Meta on
   // generic external keyboards are independent, even if one or both are
@@ -935,66 +1047,45 @@ TEST_F(EventRewriterTest, TestRewriteExternalMetaKey) {
   InitModifierKeyPref(&meta, ::prefs::kLanguageRemapExternalMetaKeyTo,
                       ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kAlt);
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
 
-  TestChromeKeyboardVariants({
-      // VKEY_A, Win modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_COMMAND_DOWN,
-        ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'a'>::Character}},
+    // VKEY_A, Win modifier.
+    EXPECT_EQ(APressed(ui::EF_CONTROL_DOWN),
+              RunRewriter(UnidentifiedAPressed(ui::EF_COMMAND_DOWN)));
 
-      // VKEY_A, Alt+Win modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
-        ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'a'>::Character}},
+    // VKEY_A, Alt+Win modifier.
+    EXPECT_EQ(APressed(ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN),
+              RunRewriter(
+                  UnidentifiedAPressed(ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN)));
 
-      // VKEY_LWIN (left Windows key), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::CONTROL}},
+    // VKEY_LWIN (left Windows key), Alt modifier.
+    EXPECT_EQ(LControlPressed(ui::EF_ALT_DOWN),
+              RunRewriter(LWinPressed(ui::EF_ALT_DOWN)));
 
-      // VKEY_RWIN (right Windows key), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
-        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_RIGHT,
-        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::CONTROL}},
-  });
+    // VKEY_RWIN (right Windows key), Alt modifier.
+    EXPECT_EQ(RControlPressed(ui::EF_ALT_DOWN),
+              RunRewriter(RWinPressed(ui::EF_ALT_DOWN)));
+  }
 
-  TestExternalGenericKeyboard({
-      // VKEY_A, Win modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_COMMAND_DOWN,
-        ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'a'>::Character}},
+  SetUpKeyboard(kExternalGenericKeyboard);
+  // VKEY_A, Win modifier.
+  EXPECT_EQ(APressed(ui::EF_ALT_DOWN),
+            RunRewriter(UnidentifiedAPressed(ui::EF_COMMAND_DOWN)));
 
-      // VKEY_A, Alt+Win modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN,
-        ui::DomKey::UNIDENTIFIED},
-       {ui::VKEY_A, ui::DomCode::US_A, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'a'>::Character}},
+  // VKEY_A, Alt+Win modifier.
+  EXPECT_EQ(
+      APressed(ui::EF_ALT_DOWN),
+      RunRewriter(UnidentifiedAPressed(ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN)));
 
-      // VKEY_LWIN (left Windows key), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
-        ui::DomKey::ALT}},
+  // VKEY_LWIN (left Windows key), Alt modifier.
+  EXPECT_EQ(LAltPressed(ui::EF_ALT_DOWN),
+            RunRewriter(LWinPressed(ui::EF_ALT_DOWN)));
 
-      // VKEY_RWIN (right Windows key), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
-        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_MENU, ui::DomCode::ALT_RIGHT, ui::EF_ALT_DOWN,
-        ui::DomKey::ALT}},
-  });
+  // VKEY_RWIN (right Windows key), Alt modifier.
+  EXPECT_EQ(RAltPressed(ui::EF_ALT_DOWN),
+            RunRewriter(RWinPressed(ui::EF_ALT_DOWN)));
 }
 
 // For crbug.com/133896.
@@ -1010,210 +1101,100 @@ TEST_F(EventRewriterTest, TestRewriteCommandToControlWithControlRemapped) {
                       ui::mojom::ModifierKey::kControl,
                       ui::mojom::ModifierKey::kAlt);
 
-  TestNonAppleKeyboardVariants({
-      // Control should be remapped to Alt.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN,
-        ui::DomKey::CONTROL},
-       {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN,
-        ui::DomKey::ALT}},
-  });
+  for (const auto& keyboard : kNonAppleKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    EXPECT_EQ(LAltPressed(), RunRewriter(LControlPressed()));
+  }
 
   // Now verify that remapping does not affect Apple keyboard.
-  TestExternalAppleKeyboard({
-      // VKEY_LWIN (left Command key) with  Alt modifier. The remapped Command
-      // key should never be re-remapped to Alt.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LWIN, ui::DomCode::META_LEFT,
-        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::CONTROL}},
+  SetUpKeyboard(kExternalAppleKeyboard);
 
-      // VKEY_RWIN (right Command key) with  Alt modifier. The remapped Command
-      // key should never be re-remapped to Alt.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
-        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_CONTROL, ui::DomCode::CONTROL_RIGHT,
-        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::CONTROL}},
-  });
-}
+  // VKEY_LWIN (left Command key) with  Alt modifier. The remapped Command
+  // key should never be re-remapped to Alt.
+  EXPECT_EQ(LControlPressed(ui::EF_ALT_DOWN),
+            RunRewriter(LWinPressed(ui::EF_ALT_DOWN)));
 
-void EventRewriterTest::TestRewriteNumPadKeys() {
-  // Even if most Chrome OS keyboards do not have numpad, they should still
-  // handle it the same way as generic PC keyboards.
-  TestNonAppleKeyboardVariants({
-      // XK_KP_Insert (= NumPad 0 without Num Lock), no modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_INSERT, ui::DomCode::NUMPAD0, ui::EF_NONE, ui::DomKey::INSERT},
-       {ui::VKEY_NUMPAD0, ui::DomCode::NUMPAD0, ui::EF_NONE,
-        ui::DomKey::Constant<'0'>::Character}},
-
-      // XK_KP_Insert (= NumPad 0 without Num Lock), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_INSERT, ui::DomCode::NUMPAD0, ui::EF_ALT_DOWN,
-        ui::DomKey::INSERT},
-       {ui::VKEY_NUMPAD0, ui::DomCode::NUMPAD0, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'0'>::Character}},
-
-      // XK_KP_Delete (= NumPad . without Num Lock), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_DELETE, ui::DomCode::NUMPAD_DECIMAL, ui::EF_ALT_DOWN,
-        ui::DomKey::DEL},
-       {ui::VKEY_DECIMAL, ui::DomCode::NUMPAD_DECIMAL, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'.'>::Character}},
-
-      // XK_KP_End (= NumPad 1 without Num Lock), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_END, ui::DomCode::NUMPAD1, ui::EF_ALT_DOWN, ui::DomKey::END},
-       {ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'1'>::Character}},
-
-      // XK_KP_Down (= NumPad 2 without Num Lock), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_DOWN, ui::DomCode::NUMPAD2, ui::EF_ALT_DOWN,
-        ui::DomKey::ARROW_DOWN},
-       {ui::VKEY_NUMPAD2, ui::DomCode::NUMPAD2, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'2'>::Character}},
-
-      // XK_KP_Next (= NumPad 3 without Num Lock), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NEXT, ui::DomCode::NUMPAD3, ui::EF_ALT_DOWN,
-        ui::DomKey::PAGE_DOWN},
-       {ui::VKEY_NUMPAD3, ui::DomCode::NUMPAD3, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'3'>::Character}},
-
-      // XK_KP_Left (= NumPad 4 without Num Lock), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_LEFT, ui::DomCode::NUMPAD4, ui::EF_ALT_DOWN,
-        ui::DomKey::ARROW_LEFT},
-       {ui::VKEY_NUMPAD4, ui::DomCode::NUMPAD4, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'4'>::Character}},
-
-      // XK_KP_Begin (= NumPad 5 without Num Lock), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_CLEAR, ui::DomCode::NUMPAD5, ui::EF_ALT_DOWN,
-        ui::DomKey::CLEAR},
-       {ui::VKEY_NUMPAD5, ui::DomCode::NUMPAD5, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'5'>::Character}},
-
-      // XK_KP_Right (= NumPad 6 without Num Lock), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_RIGHT, ui::DomCode::NUMPAD6, ui::EF_ALT_DOWN,
-        ui::DomKey::ARROW_RIGHT},
-       {ui::VKEY_NUMPAD6, ui::DomCode::NUMPAD6, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'6'>::Character}},
-
-      // XK_KP_Home (= NumPad 7 without Num Lock), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_HOME, ui::DomCode::NUMPAD7, ui::EF_ALT_DOWN, ui::DomKey::HOME},
-       {ui::VKEY_NUMPAD7, ui::DomCode::NUMPAD7, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'7'>::Character}},
-
-      // XK_KP_Up (= NumPad 8 without Num Lock), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_UP, ui::DomCode::NUMPAD8, ui::EF_ALT_DOWN,
-        ui::DomKey::ARROW_UP},
-       {ui::VKEY_NUMPAD8, ui::DomCode::NUMPAD8, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'8'>::Character}},
-
-      // XK_KP_Prior (= NumPad 9 without Num Lock), Alt modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_PRIOR, ui::DomCode::NUMPAD9, ui::EF_ALT_DOWN,
-        ui::DomKey::PAGE_UP},
-       {ui::VKEY_NUMPAD9, ui::DomCode::NUMPAD9, ui::EF_ALT_DOWN,
-        ui::DomKey::Constant<'9'>::Character}},
-
-      // XK_KP_0 (= NumPad 0 with Num Lock), Num Lock modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NUMPAD0, ui::DomCode::NUMPAD0, ui::EF_NONE,
-        ui::DomKey::Constant<'0'>::Character},
-       {ui::VKEY_NUMPAD0, ui::DomCode::NUMPAD0, ui::EF_NONE,
-        ui::DomKey::Constant<'0'>::Character}},
-
-      // XK_KP_DECIMAL (= NumPad . with Num Lock), Num Lock modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_DECIMAL, ui::DomCode::NUMPAD_DECIMAL, ui::EF_NONE,
-        ui::DomKey::Constant<'.'>::Character},
-       {ui::VKEY_DECIMAL, ui::DomCode::NUMPAD_DECIMAL, ui::EF_NONE,
-        ui::DomKey::Constant<'.'>::Character}},
-
-      // XK_KP_1 (= NumPad 1 with Num Lock), Num Lock modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1, ui::EF_NONE,
-        ui::DomKey::Constant<'1'>::Character},
-       {ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1, ui::EF_NONE,
-        ui::DomKey::Constant<'1'>::Character}},
-
-      // XK_KP_2 (= NumPad 2 with Num Lock), Num Lock modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NUMPAD2, ui::DomCode::NUMPAD2, ui::EF_NONE,
-        ui::DomKey::Constant<'2'>::Character},
-       {ui::VKEY_NUMPAD2, ui::DomCode::NUMPAD2, ui::EF_NONE,
-        ui::DomKey::Constant<'2'>::Character}},
-
-      // XK_KP_3 (= NumPad 3 with Num Lock), Num Lock modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NUMPAD3, ui::DomCode::NUMPAD3, ui::EF_NONE,
-        ui::DomKey::Constant<'3'>::Character},
-       {ui::VKEY_NUMPAD3, ui::DomCode::NUMPAD3, ui::EF_NONE,
-        ui::DomKey::Constant<'3'>::Character}},
-
-      // XK_KP_4 (= NumPad 4 with Num Lock), Num Lock modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NUMPAD4, ui::DomCode::NUMPAD4, ui::EF_NONE,
-        ui::DomKey::Constant<'4'>::Character},
-       {ui::VKEY_NUMPAD4, ui::DomCode::NUMPAD4, ui::EF_NONE,
-        ui::DomKey::Constant<'4'>::Character}},
-
-      // XK_KP_5 (= NumPad 5 with Num Lock), Num Lock
-      // modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NUMPAD5, ui::DomCode::NUMPAD5, ui::EF_NONE,
-        ui::DomKey::Constant<'5'>::Character},
-       {ui::VKEY_NUMPAD5, ui::DomCode::NUMPAD5, ui::EF_NONE,
-        ui::DomKey::Constant<'5'>::Character}},
-
-      // XK_KP_6 (= NumPad 6 with Num Lock), Num Lock
-      // modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NUMPAD6, ui::DomCode::NUMPAD6, ui::EF_NONE,
-        ui::DomKey::Constant<'6'>::Character},
-       {ui::VKEY_NUMPAD6, ui::DomCode::NUMPAD6, ui::EF_NONE,
-        ui::DomKey::Constant<'6'>::Character}},
-
-      // XK_KP_7 (= NumPad 7 with Num Lock), Num Lock
-      // modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NUMPAD7, ui::DomCode::NUMPAD7, ui::EF_NONE,
-        ui::DomKey::Constant<'7'>::Character},
-       {ui::VKEY_NUMPAD7, ui::DomCode::NUMPAD7, ui::EF_NONE,
-        ui::DomKey::Constant<'7'>::Character}},
-
-      // XK_KP_8 (= NumPad 8 with Num Lock), Num Lock
-      // modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NUMPAD8, ui::DomCode::NUMPAD8, ui::EF_NONE,
-        ui::DomKey::Constant<'8'>::Character},
-       {ui::VKEY_NUMPAD8, ui::DomCode::NUMPAD8, ui::EF_NONE,
-        ui::DomKey::Constant<'8'>::Character}},
-
-      // XK_KP_9 (= NumPad 9 with Num Lock), Num Lock
-      // modifier.
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NUMPAD9, ui::DomCode::NUMPAD9, ui::EF_NONE,
-        ui::DomKey::Constant<'9'>::Character},
-       {ui::VKEY_NUMPAD9, ui::DomCode::NUMPAD9, ui::EF_NONE,
-        ui::DomKey::Constant<'9'>::Character}},
-  });
+  // VKEY_RWIN (right Command key) with  Alt modifier. The remapped Command
+  // key should never be re-remapped to Alt.
+  EXPECT_EQ(RControlPressed(ui::EF_ALT_DOWN),
+            RunRewriter(RWinPressed(ui::EF_ALT_DOWN)));
 }
 
 TEST_F(EventRewriterTest, TestRewriteNumPadKeys) {
-  TestRewriteNumPadKeys();
+  // Even if most Chrome OS keyboards do not have numpad, they should still
+  // handle it the same way as generic PC keyboards.
+  for (const auto& keyboard : kNonAppleKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // XK_KP_Insert (= NumPad 0 without Num Lock), no modifier.
+    EXPECT_EQ(Numpad0Pressed(), RunRewriter(NumpadInsertPressed()));
+
+    // XK_KP_Insert (= NumPad 0 without Num Lock), Alt modifier.
+    EXPECT_EQ(Numpad0Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(NumpadInsertPressed(ui::EF_ALT_DOWN)));
+
+    // XK_KP_Delete (= NumPad . without Num Lock), Alt modifier.
+    EXPECT_EQ(NumpadDecimalPressed(ui::EF_ALT_DOWN),
+              RunRewriter(NumpadDeletePressed(ui::EF_ALT_DOWN)));
+
+    // XK_KP_End (= NumPad 1 without Num Lock), Alt modifier.
+    EXPECT_EQ(Numpad1Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(NumpadEndPressed(ui::EF_ALT_DOWN)));
+
+    // XK_KP_Down (= NumPad 2 without Num Lock), Alt modifier.
+    EXPECT_EQ(Numpad2Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(NumpadArrowDownPressed(ui::EF_ALT_DOWN)));
+
+    // XK_KP_Next (= NumPad 3 without Num Lock), Alt modifier.
+    EXPECT_EQ(Numpad3Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(NumpadPageDownPressed(ui::EF_ALT_DOWN)));
+
+    // XK_KP_Left (= NumPad 4 without Num Lock), Alt modifier.
+    EXPECT_EQ(Numpad4Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(NumpadArrowLeftPressed(ui::EF_ALT_DOWN)));
+
+    // XK_KP_Begin (= NumPad 5 without Num Lock), Alt modifier.
+    EXPECT_EQ(Numpad5Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(NumpadClearPressed(ui::EF_ALT_DOWN)));
+
+    // XK_KP_Right (= NumPad 6 without Num Lock), Alt modifier.
+    EXPECT_EQ(Numpad6Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(NumpadArrowRightPressed(ui::EF_ALT_DOWN)));
+
+    // XK_KP_Home (= NumPad 7 without Num Lock), Alt modifier.
+    EXPECT_EQ(Numpad7Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(NumpadHomePressed(ui::EF_ALT_DOWN)));
+
+    // XK_KP_Up (= NumPad 8 without Num Lock), Alt modifier.
+    EXPECT_EQ(Numpad8Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(NumpadArrowUpPressed(ui::EF_ALT_DOWN)));
+
+    // XK_KP_Prior (= NumPad 9 without Num Lock), Alt modifier.
+    EXPECT_EQ(Numpad9Pressed(ui::EF_ALT_DOWN),
+              RunRewriter(NumpadPageUpPressed(ui::EF_ALT_DOWN)));
+
+    // XK_KP_{N} (= NumPad {N} with Num Lock), Num Lock modifier.
+    EXPECT_EQ(Numpad0Pressed(), RunRewriter(Numpad0Pressed()));
+    EXPECT_EQ(Numpad1Pressed(), RunRewriter(Numpad1Pressed()));
+    EXPECT_EQ(Numpad2Pressed(), RunRewriter(Numpad2Pressed()));
+    EXPECT_EQ(Numpad3Pressed(), RunRewriter(Numpad3Pressed()));
+    EXPECT_EQ(Numpad4Pressed(), RunRewriter(Numpad4Pressed()));
+    EXPECT_EQ(Numpad5Pressed(), RunRewriter(Numpad5Pressed()));
+    EXPECT_EQ(Numpad6Pressed(), RunRewriter(Numpad6Pressed()));
+    EXPECT_EQ(Numpad7Pressed(), RunRewriter(Numpad7Pressed()));
+    EXPECT_EQ(Numpad8Pressed(), RunRewriter(Numpad8Pressed()));
+    EXPECT_EQ(Numpad9Pressed(), RunRewriter(Numpad9Pressed()));
+
+    // XK_KP_DECIMAL (= NumPad . with Num Lock), Num Lock modifier.
+    EXPECT_EQ(NumpadDecimalPressed(), RunRewriter(NumpadDecimalPressed()));
+  }
 }
 
 // Tests if the rewriter can handle a Command + Num Pad event.
-void EventRewriterTest::TestRewriteNumPadKeysOnAppleKeyboard() {
+TEST_F(EventRewriterTest, TestRewriteNumPadKeysOnAppleKeyboard) {
   // Simulate the default initialization of the Apple Command key remap pref to
   // Ctrl.
   Preferences::RegisterProfilePrefs(prefs()->registry());
@@ -1223,28 +1204,18 @@ void EventRewriterTest::TestRewriteNumPadKeysOnAppleKeyboard() {
         ui::mojom::ModifierKey::kControl;
   }
 
-  TestExternalAppleKeyboard({
-      // XK_KP_End (= NumPad 1 without Num Lock), Win modifier.
-      // The result should be "Num Pad 1 with Control + Num Lock modifiers".
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_END, ui::DomCode::NUMPAD1, ui::EF_COMMAND_DOWN,
-        ui::DomKey::END},
-       {ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1, ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'1'>::Character}},
+  SetUpKeyboard(kExternalAppleKeyboard);
 
-      // XK_KP_1 (= NumPad 1 with Num Lock), Win modifier.
-      // The result should also be "Num Pad 1 with Control + Num Lock
-      // modifiers".
-      {ui::ET_KEY_PRESSED,
-       {ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1, ui::EF_COMMAND_DOWN,
-        ui::DomKey::Constant<'1'>::Character},
-       {ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1, ui::EF_CONTROL_DOWN,
-        ui::DomKey::Constant<'1'>::Character}},
-  });
-}
+  // XK_KP_End (= NumPad 1 without Num Lock), Win modifier.
+  // The result should be "Num Pad 1 with Control + Num Lock modifiers".
+  EXPECT_EQ(Numpad1Pressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(NumpadEndPressed(ui::EF_COMMAND_DOWN)));
 
-TEST_F(EventRewriterTest, TestRewriteNumPadKeysOnAppleKeyboard) {
-  TestRewriteNumPadKeysOnAppleKeyboard();
+  // XK_KP_1 (= NumPad 1 with Num Lock), Win modifier.
+  // The result should also be "Num Pad 1 with Control + Num Lock
+  // modifiers".
+  EXPECT_EQ(Numpad1Pressed(ui::EF_CONTROL_DOWN),
+            RunRewriter(Numpad1Pressed(ui::EF_COMMAND_DOWN)));
 }
 
 TEST_F(EventRewriterTest, TestRewriteModifiersNoRemap) {
