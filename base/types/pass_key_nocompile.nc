@@ -17,57 +17,39 @@ class Restricted {
   Restricted(base::PassKey<Manager>) {}
 };
 
-int Secret(base::PassKey<Manager>) {
-  return 1;
+void Secret(base::PassKey<Manager>) {}
+
+void CannotConstructFieldFromTemporaryPassKey() {
+  class NotAManager {
+   public:
+    NotAManager() : restricted_(base::PassKey<Manager>()) {}  // expected-error {{calling a private constructor of class 'base::PassKey<base::Manager>'}}
+
+   private:
+    Restricted restricted_;
+  };
 }
 
-#if defined(NCTEST_UNAUTHORIZED_PASS_KEY_IN_INITIALIZER)  // [r"fatal error: calling a private constructor of class 'base::PassKey<base::Manager>'"]
+void CannotConstructFieldFromImplicitPassKey() {
+  class NotAManager {
+   public:
+    NotAManager() : restricted_({}) {}  // expected-error {{calling a private constructor of class 'base::PassKey<base::Manager>'}}
 
-class NotAManager {
- public:
-  NotAManager() : restricted_(base::PassKey<Manager>()) {}
-
- private:
-  Restricted restricted_;
-};
-
-void WillNotCompile() {
-  NotAManager not_a_manager;
+   private:
+    Restricted restricted_;
+  };
 }
 
-#elif defined(NCTEST_UNAUTHORIZED_UNIFORM_INITIALIZED_PASS_KEY_IN_INITIALIZER)  // [r"fatal error: calling a private constructor of class 'base::PassKey<base::Manager>'"]
-
-class NotAManager {
- public:
-  NotAManager() : restricted_({}) {}
-
- private:
-  Restricted restricted_;
-};
-
-void WillNotCompile() {
-  NotAManager not_a_manager;
+void CannotConstructTemporaryPassKey() {
+  Secret(base::PassKey<Manager>());  // expected-error {{calling a private constructor of class 'base::PassKey<base::Manager>'}}
 }
 
-#elif defined(NCTEST_UNAUTHORIZED_PASS_KEY_IN_FUNCTION)  // [r"fatal error: calling a private constructor of class 'base::PassKey<base::Manager>'"]
-
-int WillNotCompile() {
-  return Secret(base::PassKey<Manager>());
+void CannotConstructPassKeyImplicitly() {
+  Secret({});  // expected-error {{calling a private constructor of class 'base::PassKey<base::Manager>'}}
 }
 
-#elif defined(NCTEST_UNAUTHORIZED_UNIFORM_INITIALIZATION_WITH_DEDUCED_PASS_KEY_TYPE)  // [r"fatal error: calling a private constructor of class 'base::PassKey<base::Manager>'"]
-
-int WillNotCompile() {
-  return Secret({});
+void CannotConstructNamedPassKey() {
+  base::PassKey<Manager> key {};  // expected-error {{calling a private constructor of class 'base::PassKey<base::Manager>'}}
+  Secret(key);
 }
-
-#elif defined(NCTEST_UNAUTHORIZED_UNIFORM_INITIALIZATION)  // [r"fatal error: calling a private constructor of class 'base::PassKey<base::Manager>'"]
-
-int WillNotCompile() {
-  base::PassKey<Manager> key {};
-  return Secret(key);
-}
-
-#endif
 
 }  // namespace base
