@@ -3672,6 +3672,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="FormControlType" enum="AutofillFormControlType">
+    <obsolete>
+      Deprecated as of 11/2023. Replaced by FormControlType2.
+    </obsolete>
     <summary>
       A form control type of a web form-associated element. We only list the
       very common ones that are seen in autofill, such as text, textarea,

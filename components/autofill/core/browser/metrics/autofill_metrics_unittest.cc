@@ -8323,8 +8323,6 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
                form.fields[i].global_id())},
           {UFIT::kFieldSignatureName,
            Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
-          {UFIT::kFormControlTypeName,
-           base::to_underlying(DeprecatedFormControlType::kText)},
           {UFIT::kFormControlType2Name,
            base::to_underlying(FormControlType::kInputText)},
           {UFIT::kAutocompleteStateName,
@@ -8442,8 +8440,6 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
            Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
           {UFIT::kAutofillSkippedStatusName,
            DenseSet<FieldFillingSkipReason>{status}.data()[0]},
-          {UFIT::kFormControlTypeName,
-           base::to_underlying(DeprecatedFormControlType::kText)},
           {UFIT::kFormControlType2Name,
            base::to_underlying(FormControlType::kInputText)},
           {UFIT::kAutocompleteStateName,
@@ -8685,8 +8681,6 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
         {UFIT::kSectionIdName, 1},
         {UFIT::kTypeChangedByRationalizationName, false},
         {UFIT::kRankInFieldSignatureGroupName, 1},
-        {UFIT::kFormControlTypeName,
-         base::to_underlying(DeprecatedFormControlType::kText)},
         {UFIT::kFormControlType2Name,
          base::to_underlying(FormControlType::kInputText)},
         {UFIT::kAutocompleteStateName,
@@ -8847,8 +8841,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
          AutofillMetrics::FieldGlobalIdToHash64Bit(form.fields[i].global_id())},
         {UFIT::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
-        {UFIT::kFormControlTypeName,
-         base::to_underlying(DeprecatedFormControlType::kText)},
         {UFIT::kFormControlType2Name,
          base::to_underlying(FormControlType::kInputText)},
         {UFIT::kAutocompleteStateName,
@@ -9130,9 +9122,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   auto entries =
       test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
   ASSERT_EQ(4u, entries.size());
-  std::vector<DeprecatedFormControlType> deprecated_form_control_types = {
-      DeprecatedFormControlType::kText, DeprecatedFormControlType::kText,
-      DeprecatedFormControlType::kRadio, DeprecatedFormControlType::kRadio};
   std::vector<FormControlType> form_control_types = {
       FormControlType::kInputText, FormControlType::kInputText,
       FormControlType::kInputRadio, FormControlType::kInputRadio};
@@ -9152,8 +9141,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
         {UFIT::kOverallTypeName, field_types[i]},
         {UFIT::kSectionIdName, 1},
         {UFIT::kTypeChangedByRationalizationName, false},
-        {UFIT::kFormControlTypeName,
-         base::to_underlying(deprecated_form_control_types[i])},
         {UFIT::kFormControlType2Name,
          base::to_underlying(form_control_types[i])},
         {UFIT::kAutocompleteStateName,
@@ -9257,15 +9244,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
   ASSERT_EQ(3u, entries.size());
   test_ukm_recorder().ExpectEntryMetric(
-      entries[0], UkmFieldInfoType::kFormControlTypeName,
-      base::to_underlying(DeprecatedFormControlType::kText));
-  test_ukm_recorder().ExpectEntryMetric(
-      entries[1], UkmFieldInfoType::kFormControlTypeName,
-      base::to_underlying(DeprecatedFormControlType::kText));
-  test_ukm_recorder().ExpectEntryMetric(
-      entries[2], UkmFieldInfoType::kFormControlTypeName,
-      base::to_underlying(DeprecatedFormControlType::kSelectlist));
-  test_ukm_recorder().ExpectEntryMetric(
       entries[0], UkmFieldInfoType::kFormControlType2Name,
       base::to_underlying(FormControlType::kInputText));
   test_ukm_recorder().ExpectEntryMetric(
@@ -9328,9 +9306,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   auto entries =
       test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
   ASSERT_EQ(3u, entries.size());
-  std::vector<DeprecatedFormControlType> deprecated_form_control_types = {
-      DeprecatedFormControlType::kText, DeprecatedFormControlType::kText,
-      DeprecatedFormControlType::kText};
   std::vector<FormControlType> form_control_types = {
       FormControlType::kInputText, FormControlType::kInputText,
       FormControlType::kInputText};
@@ -9356,8 +9331,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       {UFIT::kOverallTypeName, field_types[i]},
       {UFIT::kSectionIdName, 1},
       {UFIT::kTypeChangedByRationalizationName, false},
-      {UFIT::kFormControlTypeName,
-       base::to_underlying(deprecated_form_control_types[i])},
       {UFIT::kFormControlType2Name, base::to_underlying(form_control_types[i])},
       {UFIT::kAutocompleteStateName,
        base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},

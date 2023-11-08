@@ -32,18 +32,6 @@ typedef std::map<ServerFieldType, std::vector<AutofillDataModel::ValidityState>>
 typedef std::map<ServerFieldType, AutofillDataModel::ValidityState>
     ServerFieldTypeValidityStateMap;
 
-enum class DeprecatedFormControlType {
-  kEmpty = 0,
-  kOther = 1,
-  kText = 2,
-  kTextarea = 3,
-  kCheckbox = 4,
-  kRadio = 5,
-  kSelectOne = 6,
-  kSelectlist = 7,
-  kMaxValue = kSelectlist,
-};
-
 // Specifies if the Username First Flow vote has intermediate values.
 enum class IsMostRecentSingleUsernameCandidate {
   // Field is not part of Username First Flow.
@@ -350,9 +338,6 @@ class AutofillField : public FormFieldData {
   absl::optional<std::string> autofill_source_profile_guid() const {
     return autofill_source_profile_guid_;
   }
-
-  // Use FormFieldData::form_control_type instead (crbug.com/1482526).
-  enum DeprecatedFormControlType FormControlType() const;
 
  private:
   explicit AutofillField(FieldSignature field_signature);
