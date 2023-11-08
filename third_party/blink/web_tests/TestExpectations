@@ -1416,20 +1416,28 @@ crbug.com/995106 external/wpt/css/css-lists/inline-list.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list-marker.html [ Failure ]
 
 # css-pseudo
-crbug.com/1163437 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [ Failure ]
-crbug.com/1163437 external/wpt/css/css-pseudo/grammar-spelling-errors-002.html [ Failure ]
+crbug.com/1500288 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [ Failure ]
+crbug.com/1500288 external/wpt/css/css-pseudo/grammar-spelling-errors-002.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-001.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-002.html [ Failure ]
 crbug.com/1172333 external/wpt/css/css-pseudo/first-letter-hi-001.html [ Failure ]
 crbug.com/1172333 external/wpt/css/css-pseudo/first-letter-digraph.html [ Failure ]
-crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-003.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/target-text-004.html [ Failure ]
-crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-004.html [ Failure ]
+crbug.com/1179938 external/wpt/css/css-pseudo/target-text-dynamic-004.html [ Failure ]
 crbug.com/1353352 fast/css3-text/css3-text-decoration/text-decoration-line-grammar-error.html [ Failure ]
 crbug.com/1353352 fast/css3-text/css3-text-decoration/text-decoration-line-spelling-error.html [ Failure ]
 crbug.com/1350475 external/wpt/css/css-pseudo/highlight-currentcolor-painting-text-shadow-001.html [ Failure ]
 crbug.com/1350475 external/wpt/css/css-pseudo/highlight-currentcolor-painting-text-shadow-002.html [ Failure ]
 crbug.com/1351020 [ Mac ] external/wpt/compat/webkit-text-fill-color-property-002.html [ Failure ]
+crbug.com/1350469 external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-001.html [ Failure ]  # Reftest image failure
+crbug.com/1350469 external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-002.html [ Failure ]  # Reftest image failure
+crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-003.html [ Failure ]  # Reftest image failure
+crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-004.html [ Failure ]  # Reftest image failure
+crbug.com/1432038 external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
+crbug.com/1500288 external/wpt/css/css-pseudo/spelling-error-001.html [ Failure ]
+crbug.com/1500288 external/wpt/css/css-pseudo/grammar-error-001.html [ Failure ]
+crbug.com/1500288 external/wpt/css/css-pseudo/selection-overlay-and-grammar-001.html [ Failure ]
+crbug.com/1500288 external/wpt/css/css-pseudo/selection-overlay-and-spelling-001.html [ Failure ]
 
 crbug.com/1205953 external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
 
@@ -3097,7 +3105,6 @@ crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-emb
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-fetch.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-fetch.https.html [ Timeout ]
 crbug.com/626703 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-backdrop-opacity.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/url/IdnaTestV2.window.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-non-adjoining-item.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-block-end-trimmed-only.html [ Failure ]
@@ -7175,10 +7182,6 @@ crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/first-letter-002.html [
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/first-letter-003.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/first-line-with-inline-block.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-cascade-008.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-001.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-002.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-painting-003.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-painting-004.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-ruby/block-ruby-003.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-decoration-subelements-002.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-color-property-001.html [ Failure ]  # Reftest image failure
@@ -7393,7 +7396,6 @@ crbug.com/1499775 [ Chrome ] wpt_internal/css/css-masking/mask-clip-text-not-sup
 crbug.com/1499775 [ Chrome ] wpt_internal/css/css-overflow/scrollbar-gutter-background-paint.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] wpt_internal/css/css-overflow/scrollbar-gutter-content-overflowing.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] wpt_internal/css/css-pseudo/grammar-error-color-001.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 [ Chrome ] wpt_internal/css/css-pseudo/spelling-error-color-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] wpt_internal/css/css-text-decor/text-decoration-line-grammar-error-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] wpt_internal/css/css-text-decor/text-decoration-line-grammar-error-002.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 [ Chrome ] wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-001.html [ Failure ]  # Reftest image failure
