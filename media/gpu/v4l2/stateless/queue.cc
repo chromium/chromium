@@ -148,4 +148,79 @@ uint32_t InputQueue::BufferMinimumCount() {
   // performance tuning is done.
   return 8;
 }
+
+std::unique_ptr<OutputQueue> OutputQueue::Create(
+    scoped_refptr<StatelessDevice> device) {
+  std::unique_ptr<OutputQueue> queue = std::make_unique<OutputQueue>(device);
+
+  if (!queue->NegotiateFormat()) {
+    return nullptr;
+  }
+
+  return queue;
+}
+
+OutputQueue::OutputQueue(scoped_refptr<StatelessDevice> device)
+    : BaseQueue(device, BufferType::kRawFrames, MemoryType::kMemoryMapped),
+      buffer_format_(BufferFormat(Fourcc(Fourcc::UNDEFINED),
+                                  gfx::Size(0, 0),
+                                  BufferType::kRawFrames)) {}
+
+bool OutputQueue::NegotiateFormat() {
+  DVLOGF(4);
+  CHECK(device_);
+
+  // should also have associated number of planes, or are they all 2?
+  constexpr Fourcc kPreferredFormats[] = {
+      Fourcc(Fourcc::NV12), Fourcc(Fourcc::MM21), Fourcc(Fourcc::MT2T)};
+
+  const auto initial_format = device_->GetOutputFormat();
+  if (!initial_format) {
+    return false;
+  }
+
+  if (!base::Contains(kPreferredFormats, initial_format->fourcc)) {
+    for (const auto& preferred_fourcc : kPreferredFormats) {
+      BufferFormat try_format = *initial_format;
+      try_format.fourcc = preferred_fourcc;
+      if (device_->TryOutputFormat(try_format)) {
+        auto chosen_format = device_->SetOutputFormat(try_format);
+        if (chosen_format) {
+          DVLOGF(2) << "Preferred format " << chosen_format->fourcc.ToString()
+                    << " choosen for output queue through negotiation. "
+                    << "Initial format was "
+                    << initial_format->fourcc.ToString() << ".";
+          buffer_format_ = *chosen_format;
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+  } else {
+    DVLOGF(2) << "Initial format " << initial_format->fourcc.ToString()
+              << " choosen for output queue.";
+    auto chosen_format = device_->SetOutputFormat(*initial_format);
+    if (chosen_format) {
+      buffer_format_ = *chosen_format;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool OutputQueue::PrepareBuffers() {
+  DVLOGF(4);
+  return AllocateBuffers(buffer_format_.NumPlanes());
+}
+
+std::string OutputQueue::Description() {
+  return "output";
+}
+
+uint32_t OutputQueue::BufferMinimumCount() {
+  return 4;
+}
+
 }  // namespace media

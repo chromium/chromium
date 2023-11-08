@@ -102,7 +102,10 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // Video decoder used to parse stream headers by software.
   std::unique_ptr<AcceleratedVideoDecoder> decoder_;
 
+  // Queue to hold compressed bitstream buffers to be submitted to the hardware
   std::unique_ptr<InputQueue> input_queue_;
+  // Queue to hold uncompressed image buffers returned by the hardware
+  std::unique_ptr<OutputQueue> output_queue_;
 
   // Int32 safe ID generator, starting at 0. Generated IDs are used to uniquely
   // identify a Decode() request for stateless backends. BitstreamID is just

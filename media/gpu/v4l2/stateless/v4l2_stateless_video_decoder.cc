@@ -170,15 +170,28 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
                                             size_t size,
                                             int32_t bitstream_id) {
   DVLOGF(4);
-  if (!input_queue_->PrepareBuffers()) {
-    return false;
-  }
-  input_queue_->StartStreaming();
+  if (!output_queue_) {
+    if (!input_queue_->PrepareBuffers()) {
+      return false;
+    }
+    input_queue_->StartStreaming();
 
-  // The header needs to be parsed before the video resolution and format
-  // can be decided.
-  if (!device_->SetHeaders(ctrls, base::ScopedFD(-1))) {
-    return false;
+    // The header needs to be parsed before the video resolution and format
+    // can be decided.
+    if (!device_->SetHeaders(ctrls, base::ScopedFD(-1))) {
+      return false;
+    }
+
+    output_queue_ = OutputQueue::Create(device_);
+    if (!output_queue_) {
+      return false;
+    }
+
+    if (!output_queue_->PrepareBuffers()) {
+      return false;
+    }
+
+    output_queue_->StartStreaming();
   }
 
   return true;

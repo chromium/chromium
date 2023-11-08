@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/video_codecs.h"
+#include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -74,6 +75,34 @@ class Buffer {
   std::vector<Plane> planes_;
 };
 
+class PlaneFormat {
+ public:
+  PlaneFormat(uint32_t stride, uint32_t image_size)
+      : stride(stride), image_size(image_size) {}
+  // Width of decompressed frame in bytes. It must be equal to or larger than
+  // the size of the displayed image. This allows the internal buffers to be
+  // better aligned for reading/writing/caching, etc.
+  uint32_t stride;
+  // Size of the buffer to hold the data passed back and forth to the driver.
+  // When the buffer is compressed this will be the size of the compressed data
+  // in bytes. When the buffer is uncompressed this will be stride * height
+  // of the plane.
+  uint32_t image_size;
+};
+
+class BufferFormat {
+ public:
+  BufferFormat(Fourcc fourcc, gfx::Size resolution, BufferType buffer_type);
+  BufferFormat(const BufferFormat& other);
+  ~BufferFormat();
+
+  uint32_t NumPlanes() const { return planes.size(); }
+  Fourcc fourcc;
+  gfx::Size resolution;
+  std::vector<PlaneFormat> planes;
+  BufferType buffer_type;
+};
+
 // Encapsulates the v4l2 subsystem and prevents <linux/videodev2.h> from
 // being included elsewhere with the possible exception of the codec specific
 // delegates. This keeps all of the v4l2 driver specific structures in one
@@ -93,6 +122,14 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   bool SetInputFormat(VideoCodec codec,
                       gfx::Size resolution,
                       size_t encoded_buffer_size);
+
+  // To negotiate an output format the format must first be retrieved from
+  // the driver via |GetOutputFormat|. If the desired format does not match
+  // up with the retrieved format, |TryOutputFormat| and |SetOutputFormat| are
+  // used.
+  absl::optional<BufferFormat> GetOutputFormat();
+  absl::optional<BufferFormat> TryOutputFormat(const BufferFormat& format);
+  absl::optional<BufferFormat> SetOutputFormat(const BufferFormat& format);
 
   // Stops streaming on the |type| of buffer using the VIDIOC_STREAMOFF ioctl.
   bool StreamOff(BufferType type);
@@ -141,6 +178,12 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
 
   // The actual device fd.
   base::ScopedFD device_fd_;
+
+  // |TryOutputFormat| and |SetOutputFormat| are identical calls, with the
+  // difference being that |TryOutputFormat| does not change the state of the
+  // driver while |SetOutputFormat| does.
+  absl::optional<BufferFormat> TrySetOutputFormat(int request,
+                                                  const BufferFormat& format);
 
  protected:
   virtual ~Device();

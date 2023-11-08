@@ -155,6 +155,44 @@ VideoCodec V4L2PixFmtToVideoCodec(uint32_t pix_fmt) {
   return VideoCodec::kUnknown;
 }
 
+absl::optional<BufferFormat> V4L2FormatToBufferFormat(
+    const struct v4l2_format& format) {
+  const auto fourcc = Fourcc::FromV4L2PixFmt(format.fmt.pix_mp.pixelformat);
+  if (!fourcc) {
+    return absl::nullopt;
+  }
+
+  const gfx::Size resolution =
+      gfx::Size(format.fmt.pix_mp.width, format.fmt.pix_mp.height);
+  BufferFormat buffer_format =
+      BufferFormat(fourcc.value(), resolution, V4L2ToBufferType(format.type));
+
+  if (buffer_format.buffer_type == BufferType::kInvalid) {
+    DVLOGF(1) << "Invalid V4L2 buffer type (" << format.type << ").";
+  }
+  for (size_t i = 0; i < format.fmt.pix_mp.num_planes; ++i) {
+    const v4l2_plane_pix_format& plane_format = format.fmt.pix_mp.plane_fmt[i];
+    buffer_format.planes.emplace_back(plane_format.bytesperline,
+                                      plane_format.sizeimage);
+  }
+  return buffer_format;
+}
+
+void BufferFormatToV4L2Format(struct v4l2_format& v_format,
+                              const BufferFormat& b_format) {
+  memset(&v_format, 0, sizeof(v_format));
+
+  v_format.type = BufferTypeToV4L2(b_format.buffer_type);
+  v_format.fmt.pix_mp.pixelformat = b_format.fourcc.ToV4L2PixFmt();
+  v_format.fmt.pix_mp.width = b_format.resolution.width();
+  v_format.fmt.pix_mp.height = b_format.resolution.height();
+  uint32_t i = 0;
+  for (const auto& plane : b_format.planes) {
+    v_format.fmt.pix_mp.plane_fmt[i].bytesperline = plane.stride;
+    v_format.fmt.pix_mp.plane_fmt[i].sizeimage = plane.image_size;
+    ++i;
+  }
+}
 }  // namespace
 
 Device::Device() {}
@@ -203,6 +241,15 @@ bool Buffer::CopyDataIn(const void* data, size_t length) {
 
 Buffer::~Buffer() {}
 
+BufferFormat::BufferFormat(Fourcc fourcc,
+                           gfx::Size resolution,
+                           BufferType buffer_type)
+    : fourcc(fourcc), resolution(resolution), buffer_type(buffer_type) {}
+
+BufferFormat::BufferFormat(const BufferFormat& other) = default;
+
+BufferFormat::~BufferFormat() {}
+
 void Device::Close() {
   device_fd_.reset();
 }
@@ -212,7 +259,7 @@ std::set<VideoCodec> Device::EnumerateInputFormats() {
   std::set<VideoCodec> pix_fmts;
   v4l2_fmtdesc fmtdesc = {.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE};
   for (; IoctlDevice(VIDIOC_ENUM_FMT, &fmtdesc) == kIoctlOk; ++fmtdesc.index) {
-    DVLOGF(4) << "Enumerated codec: "
+    DVLOGF(4) << "Enumerated input format: "
               << media::FourccToString(fmtdesc.pixelformat) << " ("
               << fmtdesc.description << ")";
     VideoCodec enumerated_codec = V4L2PixFmtToVideoCodec(fmtdesc.pixelformat);
@@ -224,6 +271,52 @@ std::set<VideoCodec> Device::EnumerateInputFormats() {
   }
 
   return pix_fmts;
+}
+
+// VIDIOC_G_FMT
+absl::optional<BufferFormat> Device::GetOutputFormat() {
+  DVLOGF(4);
+  struct v4l2_format format;
+  memset(&format, 0, sizeof(format));
+  format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+
+  if (IoctlDevice(VIDIOC_G_FMT, &format) != kIoctlOk) {
+    return absl::nullopt;
+  }
+
+  return V4L2FormatToBufferFormat(format);
+}
+
+absl::optional<BufferFormat> Device::TrySetOutputFormat(
+    int request,
+    const BufferFormat& format) {
+  DVLOGF(4);
+  struct v4l2_format v_format;
+
+  BufferFormatToV4L2Format(v_format, format);
+
+  if (IoctlDevice(request, &v_format) != kIoctlOk) {
+    return absl::nullopt;
+  }
+
+  if (format.fourcc.ToV4L2PixFmt() != v_format.fmt.pix_mp.pixelformat) {
+    DVLOGF(1) << "Format tried is not the format returned.";
+    return absl::nullopt;
+  }
+
+  return V4L2FormatToBufferFormat(v_format);
+}
+
+absl::optional<BufferFormat> Device::TryOutputFormat(
+    const BufferFormat& format) {
+  DVLOGF(4);
+  return TrySetOutputFormat(VIDIOC_TRY_FMT, format);
+}
+
+absl::optional<BufferFormat> Device::SetOutputFormat(
+    const BufferFormat& format) {
+  DVLOGF(4);
+  return TrySetOutputFormat(VIDIOC_S_FMT, format);
 }
 
 // VIDIOC_S_FMT

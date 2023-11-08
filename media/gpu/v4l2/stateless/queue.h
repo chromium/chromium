@@ -69,5 +69,21 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
   VideoCodec codec_;
 };
 
+class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
+ public:
+  static std::unique_ptr<OutputQueue> Create(
+      scoped_refptr<StatelessDevice> device);
+
+  OutputQueue(scoped_refptr<StatelessDevice> device);
+  bool NegotiateFormat();
+  bool PrepareBuffers() override;
+
+ private:
+  std::string Description() override;
+  uint32_t BufferMinimumCount() override;
+
+  BufferFormat buffer_format_;
+};
+
 }  // namespace media
 #endif  // MEDIA_GPU_V4L2_STATELESS_QUEUE_H_
