@@ -16,6 +16,7 @@ namespace remoting {
 class FtlClientUuidDeviceIdProvider : public FtlDeviceIdProvider {
  public:
   FtlClientUuidDeviceIdProvider();
+  explicit FtlClientUuidDeviceIdProvider(const std::string&);
   ~FtlClientUuidDeviceIdProvider() override;
 
   ftl::DeviceId GetDeviceId() override;

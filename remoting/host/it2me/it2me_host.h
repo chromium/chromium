@@ -19,6 +19,7 @@
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog_proxy.h"
 #include "remoting/host/it2me/it2me_constants.h"
+#include "remoting/host/it2me/reconnect_params.h"
 #include "remoting/host/register_support_host_request.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/port_range.h"
@@ -108,6 +109,14 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // If set, only |authorized_helper| will be allowed to connect to this host.
   void set_authorized_helper(const std::string& authorized_helper);
   const std::string& authorized_helper() const { return authorized_helper_; }
+
+  // If set, the host will use `reconnect_params` instead of registering with
+  // the Directory service and generating new IDs and such.
+  void set_reconnect_params(ReconnectParams reconnect_params);
+
+  // Creates a new ReconnectParams struct if reconnections are allowed and the
+  // remote client has connected, otherwise an empty optional is returned.
+  virtual absl::optional<ReconnectParams> CreateReconnectParams() const;
 
   // Creates It2Me host structures and starts the host.
   virtual void Connect(
@@ -208,6 +217,10 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   It2MeHostState state_ = It2MeHostState::kDisconnected;
 
+  absl::optional<ReconnectParams> reconnect_params_;
+
+  std::string support_id_;
+  std::string host_secret_;
   scoped_refptr<RsaKeyPair> host_key_pair_;
   std::unique_ptr<RegisterSupportHostRequest> register_request_;
   std::unique_ptr<HostStatusLogger> host_status_logger_;
@@ -257,6 +270,8 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   // Tracks the JID of the remote user when in a connecting state.
   std::string connecting_jid_;
+
+  base::WeakPtrFactory<It2MeHost> weak_factory_{this};
 };
 
 // Having a factory interface makes it possible for the test to provide a mock

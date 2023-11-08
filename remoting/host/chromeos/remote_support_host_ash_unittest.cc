@@ -71,6 +71,19 @@ class FakeIt2MeHost : public It2MeHost {
   }
   void Disconnect() override {}
 
+  absl::optional<ReconnectParams> CreateReconnectParams() const override {
+    if (is_enterprise_session() && enterprise_params().allow_reconnections) {
+      ReconnectParams reconnect_params;
+      reconnect_params.support_id = "1234567";
+      reconnect_params.host_secret = "12345";
+      reconnect_params.private_key = std::string(384, 'a');
+      reconnect_params.ftl_device_registration_id =
+          "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+      return reconnect_params;
+    }
+    return absl::nullopt;
+  }
+
   bool WaitForConnectCall() {
     bool success = connect_waiter_.Wait();
     connect_waiter_.Clear();

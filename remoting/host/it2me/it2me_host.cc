@@ -105,6 +105,36 @@ void It2MeHost::set_authorized_helper(const std::string& authorized_helper) {
   authorized_helper_ = authorized_helper;
 }
 
+void It2MeHost::set_reconnect_params(ReconnectParams reconnect_params) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  reconnect_params_.emplace(std::move(reconnect_params));
+#else
+  NOTREACHED() << "It2MeHost::set_reconnect_params is only supported on CrOS";
+#endif
+}
+
+absl::optional<ReconnectParams> It2MeHost::CreateReconnectParams() const {
+  absl::optional<ReconnectParams> reconnect_params;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  if (!is_enterprise_session() ||
+      !chrome_os_enterprise_params_->allow_reconnections) {
+    return reconnect_params;
+  }
+  // This function is meant to be queried just after the remote client connects,
+  // otherwise the required fields will not be set.
+  CHECK_EQ(state_, It2MeHostState::kConnected);
+
+  reconnect_params.emplace();
+  reconnect_params->support_id = support_id_;
+  reconnect_params->host_secret = host_secret_;
+  reconnect_params->private_key = host_key_pair_->ToString();
+  signal_strategy_->GetLocalAddress().GetFtlInfo(
+      nullptr, &reconnect_params->ftl_device_registration_id);
+#endif
+
+  return reconnect_params;
+}
+
 void It2MeHost::Connect(
     std::unique_ptr<ChromotingHostContext> host_context,
     base::Value::Dict policies,
@@ -201,16 +231,39 @@ void It2MeHost::ConnectOnNetworkThread(
     }
   }
 
-  // Generate a key pair for the Host to use.
-  // TODO(wez): Move this to the worker thread.
-  host_key_pair_ = RsaKeyPair::Generate();
+  if (!reconnect_params_.has_value()) {
+    // Generate a key pair for the Host to use.
+    host_key_pair_ = RsaKeyPair::Generate();
 
-  // Request registration of the host for support.
-  register_request_ = std::move(connection_context->register_request);
-  register_request_->StartRequest(
-      signal_strategy_.get(), host_key_pair_, authorized_helper_,
-      std::move(chrome_os_enterprise_params_),
-      base::BindOnce(&It2MeHost::OnReceivedSupportID, base::Unretained(this)));
+    // Generate a new host secret for this instance.
+    host_secret_ = GenerateSupportHostSecret();
+
+    // Request registration of the host for support.
+    register_request_ = std::move(connection_context->register_request);
+    register_request_->StartRequest(
+        signal_strategy_.get(), host_key_pair_, authorized_helper_,
+        std::move(chrome_os_enterprise_params_),
+        base::BindOnce(&It2MeHost::OnReceivedSupportID,
+                       base::Unretained(this)));
+  } else {
+    // Reconnections are only allowed for Chrome OS enterprise sessions.
+    CHECK(is_enterprise_session());
+    CHECK(chrome_os_enterprise_params_->allow_reconnections);
+
+    // Regenerate the key pair from the private key.
+    host_key_pair_ = RsaKeyPair::FromString(reconnect_params_->private_key);
+
+    // Restore the host_secret from the previous connection.
+    host_secret_ = reconnect_params_->host_secret;
+
+    // Skip the registration service call as the entry will be retrievable by
+    // the `authorized_helper` for ~24 hours when 'allow_reconnections' is set.
+    host_context_->network_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&It2MeHost::OnReceivedSupportID,
+                                  weak_factory_.GetWeakPtr(),
+                                  reconnect_params_->support_id,
+                                  base::Minutes(5), ErrorCode::OK));
+  }
 
   HOST_LOG << "NAT traversal enabled: " << nat_traversal_enabled_;
   HOST_LOG << "Relay connections allowed: " << relay_connections_allowed_;
@@ -605,10 +658,10 @@ void It2MeHost::OnReceivedSupportID(const std::string& support_id,
     return;
   }
 
-  std::string host_secret = GenerateSupportHostSecret();
-  std::string access_code = support_id + host_secret;
+  support_id_ = support_id;
+  std::string access_code = support_id_ + host_secret_;
   std::string access_code_hash =
-      protocol::GetSharedSecretHash(support_id, access_code);
+      protocol::GetSharedSecretHash(support_id_, access_code);
 
   std::string local_certificate = host_key_pair_->GenerateCertificate();
   if (local_certificate.empty()) {
@@ -653,6 +706,7 @@ void It2MeHost::DisconnectOnNetworkThread(protocol::ErrorCode error_code) {
   host_status_logger_ = nullptr;
   log_to_server_ = nullptr;
   ftl_signaling_connector_ = nullptr;
+  reconnect_params_.reset();
 
   if (signal_strategy_) {
     // Delay destruction of the signaling strategy by a few seconds to give it

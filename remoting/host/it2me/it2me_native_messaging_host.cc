@@ -135,14 +135,19 @@ std::unique_ptr<It2MeHost::DeferredConnectContext>
 CreateNativeSignalingDeferredConnectContext(
     const std::string& username,
     const std::string& access_token,
+    const std::string& ftl_device_registration_id,
     ChromotingHostContext* host_context) {
+  auto device_id_provider =
+      ftl_device_registration_id.empty()
+          ? std::make_unique<FtlClientUuidDeviceIdProvider>()
+          : std::make_unique<FtlClientUuidDeviceIdProvider>(
+                ftl_device_registration_id);
   auto connection_context =
       std::make_unique<It2MeHost::DeferredConnectContext>();
   connection_context->use_ftl_signaling = true;
   connection_context->signal_strategy = std::make_unique<FtlSignalStrategy>(
       std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
-      host_context->url_loader_factory(),
-      std::make_unique<FtlClientUuidDeviceIdProvider>());
+      host_context->url_loader_factory(), std::move(device_id_provider));
   connection_context->register_request =
       std::make_unique<RemotingRegisterSupportHostRequest>(
           std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
@@ -323,6 +328,20 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     }
   }
 
+  absl::optional<ReconnectParams> reconnect_params;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  bool is_enterprise_admin_user =
+      message.FindBool(kIsEnterpriseAdminUser).value_or(false);
+  if (is_enterprise_admin_user) {
+    const auto* reconnect_params_ptr = message.FindDict(kReconnectParamsDict);
+    if (reconnect_params_ptr) {
+      CHECK(message.FindBool(kAllowReconnections).value_or(false));
+      reconnect_params.emplace(
+          ReconnectParams::FromDict(*reconnect_params_ptr));
+    }
+  }
+#endif
+
   It2MeHost::CreateDeferredConnectContext create_connection_context;
   if (use_signaling_proxy) {
     if (username.empty()) {
@@ -338,8 +357,14 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   } else {
     if (!username.empty()) {
       std::string access_token = ExtractAccessToken(message);
-      create_connection_context = base::BindOnce(
-          &CreateNativeSignalingDeferredConnectContext, username, access_token);
+      std::string ftl_device_registration_id;
+      if (reconnect_params.has_value()) {
+        ftl_device_registration_id =
+            reconnect_params->ftl_device_registration_id;
+      }
+      create_connection_context =
+          base::BindOnce(&CreateNativeSignalingDeferredConnectContext, username,
+                         access_token, ftl_device_registration_id);
     } else {
       LOG(ERROR) << kUserName << " not found in request.";
     }
@@ -365,19 +390,20 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     return;
   }
 
-  // Create the It2Me host and start connecting. Note that disabling dialogs is
-  // only supported on ChromeOS.
+  // Create the It2Me host and start connecting.
   it2me_host_ = factory_->CreateIt2MeHost();
   it2me_host_->set_authorized_helper(authorized_helper);
 
   auto dialog_style = It2MeConfirmationDialog::DialogStyle::kConsumer;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  bool is_enterprise_admin_user =
-      message.FindBool(kIsEnterpriseAdminUser).value_or(false);
   if (is_enterprise_admin_user) {
     dialog_style = It2MeConfirmationDialog::DialogStyle::kEnterprise;
     it2me_host_->set_chrome_os_enterprise_params(
         BuildEnterpriseParams(message));
+
+    if (reconnect_params.has_value()) {
+      it2me_host_->set_reconnect_params(std::move(*reconnect_params));
+    }
   }
 #endif
 
@@ -497,19 +523,10 @@ void It2MeNativeMessagingHost::OnStateChanged(It2MeHostState state,
 
     case It2MeHostState::kConnected: {
       message.Set(kClient, client_username_);
-
-      if (it2me_host_->is_enterprise_session() &&
-          it2me_host_->chrome_os_enterprise_params().allow_reconnections) {
-        // These test values are needed so the impl CL can be broken up into
-        // smaller patchsets.
-        // TODO(joedow): Replace them with real values.
+      auto reconnect_params = it2me_host_->CreateReconnectParams();
+      if (reconnect_params.has_value()) {
         message.Set(kReconnectParamsDict,
-                    base::Value::Dict()
-                        .Set(kReconnectSupportId, "1234567")
-                        .Set(kReconnectHostSecret, "12345")
-                        .Set(kReconnectPrivateKey, std::string(384, 'a'))
-                        .Set(kReconnectFtlDeviceRegistrationId,
-                             "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"));
+                    ReconnectParams::ToDict(std::move(*reconnect_params)));
       }
       break;
     }

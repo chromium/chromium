@@ -330,15 +330,8 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     absl::optional<ReconnectParams> reconnect_params;
     const auto* reconnect_params_ptr = message.FindDict(kReconnectParamsDict);
     if (reconnect_params_ptr) {
-      reconnect_params.emplace();
-      reconnect_params->support_id =
-          *reconnect_params_ptr->FindString(kReconnectSupportId);
-      reconnect_params->host_secret =
-          *reconnect_params_ptr->FindString(kReconnectHostSecret);
-      reconnect_params->private_key =
-          *reconnect_params_ptr->FindString(kReconnectPrivateKey);
-      reconnect_params->ftl_device_registration_id =
-          *reconnect_params_ptr->FindString(kReconnectFtlDeviceRegistrationId);
+      reconnect_params.emplace(
+          ReconnectParams::FromDict(*reconnect_params_ptr));
     }
     std::move(host_state_connected_callback_).Run(std::move(reconnect_params));
 
