@@ -2617,6 +2617,20 @@ bool ComputedStyle::IsRenderedInTopLayer(const Element& element) const {
          StyleType() == kPseudoIdBackdrop;
 }
 
+bool ComputedStyle::ApplyControlFixedSize(const Node* node) const {
+  if (FieldSizing() == EFieldSizing::kFixed) {
+    return true;
+  }
+  if (!node) {
+    return false;
+  }
+  const auto* control = DynamicTo<HTMLFormControlElement>(node);
+  if (!control) {
+    control = DynamicTo<HTMLFormControlElement>(node->OwnerShadowHost());
+  }
+  return control && control->GetAutofillState() != WebAutofillState::kNotFilled;
+}
+
 ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style)
     : ComputedStyleBuilderBase(style) {}
 

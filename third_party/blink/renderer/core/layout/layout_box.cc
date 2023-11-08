@@ -1261,7 +1261,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
     return kIndefiniteSize;
   const Element& element = *To<Element>(GetNode());
 
-  const bool apply_fixed_size = StyleRef().ApplyControlFixedSize();
+  const bool apply_fixed_size = StyleRef().ApplyControlFixedSize(&element);
   const auto* select = DynamicTo<HTMLSelectElement>(element);
   if (UNLIKELY(select && select->UsesMenuList())) {
     return apply_fixed_size ? MenuListIntrinsicInlineSize(*select, *this)
@@ -1315,7 +1315,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
     return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartRadio).block_size;
   }
 
-  if (!StyleRef().ApplyControlFixedSize()) {
+  if (!StyleRef().ApplyControlFixedSize(GetNode())) {
     return kIndefiniteSize;
   }
   if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {

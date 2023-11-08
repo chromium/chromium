@@ -2396,10 +2396,10 @@ class ComputedStyle final : public ComputedStyleBase {
             OverflowClipMargin()->GetMargin() != LayoutUnit());
   }
 
-  // Field-sizing utility function
-  bool ApplyControlFixedSize() const {
-    return FieldSizing() == EFieldSizing::kFixed;
-  }
+  // Field-sizing utility function:
+  // Returns true if field-sizing:fixed or node's owner form control is
+  // autofilled.
+  bool ApplyControlFixedSize(const Node* node) const;
 
  private:
   bool IsInlineSizeContainer() const {

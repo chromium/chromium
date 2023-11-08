@@ -293,7 +293,7 @@ absl::optional<LayoutUnit> ContentMinimumInlineSize(
   else
     inline_size += border_padding.InlineSum();
 
-  const bool apply_form_sizing = style.ApplyControlFixedSize();
+  const bool apply_form_sizing = style.ApplyControlFixedSize(node);
   if (block_node.IsTextControl() && apply_form_sizing) {
     return inline_size;
   }

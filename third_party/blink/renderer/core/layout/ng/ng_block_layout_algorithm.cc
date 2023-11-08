@@ -307,7 +307,7 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
     }
 
     if (child.IsTextControlPlaceholder()) {
-      if (Style().ApplyControlFixedSize()) {
+      if (Style().ApplyControlFixedSize(Node().GetDOMNode())) {
         continue;
       }
     }
@@ -3314,7 +3314,7 @@ LayoutUnit NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
 
   const wtf_size_t kTextBlockIndex = 0u;
   LogicalSize available_size = ChildAvailableSize();
-  bool apply_fixed_size = Style().ApplyControlFixedSize();
+  bool apply_fixed_size = Style().ApplyControlFixedSize(Node().GetDOMNode());
   if (container_builder_.Children().size() > 0 && apply_fixed_size) {
     // The placeholder should have the width same as "editing-view-port"
     // element, which is the first grandchild of the text control.
