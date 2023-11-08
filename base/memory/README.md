@@ -64,21 +64,29 @@ WeakPtrFactory as a member. It works like `WeakPtr`, but doesn't allow for a
 null state. There's also overlap with `raw_ptr`, though this was implemented
 first.
 
-## `base::scoped_refptr<T>`
+## `scoped_refptr<T>`
 Use when you want manually managed strong refcounting. Use carefully!
 
 It’s an owning smart pointer, so it owns a pointer to something allocated in the
 heap and gives shared ownership of the underlying object, since it can be
-copied. When all `scoped_refptr`s pointing to the same object are gone, that
+copied. When all `scoped_refptr<T>`s pointing to the same object are gone, that
 object gets destroyed.
 
 This is Chrome's answer to `std::shared_ptr<T>`. It additionally requires T to
 inherit from `RefCounted` or `RefCountedThreadSafe`, since the ref counting
-happens in the object itself, unlike `shared_ptr<T>`. It's preferred for an
-object to remain on the same thread, as `RefCounted` is much cheaper. If there
-are `scoped_refptr`s to the same object on different threads, use
-`RefCountedThreadSafe`, since accesses to the reference count can race.
-In this case, without external synchronization, the destructor can run on any
-thread. If the destructor interacts with other systems it is important to
+happens in the object itself, unlike `shared_ptr<T>`.
+
+It's preferred for an object to remain on the same thread, as `RefCounted` is
+much cheaper. If there are `scoped_refptr<T>`s to the same object on different
+threads, use `RefCountedThreadSafe`, since accesses to the reference count can
+race. In this case, without external synchronization, the destructor of
+`scoped_refptr<T>`, which decreases the reference count by one, can run on any
+thread.
+
+Inheriting from `RefCountedThreadSafe` by itself doesn't make a class `T` or the
+underlying object of `scoped_refptr<T>` thread-safe: It merely ensures that the
+counter manipulated by `scoped_refptr<T>` is thread-safe.
+
+If the destructor interacts with other systems it is important to
 control and know which thread has the last reference to the object, or you can
 end up with flakiness.
