@@ -15,8 +15,8 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
 
   void AddObserver(sessions::TabRestoreServiceObserver* observer) override;
   void RemoveObserver(sessions::TabRestoreServiceObserver* observer) override;
-  absl::optional<SessionID> CreateHistoricalTab(sessions::LiveTab* live_tab,
-                                                int index) override;
+  std::optional<SessionID> CreateHistoricalTab(sessions::LiveTab* live_tab,
+                                               int index) override;
   void BrowserClosing(sessions::LiveTabContext* context) override;
   void BrowserClosed(sessions::LiveTabContext* context) override;
   void CreateHistoricalGroup(sessions::LiveTabContext* context,

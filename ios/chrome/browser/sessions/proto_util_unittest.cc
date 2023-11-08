@@ -4,9 +4,10 @@
 
 #include "ios/chrome/browser/sessions/proto_util.h"
 
+#include <optional>
+
 #include "ios/chrome/browser/sessions/proto/storage.pb.h"
 #include "testing/platform_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ProtoUtilTest = PlatformTest;
 
@@ -23,7 +24,7 @@ ios::proto::OpenerStorage CreateOpenerStorage(int index, int navigation_index) {
 // Helper function to create a WebStateListItemStorage.
 ios::proto::WebStateListItemStorage CreateWebStateListItemStorage(
     int identifier,
-    absl::optional<ios::proto::OpenerStorage> opener = absl::nullopt) {
+    std::optional<ios::proto::OpenerStorage> opener = std::nullopt) {
   ios::proto::WebStateListItemStorage storage;
   storage.set_identifier(identifier);
   if (opener) {

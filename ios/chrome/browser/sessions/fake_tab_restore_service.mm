@@ -20,7 +20,7 @@ void FakeTabRestoreService::RemoveObserver(
   NOTREACHED();
 }
 
-absl::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
+std::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
     sessions::LiveTab* live_tab,
     int index) {
   auto tab = std::make_unique<Tab>();
@@ -32,7 +32,7 @@ absl::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
     tab->navigations[i] = entry;
   }
   entries_.push_front(std::move(tab));
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FakeTabRestoreService::BrowserClosing(sessions::LiveTabContext* context) {
