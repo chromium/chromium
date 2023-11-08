@@ -90,14 +90,16 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
 }
 
 bool IsFormatSupported(viz::SharedImageFormat format,
-                       gfx::GpuMemoryBufferType gmb_type) {
-#if BUILDFLAG(IS_LINUX)
-  if (format.IsLegacyMultiplanar() || format.PrefersExternalSampler()) {
-    // ExternalVkImageBacking doesn't work properly with external sampler
-    // multi-planar formats on Linux, see https://crbug.com/1394888.
-    return false;
+                       gfx::GpuMemoryBufferType gmb_type,
+                       uint32_t usage) {
+  if (usage & SHARED_IMAGE_USAGE_GLES2 ||
+      usage & SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT) {
+    if (format.IsLegacyMultiplanar() || format.PrefersExternalSampler()) {
+      // GL interop does not work with external sampler. Also, see
+      // https://crbug.com/1394888.
+      return false;
+    }
   }
-#endif
 
   if (format.is_multi_plane()) {
     if (gmb_type != gfx::GpuMemoryBufferType::EMPTY_BUFFER) {
@@ -284,7 +286,7 @@ bool ExternalVkImageBackingFactory::IsSupported(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
-  if (!IsFormatSupported(format, gmb_type)) {
+  if (!IsFormatSupported(format, gmb_type, usage)) {
     return false;
   }
 
