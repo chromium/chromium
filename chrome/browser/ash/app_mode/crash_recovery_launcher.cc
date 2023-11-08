@@ -23,7 +23,7 @@ CrashRecoveryLauncher::CrashRecoveryLauncher(Profile& profile,
         /*network_delegate=*/this);
   } else {
     app_launcher_ = std::make_unique<WebKioskAppServiceLauncher>(
-        &profile, *kiosk_app_id.account_id, /*network_delegate=*/this);
+        &profile, kiosk_app_id.account_id, /*network_delegate=*/this);
   }
   observation_.Observe(app_launcher_.get());
 }

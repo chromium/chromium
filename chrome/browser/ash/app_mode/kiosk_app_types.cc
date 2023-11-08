@@ -24,7 +24,7 @@ void CheckChromeAppIdIsValid(std::string_view id) {
       << "Invalid Chrome App ID: " << id;
 }
 
-std::string KioskAppTypeToString(KioskAppType type) {
+std::string ToString(KioskAppType type) {
   switch (type) {
     case KioskAppType::kArcApp:
       return "ArcKiosk";
@@ -39,9 +39,9 @@ std::string KioskAppTypeToString(KioskAppType type) {
 
 // static
 KioskAppId KioskAppId::ForChromeApp(std::string_view chrome_app_id,
-                                    absl::optional<AccountId> account_id) {
+                                    const AccountId& account_id) {
   // TODO(b/304937903) upgrade to CHECK.
-  DUMP_WILL_BE_CHECK(!account_id.has_value() || account_id->is_valid());
+  DUMP_WILL_BE_CHECK(account_id.is_valid());
   return KioskAppId(chrome_app_id, account_id);
 }
 
@@ -61,7 +61,7 @@ KioskAppId KioskAppId::ForWebApp(const AccountId& account_id) {
 
 KioskAppId::KioskAppId() = default;
 KioskAppId::KioskAppId(std::string_view chrome_app_id,
-                       absl::optional<AccountId> account_id)
+                       const AccountId& account_id)
     : type(KioskAppType::kChromeApp),
       app_id(chrome_app_id),
       account_id(account_id) {
@@ -73,17 +73,12 @@ KioskAppId::KioskAppId(const KioskAppId&) = default;
 KioskAppId::~KioskAppId() = default;
 
 std::ostream& operator<<(std::ostream& stream, const KioskAppId& id) {
-  stream << "{type: " << KioskAppTypeToString(id.type);
-
-  if (id.account_id.has_value()) {
-    stream << ", account_id: " << id.account_id.value();
-  }
+  stream << "{type: " << ToString(id.type);
+  stream << ", account_id: " << id.account_id;
   if (id.app_id.has_value()) {
     stream << ", app_id: " << id.app_id.value();
   }
-
-  stream << "}";
-  return stream;
+  return stream << "}";
 }
 
 }  // namespace ash

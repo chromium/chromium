@@ -168,7 +168,7 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
           network_delegate);
     case KioskAppType::kWebApp:
       return std::make_unique<WebKioskAppServiceLauncher>(
-          profile, kiosk_app_id.account_id.value(), network_delegate);
+          profile, kiosk_app_id.account_id, network_delegate);
   }
 }
 
@@ -337,12 +337,9 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
     return;
   }
 
-  // TODO(b/304981820) remove checks once account_id is no longer optional.
-  CHECK(kiosk_app_id.account_id.has_value());
-  CHECK(kiosk_app_id.account_id.value().is_valid());
-
+  CHECK(kiosk_app_id.account_id.is_valid());
   kiosk_profile_loader_ = std::make_unique<KioskProfileLoader>(
-      kiosk_app_id_.account_id.value(), kiosk_app_id_.type, /*delegate=*/this);
+      kiosk_app_id_.account_id, kiosk_app_id_.type, /*delegate=*/this);
   kiosk_profile_loader_->Start();
 }
 
@@ -466,11 +463,9 @@ void KioskLaunchController::OnCancelAppLaunch() {
 
 AppLaunchSplashScreenView::Data
 KioskLaunchController::GetSplashScreenAppData() {
-  // TODO(b/306117645) upgrade to CHECK.
-  DUMP_WILL_BE_CHECK(kiosk_app_id_.account_id.has_value());
-
   absl::optional<KioskApp> app =
       KioskController::Get().GetAppById(kiosk_app_id_);
+  // TODO(b/306117645) upgrade to CHECK.
   DUMP_WILL_BE_CHECK(app.has_value());
 
   if (!app.has_value()) {

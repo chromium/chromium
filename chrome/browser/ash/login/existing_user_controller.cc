@@ -1608,7 +1608,8 @@ void ExistingUserController::DoLogin(const UserContext& user_context,
 
   if (user_context.GetUserType() == user_manager::USER_TYPE_KIOSK_APP) {
     LoginAsKioskApp(
-        KioskAppId::ForChromeApp(user_context.GetAccountId().GetUserEmail()));
+        KioskAppId::ForChromeApp(user_context.GetAccountId().GetUserEmail(),
+                                 user_context.GetAccountId()));
     return;
   }
 

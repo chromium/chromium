@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -98,13 +99,11 @@ absl::optional<KioskApp> KioskController::GetAppById(
     const KioskAppId& app_id) const {
   switch (app_id.type) {
     case KioskAppType::kWebApp:
-      CHECK(app_id.account_id.has_value());
-      return WebAppById(web_app_manager_.get(), app_id.account_id.value());
+      return WebAppById(web_app_manager_.get(), app_id.account_id);
     case KioskAppType::kChromeApp:
       return ChromeAppById(chrome_app_manager_.get(), app_id.app_id.value());
     case KioskAppType::kArcApp:
-      CHECK(app_id.account_id.has_value());
-      return ArcAppById(arc_app_manager_.get(), app_id.account_id.value());
+      return ArcAppById(arc_app_manager_.get(), app_id.account_id);
   }
 }
 

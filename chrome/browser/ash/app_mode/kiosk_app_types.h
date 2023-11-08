@@ -19,9 +19,8 @@ enum class KioskAppType { kArcApp, kChromeApp, kWebApp };
 // Universal identifier for Kiosk apps.
 class KioskAppId {
  public:
-  static KioskAppId ForChromeApp(
-      std::string_view chrome_app_id,
-      absl::optional<AccountId> account_id = absl::nullopt);
+  static KioskAppId ForChromeApp(std::string_view chrome_app_id,
+                                 const AccountId& account_id);
   static KioskAppId ForWebApp(const AccountId& account_id);
   static KioskAppId ForArcApp(const AccountId& account_id);
 
@@ -31,11 +30,10 @@ class KioskAppId {
 
   KioskAppType type;
   absl::optional<std::string> app_id;
-  absl::optional<AccountId> account_id;
+  AccountId account_id;
 
  private:
-  KioskAppId(std::string_view chrome_app_id,
-             absl::optional<AccountId> account_id);
+  KioskAppId(std::string_view chrome_app_id, const AccountId& account_id);
   KioskAppId(KioskAppType type, const AccountId& account_id);
 };
 

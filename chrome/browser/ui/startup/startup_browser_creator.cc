@@ -996,7 +996,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     if (user && user->GetType() == user_manager::USER_TYPE_KIOSK_APP) {
       ash::LaunchAppOrDie(
           profile, ash::KioskAppId::ForChromeApp(
-                       command_line.GetSwitchValueASCII(switches::kAppId)));
+                       command_line.GetSwitchValueASCII(switches::kAppId),
+                       user->GetAccountId()));
     } else if (user &&
                user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP) {
       ash::LaunchAppOrDie(profile,

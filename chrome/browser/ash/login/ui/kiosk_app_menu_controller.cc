@@ -61,16 +61,14 @@ gfx::ImageSkia IconOrDefault(gfx::ImageSkia icon) {
 }
 
 KioskAppMenuEntry ToMenuEntry(const KioskApp& app) {
-  return KioskAppMenuEntry(ToMenuEntryType(app.id().type),
-                           app.id().account_id.value(), app.id().app_id,
-                           base::UTF8ToUTF16(app.name()),
+  return KioskAppMenuEntry(ToMenuEntryType(app.id().type), app.id().account_id,
+                           app.id().app_id, base::UTF8ToUTF16(app.name()),
                            IconOrDefault(app.icon()));
 }
 
 std::vector<KioskAppMenuEntry> BuildKioskAppMenuEntries() {
   std::vector<KioskAppMenuEntry> menu_entries;
   for (const KioskApp& app : KioskController::Get().GetApps()) {
-    CHECK(app.id().account_id.has_value());
     menu_entries.push_back(ToMenuEntry(app));
   }
   return menu_entries;

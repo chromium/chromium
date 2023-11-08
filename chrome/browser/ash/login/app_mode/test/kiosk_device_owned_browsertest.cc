@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   // not possible to inject an auto-launch policy before it runs.
   LoginDisplayHost* login_display_host = LoginDisplayHost::default_host();
   ASSERT_TRUE(login_display_host);
-  login_display_host->StartKiosk(KioskAppId::ForChromeApp(test_app_id()), true);
+  login_display_host->StartKiosk(test_kiosk_app().id(), true);
 
   // Check that no launch has started.
   EXPECT_FALSE(login_display_host->GetKioskLaunchController());

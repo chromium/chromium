@@ -30,13 +30,13 @@
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
+#include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -437,11 +437,7 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorForKiosk, MigrateOnKioskLaunch) {
 
   // Register app in `KioskController` so its `AccountId` can be retrieved.
   PrepareAppLaunch();
-  absl::optional<KioskApp> app = KioskController::Get().GetAppById(
-      KioskAppId::ForChromeApp(test_app_id()));
-  ASSERT_TRUE(app.has_value());
-  ASSERT_TRUE(app->id().account_id.has_value());
-  CreatePreferenceFileForProfile(app->id().account_id.value());
+  CreatePreferenceFileForProfile(test_kiosk_app().id().account_id);
 
   base::RunLoop run_loop;
   ScopedRestartAttemptForTesting scoped_restart_attempt(

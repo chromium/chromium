@@ -24,6 +24,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -130,6 +131,7 @@ class KioskBaseTest : public OobeBaseTest {
                   const std::string& version = "1.0.0",
                   const std::string& crx_file = "");
 
+  KioskApp test_kiosk_app() const;
   const std::string& test_app_id() const { return test_app_id_; }
   const std::string& test_app_version() const { return test_app_version_; }
   const std::string& test_crx_file() const { return test_crx_file_; }

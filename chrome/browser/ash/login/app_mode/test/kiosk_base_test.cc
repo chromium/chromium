@@ -15,11 +15,15 @@
 #include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_mode/kiosk_app.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
@@ -373,6 +377,16 @@ void KioskBaseTest::SetTestApp(const std::string& app_id,
   test_app_id_ = app_id;
   test_crx_file_ = (crx_file == "") ? app_id + ".crx" : crx_file;
   test_app_version_ = version;
+}
+
+KioskApp KioskBaseTest::test_kiosk_app() const {
+  for (const KioskApp& app : KioskController::Get().GetApps()) {
+    if (app.id().type == KioskAppType::kChromeApp &&
+        app.id().app_id.value() == test_app_id()) {
+      return app;
+    }
+  }
+  NOTREACHED_NORETURN() << "App not in KioskController: " << test_app_id();
 }
 
 }  // namespace ash

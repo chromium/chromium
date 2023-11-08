@@ -289,8 +289,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   void CleanUpController() { controller().CleanUp(); }
 
   void LoginFakeUser() {
-    fake_user_manager_->AddWebKioskAppUser(kiosk_app_id().account_id.value());
-    fake_user_manager_->LoginUser(kiosk_app_id().account_id.value());
+    fake_user_manager_->AddWebKioskAppUser(kiosk_app_id().account_id);
+    fake_user_manager_->LoginUser(kiosk_app_id().account_id);
   }
 
  private:
@@ -306,8 +306,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     kiosk_app_id_ = KioskAppId::ForWebApp(account_id);
 
     kiosk_controller_holder_ = std::make_unique<KioskControllerHolder>();
-    WebKioskAppManager::Get()->AddAppForTesting(
-        kiosk_app_id_.account_id.value(), GURL(kInstallUrl));
+    WebKioskAppManager::Get()->AddAppForTesting(kiosk_app_id_.account_id,
+                                                GURL(kInstallUrl));
   }
 
   std::unique_ptr<KioskAppLauncher> BuildFakeKioskAppLauncher(
@@ -867,8 +867,8 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
         testing_profile_manager_.CreateTestingProfile("testing_profile@test");
     crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
     SetUpKioskAppId();
-    fake_user_manager_->AddWebKioskAppUser(kiosk_app_id().account_id.value());
-    fake_user_manager_->LoginUser(kiosk_app_id().account_id.value());
+    fake_user_manager_->AddWebKioskAppUser(kiosk_app_id().account_id);
+    fake_user_manager_->LoginUser(kiosk_app_id().account_id);
     ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabledInWebKioskSession());
 
     keyboard_controller_client_ =
@@ -950,8 +950,8 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
 
   void SetUpKioskAppInAppManager() {
     kiosk_controller_holder_ = std::make_unique<KioskControllerHolder>();
-    WebKioskAppManager::Get()->AddAppForTesting(
-        kiosk_app_id_.account_id.value(), GURL(kInstallUrl));
+    WebKioskAppManager::Get()->AddAppForTesting(kiosk_app_id_.account_id,
+                                                GURL(kInstallUrl));
   }
 
   std::unique_ptr<KioskAppLauncher> BuildFakeKioskAppLauncher(
