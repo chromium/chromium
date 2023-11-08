@@ -1721,6 +1721,8 @@ static_library("browser") {
     "ssl/chrome_security_blocking_page_factory.h",
     "ssl/connection_help_tab_helper.cc",
     "ssl/connection_help_tab_helper.h",
+    "ssl/daily_navigation_counter.cc",
+    "ssl/daily_navigation_counter.h",
     "ssl/https_defaulted_callbacks.cc",
     "ssl/https_defaulted_callbacks.h",
     "ssl/https_first_mode_settings_tracker.cc",

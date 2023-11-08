@@ -6350,6 +6350,7 @@ test("unit_tests") {
     "../browser/ssl/certificate_error_reporter_unittest.cc",
     "../browser/ssl/certificate_reporting_test_utils.cc",
     "../browser/ssl/certificate_reporting_test_utils.h",
+    "../browser/ssl/daily_navigation_counter_unittest.cc",
     "../browser/ssl/https_first_mode_settings_tracker_unittest.cc",
     "../browser/ssl/security_state_tab_helper_unittest.cc",
     "../browser/ssl/ssl_config_service_manager_unittest.cc",
