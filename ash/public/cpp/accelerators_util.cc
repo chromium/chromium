@@ -99,6 +99,12 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
   return *key_display_map;
 }
 
+bool IsValidDomCode(ui::DomCode dom_code) {
+  return ui::KeycodeConverter::InvalidNativeKeycode() !=
+         ui::KeycodeConverter::UsbKeycodeToNativeKeycode(
+             static_cast<int32_t>(dom_code));
+}
+
 }  // namespace
 
 namespace ash {
@@ -124,7 +130,8 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
     ui::DomCode dom_code =
         ui::KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(key_code);
     if (dom_code != ui::DomCode::NONE) {
-      if (layout_engine->Lookup(dom_code, /*event_flags=*/ui::EF_NONE, &dom_key,
+      if (IsValidDomCode(dom_code) &&
+          layout_engine->Lookup(dom_code, /*event_flags=*/ui::EF_NONE, &dom_key,
                                 &key_code_to_compare)) {
         if (dom_key.IsDeadKey()) {
           return GetStringForDeadKey(dom_key);
@@ -148,7 +155,8 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
 
   // Cache miss, get the key string and store it.
   for (const auto& dom_code : ui::kDomCodesArray) {
-    if (!layout_engine->Lookup(dom_code, /*event_flags=*/ui::EF_NONE, &dom_key,
+    if (IsValidDomCode(dom_code) &&
+        !layout_engine->Lookup(dom_code, /*event_flags=*/ui::EF_NONE, &dom_key,
                                &key_code_to_compare)) {
       continue;
     }
