@@ -3453,9 +3453,8 @@ void LineBreaker::Rewind(unsigned new_end, LineInfo* line_info) {
       HandleEmptyText(items[current_.item_index], line_info);
     }
   } else {
-    // When rewinding all items, use |results[0].start_offset|.
-    const InlineItemResult& first_remove = item_results[new_end];
-    current_ = first_remove.Start();
+    // Rewinding all items.
+    current_ = line_info->Start();
     trailing_whitespace_ = WhitespaceState::kLeading;
     maybe_have_end_overhang_ = false;
   }
