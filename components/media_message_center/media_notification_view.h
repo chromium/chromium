@@ -26,6 +26,7 @@ namespace media_message_center {
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationView
     : public views::View {
   METADATA_HEADER(MediaNotificationView, views::View)
+
  public:
   // When |forced_expanded_state| has a value, the notification will be forced
   // into that expanded state and the user won't be given a button to toggle the

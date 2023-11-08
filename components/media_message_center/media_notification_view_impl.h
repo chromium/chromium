@@ -34,9 +34,9 @@ class MediaNotificationItem;
 
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
     : public MediaNotificationView {
- public:
-  METADATA_HEADER(MediaNotificationViewImpl);
+  METADATA_HEADER(MediaNotificationViewImpl, MediaNotificationView)
 
+ public:
   // The type of metadata that was displayed. This is used in metrics so new
   // values must only be added to the end.
   enum class Metadata {
