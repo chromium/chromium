@@ -194,6 +194,10 @@ SupportedFormats GetSupportedFormatsInternal(
 
     absl::optional<webrtc::SdpVideoFormat> format = VEAToWebRTCFormat(profile);
     if (format) {
+      if (format->IsCodecInList(supported_formats.sdp_formats)) {
+        continue;
+      }
+
       supported_formats.profiles.push_back(profile.profile);
       supported_formats.scalability_modes.push_back(profile.scalability_modes);
       supported_formats.sdp_formats.push_back(std::move(*format));
@@ -217,6 +221,11 @@ SupportedFormats GetSupportedFormatsInternal(
 #endif
     }
   }
+
+  DCHECK_EQ(supported_formats.profiles.size(),
+            supported_formats.sdp_formats.size());
+  DCHECK_EQ(supported_formats.profiles.size(),
+            supported_formats.scalability_modes.size());
 
   return supported_formats;
 }
