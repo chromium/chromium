@@ -784,7 +784,7 @@ bool FormDataImporter::ProcessExtractedCreditCard(
 
 bool FormDataImporter::ProcessIbanImportCandidate(
     const Iban& iban_import_candidate) {
-  return iban_save_manager_->AttemptToOfferIbanLocalSave(iban_import_candidate);
+  return iban_save_manager_->AttemptToOfferSave(iban_import_candidate);
 }
 
 absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(

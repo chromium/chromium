@@ -73,13 +73,66 @@ bool IbanSaveManager::IsIbanUploadEnabled(
   return true;
 }
 
-bool IbanSaveManager::AttemptToOfferIbanLocalSave(
-    const Iban& iban_import_candidate) {
+bool IbanSaveManager::AttemptToOfferSave(const Iban& import_candidate) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (!ShouldOfferLocalSave(iban_import_candidate)) {
-    return false;
+  switch (DetermineHowToSaveIban(import_candidate)) {
+    case TypeOfOfferToSave::kDoNotOfferToSave:
+      return false;
+    case TypeOfOfferToSave::kOfferServerSave:
+      return AttemptToOfferUploadSave(import_candidate);
+    case TypeOfOfferToSave::kOfferLocalSave:
+      return AttemptToOfferLocalSave(import_candidate);
   }
-  iban_save_candidate_ = iban_import_candidate;
+#else
+  // IBAN save prompts do not currently exist on mobile.
+  return false;
+#endif
+}
+
+IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
+    const Iban& import_candidate) const {
+  // Server IBANs are ideal and should not offer to resave to the server or
+  // locally.
+  if (MatchesExistingServerIban(import_candidate)) {
+    return TypeOfOfferToSave::kDoNotOfferToSave;
+  }
+
+  // Trigger server save if available, otherwise local save as long as the IBAN
+  // isn't already saved locally.
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableServerIban) &&
+      IsIbanUploadEnabled(client_->GetSyncService())) {
+    return TypeOfOfferToSave::kOfferServerSave;
+  } else if (!MatchesExistingLocalIban(import_candidate)) {
+    return TypeOfOfferToSave::kOfferLocalSave;
+  }
+  return TypeOfOfferToSave::kDoNotOfferToSave;
+}
+
+bool IbanSaveManager::MatchesExistingLocalIban(
+    const Iban& import_candidate) const {
+  return base::ranges::any_of(
+      personal_data_manager_->GetLocalIbans(), [&](const Iban* iban) {
+        return iban->value() == import_candidate.value();
+      });
+}
+
+bool IbanSaveManager::MatchesExistingServerIban(
+    const Iban& import_candidate) const {
+  return std::ranges::any_of(
+      personal_data_manager_->GetServerIbans(),
+      [&import_candidate](const auto& iban) {
+        return iban->MatchesPrefixSuffixAndLength(import_candidate);
+      });
+}
+
+bool IbanSaveManager::AttemptToOfferLocalSave(const Iban& import_candidate) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  iban_save_candidate_ = import_candidate;
+
+  if (observer_for_testing_) {
+    observer_for_testing_->OnOfferLocalSave();
+  }
+
   // If the max strikes limit has been reached, do not show the IBAN save
   // prompt.
   bool show_save_prompt =
@@ -88,10 +141,6 @@ bool IbanSaveManager::AttemptToOfferIbanLocalSave(
   if (!show_save_prompt) {
     autofill_metrics::LogIbanSaveNotOfferedDueToMaxStrikesMetric(
         AutofillMetrics::SaveTypeMetric::LOCAL);
-  }
-
-  if (observer_for_testing_) {
-    observer_for_testing_->OnOfferLocalSave();
   }
 
   // If `show_save_prompt`'s value is false, desktop builds will still offer
@@ -107,33 +156,7 @@ bool IbanSaveManager::AttemptToOfferIbanLocalSave(
 #endif
 }
 
-bool IbanSaveManager::ShouldOfferLocalSave(
-    const Iban& iban_import_candidate) const {
-  // Only offer to save new IBANs. Users can go to the payment methods settings
-  // page to update existing IBANs if desired.
-  return base::ranges::none_of(
-      personal_data_manager_->GetLocalIbans(), [&](const auto& iban) {
-        return iban->value() == iban_import_candidate.value();
-      });
-}
-
-bool IbanSaveManager::ShouldOfferUploadSave(
-    const Iban& iban_import_candidate) const {
-  if (!base::FeatureList::IsEnabled(features::kAutofillEnableServerIban) ||
-      !IsIbanUploadEnabled(client_->GetSyncService())) {
-    return false;
-  }
-
-  // Offer server save for this IBAN if it doesn't already match an existing
-  // server IBAN.
-  return std::ranges::none_of(
-      personal_data_manager_->GetServerIbans(),
-      [&iban_import_candidate](const auto& iban) {
-        return iban->MatchesPrefixSuffixAndLength(iban_import_candidate);
-      });
-}
-
-bool IbanSaveManager::OfferUploadSave(const Iban& import_candidate) {
+bool IbanSaveManager::AttemptToOfferUploadSave(const Iban& import_candidate) {
   iban_save_candidate_ = import_candidate;
   // If the max strikes limit has been reached, do not show the save prompt.
   bool show_save_prompt =
@@ -213,7 +236,9 @@ void IbanSaveManager::OnDidGetUploadDetails(
   }
 
   // If the upload details request failed, attempt to offer local save.
-  AttemptToOfferIbanLocalSave(iban_save_candidate_);
+  if (!MatchesExistingLocalIban(iban_save_candidate_)) {
+    AttemptToOfferLocalSave(iban_save_candidate_);
+  }
 }
 
 }  // namespace autofill

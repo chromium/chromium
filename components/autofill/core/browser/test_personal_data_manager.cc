@@ -384,6 +384,7 @@ void TestPersonalDataManager::AddAutofillOfferData(
 }
 
 void TestPersonalDataManager::AddServerIban(const Iban& iban) {
+  CHECK(iban.value().empty());
   server_ibans_.push_back(std::make_unique<Iban>(iban));
   NotifyPersonalDataObserver();
 }
