@@ -58,8 +58,6 @@ class InstallFromInfoJob {
   base::Value ToDebugValue() const;
 
  private:
-  void Abort(webapps::InstallResultCode code);
-
   void OnInstallCompleted(const webapps::AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);

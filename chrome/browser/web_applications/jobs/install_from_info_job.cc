@@ -104,20 +104,10 @@ base::Value InstallFromInfoJob::ToDebugValue() const {
   return base::Value(debug_value_.Clone());
 }
 
-void InstallFromInfoJob::Abort(webapps::InstallResultCode code) {
-  debug_value_.Set("result_code", base::ToString(code));
-  if (!callback_) {
-    return;
-  }
-  webapps::InstallableMetrics::TrackInstallResult(false);
-  SignalCompletionAndSelfDestruct(code, OsHooksErrors());
-}
-
 void InstallFromInfoJob::OnInstallCompleted(const webapps::AppId& app_id,
                                             webapps::InstallResultCode code,
                                             OsHooksErrors os_hook_errors) {
   debug_value_.Set("result_code", base::ToString(code));
-  webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
   SignalCompletionAndSelfDestruct(code, os_hook_errors);
 }
 

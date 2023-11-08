@@ -140,11 +140,13 @@ void InstallFromInfoCommand::OnInstallFromInfoJobCompleted(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hook_errors) {
-  webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
-  if (!webapps::IsSuccess(code)) {
+  bool was_install_success = webapps::IsSuccess(code);
+  if (!was_install_success) {
     Abort(code);
     return;
   }
+
+  webapps::InstallableMetrics::TrackInstallResult(was_install_success);
 
   uninstall_and_replace_job_.emplace(
       &profile_.get(), *lock_, std::move(apps_or_extensions_to_uninstall_),
