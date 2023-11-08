@@ -18,6 +18,43 @@ static const char** g_argv = nullptr;
 static std::unique_ptr<content::ContentMainRunner> g_main_runner;
 static std::unique_ptr<content::ShellMainDelegate> g_main_delegate;
 
+namespace {
+
+void PopulateUIWindow(UIWindow* window) {
+  window.backgroundColor = UIColor.whiteColor;
+  [window makeKeyAndVisible];
+  CGRect bounds = UIScreen.mainScreen.bounds;
+  // Add a label to show the web test is running.
+  UILabel* label = [[UILabel alloc] initWithFrame:bounds];
+  label.text = @"Running the web tests...";
+  label.textAlignment = NSTextAlignmentCenter;
+  [window addSubview:label];
+
+  // An NSInternalInconsistencyException is thrown if the app doesn't have a
+  // root view controller. Set an empty one here.
+  window.rootViewController = [[UIViewController alloc] init];
+}
+
+}  // namespace
+
+@interface WebTestAppSceneDelegate : UIResponder <UIWindowSceneDelegate> {
+  UIWindow* __strong _window;
+}
+
+@end
+
+@implementation WebTestAppSceneDelegate
+
+- (void)scene:(UIScene*)scene
+    willConnectToSession:(UISceneSession*)session
+                 options:(UISceneConnectionOptions*)connectionOptions {
+  _window =
+      [[UIWindow alloc] initWithWindowScene:static_cast<UIWindowScene*>(scene)];
+  PopulateUIWindow(_window);
+}
+
+@end
+
 @interface WebTestApplication : UIApplication
 - (BOOL)isRunningTests;
 @end
@@ -30,7 +67,9 @@ static std::unique_ptr<content::ShellMainDelegate> g_main_delegate;
 }
 @end
 
-@interface WebTestDelegate : UIResponder <UIApplicationDelegate>
+@interface WebTestDelegate : UIResponder <UIApplicationDelegate> {
+  UIWindow* __strong _window;
+}
 @end
 
 @implementation WebTestDelegate
@@ -42,6 +81,7 @@ static std::unique_ptr<content::ShellMainDelegate> g_main_delegate;
   UISceneConfiguration* configuration =
       [[UISceneConfiguration alloc] initWithName:nil
                                      sessionRole:connectingSceneSession.role];
+  configuration.delegateClass = WebTestAppSceneDelegate.class;
   return configuration;
 }
 
