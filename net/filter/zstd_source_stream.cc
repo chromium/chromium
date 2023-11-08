@@ -5,6 +5,7 @@
 #include "net/filter/zstd_source_stream.h"
 
 #include <algorithm>
+#include <unordered_map>
 #include <utility>
 
 #define ZSTD_STATIC_LINKING_ONLY
