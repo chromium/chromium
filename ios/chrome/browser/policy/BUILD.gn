@@ -68,6 +68,7 @@ source_set("policy") {
     "//components/commerce/core:pref_names",
     "//components/component_updater",
     "//components/enterprise",
+    "//components/enterprise/idle",
     "//components/history/core/common",
     "//components/keyed_service/ios",
     "//components/metrics",

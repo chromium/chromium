@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/dom_distiller/model/dom_distiller_service_factory.h"
 #import "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/download/model/browser_download_service_factory.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
@@ -118,6 +119,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   autofill::PersonalDataManagerFactory::GetInstance();
   commerce::ShoppingServiceFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
+  enterprise_idle::IdleServiceFactory::GetInstance();
   feature_engagement::TrackerFactory::GetInstance();
   ios::AboutSigninInternalsFactory::GetInstance();
   ios::AccountBookmarkSyncServiceFactory::GetInstance();

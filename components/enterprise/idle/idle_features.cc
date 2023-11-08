@@ -5,7 +5,9 @@
 #include "components/enterprise/idle/idle_features.h"
 
 namespace enterprise_idle {
-
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kIdleTimeout, "IdleTimeout", base::FEATURE_DISABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kIdleTimeout, "IdleTimeout", base::FEATURE_ENABLED_BY_DEFAULT);
-
+#endif  // BUILDFLAG(IS_IOS)
 }  // namespace enterprise_idle

@@ -20,6 +20,7 @@
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/idle/idle_pref_names.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/flags_ui/pref_service_flags_storage.h"
 #import "components/handoff/handoff_manager.h"
@@ -310,6 +311,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterDictionaryPref(prefs::kOverflowMenuDestinationUsageHistory,
                                    PrefRegistry::LOSSY_PREF);
+  registry->RegisterTimePref(enterprise_idle::prefs::kLastActiveTimestamp,
+                             base::Time(), PrefRegistry::LOSSY_PREF);
   registry->RegisterListPref(prefs::kOverflowMenuNewDestinations,
                              PrefRegistry::LOSSY_PREF);
   registry->RegisterListPref(prefs::kOverflowMenuDestinationsOrder);

@@ -494,7 +494,7 @@ test("components_unittests") {
     ]
   }
 
-  if (is_linux || is_win || is_mac || is_android) {
+  if (is_linux || is_win || is_mac || is_android || is_ios) {
     deps += [ "//components/enterprise/idle:unit_tests" ]
   }
 

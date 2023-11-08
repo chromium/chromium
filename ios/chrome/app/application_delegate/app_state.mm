@@ -16,6 +16,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
 #import "base/task/bind_post_task.h"
+#import "components/enterprise/idle/idle_features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/metrics/model/web_state_list_metrics_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
@@ -245,6 +247,15 @@ void FlushCookieStoreOnIOThread(
     return;
   }
 
+  // mainBrowserState may be empty in tests e.g.
+  // `AppStateTest.applicationWillEnterForeground`.
+  if (self.mainBrowserState &&
+      base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
+    enterprise_idle::IdleServiceFactory::GetForBrowserState(
+        self.mainBrowserState)
+        ->OnApplicationWillEnterBackground();
+  }
+
   [MetricsMediator
       applicationDidEnterBackground:[memoryHelper
                                         foregroundMemoryWarningCount]];
@@ -319,6 +330,11 @@ void FlushCookieStoreOnIOThread(
   if (self.mainBrowserState) {
     AuthenticationServiceFactory::GetForBrowserState(self.mainBrowserState)
         ->OnApplicationWillEnterForeground();
+    if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
+      enterprise_idle::IdleServiceFactory::GetForBrowserState(
+          self.mainBrowserState)
+          ->OnApplicationWillEnterForeground();
+    }
   }
 
   crash_keys::SetCurrentlyInBackground(false);

@@ -9,6 +9,9 @@ namespace enterprise_idle::prefs {
 extern const char kIdleTimeout[];
 extern const char kIdleTimeoutActions[];
 extern const char kIdleTimeoutShowBubbleOnStartup[];
+
+extern const char kLastActiveTimestamp[];
+extern const char kLastIdleTimestamp[];
 }  // namespace enterprise_idle::prefs
 
 #endif  // COMPONENTS_ENTERPRISE_IDLE_IDLE_PREF_NAMES_H_

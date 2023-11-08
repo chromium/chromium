@@ -16,4 +16,11 @@ const char kIdleTimeoutActions[] = "idle_timeout_actions";
 // If true, show the IdleTimeout bubble when Chrome starts.
 const char kIdleTimeoutShowBubbleOnStartup[] =
     "idle_timeout_show_bubble_on_startup";
+
+// The last active time updated based on taps registered in
+// `browser_view_controller.cc`
+const char kLastActiveTimestamp[] = "idle_timeout_last_active_timestamp";
+// The time when the browser was last marked as idle. Used with
+// `kLastActiveTimestamp` to calculate the idle time on start-up.
+const char kLastIdleTimestamp[] = "idle_timeout_last_idle_timestamp";
 }  // namespace enterprise_idle::prefs

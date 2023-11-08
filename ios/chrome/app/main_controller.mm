@@ -22,6 +22,7 @@
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #import "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #import "components/component_updater/url_param_filter_remover.h"
+#import "components/enterprise/idle/idle_features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -69,6 +70,7 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_impl.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -615,6 +617,15 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   ios::provider::InstallOverrides();
 
   [self scheduleLowPriorityStartupTasks];
+
+  // Run after UI created to avoid trying to update UI before it is available.
+  // TODO(b/301676922): This should run for all browser states if multiple
+  // profiles become supported on iOS.
+  if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
+    enterprise_idle::IdleServiceFactory::GetForBrowserState(
+        self.appState.mainBrowserState)
+        ->OnApplicationWillEnterForeground();
+  }
 
   // Now that everything is properly set up, run the tests.
   tests_hook::RunTestsIfPresent();

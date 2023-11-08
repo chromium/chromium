@@ -87,6 +87,7 @@ source_set("model") {
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/download/model/background_service",
+    "//ios/chrome/browser/enterprise/model/idle",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/follow:service_factory",

@@ -16,6 +16,7 @@
 #import "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
 #import "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/idle/idle_timeout_policy_handler.h"
 #import "components/history/core/common/pref_names.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -193,5 +194,10 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<policy::BooleanDisablingPolicyHandler>(
           policy::key::kUrlKeyedMetricsAllowed,
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)));
+  handlers->AddHandler(
+      std::make_unique<enterprise_idle::IdleTimeoutPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<enterprise_idle::IdleTimeoutActionsPolicyHandler>(
+          chrome_schema));
   return handlers;
 }

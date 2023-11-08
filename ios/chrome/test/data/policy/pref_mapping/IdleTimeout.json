@@ -1,5 +1,31 @@
 [
-  {
-    "reason_for_missing_test": "The service to register the policy's pref is not implemented yet."
-  }
+    {
+         "os": [
+           "ios"
+         ],
+         "policy_pref_mapping_tests": [
+           {
+             "policies": {
+               "IdleTimeout": 10,
+               "IdleTimeoutActions": []
+             },
+             "prefs": {
+               "idle_timeout": {
+                 "value": "600000000"
+               }
+             }
+           },
+           {
+             "policies": {
+               "IdleTimeout": 0,
+               "IdleTimeoutActions": []
+             },
+             "prefs": {
+               "idle_timeout": {
+                 "value": "60000000"
+               }
+             }
+           }
+         ]
+       }
 ]

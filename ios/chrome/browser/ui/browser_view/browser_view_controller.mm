@@ -10,6 +10,9 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/enterprise/idle/idle_features.h"
+#import "components/enterprise/idle/idle_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
@@ -21,6 +24,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -1776,6 +1780,12 @@ enum HeaderBehaviour {
   _lastTapPoint = [[view superview] convertPoint:viewCoordinate
                                           toView:self.view];
   _lastTapTime = CACurrentMediaTime();
+  if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
+    // Last tap timestamp will be consumed by `IdleService` if IdleTimeout
+    // policy is set.
+    GetApplicationContext()->GetLocalState()->SetTime(
+        enterprise_idle::prefs::kLastActiveTimestamp, base::Time::Now());
+  }
 }
 
 #pragma mark - ** Protocol Implementations and Helpers **
