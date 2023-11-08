@@ -72,16 +72,17 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   Walk(root_frame_view, context);
   paint_invalidator_.ProcessPendingDelayedPaintInvalidations();
 
-#if DCHECK_IS_ON()
-  if (needed_tree_builder_context_update && VLOG_IS_ON(1)) {
-    ShowAllPropertyTrees(root_frame_view);
-  }
-#endif
-
   bool updates_executed = root_frame_view.ExecuteAllPendingUpdates();
   if (updates_executed) {
     needs_invalidate_chrome_client_ = true;
   }
+
+#if DCHECK_IS_ON()
+  if ((needed_tree_builder_context_update || updates_executed) &&
+      VLOG_IS_ON(1)) {
+    ShowAllPropertyTrees(root_frame_view);
+  }
+#endif
 
   // If the page has anything changed, we need to inform the chrome client
   // so that the client will initiate repaint of the contents if needed (e.g.
