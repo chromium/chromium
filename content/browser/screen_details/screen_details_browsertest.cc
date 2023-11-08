@@ -72,12 +72,17 @@ class FakeScreenDetailsTest : public ScreenDetailsTest {
     test_shell_ = CreateBrowser();
   }
 
+  void TearDownOnMainThread() override {
+    test_shell_ = nullptr;
+    ScreenDetailsTest::TearDownOnMainThread();
+  }
+
   display::ScreenBase* screen() { return &screen_; }
   Shell* test_shell() { return test_shell_; }
 
  private:
   display::ScreenBase screen_;
-  raw_ptr<Shell, DanglingUntriaged> test_shell_ = nullptr;
+  raw_ptr<Shell> test_shell_ = nullptr;
 };
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
