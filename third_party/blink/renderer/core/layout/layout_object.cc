@@ -1238,101 +1238,97 @@ LayoutFlowThread* LayoutObject::LocateFlowThreadContainingBlock() const {
 }
 
 static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
-  // FIXME: In future it may be possible to broaden these conditions in order to
-  // improve performance.
+  // Only LayoutBox (and subclasses) are allowed to be relayout roots.
+  const auto* box = DynamicTo<LayoutBox>(object);
+  if (!box) {
+    return false;
+  }
+
+  // We need a previous layout result to begin layout at a subtree root.
+  const NGLayoutResult* layout_result = box->GetCachedLayoutResult(nullptr);
+  if (!layout_result) {
+    return false;
+  }
 
   // Positioned objects always have self-painting layers and are safe to use as
   // relayout boundaries.
-  bool is_svg_root = object->IsSVGRoot();
-  bool has_self_painting_layer =
-      object->HasLayer() &&
-      To<LayoutBoxModelObject>(object)->HasSelfPaintingLayer();
+  bool is_svg_root = box->IsSVGRoot();
+  bool has_self_painting_layer = box->HasLayer() && box->HasSelfPaintingLayer();
   if (!has_self_painting_layer && !is_svg_root)
-    return false;
-
-  // LayoutInline can't be relayout roots since LayoutBlockFlow is responsible
-  // for layouting them.
-  if (object->IsLayoutInline())
     return false;
 
   // Table parts can't be relayout roots since the table is responsible for
   // layouting all the parts.
-  if (object->IsTablePart())
+  if (box->IsTablePart()) {
     return false;
+  }
 
   // OOF-positioned objects which rely on their static-position for placement
   // cannot be relayout boundaries (their final position would be incorrect).
-  const ComputedStyle* style = object->Style();
-  if (object->IsOutOfFlowPositioned() &&
-      (style->HasAutoLeftAndRight() || style->HasAutoTopAndBottom()))
+  const ComputedStyle* style = box->Style();
+  if (box->IsOutOfFlowPositioned() &&
+      (style->HasAutoLeftAndRight() || style->HasAutoTopAndBottom())) {
     return false;
+  }
 
-  if (const auto* layout_box = DynamicTo<LayoutBox>(object)) {
-    // In general we can't relayout a flex item independently of its container;
-    // not only is the result incorrect due to the override size that's set, it
-    // also messes with the cached main size on the flexbox.
-    if (layout_box->IsFlexItemIncludingNG())
-      return false;
+  // In general we can't relayout a flex item independently of its container;
+  // not only is the result incorrect due to the override size that's set, it
+  // also messes with the cached main size on the flexbox.
+  if (box->IsFlexItemIncludingNG()) {
+    return false;
+  }
 
-    // Similarly to flex items, we can't relayout a grid item independently of
-    // its container. This also applies to out of flow items of the grid, as we
-    // need the cached information of the grid to recompute the out of flow
-    // item's containing block rect.
-    if (layout_box->ContainingBlock()->IsLayoutGrid()) {
-      return false;
-    }
+  // Similarly to flex items, we can't relayout a grid item independently of
+  // its container. This also applies to out of flow items of the grid, as we
+  // need the cached information of the grid to recompute the out of flow
+  // item's containing block rect.
+  if (box->ContainingBlock()->IsLayoutGrid()) {
+    return false;
+  }
 
-    const NGLayoutResult* layout_result =
-        layout_box->GetCachedLayoutResult(nullptr);
+  // Make sure our fragment is safe to use.
+  const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
+  if (fragment.IsLayoutObjectDestroyedOrMoved()) {
+    return false;
+  }
 
-    // We need a previous layout result to begin layout at a subtree root.
-    if (!layout_result) {
-      return false;
-    }
+  // Fragmented nodes cannot be relayout roots.
+  if (fragment.BreakToken()) {
+    return false;
+  }
 
-    const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
+  // Any propagated layout-objects will affect the our container chain.
+  if (fragment.HasPropagatedLayoutObjects()) {
+    return false;
+  }
 
-    // Make sure our fragment is safe to use.
-    if (fragment.IsLayoutObjectDestroyedOrMoved()) {
-      return false;
-    }
+  // If a box has any OOF descendants, they are propagated up the tree to
+  // accumulate their static-position.
+  if (fragment.HasOutOfFlowPositionedDescendants()) {
+    return false;
+  }
 
-    // Fragmented nodes cannot be relayout roots.
-    if (fragment.BreakToken()) {
-      return false;
-    }
+  // Anchor queries should be propagated across the layout boundaries, even
+  // when `contain: strict` is explicitly set.
+  if (fragment.HasAnchorQuery()) {
+    return false;
+  }
 
-    // Any propagated layout-objects will affect the our container chain.
-    if (fragment.HasPropagatedLayoutObjects()) {
-      return false;
-    }
-
-    // If a box has any OOF descendants, they are propagated up the tree to
-    // accumulate their static-position.
-    if (fragment.HasOutOfFlowPositionedDescendants()) {
-      return false;
-    }
-
-    // Anchor queries should be propagated across the layout boundaries, even
-    // when `contain: strict` is explicitly set.
-    if (fragment.HasAnchorQuery()) {
-      return false;
-    }
-
-    // A box which doesn't establish a new formating context can pass a whole
-    // bunch of state (floats, margins) to an arbitrary sibling, causing that
-    // sibling to position/size differently.
-    if (!layout_box->CreatesNewFormattingContext())
-      return false;
+  // A box which doesn't establish a new formating context can pass a whole
+  // bunch of state (floats, margins) to an arbitrary sibling, causing that
+  // sibling to position/size differently.
+  if (!box->CreatesNewFormattingContext()) {
+    return false;
   }
 
   // MathML subtrees can't be relayout roots because of the embellished operator
   // and space-like logic.
-  if (object->IsMathML() && !object->IsMathMLRoot())
+  if (box->IsMathML() && !box->IsMathMLRoot()) {
     return false;
+  }
 
-  if (object->ShouldApplyLayoutContainment() &&
-      object->ShouldApplySizeContainment()) {
+  if (box->ShouldApplyLayoutContainment() &&
+      box->ShouldApplySizeContainment()) {
     return true;
   }
 
@@ -1350,17 +1346,19 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     return false;
   }
 
-  if (object->IsTextControl()) {
+  if (box->IsTextControl()) {
     return true;
   }
 
-  if (!object->ShouldClipOverflowAlongBothAxis())
+  if (!box->ShouldClipOverflowAlongBothAxis()) {
     return false;
+  }
 
   // Scrollbar parts can be removed during layout. Avoid the complexity of
   // having to deal with that.
-  if (object->IsLayoutCustomScrollbarPart())
+  if (box->IsLayoutCustomScrollbarPart()) {
     return false;
+  }
 
   // Inside multicol it's generally problematic to allow relayout roots. The
   // multicol container itself may be scheduled for relayout as well (due to
@@ -1370,8 +1368,9 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   // the previous layout pass, which is just another way of affecting the column
   // heights (and the number of rows). Instead of identifying cases where it's
   // safe to allow relayout roots, just disallow them inside multicol.
-  if (object->IsInsideFlowThread())
+  if (box->IsInsideFlowThread()) {
     return false;
+  }
 
   return true;
 }
