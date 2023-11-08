@@ -31403,6 +31403,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4720" label="LinkRelPrivacyPolicy"/>
   <int value="4721" label="LinkRelTermsOfService"/>
   <int value="4722" label="WebAppManifestIdField"/>
+  <int value="4723"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_estimate"/>
+  <int value="4724"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

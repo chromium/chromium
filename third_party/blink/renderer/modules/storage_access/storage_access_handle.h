@@ -36,6 +36,7 @@ class MODULES_EXPORT StorageAccessHandle final
   static const char kLocksNotRequested[];
   static const char kCachesNotRequested[];
   static const char kGetDirectoryNotRequested[];
+  static const char kEstimateNotRequested[];
 
   explicit StorageAccessHandle(LocalDOMWindow& window,
                                const StorageAccessTypes* storage_access_types);
@@ -48,6 +49,8 @@ class MODULES_EXPORT StorageAccessHandle final
   CacheStorage* caches(ExceptionState& exception_state) const;
   ScriptPromise getDirectory(ScriptState* script_state,
                              ExceptionState& exception_state) const;
+  ScriptPromise estimate(ScriptState* script_state,
+                         ExceptionState& exception_state);
 
  private:
   void InitSessionStorage();
@@ -57,6 +60,7 @@ class MODULES_EXPORT StorageAccessHandle final
   void InitLocks();
   void InitCaches();
   void InitGetDirectory();
+  void InitQuota();
 
   void GetDirectoryImpl(ScriptPromiseResolver* resolver) const;
 

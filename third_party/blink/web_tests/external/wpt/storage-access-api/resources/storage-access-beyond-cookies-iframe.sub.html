@@ -55,6 +55,13 @@
         }
         break;
       }
+      case "estimate": {
+        const estimate = await handle.estimate();
+        if (estimate.usage > 0) {
+          message = "Cross-site first-party estimate should be empty";
+        }
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;

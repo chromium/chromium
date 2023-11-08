@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/storage_access/storage_access_handle.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_storage_usage_details.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
@@ -40,6 +42,39 @@ const char StorageAccessHandle::kCachesNotRequested[] =
 const char StorageAccessHandle::kGetDirectoryNotRequested[] =
     "Origin Private File System not requested when storage access handle was "
     "initialized.";
+
+// static
+const char StorageAccessHandle::kEstimateNotRequested[] =
+    "The estimate function for Quota was not requested when storage access "
+    "handle was initialized.";
+
+namespace {
+
+void EstimateImplAfterRemoteEstimate(ScriptPromiseResolver* resolver,
+                                     int64_t current_usage,
+                                     int64_t current_quota,
+                                     bool success) {
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+  ScriptState::Scope scope(script_state);
+
+  if (!success) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kUnknownError,
+        "Unknown error occurred while getting estimate."));
+    return;
+  }
+
+  StorageEstimate* estimate = StorageEstimate::Create();
+  estimate->setUsage(current_usage);
+  estimate->setQuota(current_quota);
+  estimate->setUsageDetails(StorageUsageDetails::Create());
+  resolver->Resolve(estimate);
+}
+
+}  // namespace
 
 StorageAccessHandle::StorageAccessHandle(
     LocalDOMWindow& window,
@@ -82,6 +117,11 @@ StorageAccessHandle::StorageAccessHandle(
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory);
   }
+  if (storage_access_types_->estimate()) {
+    window.CountUse(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate);
+  }
   if (storage_access_types_->all() || storage_access_types_->sessionStorage()) {
     InitSessionStorage();
   }
@@ -99,6 +139,9 @@ StorageAccessHandle::StorageAccessHandle(
   }
   if (storage_access_types_->all() || storage_access_types_->getDirectory()) {
     InitGetDirectory();
+  }
+  if (storage_access_types_->all() || storage_access_types_->estimate()) {
+    InitQuota();
   }
 }
 
@@ -229,6 +272,29 @@ void StorageAccessHandle::GetDirectoryImpl(
                     WrapPersistent(resolver)));
 }
 
+ScriptPromise StorageAccessHandle::estimate(ScriptState* script_state,
+                                            ExceptionState& exception_state) {
+  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+  ScriptPromise promise = resolver->Promise();
+  if (!storage_access_types_->all() && !storage_access_types_->estimate()) {
+    resolver->RejectWithSecurityError(kEstimateNotRequested,
+                                      kEstimateNotRequested);
+    return promise;
+  }
+  GetSupplementable()->CountUse(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use);
+  if (!remote_) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError));
+    return promise;
+  }
+  remote_->Estimate(WTF::BindOnce(&EstimateImplAfterRemoteEstimate,
+                                  WrapPersistent(resolver)));
+  return promise;
+}
+
 void StorageAccessHandle::InitSessionStorage() {
   LocalDOMWindow* window = GetSupplementable();
   if (!window->GetSecurityOrigin()->CanAccessSessionStorage()) {
@@ -332,6 +398,14 @@ void StorageAccessHandle::InitGetDirectory() {
   }
   GetRemote();
   // Nothing else to init as getDirectory is an async function not a handle.
+}
+
+void StorageAccessHandle::InitQuota() {
+  if (GetSupplementable()->GetSecurityOrigin()->IsOpaque()) {
+    return;
+  }
+  GetRemote();
+  // Nothing else to init as all Quota usage is via async functions.
 }
 
 }  // namespace blink

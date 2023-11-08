@@ -32,4 +32,8 @@ interface StorageAccessHandle {
   GetDirectory() =>
       (FileSystemAccessError result,
        pending_remote<FileSystemAccessDirectoryHandle>? directory);
+
+  // Returns estimated quota usage for first-party storage.
+  // TODO(crbug.com/1500556): These should never be negative so consider uint64.
+  Estimate() => (int64 current_usage, int64 current_quota, bool success);
 };

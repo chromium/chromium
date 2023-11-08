@@ -4059,6 +4059,8 @@ enum WebFeature {
   kLinkRelPrivacyPolicy = 4720,
   kLinkRelTermsOfService = 4721,
   kWebAppManifestIdField = 4722,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate = 4723,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use = 4724,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

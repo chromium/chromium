@@ -10,7 +10,7 @@ interface StorageAccessHandle {
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute LockManager locks;
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute CacheStorage caches;
     [CallWith=ScriptState, LogActivity, RaisesException] Promise<FileSystemDirectoryHandle> getDirectory();
-    // TODO(crbug.com/1484966): Add quota
+    [CallWith=ScriptState, LogActivity, RaisesException] Promise<StorageEstimate> estimate();
     // TODO(crbug.com/1484966): Add blob storage
     // TODO(crbug.com/1484966): Add broadcast channel
     // TODO(crbug.com/1484966): Add shared worker

@@ -21,6 +21,7 @@
     await handle.locks.query();
     await handle.caches.keys();
     await handle.getDirectory();
+    await handle.estimate();
   } catch (_) {
     message = "NoAccess";
   }

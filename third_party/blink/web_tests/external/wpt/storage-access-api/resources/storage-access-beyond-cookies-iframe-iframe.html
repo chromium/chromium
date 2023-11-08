@@ -88,6 +88,18 @@
         await handle_root.removeEntry(id);
         break;
       }
+      case "estimate": {
+        const handle = await document.requestStorageAccess({estimate: true});
+        const handle_estimate = await handle.estimate();
+        if (handle_estimate.usage  <= 0) {
+          message = "No first-party quota access";
+        }
+        const local_estimate = await window.navigator.storage.estimate();
+        if (local_estimate > 0) {
+          message = "Handle should not override window quota";
+        }
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;

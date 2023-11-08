@@ -8,9 +8,26 @@
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/permission_controller.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
+
+namespace {
+
+void EstimateImplAfterGetBucketUsageAndQuota(
+    StorageAccessHandle::EstimateCallback callback,
+    blink::mojom::QuotaStatusCode code,
+    int64_t usage,
+    int64_t quota) {
+  if (code != blink::mojom::QuotaStatusCode::kOk) {
+    std::move(callback).Run(/*usage=*/0, /*quota=*/0, /*success=*/false);
+    return;
+  }
+  std::move(callback).Run(usage, quota, /*success=*/true);
+}
+
+}  // namespace
 
 // static
 void StorageAccessHandle::Create(
@@ -85,6 +102,48 @@ void StorageAccessHandle::GetDirectory(GetDirectoryCallback callback) {
               render_frame_host().GetLastCommittedURL(),
               render_frame_host().GetGlobalId()),
           /*bucket=*/absl::nullopt, std::move(callback));
+}
+
+void StorageAccessHandle::Estimate(EstimateCallback callback) {
+  static_cast<RenderFrameHostImpl&>(render_frame_host())
+      .GetStoragePartition()
+      ->GetQuotaManagerProxy()
+      ->GetBucketsForStorageKey(
+          blink::StorageKey::CreateFirstParty(
+              render_frame_host().GetStorageKey().origin()),
+          blink::mojom::StorageType::kTemporary,
+          /*delete_expired=*/false,
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&StorageAccessHandle::EstimateImpl,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void StorageAccessHandle::EstimateImpl(
+    EstimateCallback callback,
+    storage::QuotaErrorOr<std::set<storage::BucketInfo>> bucket_set) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!bucket_set.has_value()) {
+    std::move(callback).Run(/*usage=*/0, /*quota=*/0, /*success=*/false);
+    return;
+  }
+  storage::BucketInfo bucket_info;
+  for (const storage::BucketInfo& info : *bucket_set) {
+    if (info.is_default()) {
+      bucket_info = info;
+      break;
+    }
+  }
+  if (bucket_info.is_null()) {
+    std::move(callback).Run(/*usage=*/0, /*quota=*/0, /*success=*/true);
+    return;
+  }
+  static_cast<RenderFrameHostImpl&>(render_frame_host())
+      .GetStoragePartition()
+      ->GetQuotaManagerProxy()
+      ->GetBucketUsageAndQuota(
+          bucket_info.id, base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&EstimateImplAfterGetBucketUsageAndQuota,
+                         std::move(callback)));
 }
 
 StorageAccessHandle::StorageAccessHandle(

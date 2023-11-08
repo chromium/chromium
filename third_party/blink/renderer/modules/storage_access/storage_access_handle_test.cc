@@ -17,9 +17,11 @@
 
 namespace blink {
 
+// TODO(crbug.com/1484966): Re-factor to not test all combinations as
+// exponential growth is fast.
 class StorageAccessHandleTest
     : public testing::TestWithParam<
-          testing::tuple<bool, bool, bool, bool, bool, bool, bool>> {
+          testing::tuple<bool, bool, bool, bool, bool, bool, bool, bool>> {
  public:
   bool all() { return std::get<0>(GetParam()); }
   bool session_storage() { return std::get<1>(GetParam()); }
@@ -28,6 +30,7 @@ class StorageAccessHandleTest
   bool locks() { return std::get<4>(GetParam()); }
   bool caches() { return std::get<5>(GetParam()); }
   bool getDirectory() { return std::get<6>(GetParam()); }
+  bool estimate() { return std::get<7>(GetParam()); }
 
   LocalDOMWindow* getLocalDOMWindow() {
     test::ScopedMockedURLLoad scoped_mocked_url_load_root(
@@ -54,6 +57,7 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   storage_access_types->setLocks(locks());
   storage_access_types->setCaches(caches());
   storage_access_types->setGetDirectory(getDirectory());
+  storage_access_types->setEstimate(estimate());
   StorageAccessHandle* storage_access_handle =
       MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
   EXPECT_TRUE(window->document()->IsUseCounted(
@@ -91,6 +95,11 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory),
       getDirectory());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate),
+      estimate());
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
@@ -109,6 +118,9 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
@@ -178,6 +190,25 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
                   ? "Storage directory access is denied."
                   : StorageAccessHandle::kGetDirectoryNotRequested);
   }
+  {
+    V8TestingScope scope;
+    ScriptPromise promise = storage_access_handle->estimate(
+        scope.GetScriptState(), scope.GetExceptionState());
+    ScriptPromiseTester tester(scope.GetScriptState(), promise);
+    if (all() || estimate()) {
+      EXPECT_FALSE(tester.IsFulfilled());
+      EXPECT_FALSE(tester.IsRejected());
+    } else {
+      tester.WaitUntilSettled();
+      EXPECT_TRUE(tester.IsRejected());
+      auto* dom_exception = V8DOMException::ToWrappable(
+          scope.GetIsolate(), tester.Value().V8Value());
+      EXPECT_EQ(dom_exception->code(),
+                (uint16_t)DOMExceptionCode::kSecurityError);
+      EXPECT_EQ(dom_exception->message(),
+                StorageAccessHandle::kEstimateNotRequested);
+    }
+  }
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
@@ -208,11 +239,17 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use),
       all() || getDirectory());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use),
+      all() || estimate());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          StorageAccessHandleTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),
