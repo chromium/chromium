@@ -709,6 +709,7 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
   override_break_anywhere_ = false;
   disable_phrase_ = false;
   disable_score_line_break_ = false;
+  disable_bisect_line_break_ = false;
   if (!current_style_)
     SetCurrentStyle(line_info->LineStyle());
   ComputeBaseDirection();
@@ -3221,6 +3222,8 @@ void LineBreaker::HandleOverflow(LineInfo* line_info) {
   //   css2.1/t1601-c547-indent-01-d.html
   //   virtual/text-antialias/international/bdi-neutral-wrapped.html
   disable_score_line_break_ = true;
+  // The bisect line breaker doesn't support overflowing content.
+  disable_bisect_line_break_ = true;
 
   // Restore the hyphenation states to before the loop if needed.
   DCHECK(!HasHyphen());
@@ -3250,6 +3253,8 @@ void LineBreaker::RetryAfterOverflow(LineInfo* line_info,
                                      InlineItemResults* item_results) {
   // `ScoreLineBreaker` doesn't support multi-pass line breaking.
   disable_score_line_break_ = true;
+  // The bisect line breaker doesn't support multi-pass line breaking.
+  disable_bisect_line_break_ = true;
 
   state_ = LineBreakState::kContinue;
 

@@ -68,6 +68,10 @@ class CORE_EXPORT LineBreaker {
   // `InlineNode::IsScoreLineBreakDisabled()`, but some conditions can change
   // withoiut `CollectInlines`. They are determined by this.
   bool ShouldDisableScoreLineBreak() const { return disable_score_line_break_; }
+  // True if there are items that `ParagraphLineBreaker` doesn't support.
+  bool ShouldDisableBisectLineBreak() const {
+    return disable_bisect_line_break_;
+  }
 
   void SetLineOpportunity(const LineLayoutOpportunity& line_opportunity);
   // Override the available width to compute line breaks. This is reset after
@@ -319,6 +323,7 @@ class CORE_EXPORT LineBreaker {
   bool disable_phrase_ = false;
 
   bool disable_score_line_break_ = false;
+  bool disable_bisect_line_break_ = false;
 
   // True when the line should be non-empty if |IsLastLine|..
   bool force_non_empty_if_last_line_ = false;

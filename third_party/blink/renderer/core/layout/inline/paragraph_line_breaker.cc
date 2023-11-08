@@ -71,7 +71,7 @@ struct LineBreakResults {
       // Bisecting can't find the desired value if the paragraph has forced line
       // breaks.
       DCHECK(!line_info.HasForcedBreak());
-      if (line_info.HasOverflow()) {
+      if (line_breaker.ShouldDisableBisectLineBreak()) {
         return Status::kNotApplicable;
       }
       break_token_ = line_info.BreakToken();
