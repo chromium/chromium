@@ -37,11 +37,20 @@ dependencyCheck {
 }
 
 // See https://github.com/google/guava/releases/tag/v32.1.0
-configurations.each {
-  if (it.name.startsWith('buildCompile')) {
-    it.attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
-  } else {
-    it.attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "android")
+dependencies.constraints {
+  compile("com.google.guava:guava:32.1.3-android") {
+    attributes {
+      attribute(
+        TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+        objects.named(TargetJvmEnvironment, TargetJvmEnvironment.ANDROID))
+    }
+  }
+  buildCompile("com.google.guava:guava:32.1.3-jre") {
+    attributes {
+      attribute(
+        TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+        objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
+    }
   }
 }
 
@@ -107,22 +116,8 @@ dependencies {
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20"
-    compile("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")  {
-      // See https://github.com/google/guava/releases/tag/v32.1.0
-      attributes {
-        attribute(
-          TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-          objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
-      }
-    }
-    compile("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4")  {
-      // See https://github.com/google/guava/releases/tag/v32.1.0
-      attributes {
-        attribute(
-          TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-          objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
-      }
-    }
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4"
 
     // Needed by androidx.macrobenchmarks
     androidTestCompile "com.squareup.wire:wire-runtime-jvm:4.4.3"

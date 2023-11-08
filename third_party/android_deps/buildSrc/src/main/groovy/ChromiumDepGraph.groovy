@@ -288,12 +288,9 @@ class ChromiumDepGraph {
             licenseName: 'Apache 2.0'),
     ]
 
-    private static final Set<String> ALLOWED_EMPTY_DEPS = [
-        // Bill of materials (BOM) deps are used to specify versions for other dependencies and don't have children or
-        // artifacts of their own. Add other such empty deps here when we encounter them.
-        'org_jetbrains_kotlinx_kotlinx_coroutines_bom',
-        'com_squareup_okio_okio_bom',
-    ] as Set
+    // Bill of materials (BOM) deps are used to specify versions for other dependencies and don't have children or
+    // artifacts of their own. Add other such empty deps here when we encounter them.
+    private static final Set<String> ALLOWED_EMPTY_DEPS = [] as Set
 
     // Local text versions of HTML licenses. This cannot replace PROPERTY_OVERRIDES because some libraries refer to
     // license templates such as https://opensource.org/licenses/MIT.
@@ -478,7 +475,7 @@ class ChromiumDepGraph {
                         childDependenciesWithArtifacts += childDependency.children
                     } else {
                         String childDepId = makeModuleId(childDependency.module)
-                        if (childDepId !in ALLOWED_EMPTY_DEPS) {
+                        if (!childDepId.endsWith("_bom") && childDepId !in ALLOWED_EMPTY_DEPS) {
                             // BOM dependencies are deps that only specify other deps as dependencies but have no
                             // artifact of their own. These typically have _bom at the end of their names but may also
                             // be identified by looking at their pom.xml file. For more context see maven's doc:
