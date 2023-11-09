@@ -257,6 +257,10 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
   s.Set(specifics.mutable_address_floor(), ADDRESS_HOME_FLOOR);
   if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflow)) {
+    s.Set(specifics.mutable_address_overflow(), ADDRESS_HOME_OVERFLOW);
+  }
+  if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark)) {
     s.Set(specifics.mutable_address_landmark(), ADDRESS_HOME_LANDMARK);
   }
@@ -264,6 +268,21 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
           features::kAutofillEnableSupportForBetweenStreets)) {
     s.Set(specifics.mutable_address_between_streets(),
           ADDRESS_HOME_BETWEEN_STREETS);
+    s.Set(specifics.mutable_address_between_streets_1(),
+          ADDRESS_HOME_BETWEEN_STREETS_1);
+    s.Set(specifics.mutable_address_between_streets_2(),
+          ADDRESS_HOME_BETWEEN_STREETS_2);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
+    s.Set(specifics.mutable_address_between_streets_or_landmark(),
+          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
+    s.Set(specifics.mutable_address_overflow_and_landmark(),
+          ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2)) {
@@ -370,12 +389,30 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
   s.Set(specifics.address_floor(), ADDRESS_HOME_FLOOR);
   if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflow)) {
+    s.Set(specifics.address_overflow(), ADDRESS_HOME_OVERFLOW);
+  }
+  if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark)) {
     s.Set(specifics.address_landmark(), ADDRESS_HOME_LANDMARK);
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets)) {
     s.Set(specifics.address_between_streets(), ADDRESS_HOME_BETWEEN_STREETS);
+    s.Set(specifics.address_between_streets_1(),
+          ADDRESS_HOME_BETWEEN_STREETS_1);
+    s.Set(specifics.address_between_streets_2(),
+          ADDRESS_HOME_BETWEEN_STREETS_2);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreetsOrLandmark)) {
+    s.Set(specifics.address_between_streets_or_landmark(),
+          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
+    s.Set(specifics.address_overflow_and_landmark(),
+          ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2)) {
@@ -506,6 +543,10 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
     trimmed_specifics.clear_address_floor();
   }
 
+  if (d.Delete(trimmed_specifics.mutable_address_overflow())) {
+    trimmed_specifics.clear_address_overflow();
+  }
+
   if (d.Delete(trimmed_specifics.mutable_address_landmark())) {
     trimmed_specifics.clear_address_landmark();
   }
@@ -514,8 +555,25 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
     trimmed_specifics.clear_address_between_streets();
   }
 
+  if (d.Delete(trimmed_specifics.mutable_address_between_streets_1())) {
+    trimmed_specifics.clear_address_between_streets_1();
+  }
+
+  if (d.Delete(trimmed_specifics.mutable_address_between_streets_2())) {
+    trimmed_specifics.clear_address_between_streets_2();
+  }
+
   if (d.Delete(trimmed_specifics.mutable_address_admin_level_2())) {
     trimmed_specifics.clear_address_admin_level_2();
+  }
+
+  if (d.Delete(
+          trimmed_specifics.mutable_address_between_streets_or_landmark())) {
+    trimmed_specifics.clear_address_between_streets_or_landmark();
+  }
+
+  if (d.Delete(trimmed_specifics.mutable_address_overflow_and_landmark())) {
+    trimmed_specifics.clear_address_overflow_and_landmark();
   }
 
   // Delete email, phone and company values and statuses.

@@ -113,8 +113,6 @@ message AutofillProfileSpecifics {
   optional string address_home_state = 10;
   optional string address_home_zip = 11;
   optional string address_home_country = 12;
-  optional string address_home_landmark = 67;
-  optional string address_home_between_streets = 69;
   optional string address_home_admin_level_2 = 71;
 
   // Additional address fields for i18n.
@@ -128,6 +126,27 @@ message AutofillProfileSpecifics {
   optional string address_home_subpremise_name = 42;
   optional string address_home_apt_num = 56;
   optional string address_home_floor = 57;
+  optional string address_home_landmark = 67;
+  // The type indicates that the address is at the intersection between two
+  // streets. This is a common way of writing addresses in Mexico.
+  optional string address_home_between_streets = 69;
+  // The meaning of the field is similar to address_home_between_streets. The
+  // type should be used for "Entre calle 1" in MX addresses which also
+  // contain the "Entre calle 2" field.
+  optional string address_home_between_streets_1 = 77;
+  // The meaning of the field is similar to address_home_between_streets. The
+  // type should be used for "Entre calle 2" in MX addresses which also
+  // contain the "Entre calle 1" field.
+  optional string address_home_between_streets_2 = 79;
+  optional string address_home_overflow = 75;
+  // Combination of types address_home_between_streets or address_home_landmark.
+  // Note that some address forms require the combination of both in a single
+  // field as opposed to each one separately.
+  optional string address_home_between_streets_or_landmark = 81;
+  // Combination of types address_home_overflow and address_home_landmark.
+  // Note that some address forms require the combination of both in a single
+  // field as opposed to each one separately.
+  optional string address_home_overflow_and_landmark = 83;
 
   // Validation status records for address fields.
   optional VerificationStatus address_home_city_status = 43;
@@ -136,7 +155,13 @@ message AutofillProfileSpecifics {
   optional VerificationStatus address_home_country_status = 46;
   optional VerificationStatus address_home_landmark_status = 68;
   optional VerificationStatus address_home_between_streets_status = 70;
+  optional VerificationStatus address_home_between_streets_1_status = 78;
+  optional VerificationStatus address_home_between_streets_2_status = 80;
   optional VerificationStatus address_home_admin_level_2_status = 72;
+  optional VerificationStatus address_home_overflow_status = 76;
+  optional VerificationStatus address_home_between_streets_or_landmark_status =
+      82;
+  optional VerificationStatus address_home_overflow_and_landmark_status = 84;
   optional VerificationStatus address_home_street_address_status = 47;
   optional VerificationStatus address_home_sorting_code_status = 48;
   optional VerificationStatus address_home_dependent_locality_status = 49;

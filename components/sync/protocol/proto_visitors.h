@@ -234,7 +234,12 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT(address_home_zip);
   VISIT(address_home_country);
   VISIT(address_home_landmark);
+  VISIT(address_home_overflow);
   VISIT(address_home_between_streets);
+  VISIT(address_home_between_streets_1);
+  VISIT(address_home_between_streets_2);
+  VISIT(address_home_between_streets_or_landmark);
+  VISIT(address_home_overflow_and_landmark);
   VISIT(address_home_admin_level_2);
   VISIT(address_home_street_address);
   VISIT(address_home_sorting_code);
@@ -248,7 +253,12 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT_ENUM(address_home_zip_status);
   VISIT_ENUM(address_home_country_status);
   VISIT_ENUM(address_home_landmark_status);
+  VISIT_ENUM(address_home_overflow_status);
   VISIT_ENUM(address_home_between_streets_status);
+  VISIT_ENUM(address_home_between_streets_1_status);
+  VISIT_ENUM(address_home_between_streets_2_status);
+  VISIT_ENUM(address_home_between_streets_or_landmark_status);
+  VISIT_ENUM(address_home_overflow_and_landmark_status);
   VISIT_ENUM(address_home_admin_level_2_status);
   VISIT_ENUM(address_home_street_address_status);
   VISIT_ENUM(address_home_sorting_code_status);
@@ -358,6 +368,11 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(address_admin_level_2);
   VISIT(phone_home_whole_number);
   VISIT(address_street_location);
+  VISIT(address_overflow);
+  VISIT(address_between_streets_1);
+  VISIT(address_between_streets_2);
+  VISIT(address_between_streets_or_landmark);
+  VISIT(address_overflow_and_landmark);
   VISIT(birthdate_day);
   VISIT(birthdate_month);
   VISIT(birthdate_year);
