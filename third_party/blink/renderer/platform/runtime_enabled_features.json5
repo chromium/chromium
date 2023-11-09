@@ -1283,11 +1283,6 @@
       status: "test",
     },
     {
-      name: "DeflateRawCompressionFormat",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "DelayOutOfViewportLazyImages",
       public: true,
       status: "experimental",
