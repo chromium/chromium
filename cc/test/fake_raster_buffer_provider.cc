@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "cc/resources/resource_pool.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 
 namespace cc {
 
@@ -32,7 +33,7 @@ FakeRasterBufferProviderImpl::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   auto backing = std::make_unique<StubGpuBacking>();
-  backing->mailbox = gpu::Mailbox::GenerateForSharedImage();
+  backing->shared_image = gpu::ClientSharedImage::CreateForTesting();
   resource.set_gpu_backing(std::move(backing));
   return nullptr;
 }

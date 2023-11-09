@@ -42,12 +42,15 @@ constexpr static auto kBufferUsage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 class ZeroCopyGpuBacking : public ResourcePool::GpuBacking {
  public:
   ~ZeroCopyGpuBacking() override {
-    if (mailbox.IsZero())
+    if (!shared_image) {
       return;
+    }
     if (returned_sync_token.HasData())
-      shared_image_interface->DestroySharedImage(returned_sync_token, mailbox);
+      shared_image_interface->DestroySharedImage(returned_sync_token,
+                                                 std::move(shared_image));
     else if (mailbox_sync_token.HasData())
-      shared_image_interface->DestroySharedImage(mailbox_sync_token, mailbox);
+      shared_image_interface->DestroySharedImage(mailbox_sync_token,
+                                                 std::move(shared_image));
   }
 
   void OnMemoryDump(
@@ -56,10 +59,11 @@ class ZeroCopyGpuBacking : public ResourcePool::GpuBacking {
       uint64_t tracing_process_id,
       int importance) const override {
     if (base::FeatureList::IsEnabled(kAlwaysUseMappableSIForZeroCopyRaster)) {
-      if (mailbox.IsZero()) {
+      if (!shared_image) {
         return;
       }
-      auto mapping = shared_image_interface->MapSharedImage(mailbox);
+      auto mapping =
+          shared_image_interface->MapSharedImage(shared_image->mailbox());
       if (!mapping) {
         return;
       }
@@ -106,12 +110,12 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     // checkerboarding.
     if (base::FeatureList::IsEnabled(kAlwaysUseMappableSIForZeroCopyRaster)) {
       CHECK(!gpu_memory_buffer_);
-      if (backing_->mailbox.IsZero()) {
+      if (!backing_->shared_image) {
         return;
       }
     } else {
       if (!gpu_memory_buffer_) {
-        DCHECK(backing_->mailbox.IsZero());
+        DCHECK(!backing_->shared_image);
         return;
       }
     }
@@ -122,21 +126,21 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     // TODO(danakj): This could be done with the worker context in Playback. Do
     // we need to do things in IsResourceReadyToDraw() and OrderingBarrier then?
     gpu::SharedImageInterface* sii = backing_->shared_image_interface;
-    if (backing_->mailbox.IsZero()) {
+    if (!backing_->shared_image) {
       CHECK(
           !base::FeatureList::IsEnabled(kAlwaysUseMappableSIForZeroCopyRaster));
       uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                        gpu::SHARED_IMAGE_USAGE_SCANOUT;
       // Make a mailbox for export of the GpuMemoryBuffer to the display
       // compositor.
-      auto client_shared_image = sii->CreateSharedImage(
+      backing_->shared_image = sii->CreateSharedImage(
           format_, resource_size_, resource_color_space_,
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
           "ZeroCopyRasterTile", gpu_memory_buffer_->CloneHandle());
-      CHECK(client_shared_image);
-      backing_->mailbox = client_shared_image->mailbox();
+      CHECK(backing_->shared_image);
     } else {
-      sii->UpdateSharedImage(backing_->returned_sync_token, backing_->mailbox);
+      sii->UpdateSharedImage(backing_->returned_sync_token,
+                             backing_->shared_image->mailbox());
     }
 
     backing_->mailbox_sync_token = sii->GenUnverifiedSyncToken();
@@ -165,25 +169,24 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
       gpu::SharedImageInterface* sii = backing_->shared_image_interface;
 
       // Create a MappableSI if necessary.
-      if (backing_->mailbox.IsZero()) {
+      if (!backing_->shared_image) {
         uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_SCANOUT;
-        auto client_shared_image = sii->CreateSharedImage(
+        backing_->shared_image = sii->CreateSharedImage(
             format_, resource_size_, resource_color_space_,
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
             "ZeroCopyRasterTile", gpu::kNullSurfaceHandle, kBufferUsage);
-        if (!client_shared_image) {
+        if (!backing_->shared_image) {
           LOG(ERROR) << "Creation of MappableSharedImage failed.";
           return;
         }
-        backing_->mailbox = client_shared_image->mailbox();
       }
 
-      mapping = sii->MapSharedImage(backing_->mailbox);
+      mapping = sii->MapSharedImage(backing_->shared_image->mailbox());
       if (!mapping) {
         LOG(ERROR) << "MapSharedImage Failed.";
-        sii->DestroySharedImage(gpu::SyncToken(), backing_->mailbox);
-        backing_->mailbox.SetZero();
+        sii->DestroySharedImage(gpu::SyncToken(),
+                                std::move(backing_->shared_image));
         return;
       }
       memory = mapping->Memory(0);
