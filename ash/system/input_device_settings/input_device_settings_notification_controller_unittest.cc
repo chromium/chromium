@@ -7,9 +7,13 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/contains.h"
+#include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
@@ -375,6 +379,66 @@ TEST_F(InputDeviceSettingsNotificationControllerTest, LearnMoreButtonClicked) {
   message_center()->ClickOnNotificationButton(
       "delete_six_pack_rewrite_blocked_by_setting_1",
       NotificationButtonIndex::BUTTON_LEARN_MORE);
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotifyMouseFirstTimeConnected) {
+  mojom::MousePtr mojom_mouse = mojom::Mouse::New();
+  mojom_mouse->device_key = "0001:0001";
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  EXPECT_TRUE(prefs->GetList(prefs::kPeripheralNotificationMiceSeen).empty());
+  controller()->NotifyMouseFirstTimeConnected(*mojom_mouse);
+  EXPECT_EQ(prefs->GetList(prefs::kPeripheralNotificationMiceSeen).size(), 1u);
+  EXPECT_TRUE(
+      base::Contains(prefs->GetList(prefs::kPeripheralNotificationMiceSeen),
+                     base::Value("0001:0001")));
+  controller()->NotifyMouseFirstTimeConnected(*mojom_mouse);
+  EXPECT_EQ(prefs->GetList(prefs::kPeripheralNotificationMiceSeen).size(), 1u);
+
+  mojom_mouse->device_key = "0001:0002";
+
+  controller()->NotifyMouseFirstTimeConnected(*mojom_mouse);
+  EXPECT_EQ(prefs->GetList(prefs::kPeripheralNotificationMiceSeen).size(), 2u);
+  EXPECT_TRUE(
+      base::Contains(prefs->GetList(prefs::kPeripheralNotificationMiceSeen),
+                     base::Value("0001:0002")));
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotifyGraphicsTabletFirstTimeConnected) {
+  mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
+  mojom_graphics_tablet->device_key = "0002:0001";
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  EXPECT_TRUE(prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen)
+                  .empty());
+  controller()->NotifyGraphicsTabletFirstTimeConnected(
+      mojom_graphics_tablet.get());
+  EXPECT_EQ(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
+      1u);
+  EXPECT_TRUE(base::Contains(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen),
+      base::Value("0002:0001")));
+  controller()->NotifyGraphicsTabletFirstTimeConnected(
+      mojom_graphics_tablet.get());
+  EXPECT_EQ(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
+      1u);
+
+  mojom_graphics_tablet->device_key = "0002:0002";
+
+  controller()->NotifyGraphicsTabletFirstTimeConnected(
+      mojom_graphics_tablet.get());
+  EXPECT_EQ(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
+      2u);
+  EXPECT_TRUE(base::Contains(
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen),
+      base::Value("0002:0002")));
 }
 
 }  // namespace ash

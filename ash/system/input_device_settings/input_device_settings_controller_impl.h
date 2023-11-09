@@ -15,6 +15,7 @@
 #include "ash/system/input_device_settings/input_device_duplicate_id_finder.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
+#include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
 #include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler.h"
@@ -242,6 +243,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
 
   std::unique_ptr<InputDeviceDuplicateIdFinder> duplicate_id_finder_;
+
+  std::unique_ptr<InputDeviceSettingsNotificationController>
+      notification_controller_;
 
   raw_ptr<PrefService> active_pref_service_ = nullptr;  // Not owned.
   absl::optional<AccountId> active_account_id_;

@@ -431,6 +431,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
         {features::kPeripheralCustomization,
          features::kInputDeviceSettingsSplit,
          features::kAltClickAndSixPackCustomization,
+         features::kPeripheralNotification,
          ::features::kSupportF11AndF12KeyShortcuts},
         {});
     NoSessionAshTestBase::SetUp();

@@ -26,6 +26,12 @@ constexpr char kPointingStickLoginScreenInternalSettingsPref[] =
 constexpr char kTouchpadLoginScreenInternalSettingsPref[] =
     "settings.touchpad.internal";
 
+// Prefs which contain seen peripheral devices for notification use.
+constexpr char kPeripheralNotificationMiceSeen[] =
+    "settings.mouse.peripheral_notification_seen";
+constexpr char kPeripheralNotificationGraphicsTabletsSeen[] =
+    "settings.graphics_tablet.peripheral_notification_seen";
+
 // Prefs which contain login screen settings for connected external devices.
 constexpr char kKeyboardLoginScreenExternalSettingsPref[] =
     "settings.keyboard.external";

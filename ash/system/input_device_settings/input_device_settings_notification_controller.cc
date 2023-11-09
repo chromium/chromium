@@ -18,8 +18,10 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -347,6 +349,9 @@ void InputDeviceSettingsNotificationController::RegisterProfilePrefs(
   pref_registry->RegisterIntegerPref(
       prefs::kSixPackKeyInsertNotificationsRemaining, 3,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterListPref(prefs::kPeripheralNotificationMiceSeen);
+  pref_registry->RegisterListPref(
+      prefs::kPeripheralNotificationGraphicsTabletsSeen);
 }
 
 InputDeviceSettingsNotificationController::
@@ -396,6 +401,55 @@ void InputDeviceSettingsNotificationController::
       kNotificationKeyboardIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   message_center_->AddNotification(std::move(notification));
+}
+
+void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
+    const mojom::Mouse& mouse) {
+  if (!IsActiveUserSession()) {
+    return;
+  }
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  CHECK(prefs);
+
+  if (base::Contains(prefs->GetList(prefs::kPeripheralNotificationMiceSeen),
+                     mouse.device_key)) {
+    return;
+  }
+
+  auto seen_mouse_list =
+      prefs->GetList(prefs::kPeripheralNotificationMiceSeen).Clone();
+
+  seen_mouse_list.Append(mouse.device_key);
+  prefs->SetList(prefs::kPeripheralNotificationMiceSeen,
+                 std::move(seen_mouse_list));
+  // TODO(yyhyyh@): Push peripheral notification.
+}
+
+void InputDeviceSettingsNotificationController::
+    NotifyGraphicsTabletFirstTimeConnected(
+        const mojom::GraphicsTablet* graphics_tablet) {
+  if (!IsActiveUserSession()) {
+    return;
+  }
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  CHECK(prefs);
+
+  auto seen_graphics_tablet_list =
+      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).Clone();
+
+  for (const auto& value : seen_graphics_tablet_list) {
+    if (value.is_string() && value.GetString() == graphics_tablet->device_key) {
+      return;
+    }
+  }
+  seen_graphics_tablet_list.Append(graphics_tablet->device_key);
+  prefs->SetList(prefs::kPeripheralNotificationGraphicsTabletsSeen,
+                 std::move(seen_graphics_tablet_list));
+  // TODO(yyhyyh@): Push peripheral notification.
 }
 
 void InputDeviceSettingsNotificationController::
