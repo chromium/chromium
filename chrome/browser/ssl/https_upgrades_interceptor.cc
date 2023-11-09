@@ -337,7 +337,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   auto query_complete_callback = base::BindOnce(
       &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
       weak_factory_.GetWeakPtr(), tentative_resource_request,
-      std::move(callback), profile, web_contents, tab_helper);
+      std::move(callback));
   network::mojom::NetworkContext* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
   network_context->IsHSTSActiveForHost(
@@ -350,11 +350,27 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
 void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     const network::ResourceRequest& tentative_resource_request,
     content::URLLoaderRequestInterceptor::LoaderCallback callback,
-    Profile* profile,
-    content::WebContents* web_contents,
-    HttpsOnlyModeTabHelper* tab_helper,
     bool is_hsts_active_for_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Reconstruct objects here instead of binding them as parameters to this
+  // callback method.
+  //
+  // It's possible for the WebContents to be destroyed during the
+  // asynchronous HSTS query call, before this callback is run. If it no longer
+  // exists, don't upgrade and return. (See crbug.com/1499515.)
+  content::WebContents* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  if (!web_contents) {
+    std::move(callback).Run({});
+    return;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  HttpsOnlyModeTabHelper* tab_helper =
+      HttpsOnlyModeTabHelper::FromWebContents(web_contents);
+  CHECK(profile);
+  CHECK(tab_helper);
 
   // Don't upgrade this request if HSTS is active for this host.
   if (is_hsts_active_for_host) {
