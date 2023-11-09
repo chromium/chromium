@@ -1,8 +1,8 @@
 Name: cpuinfo
 Short Name: cpuinfo
 URL: https://github.com/pytorch/cpuinfo
-Version: 76d5e8f5b563daa65340a60fce0e9aec73a936df
-Date: 2023-10-26
+Version: d6860c477c99f1fce9e28eb206891af3c0e1a1d7
+Date: 2023-11-07
 License: BSD
 License File: src/LICENSE
 Security Critical: Yes
