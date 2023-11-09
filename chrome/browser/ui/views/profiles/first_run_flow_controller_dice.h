@@ -68,16 +68,7 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
       PostHostClearedCallback post_host_cleared_callback,
       bool is_continue_callback = false);
 
-  // Checks the conditions and timeouts to display the default browser step.
-  void HandleSwitchToDefaultBrowserStep(bool is_continue_callback);
-
-  void MaybeShowDefaultBrowserStep(bool should_show_default_browser_step);
-
-  // Callbacks to be called after checking if the browser is already set as
-  // default, in case the verification is completed or in case of timeout.
-  void OnDefaultBrowserCheckFinished(
-      shell_integration::DefaultWebClientState state);
-  void OnDefaultBrowserCheckTimeout();
+  void MaybeShowDefaultBrowserStep();
 
   const raw_ptr<Profile> profile_;
   ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;
@@ -85,9 +76,6 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
   // Callback that will be run when the whole flow is completed, after the
   // host is cleared.
   PostHostClearedCallback post_host_cleared_callback_;
-
-  base::CancelableOnceClosure default_browser_check_timeout_closure_;
-  base::OnceCallback<void(bool)> maybe_show_default_browser_callback_;
 
   base::WeakPtrFactory<FirstRunFlowControllerDice> weak_ptr_factory_{this};
 };
