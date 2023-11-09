@@ -42,6 +42,7 @@
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/update_client_metrics.h"
 #include "components/update_client/update_engine.h"
 #include "components/update_client/utils.h"
 
@@ -846,11 +847,13 @@ void Component::StateChecking::DoHandle() {
   CHECK(component.crx_component());
 
   if (component.error_code_) {
+    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kError);
     TransitionState(std::make_unique<StateUpdateError>(&component));
     return;
   }
 
   if (component.update_context_->is_cancelled) {
+    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kCanceled);
     TransitionState(std::make_unique<StateUpdateError>(&component));
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
@@ -858,11 +861,13 @@ void Component::StateChecking::DoHandle() {
   }
 
   if (component.status_ == "ok") {
+    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kHasUpdate);
     TransitionState(std::make_unique<StateCanUpdate>(&component));
     return;
   }
 
   if (component.status_ == "noupdate") {
+    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kNoUpdate);
     if (component.action_run_.empty() ||
         component.update_context_->is_update_check_only) {
       TransitionState(std::make_unique<StateUpToDate>(&component));
@@ -872,6 +877,7 @@ void Component::StateChecking::DoHandle() {
     return;
   }
 
+  metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kError);
   TransitionState(std::make_unique<StateUpdateError>(&component));
 }
 
@@ -919,6 +925,7 @@ void Component::StateCanUpdate::DoHandle() {
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::UPDATE_DISABLED);
     component.extra_code1_ = 0;
+    metrics::RecordCanUpdateResult(metrics::CanUpdateResult::kUpdatesDisabled);
     TransitionState(std::make_unique<StateUpdateError>(&component));
     return;
   }
@@ -927,6 +934,7 @@ void Component::StateCanUpdate::DoHandle() {
     TransitionState(std::make_unique<StateUpdateError>(&component));
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
+    metrics::RecordCanUpdateResult(metrics::CanUpdateResult::kCanceled);
     return;
   }
 
@@ -937,8 +945,12 @@ void Component::StateCanUpdate::DoHandle() {
     component.extra_code1_ = 0;
     component.AppendEvent(component.MakeEventUpdateComplete());
     EndState();
+    metrics::RecordCanUpdateResult(
+        metrics::CanUpdateResult::kCheckForUpdateOnly);
     return;
   }
+
+  metrics::RecordCanUpdateResult(metrics::CanUpdateResult::kCanUpdate);
 
   // Start computing the cost of the this update from here on.
   component.update_begin_ = base::TimeTicks::Now();
@@ -1353,6 +1365,7 @@ void Component::StateUpdated::DoHandle() {
   component.AppendEvent(component.MakeEventUpdateComplete());
 
   component.NotifyObservers(Events::COMPONENT_UPDATED);
+  metrics::RecordComponentUpdated();
   EndState();
 }
 

@@ -10400,6 +10400,36 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
+<histogram name="UpdateClient.Component.CanUpdateResult"
+    enum="UpdateClientUpdateCheckResult" expires_after="2024-05-01">
+  <owner>noahrose@google.com</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>waffles@chromium.org</owner>
+  <summary>
+    The result of a CanUpdate check when a component update is offered. Recorded
+    once per check per component.
+  </summary>
+</histogram>
+
+<histogram name="UpdateClient.Component.ComponentUpdated" enum="Boolean"
+    expires_after="2024-05-01">
+  <owner>noahrose@google.com</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>waffles@chromium.org</owner>
+  <summary>Records when the update client has updated a component.</summary>
+</histogram>
+
+<histogram name="UpdateClient.Component.UpdateCheckResult"
+    enum="UpdateClientUpdateCheckResult" expires_after="2024-05-01">
+  <owner>noahrose@google.com</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>waffles@chromium.org</owner>
+  <summary>
+    The result of a component update check. Recorded once per component per
+    update check.
+  </summary>
+</histogram>
+
 <histogram name="UpdateClient.CrxDownloader.DownloadCompleteSuccess"
     enum="Boolean" expires_after="2024-05-01">
   <owner>noahrose@google.com</owner>

@@ -7,7 +7,6 @@
 
 #include <cstddef>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 
 namespace update_client::metrics {
@@ -23,6 +22,28 @@ enum class BDMStartDownloadOutcome {
   kMaxValue = kNewDownloadTaskCreated
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Changes should be reflected in
+// "UpdateClientUpdateCheckResult" in enums.xml.
+enum class UpdateCheckResult {
+  kError = 0,
+  kCanceled = 1,
+  kHasUpdate = 2,
+  kNoUpdate = 3,
+  kMaxValue = kNoUpdate
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Changes should be reflected in
+// "UpdateClientCanUpdateResult" in enums.xml.
+enum class CanUpdateResult {
+  kUpdatesDisabled = 0,
+  kCanceled = 1,
+  kCheckForUpdateOnly = 2,
+  kCanUpdate = 3,
+  kMaxValue = kCanUpdate
+};
+
 void RecordBDMStartDownloadOutcome(BDMStartDownloadOutcome outcome);
 
 void RecordBDMResultRequestorKnown(bool requestor_known);
@@ -36,6 +57,12 @@ void RecordBDWExistingJobUsed(bool existing_job_used);
 void RecordCRXDownloadComplete(bool had_error);
 
 void RecordCRXDownloaderFallback();
+
+void RecordUpdateCheckResult(UpdateCheckResult result);
+
+void RecordCanUpdateResult(CanUpdateResult result);
+
+void RecordComponentUpdated();
 
 }  // namespace update_client::metrics
 
