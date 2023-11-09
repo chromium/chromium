@@ -79,7 +79,7 @@ class ExecuteCodeFunction : public ExtensionFunction {
   // Note that for tabs.removeCSS we still use |InjectDetails| rather than
   // |DeleteInjectionDetails|, since the two types are compatible; the value
   // of |run_at| defaults to |RUN_AT_NONE|.
-  std::unique_ptr<api::extension_types::InjectDetails> details_;
+  std::optional<api::extension_types::InjectDetails> details_;
   absl::optional<InitResult> init_result_;
   // Set iff |init_result_| == FAILURE, holds the error string.
   absl::optional<std::string> init_error_;
