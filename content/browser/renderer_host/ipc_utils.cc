@@ -73,7 +73,7 @@ bool VerifyInitiatorOrigin(
           navigation_url_key,
           navigation_url->DeprecatedGetOriginAsURL().spec());
     }
-    if (initiator_frame_token) {
+    if (initiator_frame_token && initiator_frame_token->has_value()) {
       if (RenderFrameHostImpl* initiator_render_frame_host =
               RenderFrameHostImpl::FromFrameToken(
                   process_id, initiator_frame_token->value())) {
