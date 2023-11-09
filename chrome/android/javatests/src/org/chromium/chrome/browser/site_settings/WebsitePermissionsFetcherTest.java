@@ -22,11 +22,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
-import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -37,7 +32,7 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectInfo;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
@@ -69,8 +64,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for WebsitePermissionsFetcher. */
-@RunWith(ParameterizedRunner.class)
-@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     WebsitePermissionsFetcherTest.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
@@ -300,29 +294,6 @@ public class WebsitePermissionsFetcherTest {
                     entry("https://verizonconnect.com", "verizon.com"),
                     entry("https://aol.com", "verizon.com"),
                     entry("https://vodafone.de", "vodafone.com"));
-
-    private static final List<Integer> EMBEDDED_CONTENT_SETTINGS =
-            Arrays.asList(ContentSettingsType.STORAGE_ACCESS);
-
-    private static final String ORIGIN = "https://google.com";
-    private static final String EMBEDDER = "https://embedder.com";
-    private static final String PREFERENCE_SOURCE = "preference";
-    private static final int EXPIRATION_IN_DAYS = 30;
-
-    /**
-     * Class to parameterize the params for {@link
-     * WebsitePermissionsFetcherTest.testFetchPreferencesForCategoryPermissionInfoTypes}, {@link
-     * WebsitePermissionsFetcherTest.testFetchPreferencesForCategoryContentSettingExceptionTypes},
-     * and {@link WebsitePermissionsFetcherTest.testFetchPreferencesForAdvancedCookieSettings}, .
-     */
-    public static class EmbargoedParams implements ParameterProvider {
-        @Override
-        public List<ParameterSet> getParameters() {
-            return Arrays.asList(
-                    new ParameterSet().value(true).name("Embargoed"),
-                    new ParameterSet().value(false).name("Normal"));
-        }
-    }
 
     private static class WebsitePermissionsWaiter extends CallbackHelper
             implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
@@ -567,43 +538,55 @@ public class WebsitePermissionsFetcherTest {
         FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
         fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
 
+        String googleOrigin = "https://google.com";
+
         websitePreferenceBridge.addPermissionInfo(
-                new PermissionInfo(ContentSettingsType.AR, ORIGIN, SITE_WILDCARD, false));
+                new PermissionInfo(ContentSettingsType.AR, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.IDLE_DETECTION, ORIGIN, SITE_WILDCARD, false));
+                        ContentSettingsType.IDLE_DETECTION, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
-                new PermissionInfo(ContentSettingsType.GEOLOCATION, ORIGIN, SITE_WILDCARD, false));
+                new PermissionInfo(
+                        ContentSettingsType.GEOLOCATION, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
-                new PermissionInfo(ContentSettingsType.MIDI, ORIGIN, SITE_WILDCARD, false));
+                new PermissionInfo(ContentSettingsType.MIDI, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
-                new PermissionInfo(ContentSettingsType.MIDI_SYSEX, ORIGIN, SITE_WILDCARD, false));
+                new PermissionInfo(
+                        ContentSettingsType.MIDI_SYSEX, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER,
-                        ORIGIN,
+                        googleOrigin,
                         SITE_WILDCARD,
                         false));
         websitePreferenceBridge.addPermissionInfo(
-                new PermissionInfo(ContentSettingsType.NFC, ORIGIN, SITE_WILDCARD, false));
+                new PermissionInfo(ContentSettingsType.NFC, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.NOTIFICATIONS, ORIGIN, SITE_WILDCARD, false));
+                        ContentSettingsType.NOTIFICATIONS, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.MEDIASTREAM_CAMERA, ORIGIN, SITE_WILDCARD, false));
+                        ContentSettingsType.MEDIASTREAM_CAMERA,
+                        googleOrigin,
+                        SITE_WILDCARD,
+                        false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.MEDIASTREAM_MIC, ORIGIN, SITE_WILDCARD, false));
+                        ContentSettingsType.MEDIASTREAM_MIC, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.CLIPBOARD_READ_WRITE, ORIGIN, SITE_WILDCARD, false));
+                        ContentSettingsType.CLIPBOARD_READ_WRITE,
+                        googleOrigin,
+                        SITE_WILDCARD,
+                        false));
         websitePreferenceBridge.addPermissionInfo(
-                new PermissionInfo(ContentSettingsType.SENSORS, ORIGIN, SITE_WILDCARD, false));
+                new PermissionInfo(
+                        ContentSettingsType.SENSORS, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
-                new PermissionInfo(ContentSettingsType.VR, ORIGIN, SITE_WILDCARD, false));
+                new PermissionInfo(ContentSettingsType.VR, googleOrigin, SITE_WILDCARD, false));
 
         // Add content setting exception types.
+        String preferenceSource = "preference";
         // If the ContentSettingsType.NUM_TYPES value changes *and* a new value has been exposed on
         // Android, then please update this code block to include a test for your new type.
         // Otherwise, just update count in the assert.
@@ -611,123 +594,127 @@ public class WebsitePermissionsFetcherTest {
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.COOKIES,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.POPUPS,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.ADS,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.JAVASCRIPT,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.SOUND,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.BACKGROUND_SYNC,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.AUTOMATIC_DOWNLOADS,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.INSECURE_PRIVATE_NETWORK,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.JAVASCRIPT_JIT,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.AUTO_DARK_WEB_CONTENT,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.REQUEST_DESKTOP_SITE,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.FEDERATED_IDENTITY_API,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.ANTI_ABUSE,
-                        ORIGIN,
+                        googleOrigin,
                         ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
+                        preferenceSource,
                         /* isEmbargoed= */ false));
 
         // Add storage info.
         int storageSize = 256;
-        websitePreferenceBridge.addStorageInfo(new StorageInfo(ORIGIN, 0, storageSize));
+        websitePreferenceBridge.addStorageInfo(new StorageInfo(googleOrigin, 0, storageSize));
 
         // Add local storage info.
         websitePreferenceBridge.addLocalStorageInfoMapEntry(
-                new LocalStorageInfo(ORIGIN, storageSize, false));
+                new LocalStorageInfo(googleOrigin, storageSize, false));
 
         // Add shared dictionary info.
         int sharedDictionarySize = 12345;
         websitePreferenceBridge.addSharedDictionaryInfo(
-                new SharedDictionaryInfo(ORIGIN, ORIGIN, sharedDictionarySize));
+                new SharedDictionaryInfo(googleOrigin, googleOrigin, sharedDictionarySize));
 
         // Add chooser info types.
         websitePreferenceBridge.addChosenObjectInfo(
                 new ChosenObjectInfo(
-                        ContentSettingsType.USB_CHOOSER_DATA, ORIGIN, "Gadget", "Object", false));
+                        ContentSettingsType.USB_CHOOSER_DATA,
+                        googleOrigin,
+                        "Gadget",
+                        "Object",
+                        false));
         websitePreferenceBridge.addChosenObjectInfo(
                 new ChosenObjectInfo(
                         ContentSettingsType.BLUETOOTH_CHOOSER_DATA,
-                        ORIGIN,
+                        googleOrigin,
                         "Wireless",
                         "Object",
                         false));
@@ -737,7 +724,7 @@ public class WebsitePermissionsFetcherTest {
                     Assert.assertEquals(1, sites.size());
                     Website site = sites.iterator().next();
 
-                    Assert.assertTrue(site.getAddress().matches(ORIGIN));
+                    Assert.assertTrue(site.getAddress().matches(googleOrigin));
 
                     // Check permission info types for |site|.
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.GEOLOCATION));
@@ -819,12 +806,12 @@ public class WebsitePermissionsFetcherTest {
                     Assert.assertEquals(1, storageInfos.size());
 
                     StorageInfo storageInfo = storageInfos.get(0);
-                    Assert.assertEquals(ORIGIN, storageInfo.getHost());
+                    Assert.assertEquals(googleOrigin, storageInfo.getHost());
                     Assert.assertEquals(storageSize, storageInfo.getSize());
 
                     // Check local storage info.
                     LocalStorageInfo localStorageInfo = site.getLocalStorageInfo();
-                    Assert.assertEquals(ORIGIN, localStorageInfo.getOrigin());
+                    Assert.assertEquals(googleOrigin, localStorageInfo.getOrigin());
                     Assert.assertEquals(storageSize, localStorageInfo.getSize());
                     Assert.assertFalse(localStorageInfo.isDomainImportant());
 
@@ -834,7 +821,7 @@ public class WebsitePermissionsFetcherTest {
                     Assert.assertEquals(1, sharedDictionaryInfos.size());
 
                     SharedDictionaryInfo sharedDictionaryInfo = sharedDictionaryInfos.get(0);
-                    Assert.assertEquals(ORIGIN, sharedDictionaryInfo.getOrigin());
+                    Assert.assertEquals(googleOrigin, sharedDictionaryInfo.getOrigin());
                     Assert.assertEquals(sharedDictionarySize, sharedDictionaryInfo.getSize());
 
                     // Check chooser info types.
@@ -858,17 +845,19 @@ public class WebsitePermissionsFetcherTest {
         FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
         fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
 
+        String googleOrigin = "https://google.com";
         String chromiumOrigin = "https://chromium.org";
         String exampleOrigin = "https://example.com";
 
         websitePreferenceBridge.addPermissionInfo(
-                new PermissionInfo(ContentSettingsType.GEOLOCATION, ORIGIN, SITE_WILDCARD, false));
+                new PermissionInfo(
+                        ContentSettingsType.GEOLOCATION, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.GEOLOCATION, chromiumOrigin, SITE_WILDCARD, false));
 
         Website expectedGoogleWebsite =
-                new Website(WebsiteAddress.create(ORIGIN), WebsiteAddress.create(null));
+                new Website(WebsiteAddress.create(googleOrigin), WebsiteAddress.create(null));
         Website expectedChromiumWebsite =
                 new Website(WebsiteAddress.create(chromiumOrigin), WebsiteAddress.create(null));
 
@@ -879,11 +868,11 @@ public class WebsitePermissionsFetcherTest {
                     // The order of |sites| is unknown, so check if the array contains a geolocation
                     // permission for each of the sites.
                     ArrayList<Website> siteArray = new ArrayList<>(sites);
-                    boolean containsOriginPermission = false;
+                    boolean containsGoogleOriginPermission = false;
                     boolean containsChromiumOriginPermission = false;
                     for (Website site : siteArray) {
                         if (site.compareByAddressTo(expectedGoogleWebsite) == 0) {
-                            containsOriginPermission = true;
+                            containsGoogleOriginPermission = true;
                         } else if (site.compareByAddressTo(expectedChromiumWebsite) == 0) {
                             containsChromiumOriginPermission = true;
                         }
@@ -892,7 +881,7 @@ public class WebsitePermissionsFetcherTest {
                                 site.getPermissionInfo(ContentSettingsType.GEOLOCATION));
                     }
 
-                    Assert.assertTrue(containsOriginPermission);
+                    Assert.assertTrue(containsGoogleOriginPermission);
                     Assert.assertTrue(containsChromiumOriginPermission);
                 });
 
@@ -908,12 +897,12 @@ public class WebsitePermissionsFetcherTest {
                     Assert.assertEquals(3, sites.size());
 
                     ArrayList<Website> siteArray = new ArrayList<>(sites);
-                    boolean containsOriginPermission = false;
+                    boolean containsGoogleOriginPermission = false;
                     boolean containsChromiumOriginPermission = false;
                     boolean containsExampleOriginPermission = false;
                     for (Website site : siteArray) {
                         if (site.compareByAddressTo(expectedGoogleWebsite) == 0) {
-                            containsOriginPermission = true;
+                            containsGoogleOriginPermission = true;
                         } else if (site.compareByAddressTo(expectedChromiumWebsite) == 0) {
                             containsChromiumOriginPermission = true;
                         } else if (site.compareByAddressTo(expectedExampleWebsite) == 0) {
@@ -924,7 +913,7 @@ public class WebsitePermissionsFetcherTest {
                                 site.getPermissionInfo(ContentSettingsType.GEOLOCATION));
                     }
 
-                    Assert.assertTrue(containsOriginPermission);
+                    Assert.assertTrue(containsGoogleOriginPermission);
                     Assert.assertTrue(containsChromiumOriginPermission);
                     Assert.assertTrue(containsExampleOriginPermission);
                 });
@@ -943,13 +932,13 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    @UseMethodParameter(EmbargoedParams.class)
-    public void testFetchPreferencesForCategoryPermissionInfoTypes(boolean isEmbargoed) {
+    public void testFetchPreferencesForCategoryPermissionInfoTypes() {
         WebsitePermissionsFetcher fetcher =
                 new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
         FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
         fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
 
+        String googleOrigin = "https://google.com";
         // MIDI is excluded from this list because it does not have a top level category.
         ArrayList<Integer> permissionInfoTypes =
                 new ArrayList<>(
@@ -968,7 +957,7 @@ public class WebsitePermissionsFetcherTest {
 
         for (@ContentSettingsType int type : permissionInfoTypes) {
             PermissionInfo fakePermissionInfo =
-                    new PermissionInfo(type, ORIGIN, SITE_WILDCARD, isEmbargoed);
+                    new PermissionInfo(type, googleOrigin, SITE_WILDCARD, false);
             websitePreferenceBridge.addPermissionInfo(fakePermissionInfo);
 
             fetcher.fetchPreferencesForCategory(
@@ -985,13 +974,15 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    @UseMethodParameter(EmbargoedParams.class)
-    public void testFetchPreferencesForCategoryContentSettingExceptionTypes(boolean isEmbargoed) {
+    public void testFetchPreferencesForCategoryContentSettingExceptionTypes() {
         WebsitePermissionsFetcher fetcher =
                 new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
         FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
         fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
 
+        String googleOrigin = "https://google.com";
+        String preferenceSource = "preference";
+        boolean isEmbargoed = false;
         ArrayList<Integer> contentSettingExceptionTypes =
                 new ArrayList<>(
                         Arrays.asList(
@@ -1010,9 +1001,9 @@ public class WebsitePermissionsFetcherTest {
                 ContentSettingException fakeContentSettingException =
                         new ContentSettingException(
                                 type,
-                                ORIGIN,
+                                googleOrigin,
                                 ContentSettingValues.DEFAULT,
-                                PREFERENCE_SOURCE,
+                                preferenceSource,
                                 isEmbargoed);
                 websitePreferenceBridge.addContentSettingException(fakeContentSettingException);
 
@@ -1034,9 +1025,9 @@ public class WebsitePermissionsFetcherTest {
                 ContentSettingException fakeContentSettingException =
                         new ContentSettingException(
                                 type,
-                                ORIGIN,
+                                googleOrigin,
                                 ContentSettingValues.BLOCK,
-                                PREFERENCE_SOURCE,
+                                preferenceSource,
                                 isEmbargoed);
                 websitePreferenceBridge.addContentSettingException(fakeContentSettingException);
 
@@ -1057,8 +1048,7 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    @UseMethodParameter(EmbargoedParams.class)
-    public void testFetchPreferencesForAdvancedCookieSettings(boolean isEmbargoed) {
+    public void testFetchPreferencesForAdvancedCookieSettings() {
         WebsitePermissionsFetcher fetcher =
                 new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
         FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
@@ -1066,6 +1056,9 @@ public class WebsitePermissionsFetcherTest {
 
         String mainSite = "https://a.com";
         String thirdPartySite = "https://b.com";
+        String preferenceSource = "preference";
+        Integer expirationInDays = 30;
+        boolean isEmbargoed = false;
         @ContentSettingsType int contentSettingsType = ContentSettingsType.COOKIES;
 
         // Test the advanced exception combinations of:
@@ -1088,8 +1081,8 @@ public class WebsitePermissionsFetcherTest {
                                 pair.first,
                                 pair.second,
                                 ContentSettingValues.DEFAULT,
-                                PREFERENCE_SOURCE,
-                                EXPIRATION_IN_DAYS,
+                                preferenceSource,
+                                expirationInDays,
                                 isEmbargoed);
                 websitePreferenceBridge.addContentSettingException(fakeContentSettingException);
 
@@ -1114,8 +1107,8 @@ public class WebsitePermissionsFetcherTest {
                                 pair.first,
                                 pair.second,
                                 ContentSettingValues.BLOCK,
-                                PREFERENCE_SOURCE,
-                                EXPIRATION_IN_DAYS,
+                                preferenceSource,
+                                expirationInDays,
                                 isEmbargoed);
                 websitePreferenceBridge.addContentSettingException(fakeContentSettingException);
 
@@ -1142,15 +1135,17 @@ public class WebsitePermissionsFetcherTest {
         FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
         fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
 
+        String googleOrigin = "https://google.com";
         String chromiumOrigin = "https://chromium.org";
         int storageSize = 256;
         int sharedDictionarySize = 512;
-        StorageInfo fakeStorageInfo = new StorageInfo(ORIGIN, 0, storageSize);
-        LocalStorageInfo fakeLocalStorageInfo = new LocalStorageInfo(ORIGIN, storageSize, false);
+        StorageInfo fakeStorageInfo = new StorageInfo(googleOrigin, 0, storageSize);
+        LocalStorageInfo fakeLocalStorageInfo =
+                new LocalStorageInfo(googleOrigin, storageSize, false);
         LocalStorageInfo fakeImportantLocalStorageInfo =
                 new LocalStorageInfo(chromiumOrigin, storageSize, true);
         SharedDictionaryInfo fakeSharedDictionaryInfo =
-                new SharedDictionaryInfo(ORIGIN, ORIGIN, sharedDictionarySize);
+                new SharedDictionaryInfo(googleOrigin, googleOrigin, sharedDictionarySize);
 
         websitePreferenceBridge.addStorageInfo(fakeStorageInfo);
         websitePreferenceBridge.addLocalStorageInfoMapEntry(fakeLocalStorageInfo);
@@ -1198,7 +1193,7 @@ public class WebsitePermissionsFetcherTest {
                     Assert.assertEquals(2, sites.size());
 
                     for (Website site : sites) {
-                        if (site.getAddress().matches(ORIGIN)) {
+                        if (site.getAddress().matches(googleOrigin)) {
                             List<StorageInfo> storageInfos = site.getStorageInfo();
                             Assert.assertEquals(1, storageInfos.size());
 
@@ -1248,6 +1243,7 @@ public class WebsitePermissionsFetcherTest {
     @Test
     @SmallTest
     public void testFetchPreferencesForCategoryChooserDataTypes() {
+        String googleOrigin = "https://google.com";
         ArrayList<Integer> chooserDataTypes =
                 new ArrayList<>(
                         Arrays.asList(
@@ -1268,7 +1264,7 @@ public class WebsitePermissionsFetcherTest {
             ChosenObjectInfo fakeObjectInfo =
                     new ChosenObjectInfo(
                             chooserDataType,
-                            ORIGIN,
+                            googleOrigin,
                             "Chosen Object",
                             "SerializedObjectData",
                             false);
@@ -1342,7 +1338,7 @@ public class WebsitePermissionsFetcherTest {
                             ContentSettingsType.COOKIES,
                             origin,
                             ContentSettingValues.ALLOW,
-                            PREFERENCE_SOURCE,
+                            "preference",
                             /* isEmbargoed= */ false));
         }
 
@@ -1388,163 +1384,5 @@ public class WebsitePermissionsFetcherTest {
                                 }
                             });
                 });
-    }
-
-    @Test
-    @SmallTest
-    public void testFetchAllSites() {
-        WebsitePermissionsFetcher fetcher =
-                new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
-        FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
-        fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
-
-        websitePreferenceBridge.addPermissionInfo(
-                new PermissionInfo(ContentSettingsType.GEOLOCATION, ORIGIN, SITE_WILDCARD, false));
-        websitePreferenceBridge.addPermissionInfo(
-                new PermissionInfo(
-                        ContentSettingsType.GEOLOCATION, EMBEDDER, SITE_WILDCARD, false));
-        websitePreferenceBridge.addContentSettingException(
-                new ContentSettingException(
-                        ContentSettingsType.STORAGE_ACCESS,
-                        ORIGIN,
-                        EMBEDDER,
-                        ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
-                        EXPIRATION_IN_DAYS,
-                        /* isEmbargoed= */ false));
-        websitePreferenceBridge.addContentSettingException(
-                new ContentSettingException(
-                        ContentSettingsType.STORAGE_ACCESS,
-                        ORIGIN,
-                        null,
-                        ContentSettingValues.DEFAULT,
-                        PREFERENCE_SOURCE,
-                        EXPIRATION_IN_DAYS,
-                        /* isEmbargoed= */ true));
-
-        Website expectedWebsite =
-                new Website(WebsiteAddress.create(ORIGIN), WebsiteAddress.create(null));
-        Website expectedEmbedderWebsite =
-                new Website(WebsiteAddress.create(EMBEDDER), WebsiteAddress.create(null));
-
-        fetcher.fetchPreferencesForCategory(
-                SiteSettingsCategory.createFromType(
-                        UNUSED_BROWSER_CONTEXT_HANDLE, SiteSettingsCategory.Type.ALL_SITES),
-                (sites) -> {
-                    Assert.assertEquals(2, sites.size());
-
-                    // The order of |sites| is unknown, so check if the array contains a geolocation
-                    // permission for each of the sites.
-                    ArrayList<Website> siteArray = new ArrayList<>(sites);
-                    boolean containsOriginPermission = false;
-                    boolean containsEmbedderOriginPermission = false;
-                    for (Website site : siteArray) {
-                        if (site.compareByAddressTo(expectedWebsite) == 0) {
-                            containsOriginPermission = true;
-
-                            // Check that embargoed Storage Access is grouped by the origin.
-                            Assert.assertEquals(
-                                    Integer.valueOf(ContentSettingValues.DEFAULT),
-                                    site.getContentSetting(
-                                            UNUSED_BROWSER_CONTEXT_HANDLE,
-                                            ContentSettingsType.STORAGE_ACCESS));
-                            Assert.assertTrue(
-                                    site.getEmbeddedPermissions()
-                                            .get(ContentSettingsType.STORAGE_ACCESS)
-                                            .get(0)
-                                            .isEmbargoed());
-
-                        } else if (site.compareByAddressTo(expectedEmbedderWebsite) == 0) {
-                            containsEmbedderOriginPermission = true;
-
-                            // Check that a normal Storage Access is grouped by the embedder.
-                            Assert.assertEquals(
-                                    Integer.valueOf(ContentSettingValues.DEFAULT),
-                                    site.getContentSetting(
-                                            UNUSED_BROWSER_CONTEXT_HANDLE,
-                                            ContentSettingsType.STORAGE_ACCESS));
-                            Assert.assertFalse(
-                                    site.getEmbeddedPermissions()
-                                            .get(ContentSettingsType.STORAGE_ACCESS)
-                                            .get(0)
-                                            .isEmbargoed());
-                        }
-
-                        Assert.assertNotNull(
-                                site.getPermissionInfo(ContentSettingsType.GEOLOCATION));
-                    }
-
-                    Assert.assertTrue(containsOriginPermission);
-                    Assert.assertTrue(containsEmbedderOriginPermission);
-                });
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
-    @UseMethodParameter(EmbargoedParams.class)
-    public void testFetchPreferencesForCategoryEmbeddedPermissionTypes(boolean isEmbargoed) {
-        WebsitePermissionsFetcher fetcher =
-                new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
-        FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
-        fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
-
-        String embedder = isEmbargoed ? null : EMBEDDER;
-
-        for (@ContentSettingsType int type : EMBEDDED_CONTENT_SETTINGS) {
-            ContentSettingException fakeContentSetting =
-                    new ContentSettingException(
-                            type,
-                            ORIGIN,
-                            embedder,
-                            ContentSettingValues.DEFAULT,
-                            PREFERENCE_SOURCE,
-                            EXPIRATION_IN_DAYS,
-                            isEmbargoed);
-            websitePreferenceBridge.addContentSettingException(fakeContentSetting);
-
-            fetcher.fetchPreferencesForCategory(
-                    SiteSettingsCategory.createFromContentSettingsType(
-                            UNUSED_BROWSER_CONTEXT_HANDLE, type),
-                    (sites) -> {
-                        Assert.assertEquals(1, sites.size());
-
-                        Website site = sites.iterator().next();
-                        List<ContentSettingException> exceptions =
-                                site.getEmbeddedPermissions().get(type);
-                        Assert.assertEquals(1, exceptions.size());
-                        assertContentSettingExceptionEquals(fakeContentSetting, exceptions.get(0));
-                    });
-        }
-    }
-
-    @SmallTest
-    @Test(expected = AssertionError.class)
-    @UseMethodParameter(EmbargoedParams.class)
-    public void testFailFetchPreferencesForCategoryEmbeddedPermissionTypes(boolean isEmbargoed) {
-        WebsitePermissionsFetcher fetcher =
-                new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
-        FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
-        fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
-
-        String embedder = isEmbargoed ? EMBEDDER : SITE_WILDCARD;
-
-        for (@ContentSettingsType int type : EMBEDDED_CONTENT_SETTINGS) {
-            ContentSettingException fakeContentSetting =
-                    new ContentSettingException(
-                            type,
-                            ORIGIN,
-                            embedder,
-                            ContentSettingValues.DEFAULT,
-                            PREFERENCE_SOURCE,
-                            EXPIRATION_IN_DAYS,
-                            isEmbargoed);
-            websitePreferenceBridge.addContentSettingException(fakeContentSetting);
-
-            fetcher.fetchPreferencesForCategory(
-                    SiteSettingsCategory.createFromContentSettingsType(
-                            UNUSED_BROWSER_CONTEXT_HANDLE, type),
-                    null);
-        }
     }
 }
