@@ -216,6 +216,9 @@ void MenuRunnerImplCocoa::RunMenuAt(
   closing_event_time_ = base::TimeTicks();
   running_ = true;
 
+  // Ensure the UI can update while the menu is fading out.
+  base::ScopedPumpMessagesInPrivateModes pump_private;
+
   NSWindow* window = parent->GetNativeWindow().GetNativeNSWindow();
   NSView* view = parent->GetNativeView().GetNativeNSView();
   [menu_controller_ maybeBuildWithColorProvider:parent->GetColorProvider()];
