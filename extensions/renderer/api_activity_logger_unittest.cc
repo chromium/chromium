@@ -60,15 +60,18 @@ TEST_F(ActivityLoggerTest, DontCrashOnUnconvertedValues) {
   script_context_set.AddForTesting(std::make_unique<ScriptContext>(
       context, nullptr, extension.get(), kContextType, extension.get(),
       kContextType));
+  ScriptContext* script_context = script_context_set.GetByV8Context(context);
 
   v8::LocalVector<v8::Value> args(isolate(), {v8::Undefined(isolate())});
 
   std::unique_ptr<TestIPCMessageSender> ipc_sender =
       std::make_unique<testing::StrictMock<TestIPCMessageSender>>();
   EXPECT_CALL(*ipc_sender,
-              SendActivityLogIPC(extension->id(), ActivityLogCallType::APICALL,
-                                 testing::_, testing::_, testing::_))
-      .WillOnce([&](const ExtensionId& extension_id,
+              SendActivityLogIPC(script_context, extension->id(),
+                                 ActivityLogCallType::APICALL, testing::_,
+                                 testing::_, testing::_))
+      .WillOnce([&](ScriptContext* script_context,
+                    const ExtensionId& extension_id,
                     ActivityLogCallType call_type, const std::string& call_name,
                     base::Value::List args, const std::string& extra) {
         EXPECT_EQ("someApiMethod", call_name);
@@ -79,7 +82,6 @@ TEST_F(ActivityLoggerTest, DontCrashOnUnconvertedValues) {
   APIActivityLogger::LogAPICall(ipc_sender.get(), context, "someApiMethod",
                                 args);
 
-  ScriptContext* script_context = script_context_set.GetByV8Context(context);
   script_context_set.Remove(script_context);
   base::RunLoop().RunUntilIdle();  // Let script context destruction complete.
   ::testing::Mock::VerifyAndClearExpectations(ipc_sender.get());

@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -223,8 +224,10 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* render_process_host) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   associated_registry->AddInterface<mojom::EventRouter>(base::BindRepeating(
       &EventRouter::BindForRenderer, render_process_host->GetID()));
+#endif
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, render_process_host->GetID()));
 }
@@ -233,6 +236,11 @@ void ShellContentBrowserClient::
     RegisterAssociatedInterfaceBindersForRenderFrameHost(
         content::RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
+  int render_process_id = render_frame_host.GetProcess()->GetID();
+  associated_registry.AddInterface<mojom::EventRouter>(
+      base::BindRepeating(&EventRouter::BindForRenderer, render_process_id));
+  associated_registry.AddInterface<mojom::RendererHost>(base::BindRepeating(
+      &RendererStartupHelper::BindForRenderer, render_process_id));
   associated_registry.AddInterface<extensions::mojom::LocalFrameHost>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,

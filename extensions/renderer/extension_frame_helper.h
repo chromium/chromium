@@ -15,6 +15,8 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/mojom/automation_registry.mojom.h"
+#include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -161,6 +163,8 @@ class ExtensionFrameHelper
 
   mojom::LocalFrameHost* GetLocalFrameHost();
   mojom::RendererHost* GetRendererHost();
+  mojom::EventRouter* GetEventRouter();
+  mojom::RendererAutomationRegistry* GetRendererAutomationRegistry();
 
  private:
   void BindLocalFrame(
@@ -238,6 +242,9 @@ class ExtensionFrameHelper
 
   mojo::AssociatedRemote<mojom::LocalFrameHost> local_frame_host_remote_;
   mojo::AssociatedRemote<mojom::RendererHost> renderer_host_remote_;
+  mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
+  mojo::AssociatedRemote<mojom::RendererAutomationRegistry>
+      renderer_automation_registry_remote_;
 
   mojo::AssociatedReceiver<mojom::LocalFrame> local_frame_receiver_{this};
 

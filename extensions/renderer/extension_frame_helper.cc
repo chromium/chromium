@@ -335,6 +335,23 @@ mojom::RendererHost* ExtensionFrameHelper::GetRendererHost() {
   return renderer_host_remote_.get();
 }
 
+mojom::EventRouter* ExtensionFrameHelper::GetEventRouter() {
+  if (!event_router_remote_.is_bound()) {
+    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+        &event_router_remote_);
+  }
+  return event_router_remote_.get();
+}
+
+mojom::RendererAutomationRegistry*
+ExtensionFrameHelper::GetRendererAutomationRegistry() {
+  if (!renderer_automation_registry_remote_.is_bound()) {
+    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+        &renderer_automation_registry_remote_);
+  }
+  return renderer_automation_registry_remote_.get();
+}
+
 void ExtensionFrameHelper::ReadyToCommitNavigation(
     blink::WebDocumentLoader* document_loader) {
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();

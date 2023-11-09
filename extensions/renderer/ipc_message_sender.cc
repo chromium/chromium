@@ -90,7 +90,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    GetEventRouter()->AddListenerForMainThread(mojom::EventListener::New(
+    GetEventRouter(context)->AddListenerForMainThread(mojom::EventListener::New(
         GetEventListenerOwner(context), event_name, nullptr, absl::nullopt));
   }
 
@@ -100,8 +100,9 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    GetEventRouter()->RemoveListenerForMainThread(mojom::EventListener::New(
-        GetEventListenerOwner(context), event_name, nullptr, absl::nullopt));
+    GetEventRouter(context)->RemoveListenerForMainThread(
+        mojom::EventListener::New(GetEventListenerOwner(context), event_name,
+                                  nullptr, absl::nullopt));
   }
 
   void SendAddUnfilteredLazyEventListenerIPC(
@@ -110,8 +111,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    GetEventRouter()->AddLazyListenerForMainThread(context->GetExtensionID(),
-                                                   event_name);
+    GetEventRouter(context)->AddLazyListenerForMainThread(
+        context->GetExtensionID(), event_name);
   }
 
   void SendRemoveUnfilteredLazyEventListenerIPC(
@@ -120,8 +121,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    GetEventRouter()->RemoveLazyListenerForMainThread(context->GetExtensionID(),
-                                                      event_name);
+    GetEventRouter(context)->RemoveLazyListenerForMainThread(
+        context->GetExtensionID(), event_name);
   }
 
   void SendAddFilteredEventListenerIPC(ScriptContext* context,
@@ -131,7 +132,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    GetEventRouter()->AddFilteredListenerForMainThread(
+    GetEventRouter(context)->AddFilteredListenerForMainThread(
         GetEventListenerOwner(context), event_name, filter.Clone(), is_lazy);
   }
 
@@ -142,7 +143,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
-    GetEventRouter()->RemoveFilteredListenerForMainThread(
+    GetEventRouter(context)->RemoveFilteredListenerForMainThread(
         GetEventListenerOwner(context), event_name, filter.Clone(),
         remove_lazy_listener);
   }
@@ -153,7 +154,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
       override {
     CHECK(!context->IsForServiceWorker());
 
-    GetRendererAutomationRegistry()->BindAutomation(std::move(pending_remote));
+    GetRendererAutomationRegistry(context)->BindAutomation(
+        std::move(pending_remote));
   }
 
   void SendOpenMessageChannel(
@@ -293,19 +295,20 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
   }
 #endif
 
-  void SendActivityLogIPC(const ExtensionId& extension_id,
+  void SendActivityLogIPC(ScriptContext* context,
+                          const ExtensionId& extension_id,
                           ActivityLogCallType call_type,
                           const std::string& call_name,
                           base::Value::List args,
                           const std::string& extra) override {
     switch (call_type) {
       case ActivityLogCallType::APICALL:
-        GetRendererHost()->AddAPIActionToActivityLog(extension_id, call_name,
-                                                     std::move(args), extra);
+        GetRendererHost(context)->AddAPIActionToActivityLog(
+            extension_id, call_name, std::move(args), extra);
         break;
       case ActivityLogCallType::EVENT:
-        GetRendererHost()->AddEventToActivityLog(extension_id, call_name,
-                                                 std::move(args), extra);
+        GetRendererHost(context)->AddEventToActivityLog(extension_id, call_name,
+                                                        std::move(args), extra);
         break;
     }
   }
@@ -323,36 +326,27 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
                          std::move(response_data));
   }
 
-  mojom::EventRouter* GetEventRouter() {
-    if (!event_router_remote_.is_bound()) {
-      render_thread_->GetChannel()->GetRemoteAssociatedInterface(
-          &event_router_remote_);
-    }
-    return event_router_remote_.get();
+  mojom::EventRouter* GetEventRouter(ScriptContext* context) {
+    content::RenderFrame* frame = context->GetRenderFrame();
+    CHECK(frame);
+    return ExtensionFrameHelper::Get(frame)->GetEventRouter();
   }
 
-  extensions::mojom::RendererAutomationRegistry*
-  GetRendererAutomationRegistry() {
-    if (!renderer_automation_registry_remote_.is_bound()) {
-      render_thread_->GetChannel()->GetRemoteAssociatedInterface(
-          &renderer_automation_registry_remote_);
-    }
-    return renderer_automation_registry_remote_.get();
+  mojom::RendererAutomationRegistry* GetRendererAutomationRegistry(
+      ScriptContext* context) {
+    content::RenderFrame* frame = context->GetRenderFrame();
+    CHECK(frame);
+    return ExtensionFrameHelper::Get(frame)->GetRendererAutomationRegistry();
   }
 
-  mojom::RendererHost* GetRendererHost() {
-    if (!renderer_host_.is_bound()) {
-      render_thread_->GetChannel()->GetRemoteAssociatedInterface(
-          &renderer_host_);
-    }
-    return renderer_host_.get();
+  mojom::RendererHost* GetRendererHost(ScriptContext* context) {
+    content::RenderFrame* frame = context->GetRenderFrame();
+    CHECK(frame);
+    return ExtensionFrameHelper::Get(frame)->GetRendererHost();
   }
 
   const raw_ptr<content::RenderThread, DanglingUntriaged> render_thread_;
-  mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
   mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
-  mojo::AssociatedRemote<extensions::mojom::RendererAutomationRegistry>
-      renderer_automation_registry_remote_;
 
   base::WeakPtrFactory<MainThreadIPCMessageSender> weak_ptr_factory_{this};
 };
@@ -683,7 +677,8 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
   }
 #endif
 
-  void SendActivityLogIPC(const ExtensionId& extension_id,
+  void SendActivityLogIPC(ScriptContext* context,
+                          const ExtensionId& extension_id,
                           ActivityLogCallType call_type,
                           const std::string& call_name,
                           base::Value::List args,
