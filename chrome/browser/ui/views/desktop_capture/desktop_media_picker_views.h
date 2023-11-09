@@ -147,6 +147,9 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   // not to capture anything.
   void RecordSourceCountsUma();
 
+  // Helper for UMA-tracking of how often a user shares a discarded tab.
+  void RecordTabDiscardedStatusUma(const content::DesktopMediaID& source);
+
   // Counts the number of sources of a given type.
   // * Returns nullopt if such sources are not offered to the user due to
   //   a configuration of the picker.

@@ -4938,6 +4938,39 @@ chromium-metrics-reviews@google.com.
   <summary>Size of HTML5 media (when known), in MB.</summary>
 </histogram>
 
+<histogram
+    name="Media.Ui.GetDisplayMedia.BasicFlow.HighlightedTabDiscardStatus"
+    enum="HighlightedTabDiscardStatus" expires_after="2024-11-06">
+  <owner>eladalon@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    When getDisplayMedia() is called, the user is shown a list of tabs, windows
+    and screens they can choose to capture. If the user highlights a discarded
+    tab, no preview is shown - which is a problem. This histogram tracks how
+    often the user sees at least one missing preview due to highlighting a
+    discarded tab. (Contrast this with SelectedTabDiscardStatus.) The histogram
+    is recorded when the media-picker dialog is closed - either through the user
+    accepting or rejecting the dialog, or if the document that called
+    getDisplayMedia() is unloaded (e.g. if the tab is closed).
+  </summary>
+</histogram>
+
+<histogram name="Media.Ui.GetDisplayMedia.BasicFlow.SelectedTabDiscardStatus"
+    enum="SelectedTabDiscardStatus" expires_after="2024-11-06">
+  <owner>eladalon@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    When getDisplayMedia() is called, the user is shown a list of tabs, windows
+    and screens they can choose to capture. If the user highlights a discarded
+    tab, no preview is shown - which is a problem. This histogram tracks how
+    often the user ends up choosing to share a discarded tab. (Contrast this
+    with HighlightedTabDiscardStatus.) The histogram is recorded when the
+    media-picker dialog is closed - either through the user accepting or
+    rejecting the dialog, or if the document that called getDisplayMedia() is
+    unloaded (e.g. if the tab is closed).
+  </summary>
+</histogram>
+
 <histogram name="Media.Ui.GetDisplayMedia.BasicFlow.SourceCount.{Type}"
     units="count" expires_after="2024-09-01">
   <owner>eladalon@chromium.org</owner>

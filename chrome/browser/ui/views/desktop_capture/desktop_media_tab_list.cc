@@ -34,8 +34,19 @@
 #include "ui/views/view.h"
 
 using content::BrowserThread;
+using content::RenderFrameHost;
+using content::WebContents;
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class HighlightedTabDiscardStatus {
+  kNoTabsHighlighted = 0,
+  kAllHighlightedTabsNonDiscarded = 1,
+  kDiscardedTabHighlightedAtLeastOnce = 2,
+  kMaxValue = kDiscardedTabHighlightedAtLeastOnce
+};
 
 // Max stored length for the title of a previewed tab. The actual displayed
 // length is likely shorter than this, as the Label will elide it to fit the UI.
@@ -302,6 +313,19 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
 
 DesktopMediaTabList::~DesktopMediaTabList() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  const HighlightedTabDiscardStatus highlighted_tabs =
+      discarded_tab_highlighted_
+          ? HighlightedTabDiscardStatus::kDiscardedTabHighlightedAtLeastOnce
+      : non_discarded_tab_highlighted_
+          ? HighlightedTabDiscardStatus::kAllHighlightedTabsNonDiscarded
+          : HighlightedTabDiscardStatus::kNoTabsHighlighted;
+  // Note: For simplicty's sake, we count all invocations of the picker,
+  // regardless of whether getDisplayMedia() or extension-based.
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetDisplayMedia.BasicFlow.HighlightedTabDiscardStatus",
+      highlighted_tabs);
+
   table_->SetModel(nullptr);
 }
 
@@ -398,6 +422,8 @@ void DesktopMediaTabList::OnSelectionChanged() {
   }
   const DesktopMediaList::Source& source = controller_->GetSource(row.value());
 
+  RecordSourceDiscardedStatus(source);
+
   const std::u16string truncated_title =
       source.name.substr(0, kMaxPreviewTitleLength);
   preview_label_->SetText(truncated_title);
@@ -443,6 +469,26 @@ void DesktopMediaTabList::OnPreviewUpdated(size_t index) {
         kClearPreviewDelay);
   }
   preview_label_->SetText(source.name.substr(0, kMaxPreviewTitleLength));
+}
+
+void DesktopMediaTabList::RecordSourceDiscardedStatus(
+    const DesktopMediaList::Source& source) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_EQ(source.id.type, content::DesktopMediaID::Type::TYPE_WEB_CONTENTS);
+
+  RenderFrameHost* const rfh =
+      RenderFrameHost::FromID(source.id.web_contents_id.render_process_id,
+                              source.id.web_contents_id.main_render_frame_id);
+  WebContents* const wc = WebContents::FromRenderFrameHost(rfh);
+  if (!wc) {
+    return;
+  }
+
+  if (wc->WasDiscarded()) {
+    discarded_tab_highlighted_ = true;
+  } else {
+    non_discarded_tab_highlighted_ = true;
+  }
 }
 
 BEGIN_METADATA(DesktopMediaTabList, DesktopMediaListController::ListView)

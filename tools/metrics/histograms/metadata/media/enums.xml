@@ -1044,6 +1044,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Presentation API"/>
 </enum>
 
+<enum name="HighlightedTabDiscardStatus">
+  <int value="0" label="NoTabsHighlighted"/>
+  <int value="1" label="AllHighlightedTabsNonDiscarded"/>
+  <int value="2" label="DiscardedTabHighlightedAtLeastOnce"/>
+</enum>
+
 <enum name="ImageCaptureOutcome">
   <int value="0" label="Succeeded using video stream"/>
   <int value="1" label="Succeeded using photo stream"/>
@@ -1845,6 +1851,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="OpenOffice Impress"/>
   <int value="3" label="Keynote"/>
   <int value="4" label="LibreOffice"/>
+</enum>
+
+<enum name="SelectedTabDiscardStatus">
+  <int value="0" label="NonDiscarded"/>
+  <int value="1" label="Discarded"/>
 </enum>
 
 <enum name="SmoothVolatility">

@@ -41,6 +41,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -65,6 +66,9 @@
 #endif
 
 using content::DesktopMediaID;
+using content::RenderFrameHost;
+using content::WebContents;
+using content::WebContentsMediaCaptureId;
 using RequestSource = DesktopMediaPicker::Params::RequestSource;
 
 enum class DesktopMediaPickerDialogView::DialogType : int {
@@ -75,6 +79,14 @@ enum class DesktopMediaPickerDialogView::DialogType : int {
 namespace {
 
 using DialogType = DesktopMediaPickerDialogView::DialogType;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SelectedTabDiscardStatus {
+  kNonDiscarded = 0,
+  kDiscarded = 1,
+  kMaxValue = kDiscarded
+};
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA)
 DesktopMediaID::Id AcceleratedWidgetToDesktopMediaId(
@@ -958,6 +970,32 @@ void DesktopMediaPickerDialogView::RecordSourceCountsUma() {
   }
 }
 
+void DesktopMediaPickerDialogView::RecordTabDiscardedStatusUma(
+    const DesktopMediaID& source) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (source.type != DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
+    return;
+  }
+
+  const WebContentsMediaCaptureId& web_contents_id = source.web_contents_id;
+  RenderFrameHost* const rfh = RenderFrameHost::FromID(
+      web_contents_id.render_process_id, web_contents_id.main_render_frame_id);
+  WebContents* const wc = WebContents::FromRenderFrameHost(rfh);
+  if (!wc) {
+    return;
+  }
+
+  const SelectedTabDiscardStatus status =
+      wc->WasDiscarded() ? SelectedTabDiscardStatus::kDiscarded
+                         : SelectedTabDiscardStatus::kNonDiscarded;
+
+  // Note: For simplicty's sake, we count all invocations of the picker,
+  // regardless of whether getDisplayMedia() or extension-based.
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetDisplayMedia.BasicFlow.SelectedTabDiscardStatus", status);
+}
+
 absl::optional<int> DesktopMediaPickerDialogView::CountSourcesOfType(
     DesktopMediaList::Type type) {
   absl::optional<int> count;
@@ -1040,6 +1078,7 @@ bool DesktopMediaPickerDialogView::Accept() {
                        GetSelectedSourceListType(), dialog_open_time_);
   }
   RecordSourceCountsUma();
+  RecordTabDiscardedStatusUma(source);
 
   if (parent_)
     parent_->NotifyDialogResult(source);

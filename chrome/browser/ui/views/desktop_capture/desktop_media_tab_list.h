@@ -60,6 +60,10 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   void ClearPreview();
   void ClearPreviewImageIfUnchanged(size_t previous_preview_set_count);
 
+  // Helper for UMA-tracking of how often a user highlights a discarded tab.
+  // (When that happens, the user will not see a tab preview.)
+  void RecordSourceDiscardedStatus(const DesktopMediaList::Source& source);
+
   friend class DesktopMediaPickerViewsTestApi;
   friend class DesktopMediaTabListTest;
 
@@ -78,6 +82,16 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
 
   // Counts the number of times preview_ has been set to an image.
   size_t preview_set_count_ = 0;
+
+  // For UMA purposes only, we track how often the user interacts with
+  // the list and:
+  // 1. Never ends up highlighting a discarded tab.
+  // 2. Ends up highlighting a discarded tab at least once.
+  //
+  // For a good trade-off between complexity and accuracy, we discount
+  // the possibility of tabs being discarded after they're highlighted.
+  bool discarded_tab_highlighted_ = false;
+  bool non_discarded_tab_highlighted_ = false;
 
   base::WeakPtrFactory<DesktopMediaTabList> weak_factory_{this};
 };
