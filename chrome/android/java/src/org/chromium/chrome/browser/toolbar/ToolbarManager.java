@@ -53,9 +53,9 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.Invalidator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
@@ -1498,21 +1498,26 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     /**
      * Initialize the manager with the components that had native initialization dependencies.
-     * <p>
-     * Calling this must occur after the native library have completely loaded.
      *
-     * @param layoutManager A {@link LayoutManagerImpl} instance used to watch for scene
-     *                      changes.
+     * <p>Calling this must occur after the native library have completely loaded.
+     *
+     * @param layoutManager A {@link LayoutManagerImpl} instance used to watch for scene changes.
+     * @param stripLayoutHelperManager {@link StripLayoutHelperManager} instance used to manage the
+     *     tab strip.
      * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
      * @param newTabClickHandler The {@link OnClickListener} for the new tab button.
      * @param bookmarkClickHandler The {@link OnClickListener} for the bookmark button.
      * @param customTabsBackClickHandler The {@link OnClickListener} for the custom tabs back
-     *         button.
+     *     button.
      * @param showStartSurfaceSupplier Supplies if we should show the start surface.
      */
-    public void initializeWithNative(LayoutManagerImpl layoutManager,
-            OnClickListener tabSwitcherClickHandler, OnClickListener newTabClickHandler,
-            OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler,
+    public void initializeWithNative(
+            @NonNull LayoutManagerImpl layoutManager,
+            @Nullable StripLayoutHelperManager stripLayoutHelperManager,
+            OnClickListener tabSwitcherClickHandler,
+            OnClickListener newTabClickHandler,
+            OnClickListener bookmarkClickHandler,
+            OnClickListener customTabsBackClickHandler,
             Supplier<Boolean> showStartSurfaceSupplier) {
         TraceEvent.begin("ToolbarManager.initializeWithNative");
         assert !mInitializedWithNative;
@@ -1544,18 +1549,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mToolbar.addOnAttachStateChangeListener(mAttachStateChangeListener);
 
-        if (layoutManager != null) {
-            mLayoutManager = layoutManager;
-            mLayoutManager.getOverlayPanelManager().addObserver(mOverlayPanelManagerObserver);
-            // Set drag listener for toolbar container.
-            if (mLayoutManager instanceof LayoutManagerChrome
-                    && ((LayoutManagerChrome) mLayoutManager).getStripLayoutHelperManager()
-                            != null) {
-                mControlContainer.setToolbarContainerDragListener(
-                        ((LayoutManagerChrome) mLayoutManager)
-                                .getStripLayoutHelperManager()
-                                .getDragListener());
-            }
+        mLayoutManager = layoutManager;
+        mLayoutManager.getOverlayPanelManager().addObserver(mOverlayPanelManagerObserver);
+
+        if (stripLayoutHelperManager != null) {
+            mControlContainer.setToolbarContainerDragListener(
+                    stripLayoutHelperManager.getDragListener());
         }
 
         if (mMenuStateObserver != null) {

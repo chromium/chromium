@@ -19,6 +19,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import dagger.Lazy;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -44,8 +46,6 @@ import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import dagger.Lazy;
 
 /**
  * Works with the toolbar in a Custom Tab. Encapsulates interactions with Chrome's toolbar-related
@@ -181,7 +181,7 @@ public class CustomTabToolbarCoordinator {
 
     private void onCompositorContentInitialized(LayoutManagerImpl layoutDriver) {
         mToolbarManager.initializeWithNative(
-                layoutDriver, null, null, null, v -> onCloseButtonClick(), null);
+                layoutDriver, null, null, null, null, v -> onCloseButtonClick(), null);
         mInitializedToolbarWithNative = true;
     }
 

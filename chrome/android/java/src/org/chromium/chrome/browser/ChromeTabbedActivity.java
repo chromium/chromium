@@ -891,10 +891,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 return false;
             };
 
-            getToolbarManager().initializeWithNative(mLayoutManager,
-                    v
-                    -> onTabSwitcherClicked(),
-                    newTabClickHandler, bookmarkClickHandler, null, showStartSurfaceSupplier);
+            getToolbarManager()
+                    .initializeWithNative(
+                            mLayoutManager,
+                            mLayoutManager.getStripLayoutHelperManager(),
+                            v -> onTabSwitcherClicked(),
+                            newTabClickHandler,
+                            bookmarkClickHandler,
+                            null,
+                            showStartSurfaceSupplier);
 
             if (!isInstantStartEnabled()) {
                 // TODO(https://crbug.com/1306904): Fix this assert which is tripping on unrelated
