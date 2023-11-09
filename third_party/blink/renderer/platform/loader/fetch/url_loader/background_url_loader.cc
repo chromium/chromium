@@ -273,9 +273,17 @@ class BackgroundURLLoader::Context
         const net::RedirectInfo& redirect_info,
         network::mojom::URLResponseHeadPtr head,
         FollowRedirectCallback follow_redirect_callback) override {
+      // Wrapping `follow_redirect_callback` with base::OnTaskRunnerDeleter to
+      // make sure that `follow_redirect_callback` will be destructed in the
+      // background thread when `client_->WillFollowRedirect()` returns false
+      // in Context::OnReceivedRedirect() or the request is canceled before
+      // Context::OnReceivedRedirect() is called in the main thread.
       context_->PostTaskToMainThread(CrossThreadBindOnce(
           &Context::OnReceivedRedirect, context_, redirect_info,
-          std::move(head), std::move(follow_redirect_callback)));
+          std::move(head),
+          std::unique_ptr<FollowRedirectCallback, base::OnTaskRunnerDeleter>(
+              new FollowRedirectCallback(std::move(follow_redirect_callback)),
+              base::OnTaskRunnerDeleter(context_->background_task_runner_))));
     }
     void OnReceivedResponse(
         network::mojom::URLResponseHeadPtr head,
@@ -413,8 +421,7 @@ class BackgroundURLLoader::Context
   void OnReceivedRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr head,
-      base::OnceCallback<void(std::vector<std::string> removed_headers,
-                              net::HttpRequestHeaders modified_headers)>
+      std::unique_ptr<FollowRedirectCallback, base::OnTaskRunnerDeleter>
           follow_redirect_callback,
       int request_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
@@ -433,15 +440,9 @@ class BackgroundURLLoader::Context
             redirect_info.insecure_scheme_was_upgraded)) {
       PostCrossThreadTask(
           *background_task_runner_, FROM_HERE,
-          CrossThreadBindOnce(std::move(follow_redirect_callback),
+          CrossThreadBindOnce(std::move(*follow_redirect_callback),
                               std::move(removed_headers),
                               std::move(modified_headers)));
-    } else {
-      // `follow_redirect_callback` must be deleted in the background thread.
-      background_task_runner_->DeleteSoon(
-          FROM_HERE, std::make_unique<base::OnceCallback<void(
-                         std::vector<std::string>, net::HttpRequestHeaders)>>(
-                         std::move(follow_redirect_callback)));
     }
   }
   void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,

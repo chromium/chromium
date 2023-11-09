@@ -590,6 +590,38 @@ TEST_F(BackgroundResourceFecherTest, RedirectDoNotFollow) {
   EXPECT_EQ(KURL(kRedirectedURL), redirected_url);
 }
 
+TEST_F(BackgroundResourceFecherTest, RedirectAndCancelDoNotCrash) {
+  FakeURLLoaderClient client(freezable_task_runner_);
+  KURL redirected_url;
+  client.AddWillFollowRedirectCallback(
+      base::BindLambdaForTesting([&](const WebURL& new_url) {
+        redirected_url = new_url;
+        return true;
+      }));
+  auto background_url_loader =
+      CreateBackgroundURLLoaderAndStart(CreateTestRequest(), &client);
+
+  mojo::Remote<network::mojom::URLLoaderClient> loader_client_remote(
+      std::move(loader_client_pending_remote_));
+  FakeURLLoader loader(std::move(loader_pending_receiver_));
+
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = GURL(kRedirectedURL);
+
+  loader_client_remote->OnReceiveRedirect(
+      redirect_info, network::mojom::URLResponseHead::New());
+
+  // Call RunUntilIdle() to receive Mojo IPC.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(redirected_url.IsEmpty());
+  // Cancel the request before Context::OnReceivedRedirect() is called in
+  // `freezable_task_runner_`.
+  background_url_loader.reset();
+  freezable_task_runner_->RunUntilIdle();
+  EXPECT_TRUE(redirected_url.IsEmpty());
+}
+
 TEST_F(BackgroundResourceFecherTest, CancelSoonAfterStart) {
   base::WaitableEvent waitable_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
