@@ -34,7 +34,9 @@ enum class EmojiVariantType {
   // smaller entries only used by Chrome OS VK
   kEmojiPickerBase = 4,
   kEmojiPickerVariant = 5,
-  kMaxValue = kEmojiPickerVariant,
+  kEmojiPickerGifInserted = 6,
+  kEmojiPickerGifCopied = 7,
+  kMaxValue = kEmojiPickerGifCopied,
 };
 
 void LogInsertEmoji(bool is_variant, int16_t search_length) {
@@ -45,6 +47,14 @@ void LogInsertEmoji(bool is_variant, int16_t search_length) {
                                 insert_value);
   base::UmaHistogramCounts100("InputMethod.SystemEmojiPicker.SearchLength",
                               search_length);
+}
+
+void LogInsertGif(bool is_inserted) {
+  EmojiVariantType insert_value = is_inserted
+                                      ? EmojiVariantType::kEmojiPickerGifInserted
+                                      : EmojiVariantType::kEmojiPickerGifCopied;
+  base::UmaHistogramEnumeration("InputMethod.SystemEmojiPicker.TriggerType",
+                                insert_value);
 }
 
 void LogInsertEmojiDelay(base::TimeDelta delay) {
@@ -204,10 +214,14 @@ class GifObserver : public InsertObserver {
     if (input_client->CanInsertImage()) {
       input_client->InsertImage(gif_to_insert_);
       MarkInserted();
+      LogInsertGif(/*is_inserted=*/true);
     }
   }
 
-  void PerformCopy() override { CopyGifToClipboard(gif_to_insert_); }
+  void PerformCopy() override {
+    CopyGifToClipboard(gif_to_insert_);
+    LogInsertGif(/*is_inserted=*/false);
+  }
 
  private:
   GURL gif_to_insert_;
@@ -347,11 +361,13 @@ void EmojiPageHandler::InsertGif(const GURL& gif) {
   if (!input_method) {
     DLOG(WARNING) << "no input_method found";
     CopyGifToClipboard(gif);
+    LogInsertGif(/*is_inserted=*/false);
     return;
   }
 
   if (no_text_field_) {
     CopyGifToClipboard(gif);
+    LogInsertGif(/*is_inserted=*/false);
     return;
   }
 
