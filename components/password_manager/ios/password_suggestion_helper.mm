@@ -135,6 +135,11 @@ using password_manager::IsCrossOriginIframe;
 
   if (fillData->IsSuggestionsAvailable(formIdentifier, fieldIdentifier,
                                        isPasswordField)) {
+    const password_manager::FormInfo* formInfo =
+        fillData->GetFormInfo(formIdentifier, fieldIdentifier, isPasswordField);
+    bool is_single_username_form = formInfo && formInfo->username_element_id &&
+                                   !formInfo->password_element_id;
+
     std::vector<password_manager::UsernameAndRealm> usernameAndRealms =
         fillData->RetrieveSuggestions(formIdentifier, fieldIdentifier,
                                       isPasswordField);
@@ -146,6 +151,9 @@ using password_manager::IsCrossOriginIframe;
         url::Origin origin = url::Origin::Create(GURL(usernameAndRealm.realm));
         realm = SysUTF8ToNSString(password_manager::GetShownOrigin(origin));
       }
+
+      FormSuggestionMetadata metadata;
+      metadata.is_single_username_form = is_single_username_form;
       [results
           addObject:[FormSuggestion suggestionWithValue:username
                                      displayDescription:realm
@@ -153,7 +161,9 @@ using password_manager::IsCrossOriginIframe;
                                             popupItemId:autofill::PopupItemId::
                                                             kAutocompleteEntry
                                       backendIdentifier:nil
-                                         requiresReauth:YES]];
+                                         requiresReauth:YES
+                             acceptanceA11yAnnouncement:nil
+                                               metadata:std::move(metadata)]];
     }
   }
 

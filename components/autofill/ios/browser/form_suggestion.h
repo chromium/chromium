@@ -10,6 +10,13 @@
 
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 
+// Metadata tied to the form suggestion that gives more context around the
+// suggestion.
+struct FormSuggestionMetadata {
+  // True if the suggestion is for a single username form.
+  bool is_single_username_form = false;
+};
+
 // Represents a user-selectable suggestion for a single field within a form
 // on a web page.
 @interface FormSuggestion : NSObject
@@ -40,6 +47,19 @@
 // The `Suggestion::BackendId` associated with this suggestion. Would be GUID
 // for the addresses and credit cards where `identifier` > 0.
 @property(copy, readonly, nonatomic) NSString* backendIdentifier;
+
+// Metadata tied to the suggestion that gives more context.
+@property(assign, readonly, nonatomic) FormSuggestionMetadata metadata;
+
+// Returns FormSuggestion (immutable) with given values.
++ (FormSuggestion*)suggestionWithValue:(NSString*)value
+                    displayDescription:(NSString*)displayDescription
+                                  icon:(UIImage*)icon
+                           popupItemId:(autofill::PopupItemId)popupItemId
+                     backendIdentifier:(NSString*)backendIdentifier
+                        requiresReauth:(BOOL)requiresReauth
+            acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
+                              metadata:(FormSuggestionMetadata)metadata;
 
 // Returns FormSuggestion (immutable) with given values.
 + (FormSuggestion*)suggestionWithValue:(NSString*)value

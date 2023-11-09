@@ -46,6 +46,21 @@ using ReauthenticationEvent::kFailure;
 using ReauthenticationEvent::kMissingPasscode;
 using ReauthenticationEvent::kSuccess;
 
+namespace {
+
+int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kIOSPasswordSignInUff)) {
+    return IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD;
+  }
+
+  return suggestion.metadata.is_single_username_form
+             ? IDS_IOS_PASSWORD_BOTTOM_SHEET_CONTINUE
+             : IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD;
+}
+
+}  // namespace
+
 @interface PasswordSuggestionBottomSheetMediator () <WebStateListObserving,
                                                      CRWWebStateObserver>
 
@@ -240,6 +255,14 @@ using ReauthenticationEvent::kSuccess;
       [consumer setTitle:[self sharingNotificationTitle]
                 subtitle:[self sharingNotificationSubtitle:domain]];
     }
+
+    // Determine the primary action label only from the first suggestion, which
+    // is sufficient as all the suggestions should have the same metadata. There
+    // should be at least one suggestion at this point because the consumer is
+    // set when there is at least one suggestion.
+    [consumer setPrimaryActionString:l10n_util::GetNSString(
+                                        PrimaryActionStringIdFromSuggestion(
+                                            self.suggestions.firstObject))];
   } else {
     [consumer dismiss];
   }

@@ -12,7 +12,8 @@
                    popupItemId:(autofill::PopupItemId)popupItemId
              backendIdentifier:(NSString*)backendIdentifier
                 requiresReauth:(BOOL)requiresReauth
-    acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement {
+    acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
+                      metadata:(FormSuggestionMetadata)metadata {
   self = [super init];
   if (self) {
     _value = [value copy];
@@ -22,8 +23,27 @@
     _backendIdentifier = backendIdentifier;
     _requiresReauth = requiresReauth;
     _acceptanceA11yAnnouncement = [acceptanceA11yAnnouncement copy];
+    _metadata = metadata;
   }
   return self;
+}
+
++ (FormSuggestion*)suggestionWithValue:(NSString*)value
+                    displayDescription:(NSString*)displayDescription
+                                  icon:(UIImage*)icon
+                           popupItemId:(autofill::PopupItemId)popupItemId
+                     backendIdentifier:(NSString*)backendIdentifier
+                        requiresReauth:(BOOL)requiresReauth
+            acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
+                              metadata:(FormSuggestionMetadata)metadata {
+  return [[FormSuggestion alloc] initWithValue:value
+                            displayDescription:displayDescription
+                                          icon:icon
+                                   popupItemId:popupItemId
+                             backendIdentifier:backendIdentifier
+                                requiresReauth:requiresReauth
+                    acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
+                                      metadata:metadata];
 }
 
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
@@ -39,7 +59,8 @@
                                    popupItemId:popupItemId
                              backendIdentifier:backendIdentifier
                                 requiresReauth:requiresReauth
-                    acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
+                    acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
+                                      metadata:FormSuggestionMetadata()];
 }
 
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
@@ -54,7 +75,8 @@
                                    popupItemId:popupItemId
                              backendIdentifier:backendIdentifier
                                 requiresReauth:requiresReauth
-                    acceptanceA11yAnnouncement:nil];
+                    acceptanceA11yAnnouncement:nil
+                                      metadata:FormSuggestionMetadata()];
 }
 
 @end

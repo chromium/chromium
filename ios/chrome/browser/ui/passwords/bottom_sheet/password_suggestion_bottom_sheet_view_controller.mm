@@ -101,8 +101,10 @@ CGFloat const kSpacingAfterTitle = 4;
 
   self.titleString = _title;
   self.titleTextStyle = UIFontTextStyleTitle2;
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD);
+
+  // Check that the primary string was set before loading the view.
+  CHECK(self.primaryActionString && self.primaryActionString.length > 0);
+
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
   self.secondaryActionImage =

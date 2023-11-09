@@ -529,12 +529,14 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     NSString* value = [rawSuggestion.value
         stringByAppendingString:kPasswordFormSuggestionSuffix];
     FormSuggestion* suggestion = [FormSuggestion
-        suggestionWithValue:value
-         displayDescription:rawSuggestion.displayDescription
-                       icon:nil
-                popupItemId:autofill::PopupItemId::kAutocompleteEntry
-          backendIdentifier:nil
-             requiresReauth:YES];
+               suggestionWithValue:value
+                displayDescription:rawSuggestion.displayDescription
+                              icon:nil
+                       popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                 backendIdentifier:nil
+                    requiresReauth:YES
+        acceptanceA11yAnnouncement:nil
+                          metadata:rawSuggestion.metadata];
     [suggestions addObject:suggestion];
   }
   absl::optional<PasswordDropdownState> suggestionState;

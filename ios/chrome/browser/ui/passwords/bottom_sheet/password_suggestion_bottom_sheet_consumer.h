@@ -10,7 +10,7 @@
 @class FormSuggestion;
 
 // Suggestions consumer for the passwords bottom sheet.
-@protocol PasswordSuggestionBottomSheetConsumer
+@protocol PasswordSuggestionBottomSheetConsumer <NSObject>
 
 // Sends the list of suggestions to be presented to the user on the bottom sheet
 // and the current page's domain.
@@ -24,6 +24,9 @@
 
 // Request to dismiss the bottom sheet.
 - (void)dismiss;
+
+// Sets the primary action label.
+- (void)setPrimaryActionString:(NSString*)primaryActionString;
 
 @end
 
