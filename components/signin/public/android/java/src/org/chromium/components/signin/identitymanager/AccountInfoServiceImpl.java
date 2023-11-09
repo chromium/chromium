@@ -6,8 +6,6 @@ package org.chromium.components.signin.identitymanager;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
@@ -36,16 +34,11 @@ final class AccountInfoServiceImpl
     @Override
     public Promise<AccountInfo> getAccountInfoByEmail(String email) {
         final Promise<AccountInfo> accountInfoPromise = new Promise<>();
-        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-            accountInfoPromise.fulfill(
-                    mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
-        } else {
-            mAccountTrackerService.legacySeedAccountsIfNeeded(
-                    () -> {
-                        accountInfoPromise.fulfill(
-                                mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
-                    });
-        }
+        mAccountTrackerService.legacySeedAccountsIfNeeded(
+                () -> {
+                    accountInfoPromise.fulfill(
+                            mIdentityManager.findExtendedAccountInfoByEmailAddress(email));
+                });
         return accountInfoPromise;
     }
 
