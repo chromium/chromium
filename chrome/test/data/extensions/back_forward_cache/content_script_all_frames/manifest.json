@@ -1,8 +1,8 @@
 {
-  "name": "no caching",
+  "name": "BFCache test extension",
   "version": "0.1",
   "manifest_version": 2,
-  "description": "Checks that content scripts do prevent back forward cache.",
+  "description": "A test extension that can be injected into all frames.",
   "permissions": [
     "http://*/*",
     "https://*/*"
