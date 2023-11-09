@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -127,6 +128,8 @@ public class LocationBarTest {
                             .getSearchEngineLogo(any(), anyInt(), any(), any());
                 });
         UmaRecorderHolder.resetForTesting();
+        // Prevents recreating Chrome when the default search engine is changed.
+        ToolbarManager.setSkipRecreateActivityWhenStartSurfaceEnabledStateChangesForTesting(true);
     }
 
     private void startActivityNormally() {

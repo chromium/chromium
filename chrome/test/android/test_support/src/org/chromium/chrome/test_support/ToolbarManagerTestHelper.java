@@ -20,6 +20,7 @@ public class ToolbarManagerTestHelper {
      */
     @CalledByNative
     public static void setSkipRecreateForTesting(boolean skipRecreating) {
-        ToolbarManager.setSkipRecreateForTesting(skipRecreating);
+        ToolbarManager.setSkipRecreateActivityWhenStartSurfaceEnabledStateChangesForTesting(
+                skipRecreating);
     }
 }

@@ -2435,10 +2435,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     /**
-     * Sets whether to skip recreating the activity when the settings are changed. It should only
-     * be true in testing.
+     * Sets whether to skip recreating the activity when the settings are changed. It should only be
+     * true in testing.
      */
-    public static void setSkipRecreateForTesting(boolean skipRecreating) {
+    public static void setSkipRecreateActivityWhenStartSurfaceEnabledStateChangesForTesting(
+            boolean skipRecreating) {
         sSkipRecreateForTesting = skipRecreating;
         ResettersForTesting.register(() -> sSkipRecreateForTesting = false);
     }
