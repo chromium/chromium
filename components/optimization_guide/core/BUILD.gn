@@ -163,7 +163,8 @@ static_library("features") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-input_proto_descriptor_file = "$root_gen_dir/components/optimization_guide/proto/compose.descriptor"
+input_proto_descriptor_file =
+    "$root_gen_dir/components/optimization_guide/proto/compose.descriptor"
 output_proto_descriptors_cc_file = "$root_gen_dir/components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.cc"
 
 static_library("core") {

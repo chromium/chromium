@@ -79,8 +79,8 @@ message SubstitutedString {
   // The arguments to be substituted in `string_template`.
   repeated StringArg args = 3;
 
-  // TODO(b/302402959): Add support for conditions for which this should be
-  // applied.
+  // The conditions for which to apply this substituted string.
+  optional ConditionList conditions = 4;
 }
 
 message StringArg {
@@ -91,8 +91,8 @@ message StringArg {
 
   // TODO(b/302402959): Add support for max number of characters to apply.
 
-  // TODO(b/302402959): Add support for conditions for which this should be
-  // applied.
+  // The conditions for which to apply this substituted string.
+  optional ConditionList conditions = 3;
 }
 
 message ProtoDescriptor {
@@ -121,4 +121,34 @@ message Value {
     // boolean type.
     bool boolean_value = 5;
   }
+}
+
+// Operators available for comparing the value of fields.
+enum OperatorType {
+  OPERATOR_TYPE_UNSPECIFIED = 0;
+  // Equal.
+  OPERATOR_TYPE_EQUAL_TO = 1;
+  // Not Equal.
+  OPERATOR_TYPE_NOT_EQUAL_TO = 2;
+}
+
+enum ConditionEvaluationType {
+  CONDITION_EVALUATION_TYPE_UNSPECIFIED = 0;
+  CONDITION_EVALUATION_TYPE_AND = 1;
+  CONDITION_EVALUATION_TYPE_OR = 2;
+}
+
+message ConditionList {
+  // How to evaluate the below conditions.
+  optional ConditionEvaluationType condition_evaluation_type = 1;
+
+  // The set of conditions to evaluate.
+  repeated Condition conditions = 2;
+}
+
+// Evaluated as "value at proto_field" "operator_type" "value".
+message Condition {
+  optional ProtoField proto_field = 1;
+  optional OperatorType operator_type = 2;
+  optional Value value = 3;
 }

@@ -56,6 +56,49 @@ std::string StringPrintfVector(const std::string& string_template,
       args[30].c_str(), args[31].c_str());
 }
 
+// Returns whether `condition` applies based on `message`.
+bool EvaluateCondition(const google::protobuf::MessageLite& message,
+                       const proto::Condition& condition) {
+  absl::optional<proto::Value> proto_value =
+      GetProtoValue(message, condition.proto_field());
+  if (!proto_value) {
+    return false;
+  }
+
+  switch (condition.operator_type()) {
+    case proto::OPERATOR_TYPE_EQUAL_TO:
+      return AreValuesEqual(*proto_value, condition.value());
+    case proto::OPERATOR_TYPE_NOT_EQUAL_TO:
+      return !AreValuesEqual(*proto_value, condition.value());
+    case proto::OPERATOR_TYPE_UNSPECIFIED:
+      NOTREACHED();
+      return false;
+  }
+}
+
+// Returns whether `conditions` apply based on `message`.
+bool DoConditionsApply(const google::protobuf::MessageLite& message,
+                       const proto::ConditionList& conditions) {
+  if (conditions.conditions_size() == 0) {
+    return true;
+  }
+
+  for (const auto& condition : conditions.conditions()) {
+    bool applies = EvaluateCondition(message, condition);
+    if (applies && conditions.condition_evaluation_type() ==
+                       proto::CONDITION_EVALUATION_TYPE_OR) {
+      return true;
+    }
+    if (!applies && conditions.condition_evaluation_type() ==
+                        proto::CONDITION_EVALUATION_TYPE_AND) {
+      return false;
+    }
+  }
+
+  return conditions.condition_evaluation_type() ==
+         proto::CONDITION_EVALUATION_TYPE_AND;
+}
+
 }  // namespace
 
 OnDeviceModelExecutionConfigInterpreter::
@@ -130,11 +173,15 @@ OnDeviceModelExecutionConfigInterpreter::ConstructInputString(
   // Construct string.
   std::vector<std::string> substitutions;
   for (const auto& substitution : input_config.execute_substitutions()) {
-    // TODO(b/302402959): See if conditions apply.
+    if (!DoConditionsApply(request, substitution.conditions())) {
+      continue;
+    }
 
     std::vector<std::string> args;
     for (const auto& arg : substitution.args()) {
-      // TODO(b/302402959): See if conditions apply.
+      if (!DoConditionsApply(request, arg.conditions())) {
+        continue;
+      }
 
       if (arg.has_raw_string()) {
         args.push_back(arg.raw_string());

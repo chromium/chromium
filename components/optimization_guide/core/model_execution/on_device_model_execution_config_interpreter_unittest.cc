@@ -278,6 +278,80 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   EXPECT_FALSE(maybe_string.has_value());
 }
 
+TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
+       ConstructInputStringWithConditions) {
+  proto::OnDeviceModelExecutionConfig config;
+  auto* fc = config.add_feature_configs();
+  fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  auto* input_config = fc->mutable_input_config();
+  input_config->set_request_base_name(
+      "optimization_guide.proto.ComposeRequest");
+  auto* substitution = input_config->add_execute_substitutions();
+  substitution->set_string_template("hello this is a test: %s %s");
+  substitution->set_expected_num_args(2);
+  substitution->add_args()
+      ->mutable_proto_field()
+      ->add_proto_descriptors()
+      ->set_tag_number(2);
+  auto* arg1 = substitution->add_args();
+  auto* proto_field1 = arg1->mutable_proto_field();
+  proto_field1->add_proto_descriptors()->set_tag_number(3);
+  proto_field1->add_proto_descriptors()->set_tag_number(1);
+  auto* arg1_conditions = arg1->mutable_conditions();
+  arg1_conditions->set_condition_evaluation_type(
+      proto::CONDITION_EVALUATION_TYPE_OR);
+  auto* arg1_c1 = arg1_conditions->add_conditions();
+  auto* arg1_c1_proto_field = arg1_c1->mutable_proto_field();
+  arg1_c1_proto_field->add_proto_descriptors()->set_tag_number(4);
+  arg1_c1->set_operator_type(proto::OPERATOR_TYPE_EQUAL_TO);
+  arg1_c1->mutable_value()->set_int32_value(1);
+  auto* arg1_c2 = arg1_conditions->add_conditions();
+  arg1_c2->mutable_proto_field()->add_proto_descriptors()->set_tag_number(4);
+  arg1_c2->set_operator_type(proto::OPERATOR_TYPE_EQUAL_TO);
+  arg1_c1->mutable_value()->set_int32_value(2);
+  auto* arg2 = substitution->add_args();
+  auto* proto_field2 = arg2->mutable_proto_field();
+  proto_field2->add_proto_descriptors()->set_tag_number(3);
+  proto_field2->add_proto_descriptors()->set_tag_number(2);
+  auto* arg2_conditions = arg2->mutable_conditions();
+  arg2_conditions->set_condition_evaluation_type(
+      proto::CONDITION_EVALUATION_TYPE_OR);
+  auto* arg2_c1 = arg2_conditions->add_conditions();
+  auto* arg2_c1_proto_field = arg2_c1->mutable_proto_field();
+  arg2_c1_proto_field->add_proto_descriptors()->set_tag_number(5);
+  arg2_c1->set_operator_type(proto::OPERATOR_TYPE_EQUAL_TO);
+  arg2_c1->mutable_value()->set_int32_value(1);
+  auto* arg2_c2 = arg2_conditions->add_conditions();
+  arg2_c2->mutable_proto_field()->add_proto_descriptors()->set_tag_number(5);
+  arg2_c2->set_operator_type(proto::OPERATOR_TYPE_EQUAL_TO);
+  arg2_c1->mutable_value()->set_int32_value(2);
+
+  auto* substitution2 = input_config->add_execute_substitutions();
+  substitution2->set_string_template("should be ignored: %s");
+  substitution2->set_expected_num_args(1);
+  substitution2->add_args()->set_raw_string("also ignored");
+  auto* conditions = substitution2->mutable_conditions();
+  conditions->set_condition_evaluation_type(
+      proto::CONDITION_EVALUATION_TYPE_AND);
+  auto* c1 = conditions->add_conditions();
+  auto* c1_proto_field = c1->mutable_proto_field();
+  c1_proto_field->add_proto_descriptors()->set_tag_number(4);
+  c1->set_operator_type(proto::OPERATOR_TYPE_NOT_EQUAL_TO);
+  c1->mutable_value()->set_int32_value(0);
+  UpdateInterpreterWithConfig(config);
+
+  proto::ComposeRequest request;
+  request.set_user_input("this is my input");
+  request.mutable_page_metadata()->set_page_title("title");
+  request.mutable_page_metadata()->set_page_url("url");
+  request.set_length(proto::COMPOSE_LONGER);
+  auto maybe_string = interpreter()->ConstructInputString(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+
+  ASSERT_TRUE(maybe_string);
+  EXPECT_EQ(*maybe_string, "hello this is a test: this is my input title");
+}
+
 }  // namespace
 
 }  // namespace optimization_guide

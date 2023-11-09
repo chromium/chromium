@@ -44,5 +44,125 @@ TEST(OnDeviceModelExecutionProtoValueUtilsTest, GetStringFromValue) {
   }
 }
 
+TEST(OnDeviceModelExecutionProtoValueUtilsTest, AreValuesEqualCaseDifferent) {
+  proto::Value a;
+  a.set_string_value("hello");
+
+  proto::Value b;
+  b.set_int32_value(123);
+
+  EXPECT_FALSE(AreValuesEqual(a, b));
+}
+
+TEST(OnDeviceModelExecutionProtoValueUtilsTest, AreValuesEqualStrings) {
+  {
+    proto::Value a;
+    a.set_string_value("hello");
+
+    proto::Value b;
+    b.set_string_value("whatever");
+
+    EXPECT_FALSE(AreValuesEqual(a, b));
+  }
+
+  {
+    proto::Value a;
+    a.set_string_value("hello");
+
+    proto::Value b;
+    b.set_string_value("hello");
+
+    EXPECT_TRUE(AreValuesEqual(a, b));
+  }
+}
+
+TEST(OnDeviceModelExecutionProtoValueUtilsTest, AreValuesEqualBool) {
+  {
+    proto::Value a;
+    a.set_boolean_value(true);
+
+    proto::Value b;
+    b.set_boolean_value(false);
+
+    EXPECT_FALSE(AreValuesEqual(a, b));
+  }
+
+  {
+    proto::Value a;
+    a.set_boolean_value(false);
+
+    proto::Value b;
+    b.set_boolean_value(false);
+
+    EXPECT_TRUE(AreValuesEqual(a, b));
+  }
+}
+
+TEST(OnDeviceModelExecutionProtoValueUtilsTest, AreValuesEqualInt32) {
+  {
+    proto::Value a;
+    a.set_int32_value(1);
+
+    proto::Value b;
+    b.set_int32_value(123);
+
+    EXPECT_FALSE(AreValuesEqual(a, b));
+  }
+
+  {
+    proto::Value a;
+    a.set_int32_value(123);
+
+    proto::Value b;
+    b.set_int32_value(123);
+
+    EXPECT_TRUE(AreValuesEqual(a, b));
+  }
+}
+
+TEST(OnDeviceModelExecutionProtoValueUtilsTest, AreValuesEqualInt64) {
+  {
+    proto::Value a;
+    a.set_int64_value(3);
+
+    proto::Value b;
+    b.set_int64_value(123);
+
+    EXPECT_FALSE(AreValuesEqual(a, b));
+  }
+
+  {
+    proto::Value a;
+    a.set_int64_value(123);
+
+    proto::Value b;
+    b.set_int64_value(123);
+
+    EXPECT_TRUE(AreValuesEqual(a, b));
+  }
+}
+
+TEST(OnDeviceModelExecutionProtoValueUtilsTest, AreValuesEqualFloat) {
+  {
+    proto::Value a;
+    a.set_float_value(0.1);
+
+    proto::Value b;
+    b.set_float_value(0.2);
+
+    EXPECT_FALSE(AreValuesEqual(a, b));
+  }
+
+  {
+    proto::Value a;
+    a.set_float_value(0.2);
+
+    proto::Value b;
+    b.set_float_value(0.2);
+
+    EXPECT_TRUE(AreValuesEqual(a, b));
+  }
+}
+
 }  // namespace
 }  // namespace optimization_guide
