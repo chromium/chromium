@@ -199,14 +199,6 @@ bool ContentAutofillDriver::CanShowAutofillUi() const {
   return render_frame_host_->IsActive();
 }
 
-bool ContentAutofillDriver::RendererIsAvailable() {
-  if (!render_frame_host_->GetRenderViewHost()) {
-    base::debug::DumpWithoutCrashing();
-    return false;
-  }
-  return true;
-}
-
 void ContentAutofillDriver::PopupHidden() {
   // If the unmask prompt is shown, keep showing the preview. The preview
   // will be cleared when the prompt closes.
@@ -243,9 +235,6 @@ std::vector<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
       field_type_map,
       [](autofill::AutofillDriver* target, mojom::ActionType action_type,
          mojom::ActionPersistence action_persistence, const FormData& form) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
         cast(target)->GetAutofillAgent()->ApplyFormAction(
             action_type, action_persistence, form);
       });
@@ -262,9 +251,6 @@ void ContentAutofillDriver::ApplyFieldAction(
          mojom::ActionPersistence action_persistence,
          mojom::TextReplacement text_replacement, const FieldRendererId& field,
          const std::u16string& value) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
         cast(target)->GetAutofillAgent()->ApplyFieldAction(
             action_persistence, text_replacement, field, value);
       });
@@ -356,9 +342,6 @@ void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
       this, type_predictions,
       [](autofill::AutofillDriver* target,
          const std::vector<FormDataPredictions>& type_predictions) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
         cast(target)->GetAutofillAgent()->FieldTypePredictionsAvailable(
             type_predictions);
       });
@@ -370,9 +353,6 @@ void ContentAutofillDriver::SendFieldsEligibleForManualFillingToRenderer(
       this, fields,
       [](autofill::AutofillDriver* target,
          const std::vector<FieldRendererId>& fields) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
         cast(target)->GetAutofillAgent()->SetFieldsEligibleForManualFilling(
             fields);
       });
@@ -385,9 +365,6 @@ void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(
       this, field, value,
       [](autofill::AutofillDriver* target, const FieldRendererId& field,
          const std::u16string& value) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
         cast(target)->GetAutofillAgent()->AcceptDataListSuggestion(field,
                                                                    value);
       });
@@ -396,9 +373,6 @@ void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(
 void ContentAutofillDriver::RendererShouldClearFilledSection() {
   router().RendererShouldClearFilledSection(
       this, [](autofill::AutofillDriver* target) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
         cast(target)->GetAutofillAgent()->ClearSection();
       });
 }
@@ -406,9 +380,6 @@ void ContentAutofillDriver::RendererShouldClearFilledSection() {
 void ContentAutofillDriver::RendererShouldClearPreviewedForm() {
   router().RendererShouldClearPreviewedForm(
       this, [](autofill::AutofillDriver* target) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
         cast(target)->GetAutofillAgent()->ClearPreviewedForm();
       });
 }
@@ -420,9 +391,6 @@ void ContentAutofillDriver::RendererShouldTriggerSuggestions(
       this, field, trigger_source,
       [](autofill::AutofillDriver* target, const FieldRendererId& field,
          AutofillSuggestionTriggerSource trigger_source) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
         cast(target)->GetAutofillAgent()->TriggerSuggestions(field,
                                                              trigger_source);
       });
@@ -435,9 +403,6 @@ void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
       this, field, suggestion_availability,
       [](autofill::AutofillDriver* target, const FieldRendererId& field,
          mojom::AutofillSuggestionAvailability suggestion_availability) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
         cast(target)->GetAutofillAgent()->SetSuggestionAvailability(
             field, suggestion_availability);
       });

@@ -829,7 +829,6 @@ void AutofillExternalDelegate::FillAutofillFormData(
       is_preview ? mojom::ActionPersistence::kPreview
                  : mojom::ActionPersistence::kFill;
 
-  DCHECK(manager_->driver().RendererIsAvailable());
   PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
   if (const CreditCard* credit_card =
           pdm->GetCreditCardByGUID(backend_id.value())) {

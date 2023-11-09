@@ -1510,8 +1510,7 @@ void BrowserAutofillManager::FillCreditCardForm(
     const CreditCard& credit_card,
     const std::u16string& cvc,
     const AutofillTriggerDetails& trigger_details) {
-  if (!IsValidFormData(form) || !IsValidFormFieldData(field) ||
-      !driver().RendererIsAvailable()) {
+  if (!IsValidFormData(form) || !IsValidFormFieldData(field)) {
     return;
   }
 
@@ -1533,7 +1532,7 @@ void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(
     const FormFieldData& field,
     const AutofillTriggerDetails& trigger_details) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field) ||
-      !RefreshDataModels() || !driver().RendererIsAvailable()) {
+      !RefreshDataModels()) {
     return;
   }
 
@@ -3543,12 +3542,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
 
   context->is_context_secure = !IsFormNonSecure(form);
 
-  // TODO(rogerm): Early exit here on !driver().RendererIsAvailable()?
-  // We skip populating autofill data, but might generate warnings and or
-  // signin promo to show over the unavailable renderer. That seems a mistake.
-
-  if (!driver().RendererIsAvailable() || !got_autofillable_form ||
-      !IsAutofillEnabled()) {
+  if (!got_autofillable_form || !IsAutofillEnabled()) {
     return;
   }
 

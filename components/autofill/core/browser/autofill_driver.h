@@ -140,9 +140,6 @@ class AutofillDriver {
   virtual void ExtractForm(FormGlobalId form,
                            BrowserFormHandler response_handler) = 0;
 
-  // Returns true iff the renderer is available for communication.
-  virtual bool RendererIsAvailable() = 0;
-
   // Forwards `form` to the renderer.
   //
   // `field_type_map` contains the type predictions of the fields that may be

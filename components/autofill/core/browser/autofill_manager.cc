@@ -312,8 +312,9 @@ void AutofillManager::OnFormsSeen(
   for (FormGlobalId removed_form : removed_forms)
     form_structures_.erase(removed_form);
 
-  if (!IsValidFormDataVector(updated_forms) || !driver_->RendererIsAvailable())
+  if (!IsValidFormDataVector(updated_forms)) {
     return;
+  }
 
   if (!ShouldParseForms()) {
     return;
