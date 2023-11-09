@@ -13,6 +13,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -158,9 +159,9 @@ class Response {
     return Response(access_code);
   }
 
-  static Response Error(ResultCode error_code,
+  static Response Error(ExtendedStartCrdSessionResultCode result_code,
                         const std::string& error_message) {
-    return Response(error_code, error_message);
+    return Response(result_code, error_message);
   }
 
   Response(Response&&) = default;
@@ -174,8 +175,8 @@ class Response {
     return error_message_.value_or("<no error received>");
   }
 
-  ResultCode error_code() const {
-    return error_code_.value_or(ResultCode::SUCCESS);
+  ExtendedStartCrdSessionResultCode result_code() const {
+    return result_code_.value_or(ExtendedStartCrdSessionResultCode::kSuccess);
   }
 
   std::string access_code() const {
@@ -185,11 +186,12 @@ class Response {
  private:
   explicit Response(const std::string& access_code)
       : access_code_(access_code) {}
-  Response(ResultCode error_code, const std::string& error_message)
-      : error_code_(error_code), error_message_(error_message) {}
+  Response(ExtendedStartCrdSessionResultCode result_code,
+           const std::string& error_message)
+      : result_code_(result_code), error_message_(error_message) {}
 
   absl::optional<std::string> access_code_;
-  absl::optional<ResultCode> error_code_;
+  absl::optional<ExtendedStartCrdSessionResultCode> result_code_;
   absl::optional<std::string> error_message_;
 };
 
@@ -227,9 +229,10 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
 
   auto error_callback() {
     return base::BindOnce(
-        [](base::OnceCallback<void(Response)> setter, ResultCode error_code,
+        [](base::OnceCallback<void(Response)> setter,
+           ExtendedStartCrdSessionResultCode result_code,
            const std::string& error_message) {
-          std::move(setter).Run(Response::Error(error_code, error_message));
+          std::move(setter).Run(Response::Error(result_code, error_message));
         },
         result_.GetCallback());
   }
@@ -541,7 +544,8 @@ TEST_F(CrdAdminSessionControllerTest,
 
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
-  EXPECT_EQ(ResultCode::FAILURE_CRD_HOST_ERROR, response.error_code());
+  EXPECT_EQ(ExtendedStartCrdSessionResultCode::kFailureCrdHostError,
+            response.result_code());
 }
 
 TEST_F(CrdAdminSessionControllerTest, ShouldReturnAccessCode) {
@@ -562,7 +566,8 @@ TEST_F(CrdAdminSessionControllerTest, ShouldReportErrorWhenClientDisconnects) {
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("client disconnected", response.error_message());
-  EXPECT_EQ(ResultCode::HOST_SESSION_DISCONNECTED, response.error_code());
+  EXPECT_EQ(ExtendedStartCrdSessionResultCode::kHostSessionDisconnected,
+            response.result_code());
 }
 
 TEST_F(CrdAdminSessionControllerTest,
@@ -574,7 +579,8 @@ TEST_F(CrdAdminSessionControllerTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("policy error", response.error_message());
-  EXPECT_EQ(ResultCode::FAILURE_HOST_POLICY_ERROR, response.error_code());
+  EXPECT_EQ(ExtendedStartCrdSessionResultCode::kFailureHostPolicyError,
+            response.result_code());
 }
 
 TEST_F(CrdAdminSessionControllerTest,
@@ -586,8 +592,8 @@ TEST_F(CrdAdminSessionControllerTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("invalid domain error", response.error_message());
-  EXPECT_EQ(ResultCode::FAILURE_HOST_INVALID_DOMAIN_ERROR,
-            response.error_code());
+  EXPECT_EQ(ExtendedStartCrdSessionResultCode::kFailureHostInvalidDomainError,
+            response.result_code());
 }
 
 TEST_F(CrdAdminSessionControllerTest,
@@ -751,7 +757,8 @@ TEST_F(
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("host state error", response.error_message());
-  EXPECT_EQ(ResultCode::FAILURE_DISABLED_BY_POLICY, response.error_code());
+  EXPECT_EQ(ExtendedStartCrdSessionResultCode::kFailureDisabledByPolicy,
+            response.result_code());
 }
 
 TEST_F(CrdAdminSessionControllerTest,
@@ -882,40 +889,52 @@ TEST_F(
 }
 
 TEST_F(CrdAdminSessionControllerTest,
-       ShouldReportErrorWhenRemotingServiceReportsStateError) {
-  const std::tuple<ErrorCode, ResultCode> test_cases[] = {
-      {ErrorCode::OK, ResultCode::SUCCESS},
-      {ErrorCode::PEER_IS_OFFLINE, ResultCode::FAILURE_PEER_IS_OFFLINE},
-      {ErrorCode::SESSION_REJECTED, ResultCode::FAILURE_SESSION_REJECTED},
-      {ErrorCode::INCOMPATIBLE_PROTOCOL,
-       ResultCode::FAILURE_INCOMPATIBLE_PROTOCOL},
-      {ErrorCode::AUTHENTICATION_FAILED,
-       ResultCode::FAILURE_AUTHENTICATION_FAILED},
-      {ErrorCode::INVALID_ACCOUNT, ResultCode::FAILURE_INVALID_ACCOUNT},
-      {ErrorCode::CHANNEL_CONNECTION_ERROR,
-       ResultCode::FAILURE_CHANNEL_CONNECTION_ERROR},
-      {ErrorCode::SIGNALING_ERROR, ResultCode::FAILURE_SIGNALING_ERROR},
-      {ErrorCode::SIGNALING_TIMEOUT, ResultCode::FAILURE_SIGNALING_TIMEOUT},
-      {ErrorCode::HOST_OVERLOAD, ResultCode::FAILURE_HOST_OVERLOAD},
-      {ErrorCode::MAX_SESSION_LENGTH, ResultCode::FAILURE_MAX_SESSION_LENGTH},
-      {ErrorCode::HOST_CONFIGURATION_ERROR,
-       ResultCode::FAILURE_HOST_CONFIGURATION_ERROR},
-      {ErrorCode::UNKNOWN_ERROR, ResultCode::FAILURE_UNKNOWN_ERROR},
-      {ErrorCode::ELEVATION_ERROR, ResultCode::FAILURE_UNKNOWN_ERROR},
-      {ErrorCode::HOST_CERTIFICATE_ERROR,
-       ResultCode::FAILURE_HOST_CERTIFICATE_ERROR},
-      {ErrorCode::HOST_REGISTRATION_ERROR,
-       ResultCode::FAILURE_HOST_REGISTRATION_ERROR},
-      {ErrorCode::EXISTING_ADMIN_SESSION,
-       ResultCode::FAILURE_EXISTING_ADMIN_SESSION},
-      {ErrorCode::AUTHZ_POLICY_CHECK_FAILED,
-       ResultCode::FAILURE_AUTHZ_POLICY_CHECK_FAILED},
-      {ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED,
-       ResultCode::FAILURE_LOCATION_AUTHZ_POLICY_CHECK_FAILED},
-      {ErrorCode::UNAUTHORIZED_ACCOUNT,
-       ResultCode::FAILURE_UNAUTHORIZED_ACCOUNT}};
+       ShouldUmaLogErrorWhenRemotingServiceReportsStateError) {
+  const std::tuple<ErrorCode, ExtendedStartCrdSessionResultCode> test_cases[] =
+      {{ErrorCode::OK, ExtendedStartCrdSessionResultCode::kSuccess},
+       {ErrorCode::PEER_IS_OFFLINE,
+        ExtendedStartCrdSessionResultCode::kFailurePeerIsOffline},
+       {ErrorCode::SESSION_REJECTED,
+        ExtendedStartCrdSessionResultCode::kFailureSessionRejected},
+       {ErrorCode::INCOMPATIBLE_PROTOCOL,
+        ExtendedStartCrdSessionResultCode::kFailureIncompatibleProtocol},
+       {ErrorCode::AUTHENTICATION_FAILED,
+        ExtendedStartCrdSessionResultCode::kFailureAuthenticationFailed},
+       {ErrorCode::INVALID_ACCOUNT,
+        ExtendedStartCrdSessionResultCode::kFailureInvalidAccount},
+       {ErrorCode::CHANNEL_CONNECTION_ERROR,
+        ExtendedStartCrdSessionResultCode::kFailureChannelConnectionError},
+       {ErrorCode::SIGNALING_ERROR,
+        ExtendedStartCrdSessionResultCode::kFailureSignalingError},
+       {ErrorCode::SIGNALING_TIMEOUT,
+        ExtendedStartCrdSessionResultCode::kFailureSignalingTimeout},
+       {ErrorCode::HOST_OVERLOAD,
+        ExtendedStartCrdSessionResultCode::kFailureHostOverload},
+       {ErrorCode::MAX_SESSION_LENGTH,
+        ExtendedStartCrdSessionResultCode::kFailureMaxSessionLength},
+       {ErrorCode::HOST_CONFIGURATION_ERROR,
+        ExtendedStartCrdSessionResultCode::kFailureHostConfigurationError},
+       {ErrorCode::UNKNOWN_ERROR,
+        ExtendedStartCrdSessionResultCode::kFailureUnknownError},
+       {ErrorCode::ELEVATION_ERROR,
+        ExtendedStartCrdSessionResultCode::kFailureUnknownError},
+       {ErrorCode::HOST_CERTIFICATE_ERROR,
+        ExtendedStartCrdSessionResultCode::kFailureHostCertificateError},
+       {ErrorCode::HOST_REGISTRATION_ERROR,
+        ExtendedStartCrdSessionResultCode::kFailureHostRegistrationError},
+       {ErrorCode::EXISTING_ADMIN_SESSION,
+        ExtendedStartCrdSessionResultCode::kFailureExistingAdminSession},
+       {ErrorCode::AUTHZ_POLICY_CHECK_FAILED,
+        ExtendedStartCrdSessionResultCode::kFailureAuthzPolicyCheckFailed},
+       {ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED,
+        ExtendedStartCrdSessionResultCode::
+            kFailureLocationAuthzPolicyCheckFailed},
+       {ErrorCode::UNAUTHORIZED_ACCOUNT,
+        ExtendedStartCrdSessionResultCode::kFailureUnauthorizedAccount}};
 
   for (auto& [error_code, expected_result_code] : test_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Failure for error code " << base::ToString(error_code));
     SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
     observer.OnHostStateError(error_code);
@@ -923,7 +942,7 @@ TEST_F(CrdAdminSessionControllerTest,
     Response response = WaitForResponse();
     ASSERT_TRUE(response.HasError());
     EXPECT_EQ("host state error", response.error_message());
-    EXPECT_EQ(expected_result_code, response.error_code());
+    EXPECT_EQ(expected_result_code, response.result_code());
 
     ResetObserver();
   }

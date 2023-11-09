@@ -20,7 +20,8 @@ class StartCrdSessionJobDelegate {
  public:
   using AccessCodeCallback = base::OnceCallback<void(const std::string&)>;
   using ErrorCallback =
-      base::OnceCallback<void(ResultCode, const std::string&)>;
+      base::OnceCallback<void(ExtendedStartCrdSessionResultCode,
+                              const std::string&)>;
   using SessionEndCallback = base::OnceCallback<void(base::TimeDelta)>;
 
   // Session parameters used to start the CRD host.

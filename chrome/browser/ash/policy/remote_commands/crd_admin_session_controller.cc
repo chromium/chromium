@@ -131,7 +131,8 @@ class HostStartObserver : public CrdSessionObserver {
     }
   }
 
-  void OnHostStopped(ResultCode result, const std::string& message) override {
+  void OnHostStopped(ExtendedStartCrdSessionResultCode result,
+                     const std::string& message) override {
     if (error_callback_) {
       std::move(error_callback_).Run(result, message);
       success_callback_.Reset();
@@ -225,6 +226,7 @@ remoting::ChromeOsEnterpriseParams GetEnterpriseParameters(
       .allow_file_transfer = parameters.allow_file_transfer,
   };
 }
+
 }  // namespace
 
 class CrdAdminSessionController::CrdHostSession : private CrdSessionObserver {
@@ -306,7 +308,8 @@ class CrdAdminSessionController::CrdHostSession : private CrdSessionObserver {
     if (response->is_support_session_error()) {
       // Since `observer_proxy_` owns all the callbacks we must ask it to invoke
       // the error callback.
-      observer_proxy_.ReportHostStopped(ResultCode::FAILURE_CRD_HOST_ERROR, "");
+      observer_proxy_.ReportHostStopped(
+          ExtendedStartCrdSessionResultCode::kFailureCrdHostError, "");
       return;
     }
 
@@ -315,14 +318,16 @@ class CrdAdminSessionController::CrdHostSession : private CrdSessionObserver {
 
   void TerminateSession() {
     // First inform our observers that the session is about to be aborted.
-    observer_proxy_.ReportHostStopped(ResultCode::FAILURE_CRD_HOST_ERROR,
-                                      "Terminate requested");
+    observer_proxy_.ReportHostStopped(
+        ExtendedStartCrdSessionResultCode::kFailureCrdHostError,
+        "Terminate requested");
     // Next force terminate the host (which is done by resetting the observer).
     observer_proxy_.Unbind();
   }
 
   // `CrdSessionObserver` implementation:
-  void OnHostStopped(ResultCode, const std::string&) override {
+  void OnHostStopped(ExtendedStartCrdSessionResultCode result,
+                     const std::string& message) override {
     // Signal the CRD host has stopped by unbinding our observer, which will
     // allow the remoting code to do a full cleanup.
     observer_proxy_.Unbind();

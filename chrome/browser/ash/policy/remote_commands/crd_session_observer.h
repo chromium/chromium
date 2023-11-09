@@ -8,10 +8,9 @@
 #include <string>
 
 #include "base/observer_list_types.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 
 namespace policy {
-
-enum class ResultCode;
 
 class CrdSessionObserver : public base::CheckedObserver {
  public:
@@ -32,7 +31,8 @@ class CrdSessionObserver : public base::CheckedObserver {
   virtual void OnClientDisconnected() {}
 
   // Invoked when the CRD host stopped, or when it failed to start.
-  virtual void OnHostStopped(ResultCode result, const std::string& message) {}
+  virtual void OnHostStopped(ExtendedStartCrdSessionResultCode result,
+                             const std::string& message) {}
 };
 
 }  // namespace policy

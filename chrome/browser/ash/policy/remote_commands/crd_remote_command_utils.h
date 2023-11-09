@@ -23,121 +23,126 @@ using ::enterprise_management::UserSessionType;
 // The type of the CRD session.
 using ::enterprise_management::CrdSessionType;
 
+using ::enterprise_management::StartCrdSessionResultCode;
+
+// Extended version of `StartCrdSessionResultCode`, which contains extra values
+// that we want to log to UMA.
 // This enum can't be renumbered because it's logged to UMA.
-// Update the tools/metrics/histogram/enums.xml to be in parity with this for
-// UMA.
-enum class ResultCode {
+enum class ExtendedStartCrdSessionResultCode {
   // Successfully obtained access code.
-  SUCCESS = 0,
+  kSuccess = 0,
 
   // Failed as required services are not launched on the device.
   // deprecated FAILURE_SERVICES_NOT_READY = 1,
 
   // Failure as the current user type does not support remotely starting CRD.
-  FAILURE_UNSUPPORTED_USER_TYPE = 2,
+  kFailureUnsupportedUserType = 2,
 
   // Failed as device is currently in use and no interruptUser flag is set.
-  FAILURE_NOT_IDLE = 3,
+  kFailureNotIdle = 3,
 
   // Failed as we could not get OAuth token for whatever reason.
-  FAILURE_NO_OAUTH_TOKEN = 4,
+  kFailureNoOauthToken = 4,
 
   // Failed as we could not get ICE configuration for whatever reason.
   // deprecated FAILURE_NO_ICE_CONFIG = 5,
 
   // Failure during attempt to start CRD host and obtain CRD token.
-  FAILURE_CRD_HOST_ERROR = 6,
+  kFailureCrdHostError = 6,
 
   // Failure to start a curtained session as we're not in a managed
   // environment.
-  FAILURE_UNMANAGED_ENVIRONMENT = 7,
+  kFailureUnmanagedEnvironment = 7,
 
   // Failed because RemoteAccessHostAllowEnterpriseRemoteSupportConnections
   // policy is disabled.
-  FAILURE_DISABLED_BY_POLICY = 8,
+  kFailureDisabledByPolicy = 8,
 
   // Failure to start because client device is unreachable.
-  FAILURE_PEER_IS_OFFLINE = 9,
+  kFailurePeerIsOffline = 9,
 
   // Failure to start the session because the local user on the host device
   // rejected the support session request.
-  FAILURE_SESSION_REJECTED = 10,
+  kFailureSessionRejected = 10,
 
   // Failure to start because the protocol doesn't match between the host and
   // the client device.
-  FAILURE_INCOMPATIBLE_PROTOCOL = 11,
+  kFailureIncompatibleProtocol = 11,
 
   // Failure to start the session because authentication failed.
-  FAILURE_AUTHENTICATION_FAILED = 12,
+  kFailureAuthenticationFailed = 12,
 
   // Failure to start the session because the admin user's domain is blocked by
   // policy or if the username is invalid.
-  FAILURE_INVALID_ACCOUNT = 13,
+  kFailureInvalidAccount = 13,
 
   // Failure when webrtc operations failed while establishing a channel
   // connection.
-  FAILURE_CHANNEL_CONNECTION_ERROR = 14,
+  kFailureChannelConnectionError = 14,
 
   // Failure when the register-support-host request is failed or disconnected
   // before registration succeeds.
-  FAILURE_SIGNALING_ERROR = 15,
+  kFailureSignalingError = 15,
 
   // Failure when the register-support-host request timeout.
-  FAILURE_SIGNALING_TIMEOUT = 16,
+  kFailureSignalingTimeout = 16,
 
   // Failure while starting the session as host was overloaded with failed login
   // attempts.
-  FAILURE_HOST_OVERLOAD = 17,
+  kFailureHostOverload = 17,
 
   // Failure on the host device when the maximum session length is reached.
-  FAILURE_MAX_SESSION_LENGTH = 18,
+  kFailureMaxSessionLength = 18,
 
   // Failure as the host could not create a desktop environment (for instance
   // the curtain could not be initialized).
-  FAILURE_HOST_CONFIGURATION_ERROR = 19,
+  kFailureHostConfigurationError = 19,
 
   // Failure as the certificate generation on the host device has failed.
-  FAILURE_HOST_CERTIFICATE_ERROR = 20,
+  kFailureHostCertificateError = 20,
 
   // Failure as the registration support host failed to parse the received
   // response.
-  FAILURE_HOST_REGISTRATION_ERROR = 21,
+  kFailureHostRegistrationError = 21,
 
   // Failure to start the session as there is an existing admin session ongoing
   // on the host device.
-  FAILURE_EXISTING_ADMIN_SESSION = 22,
+  kFailureExistingAdminSession = 22,
 
   // Failure because the client is authorized to connect to the host device due
   // to a policy defined by third party auth service has failed.
-  FAILURE_AUTHZ_POLICY_CHECK_FAILED = 23,
+  kFailureAuthzPolicyCheckFailed = 23,
 
   // Failure because the client is not authorized to connect to the host device
   // based on their current location due to a policy defined by the third party
   // auth service.
-  FAILURE_LOCATION_AUTHZ_POLICY_CHECK_FAILED = 24,
+  kFailureLocationAuthzPolicyCheckFailed = 24,
 
   // Failure to start the session as the admin user is not authorized for
   // starting a remote desktop session.
-  FAILURE_UNAUTHORIZED_ACCOUNT = 25,
+  kFailureUnauthorizedAccount = 25,
 
   // Failure as the host is unable to load the device policy.
-  FAILURE_HOST_POLICY_ERROR = 26,
+  kFailureHostPolicyError = 26,
 
   // Failure as Indicates the remote support host could not start as the user's
   // domain is not included in the device policy allowlist.
-  FAILURE_HOST_INVALID_DOMAIN_ERROR = 27,
+  kFailureHostInvalidDomainError = 27,
 
   // Host session was disconnected without any error.
-  HOST_SESSION_DISCONNECTED = 28,
+  kHostSessionDisconnected = 28,
 
-  FAILURE_UNKNOWN_ERROR = 29,
+  kFailureUnknownError = 29,
 
-  kMaxValue = FAILURE_UNKNOWN_ERROR
+  kMaxValue = kFailureUnknownError
 };
 
-// Translates the `remoting::protocol::ErrorCode` to `ResultCode`.
-ResultCode ConvertErrorCodeToResultCode(
+// Translates the error code.
+ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
     remoting::protocol::ErrorCode error_code);
+
+StartCrdSessionResultCode ToStartCrdSessionResultCode(
+    ExtendedStartCrdSessionResultCode error_code);
 
 // Returns the time since the last user activity on this device.
 // Returns `TimeDelta::Max()` if there was no user activity since the last

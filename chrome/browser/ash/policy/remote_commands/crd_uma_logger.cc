@@ -25,7 +25,8 @@ CrdUmaLogger::CrdUmaLogger(CrdSessionType session_type,
                            UserSessionType user_session_type)
     : session_type_(session_type), user_session_type_(user_session_type) {}
 
-void CrdUmaLogger::LogSessionLaunchResult(ResultCode result_code) {
+void CrdUmaLogger::LogSessionLaunchResult(
+    ExtendedStartCrdSessionResultCode result_code) {
   base::UmaHistogramEnumeration(
       GetUmaHistogramName(kMetricDeviceRemoteCommandCrdResultTemplate),
       result_code);

@@ -77,7 +77,7 @@ void SupportHostObserverProxy::OnHostStateDisconnected(
     observer.OnClientDisconnected();
   }
 
-  ReportHostStopped(ResultCode::HOST_SESSION_DISCONNECTED,
+  ReportHostStopped(ExtendedStartCrdSessionResultCode::kHostSessionDisconnected,
                     "client disconnected");
 }
 
@@ -93,28 +93,30 @@ void SupportHostObserverProxy::OnHostStateError(int64_t error) {
                << " with error code: " << ErrorCodeToString(error_code) << "("
                << error_code << ")";
 
-  const ResultCode result_code = ConvertErrorCodeToResultCode(error_code);
-  ReportHostStopped(result_code, "host state error");
+  ReportHostStopped(ToExtendedStartCrdSessionResultCode(error_code),
+                    "host state error");
 }
 
 void SupportHostObserverProxy::OnPolicyError() {
   CRD_DVLOG(3) << __func__;
 
-  ReportHostStopped(ResultCode::FAILURE_HOST_POLICY_ERROR, "policy error");
+  ReportHostStopped(ExtendedStartCrdSessionResultCode::kFailureHostPolicyError,
+                    "policy error");
 }
 
 void SupportHostObserverProxy::OnInvalidDomainError() {
   CRD_DVLOG(3) << __func__;
 
-  ReportHostStopped(ResultCode::FAILURE_HOST_INVALID_DOMAIN_ERROR,
-                    "invalid domain error");
+  ReportHostStopped(
+      ExtendedStartCrdSessionResultCode::kFailureHostInvalidDomainError,
+      "invalid domain error");
 }
 
 void SupportHostObserverProxy::ReportHostStopped(
-    ResultCode error_code,
+    ExtendedStartCrdSessionResultCode result,
     const std::string& error_message) {
   for (auto& observer : observers_) {
-    observer.OnHostStopped(error_code, error_message);
+    observer.OnHostStopped(result, error_message);
   }
 }
 

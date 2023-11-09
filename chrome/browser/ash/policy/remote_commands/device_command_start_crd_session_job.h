@@ -66,7 +66,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   void StartCrdHostAndGetCode(const std::string& token);
   void FinishWithSuccess(const std::string& access_code);
   // Finishes command with error code and optional message.
-  void FinishWithError(ResultCode result_code, const std::string& message);
+  void FinishWithError(ExtendedStartCrdSessionResultCode result_code,
+                       const std::string& message);
   void FinishWithNotIdleError();
 
   bool UserTypeSupportsCrd() const;

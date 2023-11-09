@@ -117,52 +117,104 @@ void CloseMojomConnection(
 
 }  // namespace
 
-ResultCode ConvertErrorCodeToResultCode(ErrorCode error_code) {
+ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
+    ErrorCode error_code) {
   switch (error_code) {
     case ErrorCode::OK:
-      return ResultCode::SUCCESS;
+      return ExtendedStartCrdSessionResultCode::kSuccess;
     case ErrorCode::PEER_IS_OFFLINE:
-      return ResultCode::FAILURE_PEER_IS_OFFLINE;
+      return ExtendedStartCrdSessionResultCode::kFailurePeerIsOffline;
     case ErrorCode::SESSION_REJECTED:
-      return ResultCode::FAILURE_SESSION_REJECTED;
+      return ExtendedStartCrdSessionResultCode::kFailureSessionRejected;
     case ErrorCode::INCOMPATIBLE_PROTOCOL:
-      return ResultCode::FAILURE_INCOMPATIBLE_PROTOCOL;
+      return ExtendedStartCrdSessionResultCode::kFailureIncompatibleProtocol;
     case ErrorCode::AUTHENTICATION_FAILED:
-      return ResultCode::FAILURE_AUTHENTICATION_FAILED;
+      return ExtendedStartCrdSessionResultCode::kFailureAuthenticationFailed;
     case ErrorCode::INVALID_ACCOUNT:
-      return ResultCode::FAILURE_INVALID_ACCOUNT;
+      return ExtendedStartCrdSessionResultCode::kFailureInvalidAccount;
     case ErrorCode::CHANNEL_CONNECTION_ERROR:
-      return ResultCode::FAILURE_CHANNEL_CONNECTION_ERROR;
+      return ExtendedStartCrdSessionResultCode::kFailureChannelConnectionError;
     case ErrorCode::SIGNALING_ERROR:
-      return ResultCode::FAILURE_SIGNALING_ERROR;
+      return ExtendedStartCrdSessionResultCode::kFailureSignalingError;
     case ErrorCode::SIGNALING_TIMEOUT:
-      return ResultCode::FAILURE_SIGNALING_TIMEOUT;
+      return ExtendedStartCrdSessionResultCode::kFailureSignalingTimeout;
     case ErrorCode::HOST_OVERLOAD:
-      return ResultCode::FAILURE_HOST_OVERLOAD;
+      return ExtendedStartCrdSessionResultCode::kFailureHostOverload;
     case ErrorCode::MAX_SESSION_LENGTH:
-      return ResultCode::FAILURE_MAX_SESSION_LENGTH;
+      return ExtendedStartCrdSessionResultCode::kFailureMaxSessionLength;
     case ErrorCode::HOST_CONFIGURATION_ERROR:
-      return ResultCode::FAILURE_HOST_CONFIGURATION_ERROR;
+      return ExtendedStartCrdSessionResultCode::kFailureHostConfigurationError;
     case ErrorCode::HOST_CERTIFICATE_ERROR:
-      return ResultCode::FAILURE_HOST_CERTIFICATE_ERROR;
+      return ExtendedStartCrdSessionResultCode::kFailureHostCertificateError;
     case ErrorCode::HOST_REGISTRATION_ERROR:
-      return ResultCode::FAILURE_HOST_REGISTRATION_ERROR;
+      return ExtendedStartCrdSessionResultCode::kFailureHostRegistrationError;
     case ErrorCode::EXISTING_ADMIN_SESSION:
-      return ResultCode::FAILURE_EXISTING_ADMIN_SESSION;
+      return ExtendedStartCrdSessionResultCode::kFailureExistingAdminSession;
     case ErrorCode::AUTHZ_POLICY_CHECK_FAILED:
-      return ResultCode::FAILURE_AUTHZ_POLICY_CHECK_FAILED;
+      return ExtendedStartCrdSessionResultCode::kFailureAuthzPolicyCheckFailed;
     case ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED:
-      return ResultCode::FAILURE_LOCATION_AUTHZ_POLICY_CHECK_FAILED;
+      return ExtendedStartCrdSessionResultCode::
+          kFailureLocationAuthzPolicyCheckFailed;
     case ErrorCode::DISALLOWED_BY_POLICY:
-      return ResultCode::FAILURE_DISABLED_BY_POLICY;
+      return ExtendedStartCrdSessionResultCode::kFailureDisabledByPolicy;
     case ErrorCode::UNAUTHORIZED_ACCOUNT:
-      return ResultCode::FAILURE_UNAUTHORIZED_ACCOUNT;
+      return ExtendedStartCrdSessionResultCode::kFailureUnauthorizedAccount;
     case ErrorCode::UNKNOWN_ERROR:
     // This error can only take place for windows builds which is not a part for
     // commercial CRD.
     case ErrorCode::ELEVATION_ERROR:
-      return ResultCode::FAILURE_UNKNOWN_ERROR;
+      return ExtendedStartCrdSessionResultCode::kFailureUnknownError;
   }
+  NOTREACHED_NORETURN();
+}
+
+StartCrdSessionResultCode ToStartCrdSessionResultCode(
+    ExtendedStartCrdSessionResultCode result_code) {
+  switch (result_code) {
+    case ExtendedStartCrdSessionResultCode::kSuccess:
+      return StartCrdSessionResultCode::START_CRD_SESSION_SUCCESS;
+    case ExtendedStartCrdSessionResultCode::kFailureUnsupportedUserType:
+      return StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE;
+    case ExtendedStartCrdSessionResultCode::kFailureNotIdle:
+      return StartCrdSessionResultCode::FAILURE_NOT_IDLE;
+    case ExtendedStartCrdSessionResultCode::kFailureNoOauthToken:
+      return StartCrdSessionResultCode::FAILURE_NO_OAUTH_TOKEN;
+    case ExtendedStartCrdSessionResultCode::kFailureCrdHostError:
+      return StartCrdSessionResultCode::FAILURE_CRD_HOST_ERROR;
+    case ExtendedStartCrdSessionResultCode::kFailureUnmanagedEnvironment:
+      return StartCrdSessionResultCode::FAILURE_UNMANAGED_ENVIRONMENT;
+    case ExtendedStartCrdSessionResultCode::kFailureDisabledByPolicy:
+      return StartCrdSessionResultCode::FAILURE_DISABLED_BY_POLICY;
+    case ExtendedStartCrdSessionResultCode::kFailureUnknownError:
+      return StartCrdSessionResultCode::START_CRD_SESSION_RESULT_UNKNOWN;
+
+    case ExtendedStartCrdSessionResultCode::kFailureAuthzPolicyCheckFailed:
+    case ExtendedStartCrdSessionResultCode::kFailurePeerIsOffline:
+    case ExtendedStartCrdSessionResultCode::kFailureSessionRejected:
+    case ExtendedStartCrdSessionResultCode::kFailureIncompatibleProtocol:
+    case ExtendedStartCrdSessionResultCode::kFailureAuthenticationFailed:
+    case ExtendedStartCrdSessionResultCode::kFailureInvalidAccount:
+    case ExtendedStartCrdSessionResultCode::kFailureChannelConnectionError:
+    case ExtendedStartCrdSessionResultCode::kFailureSignalingError:
+    case ExtendedStartCrdSessionResultCode::kFailureSignalingTimeout:
+    case ExtendedStartCrdSessionResultCode::kFailureHostOverload:
+    case ExtendedStartCrdSessionResultCode::kFailureMaxSessionLength:
+    case ExtendedStartCrdSessionResultCode::kFailureHostConfigurationError:
+    case ExtendedStartCrdSessionResultCode::kFailureHostCertificateError:
+    case ExtendedStartCrdSessionResultCode::kFailureHostRegistrationError:
+    case ExtendedStartCrdSessionResultCode::kFailureExistingAdminSession:
+    case ExtendedStartCrdSessionResultCode::
+        kFailureLocationAuthzPolicyCheckFailed:
+    case ExtendedStartCrdSessionResultCode::kFailureUnauthorizedAccount:
+    case ExtendedStartCrdSessionResultCode::kFailureHostPolicyError:
+    case ExtendedStartCrdSessionResultCode::kFailureHostInvalidDomainError:
+    case ExtendedStartCrdSessionResultCode::kHostSessionDisconnected:
+      // The server side is not interested in a lot of the different CRD host
+      // failures, which is why most of them are simply mapped to
+      // 'FAILURE_CRD_HOST_ERROR`.
+      return StartCrdSessionResultCode::FAILURE_CRD_HOST_ERROR;
+  }
+  NOTREACHED_NORETURN();
 }
 
 base::TimeDelta GetDeviceIdleTime() {

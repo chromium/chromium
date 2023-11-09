@@ -257,7 +257,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   }
 
   Payload CreateSuccessPayload(const std::string& access_code);
-  Payload CreateErrorPayload(ResultCode result_code,
+  Payload CreateErrorPayload(StartCrdSessionResultCode result_code,
                              const std::string& error_message);
   Payload CreateNotIdlePayload(int idle_time_in_sec);
 
@@ -391,12 +391,14 @@ class DeviceCommandStartCrdSessionJobTestBoolParameterized
 Payload DeviceCommandStartCrdSessionJobTest::CreateSuccessPayload(
     const std::string& access_code) {
   return Payload()
-      .Set(kResultCodeFieldName, static_cast<int>(ResultCode::SUCCESS))
+      .Set(kResultCodeFieldName,
+           static_cast<int>(
+               StartCrdSessionResultCode::START_CRD_SESSION_SUCCESS))
       .Set(kResultAccessCodeFieldName, access_code);
 }
 
 Payload DeviceCommandStartCrdSessionJobTest::CreateErrorPayload(
-    ResultCode result_code,
+    StartCrdSessionResultCode result_code,
     const std::string& error_message = "") {
   auto payload = Payload()  //
                      .Set(kResultCodeFieldName, static_cast<int>(result_code));
@@ -409,7 +411,8 @@ Payload DeviceCommandStartCrdSessionJobTest::CreateErrorPayload(
 Payload DeviceCommandStartCrdSessionJobTest::CreateNotIdlePayload(
     int idle_time_in_sec) {
   return Payload()
-      .Set(kResultCodeFieldName, static_cast<int>(ResultCode::FAILURE_NOT_IDLE))
+      .Set(kResultCodeFieldName,
+           static_cast<int>(StartCrdSessionResultCode::FAILURE_NOT_IDLE))
       .Set(kResultLastActivityFieldName, idle_time_in_sec);
 }
 
@@ -463,7 +466,8 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
   if (is_supported) {
     EXPECT_SUCCESS(result);
   } else {
-    EXPECT_ERROR(result, ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
+    EXPECT_ERROR(result,
+                 StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
   }
 }
 
@@ -522,7 +526,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
   EXPECT_ERROR(RunJobAndWaitForResult(
                    Payload().Set("idlenessCutoffSec", idleness_cutoff_in_sec)),
-               ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
+               StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -530,7 +534,8 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   LogInAsKioskUser();
   ClearOAuthToken();
 
-  EXPECT_ERROR(RunJobAndWaitForResult(), ResultCode::FAILURE_NO_OAUTH_TOKEN,
+  EXPECT_ERROR(RunJobAndWaitForResult(),
+               StartCrdSessionResultCode::FAILURE_NO_OAUTH_TOKEN,
                kTestNoOAuthTokenReason);
 }
 
@@ -539,7 +544,8 @@ TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldFailIfCrdHostReportsAnError) {
 
   delegate().MakeAccessCodeFetchFail();
 
-  EXPECT_ERROR(RunJobAndWaitForResult(), ResultCode::FAILURE_CRD_HOST_ERROR);
+  EXPECT_ERROR(RunJobAndWaitForResult(),
+               StartCrdSessionResultCode::FAILURE_CRD_HOST_ERROR);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldPassOAuthTokenToDelegate) {
@@ -772,14 +778,15 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
   }();
 
   histogram_tester.ExpectUniqueSample(
-      "Enterprise.DeviceRemoteCommand.Crd.Result", ResultCode::SUCCESS, 1);
+      "Enterprise.DeviceRemoteCommand.Crd.Result",
+      ExtendedStartCrdSessionResultCode::kSuccess, 1);
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.SessionType", expected_session_type,
       1);
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(kHistogramResultTemplate, "RemoteSupport",
                          SessionTypeToUmaString(user_session_type)),
-      ResultCode::SUCCESS, /*expected_bucket_count=*/1);
+      ExtendedStartCrdSessionResultCode::kSuccess, /*expected_bucket_count=*/1);
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
@@ -848,11 +855,12 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.Result",
-      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, 1);
+      ExtendedStartCrdSessionResultCode::kFailureUnsupportedUserType, 1);
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(kHistogramResultTemplate, "RemoteSupport",
                          "UnaffiliatedUserSession"),
-      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, /*expected_bucket_count=*/1);
+      ExtendedStartCrdSessionResultCode::kFailureUnsupportedUserType,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -868,12 +876,13 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
       Payload().Set("idlenessCutoffSec", idleness_cutoff_in_sec));
 
   histogram_tester.ExpectUniqueSample(
-      "Enterprise.DeviceRemoteCommand.Crd.Result", ResultCode::FAILURE_NOT_IDLE,
-      1);
+      "Enterprise.DeviceRemoteCommand.Crd.Result",
+      ExtendedStartCrdSessionResultCode::kFailureNotIdle, 1);
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(kHistogramResultTemplate, "RemoteSupport",
                          "AutoLaunchedKioskSession"),
-      ResultCode::FAILURE_NOT_IDLE, /*expected_bucket_count=*/1);
+      ExtendedStartCrdSessionResultCode::kFailureNotIdle,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -886,11 +895,12 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.Result",
-      ResultCode::FAILURE_NO_OAUTH_TOKEN, 1);
+      ExtendedStartCrdSessionResultCode::kFailureNoOauthToken, 1);
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(kHistogramResultTemplate, "RemoteSupport",
                          "AutoLaunchedKioskSession"),
-      ResultCode::FAILURE_NO_OAUTH_TOKEN, /*expected_bucket_count=*/1);
+      ExtendedStartCrdSessionResultCode::kFailureNoOauthToken,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -903,11 +913,12 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.Result",
-      ResultCode::FAILURE_CRD_HOST_ERROR, 1);
+      ExtendedStartCrdSessionResultCode::kFailureCrdHostError, 1);
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(kHistogramResultTemplate, "RemoteSupport",
                          "AutoLaunchedKioskSession"),
-      ResultCode::FAILURE_CRD_HOST_ERROR, /*expected_bucket_count=*/1);
+      ExtendedStartCrdSessionResultCode::kFailureCrdHostError,
+      /*expected_bucket_count=*/1);
 }
 
 class DeviceCommandStartCrdSessionJobRemoteAccessTest
@@ -967,7 +978,8 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     // Ensure the session a remote support session (= not curtained off).
     EXPECT_FALSE(delegate().session_parameters().curtain_local_user_session);
   } else {
-    EXPECT_ERROR(result, ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
+    EXPECT_ERROR(result,
+                 StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
   }
 }
 
@@ -986,7 +998,8 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     // Ensure the session a remote support session (= not curtained off).
     EXPECT_FALSE(delegate().session_parameters().curtain_local_user_session);
   } else {
-    EXPECT_ERROR(result, ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
+    EXPECT_ERROR(result,
+                 StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
   }
 }
 
@@ -1006,7 +1019,8 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     // Ensure the session a remote access session (= curtained off).
     EXPECT_TRUE(delegate().session_parameters().curtain_local_user_session);
   } else {
-    EXPECT_ERROR(result, ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
+    EXPECT_ERROR(result,
+                 StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
   }
 }
 
@@ -1065,7 +1079,8 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   StartSessionOfType(user_session_type);
   Result result = RunJobAndWaitForResult(RemoteAccessPayload());
 
-  EXPECT_ERROR(result, ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
+  EXPECT_ERROR(result,
+               StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
@@ -1174,7 +1189,7 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
   fake_cros_network_config().ClearActiveNetworks();
 
   EXPECT_ERROR(RunJobAndWaitForResult(RemoteAccessPayload()),
-               ResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
+               StartCrdSessionResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
@@ -1187,7 +1202,7 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
   });
 
   EXPECT_ERROR(RunJobAndWaitForResult(RemoteAccessPayload()),
-               ResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
+               StartCrdSessionResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
@@ -1198,7 +1213,7 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
   });
 
   EXPECT_ERROR(RunJobAndWaitForResult(RemoteAccessPayload()),
-               ResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
+               StartCrdSessionResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
@@ -1237,7 +1252,7 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
   });
 
   EXPECT_ERROR(RunJobAndWaitForResult(RemoteAccessPayload()),
-               ResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
+               StartCrdSessionResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
@@ -1318,7 +1333,8 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(kHistogramResultTemplate, "RemoteAccess",
                          SessionTypeToUmaString(user_session_type)),
-      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, /*expected_bucket_count=*/1);
+      ExtendedStartCrdSessionResultCode::kFailureUnsupportedUserType,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
@@ -1339,7 +1355,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(kHistogramResultTemplate, "RemoteAccess",
                          SessionTypeToUmaString(user_session_type)),
-      ResultCode::SUCCESS, /*expected_bucket_count=*/1);
+      ExtendedStartCrdSessionResultCode::kSuccess, /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
@@ -1352,7 +1368,8 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
   histogram_tester.ExpectUniqueSample(
       base::StringPrintf(kHistogramResultTemplate, "RemoteAccess",
                          SessionTypeToUmaString(TestSessionType::kNoSession)),
-      ResultCode::FAILURE_UNMANAGED_ENVIRONMENT, /*expected_bucket_count=*/1);
+      ExtendedStartCrdSessionResultCode::kFailureUnmanagedEnvironment,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,

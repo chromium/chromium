@@ -20,7 +20,7 @@ class CrdUmaLogger {
   CrdUmaLogger& operator=(const CrdUmaLogger&) = default;
 
   // Logs the CRD session launch result to UMA.
-  void LogSessionLaunchResult(ResultCode code);
+  void LogSessionLaunchResult(ExtendedStartCrdSessionResultCode result_code);
 
   // Logs the CRD session duration to UMA.
   void LogSessionDuration(base::TimeDelta duration);

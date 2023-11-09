@@ -93,7 +93,7 @@ absl::optional<std::string> FindString(const base::Value::Dict& dict,
 
 void SendResultCodeToUma(CrdSessionType crd_session_type,
                          UserSessionType user_session_type,
-                         ResultCode result_code) {
+                         ExtendedStartCrdSessionResultCode result_code) {
   base::UmaHistogramEnumeration("Enterprise.DeviceRemoteCommand.Crd.Result",
                                 result_code);
 
@@ -108,10 +108,12 @@ void SendSessionTypeToUma(
 }
 
 std::string CreateSuccessPayload(const std::string& access_code) {
-  return base::WriteJson(base::Value::Dict()
-                             .Set(kResultCodeFieldName,
-                                  static_cast<int>(ResultCode::SUCCESS))
-                             .Set(kResultAccessCodeFieldName, access_code))
+  return base::WriteJson(
+             base::Value::Dict()
+                 .Set(kResultCodeFieldName,
+                      static_cast<int>(
+                          StartCrdSessionResultCode::START_CRD_SESSION_SUCCESS))
+                 .Set(kResultAccessCodeFieldName, access_code))
       .value();
 }
 
@@ -119,16 +121,17 @@ std::string CreateNonIdlePayload(const base::TimeDelta& time_delta) {
   return base::WriteJson(
              base::Value::Dict()
                  .Set(kResultCodeFieldName,
-                      static_cast<int>(ResultCode::FAILURE_NOT_IDLE))
+                      static_cast<int>(
+                          StartCrdSessionResultCode::FAILURE_NOT_IDLE))
                  .Set(kResultLastActivityFieldName,
                       static_cast<int>(time_delta.InSeconds())))
       .value();
 }
 
-std::string CreateErrorPayload(ResultCode result_code,
+std::string CreateErrorPayload(StartCrdSessionResultCode result_code,
                                const std::string& error_message) {
-  DCHECK(result_code != ResultCode::SUCCESS);
-  DCHECK(result_code != ResultCode::FAILURE_NOT_IDLE);
+  CHECK_NE(result_code, StartCrdSessionResultCode::START_CRD_SESSION_SUCCESS);
+  CHECK_NE(result_code, StartCrdSessionResultCode::FAILURE_NOT_IDLE);
 
   auto payload = base::Value::Dict()  //
                      .Set(kResultCodeFieldName, static_cast<int>(result_code));
@@ -216,7 +219,8 @@ class DeviceCommandStartCrdSessionJob::OAuthTokenFetcher
     CRD_DVLOG(1) << "Failed to get OAuth access token: " << error.ToString();
     oauth_request_.reset();
     std::move(error_callback_)
-        .Run(ResultCode::FAILURE_NO_OAUTH_TOKEN, error.ToString());
+        .Run(ExtendedStartCrdSessionResultCode::kFailureNoOauthToken,
+             error.ToString());
   }
 
   const raw_ref<DeviceOAuth2TokenService, ExperimentalAsh> oauth_service_;
@@ -300,7 +304,8 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
   result_callback_ = std::move(result_callback);
 
   if (!UserTypeSupportsCrd()) {
-    FinishWithError(ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, "");
+    FinishWithError(
+        ExtendedStartCrdSessionResultCode::kFailureUnsupportedUserType, "");
     return;
   }
 
@@ -336,8 +341,9 @@ void DeviceCommandStartCrdSessionJob::CheckManagedNetworkASync(
         if (is_in_managed_environment) {
           std::move(on_success).Run();
         } else {
-          std::move(on_error).Run(ResultCode::FAILURE_UNMANAGED_ENVIRONMENT,
-                                  /*error_messages=*/"");
+          std::move(on_error).Run(
+              ExtendedStartCrdSessionResultCode::kFailureUnmanagedEnvironment,
+              /*error_messages=*/"");
         }
       },
       std::move(on_success), GetErrorCallback()));
@@ -386,7 +392,7 @@ void DeviceCommandStartCrdSessionJob::FinishWithSuccess(
   }
 
   SendResultCodeToUma(GetCrdSessionType(), GetCurrentUserSessionType(),
-                      ResultCode::SUCCESS);
+                      ExtendedStartCrdSessionResultCode::kSuccess);
   SendSessionTypeToUma(GetUmaSessionType());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -395,9 +401,9 @@ void DeviceCommandStartCrdSessionJob::FinishWithSuccess(
 }
 
 void DeviceCommandStartCrdSessionJob::FinishWithError(
-    const ResultCode result_code,
+    const ExtendedStartCrdSessionResultCode result_code,
     const std::string& message) {
-  DCHECK(result_code != ResultCode::SUCCESS);
+  CHECK_NE(result_code, ExtendedStartCrdSessionResultCode::kSuccess);
   CRD_LOG(INFO) << "Not starting CRD session because of error (code "
                 << static_cast<int>(result_code) << ", message '" << message
                 << "')";
@@ -410,7 +416,8 @@ void DeviceCommandStartCrdSessionJob::FinishWithError(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(result_callback_), ResultType::kFailure,
-                     CreateErrorPayload(result_code, message)));
+                     CreateErrorPayload(
+                         ToStartCrdSessionResultCode(result_code), message)));
 }
 
 void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
@@ -420,7 +427,7 @@ void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
   }
 
   SendResultCodeToUma(GetCrdSessionType(), GetCurrentUserSessionType(),
-                      ResultCode::FAILURE_NOT_IDLE);
+                      ExtendedStartCrdSessionResultCode::kFailureNotIdle);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(result_callback_), ResultType::kFailure,

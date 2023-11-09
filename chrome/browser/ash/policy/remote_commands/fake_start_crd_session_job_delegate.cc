@@ -49,7 +49,8 @@ void FakeStartCrdSessionJobDelegate::StartCrdHostAndGetCode(
     std::move(success_callback).Run(kTestAccessCode);
   } else {
     std::move(error_callback)
-        .Run(ResultCode::FAILURE_CRD_HOST_ERROR, std::string());
+        .Run(ExtendedStartCrdSessionResultCode::kFailureCrdHostError,
+             std::string());
   }
 }
 

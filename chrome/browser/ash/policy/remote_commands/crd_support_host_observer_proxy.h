@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/observer_list.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
@@ -21,7 +22,6 @@ class TimeDelta;
 namespace policy {
 
 class CrdSessionObserver;
-enum class ResultCode;
 
 // A proxy that translates and forwards `SupportHostObserver` events to the
 // corresponding `CrdSessionObserver` events.
@@ -54,7 +54,7 @@ class SupportHostObserverProxy : public remoting::mojom::SupportHostObserver {
   void OnPolicyError() override;
   void OnInvalidDomainError() override;
 
-  void ReportHostStopped(ResultCode error_code,
+  void ReportHostStopped(ExtendedStartCrdSessionResultCode result,
                          const std::string& error_message);
 
  private:
