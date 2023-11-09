@@ -4480,6 +4480,7 @@ bool LayoutObject::CanUpdateSelectionOnRootLineBoxes() const {
 void LayoutObject::SetNeedsBoundariesUpdate() {
   NOT_DESTROYED();
   DCHECK(!GetDocument().InPostLifecycleSteps());
+  InvalidateIntersectionObserverCachedRects();
   if (LayoutObject* layout_object = Parent())
     layout_object->SetNeedsBoundariesUpdate();
 }

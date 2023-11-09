@@ -116,6 +116,10 @@ std::pair<PhysicalRect, bool> InitializeTargetRect(const LayoutObject* target,
   std::pair<PhysicalRect, bool> result;
   if (flags & IntersectionGeometry::kForFrameViewportIntersection) {
     result.first = To<LayoutEmbeddedContent>(target)->ReplacedContentRect();
+  } else if (target->IsSVGChild()) {
+    // TODO(yotha): Avoid the FastAndLossyFromRectF conversion.
+    result.first =
+        PhysicalRect::FastAndLossyFromRectF(target->DecoratedBoundingBox());
   } else if (target->IsBox()) {
     result.first =
         GetBoxBounds(To<LayoutBox>(target),
@@ -251,6 +255,10 @@ IntersectionGeometry::RootAndTarget::RootAndTarget(
   ComputeRelationship(!root_node, has_scroll_margin);
 }
 
+bool IsAllowedLayoutObjectType(const LayoutObject& target) {
+  return target.IsBoxModelObject() || target.IsText() || target.IsSVG();
+}
+
 // Validates the given target element and returns its LayoutObject
 const LayoutObject* IntersectionGeometry::RootAndTarget::GetTargetLayoutObject(
     const Element& target_element) {
@@ -258,7 +266,7 @@ const LayoutObject* IntersectionGeometry::RootAndTarget::GetTargetLayoutObject(
     return nullptr;
   }
   LayoutObject* target = target_element.GetLayoutObject();
-  if (!target || (!target->IsBoxModelObject() && !target->IsText())) {
+  if (!target || !IsAllowedLayoutObjectType(*target)) {
     return nullptr;
   }
   // If the target is inside a locked subtree, it isn't ever visible.
