@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/rand_util.h"
@@ -17,6 +18,7 @@
 #elif BUILDFLAG(IS_MAC)
 #include "services/device/compute_pressure/cpu_probe_mac.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "services/device/public/cpp/device_features.h"
 
 namespace device {
 
@@ -90,13 +92,16 @@ void CpuProbe::EnsureStarted() {
   timer_.Start(FROM_HERE, sampling_interval_,
                base::BindRepeating(&CpuProbe::Update, base::Unretained(this)));
 
-  randomization_time_ = base::Seconds(base::RandInt(
-      kMinRandomizationTimeInSeconds, kMaxRandomizationTimeInSeconds));
+  if (base::FeatureList::IsEnabled(
+          features::kComputePressureBreakCalibrationMitigation)) {
+    randomization_time_ = base::Seconds(base::RandInt(
+        kMinRandomizationTimeInSeconds, kMaxRandomizationTimeInSeconds));
 
-  randomization_timer_.Start(
-      FROM_HERE, randomization_time_,
-      base::BindRepeating(&CpuProbe::ToggleStateRandomization,
-                          base::Unretained(this)));
+    randomization_timer_.Start(
+        FROM_HERE, randomization_time_,
+        base::BindRepeating(&CpuProbe::ToggleStateRandomization,
+                            base::Unretained(this)));
+  }
 }
 
 void CpuProbe::Stop() {

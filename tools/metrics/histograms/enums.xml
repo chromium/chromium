@@ -45776,6 +45776,8 @@ from previous Chrome versions.
   <int value="522013077" label="LinkCapturingAutoDisplayIntentPicker:disabled"/>
   <int value="524557829" label="OmniboxSteadyStateTextColor:enabled"/>
   <int value="525286392" label="PageInfoAboutThisSiteNonMsbb:disabled"/>
+  <int value="527010182"
+      label="ComputePressureBreakCalibrationMitigation:disabled"/>
   <int value="527140412"
       label="AndroidAutofillViewStructureWithFormHierarchyLayer:disabled"/>
   <int value="529235584" label="PhoneHub:enabled"/>
@@ -47147,6 +47149,8 @@ from previous Chrome versions.
   <int value="1198839129" label="OfflinePagesLivePageSharing:enabled"/>
   <int value="1199200896" label="FileTransferEnterpriseConnectorUI:enabled"/>
   <int value="1199276782" label="HighEfficiencyMultistateMode:enabled"/>
+  <int value="1199381550"
+      label="ComputePressureBreakCalibrationMitigation:enabled"/>
   <int value="1199500202" label="PanelSelfRefresh2:enabled"/>
   <int value="1200407724" label="WebUITabStripContextMenuAfterTap:disabled"/>
   <int value="1200946197" label="ConfirmationChip:disabled"/>

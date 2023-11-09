@@ -159,6 +159,21 @@ const char kComputePressureRateObfuscationMitigationDescription[] =
     "pressure is, but the Compute Pressure API can be susceptible to "
     "fingerprinting attacks.";
 
+const char kComputePressureBreakCalibrationMitigationName[] =
+    "Enable mitigation algorithm to break calibration attempt in compute "
+    "pressure";
+const char kComputePressureBreakCalibrationMitigationDescription[] =
+    "In a calibration process an attacker tries to manipulate the CPU so that "
+    "Compute Pressure API would report a transition into a certain pressure "
+    "state with the highest probability in response to the pressure exerted "
+    "by the fabricated workload."
+    "Break Calibration Mitigation is used to avoid calibration attempts by "
+    "introducing some randomness in the result of the platform collector."
+    "This mitigation might introduce slight precision errors."
+    "When disabled this helps to test how predictable and accurate compute "
+    "pressure is, but the Compute Pressure API can be susceptible to "
+    "calibration attempts.";
+
 const char kContentLanguagesInLanguagePickerName[] =
     "Content languages in language picker";
 const char kContentLanguagesInLanguagePickerDescription[] =

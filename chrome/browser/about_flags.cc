@@ -10622,6 +10622,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kComputePressureRateObfuscationMitigation)},
 
+    {"enable-compute-pressure-break-calibration-mitigation",
+     flag_descriptions::kComputePressureBreakCalibrationMitigationName,
+     flag_descriptions::kComputePressureBreakCalibrationMitigationDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kComputePressureBreakCalibrationMitigation)},
+
     {"enable-zstd-content-encoding",
      flag_descriptions::kZstdContentEncodingName,
      flag_descriptions::kZstdContentEncodingDescription, kOsAll,

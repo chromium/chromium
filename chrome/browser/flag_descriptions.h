@@ -128,6 +128,9 @@ extern const char kClipboardMaximumAgeDescription[];
 extern const char kComputePressureRateObfuscationMitigationName[];
 extern const char kComputePressureRateObfuscationMitigationDescription[];
 
+extern const char kComputePressureBreakCalibrationMitigationName[];
+extern const char kComputePressureBreakCalibrationMitigationDescription[];
+
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
 
