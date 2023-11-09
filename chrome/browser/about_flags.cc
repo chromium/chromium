@@ -9177,6 +9177,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmSelectiveDisclosureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmSelectiveDisclosure)},
 
+    {"fedcm-add-account", flag_descriptions::kFedCmAddAccountName,
+     flag_descriptions::kFedCmAddAccountDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmAddAccount)},
+
     {"fedcm-without-third-party-cookies",
      flag_descriptions::kFedCmWithoutThirdPartyCookiesName,
      flag_descriptions::kFedCmWithoutThirdPartyCookiesDescription, kOsAll,

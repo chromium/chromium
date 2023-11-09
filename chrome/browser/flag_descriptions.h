@@ -954,6 +954,9 @@ extern const char kFedCmSelectiveDisclosureDescription[];
 extern const char kFedCmIdpSigninStatusName[];
 extern const char kFedCmIdpSigninStatusDescription[];
 
+extern const char kFedCmAddAccountName[];
+extern const char kFedCmAddAccountDescription[];
+
 extern const char kFedCmWithoutThirdPartyCookiesName[];
 extern const char kFedCmWithoutThirdPartyCookiesDescription[];
 

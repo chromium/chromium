@@ -533,8 +533,10 @@ void OnConfigParsed(const GURL& provider,
   }
   idp_metadata.idp_login_url =
       ExtractEndpoint(provider, response, kLoginUrlKey);
-  idp_metadata.supports_add_account =
-      response.FindBool(kSupportsAddAccountKey).value_or(false);
+  if (IsFedCmAddAccountEnabled()) {
+    idp_metadata.supports_add_account =
+        response.FindBool(kSupportsAddAccountKey).value_or(false);
+  }
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                           endpoints, std::move(idp_metadata));
 }

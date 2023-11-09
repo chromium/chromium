@@ -45670,6 +45670,7 @@ from previous Chrome versions.
   <int value="767549069" label="ScreenTime:enabled"/>
   <int value="767970385" label="ResamplingScrollEvents:enabled"/>
   <int value="768287307" label="OmniboxCr2023Umbrella:enabled"/>
+  <int value="768468500" label="FedCmAddAccount:disabled"/>
   <int value="768675159" label="FastPairDebugMetadata:enabled"/>
   <int value="768855962" label="PaymentRequestBasicCard:enabled"/>
   <int value="768900239" label="ArcSwitchToKeyMintOnTOverride:disabled"/>
@@ -46580,6 +46581,7 @@ from previous Chrome versions.
   <int value="1220464509" label="enable-first-run-ui-transitions"/>
   <int value="1220655015" label="kScrollableTabStripOverflow:enabled"/>
   <int value="1221104166" label="ThumbnailCacheRefactor:enabled"/>
+  <int value="1221370955" label="FedCmAddAccount:enabled"/>
   <int value="1221394044" label="SharingUseDeviceInfo:enabled"/>
   <int value="1221559505" label="enable-spelling-feedback-field-trial"/>
   <int value="1222017136" label="WebRtcUseEchoCanceller3:disabled"/>

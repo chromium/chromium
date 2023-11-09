@@ -68,4 +68,8 @@ bool IsFedCmRevokeEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmRevoke);
 }
 
+bool IsFedCmAddAccountEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmAddAccount);
+}
+
 }  // namespace content

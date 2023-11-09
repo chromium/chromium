@@ -353,18 +353,20 @@ BASE_FEATURE(kEnableServiceWorkersForChromeScheme,
 // We enable it here by default to support use in origin trials.
 BASE_FEATURE(kFedCm, "FedCm", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the "Add Account" button in the FedCM account chooser to log in to
+// another IDP account, if the IDP opts in.
+BASE_FEATURE(kFedCmAddAccount,
+             "FedCmAddAccount",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables usage of the FedCM Authz API.
+BASE_FEATURE(kFedCmAuthz, "FedCmAuthz", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM AutoSelectedFlag feature.
 // ChromeStatus entry: https://chromestatus.com/feature/5384360374566912
 BASE_FEATURE(kFedCmAutoSelectedFlag,
              "FedCmAutoSelectedFlag",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables usage of the FedCM Authz API.
-BASE_FEATURE(kFedCmAuthz, "FedCmAuthz", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables usage of the FedCM Error API.
-// ChromeStatus entry: https://chromestatus.com/feature/5384360374566912
-BASE_FEATURE(kFedCmError, "FedCmError", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM DomainHint feature. ChromeStatus entry:
 // https://chromestatus.com/feature/5202286040580096
@@ -372,10 +374,20 @@ BASE_FEATURE(kFedCmDomainHint,
              "FedCmDomainHint",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables usage of the FedCM Error API.
+// ChromeStatus entry: https://chromestatus.com/feature/5384360374566912
+BASE_FEATURE(kFedCmError, "FedCmError", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM IdP Registration API.
 BASE_FEATURE(kFedCmIdPRegistration,
              "FedCmIdPregistration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the IDP signin status API for use with FedCM, including avoiding
+// network requests when not signed in and mismatch handling.
+BASE_FEATURE(kFedCmIdpSigninStatusEnabled,
+             "FedCmIdpSigninStatusEnabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM API with metrics endpoint at the same time.
 BASE_FEATURE(kFedCmMetricsEndpoint,
@@ -396,12 +408,6 @@ BASE_FEATURE(kFedCmRevoke, "FedCmRevoke", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFedCmSelectiveDisclosure,
              "FedCmSelectiveDisclosure",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the IDP signin status API for use with FedCM, including avoiding
-// network requests when not signed in and mismatch handling.
-BASE_FEATURE(kFedCmIdpSigninStatusEnabled,
-             "FedCmIdpSigninStatusEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables bypassing the well-known file enforcement.
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
