@@ -2027,7 +2027,7 @@ targets.script(
 
 targets.generated_script(
     name = "touch_to_fill_junit_tests",
-    label = "//chrome/browser/touch_to_fill/password_manager/android:touch_to_fill_junit_tests",
+    label = "//chrome/browser/touch_to_fill/android:touch_to_fill_junit_tests",
 )
 
 targets.compile_target(

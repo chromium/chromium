@@ -1,0 +1,144 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+source_set("android") {
+  visibility = [ "//chrome/browser/touch_to_fill:factory" ]
+
+  sources = [
+    "touch_to_fill_view_impl.cc",
+    "touch_to_fill_view_impl.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    ":jni_headers",
+    "//chrome/browser/touch_to_fill:public",
+    "//chrome/browser/touch_to_fill/android/internal:jni",
+    "//chrome/browser/ui",
+    "//components/password_manager/core/browser",
+    "//components/strings:components_strings_grit",
+    "//ui/android",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/touch_to_fill/data/Credential.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/data/WebAuthnCredential.java",
+  ]
+}
+
+android_library("public_java") {
+  resources_package = "org.chromium.chrome.browser.touch_to_fill"
+  deps = [
+    "//chrome/browser/touch_to_fill/common/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillComponent.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/data/Credential.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/data/WebAuthnCredential.java",
+  ]
+}
+
+robolectric_binary("touch_to_fill_junit_tests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.touch_to_fill"
+  shared_libraries =
+      [ "//chrome/android/junit:libchrome_junit_tests($robolectric_toolchain)" ]
+
+  sources = [ "junit/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillControllerTest.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/password_manager/android:public_impl_java",
+    "//chrome/browser/touch_to_fill/android:public_java",
+    "//chrome/browser/touch_to_fill/android/internal:java",
+    "//chrome/browser/touch_to_fill/common/android:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/favicon/android:java",
+    "//components/module_installer/android:module_installer_java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/url_formatter/android:url_formatter_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+  ]
+}
+
+android_library("test_java") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.touch_to_fill"
+
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillIntegrationTest.java",
+    "javatests/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillRenderTest.java",
+    "javatests/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillViewTest.java",
+  ]
+
+  deps = [
+    ":public_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/android:chrome_test_java",
+    "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/password_manager/android:password_manager_resource_provider_java",
+    "//chrome/browser/password_manager/android:public_impl_java",
+    "//chrome/browser/touch_to_fill/android/internal:java",
+    "//chrome/browser/touch_to_fill/android/internal:java_resources",
+    "//chrome/browser/touch_to_fill/android/internal:resource_provider_public_impl_java",
+    "//chrome/browser/touch_to_fill/common/android:java",
+    "//chrome/browser/touch_to_fill/common/android:java_resources",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
+    "//chrome/browser/util:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:java_resources",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/url_formatter/android:url_formatter_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/accessibility:ax_base_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_utils_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+  ]
+}
