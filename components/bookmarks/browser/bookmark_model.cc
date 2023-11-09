@@ -123,8 +123,10 @@ void DeleteAccountStorageFileSynchronously(
 
 // BookmarkModel --------------------------------------------------------------
 
-BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client)
-    : owned_root_(std::make_unique<BookmarkNode>(
+BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client,
+                             bool allow_folders_for_account_storage)
+    : allow_folders_for_account_storage_(allow_folders_for_account_storage),
+      owned_root_(std::make_unique<BookmarkNode>(
           /*id=*/0,
           base::Uuid::ParseLowercase(kRootNodeUuid),
           GURL())),
@@ -176,6 +178,27 @@ void BookmarkModel::Load(const base::FilePath& profile_path,
 scoped_refptr<ModelLoader> BookmarkModel::model_loader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return model_loader_;
+}
+
+const BookmarkNode* BookmarkModel::account_bookmark_bar_node() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Must be null if the feature flag isn't enabled.
+  CHECK(!account_bookmark_bar_node_ || allow_folders_for_account_storage_);
+  return account_bookmark_bar_node_;
+}
+
+const BookmarkNode* BookmarkModel::account_other_node() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Must be null if the feature flag isn't enabled.
+  CHECK(!account_other_node_ || allow_folders_for_account_storage_);
+  return account_other_node_;
+}
+
+const BookmarkNode* BookmarkModel::account_mobile_node() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Must be null if the feature flag isn't enabled.
+  CHECK(!account_mobile_node_ || allow_folders_for_account_storage_);
+  return account_mobile_node_;
 }
 
 void BookmarkModel::AddObserver(BookmarkModelObserver* observer) {
@@ -1112,6 +1135,8 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   other_node_ = details->other_folder_node();
   mobile_node_ = details->mobile_folder_node();
 
+  // TODO(crbug.com/1494120): Load nodes for account storage as well.
+
   titled_url_index_->SetNodeSorter(
       std::make_unique<TypedCountSorter>(client_.get()));
   // Sorting the permanent nodes has to happen on the main thread, so we do it
@@ -1243,6 +1268,24 @@ int64_t BookmarkModel::generate_next_node_id() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   return next_node_id_++;
+}
+
+void BookmarkModel::CreateAccountPermanentFolders() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(allow_folders_for_account_storage_);
+  CHECK(loaded_);
+
+  // TODO(crbug.com/1494120): Implement this method.
+  NOTIMPLEMENTED();
+}
+
+void BookmarkModel::RemoveAccountPermanentFolders() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(allow_folders_for_account_storage_);
+  CHECK(loaded_);
+
+  // TODO(crbug.com/1494120): Implement this method.
+  NOTIMPLEMENTED();
 }
 
 }  // namespace bookmarks

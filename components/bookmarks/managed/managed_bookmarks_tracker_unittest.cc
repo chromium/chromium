@@ -63,7 +63,8 @@ class ManagedBookmarksTrackerTest : public testing::Test {
     managed_node_->SetTitle(l10n_util::GetStringUTF16(
         IDS_BOOKMARK_BAR_MANAGED_FOLDER_DEFAULT_NAME));
 
-    model_ = std::make_unique<BookmarkModel>(std::move(client));
+    model_ = std::make_unique<BookmarkModel>(
+        std::move(client), /*allow_folders_for_account_storage=*/false);
 
     model_->AddObserver(&observer_);
     EXPECT_CALL(observer_, BookmarkModelLoaded(model_.get(), _));

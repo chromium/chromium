@@ -139,6 +139,12 @@ BASE_FEATURE(kEnableBookmarksAccountStorage,
 #endif  // BUILDFLAG(IS_IOS)
 );
 
+#if !BUILDFLAG(IS_IOS)
+BASE_FEATURE(kEnableBookmarkFoldersForAccountStorage,
+             "EnableBookmarkFoldersForAccountStorage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_IOS)
+
 BASE_FEATURE(kReadingListEnableDualReadingListModel,
              "ReadingListEnableDualReadingListModel",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -17,6 +18,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/storage_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
 
@@ -32,12 +34,14 @@ using bookmarks::BookmarkModel;
 std::unique_ptr<KeyedService> BuildBookmarkModel(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  auto bookmark_model =
-      std::make_unique<BookmarkModel>(std::make_unique<ChromeBookmarkClient>(
+  auto bookmark_model = std::make_unique<BookmarkModel>(
+      std::make_unique<ChromeBookmarkClient>(
           profile, ManagedBookmarkServiceFactory::GetForProfile(profile),
           LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile),
           AccountBookmarkSyncServiceFactory::GetForProfile(profile),
-          BookmarkUndoServiceFactory::GetForProfile(profile)));
+          BookmarkUndoServiceFactory::GetForProfile(profile)),
+      base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage));
 #if defined(TOOLKIT_VIEWS)
   // BookmarkExpandedStateTracker depends on the loading event, so this
   // coupling must happen before the loading happens.

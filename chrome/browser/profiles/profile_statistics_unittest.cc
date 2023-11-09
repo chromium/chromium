@@ -46,11 +46,13 @@ std::unique_ptr<KeyedService> BuildBookmarkModelWithoutLoad(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(
-      new bookmarks::BookmarkModel(std::make_unique<ChromeBookmarkClient>(
-          profile, ManagedBookmarkServiceFactory::GetForProfile(profile),
-          LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile),
-          AccountBookmarkSyncServiceFactory::GetForProfile(profile),
-          BookmarkUndoServiceFactory::GetForProfile(profile))));
+      new bookmarks::BookmarkModel(
+          std::make_unique<ChromeBookmarkClient>(
+              profile, ManagedBookmarkServiceFactory::GetForProfile(profile),
+              LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile),
+              AccountBookmarkSyncServiceFactory::GetForProfile(profile),
+              BookmarkUndoServiceFactory::GetForProfile(profile)),
+          /*allow_folders_for_account_storage=*/false));
   return std::move(bookmark_model);
 }
 

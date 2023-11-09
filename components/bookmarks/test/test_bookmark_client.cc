@@ -35,8 +35,8 @@ std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModel() {
 std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModelWithClient(
     std::unique_ptr<BookmarkClient> client) {
   BookmarkClient* client_ptr = client.get();
-  std::unique_ptr<BookmarkModel> bookmark_model(
-      new BookmarkModel(std::move(client)));
+  std::unique_ptr<BookmarkModel> bookmark_model(new BookmarkModel(
+      std::move(client), /*allow_folders_for_account_storage=*/false));
   std::unique_ptr<BookmarkLoadDetails> details =
       std::make_unique<BookmarkLoadDetails>(client_ptr);
   details->LoadManagedNode();

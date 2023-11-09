@@ -80,7 +80,13 @@ class BookmarkModel final : public BookmarkUndoProvider,
                             public KeyedService,
                             public base::SupportsUserData {
  public:
-  explicit BookmarkModel(std::unique_ptr<BookmarkClient> client);
+  // `allow_folders_for_account_storage` controls whether this BookmarkModel is
+  // allowed to use permanent folders for account storage. If
+  // `allow_folders_for_account_storage` is false, calling
+  // `CreateAccountPermanentFolders`/`RemoveAccountPermanentFolders` will
+  // trigger a CHECK.
+  BookmarkModel(std::unique_ptr<BookmarkClient> client,
+                bool allow_folders_for_account_storage);
 
   BookmarkModel(const BookmarkModel&) = delete;
   BookmarkModel& operator=(const BookmarkModel&) = delete;
@@ -114,23 +120,50 @@ class BookmarkModel final : public BookmarkUndoProvider,
     return root_;
   }
 
-  // Returns the 'bookmark bar' node. This is NULL until loaded.
+  // Returns the 'bookmark bar' node for the local-or-syncable storage.
+  // Local-or-syncable storage is used for syncing bookmarks *only* if
+  // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
+  // local-or-syncable storage (and this folder) will become purely local.
+  // This is null until loaded.
   const BookmarkNode* bookmark_bar_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return bookmark_bar_node_;
   }
 
-  // Returns the 'other' node. This is NULL until loaded.
+  // Returns the 'other' node for the local-or-syncable storage.
+  // Local-or-syncable storage is used for syncing bookmarks *only* if
+  // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
+  // local-or-syncable storage (and this folder) will become purely local.
+  // This is null until loaded.
   const BookmarkNode* other_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return other_node_;
   }
 
-  // Returns the 'mobile' node. This is NULL until loaded.
+  // Returns the 'mobile' node for the local-or-syncable storage.
+  // Local-or-syncable storage is used for syncing bookmarks *only* if
+  // Sync-the-feature is enabled. After Sync-to-Signin migration is finished -
+  // local-or-syncable storage (and this folder) will become purely local.
+  // This is null until loaded.
   const BookmarkNode* mobile_node() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return mobile_node_;
   }
+
+  // Returns the 'bookmark bar' node for the account storage. This is null until
+  // loaded or if the user is not signed in (or isn't opted into syncing
+  // bookmarks in the account storage).
+  const BookmarkNode* account_bookmark_bar_node() const;
+
+  // Returns the 'other' node for the account storage. This is null until loaded
+  // or if the user is not signed in (or isn't opted into syncing bookmarks in
+  // the account storage).
+  const BookmarkNode* account_other_node() const;
+
+  // Returns the 'mobile' node for the account storage. This is null until
+  // loaded or if the user is not signed in (or isn't opted into syncing
+  // bookmarks in the account storage).
+  const BookmarkNode* account_mobile_node() const;
 
   bool is_root_node(const BookmarkNode* node) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -172,6 +205,9 @@ class BookmarkModel final : public BookmarkUndoProvider,
   void RemoveAllUserBookmarks();
 
   // Moves `node` to `new_parent` and inserts it at the given `index`.
+  //
+  // Note: this might cause UUIDs to get reassigned for `node` or its
+  // descendants, when the node is moved between local and account storages.
   void Move(const BookmarkNode* node,
             const BookmarkNode* new_parent,
             size_t index);
@@ -230,7 +266,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
       const GURL& url) const;
 
   // Returns the node with the given UUID or null if no node exists with this
-  // UUID.
+  // UUID. Please note that this doesn't return account bookmarks.
+  // TODO(crbug.com/1494120): Add support for account bookmarks.
   const BookmarkNode* GetNodeByUuid(const base::Uuid& uuid) const;
 
   // Returns the most recently added user node for the `url`; urls from any
@@ -361,6 +398,15 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Returns the client used by this BookmarkModel.
   BookmarkClient* client() const { return client_.get(); }
 
+  // Creates folders for account storage. Must be invoked by sync code only.
+  // Must only be invoked after BookmarkModel is loaded.
+  void CreateAccountPermanentFolders();
+
+  // Removes folders for account storage. Calling this method will destroy ALL
+  // bookmarks in account storage, including permanent folders. Must be invoked
+  // by sync code only. Must only be invoked after BookmarkModel is loaded.
+  void RemoveAccountPermanentFolders();
+
   base::WeakPtr<BookmarkModel> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -368,6 +414,7 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Attempts to delete the account storage file in case the account storage
   // support was rolled back. If the account storage support wasn't enabled -
   // this is a no-op. Deletion is done asynchronously on a background thread.
+  // TODO(crbug.com/1497923): Remove this method.
   static void WipeAccountStorageForRollback(const base::FilePath& profile_path);
 
  private:
@@ -456,6 +503,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
                                          const base::Time delete_begin,
                                          const base::Time delete_end);
 
+  const bool allow_folders_for_account_storage_;
+
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;
 
@@ -475,6 +524,11 @@ class BookmarkModel final : public BookmarkUndoProvider,
       nullptr;
   raw_ptr<BookmarkPermanentNode, AcrossTasksDanglingUntriaged> mobile_node_ =
       nullptr;
+
+  // Permanent nodes for account storage.
+  raw_ptr<BookmarkPermanentNode> account_bookmark_bar_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode> account_other_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode> account_mobile_node_ = nullptr;
 
   // The maximum ID assigned to the bookmark nodes in the model.
   int64_t next_node_id_ = 1;

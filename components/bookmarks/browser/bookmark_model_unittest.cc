@@ -2008,8 +2008,9 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<BookmarkModel> model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  std::unique_ptr<BookmarkModel> model = std::make_unique<BookmarkModel>(
+      std::make_unique<TestBookmarkClient>(),
+      /*allow_folders_for_account_storage=*/false);
   model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
   test::WaitForBookmarkModelToLoad(model.get());
   const GURL node_url("http://google.com");
@@ -2020,8 +2021,9 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
 
   // Recreate the model and ensure GetBookmarksMatching() returns the url that
   // was added.
-  model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model = std::make_unique<BookmarkModel>(
+      std::make_unique<TestBookmarkClient>(),
+      /*allow_folders_for_account_storage=*/false);
   model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
   test::WaitForBookmarkModelToLoad(model.get());
 

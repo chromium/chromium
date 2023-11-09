@@ -13,6 +13,7 @@
 #include "components/bookmarks/common/storage_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
@@ -32,13 +33,15 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model = std::make_unique<
-      bookmarks::BookmarkModel>(std::make_unique<BookmarkClientImpl>(
-      browser_state,
-      ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
-      ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
-          browser_state),
-      ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
-      bookmarks::StorageType::kLocalOrSyncable));
+      bookmarks::BookmarkModel>(
+      std::make_unique<BookmarkClientImpl>(
+          browser_state,
+          ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
+          ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
+              browser_state),
+          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
+          bookmarks::StorageType::kLocalOrSyncable),
+      /*allow_folders_for_account_storage=*/false);
   bookmark_model->Load(browser_state->GetStatePath(),
                        bookmarks::StorageType::kLocalOrSyncable);
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)

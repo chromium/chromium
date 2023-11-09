@@ -48,12 +48,15 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   // Using nullptr for `ManagedBookmarkService`, since managed bookmarks affect
   // only the local bookmark storage.
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(
-      new bookmarks::BookmarkModel(std::make_unique<BookmarkClientImpl>(
-          browser_state, /*managed_bookmark_service=*/nullptr,
-          ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
-              browser_state),
-          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
-          bookmarks::StorageType::kAccount)));
+      new bookmarks::BookmarkModel(
+          std::make_unique<BookmarkClientImpl>(
+              browser_state, /*managed_bookmark_service=*/nullptr,
+              ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
+                  browser_state),
+              ios::BookmarkUndoServiceFactory::GetForBrowserState(
+                  browser_state),
+              bookmarks::StorageType::kAccount),
+          /*allow_folders_for_account_storage=*/false));
   bookmark_model->Load(browser_state->GetStatePath(),
                        bookmarks::StorageType::kAccount);
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
