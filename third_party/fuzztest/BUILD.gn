@@ -83,7 +83,6 @@ if (use_centipede) {
       "src/centipede/runner_sancov.cc",
       "src/centipede/runner_sancov_object.cc",
       "src/centipede/runner_sancov_object.h",
-      "src/centipede/runner_sanitizer.cc",
       "src/centipede/runner_utils.cc",
       "src/centipede/runner_utils.h",
     ]
@@ -198,6 +197,8 @@ source_set("fuzztest_internal") {
     "src/fuzztest/internal/centipede_adaptor.h",
     "src/fuzztest/internal/compatibility_mode.cc",
     "src/fuzztest/internal/compatibility_mode.h",
+    "src/fuzztest/internal/configuration.cc",
+    "src/fuzztest/internal/configuration.h",
     "src/fuzztest/internal/coverage.cc",
     "src/fuzztest/internal/coverage.h",
     "src/fuzztest/internal/domains/absl_helpers.h",
