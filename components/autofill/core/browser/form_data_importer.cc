@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_profile_save_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -245,7 +246,7 @@ bool FormDataImporter::ComplementCountry(
 
 bool FormDataImporter::SetPhoneNumber(
     AutofillProfile& profile,
-    PhoneNumber::PhoneCombineHelper& combined_phone) {
+    const PhoneNumber::PhoneCombineHelper& combined_phone) {
   if (combined_phone.IsEmpty())
     return true;
   std::u16string constructed_number;
@@ -433,21 +434,68 @@ bool FormDataImporter::LogAddressFormImportRequirementMetric(
       });
 }
 
+AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
+    const base::flat_map<ServerFieldType, std::u16string>& observed_values,
+    const PhoneNumber::PhoneCombineHelper& combined_phone,
+    LogBuffer* import_log_buffer,
+    autofill::ProfileImportMetadata& import_metadata) {
+  AutofillProfile candidate_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
+
+  auto country_it = observed_values.find(ADDRESS_HOME_COUNTRY);
+  if (country_it != observed_values.end()) {
+    // Try setting the collected country value into the profile and report
+    // invalid country if the operation failed.
+    candidate_profile.SetInfoWithVerificationStatus(
+        ADDRESS_HOME_COUNTRY, country_it->second, app_locale_,
+        VerificationStatus::kObserved);
+
+    // Track the validity of the entered country for metrics.
+    import_metadata.observed_invalid_country =
+        !candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY);
+  }
+
+  // When setting a phone number, the region is deduced from the profile's
+  // country or the app locale. For the variation country code to take
+  // precedence over the app locale, country code complemention needs to happen
+  // before `SetPhoneNumber()`.
+  const std::string predicted_country_code = GetPredictedCountryCode(
+      candidate_profile, client_->GetVariationConfigCountryCode(), app_locale_,
+      import_log_buffer);
+  import_metadata.did_complement_country =
+      ComplementCountry(candidate_profile, predicted_country_code);
+
+  // Populate the profile with the collected values. Note that this is after the
+  // profile's country has been set to make sure the correct address
+  // representation is used.
+  for (const auto& [type, value] : observed_values) {
+    // The profile country has already been stablished by this point. It's
+    // ignored here to avoid re-setting up a potentially invalid country that
+    // was present in the form.
+    if (type != ADDRESS_HOME_COUNTRY) {
+      candidate_profile.SetInfoWithVerificationStatus(
+          type, value, app_locale_, VerificationStatus::kObserved);
+    }
+  }
+
+  if (!SetPhoneNumber(candidate_profile, combined_phone)) {
+    candidate_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
+    import_metadata.phone_import_status = PhoneImportStatus::kInvalid;
+    LOG_AF(import_log_buffer)
+        << LogMessage::kImportAddressProfileFromFormRemoveInvalidValue
+        << "Phone number." << CTag{};
+  } else if (!combined_phone.IsEmpty()) {
+    import_metadata.phone_import_status = PhoneImportStatus::kValid;
+  }
+  return candidate_profile;
+}
+
 bool FormDataImporter::ExtractAddressProfileFromSection(
     base::span<const AutofillField* const> section_fields,
     const GURL& source_url,
     std::vector<FormDataImporter::AddressProfileImportCandidate>*
         address_profile_import_candidates,
     LogBuffer* import_log_buffer) {
-  // TODO(crbug.com/1464568): Design a proper import mechanism for i18n address
-  // model.
-  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
-    return false;
-  }
-  // The candidate for profile import. There are many ways for the candidate to
-  // be rejected (see everywhere this function returns false).
-  AutofillProfile candidate_profile;
-
   // We only set complete phone, so aggregate phone parts in these vars and set
   // complete at the end.
   PhoneNumber::PhoneCombineHelper combined_phone;
@@ -462,9 +510,6 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // Tracks if the form section contains an invalid types.
   bool has_invalid_field_types = false;
 
-  // Tracks if the form section contains an invalid country.
-  bool has_invalid_country = false;
-
   // Tracks if subsequent phone number fields should be ignored,
   // since they do not belong to the first phone number in the form.
   bool ignore_phone_number_fields = false;
@@ -478,8 +523,12 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
 
   plus_addresses::PlusAddressService* plus_address_service =
       client_->GetPlusAddressService();
+
+  // Stores the values collected for each related `ServerFieldType`.
+  base::flat_map<ServerFieldType, std::u16string> observed_field_values;
+
   // Go through each |form| field and attempt to constitute a valid profile.
-  for (const auto* field : section_fields) {
+  for (const AutofillField* const field : section_fields) {
     std::u16string value;
     base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
 
@@ -516,7 +565,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     ServerFieldType server_field_type = field_type.GetStorableType();
     if (server_field_type == EMAIL_ADDRESS &&
         types_seen.count(server_field_type) &&
-        candidate_profile.GetRawInfo(EMAIL_ADDRESS) != value) {
+        observed_field_values.at(EMAIL_ADDRESS) != value) {
       LOG_AF(import_log_buffer)
           << LogMessage::kImportAddressProfileFromFormFailed
           << "Multiple different email addresses present." << CTag{};
@@ -552,14 +601,8 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     // number at the end. If |value| is not from a phone field, home.SetInfo()
     // returns false and data is stored directly in |candidate_profile|.
     if (!combined_phone.SetInfo(field_type, value)) {
-      candidate_profile.SetInfoWithVerificationStatus(
-          field_type, value, app_locale_, VerificationStatus::kObserved);
-
-      // Track the validity of the entered country for metrics.
-      if (server_field_type == ADDRESS_HOME_COUNTRY &&
-          !candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
-        has_invalid_country = true;
-      }
+      observed_field_values.insert_or_assign(field_type.GetStorableType(),
+                                             value);
     }
 
     if (FieldTypeGroupToFormType(field_type.group()) ==
@@ -573,25 +616,10 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     }
   }
 
-  // When setting a phone number, the region is deduced from the profile's
-  // country or the app locale. For the variation country code to take
-  // precedence over the app locale, country code complemention needs to happen
-  // before `SetPhoneNumber()`.
-  const std::string predicted_country_code = GetPredictedCountryCode(
-      candidate_profile, client_->GetVariationConfigCountryCode(), app_locale_,
-      import_log_buffer);
-  import_metadata.did_complement_country =
-      ComplementCountry(candidate_profile, predicted_country_code);
-
-  if (!SetPhoneNumber(candidate_profile, combined_phone)) {
-    candidate_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
-    import_metadata.phone_import_status = PhoneImportStatus::kInvalid;
-    LOG_AF(import_log_buffer)
-        << LogMessage::kImportAddressProfileFromFormRemoveInvalidValue
-        << "Phone number." << CTag{};
-  } else if (!combined_phone.IsEmpty()) {
-    import_metadata.phone_import_status = PhoneImportStatus::kValid;
-  }
+  // The candidate for profile import.
+  AutofillProfile candidate_profile =
+      ConstructProfileFromObservedValues(observed_field_values, combined_phone,
+                                         import_log_buffer, import_metadata);
 
   // This is done prior to checking the validity of the profile, because multi-
   // step import profile merging requires the profile to be finalized. Ideally
@@ -633,7 +661,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
           : AddressImportRequirement::kNoInvalidFieldTypesRequirementFulfilled);
 
   autofill_metrics::LogAddressFormImportRequirementMetric(
-      has_invalid_country
+      import_metadata.observed_invalid_country
           ? AddressImportRequirement::kCountryValidRequirementViolated
           : AddressImportRequirement::kCountryValidRequirementFulfilled);
 

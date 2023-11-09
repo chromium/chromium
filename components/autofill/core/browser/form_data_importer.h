@@ -244,6 +244,14 @@ class FormDataImporter : public PersonalDataManagerObserver {
   bool LogAddressFormImportRequirementMetric(const AutofillProfile& profile,
                                              LogBuffer* import_log_buffer);
 
+  // Helper method to construct an AutofillProfile out of observed values in the
+  // form. Used during `ExtractAddressProfileFromSection()`.
+  AutofillProfile ConstructProfileFromObservedValues(
+      const base::flat_map<ServerFieldType, std::u16string>& observed_values,
+      const PhoneNumber::PhoneCombineHelper& combined_phone,
+      LogBuffer* import_log_buffer,
+      autofill::ProfileImportMetadata& import_metadata);
+
   // Helper method for ImportAddressProfiles which only considers the fields
   // for a specified `section`. If no section is passed, the import is
   // performed on the union of all sections.
@@ -342,7 +350,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // country or alternatively the app locale.
   // Returns false if the provided `combined_phone` is invalid.
   bool SetPhoneNumber(AutofillProfile& profile,
-                      PhoneNumber::PhoneCombineHelper& combined_phone);
+                      const PhoneNumber::PhoneCombineHelper& combined_phone);
 
   // Clears all setting-inaccessible values from `profile` if
   // `kAutofillRemoveInaccessibleProfileValues` is enabled.
