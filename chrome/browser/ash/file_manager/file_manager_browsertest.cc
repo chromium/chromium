@@ -1285,64 +1285,43 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DriveSpecific, /* drive_specific.js */
     LoggedInUserFilesAppBrowserTest,
     ::testing::Values(
-        // Google One offer banner checks device state, locale, and country.
+        // Google One offer banner checks device state. Device state is NOT set
+        // to `policy::DeviceMode::DEVICE_MODE_CONSUMER` in
+        // `FilesAppBrowserTest`.
         TestCase("driveGoogleOneOfferBannerEnabled")
             .SetDeviceMode(DeviceMode::kConsumerOwned)
             .SetTestAccountType(TestAccountType::kNonManaged)
-            .SetLocale("en-US")
-            .SetCountry("us"),
-        // Disabled by the flag case.
+            .EnableGoogleOneOfferFilesBanner(),
+        // Google One offer banner is disabled by default.
         TestCase("driveGoogleOneOfferBannerDisabled")
             .SetDeviceMode(DeviceMode::kConsumerOwned)
-            .SetTestAccountType(TestAccountType::kNonManaged)
-            .SetLocale("en-US")
-            .SetCountry("us")
-            .DisableGoogleOneOfferFilesBanner(),
-        // A country is not in supported countries set case.
-        TestCase("driveGoogleOneOfferBannerDisabled")
-            .SetDeviceMode(DeviceMode::kConsumerOwned)
-            .SetTestAccountType(TestAccountType::kNonManaged)
-            .SetLocale("en-US")
-            .SetCountry("jp"),
-        // A locale is not in a supported locales set case.
-        TestCase("driveGoogleOneOfferBannerDisabled")
-            .SetDeviceMode(DeviceMode::kConsumerOwned)
-            .SetTestAccountType(TestAccountType::kNonManaged)
-            .SetLocale("ja")
-            .SetCountry("us"),
+            .SetTestAccountType(TestAccountType::kNonManaged),
         TestCase("driveGoogleOneOfferBannerDismiss")
             .SetDeviceMode(DeviceMode::kConsumerOwned)
             .SetTestAccountType(TestAccountType::kNonManaged)
-            .SetLocale("en-US")
-            .SetCountry("us"),
+            .EnableGoogleOneOfferFilesBanner(),
         TestCase("driveGoogleOneOfferBannerDismiss")
             .SetDeviceMode(DeviceMode::kConsumerOwned)
             .SetTestAccountType(TestAccountType::kNonManaged)
-            .SetLocale("en-US")
-            .SetCountry("us")
+            .EnableGoogleOneOfferFilesBanner()
             .EnableCrosComponents(),
         TestCase("driveGoogleOneOfferBannerDisabled")
-            .SetLocale("en-US")
-            .SetCountry("us")
+            .EnableGoogleOneOfferFilesBanner()
             .SetDeviceMode(DeviceMode::kConsumerOwned)
             .SetTestAccountType(TestAccountType::kEnterprise),
         TestCase("driveGoogleOneOfferBannerDisabled")
-            .SetLocale("en-US")
-            .SetCountry("us")
+            .EnableGoogleOneOfferFilesBanner()
             .SetDeviceMode(DeviceMode::kConsumerOwned)
             .SetTestAccountType(TestAccountType::kChild),
         // Google One offer is for a device. The banner will not
         // be shown for an enrolled device.
         TestCase("driveGoogleOneOfferBannerDisabled")
-            .SetLocale("en-US")
-            .SetCountry("us")
+            .EnableGoogleOneOfferFilesBanner()
             .SetDeviceMode(DeviceMode::kEnrolled)
             .SetTestAccountType(TestAccountType::kNonManaged),
         // We do not show a banner if a profile is not an owner profile.
         TestCase("driveGoogleOneOfferBannerDisabled")
             .EnableGoogleOneOfferFilesBanner()
-            .SetLocale("en-US")
-            .SetCountry("us")
             .SetDeviceMode(kConsumerOwned)
             .SetTestAccountType(kNonManagedNonOwner),
         TestCase("driveBulkPinningBannerEnabled")
