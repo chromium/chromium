@@ -76,19 +76,9 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
   NSString* allowButtonText = l10n_util::GetNSString(
       IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT);
 
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  id<GREYMatcher> allowButtonMatcher = nil;
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      [ChromeEarlGrey isUIButtonConfigurationEnabled]) {
-    allowButtonMatcher = grey_allOf(grey_ancestor(dialogMatcher),
-                                    grey_accessibilityLabel(allowButtonText),
-                                    grey_kindOfClassName(@"UILabel"), nil);
-  } else {
-    allowButtonMatcher =
-        grey_allOf(grey_ancestor(dialogMatcher),
-                   grey_accessibilityLabel(allowButtonText), nil);
-  }
+  id<GREYMatcher> allowButtonMatcher = allowButtonMatcher = grey_allOf(
+      grey_ancestor(dialogMatcher), grey_accessibilityLabel(allowButtonText),
+      grey_accessibilityTrait(UIAccessibilityTraitStaticText), nil);
 
   [[[EarlGrey selectElementWithMatcher:allowButtonMatcher]
       assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];

@@ -1222,10 +1222,6 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
 }
 
-+ (BOOL)isUIButtonConfigurationEnabled {
-  return IsUIButtonConfigurationEnabled();
-}
-
 + (BOOL)isBottomOmniboxSteadyStateEnabled {
   return IsBottomOmniboxSteadyStateEnabled();
 }
