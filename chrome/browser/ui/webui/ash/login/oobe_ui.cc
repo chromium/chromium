@@ -481,6 +481,7 @@ void OobeUI::ConfigureOobeDisplay() {
   if (features::AreLocalPasswordsEnabledForConsumers()) {
     AddScreenHandler(std::make_unique<PasswordSelectionScreenHandler>());
     AddScreenHandler(std::make_unique<LocalPasswordSetupHandler>());
+    AddScreenHandler(std::make_unique<ApplyOnlinePasswordScreenHandler>());
   }
 
   AddScreenHandler(std::make_unique<GestureNavigationScreenHandler>());

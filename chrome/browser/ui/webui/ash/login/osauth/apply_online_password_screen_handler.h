@@ -43,6 +43,9 @@ class ApplyOnlinePasswordScreenHandler : public ApplyOnlinePasswordScreenView,
  private:
   // ApplyOnlinePasswordScreenView
   void Show() override;
+
+  void DeclareLocalizedValues(
+      ::login::LocalizedValuesBuilder* builder) override {}
 };
 
 }  // namespace ash
