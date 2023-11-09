@@ -192,6 +192,7 @@ public interface ProcessScopeDependencyProvider {
     }
 
     /** @return the Color provider. */
+    @Deprecated
     default ColorProvider getColorProvider() {
         return null;
     }
