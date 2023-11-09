@@ -68,6 +68,7 @@ class NetworkConnectImpl : public NetworkConnect {
                             bool enabled_state) override;
   void ShowMobileSetup(const std::string& network_id) override;
   void ShowCarrierAccountDetail(const std::string& network_id) override;
+  void ShowCarrierUnlockNotification() override;
   void ShowPortalSignin(const std::string& network_id, Source source) override;
   void ConfigureNetworkIdAndConnect(const std::string& network_id,
                                     const base::Value::Dict& shill_properties,
@@ -492,6 +493,11 @@ void NetworkConnectImpl::ShowCarrierAccountDetail(
     return;
   }
   delegate_->ShowCarrierAccountDetail(network_id);
+}
+
+void NetworkConnectImpl::ShowCarrierUnlockNotification() {
+  CHECK(features::IsCellularCarrierLockEnabled());
+  delegate_->ShowCarrierUnlockNotification();
 }
 
 void NetworkConnectImpl::ShowPortalSignin(const std::string& network_id,

@@ -8,6 +8,7 @@
 #include "chromeos/ash/components/carrier_lock/fake_provisioning_config_fetcher.h"
 #include "chromeos/ash/components/carrier_lock/fake_psm_claim_verifier.h"
 #include "chromeos/ash/components/carrier_lock/metrics.h"
+#include "chromeos/ash/components/network/network_connect.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
@@ -31,6 +32,26 @@ const char kTestTopic[] = "/topics/test";
 const char kTestImei[] = "test_imei";
 }  // namespace
 
+class MockDelegate : public NetworkConnect::Delegate {
+ public:
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
+
+  MOCK_METHOD1(ShowNetworkConfigure, void(const std::string& network_id));
+  MOCK_METHOD1(ShowNetworkSettings, void(const std::string& network_id));
+  MOCK_METHOD1(ShowEnrollNetwork, bool(const std::string& network_id));
+  MOCK_METHOD1(ShowMobileSetupDialog, void(const std::string& network_id));
+  MOCK_METHOD1(ShowCarrierAccountDetail, void(const std::string& network_id));
+  MOCK_METHOD2(ShowPortalSignin,
+               void(const std::string& network_id,
+                    NetworkConnect::Source source));
+  MOCK_METHOD2(ShowNetworkConnectError,
+               void(const std::string& error_name,
+                    const std::string& network_id));
+  MOCK_METHOD1(ShowMobileActivationError, void(const std::string& network_id));
+  MOCK_METHOD0(ShowCarrierUnlockNotification, void());
+};
+
 class CarrierLockManagerTest : public testing::Test {
  public:
   CarrierLockManagerTest() = default;
@@ -53,9 +74,16 @@ class CarrierLockManagerTest : public testing::Test {
     fake_config_fetcher_ = std::make_unique<FakeProvisioningConfigFetcher>();
     fake_psm_verifier_ = std::make_unique<FakePsmClaimVerifier>();
     fake_fcm_subscriber_ = std::make_unique<FakeFcmTopicSubscriber>();
+
+    mock_delegate_ = std::make_unique<MockDelegate>();
+    NetworkConnect::Initialize(mock_delegate_.get());
   }
 
-  void TearDown() override { carrier_lock_manager_.reset(); }
+  void TearDown() override {
+    carrier_lock_manager_.reset();
+    NetworkConnect::Shutdown();
+    mock_delegate_.reset();
+  }
 
   std::unique_ptr<TestingPrefServiceSimple> pref_state_;
   std::unique_ptr<CarrierLockManager> carrier_lock_manager_;
@@ -66,6 +94,7 @@ class CarrierLockManagerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<MockDelegate> mock_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

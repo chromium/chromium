@@ -79,6 +79,7 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
     return false;
   }
   void ShowMobileSetupDialog(const std::string& network_id) override {}
+  void ShowCarrierUnlockNotification() override {}
   void ShowCarrierAccountDetail(const std::string& network_id) override {}
   void ShowPortalSignin(const std::string& network_id,
                         NetworkConnect::Source source) override {

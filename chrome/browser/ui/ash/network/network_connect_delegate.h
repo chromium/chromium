@@ -33,6 +33,7 @@ class NetworkConnectDelegate : public ash::NetworkConnect::Delegate {
   void ShowNetworkConnectError(const std::string& error_name,
                                const std::string& network_id) override;
   void ShowMobileActivationError(const std::string& network_id) override;
+  void ShowCarrierUnlockNotification() override;
 
   void SetSystemTrayClient(ash::SystemTrayClient* system_tray_client);
 

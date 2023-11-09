@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ui/ash/network/enrollment_dialog_view.h"
 #include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
@@ -94,6 +95,14 @@ void NetworkConnectDelegate::ShowNetworkConnectError(
 void NetworkConnectDelegate::ShowMobileActivationError(
     const std::string& network_id) {
   network_state_notifier_->ShowMobileActivationErrorForGuid(network_id);
+}
+
+void NetworkConnectDelegate::ShowCarrierUnlockNotification() {
+  CHECK(ash::features::IsCellularCarrierLockEnabled());
+  if (!IsUIAvailable()) {
+    return;
+  }
+  network_state_notifier_->ShowCarrierUnlockNotification();
 }
 
 void NetworkConnectDelegate::SetSystemTrayClient(

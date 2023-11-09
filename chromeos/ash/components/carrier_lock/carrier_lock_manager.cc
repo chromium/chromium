@@ -18,6 +18,7 @@
 #include "base/task/task_runner.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_3gpp_handler.h"
+#include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -767,6 +768,7 @@ void CarrierLockManager::CheckFcmTopic() {
     VLOG(2) << "FCM topic not provided with config, modem was unlocked.";
     base::UmaHistogramCounts100(kNumConsecutiveFailuresBeforeUnlock,
                                 error_counter_);
+    NetworkConnect::Get()->ShowCarrierUnlockNotification();
     RunStep(ConfigurationState::kDeviceUnlocked);
     return;
   }

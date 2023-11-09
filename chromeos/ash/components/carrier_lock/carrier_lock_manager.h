@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/carrier_lock/common.h"
+#include "chromeos/ash/components/network/network_3gpp_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/session_manager/core/session_manager_observer.h"
