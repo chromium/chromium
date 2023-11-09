@@ -229,7 +229,7 @@ void EmbeddedPermissionPrompt::CloseView() {
 
 EmbeddedPermissionPrompt::TabSwitchingBehavior
 EmbeddedPermissionPrompt::GetTabSwitchingBehavior() {
-  return TabSwitchingBehavior::kKeepPromptAlive;
+  return TabSwitchingBehavior::kDestroyPromptButKeepRequestPending;
 }
 
 permissions::PermissionPromptDisposition
