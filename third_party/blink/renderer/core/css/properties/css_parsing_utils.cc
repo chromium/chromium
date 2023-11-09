@@ -2850,8 +2850,7 @@ CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange& range,
   if (css_parsing_utils::IdentMatches<CSSValueID::kAuto>(range.Peek().Id())) {
     list->Append(*css_parsing_utils::ConsumeIdent(range));
   }
-  if (RuntimeEnabledFeatures::CSSContainIntrinsicSizeAutoNoneEnabled() &&
-      css_parsing_utils::IdentMatches<CSSValueID::kNone>(range.Peek().Id())) {
+  if (css_parsing_utils::IdentMatches<CSSValueID::kNone>(range.Peek().Id())) {
     list->Append(*css_parsing_utils::ConsumeIdent(range));
   } else {
     CSSValue* length = css_parsing_utils::ConsumeLength(
