@@ -32,6 +32,7 @@
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "cc/trees/viewport_property_ids.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -952,12 +953,28 @@ void AddSurfaceToRenderSurfaceList(RenderSurfaceImpl* render_surface,
   // smarter about layers with filters that move pixels and exclude regions
   // where both layers and the filters are occluded, but this seems like
   // overkill.
+  //
+  // When kAllowUndamagedNonrootRenderPassToSkip is enabled, in order for the
+  // render_surface to be skipped without triggering a redraw for the changes on
+  // occlusion_from_outside_target, surface contents need to befully drawn.
+  // DamageTracker |has_damage_from_contributing_content_| only track occlusion
+  // inside its own render_surface. Therefore we set |is_occlusion_immune| to
+  // avoid the need for redraw.
+  //
   // TODO(senorblanco): make this smarter for the SkImageFilter case (check for
   // pixel-moving filters)
+  const bool allow_skipping_render_pass = base::FeatureList::IsEnabled(
+      features::kAllowUndamagedNonrootRenderPassToSkip);
   const FilterOperations& filters = render_surface->Filters();
-  bool is_occlusion_immune = render_surface->CopyOfOutputRequired() ||
-                             filters.HasReferenceFilter() ||
-                             filters.HasFilterThatMovesPixels();
+  bool is_occlusion_immune =
+      render_surface->CopyOfOutputRequired() || filters.HasReferenceFilter() ||
+      filters.HasFilterThatMovesPixels() || allow_skipping_render_pass;
+
+  // Setting |is_occlusion_immune| leads to an empty
+  // |occlusion_from_outside_target| for a non-root render_surface. It does not
+  // affect |occlusion_from_inside_target|. |occlusion_from_outside_target| is
+  // always empty for the root render_surface because there is no other
+  // render_surface on top to occlude the root.
   if (is_occlusion_immune) {
     render_surface->SetNearestOcclusionImmuneAncestor(render_surface);
   } else if (is_root) {
