@@ -41,7 +41,7 @@ class FatalCrashEventsObserver::ReportedLocalIdManager {
   //
   // - save_file_path: Path to the save file.
   // - save_file_loaded_callback: The value of `save_file_loaded_callback_`. See
-  // - its document.
+  //   its document.
   // - io_task_runner: The task runner to run IO tasks on. If nullptr, the
   //                   constructor would create a default task runner.
   static std::unique_ptr<ReportedLocalIdManager> Create(
@@ -142,6 +142,8 @@ class FatalCrashEventsObserver::ReportedLocalIdManager {
   // Remove the local ID entry corresponding to the earliest unuploaded crash.
   void RemoveEarliestLocalIdEntry();
 
+  // This instance is always on the same sequence as that of the owning
+  // `FatalCrashEventsObserver` instance.
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The file that saves reported local IDs. It is in the CSV format: csv
@@ -179,10 +181,8 @@ class FatalCrashEventsObserver::ReportedLocalIdManager {
   SaveFileLoadedCallback save_file_loaded_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The task runner that performs IO. This instance would not be recreated in
-  // production code, but may be in unit tests.
-  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // The task runner that performs IO.
+  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   base::WeakPtrFactory<ReportedLocalIdManager> weak_factory_{this};
 };

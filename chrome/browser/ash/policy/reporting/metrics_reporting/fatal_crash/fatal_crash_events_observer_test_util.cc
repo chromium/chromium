@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -26,16 +27,27 @@ FatalCrashEventsObserver::TestEnvironment::~TestEnvironment() = default;
 
 std::unique_ptr<FatalCrashEventsObserver>
 FatalCrashEventsObserver::TestEnvironment::CreateFatalCrashEventsObserver(
-    scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> uploaded_crash_info_io_task_runner)
     const {
   auto observer = base::WrapUnique(new FatalCrashEventsObserver(
       GetReportedLocalIdSaveFilePath(), GetUploadedCrashInfoSaveFilePath(),
-      reported_local_id_io_task_runner));
+      reported_local_id_io_task_runner, uploaded_crash_info_io_task_runner));
 
+  DCHECK_CALLED_ON_VALID_SEQUENCE(observer->sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(
+      observer->reported_local_id_manager_->sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(
+      observer->uploaded_crash_info_manager_->sequence_checker_);
+
+  // For most tests, we focus on the behavior after save files are loaded. In
+  // these tests, no IO task runner is specifically provided by the test code.
+  // Thus, make sure IO is completed to prevent flaky tests.
   if (reported_local_id_io_task_runner == nullptr) {
-    // For most tests, we focus on the behavior after save files are loaded.
-    // Thus, make sure IO is completed to prevent flaky tests.
-    FlushIoTasks(*observer);
+    FlushTaskRunner(observer->reported_local_id_manager_->io_task_runner_);
+  }
+  if (uploaded_crash_info_io_task_runner == nullptr) {
+    FlushTaskRunner(observer->uploaded_crash_info_manager_->io_task_runner_);
   }
 
   // Clear tasks such as registering the observer.
@@ -78,14 +90,33 @@ void FatalCrashEventsObserver::TestEnvironment::FlushIoTasks(
   DCHECK_CALLED_ON_VALID_SEQUENCE(observer.sequence_checker_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(
       observer.reported_local_id_manager_->sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(
+      observer.uploaded_crash_info_manager_->sequence_checker_);
 
-  // Block the main thread while flushing IO tasks. Not using `PostTaskAndReply`
-  // on QuitClosure because the QuitClosure task must be posted first before the
-  // main thread can be unblocked to prevent race.
+  FlushTaskRunner(observer.reported_local_id_manager_->io_task_runner_);
+  FlushTaskRunner(observer.uploaded_crash_info_manager_->io_task_runner_);
+}
+
+// static
+void FatalCrashEventsObserver::TestEnvironment::FlushTaskRunner(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  base::RunLoop run_loop;
+  task_runner->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+// static
+void FatalCrashEventsObserver::TestEnvironment::
+    FlushTaskRunnerWithCurrentSequenceBlocked(
+        scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  // Block the main thread while flushing IO tasks. Not using
+  // `PostTaskAndReply` on QuitClosure because the QuitClosure task must be
+  // posted first before the main thread can be unblocked to prevent race.
   SequenceBlocker sequence_blocker(
       base::SequencedTaskRunner::GetCurrentDefault());
   base::RunLoop run_loop;
-  observer.reported_local_id_manager_->io_task_runner_->PostTask(
+  task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<base::SequencedTaskRunner> main_task_runner,

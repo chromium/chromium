@@ -84,10 +84,12 @@ class FatalCrashEventsObserver
   // This constructor enables the test code to use non-default values of the
   // input parameters to accommodate the test environment. In production code,
   // they are always the default value specified in the default constructor.
-  FatalCrashEventsObserver(base::FilePath reported_local_id_save_file,
-                           base::FilePath uploaded_crash_info_save_file,
-                           scoped_refptr<base::SequencedTaskRunner>
-                               reported_local_id_io_task_runner);
+  FatalCrashEventsObserver(
+      base::FilePath reported_local_id_save_file,
+      base::FilePath uploaded_crash_info_save_file,
+      scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner,
+      scoped_refptr<base::SequencedTaskRunner>
+          uploaded_crash_info_io_task_runner);
 
   MetricData FillFatalCrashTelemetry(
       const ::ash::cros_healthd::mojom::CrashEventInfoPtr& info);

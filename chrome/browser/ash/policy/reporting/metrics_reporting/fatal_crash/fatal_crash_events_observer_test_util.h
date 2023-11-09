@@ -65,7 +65,9 @@ class FatalCrashEventsObserver::TestEnvironment {
   // runner to the caller).
   std::unique_ptr<FatalCrashEventsObserver> CreateFatalCrashEventsObserver(
       scoped_refptr<base::SequencedTaskRunner>
-          reported_local_id_io_task_runner = nullptr) const;
+          reported_local_id_io_task_runner = nullptr,
+      scoped_refptr<base::SequencedTaskRunner>
+          uploaded_crash_info_io_task_runner = nullptr) const;
 
   // Get the mutable test settings of the observer.
   static SettingsForTest& GetTestSettings(FatalCrashEventsObserver& observer);
@@ -77,16 +79,25 @@ class FatalCrashEventsObserver::TestEnvironment {
   // usage is correctly limited.
   static size_t GetLocalIdEntryQueueSize(FatalCrashEventsObserver& observer);
 
-  // Flushes all IO tasks. Also post a blocking task to the calling thread to
-  // prevent the calling thread to move forward beyond the current tasks in
-  // queue. Unblock the calling thread once the IO tasks are flushed.
+  // Flushes all IO tasks at the time of the call.
   static void FlushIoTasks(FatalCrashEventsObserver& observer);
 
+  // Flush the tasks on the given task runner at the time of the call.
+  static void FlushTaskRunner(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  // Flush the tasks on the given task runner at the time of the call. Also
+  // posts a blocking task to the calling thread to prevent the calling thread
+  // to move forward beyond the current tasks in queue. Unblock the calling
+  // thread once the IO tasks are flushed.
+  static void FlushTaskRunnerWithCurrentSequenceBlocked(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
  private:
-  base::FilePath temp_dir_{base::CreateUniqueTempDirectoryScopedToTest()};
-  base::FilePath reported_local_id_save_file_path_{
+  const base::FilePath temp_dir_{base::CreateUniqueTempDirectoryScopedToTest()};
+  const base::FilePath reported_local_id_save_file_path_{
       temp_dir_.Append("REPORTED_LOCAL_IDS")};
-  base::FilePath uploaded_crash_info_save_file_path_{
+  const base::FilePath uploaded_crash_info_save_file_path_{
       temp_dir_.Append("UPLOADED_CRASH_INFO")};
 };
 }  // namespace reporting

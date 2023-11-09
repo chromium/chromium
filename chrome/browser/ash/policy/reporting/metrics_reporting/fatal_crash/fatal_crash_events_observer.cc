@@ -92,20 +92,21 @@ FatalCrashEventsObserver::FatalCrashEventsObserver()
     : FatalCrashEventsObserver(
           base::FilePath(kDefaultReportedLocalIdSaveFilePath),
           base::FilePath(kDefaultUploadedCrashInfoSaveFilePath),
-          /*reported_local_id_io_task_runner=*/nullptr) {}
+          /*reported_local_id_io_task_runner=*/nullptr,
+          /*uploaded_crash_info_io_task_runner=*/nullptr) {}
 
 FatalCrashEventsObserver::FatalCrashEventsObserver(
     base::FilePath reported_local_id_save_file,
     base::FilePath uploaded_crash_info_save_file,
-    scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> uploaded_crash_info_io_task_runner)
     : MojoServiceEventsObserverBase<ash::cros_healthd::mojom::EventObserver>(
           this),
       reported_local_id_manager_{ReportedLocalIdManager::Create(
           std::move(reported_local_id_save_file),
           // Don't BindPostTask here, because it would risk calling
           // `ProcessEventsBeforeSaveFilesLoaded` twice, once from
-          // reported_local_id_manager_, once from uploaded_crash_info_manager_
-          // (TODO(b/266018440): to be implemented).
+          // reported_local_id_manager_, once from uploaded_crash_info_manager_.
           /*save_file_loaded_callback=*/
           base::BindOnce(
               &FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded,
@@ -114,7 +115,17 @@ FatalCrashEventsObserver::FatalCrashEventsObserver(
               base::Unretained(this)),
           std::move(reported_local_id_io_task_runner))},
       uploaded_crash_info_manager_{UploadedCrashInfoManager::Create(
-          std::move(uploaded_crash_info_save_file))} {}
+          std::move(uploaded_crash_info_save_file),
+          // Don't BindPostTask here, because it would risk calling
+          // `ProcessEventsBeforeSaveFilesLoaded` twice, once from
+          // reported_local_id_manager_, once from uploaded_crash_info_manager_.
+          /*save_file_loaded_callback=*/
+          base::BindOnce(
+              &FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded,
+              // Called from member uploaded_crash_info_manager_ from
+              // the same sequence, safe to assume this instance is still alive.
+              base::Unretained(this)),
+          std::move(uploaded_crash_info_io_task_runner))} {}
 
 FatalCrashEventsObserver::~FatalCrashEventsObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -234,8 +245,8 @@ void FatalCrashEventsObserver::AddObserver() {
 
 bool FatalCrashEventsObserver::AreSaveFilesLoaded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/266018440): Also off-load uploaded_crash_info_manager_'s save file.
-  return reported_local_id_manager_->IsSaveFileLoaded();
+  return reported_local_id_manager_->IsSaveFileLoaded() &&
+         uploaded_crash_info_manager_->IsSaveFileLoaded();
 }
 
 void FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded() {
@@ -243,8 +254,7 @@ void FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded() {
   if (!AreSaveFilesLoaded()) {
     // Don't do anything if not yet loaded. There are two save files,
     // REPORTED_LOCAL_IDS and UPLOADED_CRASH_INFO. This function is called when
-    // either save file is loaded(TODO(b/266018440): UPLOADED_CRASH_INFO to be
-    // implemented).
+    // either save file is loaded.
     //
     // The first call to this method would likely reach here as it is called
     // when the first save file is loaded, since the other file is not yet

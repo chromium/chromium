@@ -403,11 +403,6 @@ TEST_P(FatalCrashEventsObserverTest, SlowFileLoadingFieldsPassedThrough) {
   // FatalCrashEventsObserver::OnEvent directly to emulate the effect of
   // FakeCrosHealthd::Get()->EmitEventForCategory().
 
-  if (is_uploaded()) {
-    GTEST_SKIP() << "Slow file loading for uploaded crashes will be added once "
-                    "its IO offloading is done";
-  }
-
   // Need 4 crash events to work around limitations in manipulating tasks in a
   // sequence.
   static constexpr size_t kNumCrashes = 4;
@@ -415,13 +410,17 @@ TEST_P(FatalCrashEventsObserverTest, SlowFileLoadingFieldsPassedThrough) {
       "First local ID", "Second local ID", "Third Local ID", "Fourth Local ID"};
 
   std::array<CrashEventInfoPtr, kNumCrashes> crash_event_infos = {
-      NewCrashEventInfo(/*is_uploaded=*/is_uploaded()),
-      NewCrashEventInfo(/*is_uploaded=*/is_uploaded()),
-      NewCrashEventInfo(/*is_uploaded=*/is_uploaded()),
-      NewCrashEventInfo(/*is_uploaded=*/is_uploaded())};
+      NewCrashEventInfo(is_uploaded()), NewCrashEventInfo(is_uploaded()),
+      NewCrashEventInfo(is_uploaded()), NewCrashEventInfo(is_uploaded())};
   for (size_t i = 0; i < crash_event_infos.size(); ++i) {
     // Test the local ID field sufficient.
     crash_event_infos[i]->local_id = kLocalIds[i];
+
+    // Make uploaded crashes have increasing offset, which is the most practical
+    // scenario.
+    if (crash_event_infos[i]->upload_info) {
+      crash_event_infos[i]->upload_info->offset = i;
+    }
   }
 
   const auto io_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
@@ -433,7 +432,10 @@ TEST_P(FatalCrashEventsObserverTest, SlowFileLoadingFieldsPassedThrough) {
 
   // Create and set up the observer object.
   auto observer = fatal_crash_test_environment_.CreateFatalCrashEventsObserver(
-      /*reported_local_id_io_task_runner=*/io_task_runner);
+      /*reported_local_id_io_task_runner=*/is_uploaded() ? nullptr
+                                                         : io_task_runner,
+      /*uploaded_crash_info_io_task_runner=*/is_uploaded() ? io_task_runner
+                                                           : nullptr);
   DCHECK_CALLED_ON_VALID_SEQUENCE(
       FatalCrashEventsObserver::TestEnvironment::GetTestSettings(*observer)
           .sequence_checker);
@@ -477,7 +479,8 @@ TEST_P(FatalCrashEventsObserverTest, SlowFileLoadingFieldsPassedThrough) {
   ASSERT_TRUE(!observer->AreSaveFilesLoaded())
       << "Internal error: Save files are loaded even task thread is blocked";
   sequence_blocker.Unblock();
-  FatalCrashEventsObserver::TestEnvironment::FlushIoTasks(*observer);
+  FatalCrashEventsObserver::TestEnvironment::
+      FlushTaskRunnerWithCurrentSequenceBlocked(io_task_runner);
   ASSERT_TRUE(observer->AreSaveFilesLoaded())
       << "Internal error: Flushing IO tasks does not finish loading save files";
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1618,6 +1621,10 @@ TEST_F(FatalCrashEventsObserverUploadedCrashCorruptSaveFileTest,
       CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
   CreateFatalCrashEvent(kCrashReportId, kZeroCreationTime, kZeroOffset,
                         *fatal_crash_events_observer, &result_metric_data);
+
+  // Make sure the save file writing task is executed.
+  FatalCrashEventsObserver::TestEnvironment::FlushIoTasks(
+      *fatal_crash_events_observer);
 
   // The save file is now available. Make it unreadable.
   ASSERT_TRUE(base::PathExists(GetSaveFilePath()));
