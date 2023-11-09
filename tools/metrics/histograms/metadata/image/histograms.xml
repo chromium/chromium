@@ -349,7 +349,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Confidence"
-    units="%" expires_after="M122">
+    units="%" expires_after="M126">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -368,7 +368,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Empty"
-    enum="BooleanEmpty" expires_after="M122">
+    enum="BooleanEmpty" expires_after="M126">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
@@ -388,7 +388,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Status"
-    enum="GoogleRpcCode" expires_after="M122">
+    enum="GoogleRpcCode" expires_after="M126">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
