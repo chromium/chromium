@@ -235,23 +235,28 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   input_config->set_request_base_name(
       "optimization_guide.proto.ComposeRequest");
   auto* substitution = input_config->add_execute_substitutions();
-  substitution->set_string_template("hello this is a test: %s %s");
-  substitution->set_expected_num_args(2);
+  substitution->set_string_template("hello this is a test: %s %s %s");
+  substitution->set_expected_num_args(3);
   auto* proto_field = substitution->add_args()->mutable_proto_field();
   proto_field->add_proto_descriptors()->set_tag_number(2);
   auto* proto_field2 = substitution->add_args()->mutable_proto_field();
   proto_field2->add_proto_descriptors()->set_tag_number(3);
   proto_field2->add_proto_descriptors()->set_tag_number(2);
+  auto* proto_field3 = substitution->add_args()->mutable_proto_field();
+  proto_field3->add_proto_descriptors()->set_tag_number(7);
+  proto_field3->add_proto_descriptors()->set_tag_number(1);
   UpdateInterpreterWithConfig(config);
 
   proto::ComposeRequest request;
   request.set_user_input("this is my input");
   request.mutable_page_metadata()->set_page_title("nested");
+  request.mutable_generate_params()->set_user_input("inner type");
   auto maybe_string = interpreter()->ConstructInputString(
       proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
 
   ASSERT_TRUE(maybe_string);
-  EXPECT_EQ(*maybe_string, "hello this is a test: this is my input nested");
+  EXPECT_EQ(*maybe_string,
+            "hello this is a test: this is my input nested inner type");
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,

@@ -127,6 +127,20 @@ def main(argv):
           'is_repeated': field.label == 3,
           })
 
+      for nested_type in m.nested_type:
+        nested_name = name + '.' + nested_type.name
+        msg_data[nested_name] = {
+          'cpp_class_name': name.replace('.', '::') + '_' + nested_type.name,
+          'fields': []
+        }
+        for field in nested_type.field:
+          msg_data[nested_name]['fields'].append({
+            'tag_number': field.number,
+            'name': field.name,
+            'type': field.type,
+            'is_repeated': field.label == 3,
+          })
+
   out_cc_str = StringIO()
   GenerateProtoDescriptors(out_cc_str, includes, msg_data)
   out_cc.write(out_cc_str.getvalue().encode('utf-8'))
