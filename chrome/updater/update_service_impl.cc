@@ -206,6 +206,11 @@ std::wstring GetTextForInstallerError(int error_code) {
     case GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT:
       return GetLocalizedString(IDS_INSTALLER_TIMED_OUT_BASE);
 
+    case GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING:
+      return GetLocalizedStringF(
+          IDS_GENERIC_INSTALL_ERROR_BASE,
+          GetTextForSystemError(ERROR_INSTALL_ALREADY_RUNNING));
+
     case ERROR_SUCCESS_REBOOT_INITIATED:
     case ERROR_SUCCESS_REBOOT_REQUIRED:
     case ERROR_SUCCESS_RESTART_REQUIRED:
@@ -509,8 +514,10 @@ MakeUpdateClientCrxStateChangeCallback(
         update_state.error_code = crx_update_item.error_code;
         update_state.extra_code1 = crx_update_item.extra_code1;
         if (crx_update_item.installer_result) {
-          update_state.error_code =
-              crx_update_item.installer_result->original_error;
+          if (crx_update_item.installer_result->original_error) {
+            update_state.error_code =
+                crx_update_item.installer_result->original_error;
+          }
           update_state.installer_cmd_line =
               crx_update_item.installer_result->installer_cmd_line;
           update_state.installer_text =

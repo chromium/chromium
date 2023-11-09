@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/win/registry.h"
@@ -502,28 +503,47 @@ AppInstallerResult RunApplicationInstaller(
                            : L"0"},
   };
 
-  base::Process process = base::LaunchProcess(cmdline, options);
-  if (!process.IsValid()) {
-    return AppInstallerResult(GOOPDATEINSTALL_E_INSTALLER_FAILED_START,
-                              HRESULTFromLastError());
-  }
-
+  int num_tries = 0;
+  base::TimeDelta retry_delay = kAlreadyRunningRetryInitialDelay;
   int exit_code = -1;
   const base::ElapsedTimer timer;
+  base::Process process;
   do {
+    if (!num_tries || exit_code == ERROR_INSTALL_ALREADY_RUNNING) {
+      if (num_tries > 0) {
+        VLOG(1) << "Retrying: " << num_tries;
+        base::PlatformThread::Sleep(retry_delay);
+        retry_delay *= 2;  // Double the retry delay each time.
+      }
+      ++num_tries;
+
+      process = base::LaunchProcess(cmdline, options);
+      if (!process.IsValid()) {
+        return AppInstallerResult(GOOPDATEINSTALL_E_INSTALLER_FAILED_START,
+                                  HRESULTFromLastError());
+      }
+    }
+
     bool wait_result = process.WaitForExitWithTimeout(
         base::Seconds(kWaitForInstallerProgressSec), &exit_code);
     auto progress = GetInstallerProgress(app_info.scope, app_info.app_id);
     VLOG(3) << "installer progress: " << progress;
     progress_callback.Run(progress);
     if (wait_result) {
-      VLOG(1) << "Installer exit code " << exit_code;
-      return MakeInstallerResult(
+      const Installer::Result installer_result = MakeInstallerResult(
           GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
+      exit_code = installer_result.original_error;
+      VLOG(1) << "Installer exit code " << exit_code;
+      if (exit_code == ERROR_INSTALL_ALREADY_RUNNING) {
+        continue;
+      }
+      return installer_result;
     }
-  } while (timer.Elapsed() < timeout);
+  } while (timer.Elapsed() < timeout && num_tries < kNumAlreadyRunningMaxTries);
 
-  return AppInstallerResult(GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT);
+  return AppInstallerResult(exit_code == ERROR_INSTALL_ALREADY_RUNNING
+                                ? GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING
+                                : GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT);
 }
 
 std::string LookupString(const base::FilePath& path,

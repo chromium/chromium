@@ -2473,6 +2473,18 @@ INSTANTIATE_TEST_SUITE_P(
             {},
         },
 
+        // InstallerResult::kMsiError, `ERROR_INSTALL_ALREADY_RUNNING`.
+        {
+            false,
+            base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
+                          base::NumberToString(ERROR_INSTALL_ALREADY_RUNNING)}),
+            GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING,
+            "Install error: Another installation is already in progress. "
+            "Complete that installation before proceeding with this install. ",
+            {},
+            {},
+        },
+
         // Interactive install via the command line with a launch command,
         // InstallerResult::kSuccess, will run `more.com` since interactive
         // install.
