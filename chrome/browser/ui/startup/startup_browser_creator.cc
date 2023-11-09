@@ -100,8 +100,11 @@
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "components/user_manager/user_manager.h"
 #else
@@ -748,15 +751,24 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
                                      : profile;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (process_startup == chrome::startup::IsProcessStartup::kYes) {
-        // If FullRestoreService is available for the profile (i.e. the full
-        // restore feature is enabled and the profile is a regular user
-        // profile), defer the browser launching to FullRestoreService code.
-        auto* full_restore_service =
-            ash::full_restore::FullRestoreService::GetForProfile(
-                profile_to_open);
-        if (full_restore_service) {
-          full_restore_service->LaunchBrowserWhenReady();
-          return;
+        auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+            profile_to_open);
+        if (user &&
+            (ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled())) {
+          // If floating workspace is enabled, it will override full restore.
+          // Floating will trigger its own restore from the user's workspace.
+          ash::FloatingWorkspaceService::GetForProfile(profile_to_open);
+        } else {
+          // If FullRestoreService is available for the profile (i.e. the full
+          // restore feature is enabled and the profile is a regular user
+          // profile), defer the browser launching to FullRestoreService code.
+          auto* full_restore_service =
+              ash::full_restore::FullRestoreService::GetForProfile(
+                  profile_to_open);
+          if (full_restore_service) {
+            full_restore_service->LaunchBrowserWhenReady();
+            return;
+          }
         }
       }
 #endif
