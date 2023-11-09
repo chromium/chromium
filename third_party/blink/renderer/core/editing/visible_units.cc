@@ -1469,56 +1469,35 @@ gfx::Rect FirstRectForRange(const EphemeralRange& range) {
       CreateVisiblePosition(range.EndPosition()).DeepEquivalent(),
       TextAffinity::kUpstream);
 
-  if (RuntimeEnabledFeatures::FirstRectForRangeVerticalEnabled()) {
-    const PositionWithAffinity end_position_in_same_line =
-        InSameLine(start_position, end_position) ? end_position
-                                                 : EndOfLine(start_position);
-    gfx::Rect end_caret_rect = AbsoluteCaretBoundsOf(end_position_in_same_line);
-    if (end_caret_rect.IsEmpty())
-      return gfx::Rect();
-
-    // Some tests expect the resultant rectangles don't include caret widths.
-    // e.g.
-    //  - RenderViewImplTest.GetCompositionCharacterBoundsTest
-    //  - LocalFrameTest.CharacterIndexAtPointWithPinchZoom
-    if (start_position.AnchorNode()
-            ->GetComputedStyle()
-            ->IsHorizontalWritingMode()) {
-      end_caret_rect.set_width(0);
-      start_caret_rect.set_width(0);
-    } else {
-      end_caret_rect.set_height(0);
-      start_caret_rect.set_height(0);
-    }
-
-    const gfx::Point left_top = {
-        std::min(start_caret_rect.x(), end_caret_rect.x()),
-        std::min(start_caret_rect.y(), end_caret_rect.y())};
-    const int right =
-        std::max(start_caret_rect.right(), end_caret_rect.right());
-    const int bottom =
-        std::max(start_caret_rect.bottom(), end_caret_rect.bottom());
-    return gfx::Rect(left_top, {right - left_top.x(), bottom - left_top.y()});
-  }
-
-  const gfx::Rect end_caret_rect = AbsoluteCaretBoundsOf(end_position);
-  if (end_caret_rect.IsEmpty())
+  const PositionWithAffinity end_position_in_same_line =
+      InSameLine(start_position, end_position) ? end_position
+                                               : EndOfLine(start_position);
+  gfx::Rect end_caret_rect = AbsoluteCaretBoundsOf(end_position_in_same_line);
+  if (end_caret_rect.IsEmpty()) {
     return gfx::Rect();
-
-  if (start_caret_rect.y() == end_caret_rect.y()) {
-    // start and end are on the same line
-    return gfx::Rect(
-        std::min(start_caret_rect.x(), end_caret_rect.x()),
-        start_caret_rect.y(), abs(end_caret_rect.x() - start_caret_rect.x()),
-        std::max(start_caret_rect.height(), end_caret_rect.height()));
   }
 
-  // start and end aren't on the same line, so go from start to the end of its
-  // line
-  return gfx::Rect(
-      start_caret_rect.x(), start_caret_rect.y(),
-      (start_caret_rect.width() + extra_width_to_end_of_line).ToInt(),
-      start_caret_rect.height());
+  // Some tests expect the resultant rectangles don't include caret widths.
+  // e.g.
+  //  - RenderViewImplTest.GetCompositionCharacterBoundsTest
+  //  - LocalFrameTest.CharacterIndexAtPointWithPinchZoom
+  if (start_position.AnchorNode()
+          ->GetComputedStyle()
+          ->IsHorizontalWritingMode()) {
+    end_caret_rect.set_width(0);
+    start_caret_rect.set_width(0);
+  } else {
+    end_caret_rect.set_height(0);
+    start_caret_rect.set_height(0);
+  }
+
+  const gfx::Point left_top = {
+      std::min(start_caret_rect.x(), end_caret_rect.x()),
+      std::min(start_caret_rect.y(), end_caret_rect.y())};
+  const int right = std::max(start_caret_rect.right(), end_caret_rect.right());
+  const int bottom =
+      std::max(start_caret_rect.bottom(), end_caret_rect.bottom());
+  return gfx::Rect(left_top, {right - left_top.x(), bottom - left_top.y()});
 }
 
 }  // namespace blink

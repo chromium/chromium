@@ -1806,10 +1806,6 @@
       status: "experimental",
     },
     {
-      name: "FirstRectForRangeVertical",
-      status: "stable",
-    },
-    {
       name: "FixedElementsDontOverscroll",
       status: "stable",
     },
