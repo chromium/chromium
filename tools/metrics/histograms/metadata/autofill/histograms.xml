@@ -248,42 +248,42 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AutofillFieldFillingStats">
-  <variant name="Accepted"
+  <variant name=".Accepted"
       summary="The field was autofilled without subsequent corrections."/>
-  <variant name="CorrectedToDifferentType"
+  <variant name=".CorrectedToDifferentType"
       summary="The field was autofilled but the value was edited into another
                non-empty value that was detected to be of different type."/>
-  <variant name="CorrectedToEmpty"
+  <variant name=".CorrectedToEmpty"
       summary="The field was autofilled but the value was corrected into the
                empty type."/>
-  <variant name="CorrectedToSameType"
+  <variant name=".CorrectedToSameType"
       summary="The field was autofilled but the value was edited into another
                non-empty value that was detected to have the same type."/>
-  <variant name="CorrectedToUnknownType"
+  <variant name=".CorrectedToUnknownType"
       summary="The field was autofilled but the value was edited into another
                non-empty value with an unknown type."/>
-  <variant name="LeftEmpty" summary="The field was not filled at all."/>
-  <variant name="ManuallyFilledToDifferentType"
+  <variant name=".LeftEmpty" summary="The field was not filled at all."/>
+  <variant name=".ManuallyFilledToDifferentType"
       summary="The field was not autofilled but the user manually entered a
                value that was detected to have a different type than the type
                the field was predicted to have."/>
-  <variant name="ManuallyFilledToSameType"
+  <variant name=".ManuallyFilledToSameType"
       summary="The field was not autofilled but the user manually entered a
                value that was detected to have the same type than the field
                was predicted to."/>
-  <variant name="ManuallyFilledToUnknownType"
+  <variant name=".ManuallyFilledToUnknownType"
       summary="The field was not autofilled but the user manually entered a
                value that was detected to have no known type."/>
-  <variant name="Total" summary="The total number of fields."/>
-  <variant name="TotalCorrected"
+  <variant name=".Total" summary="The total number of fields."/>
+  <variant name=".TotalCorrected"
       summary="The field was autofilled and subsequently corrected by the
                user."/>
-  <variant name="TotalFilled"
+  <variant name=".TotalFilled"
       summary="The field was autofilled and either accepted or subsequently
                corrected by the user."/>
-  <variant name="TotalManuallyFilled"
+  <variant name=".TotalManuallyFilled"
       summary="The field was not autofilled and manually filled by the user."/>
-  <variant name="TotalUnfilled"
+  <variant name=".TotalUnfilled"
       summary="The field was not autofilled and either manually filled by the
                user or left empty."/>
 </variants>
@@ -300,6 +300,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AutofillFillingMethod">
+  <variant name=".Any" summary="User chose any of the filling methods."/>
   <variant name=".FieldByFieldFilling"
       summary="User chose to fill a specific field"/>
   <variant name=".FullForm" summary="User chose to fill the full form"/>
@@ -1728,7 +1729,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.FieldFillingStats{AutofillFillingMethod}.{AutofillFormType}.{FillingStatus}"
+    name="Autofill.FieldFillingStats{AutofillFillingMethod}{AutofillFormType}{FillingStatus}"
     units="fields" expires_after="2024-02-20">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1745,7 +1746,7 @@ chromium-metrics-reviews@google.com.
   <token key="FillingStatus" variants="AutofillFieldFillingStats"/>
 </histogram>
 
-<histogram name="Autofill.FieldFillingStats{AutofillFormType}.{FillingStatus}"
+<histogram name="Autofill.FieldFillingStats{AutofillFormType}{FillingStatus}"
     units="fields" expires_after="2024-04-28">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
