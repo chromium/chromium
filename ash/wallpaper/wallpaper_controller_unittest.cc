@@ -13,7 +13,7 @@
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/test/in_process_image_decoder.h"
+#include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
@@ -874,7 +874,7 @@ class WallpaperControllerTestBase : public AshTestBase {
       AccountId::FromUserEmailGaiaId(kChildEmail, kChildEmail);
 
  private:
-  InProcessImageDecoder decoder_;
+  InProcessDataDecoder decoder_;
   base::Time mock_clock_origin_;
 };
 

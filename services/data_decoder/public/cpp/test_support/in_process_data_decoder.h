@@ -5,6 +5,8 @@
 #ifndef SERVICES_DATA_DECODER_PUBLIC_CPP_TEST_SUPPORT_IN_PROCESS_DATA_DECODER_H_
 #define SERVICES_DATA_DECODER_PUBLIC_CPP_TEST_SUPPORT_IN_PROCESS_DATA_DECODER_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,6 +17,7 @@
 #include "services/data_decoder/public/cpp/service_provider.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom-test-utils.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 
 namespace data_decoder {
 namespace test {
@@ -68,6 +71,12 @@ class InProcessDataDecoder
   void BindWebBundleParserFactory(
       mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
           receiver) override;
+
+  // Optionally allows subclasses to specify a custom `ImageDecoder`
+  // implementation. If not overridden, the image decoder implementation in
+  // `DataDecoderService` is used.
+  virtual std::unique_ptr<data_decoder::mojom::ImageDecoder>
+  CreateCustomImageDecoder();
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ::data_decoder::DataDecoderService service_;

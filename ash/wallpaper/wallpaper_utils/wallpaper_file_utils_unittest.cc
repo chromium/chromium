@@ -5,7 +5,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 
 #include "ash/public/cpp/image_util.h"
-#include "ash/public/cpp/test/in_process_image_decoder.h"
+#include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
@@ -59,7 +59,7 @@ class ResizeAndSaveWallpaperTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  InProcessImageDecoder decoder_;
+  InProcessDataDecoder decoder_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 

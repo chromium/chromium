@@ -7,7 +7,7 @@
 #include <string>
 
 #include "ash/public/cpp/image_util.h"
-#include "ash/public/cpp/test/in_process_image_decoder.h"
+#include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -159,7 +159,7 @@ class ImageUtilTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  InProcessImageDecoder decoder_;
+  InProcessDataDecoder decoder_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 

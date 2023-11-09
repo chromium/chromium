@@ -571,8 +571,8 @@ source_set("test_support") {
   sources = [
     "personalization_app/time_of_day_test_utils.cc",
     "personalization_app/time_of_day_test_utils.h",
-    "test/in_process_image_decoder.cc",
-    "test/in_process_image_decoder.h",
+    "test/in_process_data_decoder.cc",
+    "test/in_process_data_decoder.h",
     "test/mock_in_session_auth_token_provider.cc",
     "test/mock_in_session_auth_token_provider.h",
     "test/mock_input_device_settings_controller.cc",
@@ -608,6 +608,7 @@ source_set("test_support") {
     "//components/access_code_cast/common:metrics",
     "//mojo/public/cpp/bindings",
     "//services/data_decoder/public/cpp:service_provider",
+    "//services/data_decoder/public/cpp:test_support",
     "//services/data_decoder/public/mojom",
     "//services/device/public/cpp:test_support",
     "//services/network/public/cpp:cpp",

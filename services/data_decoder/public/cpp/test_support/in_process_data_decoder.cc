@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace data_decoder {
 namespace test {
@@ -18,6 +19,11 @@ InProcessDataDecoder::InProcessDataDecoder()
 
 InProcessDataDecoder::~InProcessDataDecoder() {
   ServiceProvider::Set(nullptr);
+}
+
+std::unique_ptr<data_decoder::mojom::ImageDecoder>
+InProcessDataDecoder::CreateCustomImageDecoder() {
+  return nullptr;
 }
 
 void InProcessDataDecoder::BindDataDecoderService(
@@ -39,9 +45,18 @@ mojom::DataDecoderService* InProcessDataDecoder::GetForwardingInterface() {
 
 void InProcessDataDecoder::BindImageDecoder(
     mojo::PendingReceiver<mojom::ImageDecoder> receiver) {
-  if (!drop_image_decoders_) {
-    GetForwardingInterface()->BindImageDecoder(std::move(receiver));
+  if (drop_image_decoders_) {
+    return;
   }
+
+  std::unique_ptr<data_decoder::mojom::ImageDecoder> custom_decoder =
+      CreateCustomImageDecoder();
+  if (custom_decoder) {
+    mojo::MakeSelfOwnedReceiver(std::move(custom_decoder), std::move(receiver));
+    return;
+  }
+
+  GetForwardingInterface()->BindImageDecoder(std::move(receiver));
 }
 
 void InProcessDataDecoder::BindJsonParser(
