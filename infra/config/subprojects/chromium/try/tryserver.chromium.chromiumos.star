@@ -148,6 +148,7 @@ try_.compilator_builder(
         swarming.cache(
             name = "shared_chromeos_amd64_generic_rel_cache",
             path = "builder",
+            wait_for_warm_cache = 4 * time.minute,
         ),
     ],
     main_list_view = "try",
