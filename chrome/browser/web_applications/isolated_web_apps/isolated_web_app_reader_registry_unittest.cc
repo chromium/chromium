@@ -163,8 +163,8 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path_));
     EXPECT_TRUE(base::WriteFile(web_bundle_path_, kResponseBody));
 
-    in_process_data_decoder_.service()
-        .SetWebBundleParserFactoryBinderForTesting(base::BindRepeating(
+    in_process_data_decoder_.SetWebBundleParserFactoryBinder(
+        base::BindRepeating(
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
   }

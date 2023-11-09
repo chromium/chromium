@@ -3652,7 +3652,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
 
   // Simulate the JSON service crashing instead of returning a result.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-  in_process_data_decoder.service().SimulateJsonParserCrashForTesting(
+  in_process_data_decoder.SimulateJsonParserCrash(
       /*drop=*/true);
 
   UpdateInterestGroupNoFlush();
@@ -3670,7 +3670,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
 
   // Try another IG update, this time with no crash. It should succceed.
   // (We need to advance time since this next attempt is rate-limited).
-  in_process_data_decoder.service().SimulateJsonParserCrashForTesting(
+  in_process_data_decoder.SimulateJsonParserCrash(
       /*drop=*/false);
   task_environment()->FastForwardBy(
       InterestGroupStorage::kUpdateSucceededBackoffPeriod);

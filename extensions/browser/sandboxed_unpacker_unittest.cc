@@ -563,7 +563,7 @@ TEST_F(SandboxedUnpackerTest, UnzipperServiceFails) {
 }
 
 TEST_F(SandboxedUnpackerTest, JsonParserFails) {
-  in_process_data_decoder().service().SimulateJsonParserCrashForTesting(true);
+  in_process_data_decoder().SimulateJsonParserCrash(true);
   InitSandboxedUnpacker();
 
   SetupUnpacker("good_package.crx", "");
@@ -574,7 +574,7 @@ TEST_F(SandboxedUnpackerTest, JsonParserFails) {
 }
 
 TEST_F(SandboxedUnpackerTest, ImageDecoderFails) {
-  in_process_data_decoder().service().SimulateImageDecoderCrashForTesting(true);
+  in_process_data_decoder().SimulateImageDecoderCrash(true);
   InitSandboxedUnpacker();
   SetupUnpacker("good_package.crx", "");
   EXPECT_FALSE(InstallSucceeded());

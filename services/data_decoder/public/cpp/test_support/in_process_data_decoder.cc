@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+
+#include <utility>
+
 #include "base/task/sequenced_task_runner.h"
 
 namespace data_decoder {
@@ -27,7 +30,35 @@ void InProcessDataDecoder::BindDataDecoderService(
     return;
   }
 
-  receivers_.Add(&service_, std::move(receiver));
+  receivers_.Add(this, std::move(receiver));
+}
+
+mojom::DataDecoderService* InProcessDataDecoder::GetForwardingInterface() {
+  return &service_;
+}
+
+void InProcessDataDecoder::BindImageDecoder(
+    mojo::PendingReceiver<mojom::ImageDecoder> receiver) {
+  if (!drop_image_decoders_) {
+    GetForwardingInterface()->BindImageDecoder(std::move(receiver));
+  }
+}
+
+void InProcessDataDecoder::BindJsonParser(
+    mojo::PendingReceiver<mojom::JsonParser> receiver) {
+  if (!drop_json_parsers_) {
+    GetForwardingInterface()->BindJsonParser(std::move(receiver));
+  }
+}
+
+void InProcessDataDecoder::BindWebBundleParserFactory(
+    mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
+        receiver) {
+  if (web_bundle_parser_factory_binder_) {
+    web_bundle_parser_factory_binder_.Run(std::move(receiver));
+  } else {
+    GetForwardingInterface()->BindWebBundleParserFactory(std::move(receiver));
+  }
 }
 
 }  // namespace test

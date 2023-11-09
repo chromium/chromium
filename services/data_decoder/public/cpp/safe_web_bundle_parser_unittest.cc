@@ -151,9 +151,9 @@ class SafeWebBundleParserTest : public testing::Test {
     DCHECK(!factory_);
     factory_ = std::make_unique<MockFactory>();
 
-    in_process_data_decoder_.service()
-        .SetWebBundleParserFactoryBinderForTesting(base::BindRepeating(
-            &MockFactory::AddReceiver, base::Unretained(factory_.get())));
+    in_process_data_decoder_.SetWebBundleParserFactoryBinder(
+        base::BindRepeating(&MockFactory::AddReceiver,
+                            base::Unretained(factory_.get())));
 
     return factory_.get();
   }
