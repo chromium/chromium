@@ -8132,7 +8132,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest,
 }
 
 class PrerenderNewLimitAndSchedulerBrowserTest
-    : public PrerenderEagernessBrowserTest {
+    : public PrerenderEagernessBrowserTest,
+      public testing::WithParamInterface<std::string> {
  public:
   PrerenderNewLimitAndSchedulerBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
@@ -8155,7 +8156,14 @@ class PrerenderNewLimitAndSchedulerBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrerenderNewLimitAndSchedulerBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderNewLimitAndSchedulerBrowserTest,
+                         testing::Values("_self", "_blank"),
+                         [](const testing::TestParamInfo<std::string>& info) {
+                           return info.param;
+                         });
+
+IN_PROC_BROWSER_TEST_P(PrerenderNewLimitAndSchedulerBrowserTest,
                        ResetForNonEagerPrerener) {
   const GURL initial_url = GetUrl("/empty.html");
   std::vector<GURL> prerendering_urls;
@@ -8175,11 +8183,21 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewLimitAndSchedulerBrowserTest,
         GetUrl("/empty.html?prerender" + base::ToString(i));
     prerendering_urls.push_back(prerendering_url);
     InsertAnchor(prerendering_url);
-    AddPrerenderWithEagernessAsync(
-        prerendering_url, blink::mojom::SpeculationEagerness::kModerate);
+    AddPrerendersAsync({prerendering_url},
+                       blink::mojom::SpeculationEagerness::kModerate,
+                       GetParam());
     preloading_decider_observer.WaitUpdateSpeculationCandidates();
-    PointerHoverToAnchor(prerendering_url);
-    WaitForPrerenderLoadCompletion(prerendering_url);
+
+    if (GetParam() == "_blank") {
+      TestNavigationObserver nav_observer(prerendering_url);
+      nav_observer.StartWatchingNewWebContents();
+      PointerHoverToAnchor(prerendering_url);
+      nav_observer.WaitForNavigationFinished();
+      EXPECT_EQ(nav_observer.last_navigation_url(), prerendering_url);
+    } else if (GetParam() == "_self") {
+      PointerHoverToAnchor(prerendering_url);
+      WaitForPrerenderLoadCompletion(prerendering_url);
+    }
   }
   for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
        i++) {
@@ -8197,8 +8215,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewLimitAndSchedulerBrowserTest,
   }
 
   // Hover the first link again. This should be retriggered.
-  PointerHoverToAnchor(prerendering_urls[0]);
-  WaitForPrerenderLoadCompletion(prerendering_urls[0]);
+  const auto& prerendering_url_first = prerendering_urls[0];
+  if (GetParam() == "_blank") {
+    TestNavigationObserver nav_observer(prerendering_url_first);
+    nav_observer.StartWatchingNewWebContents();
+    PointerHoverToAnchor(prerendering_url_first);
+    nav_observer.WaitForNavigationFinished();
+    EXPECT_EQ(nav_observer.last_navigation_url(), prerendering_url_first);
+  } else if (GetParam() == "_self") {
+    PointerHoverToAnchor(prerendering_url_first);
+    WaitForPrerenderLoadCompletion(prerendering_url_first);
+  }
 
   // The oldest prerender in registry at this point should be removed due to the
   // limit.

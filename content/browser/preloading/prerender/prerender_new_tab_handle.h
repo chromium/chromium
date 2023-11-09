@@ -60,6 +60,11 @@ class PrerenderNewTabHandle {
   // Returns PrerenderTriggerType.
   PrerenderTriggerType trigger_type() const { return attributes_.trigger_type; }
 
+  // Returns SpeculationEagerness.
+  absl::optional<blink::mojom::SpeculationEagerness> eagerness() const {
+    return attributes_.eagerness;
+  }
+
  private:
   PrerenderHostRegistry& GetPrerenderHostRegistry();
 

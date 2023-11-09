@@ -208,6 +208,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   // Returns the non-reserved host for `prerendering_url`. Returns nullptr if
   // the URL doesn't match any non-reserved host.
+  // Note that the result of this function includes prerender-into-new-tab
+  // triggers.
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
   // Cancels all hosts.
@@ -289,8 +291,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   // Returns the number of hosts that prerender_host_by_frame_tree_node_id_
   // holds by trigger type / limit group.
-  // TODO(crbug.com/1350676): Make this function care about
-  // `prerender_new_tab_handle_by_frame_tree_node_id_` as well.
   int GetHostCountByTriggerType(PrerenderTriggerType trigger_type);
   int GetHostCountByLimitGroup(PrerenderLimitGroup limit_group);
 

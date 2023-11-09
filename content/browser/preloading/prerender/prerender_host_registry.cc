@@ -683,11 +683,19 @@ int PrerenderHostRegistry::CreateAndStartHost(
       }
     }
 
+    // Under kPrerender2InNewTab, CreateAndStartHost will be called in
+    // the newly created WebContents’s PrerenderHostRegistry for new tab
+    // triggers, rather than in initiator WebContents’s registry, while
+    // it is called in initiator ones for normal triggers. In either
+    // case, we want to control the limit based on the initiator
+    // WebContents.
+    //
     // TODO(crbug.com/1355151): Enqueue the request exceeding the number limit
     // until the forerunners are cancelled, and suspend starting a new prerender
     // when the number reaches the limit.
-    if (!IsAllowedToStartPrerenderingForTrigger(attributes.trigger_type,
-                                                attributes.eagerness)) {
+    if (!initiator_web_contents.GetPrerenderHostRegistry()
+             ->IsAllowedToStartPrerenderingForTrigger(attributes.trigger_type,
+                                                      attributes.eagerness)) {
       // The reason we don't consider limit exceeded as an ineligibility
       // reason is because we can't replicate the behavior in our other
       // experiment groups for analysis. To prevent this we set
@@ -788,6 +796,14 @@ int PrerenderHostRegistry::CreateAndStartHostForNewTab(
     return RenderFrameHost::kNoFrameTreeNodeId;
   prerender_new_tab_handle_by_frame_tree_node_id_[prerender_host_id] =
       std::move(handle);
+
+  if (base::FeatureList::IsEnabled(features::kPrerender2NewLimitAndScheduler)) {
+    if (GetPrerenderLimitGroup(attributes.trigger_type, attributes.eagerness) ==
+        PrerenderLimitGroup::kSpeculationRulesNonEager) {
+      non_eager_prerender_host_id_by_arrival_order_.push_back(
+          prerender_host_id);
+    }
+  }
   return prerender_host_id;
 }
 
@@ -1658,6 +1674,16 @@ int PrerenderHostRegistry::GetHostCountByTriggerType(
       ++host_count;
     }
   }
+
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
+    for (const auto& [_, handle] :
+         prerender_new_tab_handle_by_frame_tree_node_id_) {
+      if (handle->trigger_type() == trigger_type) {
+        ++host_count;
+      }
+    }
+  }
+
   return host_count;
 }
 
@@ -1672,6 +1698,17 @@ int PrerenderHostRegistry::GetHostCountByLimitGroup(
       ++host_count;
     }
   }
+
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
+    for (const auto& [_, handle] :
+         prerender_new_tab_handle_by_frame_tree_node_id_) {
+      if (GetPrerenderLimitGroup(handle->trigger_type(), handle->eagerness()) ==
+          limit_group) {
+        ++host_count;
+      }
+    }
+  }
+
   return host_count;
 }
 
@@ -1711,8 +1748,14 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
             oldest_prerender_host_id =
                 non_eager_prerender_host_id_by_arrival_order_.front();
             non_eager_prerender_host_id_by_arrival_order_.pop_front();
-          } while (!prerender_host_by_frame_tree_node_id_.contains(
-              oldest_prerender_host_id));
+          } while (
+              base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)
+                  ? !prerender_host_by_frame_tree_node_id_.contains(
+                        oldest_prerender_host_id) &&
+                        !prerender_new_tab_handle_by_frame_tree_node_id_
+                             .contains(oldest_prerender_host_id)
+                  : !prerender_host_by_frame_tree_node_id_.contains(
+                        oldest_prerender_host_id));
 
           CHECK(CancelHost(oldest_prerender_host_id,
                            PrerenderFinalStatus::
