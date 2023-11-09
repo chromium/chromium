@@ -219,4 +219,12 @@ std::ostream& operator<<(std::ostream& out, const TriggerSpecs& specs) {
   return out << specs.ToJson();
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         const TriggerSpecs::const_iterator& it) {
+  if (!it) {
+    return out << "(end)";
+  }
+  return out << "{" << (*it).first << ", " << (*it).second << "}";
+}
+
 }  // namespace attribution_reporting

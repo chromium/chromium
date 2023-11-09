@@ -9,6 +9,7 @@
 
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -23,9 +24,6 @@ class AggregationKeys;
 class DestinationSet;
 class EventReportWindows;
 class SuitableOrigin;
-class TriggerConfig;
-class TriggerSpec;
-class TriggerSpecs;
 
 struct AggregatableDedupKey;
 struct EventTriggerData;
@@ -102,6 +100,8 @@ std::ostream& operator<<(std::ostream&, const TriggerSpec&);
 bool operator==(const TriggerSpecs&, const TriggerSpecs&);
 
 std::ostream& operator<<(std::ostream&, const TriggerSpecs&);
+
+std::ostream& operator<<(std::ostream&, const TriggerSpecs::const_iterator&);
 
 }  // namespace attribution_reporting
 

@@ -222,6 +222,25 @@ TriggerSpec::TriggerSpec(TriggerSpec&&) = default;
 
 TriggerSpec& TriggerSpec::operator=(TriggerSpec&&) = default;
 
+TriggerSpecs::const_iterator TriggerSpecs::find(
+    uint64_t trigger_data,
+    TriggerDataMatching trigger_data_matching) const {
+  switch (trigger_data_matching) {
+    case TriggerDataMatching::kExact:
+      return Iterator(*this, trigger_data_indices_.find(trigger_data));
+    case TriggerDataMatching::kModulus:
+      // Prevent modulus-by-zero.
+      if (trigger_data_indices_.empty()) {
+        return end();
+      }
+      // `std::next()` is constant-time due to the underlying iterator being
+      // random-access.
+      return Iterator(*this,
+                      std::next(trigger_data_indices_.begin(),
+                                trigger_data % trigger_data_indices_.size()));
+  }
+}
+
 base::Value::Dict TriggerSpec::ToJson() const {
   base::Value::Dict dict;
   event_report_windows_.Serialize(dict);

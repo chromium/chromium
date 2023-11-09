@@ -93,10 +93,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   // Will return nullptr if there is not a single shared spec.
   const TriggerSpec* SingleSharedSpec() const;
 
-  // TODO(apaseltiner): Add a `find(uint32_t)` method that performs an optimized
-  // lookup for a given trigger data value and use it in
-  // `content::AttributionStorageSql`.
-
   base::Value::List ToJson() const;
 
   void Serialize(base::Value::Dict&) const;
@@ -162,6 +158,19 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   const_iterator end() const {
     return Iterator(*this, trigger_data_indices_.cend());
   }
+
+  // Returns the matching trigger spec and its associated trigger data, if any.
+  // Returns `TriggerSpecs::end()` if there is no match.
+  //
+  // Accepts a 64-bit integer instead of a 32-bit one for backward
+  // compatibility with pre-Flex triggers that supply the full range.
+  //
+  // Note: `TriggerDataMatching::kModulus` can still be applied
+  // even if the trigger data does not form a contiguous range starting at 0.
+  // Such a combination is prohibited by `TriggerSpecs::Parse()`, but there is
+  // still a well-defined meaning for it for arbitrary trigger data, so we do
+  // not bother preventing it here, though we may do so in the future.
+  const_iterator find(uint64_t trigger_data, mojom::TriggerDataMatching) const;
 
   const TriggerDataIndices& trigger_data_indices() const {
     return trigger_data_indices_;
