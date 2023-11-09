@@ -364,8 +364,6 @@ PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
                             ? PageVisitFinalStatus::kReachedFCP
                             : PageVisitFinalStatus::kAborted;
   }
-  base::UmaHistogramEnumeration("UserPerceivedPageVisit.PageVisitFinalStatus",
-                                page_visit_status);
   ukm::builders::UserPerceivedPageVisit pageVisitBuilder(source_id);
   pageVisitBuilder.SetPageVisitFinalStatus(static_cast<int>(page_visit_status));
   pageVisitBuilder.Record(ukm::UkmRecorder::Get());
