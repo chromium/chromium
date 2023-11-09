@@ -95,22 +95,41 @@ enum ClipboardUse {
 // Stores all data associated with a single call to the model execution run for
 // compose.
 message ComposeRequest {
+  message GenerateParams {
+    // User written input text.
+    string user_input = 1;
+  }
+  message RewriteParams {
+    // A previously received ComposeResponse response_text, which will be
+    // rewritten.
+    string previous_response = 1;
+    // Rewrite with either tone or length specified.
+    oneof modifier {
+      ComposeTone tone = 2;
+      ComposeLength length = 3;
+    }
+  }
+  oneof request_params {
+    GenerateParams generate_params = 7;
+    RewriteParams rewrite_params = 8;
+  }
+
   // Purely the user input text.
-  string user_input = 2;
+  string user_input = 2 [deprecated = true];
 
   // Contains information scraped from the page.
   ComposePageMetadata page_metadata = 3;
 
   // Stores the tone selection that the user chose.
-  ComposeTone tone = 4;
+  ComposeTone tone = 4 [deprecated = true];
 
   // Stores the length selection that the user chose.
-  ComposeLength length = 5;
+  ComposeLength length = 5 [deprecated = true];
 
   // The previous Compose responses, which may be used when the user is
   // selecting a different tone or length. Specified only for responses where
   // the user prompt (and page context) stay the same.
-  repeated ComposePriorResponse previous_responses = 6;
+  repeated ComposePriorResponse previous_responses = 6 [deprecated = true];
 }
 
 // Stores the response text from the model execution run.
