@@ -130,11 +130,17 @@ std::unique_ptr<UserScript> CreateUserScript(
   // script content.
   const bool allowed_in_incognito = false;
   bool wants_file_access = false;
+
+  script_serialization::SerializedUserScriptParseOptions parse_options;
+  parse_options.index_for_error = definition_index;
+  parse_options.custom_schemes = valid_schemes;
+  parse_options.can_execute_script_everywhere = can_execute_script_everywhere;
+  parse_options.all_urls_includes_chrome_urls = all_urls_includes_chrome_urls;
+
   std::unique_ptr<UserScript> user_script =
       script_serialization::ParseSerializedUserScript(
           serialized_script, *extension, allowed_in_incognito, error,
-          &wants_file_access, definition_index, valid_schemes,
-          can_execute_script_everywhere, all_urls_includes_chrome_urls);
+          &wants_file_access, parse_options);
 
   if (!user_script) {
     // Parsing failed. `error` should be properly populated.

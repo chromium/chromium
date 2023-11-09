@@ -25,6 +25,20 @@ std::vector<api::scripts_internal::ScriptSource> GetSourcesFromFileNames(
 api::scripts_internal::SerializedUserScript SerializeUserScript(
     const UserScript& user_script);
 
+// Additional options for parsing user scripts.
+struct SerializedUserScriptParseOptions {
+  // If populated, used in the error message.
+  absl::optional<int> index_for_error;
+  // If populated, used instead of the default schemes for URLPattern parsing.
+  absl::optional<int> custom_schemes;
+  // If true, indicates the extension can execute scripts on every page without
+  // additional permission (this should only be true for special extensions like
+  // ChromeVox).
+  bool can_execute_script_everywhere = false;
+  // If true, `<all_urls>` match patterns will also match chrome:-scheme URLs.
+  bool all_urls_includes_chrome_urls = false;
+};
+
 // Attempts to deserialize `serialized_script` into a new `UserScript`. This can
 // fail if `serialized_script` has invalid values for parsed types (e.g.,
 // match patterns). `allowed_in_incognito` indicates if the corresponding
@@ -33,27 +47,15 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
 // If `wants_file_access_out` is provided, it will be populated with whether the
 // extension wants file access according to the patterns in the serialized
 // script.
-// If `index_for_error` is populated, it will be used in the error message.
-// If `custom_schemes` is provided, they will be used instead of the default
-// schemes for URLPattern parsing.
-// If `can_execute_script_everywhere` is true, it indicates the extension
-// doesn't need additional file access permissions.
-// If `all_urls_includes_chrome_urls` is true, <all_urls> patterns will also
-// include chrome:-scheme URLs.
 // TODO(devlin): It'd be nice to use absl::optional here, but UserScripts are
 // currently passed by pointer a lot.
-// TODO(devlin): Pull most/all these optional parameters out into a struct to
-// pass in.
 std::unique_ptr<UserScript> ParseSerializedUserScript(
     const api::scripts_internal::SerializedUserScript& serialized_script,
     const Extension& extension,
     bool allowed_in_incognito,
     std::u16string* error_out = nullptr,
     bool* wants_file_access_out = nullptr,
-    absl::optional<int> index_for_error = absl::nullopt,
-    absl::optional<int> custom_schemes = absl::nullopt,
-    absl::optional<bool> can_execute_script_everywhere = absl::nullopt,
-    bool all_urls_includes_chrome_urls = false);
+    SerializedUserScriptParseOptions parse_options = {});
 
 }  // namespace script_serialization
 }  // namespace extensions

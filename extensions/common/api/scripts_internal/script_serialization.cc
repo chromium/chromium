@@ -151,10 +151,7 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
     bool allowed_in_incognito,
     std::u16string* error_out,
     bool* wants_file_access_out,
-    absl::optional<int> index_for_error,
-    absl::optional<int> custom_schemes,
-    absl::optional<bool> can_execute_script_everywhere,
-    bool all_urls_includes_chrome_urls) {
+    SerializedUserScriptParseOptions parse_options) {
   bool source_matches_id = true;
   switch (serialized_script.source) {
     case api::scripts_internal::Source::kDynamicContentScript:
@@ -198,21 +195,19 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
   if (!script_parsing::ParseFileSources(
           &extension, base::OptionalToPtr(serialized_script.js),
           base::OptionalToPtr(serialized_script.css),
-          index_for_error, user_script.get(), error_out)) {
+          parse_options.index_for_error, user_script.get(), error_out)) {
     return nullptr;
   }
-  const int valid_schemes =
-      custom_schemes.value_or(
-          UserScript::ValidUserScriptSchemes(
-              kScriptsCanExecuteEverywhere));
+  const int valid_schemes = parse_options.custom_schemes.value_or(
+      UserScript::ValidUserScriptSchemes(kScriptsCanExecuteEverywhere));
   // `excludeMatches`/`matches`.
   if (!script_parsing::ParseMatchPatterns(
           serialized_script.matches,
           base::OptionalToPtr(serialized_script.exclude_matches),
           extension.creation_flags(),
-          can_execute_script_everywhere.value_or(kScriptsCanExecuteEverywhere),
-          valid_schemes, all_urls_includes_chrome_urls,
-          index_for_error, user_script.get(), error_out,
+          parse_options.can_execute_script_everywhere, valid_schemes,
+          parse_options.all_urls_includes_chrome_urls,
+          parse_options.index_for_error, user_script.get(), error_out,
           wants_file_access_out)) {
     return nullptr;
   }
