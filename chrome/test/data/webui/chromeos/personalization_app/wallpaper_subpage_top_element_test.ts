@@ -132,6 +132,45 @@ suite('WallpaperSubpageTopElementTest', function() {
         wallpaperSubpageTopElement.shadowRoot!.querySelector(
             'sea-pen-input-query');
     assertTrue(!!seaPenInputQueryElement, 'input query should be displayed.');
+    // Template query should be hidden.
+    const templateQuery = wallpaperSubpageTopElement.shadowRoot!.querySelector(
+        'sea-pen-template-query');
+    assertFalse(!!templateQuery, 'template query should not be displayed.');
+    // Verify that the text input area and search button are displayed.
+    const inputQuery =
+        seaPenInputQueryElement!.shadowRoot!.querySelector('cr-input');
+    assertTrue(!!inputQuery, 'input query should display.');
+    const searchButton = seaPenInputQueryElement!.shadowRoot!.querySelector(
+                             '#searchButton') as HTMLElement;
+    assertTrue(!!searchButton, 'search button should display.');
+  });
+
+  test('shows input element on input query tab', async () => {
+    loadTimeData.overrideValues(
+        {isSeaPenEnabled: true, isSeaPenTextInputEnabled: true});
+    wallpaperSubpageTopElement = initElement(
+        WallpaperSubpageTopElement,
+        {path: Paths.SEA_PEN_COLLECTION, 'templateId': 'query'});
+    await waitAfterNextRender(wallpaperSubpageTopElement);
+
+    // wallpaper selected page isn't displayed.
+    const wallpaperSelected =
+        wallpaperSubpageTopElement!.shadowRoot!.querySelector(
+            'wallpaper-selected');
+    assertFalse(
+        !!wallpaperSelected,
+        'wallpaper selected element should not be displayed.');
+
+    // SeaPen input is displayed.
+    const seaPenInputQueryElement =
+        wallpaperSubpageTopElement.shadowRoot!.querySelector(
+            'sea-pen-input-query');
+    assertTrue(!!seaPenInputQueryElement, 'input query should be displayed.');
+
+    // Template query should be hidden.
+    const templateQuery = wallpaperSubpageTopElement.shadowRoot!.querySelector(
+        'sea-pen-template-query');
+    assertFalse(!!templateQuery, 'template query should not be displayed.');
   });
 
   test('displays input query tab', async () => {
@@ -140,24 +179,14 @@ suite('WallpaperSubpageTopElementTest', function() {
     wallpaperSubpageTopElement = initElement(
         WallpaperSubpageTopElement, {path: Paths.SEA_PEN_COLLECTION});
     await waitAfterNextRender(wallpaperSubpageTopElement);
-
     const seaPenInputQueryElement =
         wallpaperSubpageTopElement.shadowRoot!.querySelector(
             'sea-pen-input-query');
-    assertTrue(!!seaPenInputQueryElement, 'input query should be display.');
-
-    const templateQuery = wallpaperSubpageTopElement.shadowRoot!.querySelector(
-        'sea-pen-template-query');
-    assertFalse(!!templateQuery, 'template query should not be displayed.');
-
-    // Verify that the text input area and search button are displayed.
     const inputQuery =
         seaPenInputQueryElement!.shadowRoot!.querySelector('cr-input');
     assertTrue(!!inputQuery, 'input query should display.');
-
     const searchButton = seaPenInputQueryElement!.shadowRoot!.querySelector(
                              '#searchButton') as HTMLElement;
-    assertTrue(!!searchButton, 'search button should display.');
 
     // Mock singleton |PersonalizationRouter|.
     const router = TestMock.fromClass(PersonalizationRouterElement);
