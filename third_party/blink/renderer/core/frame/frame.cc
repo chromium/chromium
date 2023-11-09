@@ -694,8 +694,9 @@ bool Frame::SwapImpl(
     provisional_frame_ = nullptr;
   }
 
-  v8::HandleScope handle_scope(page->GetAgentGroupScheduler().Isolate());
-  WindowProxyManager::GlobalProxyVector global_proxies;
+  v8::Isolate* isolate = page->GetAgentGroupScheduler().Isolate();
+  v8::HandleScope handle_scope(isolate);
+  WindowProxyManager::GlobalProxyVector global_proxies(isolate);
   GetWindowProxyManager()->ReleaseGlobalProxies(global_proxies);
 
   if (new_web_frame->IsWebRemoteFrame()) {
