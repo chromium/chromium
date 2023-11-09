@@ -22,14 +22,14 @@ namespace segmentation_platform::processing {
 
 namespace {
 
-const proto::UMAFeature& GetAsUMA(const Data& data) {
+proto::UMAFeature* GetAsUMA(Data& data) {
   DCHECK(data.input_feature.has_value() || data.output_feature.has_value());
 
   if (data.input_feature.has_value()) {
-    return data.input_feature->uma_feature();
+    return data.input_feature->mutable_uma_feature();
   }
 
-  return data.output_feature->uma_output().uma_feature();
+  return data.output_feature->mutable_uma_output()->mutable_uma_feature();
 }
 
 }  // namespace
@@ -61,10 +61,10 @@ void UmaFeatureProcessor::Process(
   callback_ = std::move(callback);
 
   size_t max_bucket_count = 0;
-  for (const auto& feature : uma_features_) {
+  for (auto& feature : uma_features_) {
     // Validate the proto::UMAFeature metadata.
-    const proto::UMAFeature& uma_feature = GetAsUMA(feature.second);
-    if (metadata_utils::ValidateMetadataUmaFeature(uma_feature) !=
+    const proto::UMAFeature* uma_feature = GetAsUMA(feature.second);
+    if (metadata_utils::ValidateMetadataUmaFeature(*uma_feature) !=
         metadata_utils::ValidationResult::kValidationSuccess) {
       feature_processor_state_->SetError(
           stats::FeatureProcessingError::kUmaValidationError);
@@ -75,8 +75,8 @@ void UmaFeatureProcessor::Process(
       return;
     }
 
-    if (max_bucket_count < uma_feature.bucket_count()) {
-      max_bucket_count = uma_feature.bucket_count();
+    if (max_bucket_count < uma_feature->bucket_count()) {
+      max_bucket_count = uma_feature->bucket_count();
     }
   }
 
@@ -112,7 +112,7 @@ void UmaFeatureProcessor::ProcessOnGotAllSamples(
     }
 
     const auto& it = uma_features_.begin();
-    proto::UMAFeature next_feature = GetAsUMA(it->second);
+    proto::UMAFeature next_feature = std::move(*GetAsUMA(it->second));
     FeatureIndex index = it->first;
     uma_features_.erase(it);
 
