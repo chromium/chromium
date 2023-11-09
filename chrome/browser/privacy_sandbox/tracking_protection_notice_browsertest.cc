@@ -1084,6 +1084,33 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
       true, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
+                       PRE_StopsObserving) {
+  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->NoticeShown(NoticeType::kOnboarding);
+}
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
+                       StopsObserving) {
+  // Setup
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+  WaitForFeatureEngagement(browser());
+
+  // Navigates to eligible page.
+  browser()->window()->Activate();
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(), https_server_.GetURL("a.test", "/empty.html"), 1,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  EXPECT_TRUE(TabStripModelObserver::IsObservingAny(notice_service()));
+  PressPromoButton(browser());
+  // Verification - Observation stops
+  EXPECT_FALSE(TabStripModelObserver::IsObservingAny(notice_service()));
+  EXPECT_FALSE(privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
+                   IsHelperNeeded(browser()->profile()));
+}
+
 struct TrackingProtectionSurveyTestData {
   // Inputs
   std::vector<base::test::FeatureRefAndParams> features;

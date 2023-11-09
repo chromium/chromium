@@ -105,17 +105,22 @@ class TrackingProtectionNoticeService
   class BaseIPHNotice {
    public:
     BaseIPHNotice(Profile* profile,
-                  TrackingProtectionOnboarding* onboarding_service);
+                  TrackingProtectionOnboarding* onboarding_service,
+                  TrackingProtectionNoticeService* notice_service);
     virtual ~BaseIPHNotice();
 
     void MaybeUpdateNoticeVisibility(content::WebContents* web_content);
 
-   private:
+    TrackingProtectionNoticeService* notice_service() const {
+      return notice_service_;
+    }
+
     // Fires when the notice is closed (For any reason)
-    void OnNoticeClosed(
+    virtual void OnNoticeClosed(
         base::Time showed_when,
         user_education::FeaturePromoController* promo_controller);
 
+   private:
     bool WasPromoPreviouslyDismissed(Browser* browser);
     bool IsPromoShowing(Browser* browser);
     bool MaybeShowPromo(Browser* browser);
@@ -127,12 +132,14 @@ class TrackingProtectionNoticeService
 
     raw_ptr<Profile> profile_;
     raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
+    raw_ptr<TrackingProtectionNoticeService> notice_service_;
   };
 
   class OnboardingNotice : public BaseIPHNotice {
    public:
     OnboardingNotice(Profile* profile,
-                     TrackingProtectionOnboarding* onboarding_service);
+                     TrackingProtectionOnboarding* onboarding_service,
+                     TrackingProtectionNoticeService* notice_service);
 
    private:
     TrackingProtectionOnboarding::NoticeType GetNoticeType() override;
@@ -142,11 +149,15 @@ class TrackingProtectionNoticeService
   class OffboardingNotice : public BaseIPHNotice {
    public:
     OffboardingNotice(Profile* profile,
-                      TrackingProtectionOnboarding* onboarding_service);
+                      TrackingProtectionOnboarding* onboarding_service,
+                      TrackingProtectionNoticeService* notice_service);
 
    private:
     TrackingProtectionOnboarding::NoticeType GetNoticeType() override;
     const base::Feature& GetIPHFeature() override;
+    void OnNoticeClosed(
+        base::Time showed_when,
+        user_education::FeaturePromoController* promo_controller) override;
   };
 
   // Indicates if the notice is needed to be displayed.
