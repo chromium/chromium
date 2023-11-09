@@ -402,15 +402,13 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->retry = retry;
   file_value->state = *state;
 
+  // Note that the safe_browsing_state is the state of the download's profile
+  // *now* whereas the presence of a verdict was determined when the download
+  // happened, so they are not necessarily related.
   file_value->safe_browsing_state =
       GetSafeBrowsingState(download_model.profile());
   file_value->has_safe_browsing_verdict =
       WasSafeBrowsingVerdictObtained(download_item);
-  // If there is no safe browsing protection, the item should not have a safe
-  // browsing verdict.
-  CHECK(!file_value->has_safe_browsing_verdict ||
-        file_value->safe_browsing_state !=
-            downloads::mojom::SafeBrowsingState::kNoSafeBrowsing);
 
   return file_value;
 }

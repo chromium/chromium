@@ -403,9 +403,17 @@ TEST_F(DownloadsListTrackerTest, CreateDownloadData_SafeBrowsing) {
     EXPECT_EQ(data->safe_browsing_state,
               SafeBrowsingState::kStandardProtection);
     EXPECT_TRUE(data->has_safe_browsing_verdict);
+
+    // Now turn off Safe Browsing on the profile. The DownloadsListTracker
+    // should not assume that there's no verdict. (crbug.com/1499703)
+    profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+    data = tracker->CreateDownloadData(item);
+    EXPECT_EQ(data->safe_browsing_state, SafeBrowsingState::kNoSafeBrowsing);
+    EXPECT_TRUE(data->has_safe_browsing_verdict);
   }
 
   // Enable Enhanced Safe Browsing.
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   {
     MockDownloadItem* item = CreateNextItem();
