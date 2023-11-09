@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//build/config/fuchsia/gn_configs.gni")
+import("gn_sdk_configs.gni")
 assert(is_fuchsia)
 
 # Creates a .build-id dir of unstripped binaries, structured according to the
@@ -72,7 +73,7 @@ template("build_id_dir") {
                              "testonly",
                              "visibility",
                            ])
-    script = "//third_party/fuchsia-gn-sdk/src/populate_build_id_dir.py"
+    script = gn_sdk_root + "/populate_build_id_dir.py"
     inputs = [ _all_ids_txt_path ]
     _stamp = "$target_gen_dir/$target_name.stamp"
     outputs = [

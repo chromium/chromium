@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/fuchsia/gn_configs.gni")
+import("gn_sdk_configs.gni")
+
 template("_configc_tool") {
   action(target_name) {
     forward_variables_from(invoker,
@@ -12,7 +14,7 @@ template("_configc_tool") {
                              "testonly",
                              "visibility",
                            ])
-    script = "//third_party/fuchsia-gn-sdk/src/gn_run_binary.py"
+    script = gn_sdk_root + "/gn_run_binary.py"
     _configc_tool_path = "${fuchsia_tool_dir}/configc"
 
     assert(defined(invoker.inputs), "inputs is a required parameter.")
