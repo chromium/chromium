@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
@@ -523,8 +524,8 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
       MarkAncestorsForPrePaintIfNeeded();
     }
 
-    if (emit_warnings && v8::Isolate::GetCurrent()->InContext() && document_ &&
-        element_ &&
+    if (emit_warnings && document_ &&
+        document_->GetAgent().isolate()->InContext() && element_ &&
         (!IsActivatable(DisplayLockActivationReason::kAny) ||
          RuntimeEnabledFeatures::
              WarnOnContentVisibilityRenderAccessEnabled())) {
