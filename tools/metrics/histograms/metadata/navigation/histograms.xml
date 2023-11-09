@@ -34,8 +34,8 @@ chromium-metrics-reviews@google.com.
   <variant name="WillStartRequest"/>
 </variants>
 
-<variants name="PrerenderTriggerType">
-<!-- Should be kept in sync with variants PagePrerenderTriggerType in
+<variants name="PreloadingTriggerType">
+<!-- Should be kept in sync with variants PagePreloadingTriggerType in
   tools/metrics/histograms/metadata/page/histograms.xml.
 -->
 
@@ -1274,7 +1274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Navigation.Prerender.ActivationCommitDeferTime{PrerenderTriggerType}"
+    name="Navigation.Prerender.ActivationCommitDeferTime{PreloadingTriggerType}"
     units="ms" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@chromium.org</owner>
@@ -1283,12 +1283,12 @@ chromium-metrics-reviews@google.com.
     to commit an ongoing mainframe prerender navigation. Logged every time a
     PrerenderCommitDeferringCondition defers navigation.
 
-    After 2023/05, this metric is used with PrerenderTriggerType key and records
-    even when PrerenderCommitDeferringCondition doesn't delay navigation as zero
-    delay. Previously the metric was only used without the key and recorded only
-    when PrerenderCommitDeferringCondition deferred navigation.
+    After 2023/05, this metric is used with PreloadingTriggerType key and
+    records even when PrerenderCommitDeferringCondition doesn't delay navigation
+    as zero delay. Previously the metric was only used without the key and
+    recorded only when PrerenderCommitDeferringCondition deferred navigation.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram name="Navigation.QueueTime.{Method}.{FrameType}" units="ms"
@@ -1457,7 +1457,7 @@ chromium-metrics-reviews@google.com.
   <token key="Event" variants="NavigationThrottleEvents"/>
 </histogram>
 
-<histogram name="Navigation.TimeToActivatePrerender{PrerenderTriggerType}"
+<histogram name="Navigation.TimeToActivatePrerender{PreloadingTriggerType}"
     units="ms" expires_after="2024-04-27">
   <owner>nhiroki@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -1469,7 +1469,7 @@ chromium-metrics-reviews@google.com.
 
     This metric is logged everytime prerender activation navigation commits.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram name="Navigation.TimeToReadyToCommit2" units="ms"
@@ -1623,7 +1623,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Prerender.CanceledForInactivePageRestriction.DisallowActivationReason{PrerenderTriggerType}"
+    name="Prerender.CanceledForInactivePageRestriction.DisallowActivationReason{PreloadingTriggerType}"
     enum="InactiveFrameDisallowActivationReason" expires_after="2024-04-28">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@chromium.org</owner>
@@ -1644,11 +1644,11 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2023-03-01 to 2023-03-29; data may
     be missing.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.ActivationHeadersMismatch{PrerenderTriggerType}"
+    name="Prerender.Experimental.ActivationHeadersMismatch{PreloadingTriggerType}"
     enum="PrerenderActivationHeaderMismatchType" expires_after="2024-04-28">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -1671,7 +1671,7 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2023-01-31 to 2023-03-29; data may
     be missing.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram name="Prerender.Experimental.ActivationIPCDelay" units="ms"
@@ -1688,7 +1688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.ActivationNavigationParamsMatch{PrerenderTriggerType}"
+    name="Prerender.Experimental.ActivationNavigationParamsMatch{PreloadingTriggerType}"
     enum="PrerenderActivationNavigationParamsMatch" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -1697,11 +1697,11 @@ chromium-metrics-reviews@google.com.
     parameters and the prerender activation navigation parameters. Recorded by
     PrerenderHost in the browser process when comparing these two parameters.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.ActivationTransitionMismatch{PrerenderTriggerType}"
+    name="Prerender.Experimental.ActivationTransitionMismatch{PreloadingTriggerType}"
     enum="PrerenderActivationTransitionMismatchType" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -1714,7 +1714,7 @@ chromium-metrics-reviews@google.com.
     metric records the transition of the activation navigation in
     RecordPrerenderActivationTransition().
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram
@@ -1779,7 +1779,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.CrossOriginRedirectionProtocolChange{PrerenderTriggerType}"
+    name="Prerender.Experimental.CrossOriginRedirectionProtocolChange{PreloadingTriggerType}"
     enum="PrerenderCrossOriginRedirectionProtocolChange"
     expires_after="2024-03-01">
   <owner>lingqi@chromium.org</owner>
@@ -1793,7 +1793,7 @@ chromium-metrics-reviews@google.com.
     Note that for now it is not used for prerendering that are triggered by
     speculation rules.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram name="Prerender.Experimental.PredictionStatus.DefaultSearchEngine"
@@ -1821,7 +1821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.PrerenderCancelledInterface{PrerenderTriggerType}"
+    name="Prerender.Experimental.PrerenderCancelledInterface{PreloadingTriggerType}"
     enum="PrerenderCancelledInterface" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
@@ -1831,11 +1831,11 @@ chromium-metrics-reviews@google.com.
     MojoBinderPolicyApplier in the browser process once it receives the binding
     request of a kCancel Mojo interface.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.PrerenderCancelledUnknownInterface{PrerenderTriggerType}"
+    name="Prerender.Experimental.PrerenderCancelledUnknownInterface{PreloadingTriggerType}"
     enum="PrerenderCancelledUnknownInterface" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
@@ -1859,11 +1859,11 @@ chromium-metrics-reviews@google.com.
     receives the binding request of a kCancel Mojo interface and cannot find an
     accurate enum type for this interface.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.PrerenderCrossOriginRedirectionMismatch{PrerenderTriggerType}"
+    name="Prerender.Experimental.PrerenderCrossOriginRedirectionMismatch{PreloadingTriggerType}"
     enum="PrerenderCrossOriginRedirectionMismatch" expires_after="2024-03-01">
   <owner>lingqi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
@@ -1880,11 +1880,11 @@ chromium-metrics-reviews@google.com.
     Note that for now it is not used for prerendering that are triggered by
     speculation rules.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.PrerenderHostFinalStatus{PrerenderTriggerType}"
+    name="Prerender.Experimental.PrerenderHostFinalStatus{PreloadingTriggerType}"
     enum="PrerenderHostFinalStatus" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
@@ -1894,11 +1894,11 @@ chromium-metrics-reviews@google.com.
     Final status for a prerendering attempt. Recorded by PrerenderHost or
     PrerenderHostRegistry in the browser process when the attempt finishes.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.PrerenderLoadingFailureError{PrerenderTriggerType}"
+    name="Prerender.Experimental.PrerenderLoadingFailureError{PreloadingTriggerType}"
     enum="NetErrorCodes" expires_after="2024-04-28">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -1908,14 +1908,14 @@ chromium-metrics-reviews@google.com.
 
     This metric is used to monitor whether preload cache intercepting logic
     causes extra page loading errors. Similar to
-    PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus{PrerenderTriggerType},
+    PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus{PreloadingTriggerType},
     but used to track the loading status of not activated prerendered pages.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount2{PrerenderTriggerType}{EagernessCategory}"
+    name="Prerender.Experimental.ReceivedPrerendersPerPrimaryPageChangedCount2{PreloadingTriggerType}{EagernessCategory}"
     units="count" expires_after="2024-03-03">
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -1925,10 +1925,10 @@ chromium-metrics-reviews@google.com.
     coutend per PrerendererImpl::MaybePrerender and recorded when primary page
     is changed and PrerendererImpl::CancelStartedPrerenders is called.
 
-    Note that this metric only records where PrerenderTriggerType is
+    Note that this metric only records where PreloadingTriggerType is
     SpeculationRule and SpeculationRuleFromIsolatedWorld.
   </summary>
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
   <token key="EagernessCategory">
     <variant name=".Conservative"/>
     <variant name=".Eager"/>

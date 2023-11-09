@@ -26,7 +26,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/common/referrer.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
@@ -67,7 +67,7 @@ PrerenderHost& PrerenderHost::GetFromFrameTreeNode(
 bool PrerenderHost::AreHttpRequestHeadersCompatible(
     const std::string& potential_activation_headers_str,
     const std::string& prerender_headers_str,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
   net::HttpRequestHeaders prerender_headers;
   prerender_headers.AddHeadersFromString(prerender_headers_str);
@@ -96,7 +96,7 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   // to set url parameters.
 #if BUILDFLAG(IS_ANDROID)
   // Used by Android devices only.
-  if (trigger_type == PrerenderTriggerType::kEmbedder) {
+  if (trigger_type == PreloadingTriggerType::kEmbedder) {
     prerender_headers.RemoveHeader("X-Geo");
     potential_activation_headers.RemoveHeader("X-Geo");
   }

@@ -57,8 +57,10 @@ class PrerenderNewTabHandle {
   // Returns PrerenderHost that `web_contents_` is hosting.
   PrerenderHost* GetPrerenderHostForTesting();
 
-  // Returns PrerenderTriggerType.
-  PrerenderTriggerType trigger_type() const { return attributes_.trigger_type; }
+  // Returns PreloadingTriggerType.
+  PreloadingTriggerType trigger_type() const {
+    return attributes_.trigger_type;
+  }
 
   // Returns SpeculationEagerness.
   absl::optional<blink::mojom::SpeculationEagerness> eagerness() const {

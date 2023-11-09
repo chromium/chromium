@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Start embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderTrigger_ChromeUrl) {
   // Start embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginMainFrameNavigation) {
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),

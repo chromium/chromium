@@ -115,7 +115,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   static bool AreHttpRequestHeadersCompatible(
       const std::string& potential_activation_headers_str,
       const std::string& prerender_headers_str,
-      PrerenderTriggerType trigger_type,
+      PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix);
 
   // Sets a callback to be called on PrerenderHost creation.
@@ -282,7 +282,9 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     return final_status_;
   }
 
-  PrerenderTriggerType trigger_type() const { return attributes_.trigger_type; }
+  PreloadingTriggerType trigger_type() const {
+    return attributes_.trigger_type;
+  }
   const std::string& embedder_histogram_suffix() const {
     return attributes_.embedder_histogram_suffix;
   }

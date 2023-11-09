@@ -300,7 +300,7 @@ PrerenderManager::StartPrerenderBookmark(
           base::BindRepeating(&AttachBookmarkBarNavigationHandleUserData);
 
   bookmark_prerender_handle_ = web_contents()->StartPrerendering(
-      prerendering_url, content::PrerenderTriggerType::kEmbedder,
+      prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kBookmarkBarMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
@@ -349,7 +349,7 @@ PrerenderManager::StartPrerenderNewTabPage(
   }
 
   new_tab_page_prerender_handle_ = web_contents()->StartPrerendering(
-      prerendering_url, content::PrerenderTriggerType::kEmbedder,
+      prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kNewTabPageMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
@@ -406,7 +406,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
     direct_url_input_prerender_handle_.reset();
   }
   direct_url_input_prerender_handle_ = web_contents()->StartPrerendering(
-      prerendering_url, content::PrerenderTriggerType::kEmbedder,
+      prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kDirectUrlInputMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -443,7 +443,7 @@ void PrerenderManager::StartPrerenderSearchResult(
 
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       web_contents()->StartPrerendering(
-          prerendering_url, content::PrerenderTriggerType::kEmbedder,
+          prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDefaultSearchEngineMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),

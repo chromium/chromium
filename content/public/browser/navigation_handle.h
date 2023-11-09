@@ -16,7 +16,7 @@
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/common/referrer.h"
@@ -638,7 +638,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Prerender2:
   // Used for metrics.
-  virtual PrerenderTriggerType GetPrerenderTriggerType() = 0;
+  virtual PreloadingTriggerType GetPrerenderTriggerType() = 0;
   virtual std::string GetPrerenderEmbedderHistogramSuffix() = 0;
 
   // Returns a SafeRef to this handle.

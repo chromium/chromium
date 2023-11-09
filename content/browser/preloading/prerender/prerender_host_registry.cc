@@ -20,13 +20,13 @@
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/devtools_prerender_attempt.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
-#include "content/browser/preloading/prerender/prerender_trigger_type_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -577,7 +577,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // then prerender host will be created and its id will be enqueued to
     // `pending_prerenders_`. The visibility of the initiator will be considered
     // when trying to pop from `pending_prerenders_` on `StartPrerendering()`.
-    if (attributes.trigger_type == PrerenderTriggerType::kEmbedder &&
+    if (attributes.trigger_type == PreloadingTriggerType::kEmbedder &&
         initiator_web_contents.GetVisibility() == Visibility::HIDDEN) {
       builder.RejectAsNotEligible(attributes,
                                   PrerenderFinalStatus::kTriggerBackgrounded);
@@ -741,8 +741,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
   }
 
   switch (attributes.trigger_type) {
-    case PrerenderTriggerType::kSpeculationRule:
-    case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case PreloadingTriggerType::kSpeculationRule:
+    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       pending_prerenders_.push_back(frame_tree_node_id);
       // Start the initial prerendering navigation of the pending request in
       // the head of the queue if there's no running prerender and the initiator
@@ -763,7 +763,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
         frame_tree_node_id = started_frame_tree_node_id;
       }
       break;
-    case PrerenderTriggerType::kEmbedder:
+    case PreloadingTriggerType::kEmbedder:
       // The prerendering request from embedder should have high-priority
       // because embedder prediction is more likely for the user to visit.
       // Hold the return value of `StartPrerendering` because the requested
@@ -861,8 +861,8 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
 
   switch (prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
               ->trigger_type()) {
-    case PrerenderTriggerType::kSpeculationRule:
-    case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case PreloadingTriggerType::kSpeculationRule:
+    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       // Check the current memory usage and destroy a prerendering if the entire
       // browser uses excessive memory. This occurs asynchronously.
       DestroyWhenUsingExcessiveMemory(frame_tree_node_id);
@@ -870,7 +870,7 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
       // Update the `running_prerender_host_id` to the starting prerender's id.
       running_prerender_host_id_ = frame_tree_node_id;
       break;
-    case PrerenderTriggerType::kEmbedder:
+    case PreloadingTriggerType::kEmbedder:
       // We don't check the memory usage for embedder triggered prerenderings
       // for now.
 
@@ -962,7 +962,7 @@ bool PrerenderHostRegistry::CancelHost(
 }
 
 void PrerenderHostRegistry::CancelHostsForTriggers(
-    std::vector<PrerenderTriggerType> trigger_types,
+    std::vector<PreloadingTriggerType> trigger_types,
     const PrerenderCancellationReason& reason) {
   TRACE_EVENT1("navigation", "PrerenderHostRegistry::CancelHostsForTrigger",
                "trigger_type", trigger_types[0]);
@@ -1430,7 +1430,7 @@ void PrerenderHostRegistry::OnVisibilityChanged(Visibility visibility) {
         FROM_HERE, kTimeToLiveInBackgroundForEmbedder,
         base::BindOnce(&PrerenderHostRegistry::CancelHostsForTriggers,
                        base::Unretained(this),
-                       std::vector({PrerenderTriggerType::kEmbedder}),
+                       std::vector({PreloadingTriggerType::kEmbedder}),
                        PrerenderCancellationReason(
                            PrerenderFinalStatus::kTimeoutBackgrounded)));
     timeout_timer_for_speculation_rules_.Start(
@@ -1439,8 +1439,8 @@ void PrerenderHostRegistry::OnVisibilityChanged(Visibility visibility) {
             &PrerenderHostRegistry::CancelHostsForTriggers,
             base::Unretained(this),
             std::vector(
-                {PrerenderTriggerType::kSpeculationRule,
-                 PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld}),
+                {PreloadingTriggerType::kSpeculationRule,
+                 PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld}),
             PrerenderCancellationReason(
                 PrerenderFinalStatus::kTimeoutBackgrounded)));
   } else {
@@ -1625,7 +1625,7 @@ void PrerenderHostRegistry::NotifyCancel(
   }
 }
 
-PrerenderTriggerType PrerenderHostRegistry::GetPrerenderTriggerType(
+PreloadingTriggerType PrerenderHostRegistry::GetPrerenderTriggerType(
     int frame_tree_node_id) {
   PrerenderHost* prerender_host = FindReservedHostById(frame_tree_node_id);
   CHECK(prerender_host);
@@ -1643,11 +1643,11 @@ const std::string& PrerenderHostRegistry::GetPrerenderEmbedderHistogramSuffix(
 
 PrerenderHostRegistry::PrerenderLimitGroup
 PrerenderHostRegistry::GetPrerenderLimitGroup(
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     absl::optional<blink::mojom::SpeculationEagerness> eagerness) {
   switch (trigger_type) {
-    case PrerenderTriggerType::kSpeculationRule:
-    case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case PreloadingTriggerType::kSpeculationRule:
+    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       CHECK(eagerness.has_value());
       switch (eagerness.value()) {
         // Separate the limits of speculation rules into two categories: eager,
@@ -1661,13 +1661,13 @@ PrerenderHostRegistry::GetPrerenderLimitGroup(
         case blink::mojom::SpeculationEagerness::kConservative:
           return PrerenderLimitGroup::kSpeculationRulesNonEager;
       }
-    case PrerenderTriggerType::kEmbedder:
+    case PreloadingTriggerType::kEmbedder:
       return PrerenderLimitGroup::kEmbedder;
   }
 }
 
 int PrerenderHostRegistry::GetHostCountByTriggerType(
-    PrerenderTriggerType trigger_type) {
+    PreloadingTriggerType trigger_type) {
   int host_count = 0;
   for (const auto& [_, host] : prerender_host_by_frame_tree_node_id_) {
     if (host->trigger_type() == trigger_type) {
@@ -1713,7 +1713,7 @@ int PrerenderHostRegistry::GetHostCountByLimitGroup(
 }
 
 bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     absl::optional<blink::mojom::SpeculationEagerness> eagerness) {
   PrerenderLimitGroup limit_group;
   int host_count;
@@ -1773,8 +1773,8 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
     }
   }
   switch (trigger_type) {
-    case PrerenderTriggerType::kSpeculationRule:
-    case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case PreloadingTriggerType::kSpeculationRule:
+    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       // The number of prerenders triggered by speculation rules is limited to
       // a Finch config param.
       return host_count <
@@ -1782,7 +1782,7 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
                  blink::features::kPrerender2,
                  blink::features::kPrerender2MaxNumOfRunningSpeculationRules,
                  10);
-    case PrerenderTriggerType::kEmbedder:
+    case PreloadingTriggerType::kEmbedder:
       // Currently the number of prerenders triggered by an embedder is
       // limited to two.
       return host_count < 2;

@@ -128,7 +128,7 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
           url_match_predicate) {
     RenderFrameHostImpl* rfh = contents()->GetPrimaryMainFrame();
     return PrerenderAttributes(
-        url, PrerenderTriggerType::kSpeculationRule,
+        url, PreloadingTriggerType::kSpeculationRule,
         /*embedder_histogram_suffix=*/"",
         blink::mojom::SpeculationTargetHint::kNoHint, Referrer(),
         blink::mojom::SpeculationEagerness::kEager,
@@ -528,7 +528,7 @@ TEST(AreHttpRequestHeadersCompatible, IgnoreRTT) {
   const std::string potential_activation_headers = "rtt: 2 \r\n downlink: 4";
   EXPECT_TRUE(PrerenderHost::AreHttpRequestHeadersCompatible(
       potential_activation_headers, prerender_headers,
-      PrerenderTriggerType::kSpeculationRule,
+      PreloadingTriggerType::kSpeculationRule,
       /*embedder_histogram_suffix=*/""));
 }
 

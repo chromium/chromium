@@ -5922,7 +5922,7 @@ void NavigationRequest::CommitPageActivation() {
   } else {
     // Copy the prerender trigger type before PrerenderHost is destroyed in
     // ActivateReservedHost().
-    PrerenderTriggerType trigger_type =
+    PreloadingTriggerType trigger_type =
         GetPrerenderHostRegistry().GetPrerenderTriggerType(
             prerender_frame_tree_node_id());
     const std::string embedder_histogram_suffix =
@@ -9590,7 +9590,7 @@ NavigationRequest::ScopedCrashKeys::ScopedCrashKeys(
 
 NavigationRequest::ScopedCrashKeys::~ScopedCrashKeys() = default;
 
-PrerenderTriggerType NavigationRequest::GetPrerenderTriggerType() {
+PreloadingTriggerType NavigationRequest::GetPrerenderTriggerType() {
   DCHECK(prerender_trigger_type_.has_value());
   return prerender_trigger_type_.value();
 }

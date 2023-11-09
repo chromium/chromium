@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering, EffectiveUrlOnTrigger) {
   // context has the effective URL.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetAppWebContents()->StartPrerendering(
-          prerendering_url, content::PrerenderTriggerType::kEmbedder,
+          prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
   // fail as the app URL has the effective URL.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetNonAppWebContents()->StartPrerendering(
-          app_url, content::PrerenderTriggerType::kEmbedder,
+          app_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
   // non-app's context. This should fail as the final URL has the effective URL.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetNonAppWebContents()->StartPrerendering(
-          prerendering_url, content::PrerenderTriggerType::kEmbedder,
+          prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -624,7 +624,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
   // Start prerendering for the app URL on the non-app's context.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetNonAppWebContents()->StartPrerendering(
-          app_url, content::PrerenderTriggerType::kEmbedder,
+          app_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),

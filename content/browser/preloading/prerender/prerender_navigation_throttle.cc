@@ -16,7 +16,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -31,10 +31,10 @@ namespace {
 void AnalyzeCrossOriginRedirection(
     const url::Origin& current_origin,
     const url::Origin& initial_origin,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
   CHECK_NE(initial_origin, current_origin);
-  CHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
+  CHECK_EQ(trigger_type, PreloadingTriggerType::kEmbedder);
   CHECK(current_origin.GetURL().SchemeIsHTTPOrHTTPS());
   CHECK(initial_origin.GetURL().SchemeIsHTTPOrHTTPS());
 

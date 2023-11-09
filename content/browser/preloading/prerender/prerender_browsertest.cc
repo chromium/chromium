@@ -447,7 +447,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
       const GURL& prerendering_url,
       PreloadingAttempt* preloading_attempt = nullptr) {
     return web_contents_impl()->StartPrerendering(
-        prerendering_url, PrerenderTriggerType::kEmbedder,
+        prerendering_url, PreloadingTriggerType::kEmbedder,
         "EmbedderSuffixForTest",
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -2700,7 +2700,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
 // Tests for main frame navigation in a prerendered page.
 class PrerenderMainFrameNavigationBrowserTest
-    : public testing::WithParamInterface<PrerenderTriggerType>,
+    : public testing::WithParamInterface<PreloadingTriggerType>,
       public PrerenderBrowserTest {
  protected:
   enum class NavigationType {
@@ -2724,7 +2724,7 @@ class PrerenderMainFrameNavigationBrowserTest
       const std::vector<NavigationType>& navigation_types,
       PrerenderFinalStatus expected_status) {
     ASSERT_FALSE(navigation_types.empty());
-    PrerenderTriggerType trigger_type = GetParam();
+    PreloadingTriggerType trigger_type = GetParam();
 
     std::vector<GURL> urls;
     for (auto type : navigation_types) {
@@ -2741,13 +2741,13 @@ class PrerenderMainFrameNavigationBrowserTest
     int host_id = RenderFrameHost::kNoFrameTreeNodeId;
     std::unique_ptr<PrerenderHandle> prerender_handle;
     switch (trigger_type) {
-      case PrerenderTriggerType::kSpeculationRule:
+      case PreloadingTriggerType::kSpeculationRule:
         host_id = AddPrerender(kPrerenderingUrl);
         break;
-      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+      case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
         host_id = AddPrerender(kPrerenderingUrl, /*world_id=*/1);
         break;
-      case PrerenderTriggerType::kEmbedder:
+      case PreloadingTriggerType::kEmbedder:
         prerender_handle = AddEmbedderTriggeredPrerender(kPrerenderingUrl);
         host_id = static_cast<PrerenderHandleImpl*>(prerender_handle.get())
                       ->frame_tree_node_id_for_testing();
@@ -2781,11 +2781,11 @@ class PrerenderMainFrameNavigationBrowserTest
 
         // Activation should succeed.
         switch (trigger_type) {
-          case PrerenderTriggerType::kSpeculationRule:
-          case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+          case PreloadingTriggerType::kSpeculationRule:
+          case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
             NavigatePrimaryPage(kPrerenderingUrl);
             break;
-          case PrerenderTriggerType::kEmbedder:
+          case PreloadingTriggerType::kEmbedder:
             NavigatePrimaryPageFromAddressBar(kPrerenderingUrl);
             break;
         }
@@ -2805,13 +2805,13 @@ class PrerenderMainFrameNavigationBrowserTest
 
     // Verify UMA/UKM records.
     switch (trigger_type) {
-      case PrerenderTriggerType::kSpeculationRule:
+      case PreloadingTriggerType::kSpeculationRule:
         ExpectFinalStatusForSpeculationRule(expected_status);
         break;
-      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+      case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
         ExpectFinalStatusForSpeculationRuleFromIsolatedWorld(expected_status);
         break;
-      case PrerenderTriggerType::kEmbedder:
+      case PreloadingTriggerType::kEmbedder:
         ExpectFinalStatusForEmbedder(expected_status);
         break;
     }
@@ -2823,7 +2823,7 @@ class PrerenderMainFrameNavigationBrowserTest
       const std::vector<NavigationType>& redirection_types,
       PrerenderFinalStatus expected_status) {
     ASSERT_FALSE(redirection_types.empty());
-    PrerenderTriggerType trigger_type = GetParam();
+    PreloadingTriggerType trigger_type = GetParam();
 
     // Create a URL that rus a redirection sequence in the order of
     // `redirection_types`. To make the URL, create a final URL from the last
@@ -2846,13 +2846,13 @@ class PrerenderMainFrameNavigationBrowserTest
     int host_id = RenderFrameHost::kNoFrameTreeNodeId;
     std::unique_ptr<PrerenderHandle> prerender_handle;
     switch (trigger_type) {
-      case PrerenderTriggerType::kSpeculationRule:
+      case PreloadingTriggerType::kSpeculationRule:
         host_id = AddPrerender(kPrerenderingUrl);
         break;
-      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+      case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
         host_id = AddPrerender(kPrerenderingUrl, /*world_id=*/1);
         break;
-      case PrerenderTriggerType::kEmbedder:
+      case PreloadingTriggerType::kEmbedder:
         prerender_handle = AddEmbedderTriggeredPrerender(kPrerenderingUrl);
         host_id = static_cast<PrerenderHandleImpl*>(prerender_handle.get())
                       ->frame_tree_node_id_for_testing();
@@ -2874,11 +2874,11 @@ class PrerenderMainFrameNavigationBrowserTest
 
         // Activation should succeed.
         switch (trigger_type) {
-          case PrerenderTriggerType::kSpeculationRule:
-          case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+          case PreloadingTriggerType::kSpeculationRule:
+          case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
             NavigatePrimaryPage(kPrerenderingUrl);
             break;
-          case PrerenderTriggerType::kEmbedder:
+          case PreloadingTriggerType::kEmbedder:
             NavigatePrimaryPageFromAddressBar(kPrerenderingUrl);
             break;
         }
@@ -2898,13 +2898,13 @@ class PrerenderMainFrameNavigationBrowserTest
 
     // Verify UMA/UKM records.
     switch (trigger_type) {
-      case PrerenderTriggerType::kSpeculationRule:
+      case PreloadingTriggerType::kSpeculationRule:
         ExpectFinalStatusForSpeculationRule(expected_status);
         break;
-      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+      case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
         ExpectFinalStatusForSpeculationRuleFromIsolatedWorld(expected_status);
         break;
-      case PrerenderTriggerType::kEmbedder:
+      case PreloadingTriggerType::kEmbedder:
         ExpectFinalStatusForEmbedder(expected_status);
         break;
     }
@@ -2949,16 +2949,16 @@ class PrerenderMainFrameNavigationBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     PrerenderMainFrameNavigationBrowserTest,
-    testing::Values(PrerenderTriggerType::kSpeculationRule,
-                    PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld,
-                    PrerenderTriggerType::kEmbedder),
-    [](const testing::TestParamInfo<PrerenderTriggerType>& info) {
+    testing::Values(PreloadingTriggerType::kSpeculationRule,
+                    PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld,
+                    PreloadingTriggerType::kEmbedder),
+    [](const testing::TestParamInfo<PreloadingTriggerType>& info) {
       switch (info.param) {
-        case PrerenderTriggerType::kSpeculationRule:
+        case PreloadingTriggerType::kSpeculationRule:
           return "SpeculationRule";
-        case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+        case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
           return "SpeculationRuleFromIsolatedWorld";
-        case PrerenderTriggerType::kEmbedder:
+        case PreloadingTriggerType::kEmbedder:
           return "Embedder";
       }
     });
@@ -9659,7 +9659,7 @@ PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
       web_contents.StartPrerendering(
-          prerendering_url, PrerenderTriggerType::kEmbedder,
+          prerendering_url, PreloadingTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),

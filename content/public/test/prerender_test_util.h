@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -150,7 +150,7 @@ class PrerenderTestHelper {
   // the prerendering navigation.
   std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerenderAsync(
       const GURL& prerendering_url,
-      PrerenderTriggerType trigger_type,
+      PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
       ui::PageTransition page_transition);
 
@@ -192,7 +192,7 @@ class PrerenderTestHelper {
   // Generates the histogram name by appending the trigger type and the embedder
   // suffix to the base name.
   std::string GenerateHistogramName(const std::string& histogram_base_name,
-                                    content::PrerenderTriggerType trigger_type,
+                                    content::PreloadingTriggerType trigger_type,
                                     const std::string& embedder_suffix);
 
  private:

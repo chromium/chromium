@@ -4933,7 +4933,7 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   blink::mojom::FrameReplicationState prerender_main_frame_replication_state;
   // Copy the prerendering trigger type and the embbeder histogram suffix for
   // metrics before NavigationRequest is destroyed.
-  PrerenderTriggerType prerender_trigger_type;
+  PreloadingTriggerType prerender_trigger_type;
   std::string prerender_embedder_histogram_suffix;
   if (is_prerender_page_activation) {
     prerender_main_frame_replication_state =

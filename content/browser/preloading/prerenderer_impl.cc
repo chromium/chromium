@@ -20,15 +20,15 @@ namespace content {
 
 namespace {
 
-PrerenderTriggerType GetTriggerType(
+PreloadingTriggerType GetTriggerType(
     blink::mojom::SpeculationInjectionWorld world) {
   switch (world) {
     case blink::mojom::SpeculationInjectionWorld::kNone:
       [[fallthrough]];
     case blink::mojom::SpeculationInjectionWorld::kMain:
-      return PrerenderTriggerType::kSpeculationRule;
+      return PreloadingTriggerType::kSpeculationRule;
     case blink::mojom::SpeculationInjectionWorld::kIsolated:
-      return PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld;
+      return PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld;
   }
 }
 
@@ -377,14 +377,14 @@ void PrerendererImpl::CancelStartedPrerenders() {
 
 void PrerendererImpl::ResetReceivedPrerendersCountForMetrics() {
   for (auto trigger_type :
-       {PrerenderTriggerType::kSpeculationRule,
-        PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld}) {
+       {PreloadingTriggerType::kSpeculationRule,
+        PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld}) {
     received_prerenders_by_eagerness_[trigger_type].fill({});
   }
 }
 
 void PrerendererImpl::IncrementReceivedPrerendersCountForMetrics(
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     blink::mojom::SpeculationEagerness eagerness) {
   received_prerenders_by_eagerness_[trigger_type]
                                    [static_cast<size_t>(eagerness)]++;
@@ -392,8 +392,8 @@ void PrerendererImpl::IncrementReceivedPrerendersCountForMetrics(
 
 void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
   for (auto trigger_type :
-       {PrerenderTriggerType::kSpeculationRule,
-        PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld}) {
+       {PreloadingTriggerType::kSpeculationRule,
+        PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld}) {
     int conservative =
         received_prerenders_by_eagerness_[trigger_type][static_cast<size_t>(
             blink::mojom::SpeculationEagerness::kConservative)];

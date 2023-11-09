@@ -882,7 +882,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   absl::optional<SkColor> GetBaseBackgroundColor() override;
   std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
-      PrerenderTriggerType trigger_type,
+      PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
       ui::PageTransition page_transition,
       PreloadingHoldbackStatus holdback_status_override,

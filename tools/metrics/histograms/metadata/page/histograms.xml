@@ -30,8 +30,8 @@ chromium-metrics-reviews@google.com.
   <variant name="5000ms"/>
 </variants>
 
-<variants name="PagePrerenderTriggerType">
-<!-- Should be kept in sync with variants PrerenderTriggerType in
+<variants name="PagePreloadingTriggerType">
+<!-- Should be kept in sync with variants PreloadingTriggerType in
   tools/metrics/histograms/metadata/navigation/histograms.xml.
 -->
 
@@ -951,7 +951,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4{PrerenderTriggerType}"
+    name="PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4{PreloadingTriggerType}"
     units="ms" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
@@ -960,11 +960,11 @@ chromium-metrics-reviews@google.com.
     prerendered and were later activated. Note that prerendered page loads are
     excluded from PageLoad.InteractiveTiming.FirstInputDelay4.
   </summary>
-  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore.MainFrame{PrerenderTriggerType}"
+    name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore.MainFrame{PreloadingTriggerType}"
     units="ms" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
@@ -974,11 +974,11 @@ chromium-metrics-reviews@google.com.
     page loads are excluded from
     PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame.
   </summary>
-  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore{PrerenderTriggerType}"
+    name="PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore{PreloadingTriggerType}"
     units="ms" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
@@ -987,11 +987,11 @@ chromium-metrics-reviews@google.com.
     were prerendered and were later activated. Note that prerendered page loads
     are excluded from PageLoad.LayoutInstability.CumulativeShiftScore.
   </summary>
-  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2{PrerenderTriggerType}"
+    name="PageLoad.Clients.Prerender.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2{PreloadingTriggerType}"
     units="ms" expires_after="2024-09-03">
   <owner>kenoss@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
@@ -1001,11 +1001,11 @@ chromium-metrics-reviews@google.com.
     prerendered page loads are excluded from
     PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.
   </summary>
-  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.NavigationToActivation{PrerenderTriggerType}"
+    name="PageLoad.Clients.Prerender.NavigationToActivation{PreloadingTriggerType}"
     units="ms" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
@@ -1015,11 +1015,11 @@ chromium-metrics-reviews@google.com.
     attribute of PerformanceNavigationTiming. Recorded when a prerendered page
     is activated.
   </summary>
-  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstContentfulPaint{PrerenderTriggerType}"
+    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstContentfulPaint{PreloadingTriggerType}"
     units="ms" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
@@ -1030,11 +1030,11 @@ chromium-metrics-reviews@google.com.
     loads are excluded from
     PageLoad.PaintTiming.NavigationToFirstContentfulPaint.
   </summary>
-  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstPaint{PrerenderTriggerType}"
+    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstPaint{PreloadingTriggerType}"
     units="ms" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
@@ -1044,11 +1044,11 @@ chromium-metrics-reviews@google.com.
     activation navigation start. Note that prerendered page loads are excluded
     from PageLoad.PaintTiming.NavigationToFirstPaint.
   </summary>
-  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToLargestContentfulPaint2{PrerenderTriggerType}"
+    name="PageLoad.Clients.Prerender.PaintTiming.ActivationToLargestContentfulPaint2{PreloadingTriggerType}"
     units="ms" expires_after="2024-04-28">
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
@@ -1059,7 +1059,7 @@ chromium-metrics-reviews@google.com.
     loads are excluded from
     PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.
   </summary>
-  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
 <histogram
@@ -2355,7 +2355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus{PrerenderTriggerType}"
+    name="PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus{PreloadingTriggerType}"
     enum="NetErrorCodes" expires_after="2024-04-28">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -2367,7 +2367,7 @@ chromium-metrics-reviews@google.com.
     This metric is used to monitor whether preload cache intercepting logic
     causes extra page loading errors.
   </summary>
-  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
 <histogram name="PageLoad.Internal.Prerender2.Event"

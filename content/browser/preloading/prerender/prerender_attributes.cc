@@ -17,7 +17,7 @@ void PrerenderAttributes::WriteIntoTrace(
 
 PrerenderAttributes::PrerenderAttributes(
     const GURL& prerendering_url,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
     absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
     Referrer referrer,

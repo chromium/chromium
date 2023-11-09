@@ -7,7 +7,7 @@
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 
 namespace content {
 
@@ -24,7 +24,7 @@ PrerenderHandleImpl::PrerenderHandleImpl(
   auto* prerender_host =
       prerender_host_registry_->FindNonReservedHostById(frame_tree_node_id);
   CHECK(prerender_host);
-  CHECK_EQ(prerender_host->trigger_type(), PrerenderTriggerType::kEmbedder);
+  CHECK_EQ(prerender_host->trigger_type(), PreloadingTriggerType::kEmbedder);
 }
 
 PrerenderHandleImpl::~PrerenderHandleImpl() {

@@ -42,7 +42,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -428,7 +428,7 @@ class CONTENT_EXPORT NavigationRequest
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
   void SetAllowCookiesFromBrowser(bool allow_cookies_from_browser) override;
   void GetResponseBody(ResponseBodyCallback callback) override;
-  PrerenderTriggerType GetPrerenderTriggerType() override;
+  PreloadingTriggerType GetPrerenderTriggerType() override;
   std::string GetPrerenderEmbedderHistogramSuffix() override;
 #if BUILDFLAG(IS_ANDROID)
   const base::android::JavaRef<jobject>& GetJavaNavigationHandle() override;
@@ -1132,7 +1132,7 @@ class CONTENT_EXPORT NavigationRequest
   };
 
   // Prerender2:
-  void set_prerender_trigger_type(PrerenderTriggerType type) {
+  void set_prerender_trigger_type(PreloadingTriggerType type) {
     DCHECK(!prerender_trigger_type_.has_value());
     prerender_trigger_type_ = type;
   }
@@ -2598,9 +2598,9 @@ class CONTENT_EXPORT NavigationRequest
   // Prerender2:
   // The type to trigger prerendering. The value is valid only when Prerender2
   // is enabled.
-  absl::optional<PrerenderTriggerType> prerender_trigger_type_;
+  absl::optional<PreloadingTriggerType> prerender_trigger_type_;
   // The suffix of a prerender embedder. This value is valid only when
-  // PrerenderTriggerType is kEmbedder. Only used for metrics.
+  // PreloadingTriggerType is kEmbedder. Only used for metrics.
   std::string prerender_embedder_histogram_suffix_;
 
   // Prevents the compositor from requesting main frame updates early in

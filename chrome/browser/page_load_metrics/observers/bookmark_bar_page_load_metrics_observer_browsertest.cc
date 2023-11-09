@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarPageLoadMetricsBrowserTest,
   // Start Omnibox triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),

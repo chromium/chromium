@@ -13,9 +13,9 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_util.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
-#include "content/browser/preloading/prerender/prerender_trigger_type_impl.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,17 +63,17 @@ int32_t HeaderMismatchHasher(const std::string& header,
 }
 
 std::string GenerateHistogramName(const std::string& histogram_base_name,
-                                  PrerenderTriggerType trigger_type,
+                                  PreloadingTriggerType trigger_type,
                                   const std::string& embedder_suffix) {
   switch (trigger_type) {
-    case PrerenderTriggerType::kSpeculationRule:
+    case PreloadingTriggerType::kSpeculationRule:
       CHECK(embedder_suffix.empty());
       return std::string(histogram_base_name) + ".SpeculationRule";
-    case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       CHECK(embedder_suffix.empty());
       return std::string(histogram_base_name) +
              ".SpeculationRuleFromIsolatedWorld";
-    case PrerenderTriggerType::kEmbedder:
+    case PreloadingTriggerType::kEmbedder:
       CHECK(!embedder_suffix.empty());
       return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;
   }
@@ -82,7 +82,7 @@ std::string GenerateHistogramName(const std::string& histogram_base_name,
 
 void ReportHeaderMismatch(const std::string& key,
                           HeaderMismatchType mismatch_type,
-                          PrerenderTriggerType trigger_type,
+                          PreloadingTriggerType trigger_type,
                           const std::string& embedder_histogram_suffix) {
   base::UmaHistogramSparse(
       GenerateHistogramName("Prerender.Experimental.ActivationHeadersMismatch",
@@ -94,7 +94,7 @@ void ReportHeaderMismatch(const std::string& key,
 // that causes MojoBinderPolicyApplier to cancel prerendering.
 void RecordPrerenderCancelledInterface(
     const std::string& interface_name,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
   const PrerenderCancelledInterface interface_type =
       GetCancelledInterfaceType(interface_name);
@@ -117,7 +117,7 @@ void RecordPrerenderCancelledInterface(
 
 void RecordPrerenderFinalStatusUma(
     PrerenderFinalStatus final_status,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
   base::UmaHistogramEnumeration(
       GenerateHistogramName("Prerender.Experimental.PrerenderHostFinalStatus",
@@ -126,7 +126,7 @@ void RecordPrerenderFinalStatusUma(
 }
 
 void RecordDidFailLoadErrorType(int32_t error_code,
-                                PrerenderTriggerType trigger_type,
+                                PreloadingTriggerType trigger_type,
                                 const std::string& embedder_histogram_suffix) {
   base::UmaHistogramSparse(
       GenerateHistogramName(
@@ -185,7 +185,7 @@ PrerenderCancellationReason::PrerenderCancellationReason(
     : final_status_(final_status), explanation_(std::move(explanation)) {}
 
 void PrerenderCancellationReason::ReportMetrics(
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) const {
   switch (final_status_) {
     case PrerenderFinalStatus::kInactivePageRestriction:
@@ -256,7 +256,7 @@ void RecordPrerenderTriggered(ukm::SourceId ukm_id) {
 
 void RecordPrerenderActivationTime(
     base::TimeDelta delta,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
   base::UmaHistogramTimes(
       GenerateHistogramName("Navigation.TimeToActivatePrerender", trigger_type,
@@ -304,7 +304,7 @@ void ReportSuccessActivation(const PrerenderAttributes& attributes,
 
 void RecordPrerenderActivationNavigationParamsMatch(
     PrerenderHost::ActivationNavigationParamsMatch result,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_suffix) {
   base::UmaHistogramEnumeration(
       GenerateHistogramName(
@@ -315,9 +315,9 @@ void RecordPrerenderActivationNavigationParamsMatch(
 
 void RecordPrerenderRedirectionMismatchType(
     PrerenderCrossOriginRedirectionMismatch mismatch_type,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
-  CHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
+  CHECK_EQ(trigger_type, PreloadingTriggerType::kEmbedder);
   base::UmaHistogramEnumeration(
       GenerateHistogramName(
           "Prerender.Experimental.PrerenderCrossOriginRedirectionMismatch",
@@ -327,9 +327,9 @@ void RecordPrerenderRedirectionMismatchType(
 
 void RecordPrerenderRedirectionProtocolChange(
     PrerenderCrossOriginRedirectionProtocolChange change_type,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
-  CHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
+  CHECK_EQ(trigger_type, PreloadingTriggerType::kEmbedder);
   base::UmaHistogramEnumeration(
       GenerateHistogramName(
           "Prerender.Experimental.CrossOriginRedirectionProtocolChange",
@@ -340,7 +340,7 @@ void RecordPrerenderRedirectionProtocolChange(
 void AnalyzePrerenderActivationHeader(
     net::HttpRequestHeaders potential_activation_headers,
     net::HttpRequestHeaders prerender_headers,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
   using HeaderPair = net::HttpRequestHeaders::HeaderKeyValuePair;
   auto potential_header_dict = base::MakeFlatMap<std::string, std::string>(
@@ -399,7 +399,7 @@ void AnalyzePrerenderActivationHeader(
 
 void RecordPrerenderActivationTransition(
     int32_t potential_activation_transition,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
   base::UmaHistogramSparse(
       GenerateHistogramName(
@@ -442,7 +442,7 @@ void RecordPrerenderBackNavigationEligibility(
 
 void RecordPrerenderActivationCommitDeferTime(
     base::TimeDelta time_delta,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix) {
   base::UmaHistogramTimes(
       GenerateHistogramName("Navigation.Prerender.ActivationCommitDeferTime",
@@ -452,7 +452,7 @@ void RecordPrerenderActivationCommitDeferTime(
 
 void RecordReceivedPrerendersPerPrimaryPageChangedCount(
     int number,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& eagerness_category) {
   base::UmaHistogramCounts100(
       GenerateHistogramName("Prerender.Experimental."

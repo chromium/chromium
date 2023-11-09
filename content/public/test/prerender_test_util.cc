@@ -463,7 +463,7 @@ void PrerenderTestHelper::AddPrefetchAsync(const GURL& prefetch_url) {
 std::unique_ptr<PrerenderHandle>
 PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
     const GURL& prerendering_url,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
     ui::PageTransition page_transition) {
   TRACE_EVENT("test", "PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync",
@@ -637,17 +637,17 @@ WebContents* PrerenderTestHelper::GetWebContents() {
 
 std::string PrerenderTestHelper::GenerateHistogramName(
     const std::string& histogram_base_name,
-    content::PrerenderTriggerType trigger_type,
+    content::PreloadingTriggerType trigger_type,
     const std::string& embedder_suffix) {
   switch (trigger_type) {
-    case content::PrerenderTriggerType::kSpeculationRule:
+    case content::PreloadingTriggerType::kSpeculationRule:
       DCHECK(embedder_suffix.empty());
       return std::string(histogram_base_name) + ".SpeculationRule";
-    case content::PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+    case content::PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       DCHECK(embedder_suffix.empty());
       return std::string(histogram_base_name) +
              ".SpeculationRuleFromIsolatedWorld";
-    case content::PrerenderTriggerType::kEmbedder:
+    case content::PreloadingTriggerType::kEmbedder:
       DCHECK(!embedder_suffix.empty());
       return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;
   }

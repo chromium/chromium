@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -95,7 +95,7 @@ class PrerenderCancellationReason {
   PrerenderCancellationReason(PrerenderCancellationReason&& reason);
 
   // Reports UMA and UKM metrics.
-  void ReportMetrics(PrerenderTriggerType trigger_type,
+  void ReportMetrics(PreloadingTriggerType trigger_type,
                      const std::string& embedder_histogram_suffix) const;
 
   PrerenderFinalStatus final_status() const { return final_status_; }
@@ -137,7 +137,7 @@ void RecordPrerenderTriggered(ukm::SourceId ukm_id);
 
 void RecordPrerenderActivationTime(
     base::TimeDelta delta,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 // Used by failing prerender attempts. Records the status to UMA and UKM, and
@@ -156,20 +156,20 @@ void ReportSuccessActivation(const PrerenderAttributes& attributes,
 // initial prerender navigation when activation fails.
 void RecordPrerenderActivationNavigationParamsMatch(
     PrerenderHost::ActivationNavigationParamsMatch result,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_suffix);
 
 // Records the detailed types of the cross-origin redirection, e.g., changes to
 // scheme, host name etc.
 void RecordPrerenderRedirectionMismatchType(
     PrerenderCrossOriginRedirectionMismatch case_type,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 // Records whether the redirection was caused by HTTP protocol upgrade.
 void RecordPrerenderRedirectionProtocolChange(
     PrerenderCrossOriginRedirectionProtocolChange change_type,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 // Takes the headers of incoming navigation which can potentially activate a
@@ -185,14 +185,14 @@ void RecordPrerenderRedirectionProtocolChange(
 void CONTENT_EXPORT AnalyzePrerenderActivationHeader(
     net::HttpRequestHeaders potential_activation_headers,
     net::HttpRequestHeaders prerender_headers,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 // Records ui::PageTransition of prerender activation navigation when transition
 // mismatch happens on prerender activation.
 void RecordPrerenderActivationTransition(
     int32_t potential_activation_transition,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -227,12 +227,12 @@ void RecordPrerenderBackNavigationEligibility(
 
 void RecordPrerenderActivationCommitDeferTime(
     base::TimeDelta time_delta,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 void RecordReceivedPrerendersPerPrimaryPageChangedCount(
     int number,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& eagerness_category);
 
 }  // namespace content
