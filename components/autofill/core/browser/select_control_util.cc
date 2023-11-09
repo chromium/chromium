@@ -125,4 +125,23 @@ std::optional<std::u16string> GetSelectControlValueTokenMatch(
   return std::nullopt;
 }
 
+std::optional<std::u16string> GetNumericSelectControlValue(
+    int value,
+    base::span<const SelectOption> field_options,
+    std::string* failure_to_fill) {
+  for (const SelectOption& option : field_options) {
+    int num;
+    if ((base::StringToInt(option.value, &num) && num == value) ||
+        (base::StringToInt(option.content, &num) && num == value)) {
+      return option.value;
+    }
+  }
+
+  if (failure_to_fill) {
+    *failure_to_fill +=
+        "Did not find numeric value to fill in select control element. ";
+  }
+  return std::nullopt;
+}
+
 }  // namespace autofill

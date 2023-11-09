@@ -26,7 +26,7 @@
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
-#include "components/autofill/core/browser/field_filler.h"
+#include "components/autofill/core/browser/field_filling_address_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/address_field.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -800,7 +800,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     std::u16string main_text =
         GetProfileSuggestionMainText(profile, trigger_field_type);
     if (trigger_field_type_group == FieldTypeGroup::kPhone) {
-      main_text = FieldFiller::GetPhoneNumberValueForInput(
+      main_text = GetPhoneNumberValueForInput(
           trigger_field_max_length, main_text,
           profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
     }

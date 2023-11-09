@@ -59,14 +59,6 @@ class FieldFiller {
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill = nullptr);
 
-  // Returns the phone number value for the given `field_max_length`. The
-  // returned value might be `number`, or `city_and_number`, or could possibly
-  // be a meaningful subset `number`, if that's appropriate for the field.
-  static std::u16string GetPhoneNumberValueForInput(
-      uint64_t field_max_length,
-      const std::u16string& number,
-      const std::u16string& city_and_number);
-
  private:
   const std::string app_locale_;
   // Weak, should outlive this object. May be null.

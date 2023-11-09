@@ -48,6 +48,13 @@ std::optional<std::u16string> GetSelectControlValueTokenMatch(
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill);
 
+// Gets the numeric `value` to fill into `field`.
+// A nullopt value means that no value for filling was found.
+std::optional<std::u16string> GetNumericSelectControlValue(
+    int value,
+    base::span<const SelectOption> field_options,
+    std::string* failure_to_fill);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SELECT_CONTROL_UTIL_H_
