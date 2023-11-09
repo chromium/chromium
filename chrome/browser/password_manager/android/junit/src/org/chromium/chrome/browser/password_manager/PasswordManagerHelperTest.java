@@ -78,6 +78,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -89,6 +90,8 @@ import java.util.OptionalInt;
 @Batch(Batch.PER_CLASS)
 public class PasswordManagerHelperTest {
     private static final String TEST_EMAIL_ADDRESS = "test@email.com";
+    // TODO(crbug.com/1500673): Deduplicate the histogram names with those in PasswordManagerHelper.
+    // TODO(crbug.com/1500676): Use HistogramWatcher to check histogram records.
     private static final String ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM =
             "PasswordManager.CredentialManager.Account.GetIntent.Latency";
     private static final String ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM =
@@ -153,6 +156,7 @@ public class PasswordManagerHelperTest {
 
     @Before
     public void setUp() throws PasswordCheckBackendException, CredentialManagerBackendException {
+        // TODO(crbug.com/1500670): Parametrise the tests for local and account.
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
@@ -484,7 +488,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testLaunchesCredentialManagerSync() {
+    public void testShowPasswordSettingsSyncingPasswordsLaunchesNewUIForAccount() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
 
         PasswordManagerHelper.showPasswordSettings(
@@ -504,7 +508,30 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testShowPasswordSettingsNoSyncLaunchesOldUI() {
+    public void testShowPasswordSettingsSyncingUserNotSyncingPasswordsLaunchesOldUI() {
+        chooseToSyncButNotSyncPasswords();
+        Context mockContext = mock(Context.class);
+        // Set the adequate PasswordManagerUtilBridge response for canUseUPMBackend for a syncing
+        // user who isn't syncing passwords and isn't eligible to use UPM for local.
+        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+                .thenReturn(false);
+
+        PasswordManagerHelper.showPasswordSettings(
+                mockContext,
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSettingsLauncherMock,
+                mSyncServiceMock,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false);
+
+        verify(mockContext).startActivity(any());
+        verify(mSettingsLauncherMock)
+                .createSettingsActivityIntent(
+                        eq(mockContext), eq(PasswordSettings.class.getName()), any(Bundle.class));
+    }
+
+    @Test
+    public void testShowPasswordSettingsNotSyncingPasswordsCanNotUseUPMLaunchesOldUI() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         Context mockContext = mock(Context.class);
 
@@ -520,6 +547,27 @@ public class PasswordManagerHelperTest {
         verify(mSettingsLauncherMock)
                 .createSettingsActivityIntent(
                         eq(mockContext), eq(PasswordSettings.class.getName()), any(Bundle.class));
+    }
+
+    @Test
+    public void testShowPasswordSettingsNotSyncingPasswordsCanUseUPMLaunchesNewUIForLocal() {
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+                .thenReturn(true);
+
+        PasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSettingsLauncherMock,
+                mSyncServiceMock,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false);
+
+        verify(mCredentialManagerLauncherMock)
+                .getLocalCredentialManagerIntent(
+                        eq(ManagePasswordsReferrer.CHROME_SETTINGS),
+                        any(Callback.class),
+                        any(Callback.class));
     }
 
     @Test
@@ -550,6 +598,37 @@ public class PasswordManagerHelperTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1));
+    }
+
+    @Test
+    public void testRecordsSuccessMetricsForLocalIntent() {
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+                .thenReturn(true);
+        setUpSuccessfulIntentFetchingForLocal();
+
+        PasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSettingsLauncherMock,
+                mSyncServiceMock,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false);
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_GET_INTENT_LATENCY_HISTOGRAM, 0));
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 1));
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramTotalCountForTesting(LOCAL_GET_INTENT_ERROR_HISTOGRAM));
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1));
     }
 
     @Test
@@ -584,6 +663,39 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    public void testRecordsErrorMetricsForLocalIntent() {
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+                .thenReturn(true);
+        returnErrorWhenFetchingIntentForLocal(CredentialManagerError.UNCATEGORIZED);
+
+        PasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSettingsLauncherMock,
+                mSyncServiceMock,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false);
+
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.UNCATEGORIZED));
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0));
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        LOCAL_GET_INTENT_LATENCY_HISTOGRAM));
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+    }
+
+    @Test
     public void testRecordsMetricsWhenAccountIntentFails() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
@@ -613,6 +725,39 @@ public class PasswordManagerHelperTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
+    }
+
+    @Test
+    public void testRecordsMetricsWhenLocalIntentFails() throws CanceledException {
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+                .thenReturn(true);
+        setUpSuccessfulIntentFetchingForLocal();
+        doThrow(CanceledException.class).when(mPendingIntentMock).send();
+
+        PasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSettingsLauncherMock,
+                mSyncServiceMock,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false);
+
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_GET_INTENT_LATENCY_HISTOGRAM, 0));
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 1));
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramTotalCountForTesting(LOCAL_GET_INTENT_ERROR_HISTOGRAM));
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
     }
 
     @Test
@@ -1425,7 +1570,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testRecordsApiErrorWhenFetchingCredentialManagerIntent() {
+    public void testRecordsApiErrorWhenFetchingAccountCredentialManagerIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         ApiException returnedException =
                 new ApiException(new Status(CommonStatusCodes.INTERNAL_ERROR));
@@ -1462,7 +1607,39 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testRecordsConnectionResultWhenFetchingCredentialManagerIntent() {
+    public void testRecordsApiErrorWhenFetchingLocalCredentialManagerIntent() {
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+                .thenReturn(true);
+
+        ApiException returnedException =
+                new ApiException(new Status(CommonStatusCodes.INTERNAL_ERROR));
+        returnApiExceptionWhenFetchingIntentForLocal(returnedException);
+
+        PasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSettingsLauncherMock,
+                mSyncServiceMock,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false);
+
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0));
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR));
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+    }
+
+    @Test
+    public void testRecordsConnectionResultWhenFetchingAccountCredentialManagerIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         ApiException returnedException =
                 new ApiException(
@@ -1502,6 +1679,39 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    public void testRecordsConnectionResultWhenFetchingLocalCredentialManagerIntent() {
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+                .thenReturn(true);
+
+        ApiException returnedException =
+                new ApiException(
+                        new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
+        returnApiExceptionWhenFetchingIntentForLocal(returnedException);
+
+        PasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSettingsLauncherMock,
+                mSyncServiceMock,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false);
+
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0));
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOCAL_GET_INTENT_ERROR_HISTOGRAM, CredentialManagerError.API_ERROR));
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID)
     public void testUseAccountSettings() {
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
@@ -1531,6 +1741,13 @@ public class PasswordManagerHelperTest {
                 .thenReturn(true);
     }
 
+    private void chooseToSyncButNotSyncPasswords() {
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncServiceMock.getSelectedTypes()).thenReturn(new HashSet<>());
+        when(mSyncServiceMock.getAccountInfo())
+                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+    }
+
     private void setUpSuccessfulIntentFetchingForAccount() {
         doAnswer(
                         invocation -> {
@@ -1542,6 +1759,20 @@ public class PasswordManagerHelperTest {
                 .getAccountCredentialManagerIntent(
                         eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         eq(TEST_EMAIL_ADDRESS),
+                        any(Callback.class),
+                        any(Callback.class));
+    }
+
+    private void setUpSuccessfulIntentFetchingForLocal() {
+        doAnswer(
+                        invocation -> {
+                            Callback<PendingIntent> cb = invocation.getArgument(1);
+                            cb.onResult(mPendingIntentMock);
+                            return true;
+                        })
+                .when(mCredentialManagerLauncherMock)
+                .getLocalCredentialManagerIntent(
+                        eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         any(Callback.class),
                         any(Callback.class));
     }
@@ -1576,6 +1807,20 @@ public class PasswordManagerHelperTest {
                         any(Callback.class));
     }
 
+    private void returnErrorWhenFetchingIntentForLocal(@CredentialManagerError int error) {
+        doAnswer(
+                        invocation -> {
+                            Callback<Exception> cb = invocation.getArgument(2);
+                            cb.onResult(new CredentialManagerBackendException("", error));
+                            return true;
+                        })
+                .when(mCredentialManagerLauncherMock)
+                .getLocalCredentialManagerIntent(
+                        eq(ManagePasswordsReferrer.CHROME_SETTINGS),
+                        any(Callback.class),
+                        any(Callback.class));
+    }
+
     private void returnApiExceptionWhenFetchingIntentForAccount(ApiException exception) {
         doAnswer(
                         invocation -> {
@@ -1587,6 +1832,20 @@ public class PasswordManagerHelperTest {
                 .getAccountCredentialManagerIntent(
                         eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         eq(TEST_EMAIL_ADDRESS),
+                        any(Callback.class),
+                        any(Callback.class));
+    }
+
+    private void returnApiExceptionWhenFetchingIntentForLocal(ApiException exception) {
+        doAnswer(
+                        invocation -> {
+                            Callback<Exception> cb = invocation.getArgument(2);
+                            cb.onResult(exception);
+                            return true;
+                        })
+                .when(mCredentialManagerLauncherMock)
+                .getLocalCredentialManagerIntent(
+                        eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         any(Callback.class),
                         any(Callback.class));
     }
