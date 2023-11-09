@@ -6297,14 +6297,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.SplitView.SwapWindowSource"
     enum="SplitViewSwapWindowsSource" expires_after="2023-12-10">
+  <obsolete>
+    Deprecated Nov 2023 as the swap entry point is deprecated.
+  </obsolete>
   <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
     Recorded whenever two windows in split view are swapped. The recorded enum
     indicates where the swap operation is triggered, which can either be from
     double tap or swap button on the snap group expanded menu.
-
-    Deprecated Nov 2023 as the swap entry point is deprecated.
   </summary>
 </histogram>
 
