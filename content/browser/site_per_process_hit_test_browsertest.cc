@@ -7384,17 +7384,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
 }
 
 #if defined(USE_AURA)
-class SitePerProcessDelegatedInkBrowserTest
-    : public SitePerProcessHitTestBrowserTest {
- public:
-  SitePerProcessDelegatedInkBrowserTest() = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SitePerProcessHitTestBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "DelegatedInkTrails");
-  }
-};
+using SitePerProcessDelegatedInkBrowserTest = SitePerProcessHitTestBrowserTest;
 
 // Test confirms that a point hitting an OOPIF that is requesting delegated ink
 // trails results in the metadata being correctly sent to the child's
