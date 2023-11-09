@@ -18,6 +18,7 @@ class MediaItemUIView;
 class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDeviceSelector
     : public views::View {
   METADATA_HEADER(MediaItemUIDeviceSelector, views::View)
+
  public:
   // Gives the device selector a pointer to the MediaItemUIView so that it can
   // inform it of size changes.

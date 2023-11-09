@@ -17,6 +17,7 @@ namespace global_media_controls {
 class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIFooter
     : public views::View {
   METADATA_HEADER(MediaItemUIFooter, views::View)
+
  public:
   virtual void OnColorsChanged(SkColor foreground, SkColor background) = 0;
 };
