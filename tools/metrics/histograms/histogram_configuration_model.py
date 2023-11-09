@@ -166,7 +166,6 @@ _HISTOGRAM_TYPE = models.ObjectNodeType(
     required_attributes=['name'],
     alphabetization=[
         (_EXPIRED_INTENTIONALLY_TYPE.tag, _KEEP_ORDER),
-        (_OBSOLETE_TYPE.tag, _KEEP_ORDER),
         (_OWNER_TYPE.tag, _KEEP_ORDER),
         (_COMPONENT_TYPE.tag, _KEEP_ORDER),
         (_IMPROVEMENT_TYPE.tag, _KEEP_ORDER),
@@ -178,7 +177,6 @@ _HISTOGRAM_TYPE = models.ObjectNodeType(
         models.ChildType(_EXPIRED_INTENTIONALLY_TYPE.tag,
                          _EXPIRED_INTENTIONALLY_TYPE,
                          multiple=False),
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
         models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
         models.ChildType(_COMPONENT_TYPE.tag, _COMPONENT_TYPE, multiple=True),
         models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),

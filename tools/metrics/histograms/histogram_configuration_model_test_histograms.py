@@ -20,27 +20,18 @@ XML_RIGHT_ORDER = """
 <histograms>
 
 <histogram name="hist.a" enum="enum1" expires_after="2019-11-02">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <summary>Summary text</summary>
 </histogram>
 
 <histogram name="hist.b" expires_after="M85">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <summary>Summary text</summary>
 </histogram>
 
 <histogram name="hist.c" enum="enum3" expires_after="never">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <summary>Summary text</summary>
@@ -79,9 +70,6 @@ PRETTY_XML = """
 <histogram base="true" name="hist.a" expires_after="2019-11-02">
 <!-- Comment in histogram -->
 
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <component>Component&gt;Subcomponent</component>
@@ -115,9 +103,6 @@ XML_WRONG_ATTRIBUTE_ORDER = """
 <histogram expires_after="2019-11-02" name="hist.a" base="true" >
 <!-- Comment in histogram -->
 
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <component>Component&gt;Subcomponent</component>
@@ -151,9 +136,6 @@ XML_MISSING_SEPARATOR = """
 <histogram base="true" name="hist.a" expires_after="2019-11-02">
 <!-- Comment in histogram -->
 
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <summary>Summary text</summary>
@@ -186,9 +168,6 @@ XML_WRONG_INDENT = """
   <histogram base="true" name="hist.a" expires_after="2019-11-02">
   <!-- Comment in histogram -->
 
-    <obsolete>
-      Obsolete text
-    </obsolete>
       <owner>owner1@chromium.org</owner>
       <owner>owner2@chromium.org</owner>
       <component>Component&gt;Subcomponent</component>
@@ -222,7 +201,6 @@ XML_WRONG_SINGLELINE = """
 <histogram base="true" name="hist.a" expires_after="2019-11-02">
 <!-- Comment in histogram -->
 
-  <obsolete>Obsolete text</obsolete>
   <owner>
     owner1@chromium.org
   </owner>
@@ -260,9 +238,6 @@ XML_WRONG_LINEBREAK = """
 
 <histogram base="true" name="hist.a" expires_after="2019-11-02">
 <!-- Comment in histogram -->
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <component>Component&gt;Subcomponent</component>
@@ -294,11 +269,8 @@ XML_WRONG_CHILDREN_ORDER = """
 <histogram base="true" name="hist.a" expires_after="2019-11-02">
 <!-- Comment in histogram -->
 
-  <obsolete>
-    Obsolete text
-  </obsolete>
-  <summary>Summary text</summary>
   <owner>owner1@chromium.org</owner>
+  <summary>Summary text</summary>
   <component>Component&gt;Subcomponent</component>
   <owner>owner2@chromium.org</owner>
 </histogram>
@@ -328,27 +300,18 @@ XML_WRONG_ORDER = """
 <histograms>
 
 <histogram name="hist.c" enum="enum3" expires_after="never">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <summary>Summary text</summary>
 </histogram>
 
 <histogram name="hist.a" enum="enum1" expires_after="2019-11-02">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <summary>Summary text</summary>
 </histogram>
 
 <histogram name="hist.b" expires_after="M85">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
   <summary>Summary text</summary>
@@ -396,9 +359,6 @@ PRETTY_XML_WITH_TOKEN = """
 
 <histogram name="Omnibox{version}{content}.Time" units="ms"
     expires_after="2020-12-25">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>me@google.com</owner>
   <summary>
     The length of time taken by {version} of {content} provider's synchronous
@@ -441,9 +401,6 @@ XML_WRONG_VARIANT_CHILDREN_ORDER = """
 
 <histogram name="Omnibox{version}{content}.Time" units="ms"
     expires_after="2020-12-25">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>me@google.com</owner>
   <summary>
     The length of time taken by {version} of {content} provider's synchronous
@@ -486,9 +443,6 @@ XML_WRONG_VARIANT_ORDER = """
 
 <histogram name="Omnibox{version}{content}.Time" units="ms"
     expires_after="2020-12-25">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>me@google.com</owner>
   <summary>
     The length of time taken by {version} of {content} provider's synchronous
@@ -521,9 +475,6 @@ XML_WRONG_HISTOGRAM_VARIANTS_ORDER = """
 
 <histogram name="Omnibox{version}{content}.Time" units="ms"
     expires_after="2020-12-25">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <owner>me@google.com</owner>
   <summary>
     The length of time taken by {version} of {content} provider's synchronous
@@ -577,7 +528,8 @@ class HistogramXmlTest(unittest.TestCase):
   def testPrettify(self, _, input_xml, expected_xml):
     result = histogram_configuration_model.PrettifyTree(
         etree_util.ParseXMLString(input_xml))
-    self.assertMultiLineEqual(result.strip(), expected_xml)
+    self.maxDiff = None
+    self.assertMultiLineEqual(expected_xml, result.strip())
 
   def testMissingRequiredAttribute(self):
     with self.assertRaises(Exception) as context:
@@ -631,10 +583,10 @@ class HistogramXmlTest(unittest.TestCase):
        PRETTY_XML_WITH_TOKEN),
   ])
   def testTokenPrettify(self, _, input_xml, expected_xml):
-    self.maxDiff = None
     result = histogram_configuration_model.PrettifyTree(
         etree_util.ParseXMLString(input_xml))
-    self.assertMultiLineEqual(result.strip(), expected_xml)
+    self.maxDiff = None
+    self.assertMultiLineEqual(expected_xml, result.strip())
 
   def testIndividualTagParsing_improvement(self):
     """Tests that <improvement> has the right format and can be parsed."""
@@ -661,7 +613,8 @@ class HistogramXmlTest(unittest.TestCase):
 
     result = histogram_configuration_model.PrettifyTree(
         etree_util.ParseXMLString(config_good))
-    self.assertMultiLineEqual(result.strip(), config_good.strip())
+    self.maxDiff = None
+    self.assertMultiLineEqual(config_good.strip(), result.strip())
 
     with self.assertRaisesRegex(ValueError,
                                 'direction "" does not match regex'):
