@@ -603,8 +603,14 @@ ExtensionFunction::ResponseValue BookmarksMoveFunction::RunOnReady() {
 
     parent = bookmarks::GetBookmarkNodeByID(model, parent_id);
   }
-  if (!CanBeModified(parent, &error) || !CanBeModified(node, &error))
+
+  if (!CanBeModified(parent, &error) || !CanBeModified(node, &error)) {
     return Error(error);
+  }
+
+  if (!parent->is_folder()) {
+    return Error(bookmark_api_constants::kInvalidParentError);
+  }
 
   size_t index;
   if (params->destination.index) {  // Optional (defaults to end).

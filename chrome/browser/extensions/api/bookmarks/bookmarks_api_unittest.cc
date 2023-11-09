@@ -79,4 +79,37 @@ TEST_F(BookmarksApiUnittest, Create) {
   ASSERT_TRUE(url_node->children().empty());
 }
 
+// Tests that attempting to move a bookmark to a non-folder parent does
+// not add the bookmark to that parent.
+// Regression test for https://crbug.com/1491227.
+TEST_F(BookmarksApiUnittest, Move) {
+  auto move_function = base::MakeRefCounted<BookmarksMoveFunction>();
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      move_function.get(),
+      base::StringPrintf(R"(["%s", {"parentId": "%s"}])",
+                         folder_node_id().c_str(), url_node_id().c_str()),
+      profile());
+  ASSERT_EQ("Parameter 'parentId' does not specify a folder.", error);
+
+  const bookmarks::BookmarkNode* url_node =
+      model()->GetMostRecentlyAddedUserNodeForURL(url());
+  ASSERT_TRUE(url_node->children().empty());
+}
+
+// Tests that attempting to move a bookmark to a non existent parent returns an
+// error.
+TEST_F(BookmarksApiUnittest, Move_NoParent) {
+  auto move_function = base::MakeRefCounted<BookmarksMoveFunction>();
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      move_function.get(),
+      base::StringPrintf(R"(["%s", {"parentId": "1234"}])",
+                         folder_node_id().c_str()),
+      profile());
+  ASSERT_EQ("Can't find parent bookmark for id.", error);
+
+  const bookmarks::BookmarkNode* url_node =
+      model()->GetMostRecentlyAddedUserNodeForURL(url());
+  ASSERT_TRUE(url_node->children().empty());
+}
+
 }  // namespace extensions
