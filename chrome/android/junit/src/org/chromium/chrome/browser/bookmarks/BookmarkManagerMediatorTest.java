@@ -36,6 +36,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
@@ -2133,5 +2134,50 @@ public class BookmarkManagerMediatorTest {
         mMediator.onDestroy();
         // Now give the pending task time to run. It should no-op, and not crash.
         ShadowLooper.idleMainLooper();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testClickDeletedBookmark() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        verify(mBookmarkModel, times(1)).getChildIds(mFolderId1);
+        verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3);
+
+        // Hang onto the on click handlers. After removing views it's not normal for users to be
+        // able to click on rows. But there's asynchronicity, especially between model changes and
+        // the views. While this test case is a bit more extreme than in practice, our logic still
+        // need to be robust.
+        View.OnClickListener onClick2 =
+                mModelList.get(1).model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER);
+        View.OnClickListener onClick3 =
+                mModelList.get(2).model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER);
+
+        // Folder 3 is deleted, but folder 2 is still in the model.
+        when(mBookmarkModel.getBookmarkById(mFolderId3)).thenReturn(null);
+        // Neither children are present in folder 1 anymore.
+        when(mBookmarkModel.getChildIds(mFolderId1)).thenReturn(Collections.emptyList());
+
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        BookmarkModelObserver observer = mBookmarkModelObserverArgumentCaptor.getValue();
+        observer.bookmarkModelChanged();
+        verifyCurrentBookmarkIds(new BookmarkId[] {null});
+
+        // Neither of these can do anything, the models are gone. But more importantly, they should
+        // not crash.
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(true);
+        onClick2.onClick(null);
+        onClick3.onClick(null);
+
+        when(mSelectionDelegate.isSelectionEnabled()).thenReturn(false);
+        // Handling here is a bit arbitrary. So rare we don't need to support it, but we can and the
+        // code does currently open the folder correctly.
+        onClick2.onClick(null);
+        verifyCurrentBookmarkIds(null, mBookmarkId21);
+        verify(mBookmarkModel).getChildIds(mFolderId2);
+
+        // This should no-op as the folder is gone.
+        onClick3.onClick(null);
+        verify(mBookmarkModel, never()).getChildIds(mFolderId3);
     }
 }

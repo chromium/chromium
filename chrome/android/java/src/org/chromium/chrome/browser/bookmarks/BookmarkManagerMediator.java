@@ -1489,7 +1489,11 @@ class BookmarkManagerMediator
 
     void toggleSelectionForRow(BookmarkId id) {
         mSelectionDelegate.toggleSelectionForItem(id);
-        PropertyModel model = mModelList.get(getPositionForBookmark(id)).model;
+        int index = getPositionForBookmark(id);
+        if (index < 0) {
+            return;
+        }
+        PropertyModel model = mModelList.get(index).model;
         model.set(ImprovedBookmarkRowProperties.SELECTED, mSelectionDelegate.isItemSelected(id));
     }
 
@@ -1502,7 +1506,11 @@ class BookmarkManagerMediator
     }
 
     void openBookmarkId(BookmarkId id) {
-        BookmarkItem item = mBookmarkModel.getBookmarkById(id);
+        @Nullable BookmarkItem item = mBookmarkModel.getBookmarkById(id);
+        if (item == null) {
+            return;
+        }
+
         if (item.isFolder()) {
             openFolder(id);
         } else {
