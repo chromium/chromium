@@ -3099,7 +3099,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3442674350323953953">Omogućite Googleu da koristi podatke o hardveru kako bi poboljšao <ph name="DEVICE_OS" />. Ako odbijete, ti se podaci svejedno šalju Googleu kako bi se utvrdila odgovarajuća ažuriranja, no ti se podaci ni u kojem drugom slučaju ne pohranjuju niti koriste.</translation>
 <translation id="3443744348829035122">Isteklo je vrijeme za <ph name="BRAND" /></translation>
 <translation id="3443754338602062261">Već imate zaporke za te račune na usluzi <ph name="BRAND" />. Ako odlučite uvesti jednu od zaporki u nastavku, ona će zamijeniti postojeću.</translation>
-<translation id="344449859752187052">Blokirani su kolačići treće strane</translation>
+<translation id="344449859752187052">Blokirani su kolačići trećih strana</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> će moći pregledavati datoteku <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Brzi odgovori Google asistenta</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5024,7 +5024,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4997086284911172121">Nema internetske veze.</translation>
 <translation id="4998430619171209993">Uključeno</translation>
 <translation id="4999804342505941663">Uključi opciju Ne uznemiravaj</translation>
-<translation id="5001526427543320409">Kolačići treće strane</translation>
+<translation id="5001526427543320409">Kolačići trećih strana</translation>
 <translation id="5005498671520578047">Kopiranje zaporke</translation>
 <translation id="5006118752738286774">Prije dvije godine</translation>
 <translation id="5006218871145547804">Crostinijev ADB za Android aplikacije</translation>
@@ -8866,7 +8866,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8123975449645947908">Pomicanje unatrag</translation>
 <translation id="8124313775439841391">Upravljani ONC</translation>
 <translation id="8129265306888404830">Da biste upotrebljavali e-adresu svoje organizacije (<ph name="EMAIL_DOMAIN" />), trebate upotrijebiti prijavu organizacije. Ako je ovaj uređaj za vašu osobnu upotrebu, prijavite se osobnim Google računom.</translation>
-<translation id="813082847718468539">Prikaz informacija o web-mjestu</translation>
+<translation id="813082847718468539">Prikaz informacija o web-lokaciji</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8133297578569873332">Prihvatljiva – FM</translation>
 <translation id="8133676275609324831">&amp;Prikaži u mapi</translation>
