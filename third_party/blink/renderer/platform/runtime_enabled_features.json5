@@ -589,7 +589,7 @@
     },
     {
       name: "CheckVisibilityExtraProperties",
-      status: "test",
+      status: "stable",
     },
     {
       name: "ClickToCapturedPointer",
