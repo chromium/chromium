@@ -52,6 +52,9 @@ BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
 // latencies.
 BASE_DECLARE_FEATURE(kShadowKidsApiWithSafeSites);
 
+// Forces Safe Search for supervised users.
+BASE_DECLARE_FEATURE(kForceGoogleSafeSearchForSupervisedUsers);
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web

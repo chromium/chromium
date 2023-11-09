@@ -131,7 +131,12 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     // Set hardcoded prefs and defaults.
     prefs_->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
                        supervised_user::SupervisedUserURLFilter::ALLOW);
-    prefs_->SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch, true);
+
+    if (base::FeatureList::IsEnabled(
+            supervised_user::kForceGoogleSafeSearchForSupervisedUsers)) {
+      prefs_->SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch, true);
+    }
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
     prefs_->SetInteger(policy::policy_prefs::kForceYouTubeRestrict,
                        safe_search_api::YOUTUBE_RESTRICT_MODERATE);
