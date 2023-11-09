@@ -755,7 +755,7 @@ void ApkWebAppService::AddInstallingWebApkPackageName(
 void ApkWebAppService::RemoveInstallingWebApkPackageName(
     const std::string& app_id) {
   std::string package_name = currently_installing_apks_[app_id];
-  if (ash::features::ArePromiseIconsEnabled()) {
+  if (ash::features::ArePromiseIconsEnabled() && !package_name.empty()) {
     apps::AppServiceProxyFactory::GetForProfile(profile_)
         ->PromiseAppService()
         ->OnApkWebAppInstallationFinished(package_name);
