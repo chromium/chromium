@@ -134,12 +134,28 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_suite_for_builder(self):
         host = self.mock_host()
+        host.builders = BuilderList({
+            'MOCK Try Trusty': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+                'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                    'blink_wpt_tests (with patch)': {},
+                    'webdriver_wpt_tests (with patch)': {},
+                    'fake_flag_blink_wpt_tests (with patch)': {
+                        'flag_specific': 'fake-flag',
+                    },
+                },
+            },
+        })
+
         updater = WPTExpectationsUpdater(host)
-        self.assertEqual(updater.suite_for_builder('MOCK Try Trusty'),
-                         'blink_wpt_tests')
+        self.assertEqual(sorted(updater.suites_for_builder('MOCK Try Trusty')),
+                         ['blink_wpt_tests', 'webdriver_wpt_tests'])
         self.assertEqual(
-            updater.suite_for_builder('MOCK Try Trusty', 'fake-flag'),
-            'fake_flag_blink_wpt_tests')
+            updater.suites_for_builder('MOCK Try Trusty', 'fake-flag'),
+            ['fake_flag_blink_wpt_tests'])
 
     def test_run_single_platform_failure(self):
         """Tests the main run method in a case where one test fails on one platform."""
@@ -193,6 +209,73 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             host.filesystem.read_text_file(expectations_path),
             '# ====== New tests from wpt-importer added here ======\n'
             'crbug.com/626703 [ Mac10.10 ] external/wpt/test/path.html [ Timeout ]\n'
+        )
+
+    def test_run_chrome_only_failure(self):
+        host = self.mock_host()
+        host.builders = BuilderList({
+            'MOCK Try Chrome': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Chrome', 'Release'],
+                'is_try_builder': True,
+                'steps': {
+                    'chrome_wpt_tests (with patch)': {},
+                    'webdriver_wpt_tests (with patch)': {},
+                },
+            },
+            'MOCK Try Trusty': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+                'is_try_builder': True,
+                'steps': {
+                    'blink_wpt_tests (with patch)': {},
+                },
+            },
+        })
+
+        expectations_path = \
+            host.port_factory.get().path_to_generic_test_expectations_file()
+        host.filesystem.write_text_file(
+            expectations_path, WPTExpectationsUpdater.MARKER_COMMENT + '\n')
+
+        updater = WPTExpectationsUpdater(host)
+        updater.git_cl = MockGitCL(
+            updater.host, {
+                Build('MOCK Try Trusty', 222, 'Build-3'):
+                TryJobStatus('COMPLETED', 'SUCCESS'),
+                Build('MOCK Try Chrome', 333, 'Build-4'):
+                TryJobStatus('COMPLETED', 'FAILURE'),
+            })
+
+        host.results_fetcher.set_results(
+            Build('MOCK Try Chrome', 333, 'Build-4'),
+            WebTestResults.from_rdb_responses(
+                {
+                    'external/wpt/test/path.html': [{
+                        'status': 'ABORT',
+                        'expected': False,
+                    }] * 3,
+                },
+                builder_name='MOCK Try Chrome',
+                step_name='chrome_wpt_tests'))
+        host.results_fetcher.set_results(
+            Build('MOCK Try Chrome', 333, 'Build-4'),
+            WebTestResults.from_rdb_responses(
+                {
+                    'external/wpt/webdriver/test.py': [{
+                        'status': 'ABORT',
+                        'expected': False,
+                    }] * 3,
+                },
+                builder_name='MOCK Try Chrome',
+                step_name='webdriver_wpt_tests'))
+
+        self.assertEqual(0, updater.run())
+        self.assertEqual(
+            host.filesystem.read_text_file(expectations_path),
+            '# ====== New tests from wpt-importer added here ======\n'
+            'crbug.com/626703 [ Chrome ] external/wpt/test/path.html [ Timeout ]\n'
+            'crbug.com/626703 [ Chrome ] external/wpt/webdriver/test.py [ Timeout ]\n'
         )
 
     def test_run_inherited_results(self):

@@ -13,7 +13,7 @@ import copy
 import logging
 import re
 from collections import defaultdict, namedtuple
-from typing import List, Optional, Set
+from typing import Iterator, List, Optional, Set
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.git_cl import BuildStatuses, GitCL
@@ -139,18 +139,17 @@ class WPTExpectationsUpdater:
                  'This command line argument can be used to mark tests '
                  'as flaky.')
 
-    def suite_for_builder(self,
-                          builder: str,
-                          flag_specific: Optional[str] = None) -> str:
+    def suites_for_builder(self,
+                           builder: str,
+                           flag_specific: Optional[str] = None) -> List[str]:
+        suites = []
         for step in self.host.builders.step_names_for_builder(builder):
             if self.host.builders.flag_specific_option(builder,
                                                        step) == flag_specific:
-                suite_match = re.match(r'(?P<suite>[\w_-]*blink_wpt_tests)',
-                                       step)
+                suite_match = re.match(r'(?P<suite>[\w_-]*wpt_tests)', step)
                 if suite_match:
-                    return suite_match['suite']
-        raise ValueError('"%s" flag-specific suite on "%s" not found' %
-                         (flag_specific, builder))
+                    suites.append(suite_match['suite'])
+        return suites
 
     def update_expectations(self, flag_specific: Optional[str] = None):
         """Adds test expectations lines.
@@ -216,7 +215,7 @@ class WPTExpectationsUpdater:
     def _make_results_for_update(
             self,
             build_to_status: BuildStatuses,
-            flag_specific: Optional[str] = None) -> List[WebTestResults]:
+            flag_specific: Optional[str] = None) -> Iterator[WebTestResults]:
         fetcher = self.host.results_fetcher
         completed_results, missing_results = [], []
         incomplete_builds = GitCL.filter_incomplete(build_to_status)
@@ -224,32 +223,30 @@ class WPTExpectationsUpdater:
             if (job_status.result == 'SUCCESS'
                     and not self.options.include_unexpected_pass):
                 continue
-            try:
-                wpt_tests_suite = self.suite_for_builder(
-                    build.builder_name, flag_specific)
-            except ValueError:
-                _log.debug(
-                    'Builder %s does not run flag-specific suite %s, skipping',
-                    build.builder_name, flag_specific or '(generic)')
-                continue
-            suite_results = self.host.results_fetcher.gather_results(
-                build,
-                wpt_tests_suite,
-                # `exclude_exonerations=(not include_unexpected_pass)` will leave
-                # out unexpected passes as well as other kinds of exonerations
-                # (e.g., experimental build). This is good enough in practice.
-                not self.options.include_unexpected_pass)
-            if build in incomplete_builds:
-                missing_results.append(suite_results)
-            else:
-                completed_results.append(
-                    self.filter_results_for_update(suite_results))
+            for suite in self.suites_for_builder(build.builder_name,
+                                                 flag_specific):
+                # `exclude_exonerations=(not include_unexpected_pass)` will
+                # leave out unexpected passes as well as other kinds of
+                # exonerations (e.g., experimental build). This is good enough
+                # in practice.
+                suite_results = self.host.results_fetcher.gather_results(
+                    build, suite, not self.options.include_unexpected_pass)
+                if 'webdriver_wpt_tests' in suite:
+                    if build in incomplete_builds:
+                        raise ValueError(
+                            f"{suite!r} on {build!r} doesn't run the main WPT "
+                            'suite and therefore cannot inherit results from '
+                            'other builds.')
+                    yield suite_results
+                elif build in incomplete_builds:
+                    missing_results.append(suite_results)
+                else:
+                    completed_results.append(
+                        self.filter_results_for_update(suite_results))
 
-        filled_results = [
-            self.fill_missing_results(results, completed_results)
-            for results in missing_results
-        ]
-        return completed_results + filled_results
+        for results in missing_results:
+            yield self.fill_missing_results(results, completed_results)
+        yield from completed_results
 
     def fill_missing_results(
         self,

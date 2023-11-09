@@ -9,7 +9,7 @@
         "port_name": "linux",
         "specifiers": ["Linux", "Debug"],
         "steps": {
-            "webdriver_tests_suite": {
+            "webdriver_wpt_tests": {
                 "product": "chrome"
             }
         }
