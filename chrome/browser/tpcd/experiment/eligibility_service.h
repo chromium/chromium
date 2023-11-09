@@ -58,6 +58,9 @@ class EligibilityService
   void BroadcastProfileEligibility();
   privacy_sandbox::TpcdExperimentEligibility ProfileEligibility();
   void UpdateCookieDeprecationLabel();
+  void MaybeNotifyManagerTrackingProtectionOnboarded(
+      privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
+          onboarding_status);
 
   // privacy_sandbox::TrackingProtectionOnboarding::Observer:
   void OnTrackingProtectionOnboardingUpdated(

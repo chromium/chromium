@@ -141,6 +141,25 @@ TEST_F(ExperimentManagerImplTestBase, ForceEligibleForTesting) {
   EXPECT_THAT(test_manager.IsClientEligible(), testing::Optional(true));
 }
 
+TEST_F(ExperimentManagerImplTestBase, ProfileOnboardedSetsPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kCookieDeprecationFacilitatedTesting,
+      {{kDisable3PCookiesName, "true"}});
+
+  TestingExperimentManagerImpl test_manager;
+  test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
+  EXPECT_CALL(mock_callback_, Run(true)).Times(1);
+  task_environment_.FastForwardBy(delay_time_);
+
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kEligible));
+
+  test_manager.NotifyProfileTrackingProtectionOnboarded();
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kOnboarded));
+}
+
 class ExperimentManagerImplTest : public ExperimentManagerImplTestBase {
  public:
   ExperimentManagerImplTest() {
