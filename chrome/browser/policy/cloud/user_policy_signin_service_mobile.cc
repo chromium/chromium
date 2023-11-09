@@ -154,6 +154,14 @@ void UserPolicySigninService::InitializeCloudPolicyManager(
   }
 }
 
+CloudPolicyClient::DeviceDMTokenCallback
+UserPolicySigninService::GetDeviceDMTokenIfAffiliatedCallback() {
+  if (device_dm_token_callback_for_testing_) {
+    return device_dm_token_callback_for_testing_;
+  }
+  return base::BindRepeating(&GetDeviceDMTokenIfAffiliated);
+}
+
 base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
   net::NetworkChangeNotifier::ConnectionType connection_type =
       net::NetworkChangeNotifier::GetConnectionType();

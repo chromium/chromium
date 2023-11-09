@@ -6229,6 +6229,7 @@ test("unit_tests") {
     "../browser/plugins/pdf_iframe_navigation_throttle_unittest.cc",
     "../browser/policy/chrome_browser_policy_connector_unittest.cc",
     "../browser/policy/cloud/user_policy_signin_service_unittest.cc",
+    "../browser/policy/cloud/user_policy_signin_service_util_unittest.cc",
     "../browser/policy/homepage_location_policy_handler_unittest.cc",
     "../browser/policy/javascript_policy_handler_unittest.cc",
     "../browser/policy/messaging_layer/public/report_client_unittest.cc",
@@ -8264,6 +8265,7 @@ test("unit_tests") {
   if (is_chromeos_ash) {
     sources -= [
       "../browser/policy/cloud/user_policy_signin_service_unittest.cc",
+      "../browser/policy/cloud/user_policy_signin_service_util_unittest.cc",
       "../browser/profiles/gaia_info_update_service_unittest.cc",
       "../browser/ui/webui/settings/settings_manage_profile_handler_unittest.cc",
       "../browser/ui/webui/signin/profile_picker_handler_unittest.cc",

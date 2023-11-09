@@ -91,6 +91,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   machine_level_user_cloud_policy_manager() {
     return machine_level_user_cloud_policy_manager_;
   }
+  void SetMachineLevelUserCloudPolicyManagerForTesting(
+      MachineLevelUserCloudPolicyManager* manager);
 
   ProxyPolicyProvider* proxy_policy_provider() {
     return proxy_policy_provider_;

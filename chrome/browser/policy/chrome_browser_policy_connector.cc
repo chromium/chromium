@@ -24,6 +24,7 @@
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome_browser_policy_connector.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -235,6 +236,12 @@ void ChromeBrowserPolicyConnector::InitCloudManagementController(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   chrome_browser_cloud_management_controller()->MaybeInit(local_state,
                                                           url_loader_factory);
+}
+
+void ChromeBrowserPolicyConnector::
+    SetMachineLevelUserCloudPolicyManagerForTesting(
+        MachineLevelUserCloudPolicyManager* manager) {
+  machine_level_user_cloud_policy_manager_ = manager;
 }
 
 void ChromeBrowserPolicyConnector::SetProxyPolicyProviderForTesting(
