@@ -1116,19 +1116,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.base_unittests.filter"
-        ],
-        "autotest_name": "chromium",
-        "cros_board": "brya",
-        "dut_pool": "chrome",
-        "name": "base_unittests BRYA_RELEASE_LKGM",
-        "test": "base_unittests",
-        "test_id_prefix": "ninja://base:base_unittests/",
-        "use_lkgm": true,
-        "variant_id": "BRYA_RELEASE_LKGM"
-      },
-      {
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "brya",
         "dut_pool": "chrome",
