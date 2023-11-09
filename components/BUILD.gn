@@ -713,7 +713,7 @@ test("components_unittests") {
     deps += [ "//components/constrained_window:unit_tests" ]
   }
 
-  if (is_win || is_linux || is_chromeos) {
+  if (is_win || is_linux || is_chromeos || is_mac) {
     deps += [ "//components/stability_report:unit_tests" ]
   }
 

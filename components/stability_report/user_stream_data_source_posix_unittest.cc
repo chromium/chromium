@@ -25,7 +25,11 @@ TEST(StabilityReportUserStreamDataSourceTest, GetOpenFDs) {
   process_snapshot.SetProcessID(process_id);
 
   std::unique_ptr<base::ProcessMetrics> metrics =
+#if !BUILDFLAG(IS_MAC)
       base::ProcessMetrics::CreateProcessMetrics(process_id);
+#else
+      base::ProcessMetrics::CreateProcessMetrics(process_id, nullptr);
+#endif  // !BUILDFLAG(IS_MAC)
   const int fd_count = metrics->GetOpenFdCount();
   EXPECT_GE(fd_count, 0);
 

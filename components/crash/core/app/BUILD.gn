@@ -50,7 +50,7 @@ source_set("crashpad_handler_main") {
     "//third_party/crashpad/crashpad/handler:handler",
   ]
 
-  if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos || is_mac) {
     deps += [ "//components/stability_report" ]
   }
 
