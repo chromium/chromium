@@ -81,6 +81,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_null_aggregatable_reports(std::vector<NullAggregatableReport>);
 
+  void use_realistic_report_times();
+
   // Detaches the delegate from its current sequence in preparation for being
   // moved to storage, which runs on its own sequence.
   void DetachFromSequence();
@@ -92,6 +94,9 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::TimeDelta report_delay_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  bool use_realistic_report_times_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   absl::optional<OfflineReportDelayConfig> offline_report_delay_config_
       GUARDED_BY_CONTEXT(sequence_checker_);

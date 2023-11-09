@@ -1915,6 +1915,63 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
           AllOf(ReportSourceIs(SourceEventIdIs(7u)), TriggerDebugKeyIs(22u))));
 }
 
+// Regression test for erroneous use of report_time instead of
+// initial_report_time in event-level prioritization (http://crbug.com/1500598).
+TEST_F(AttributionStorageTest, TriggerPriority_UsesOriginalReportTime) {
+  delegate()->use_realistic_report_times();
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetMaxEventLevelReports(1)
+          .SetEventReportWindows(
+              *attribution_reporting::EventReportWindows::Create(
+                  /*start_time=*/base::Seconds(0),
+                  /*end_times=*/
+                  {
+                      base::Hours(1),
+                      base::Hours(1) + base::Minutes(5),
+                  }))
+          .Build());
+
+  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder().SetPriority(0).Build()));
+
+  // Force the second trigger to fall into the second report window.
+  task_environment_.FastForwardBy(base::Hours(1));
+
+  const base::Time expected_first_report_time =
+      base::Time::Now() + base::Minutes(5);
+
+  // Simulate the first report being sent but experiencing a transient failure,
+  // resulting in its report time being adjusted so that it happens to be equal
+  // to that of the second trigger.
+  {
+    std::vector<AttributionReport> reports =
+        storage()->GetAttributionReports(base::Time::Max());
+    ASSERT_EQ(reports.size(), 1u);
+
+    ASSERT_TRUE(storage()->UpdateReportForSendFailure(
+        reports.front().id(), expected_first_report_time));
+
+    reports = storage()->GetAttributionReports(base::Time::Max());
+    ASSERT_EQ(reports.size(), 1u);
+    ASSERT_EQ(reports.front().report_time(), expected_first_report_time);
+  }
+
+  // This one should not replace the previous one despite having a higher
+  // priority because its original report time does not match that of the
+  // previous one. Prior to the fix, this would have returned
+  // `AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority`.
+  ASSERT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          TriggerBuilder().SetPriority(1).Build()),
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kExcessiveReports),
+            DroppedEventLevelReportIs(
+                Optional(ReportTimeIs(expected_first_report_time)))));
+}
+
 TEST_F(AttributionStorageTest, TriggerPriority_Simple) {
   storage()->StoreSource(SourceBuilder().SetMaxEventLevelReports(1).Build());
 

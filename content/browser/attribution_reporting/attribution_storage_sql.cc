@@ -788,7 +788,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   sql::Statement min_priority_statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kMinPrioritySql));
   min_priority_statement.BindInt64(0, *source.source_id());
-  min_priority_statement.BindTime(1, report.report_time());
+  min_priority_statement.BindTime(1, report.initial_report_time());
 
   absl::optional<AttributionReport::Id> conversion_id_with_min_priority;
   int64_t min_priority;
