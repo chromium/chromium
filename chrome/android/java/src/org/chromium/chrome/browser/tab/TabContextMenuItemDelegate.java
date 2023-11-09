@@ -11,6 +11,7 @@ import android.net.MailTo;
 import android.net.Uri;
 import android.provider.Browser;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -340,6 +341,14 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void onOpenInDefaultBrowser(GURL url) {
+        // Most browsers (including Chrome) do not advertise support for data scheme URIs
+        // and so cannot handle data scheme view Intents. Use the browser backing the currently
+        // running CCT.
+        if (TextUtils.equals("data", url.getScheme())) {
+            onOpenInNewChromeTabFromCCT(url, false);
+            return;
+        }
+
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
         CustomTabsIntent.setAlwaysUseBrowserUI(intent);
         IntentUtils.safeStartActivity(mTab.getContext(), intent);
