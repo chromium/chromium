@@ -35,7 +35,6 @@
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "components/password_manager/core/browser/interactions_stats.h"
-#include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
@@ -93,11 +92,6 @@ bool FormContainsFieldWithName(const FormData& form,
       };
   return base::ranges::any_of(form.fields, equals_element_case_insensitive,
                               &FormFieldData::name);
-}
-
-bool IsPhished(const PasswordForm& credentials) {
-  return credentials.password_issues.find(InsecureType::kPhished) !=
-         credentials.password_issues.end();
 }
 
 void LogUsingPossibleUsername(PasswordManagerClient* client,
@@ -386,39 +380,13 @@ void PasswordFormManager::Save() {
     newly_blocklisted_ = false;
   }
 
-  // This is potentially the conclusion of a password change flow. It might also
-  // not be related to such a flow at all, but the tracker will figure it out.
-  PasswordChangeSuccessTracker::EndEvent end_event =
-      HasGeneratedPassword() ? PasswordChangeSuccessTracker::EndEvent::
-                                   kManualFlowGeneratedPasswordChosen
-                             : PasswordChangeSuccessTracker::EndEvent::
-                                   kManualFlowOwnPasswordChosen;
-  client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
-      parsed_submitted_form_->url,
-      base::UTF16ToUTF8(GetPendingCredentials().username_value), end_event,
-      IsPhished(GetPendingCredentials()));
-
   password_save_manager_->Save(observed_form(), *parsed_submitted_form_);
-
   client_->UpdateFormManagers();
 }
 
 void PasswordFormManager::Update(const PasswordForm& credentials_to_update) {
-  // This is potentially the conclusion of a password change flow. It might also
-  // not be related to such a flow at all, but the tracker will figure it out.
-  PasswordChangeSuccessTracker::EndEvent end_event =
-      HasGeneratedPassword() ? PasswordChangeSuccessTracker::EndEvent::
-                                   kManualFlowGeneratedPasswordChosen
-                             : PasswordChangeSuccessTracker::EndEvent::
-                                   kManualFlowOwnPasswordChosen;
-  client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
-      parsed_submitted_form_->url,
-      base::UTF16ToUTF8(GetPendingCredentials().username_value), end_event,
-      IsPhished(credentials_to_update));
-
   password_save_manager_->Update(credentials_to_update, observed_form(),
                                  *parsed_submitted_form_);
-
   client_->UpdateFormManagers();
 }
 
