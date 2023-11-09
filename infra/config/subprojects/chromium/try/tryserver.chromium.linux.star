@@ -271,8 +271,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        # crbug/940930
-        "chromium.enable_cleandead": 5,
     },
     gn_args = gn_args.config(
         configs = [
@@ -295,6 +293,10 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-rel-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
+    experiments = {
+        # crbug/940930
+        "chromium.enable_cleandead": 10,
+    },
     main_list_view = "try",
 )
 
