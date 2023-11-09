@@ -1904,6 +1904,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Renderer.EvictedLockedResources.{Source}" units="KB"
+    expires_after="2024-06-01">
+  <owner>jonross@chromium.org</owner>
+  <owner>chrome-gpu-memory@google.com</owner>
+  <summary>
+    The estimated memory size of viz::TransferableResources that are locked
+    against deletion. This is reported by a ClientResourceProvider once it has
+    been evicted by the Viz Host, and whose cc::LayerTreeHostImpl has been
+    hidden.
+
+    This counts the {Source} that are locked. These will not be freed when Viz
+    instructs us to ReclaimResources.
+  </summary>
+  <token key="Source">
+    <variant name="AR" summary="AR sources"/>
+    <variant name="Canvas" summary="Canvas sources"/>
+    <variant name="DrawingBuffer"
+        summary="DrawingBuffer sources, which can have mixed origins,"/>
+    <variant name="ExoBuffer" summary="ExoBuffer sources"/>
+    <variant name="HeadsUpDisplay" summary="HeadsUpDisplay sources"/>
+    <variant name="ImageLayerBridge" summary="ImageLayerBridge sources"/>
+    <variant name="PepperGraphics2D" summary="PepperGraphics2D sources"/>
+    <variant name="PPBGraphics3D" summary="PPBGraphics3D sources"/>
+    <variant name="SharedElementTransition"
+        summary="SharedElementTransition sources"/>
+    <variant name="StaleContent" summary="StaleContent sources"/>
+    <variant name="Test" summary="Test sources, which should not be seen,"/>
+    <variant name="TileRasterTask" summary="TileRasterTask sources"/>
+    <variant name="Total" summary="Total of all sources"/>
+    <variant name="UI" summary="UI sources"/>
+    <variant name="Unknown" summary="Unknown sources, which are unexpected,"/>
+    <variant name="Video" summary="Video sources"/>
+    <variant name="WebGPUSwapBuffer" summary="WebGPUSwapBuffer sources"/>
+  </token>
+</histogram>
+
 <histogram name="Memory.Renderer.PrivateMemoryFootprint" units="MB"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->

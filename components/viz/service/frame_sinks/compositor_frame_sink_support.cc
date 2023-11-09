@@ -489,6 +489,9 @@ void CompositorFrameSinkSupport::EvictSurface(const LocalSurfaceId& id) {
   last_evicted_local_surface_id_ = id;
   surface_manager_->DropTemporaryReference(SurfaceId(frame_sink_id_, id));
   MaybeEvictSurfaces();
+  if (client_) {
+    client_->OnSurfaceEvicted(id);
+  }
 }
 
 void CompositorFrameSinkSupport::MaybeEvictSurfaces() {

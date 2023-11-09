@@ -108,6 +108,9 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   // Checks whether a resource is in use by a consumer.
   bool InUseByConsumer(ResourceId id);
 
+  void SetEvicted(bool evicted);
+  void SetVisible(bool visible);
+
   size_t num_resources_for_testing() const;
 
  private:
@@ -119,12 +122,25 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
       base::OnceCallback<void(std::vector<GLbyte*>* tokens)>
           verify_sync_tokens);
 
+  void ValidateEviction();
+
   THREAD_CHECKER(thread_checker_);
 
   base::flat_map<ResourceId, ImportedResource> imported_resources_;
   // The ResourceIds in ClientResourceProvider start from 1 to avoid
   // conflicts with id from DisplayResourceProvider.
   ResourceIdGenerator id_generator_;
+
+  // Whether the Client has had its Surface Evicted. When `true` all
+  // `imported_resources_` are no longer required by the Parent. Though we need
+  // to wait until we are not `visible_` as the Client may still use them.
+  bool evicted_ = false;
+
+  // Whether the Client is visible. While ClientResourceProvider is not
+  // thread-safe, it is often used in a multi-threaded Renderer. While `true`
+  // all `imported_resources_` may still be used by the Client. So it is not
+  // safe to release them, even if we have been `evicted_`.
+  bool visible_ = false;
 };
 
 }  // namespace viz

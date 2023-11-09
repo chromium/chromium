@@ -150,4 +150,10 @@ interface CompositorFrameSinkClient {
   // Inform the client that a compositor frame transition directive was fully
   // processed.
   OnCompositorFrameTransitionDirectiveProcessed(uint32 sequence_id);
+
+  // Inform the client that a Surface has been evicted. Upon eviction a client
+  // should no longer submit to the given, or earlier, `local_surface_id`. This
+  // will be followed later by a call to ReclaimResources for the previously
+  // submitted CompositorFrame.
+  OnSurfaceEvicted(LocalSurfaceId local_surface_id);
 };

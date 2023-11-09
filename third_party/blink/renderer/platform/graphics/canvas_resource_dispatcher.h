@@ -105,6 +105,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   void ReclaimResources(WTF::Vector<viz::ReturnedResource> resources) final;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) final {}
+  void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) final {}
 
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                const gpu::Mailbox& id);

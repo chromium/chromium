@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -90,6 +91,8 @@ class CC_EXPORT LayerTreeFrameSinkClient {
   // processed.
   virtual void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) {}
+
+  virtual void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) {}
 
  protected:
   virtual ~LayerTreeFrameSinkClient() {}

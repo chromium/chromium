@@ -63,6 +63,9 @@ class PLATFORM_EXPORT BeginFrameProvider
       uint32_t sequence_id) final {
     NOTIMPLEMENTED();
   }
+  void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) final {
+    NOTIMPLEMENTED();
+  }
 
   // viz::mojom::blink::EmbeddedFrameSinkClient implementation.
   void BindSurfaceEmbedder(

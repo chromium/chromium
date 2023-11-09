@@ -2260,6 +2260,17 @@ void LayerTreeHostImpl::OnCompositorFrameTransitionDirectiveProcessed(
   client_->NotifyTransitionRequestFinished(sequence_id);
 }
 
+void LayerTreeHostImpl::OnSurfaceEvicted(
+    const viz::LocalSurfaceId& local_surface_id) {
+  // Don't evict if the host has given us a newer viz::SurfaceId. Instead handle
+  // resource returns as normal, and begin producing from the new tree.
+  if (target_local_surface_id_.IsNewerThan(local_surface_id)) {
+    return;
+  }
+  evicted_local_surface_id_ = local_surface_id;
+  resource_provider_.SetEvicted(true);
+}
+
 void LayerTreeHostImpl::ReportEventLatency(
     std::vector<EventLatencyTracker::LatencyData> latencies) {
   if (auto* recorder = CustomMetricRecorder::Get())
@@ -2602,6 +2613,10 @@ absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
   if (settings_.enable_compositing_based_throttling &&
       throttle_decider_.HasThrottlingChanged()) {
     client_->FrameSinksToThrottleUpdated(throttle_decider_.ids());
+  }
+  if (evicted_local_surface_id_.is_valid()) {
+    evicted_local_surface_id_ = viz::LocalSurfaceId();
+    resource_provider_.SetEvicted(false);
   }
 
   return SubmitInfo{submit_time, std::move(events_metrics)};
@@ -3548,6 +3563,7 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
     PrepareTiles();
     tile_manager_.decoded_image_tracker().UnlockAllImages();
   }
+  resource_provider_.SetVisible(visible);
 }
 
 void LayerTreeHostImpl::SetNeedsOneBeginImplFrame() {

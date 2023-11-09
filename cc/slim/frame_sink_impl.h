@@ -84,6 +84,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
+  void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override {}
   void OnBeginFrame(const viz::BeginFrameArgs& begin_frame_args,
                     const viz::FrameTimingDetailsMap& timing_details,
                     bool frame_ack,

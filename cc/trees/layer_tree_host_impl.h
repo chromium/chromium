@@ -575,6 +575,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
               bool skip_draw) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override;
+  void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override;
 
   // EventLatencyTracker implementation.
   void ReportEventLatency(
@@ -1240,6 +1241,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   absl::optional<RenderFrameMetadata> last_draw_render_frame_metadata_;
   // The viz::LocalSurfaceId to unthrottle drawing for.
   viz::LocalSurfaceId target_local_surface_id_;
+  viz::LocalSurfaceId evicted_local_surface_id_;
   viz::ChildLocalSurfaceIdAllocator child_local_surface_id_allocator_;
 
   // Indicates the direction of the last vertical scroll of the root layer.

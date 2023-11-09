@@ -65,6 +65,7 @@ class RootFrameSink::ChildCompositorFrameSink
     owner_->OnCompositorFrameTransitionDirectiveProcessed(
         frame_sink_id_, layer_tree_frame_sink_id_, sequence_id);
   }
+  void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override {}
 
   const viz::FrameSinkId frame_sink_id() { return frame_sink_id_; }
 

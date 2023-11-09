@@ -95,6 +95,7 @@ class SoftwareCompositorFrameSinkClient
   void OnBeginFramePausedChanged(bool paused) override {}
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
+  void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override {}
 };
 
 }  // namespace

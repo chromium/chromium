@@ -368,6 +368,11 @@ void AsyncLayerTreeFrameSink::OnCompositorFrameTransitionDirectiveProcessed(
   client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
 }
 
+void AsyncLayerTreeFrameSink::OnSurfaceEvicted(
+    const viz::LocalSurfaceId& local_surface_id) {
+  client_->OnSurfaceEvicted(local_surface_id);
+}
+
 void AsyncLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   DCHECK(compositor_frame_sink_ptr_);
 
