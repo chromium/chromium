@@ -532,11 +532,18 @@ public class CustomTabsConnection {
         }
 
         if (maySpeculate(session)) {
+            // `IntentHandler.hasAnyIncognitoExtra` check:
             // Hidden tabs are created always with regular profile, so we need to block hidden tab
             // creation in incognito mode not to have inconsistent modes between tab model and
             // hidden tab. (crbug.com/1190971)
-            boolean canUseHiddenTab = mClientManager.getCanUseHiddenTab(session)
-                    && !IntentHandler.hasAnyIncognitoExtra(extras);
+            // The incognito check is already performed in the entrypoint
+            // `mayLaunchUrlInternal`,
+            // but also performed here to be safe against future callers.
+            // Read the discussion at
+            // https://chromium-review.googlesource.com/c/chromium/src/+/5004377/comment/02cf16f4_82578ace/
+            boolean canUseHiddenTab =
+                    mClientManager.getCanUseHiddenTab(session)
+                            && !IntentHandler.hasAnyIncognitoExtra(extras);
             startSpeculation(session, url, canUseHiddenTab, extras, uid);
         }
         preconnectUrls(otherLikelyBundles);
