@@ -122,9 +122,6 @@ void PopupMenuHelper::ShowPopupMenu(
     // be done manually.
     base::mac::ScopedSendingEvent sending_event_scoper;
 
-    // Ensure the UI can update while the menu is fading out.
-    pump_in_fade_ = std::make_unique<base::ScopedPumpMessagesInPrivateModes>();
-
     // Now run a NESTED EVENT LOOP until the pop-up is finished.
     [runner runMenuInView:cocoa_view
                withBounds:[cocoa_view flipRectToNSRect:bounds]
@@ -134,7 +131,6 @@ void PopupMenuHelper::ShowPopupMenu(
   if (!weak_ptr)
     return;  // Handle |this| being deleted.
 
-  pump_in_fade_ = nullptr;
   objc_storage_->menu_runner = nil;
 
   // The RenderFrameHost may be deleted while running the menu, or it may have
