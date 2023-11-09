@@ -197,6 +197,11 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
             },
             {
+                "sdk_package_name": "emulator",
+                "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
+                "sdk_channel": "BETA",
+            },
+            {
                 "sdk_package_name": "platforms;android-34",
                 "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-34.yaml",
             },
