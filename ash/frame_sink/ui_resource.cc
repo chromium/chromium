@@ -16,8 +16,8 @@ UiResource::~UiResource() {
   }
 
   gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
-  DCHECK(!mailbox.IsZero());
-  sii->DestroySharedImage(sync_token, mailbox);
+  DCHECK(!mailbox().IsZero());
+  sii->DestroySharedImage(sync_token, mailbox());
 }
 
 }  // namespace ash

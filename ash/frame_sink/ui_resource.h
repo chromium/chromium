@@ -29,8 +29,10 @@ class ASH_EXPORT UiResource {
 
   virtual ~UiResource();
 
+  void SetMailbox(const gpu::Mailbox& mailbox) { mailbox_internal_ = mailbox; }
+  const gpu::Mailbox& mailbox() const { return mailbox_internal_; }
+
   scoped_refptr<viz::RasterContextProvider> context_provider;
-  gpu::Mailbox mailbox;
   gpu::SyncToken sync_token;
   viz::SharedImageFormat format;
   gfx::Size resource_size;
@@ -50,6 +52,11 @@ class ASH_EXPORT UiResource {
 
   // If the textures represented by the resource is damaged.
   bool damaged = true;
+
+ private:
+  // NOTE: This is private as an upcoming CL will change UiResource to instead
+  // hold ClientSharedImage.
+  gpu::Mailbox mailbox_internal_;
 };
 
 }  // namespace ash

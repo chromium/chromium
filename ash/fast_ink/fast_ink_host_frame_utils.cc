@@ -47,7 +47,7 @@ std::unique_ptr<UiResource> AcquireUiResource(
   std::unique_ptr<UiResource> resource;
   if (reusable_resource_id != viz::kInvalidResourceId) {
     resource = resource_manager->ReleaseAvailableResource(reusable_resource_id);
-    CHECK(mailbox.IsZero() || mailbox == resource->mailbox);
+    CHECK(mailbox.IsZero() || mailbox == resource->mailbox());
   } else {
     resource = CreateUiResource(size, kFastInkUiSourceId, is_overlay_candidate,
                                 gpu_memory_buffer, mailbox, sync_token);
@@ -167,12 +167,12 @@ std::unique_ptr<UiResource> CreateUiResource(
         gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         "FastInkHostUIResource", gpu_memory_buffer->CloneHandle());
     CHECK(client_shared_image);
-    resource->mailbox = client_shared_image->mailbox();
+    resource->SetMailbox(client_shared_image->mailbox());
     resource->sync_token = sii->GenVerifiedSyncToken();
   } else {
     // This UiResource is operating on a shared SharedImage.
     resource->owns_mailbox = false;
-    resource->mailbox = mailbox;
+    resource->SetMailbox(mailbox);
     resource->sync_token = sync_token;
   }
 
@@ -221,7 +221,7 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     gpu::SharedImageInterface* sii =
         resource->context_provider->SharedImageInterface();
 
-    sii->UpdateSharedImage(resource->sync_token, resource->mailbox);
+    sii->UpdateSharedImage(resource->sync_token, resource->mailbox());
     resource->sync_token = sii->GenVerifiedSyncToken();
     resource->damaged = false;
   }

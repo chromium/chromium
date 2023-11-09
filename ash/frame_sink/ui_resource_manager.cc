@@ -124,7 +124,7 @@ viz::TransferableResource UiResourceManager::PrepareResourceForExport(
 
   viz::TransferableResource transferable_resource =
       viz::TransferableResource::MakeGpu(
-          to_be_exported_resource->mailbox, GL_TEXTURE_2D,
+          to_be_exported_resource->mailbox(), GL_TEXTURE_2D,
           to_be_exported_resource->sync_token,
           to_be_exported_resource->resource_size,
           to_be_exported_resource->format,
