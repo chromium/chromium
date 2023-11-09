@@ -29,7 +29,5 @@ specific_include_rules = {
   # //content/browser.
   ".*\.(cc|mm)": [
     "+content/browser",
-    "+services/tracing/public/cpp",
-    "+third_party/perfetto/include",
   ],
 }

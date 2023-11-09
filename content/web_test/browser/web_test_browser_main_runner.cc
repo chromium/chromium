@@ -116,17 +116,18 @@ void ConnectStdioSocket(const std::string& host_and_port) {
 
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-void RunOneTest(const content::TestInfo& test_info,
+bool RunOneTest(const content::TestInfo& test_info,
                 content::WebTestControlHost* web_test_control_host,
                 content::BrowserMainRunner* main_runner) {
   TRACE_EVENT0("shell", "WebTestBrowserMainRunner::RunOneTest");
   DCHECK(web_test_control_host);
 
-  web_test_control_host->PrepareForWebTest(test_info);
+  if (!web_test_control_host->PrepareForWebTest(test_info))
+    return false;
 
   main_runner->Run();
 
-  web_test_control_host->ResetBrowserAfterWebTest();
+  return web_test_control_host->ResetBrowserAfterWebTest();
 }
 
 void RunTests(content::BrowserMainRunner* main_runner) {
@@ -164,7 +165,8 @@ void RunTests(content::BrowserMainRunner* main_runner) {
       *base::CommandLine::ForCurrentProcess());
   std::unique_ptr<content::TestInfo> test_info;
   while ((test_info = test_extractor.GetNextTest())) {
-    RunOneTest(*test_info, &test_controller, main_runner);
+    if (!RunOneTest(*test_info, &test_controller, main_runner))
+      break;
   }
 }
 

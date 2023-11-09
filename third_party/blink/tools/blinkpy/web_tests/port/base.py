@@ -234,15 +234,6 @@ class Port(object):
         r'"(?:(.+):)?(?:\s*maxDifference\s*=\s*)?(?:(\d+)-)?(\d+);(?:\s*totalPixels\s*=\s*)?(?:(\d+)-)?(\d+)"\s*/?>'
     )
 
-    # Add fully-qualified test names here to generate per-test traces.
-    #
-    # To generate traces for a limited set of tests running on CI bots, upload
-    # a patch that adds entries to TESTS_TO_TRACE and do a CQ dry run.
-    #
-    # To generate traces when running locally, either modify TESTS_TO_TRACE or
-    # specify --enable-per-test-tracing to generate traces for all tests.
-    TESTS_TO_TRACE = set([])
-
     # Because this is an abstract base class, arguments to functions may be
     # unused in this class - pylint: disable=unused-argument
 
@@ -1677,29 +1668,6 @@ class Port(object):
         """
         return self._filesystem.join(self.web_tests_dir(), test_name)
 
-    # This is used to generate tracing data covering the execution of a single
-    # test case; it omits startup and shutdown time for the test binary.
-    @memoized
-    def trace_file_for_test(self, test):
-        if (self.get_option('enable_per_test_tracing')
-                or test in self.TESTS_TO_TRACE):
-            basename = '{}.pftrace'.format(
-                self._filesystem.sanitize_filename(test))
-            return self._filesystem.join(tempfile.gettempdir(), basename)
-        return None
-
-    # This is used to generate tracing data covering the entire execution of the
-    # test binary, including startup and shutdown time.
-    @memoized
-    def startup_trace_file_for_test(self, test_name):
-        # Note that this method is memoized, so subsequent runs of a test will
-        # overwrite this file.
-        if not self.get_option('enable_tracing'):
-            return None
-        current_time = time.strftime("%Y-%m-%d-%H-%M-%S")
-        return 'trace_layout_test_{}_{}.pftrace'.format(
-            self._filesystem.sanitize_filename(test_name), current_time)
-
     @memoized
     def args_for_test(self, test_name):
         args = self._lookup_virtual_test_args(test_name)
@@ -1721,13 +1689,18 @@ class Port(object):
             if DISABLE_THREADED_ANIMATION_FLAG in args:
                 args.remove(DISABLE_THREADED_ANIMATION_FLAG)
 
-        startup_trace_file = self.startup_trace_file_for_test(test_name)
-        if startup_trace_file is not None:
-            tracing_categories = self.get_option('enable_tracing')
+        tracing_categories = self.get_option('enable_tracing')
+        if tracing_categories:
             args.append('--trace-startup=' + tracing_categories)
             # Do not finish the trace until the test is finished.
             args.append('--trace-startup-duration=0')
-            args.append('--trace-startup-file=' + startup_trace_file)
+            # Append the current time to the output file name to ensure that
+            # the subsequent repetitions of the test do not overwrite older
+            # trace files.
+            current_time = time.strftime("%Y-%m-%d-%H-%M-%S")
+            file_name = 'trace_layout_test_{}_{}.json'.format(
+                self._filesystem.sanitize_filename(test_name), current_time)
+            args.append('--trace-startup-file=' + file_name)
 
         return args
 

@@ -29,23 +29,16 @@ std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
   std::string::size_type separator_position = path_or_url.find('\'');
   std::string expected_pixel_hash;
   bool wpt_print_mode = false;
-  std::string trace_file;
   if (separator_position != std::string::npos) {
     expected_pixel_hash = path_or_url.substr(separator_position + 1);
     path_or_url.erase(separator_position);
 
     separator_position = expected_pixel_hash.find('\'');
+
     if (separator_position != std::string::npos) {
-      trace_file = expected_pixel_hash.substr(separator_position + 1);
+      wpt_print_mode =
+          expected_pixel_hash.substr(separator_position + 1) == "print";
       expected_pixel_hash.erase(separator_position);
-      separator_position = trace_file.find('\'');
-      if (separator_position != std::string::npos) {
-        wpt_print_mode = trace_file.substr(0, separator_position) == "print";
-        trace_file = trace_file.substr(separator_position + 1);
-      } else {
-        wpt_print_mode = trace_file.substr(separator_position + 1) == "print";
-        trace_file.clear();
-      }
     }
   }
 
@@ -73,12 +66,6 @@ std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
   base::FilePath local_path;
   base::FilePath current_working_directory;
 
-#if BUILDFLAG(IS_WIN)
-  base::FilePath trace_file_path(base::SysNativeMBToWide(trace_file));
-#else
-  base::FilePath trace_file_path(trace_file);
-#endif
-
   // We're outside of the message loop here, and this is a test.
   base::ScopedAllowBlockingForTesting allow_blocking;
   if (net::FileURLToFilePath(test_url, &local_path))
@@ -86,25 +73,23 @@ std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
   else
     base::GetCurrentDirectory(&current_working_directory);
 
-  return std::make_unique<TestInfo>(
-      test_url, expected_pixel_hash, std::move(current_working_directory),
-      wpt_print_mode, protocol_mode, std::move(trace_file_path));
+  return std::make_unique<TestInfo>(test_url, expected_pixel_hash,
+                                    current_working_directory, wpt_print_mode,
+                                    protocol_mode);
 }
 
 }  // namespace
 
 TestInfo::TestInfo(const GURL& url,
                    const std::string& expected_pixel_hash,
-                   base::FilePath current_working_directory,
+                   const base::FilePath& current_working_directory,
                    bool wpt_print_mode,
-                   bool protocol_mode,
-                   base::FilePath trace_file)
+                   bool protocol_mode)
     : url(url),
       expected_pixel_hash(expected_pixel_hash),
-      current_working_directory(std::move(current_working_directory)),
+      current_working_directory(current_working_directory),
       wpt_print_mode(wpt_print_mode),
-      protocol_mode(protocol_mode),
-      trace_file(std::move(trace_file)) {}
+      protocol_mode(protocol_mode) {}
 
 TestInfo::~TestInfo() {}
 

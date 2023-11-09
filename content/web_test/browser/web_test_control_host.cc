@@ -541,7 +541,7 @@ WebTestControlHost::~WebTestControlHost() {
   // WebTestBrowserMainRunner will close all Shell windows including those.
 }
 
-void WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
+bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   TRACE_EVENT0("shell", "WebTestControlHost::PrepareForWebTest");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_working_directory_ = test_info.current_working_directory;
@@ -566,11 +566,6 @@ void WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   all_observed_render_process_hosts_.clear();
   render_process_host_observations_.RemoveAllObservations();
   frame_to_layout_dump_map_.clear();
-
-  if (!test_info.trace_file.empty()) {
-    tracing_controller_.emplace(test_info.trace_file);
-    tracing_controller_->StartTracing();
-  }
 
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
@@ -676,9 +671,11 @@ void WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
     params.should_clear_history_list = true;
     main_window_->web_contents()->GetController().LoadURLWithParams(params);
   }
+
+  return true;
 }
 
-void WebTestControlHost::ResetBrowserAfterWebTest() {
+bool WebTestControlHost::ResetBrowserAfterWebTest() {
   TRACE_EVENT0("shell", "WebTestControlHost::ResetBrowserAfterWebTest");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -691,13 +688,6 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   web_test_render_frame_map_.clear();
   web_test_render_thread_map_.clear();
   receiver_bindings_.Clear();
-
-  // StopTracing() must be called before the printer_ calls, to ensure the trace
-  // file is flushed to disk before control returns to the test runner
-  if (tracing_controller_.has_value()) {
-    tracing_controller_->StopTracing();
-    tracing_controller_.reset();
-  }
 
   printer_->PrintTextFooter();
   printer_->PrintImageFooter();
@@ -770,6 +760,8 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   }
 
   weak_factory_.InvalidateWeakPtrs();
+
+  return true;
 }
 
 void WebTestControlHost::DidCreateOrAttachWebContents(
