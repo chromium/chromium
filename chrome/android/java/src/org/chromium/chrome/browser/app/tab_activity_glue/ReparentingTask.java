@@ -19,6 +19,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.UserData;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
@@ -35,6 +36,8 @@ import org.chromium.ui.base.WindowAndroid;
  * Takes care of reparenting a Tab object from one Activity to another.
  */
 public class ReparentingTask implements UserData {
+    public static final String TAG = "ReparentingTask";
+
     /** Provides data to {@link ReparentingTask} facilitate reparenting tabs. */
     public interface Delegate {
         /**
@@ -150,8 +153,11 @@ public class ReparentingTask implements UserData {
         // TODO(crbug/1463737): We shouldn't be detaching tabs with null WebContents as it can
         // put the tab into an unexpected detached = false state if a navigation happens on the
         // detached tab.
-        assert webContents != null : "WebContents should not be null when detaching a tab.";
-        if (webContents != null) webContents.setTopLevelNativeWindow(null);
+        if (webContents != null) {
+            webContents.setTopLevelNativeWindow(null);
+        } else {
+            Log.e(TAG, "WebContents was null when detaching a tab for reparenting.");
+        }
 
         // TabModelSelector of this Tab, if present, gets notified to remove the tab from
         // the TabModel it belonged to.
