@@ -1375,6 +1375,12 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
     return;
   }
 
+  if constexpr (ContainsFlags(flags, FreeFlags::kZap)) {
+    SlotSpan* slot_span = SlotSpan::FromObject(object);
+    uintptr_t slot_start = ObjectToSlotStart(object);
+    internal::SecureMemset(internal::SlotStartAddr2Ptr(slot_start),
+                           internal::kFreedByte, GetSlotUsableSize(slot_span));
+  }
   // TODO(https://crbug.com/1497380): Collecting objects for
   // `kSchedulerLoopQuarantine` here means it "delays" other checks (BRP
   // refcount, cookie, etc.)

@@ -63,7 +63,9 @@ enum class FreeFlags {
   kNoHooks = 1 << 1,  // Internal.
   // Quarantine for a while to ensure no UaF from on-stack pointers.
   kSchedulerLoopQuarantine = 1 << 2,
-  kMaxValue = kSchedulerLoopQuarantine,
+  // Zap the object region on `Free()`.
+  kZap = 1 << 3,
+  kMaxValue = kZap,
 };
 PA_DEFINE_OPERATORS_FOR_FLAGS(FreeFlags);
 }  // namespace internal

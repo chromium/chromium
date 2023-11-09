@@ -12,17 +12,26 @@ using base::internal::is_memory_safety_checked;
 using base::internal::MemorySafetyCheck;
 
 // Normal object: should be targeted by no additional |MemorySafetyCheck|.
-struct DefaultChecks {};
+struct DefaultChecks {
+ public:
+  char data[16];
+};
 
 // Annotated object: should have |base::internal::kAdvancedMemorySafetyChecks|.
 struct AdvancedChecks {
   ADVANCED_MEMORY_SAFETY_CHECKS();
+
+ public:
+  char data[16];
 };
 
 // Annotated and aligned object for testing aligned allocations.
 constexpr int kLargeAlignment = 2 * __STDCPP_DEFAULT_NEW_ALIGNMENT__;
 struct alignas(kLargeAlignment) AlignedAdvancedChecks {
   ADVANCED_MEMORY_SAFETY_CHECKS();
+
+ public:
+  char data[16];
 };
 
 // The macro may hook memory allocation/deallocation but should forward the
@@ -122,6 +131,36 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
 
   list.Purge();
   list.SetCapacityInBytesForTesting(original_capacity_in_bytes);
+}
+
+TEST(MemorySafetyCheckTest, ZapOnFree) {
+  static_assert(
+      !is_memory_safety_checked<DefaultChecks, MemorySafetyCheck::kZapOnFree>);
+  static_assert(
+      is_memory_safety_checked<AdvancedChecks, MemorySafetyCheck::kZapOnFree>);
+
+  {
+    // Without kZapOnFree.
+    auto* ptr = new DefaultChecks();
+    EXPECT_NE(ptr, nullptr);
+    delete ptr;
+    // *ptr is undefined.
+  }
+
+  {
+    // With kZapOnFree.
+    auto* ptr = new AdvancedChecks();
+    EXPECT_NE(ptr, nullptr);
+    memset(ptr->data, 'A', sizeof(ptr->data));
+    delete ptr;
+
+    // Dereferencing `ptr` is still undefiner behavior, but we can say it is
+    // somewhat defined as this test is gated behind
+    // `BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)`.
+    // I believe behavior here is concrete enough to be tested, but it can be
+    // affected by changes in PA. Please disable this test if it flakes.
+    EXPECT_NE(ptr->data[0], 'A');
+  }
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
