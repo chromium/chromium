@@ -26,8 +26,6 @@
 
 - (void)pageControlChangedPageByTap:(id)sender;
 
-- (void)selectTabsButtonTapped:(id)sender;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TOOLBARS_TAB_GRID_TOOLBARS_ACTION_WRANGLER_H_

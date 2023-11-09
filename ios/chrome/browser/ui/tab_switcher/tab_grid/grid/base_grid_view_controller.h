@@ -18,6 +18,7 @@
 @protocol GridEmptyView;
 @class GridItemIdentifier;
 @protocol GridShareableItemsProvider;
+@protocol GridViewControllerMutator;
 @class LegacyGridTransitionLayout;
 @protocol PriceCardDataSource;
 @protocol SuggestedActionsDelegate;
@@ -116,6 +117,8 @@ class WebStateID;
     suggestedActionsDelegate;
 // Delegate is informed of user interactions in the grid UI.
 @property(nonatomic, weak) id<GridViewControllerDelegate> delegate;
+// Mutator is informed when the model should be updated after user interaction.
+@property(nonatomic, weak) id<GridViewControllerMutator> mutator;
 // Handles drag and drop interactions that involved the model layer.
 @property(nonatomic, weak) id<TabCollectionDragDropHandler> dragDropHandler;
 // Tracks if a drop animation is in progress.

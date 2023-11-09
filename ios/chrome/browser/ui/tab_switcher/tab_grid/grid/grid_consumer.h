@@ -13,6 +13,8 @@
 - (void)setPageIdleStatus:(BOOL)status;
 // Sets the active page.
 - (void)setActivePageFromPage:(TabGridPage)page;
+// Sets the page mode.
+- (void)setPageMode:(TabGridMode)mode;
 // Notify consumer that the grid will be dismissed.
 - (void)prepareForDismissal;
 

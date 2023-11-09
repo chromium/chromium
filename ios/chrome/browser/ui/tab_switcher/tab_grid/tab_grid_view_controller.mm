@@ -584,16 +584,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-- (void)setReauthAgent:(IncognitoReauthSceneAgent*)reauthAgent {
-  if (_reauthAgent) {
-    [_reauthAgent removeObserver:self];
-  }
-
-  _reauthAgent = reauthAgent;
-
-  [_reauthAgent addObserver:self];
-}
-
 #pragma mark - TabGridPaging
 
 - (void)setActivePage:(TabGridPage)activePage {
@@ -633,8 +623,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.incognitoTabsViewController.mode = self.tabGridMode;
 
   self.scrollView.scrollEnabled = (self.tabGridMode == TabGridModeNormal);
-  if (mode == TabGridModeSelection)
-    [self updateSelectionModeToolbars];
 }
 
 #pragma mark - Private
@@ -1508,15 +1496,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Updates the views, buttons, toolbars as well as broadcasts incognito tabs
 // visibility after the tab count has changed.
 - (void)handleTabCountChangeWithTabCount:(NSUInteger)tabCount {
-  if (self.tabGridMode == TabGridModeSelection) {
-    // Exit selection mode if there are no more tabs.
-    if (tabCount == 0) {
-      self.tabGridMode = TabGridModeNormal;
-    }
-
-    [self updateSelectionModeToolbars];
-  }
-
   if (tabCount > 0) {
     // Undo is only available when the tab grid is empty.
     self.undoCloseAllAvailable = NO;
@@ -1917,7 +1896,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   if (self.tabGridMode == TabGridModeSelection) {
-    [self updateSelectionModeToolbars];
     return;
   }
 
@@ -2098,15 +2076,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - TabGridToolbarsActionWrangler
 
 - (void)doneButtonTapped:(id)sender {
-  // Tapping Done when in selection mode, should only return back to the normal
-  // mode.
-  if (self.tabGridMode == TabGridModeSelection) {
-    self.tabGridMode = TabGridModeNormal;
-    // Records action when user exit the selection mode.
-    base::RecordAction(base::UserMetricsAction("MobileTabGridSelectionDone"));
-    return;
-  }
-
   TabGridPage newActivePage = self.currentPage;
 
   if (self.currentPage == TabGridPageRemoteTabs) {
@@ -2126,11 +2095,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-- (void)selectTabsButtonTapped:(id)sender {
-  self.tabGridMode = TabGridModeSelection;
-  base::RecordAction(base::UserMetricsAction("MobileTabGridSelectTabs"));
-}
-
 - (void)selectAllButtonTapped:(id)sender {
   BaseGridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
@@ -2146,8 +2110,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         base::UserMetricsAction("MobileTabGridSelectionSelectAll"));
     [gridViewController selectAllItemsForEditing];
   }
-
-  [self updateSelectionModeToolbars];
 }
 
 - (void)searchButtonTapped:(id)sender {
@@ -2237,15 +2199,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (isTabGridUpdated) {
     [self configureButtonsForActiveAndCurrentPage];
     [self broadcastIncognitoContentVisibility];
-  }
-}
-
-#pragma mark - IncognitoReauthObserver
-
-- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
-    didUpdateAuthenticationRequirement:(BOOL)isRequired {
-  if (isRequired) {
-    self.tabGridMode = TabGridModeNormal;
   }
 }
 
@@ -2418,6 +2371,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)setActivePageFromPage:(TabGridPage)page {
   self.activePage = page;
+}
+
+- (void)setPageMode:(TabGridMode)mode {
+  self.tabGridMode = mode;
 }
 
 - (void)prepareForDismissal {

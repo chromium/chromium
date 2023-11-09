@@ -10,7 +10,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_buttons_delegate.h"
 
 class Browser;
@@ -27,6 +29,7 @@ class WebStateList;
 // Mediates between model layer and tab grid UI layer.
 @interface BaseGridMediator : NSObject <GridCommands,
                                         GridShareableItemsProvider,
+                                        GridViewControllerMutator,
                                         TabCollectionDragDropHandler,
                                         TabGridPageMutator,
                                         TabGridToolbarsButtonsDelegate>
@@ -56,6 +59,9 @@ class WebStateList;
 @end
 
 @interface BaseGridMediator (Subclassing)
+
+// Current mode.
+@property(nonatomic, assign) TabGridMode currentMode;
 
 // Disconnects the mediator.
 - (void)disconnect NS_REQUIRES_SUPER;

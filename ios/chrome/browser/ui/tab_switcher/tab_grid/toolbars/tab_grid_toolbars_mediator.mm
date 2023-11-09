@@ -15,6 +15,8 @@
   // Configuration that provides all buttons to display.
   TabGridToolbarsConfiguration* _configuration;
   id<TabGridToolbarsButtonsDelegate> _buttonsDelegate;
+
+  TabGridMode _currentMode;
 }
 
 #pragma mark - GridToolbarsMutator
@@ -23,9 +25,22 @@
   _configuration = configuration;
 
   // TODO(crbug.com/1457146): Add all buttons management.
+  [self configureSelectionModeButtons];
+
+  // Configures titles.
+  self.topToolbarConsumer.selectedTabsCount = _configuration.selectedItemsCount;
+  self.bottomToolbarConsumer.selectedTabsCount =
+      _configuration.selectedItemsCount;
+  if (_configuration.selectAllButton) {
+    [self.topToolbarConsumer configureSelectAllButtonTitle];
+  } else {
+    [self.topToolbarConsumer configureDeselectAllButtonTitle];
+  }
+
   [self configureEditOrUndoButton];
   [self.bottomToolbarConsumer
       setNewTabButtonEnabled:_configuration.newTabButton];
+
   [self.topToolbarConsumer setDoneButtonEnabled:_configuration.doneButton];
   [self.bottomToolbarConsumer setDoneButtonEnabled:_configuration.doneButton];
 }
@@ -37,7 +52,32 @@
   self.bottomToolbarConsumer.buttonsDelegate = delegate;
 }
 
+- (void)setToolbarsMode:(TabGridMode)mode {
+  _currentMode = mode;
+  self.bottomToolbarConsumer.mode = mode;
+  self.topToolbarConsumer.mode = mode;
+}
+
 #pragma mark - Private
+
+// Helpers to configure all selection mode buttons.
+- (void)configureSelectionModeButtons {
+  [self.bottomToolbarConsumer
+      setShareTabsButtonEnabled:_configuration.shareButton];
+
+  [self.bottomToolbarConsumer setAddToButtonEnabled:_configuration.addToButton];
+  if (_configuration.addToButton) {
+    [self.bottomToolbarConsumer
+        setAddToButtonMenu:_configuration.addToButtonMenu];
+  }
+
+  [self.bottomToolbarConsumer
+      setCloseTabsButtonEnabled:_configuration.closeSelectedTabsButton];
+
+  [self.topToolbarConsumer
+      setSelectAllButtonEnabled:_configuration.selectAllButton ||
+                                _configuration.deselectAllButton];
+}
 
 // Helpers to determine which button should be selected between "Edit" or "Undo"
 // and if the "Edit" button should be enabled.

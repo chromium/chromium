@@ -114,6 +114,7 @@
 
   self.tabGridViewController.regularTabsDelegate = _mediator;
   self.gridViewController.dragDropHandler = _mediator;
+  self.gridViewController.mutator = _mediator;
   self.gridViewController.shareableItemsProvider = _mediator;
 
   // If regular is enabled then the grid exists and it is not disabled.

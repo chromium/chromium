@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_view_controller.h"
@@ -557,11 +558,13 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   if ([self.shareableItemsProvider isItemWithIDShareable:identifier]) {
     _selectedSharableEditingItemIDs.insert(identifier);
   }
+  [self.mutator numberOfSelectedItemsAndShareableItemsChanged];
 }
 
 - (void)deselectItemWithIDForEditing:(web::WebStateID)identifier {
   _selectedEditingItemIDs.erase(identifier);
   _selectedSharableEditingItemIDs.erase(identifier);
+  [self.mutator numberOfSelectedItemsAndShareableItemsChanged];
 }
 
 #pragma mark - UICollectionView Diffable Data Source Helpers

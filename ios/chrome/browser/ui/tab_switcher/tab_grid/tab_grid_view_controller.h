@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
@@ -81,7 +80,6 @@ enum class TabGridPageConfiguration {
 @interface TabGridViewController
     : UIViewController <DisabledGridViewControllerDelegate,
                         GridConsumer,
-                        IncognitoReauthObserver,
                         KeyCommandActions,
                         TabGridConsumer,
                         LegacyGridTransitionAnimationLayoutProviding,
@@ -91,8 +89,6 @@ enum class TabGridPageConfiguration {
                         UISearchBarDelegate>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
-// TODO(crbug.com/1457146): Move to Incognito Coordinator.
-@property(nonatomic, weak) IncognitoReauthSceneAgent* reauthAgent;
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;

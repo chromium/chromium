@@ -10,7 +10,9 @@ source_set("grid") {
   ]
   deps = [
     ":grid_mediator_delegate",
+    ":grid_toolbars_mutator",
     ":grid_ui",
+    ":grid_view_controller_mutator",
     "//base",
     "//components/bookmarks/browser",
     "//components/bookmarks/common",
@@ -43,7 +45,9 @@ source_set("grid") {
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_page_mutator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
     "//net",
     "//ui/gfx",
@@ -87,6 +91,7 @@ source_set("grid_ui") {
 
   deps = [
     ":grid_ui_constants",
+    ":grid_view_controller_mutator",
     "resources:tab_grid_incognito_tabs_empty",
     "resources:tab_grid_regular_tabs_empty",
     "//base",
@@ -137,7 +142,14 @@ source_set("grid_toolbars_configuration_provider") {
 source_set("grid_toolbars_mutator") {
   sources = [ "grid_toolbars_mutator.h" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
+  ]
+}
+
+source_set("grid_view_controller_mutator") {
+  sources = [ "grid_view_controller_mutator.h" ]
 }
 
 source_set("unit_tests") {
