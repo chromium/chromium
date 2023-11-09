@@ -428,6 +428,8 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       break;
     }
     case TOGGLE_SIDE_PANEL_VISIBILITY: {
+      // TODO(crbug/1500800): Page navigations can occur while the context menu
+      // is open. This needs to be handled here but testing became a problem.
       SidePanelService* const side_panel_service = GetSidePanelService();
       CHECK(side_panel_service);
 
