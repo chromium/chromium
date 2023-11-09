@@ -362,9 +362,13 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
   base::UmaHistogramExactLinear(string_constants::kFontScaleHistogramName,
                                 GetNormalizedFontScale(font_scale),
                                 maximum_font_scale_logging + 1);
-  ReadAnythingFont font =
-      font_map_.at(prefs->GetString(prefs::kAccessibilityReadAnythingFontName));
-  base::UmaHistogramEnumeration(string_constants::kFontNameHistogramName, font);
+  std::string font_name =
+      prefs->GetString(prefs::kAccessibilityReadAnythingFontName);
+  if (font_map_.find(font_name) != font_map_.end()) {
+    ReadAnythingFont font = font_map_.at(font_name);
+    base::UmaHistogramEnumeration(string_constants::kFontNameHistogramName,
+                                  font);
+  }
   read_anything::mojom::Colors color =
       static_cast<read_anything::mojom::Colors>(
           prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo));
