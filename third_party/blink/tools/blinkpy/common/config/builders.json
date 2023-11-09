@@ -61,7 +61,7 @@
         "specifiers": ["Chrome", "Release"],
         "is_try_builder": true,
         "steps": {
-            "wpt_tests_suite (with patch)": {}
+            "chrome_wpt_tests (with patch)": {}
         }
     },
     "linux-blink-rel": {
@@ -86,7 +86,7 @@
             "not_site_per_process_blink_wpt_tests (with patch)": {
                 "flag_specific": "disable-site-isolation-trials"
             },
-            "webdriver_tests_suite (with patch)": {
+            "webdriver_wpt_tests (with patch)": {
                 "product": "chrome"
             }
         },

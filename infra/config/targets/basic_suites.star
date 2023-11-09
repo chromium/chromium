@@ -5115,7 +5115,7 @@ targets.legacy_basic_suite(
                 ],
             ),
         ),
-        "webdriver_tests_suite": targets.legacy_test_config(
+        "webdriver_wpt_tests": targets.legacy_test_config(
             test = "chrome_wpt_tests",
             results_handler = "layout tests",
             mixins = [
@@ -6585,7 +6585,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "wpt_web_tests",
     tests = {
-        "wpt_tests_suite": targets.legacy_test_config(
+        "chrome_wpt_tests": targets.legacy_test_config(
             test = "chrome_wpt_tests",
             results_handler = "layout tests",
             args = [

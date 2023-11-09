@@ -4636,7 +4636,7 @@
       'Mac FYI Retina ASAN (AMD)',
     ],
   },
-  'webdriver_tests_suite': {
+  'webdriver_wpt_tests': {
     'modifications': {
       'Linux Tests (dbg)(1)': {
         'args': [

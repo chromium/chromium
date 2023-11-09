@@ -4333,7 +4333,7 @@
           ],
         },
       },
-      'webdriver_tests_suite': {
+      'webdriver_wpt_tests': {
         'test': 'chrome_wpt_tests',
         'results_handler': 'layout tests',
         'mixins': [
@@ -5548,7 +5548,7 @@
     },
 
     'wpt_web_tests': {
-      'wpt_tests_suite': {
+      'chrome_wpt_tests': {
         'test': 'chrome_wpt_tests',
         'results_handler': 'layout tests',
         'args': [

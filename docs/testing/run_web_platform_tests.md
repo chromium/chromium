@@ -74,7 +74,7 @@ the same way as other web platform tests, e.g.
 third_party/blink/tools/run_wpt_tests.py --release -p chrome external/wpt/webdriver/tests/classic/find_element/find.py
 ```
 
-The `webdriver_tests_suite` step of `linux-blink-rel` runs wdspec tests and can provide results for rebaselining.
+The `webdriver_wpt_tests` step of `linux-blink-rel` runs wdspec tests and can provide results for rebaselining.
 
 ## Running Web Platform Tests with Chrome Android
 
