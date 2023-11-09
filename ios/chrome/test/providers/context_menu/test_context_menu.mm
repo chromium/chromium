@@ -34,13 +34,13 @@ BOOL HandleIntentTypesForOneTap(
   return NO;
 }
 
-absl::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
+std::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
     const base::Value::Dict& metadata,
     const std::string& text,
     NSTextCheckingType handled_types,
     ukm::SourceId source_id,
     const base::FilePath& model_path) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ios::provider
