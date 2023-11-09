@@ -538,13 +538,12 @@ TEST_F(WebRequestRulesRegistryTest, IgnoreRulesByTag) {
   base::Value::Dict value1 = base::test::ParseJsonDict(kRule1);
   base::Value::Dict value2 = base::test::ParseJsonDict(kRule2);
 
-  std::vector<const api::events::Rule*> rules;
-  auto rule1 = api::events::Rule::FromValue(value1);
-  auto rule2 = api::events::Rule::FromValue(value2);
+  std::optional<api::events::Rule> rule1 = api::events::Rule::FromValue(value1);
+  std::optional<api::events::Rule> rule2 = api::events::Rule::FromValue(value2);
   ASSERT_TRUE(rule1);
   ASSERT_TRUE(rule2);
-  rules.push_back(&rule1.value());
-  rules.push_back(&rule2.value());
+  std::vector<const api::events::Rule*> rules = {&rule1.value(),
+                                                 &rule2.value()};
 
   scoped_refptr<WebRequestRulesRegistry> registry(
       new TestWebRequestRulesRegistry(&profile_));
@@ -696,7 +695,7 @@ TEST(WebRequestRulesRegistrySimpleTest, StageChecker) {
 
   base::Value::Dict value = base::test::ParseJsonDict(kRule);
 
-  auto rule = api::events::Rule::FromValue(value);
+  std::optional<api::events::Rule> rule = api::events::Rule::FromValue(value);
   ASSERT_TRUE(rule);
 
   std::string error;
@@ -782,10 +781,9 @@ TEST_F(WebRequestRulesRegistryTest, CheckOriginAndPathRegEx) {
 
   base::Value::Dict value = base::test::ParseJsonDict(kRule);
 
-  std::vector<const api::events::Rule*> rules;
-  auto rule = api::events::Rule::FromValue(value);
+  std::optional<api::events::Rule> rule = api::events::Rule::FromValue(value);
   ASSERT_TRUE(rule);
-  rules.push_back(&rule.value());
+  std::vector<const api::events::Rule*> rules = {&rule.value()};
 
   scoped_refptr<WebRequestRulesRegistry> registry(
       new TestWebRequestRulesRegistry(&profile_));
