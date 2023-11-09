@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -2895,7 +2896,8 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
 }
 
 bool AXObjectCacheImpl::IsParsingMainDocument() const {
-  return GetDocument().Parser() && !v8::Isolate::GetCurrent()->InContext();
+  return GetDocument().Parser() &&
+         !GetDocument().GetAgent().isolate()->InContext();
 }
 
 bool AXObjectCacheImpl::IsMainDocumentDirty() const {
