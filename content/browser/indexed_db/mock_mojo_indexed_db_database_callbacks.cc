@@ -21,4 +21,8 @@ MockMojoIndexedDBDatabaseCallbacks::BindNewEndpointAndPassDedicatedRemote() {
   return receiver_.BindNewEndpointAndPassDedicatedRemote();
 }
 
+void MockMojoIndexedDBDatabaseCallbacks::FlushForTesting() {
+  receiver_.FlushForTesting();
+}
+
 }  // namespace content

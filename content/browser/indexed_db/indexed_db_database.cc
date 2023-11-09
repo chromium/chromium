@@ -341,7 +341,7 @@ leveldb::Status IndexedDBDatabase::ForceCloseAndRunTasks() {
   DCHECK(connections_.empty());
   force_closing_ = false;
   if (CanBeDestroyed())
-    bucket_context_->delegate().on_tasks_available.Run();
+    bucket_context_->QueueRunTasks();
   return status;
 }
 
@@ -1591,7 +1591,7 @@ void IndexedDBDatabase::ConnectionClosed(IndexedDBConnection* connection) {
   if (connections_.empty())
     connection_coordinator_.OnNoConnections();
   if (CanBeDestroyed())
-    bucket_context_->delegate().on_tasks_available.Run();
+    bucket_context_->QueueRunTasks();
 }
 
 bool IndexedDBDatabase::CanBeDestroyed() {

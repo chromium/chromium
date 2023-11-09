@@ -51,9 +51,9 @@ constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 // * There are outstanding blob references to this database's blob files, or
 // * The factory is in-memory (i.e. an incognito profile).
 //
-// When these qualities are no longer true, `RunTasks()` will return
-// `kCanBeDestroyed` which lets the owning `IndexedDBFactory` know it's time to
-// delete this object.
+// When these qualities are no longer true, `RunTasks()` will invoke
+// `on_ready_for_destruction`, which lets the owner (`IndexedDBFactory`) know
+// it's time to destroy this.
 //
 // TODO(crbug.com/1474996): it's intended that each bucket gets its own
 // IndexedDB task runner. To facilitate IndexedDB code running on multiple task
@@ -125,14 +125,13 @@ class CONTENT_EXPORT IndexedDBBucketContext {
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    // Called to pump the IDB task queue (generally results in `RunTasks()`
-    // being called).
-    base::RepeatingClosure on_tasks_available;
-
     // Called when a fatal error has occurred that should result in tearing down
     // the backing store. `IndexedDBBucketContext` *may* be synchronously
     // destroyed after this is invoked.
     base::RepeatingCallback<void(leveldb::Status)> on_fatal_error;
+
+    // Called when the bucket context is ready to be destroyed.
+    base::RepeatingCallback<void()> on_ready_for_destruction;
 
     // Called when database content has changed. Technically this is called when
     // the content *probably will* change --- it's invoked before a transaction
@@ -179,7 +178,11 @@ class CONTENT_EXPORT IndexedDBBucketContext {
 
   ~IndexedDBBucketContext();
 
-  void ForceClose();
+  void QueueRunTasks();
+
+  // Normally, in-memory bucket contexts never self-close. If this is called
+  // with `doom` set to true, they will self-close.
+  void ForceClose(bool doom);
 
   bool IsClosing() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -192,10 +195,6 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   }
 
   void ReportOutstandingBlobs(bool blobs_outstanding);
-
-  // Normally, in-memory contexts never self-close. After this is called, they
-  // can be closed.
-  void Doom();
 
   // Runs `method` on `this`. This exists to facilitate running the setter on
   // the correct sequence.
@@ -244,17 +243,10 @@ class CONTENT_EXPORT IndexedDBBucketContext {
 
   Delegate& delegate() { return delegate_; }
 
-  bool is_running_tasks() const { return running_tasks_; }
-  bool is_task_run_scheduled() const { return task_run_scheduled_; }
-  void set_task_run_scheduled() { task_run_scheduled_ = true; }
-
   base::OneShotTimer* close_timer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return &close_timer_;
   }
-
-  enum class RunTasksResult { kDone, kError, kCanBeDestroyed };
-  std::tuple<RunTasksResult, leveldb::Status> RunTasks();
 
   base::WeakPtr<IndexedDBBucketContext> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -274,6 +266,8 @@ class CONTENT_EXPORT IndexedDBBucketContext {
  private:
   friend IndexedDBFactory;
   friend IndexedDBBucketContextHandle;
+  friend class IndexedDBDatabaseTest;
+  friend class IndexedDBTransactionTest;
 
   // Test needs access to ShouldRunTombstoneSweeper.
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, TombstoneSweeperTiming);
@@ -306,6 +300,8 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   void StartClosing();
   void CloseNow();
   void StartPreCloseTasks();
+
+  void RunTasks();
 
   // Executes database operations, and if `true` is returned by this function,
   // then the current time will be written to the database as the last sweep
@@ -344,7 +340,6 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   bool skip_closing_sequence_ = false;
 
   bool running_tasks_ = false;
-  bool task_run_scheduled_ = false;
 
   base::Time earliest_global_sweep_time_;
   base::Time earliest_global_compaction_time_;
@@ -390,8 +385,11 @@ class CONTENT_EXPORT IndexedDBBucketContext {
 
   Delegate delegate_;
 
-  // In-memory contexts will not self-close until they are doomed.
+  // In-memory contexts will not self-close until this bit is flipped to true.
   bool is_doomed_ = false;
+
+  // True if there's already a task queued to call `RunTasks()`.
+  bool task_run_queued_ = false;
 
   base::WeakPtrFactory<IndexedDBBucketContext> weak_factory_{this};
 };

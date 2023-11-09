@@ -257,8 +257,8 @@ constexpr const base::TimeDelta
     IndexedDBBucketContext::kMaxEarliestBucketCompactionFromNow;
 
 IndexedDBBucketContext::Delegate::Delegate()
-    : on_tasks_available(base::DoNothing()),
-      on_fatal_error(base::DoNothing()),
+    : on_fatal_error(base::DoNothing()),
+      on_ready_for_destruction(base::DoNothing()),
       on_content_changed(base::DoNothing()),
       on_writing_transaction_complete(base::DoNothing()),
       for_each_bucket_context(base::DoNothing()) {}
@@ -317,41 +317,44 @@ IndexedDBBucketContext::~IndexedDBBucketContext() {
   leveldb_destruct_event.Wait();
 }
 
-void IndexedDBBucketContext::ForceClose() {
+void IndexedDBBucketContext::ForceClose(bool doom) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  IndexedDBBucketContextHandle handle(*this);
-  for (const auto& pair : databases_) {
-    // Note: We purposefully ignore the result here as force close needs to
-    // continue tearing things down anyways.
-    pair.second->ForceCloseAndRunTasks();
-  }
-  databases_.clear();
-  if (has_blobs_outstanding_) {
-    backing_store_->active_blob_registry()->ForceShutdown();
-    has_blobs_outstanding_ = false;
+  is_doomed_ = doom;
+
+  {
+    // This handle keeps `this` from closing until it goes out of scope.
+    IndexedDBBucketContextHandle handle(*this);
+    for (const auto& pair : databases_) {
+      // Note: We purposefully ignore the result here as force close needs to
+      // continue tearing things down anyways.
+      pair.second->ForceCloseAndRunTasks();
+    }
+    databases_.clear();
+    if (has_blobs_outstanding_) {
+      backing_store_->active_blob_registry()->ForceShutdown();
+      has_blobs_outstanding_ = false;
+    }
+
+    // Don't run the preclosing tasks after a ForceClose, whether or not we've
+    // started them.  Compaction in particular can run long and cannot be
+    // interrupted, so it can cause shutdown hangs.
+    close_timer_.AbandonAndStop();
+    if (pre_close_task_queue_) {
+      pre_close_task_queue_->Stop(
+          IndexedDBPreCloseTaskQueue::StopReason::FORCE_CLOSE);
+      pre_close_task_queue_.reset();
+    }
+    skip_closing_sequence_ = true;
   }
 
-  // Don't run the preclosing tasks after a ForceClose, whether or not we've
-  // started them.  Compaction in particular can run long and cannot be
-  // interrupted, so it can cause shutdown hangs.
-  close_timer_.AbandonAndStop();
-  if (pre_close_task_queue_) {
-    pre_close_task_queue_->Stop(
-        IndexedDBPreCloseTaskQueue::StopReason::FORCE_CLOSE);
-    pre_close_task_queue_.reset();
-  }
-  skip_closing_sequence_ = true;
+  // Initiate deletion if appropriate.
+  RunTasks();
 }
 
 void IndexedDBBucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   has_blobs_outstanding_ = blobs_outstanding;
   MaybeStartClosing();
-}
-
-void IndexedDBBucketContext::Doom() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_doomed_ = true;
 }
 
 void IndexedDBBucketContext::RunInstanceClosure(InstanceClosure method) {
@@ -489,10 +492,20 @@ void IndexedDBBucketContext::CreateAllExternalObjects(
   }
 }
 
-std::tuple<IndexedDBBucketContext::RunTasksResult, leveldb::Status>
-IndexedDBBucketContext::RunTasks() {
-  task_run_scheduled_ = false;
-  running_tasks_ = true;
+void IndexedDBBucketContext::QueueRunTasks() {
+  if (task_run_queued_) {
+    return;
+  }
+
+  task_run_queued_ = true;
+  backing_store_->idb_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&IndexedDBBucketContext::RunTasks,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void IndexedDBBucketContext::RunTasks() {
+  task_run_queued_ = false;
+
   leveldb::Status status;
   for (auto db_it = databases_.begin(); db_it != databases_.end();) {
     IndexedDBDatabase& db = *db_it->second;
@@ -503,19 +516,19 @@ IndexedDBBucketContext::RunTasks() {
       case IndexedDBDatabase::RunTasksResult::kDone:
         ++db_it;
         continue;
+
       case IndexedDBDatabase::RunTasksResult::kError:
-        running_tasks_ = false;
-        return {RunTasksResult::kError, status};
+        delegate().on_fatal_error.Run(status);
+        return;
+
       case IndexedDBDatabase::RunTasksResult::kCanBeDestroyed:
         databases_.erase(db_it);
         break;
     }
   }
-  running_tasks_ = false;
   if (CanClose() && closing_stage_ == ClosingState::kClosed) {
-    return {RunTasksResult::kCanBeDestroyed, leveldb::Status::OK()};
+    return delegate().on_ready_for_destruction.Run();
   }
-  return {RunTasksResult::kDone, leveldb::Status::OK()};
 }
 
 // static
@@ -647,7 +660,7 @@ void IndexedDBBucketContext::CloseNow() {
   closing_stage_ = ClosingState::kClosed;
   close_timer_.AbandonAndStop();
   pre_close_task_queue_.reset();
-  delegate_.on_tasks_available.Run();
+  QueueRunTasks();
 }
 
 bool IndexedDBBucketContext::ShouldRunTombstoneSweeper() {

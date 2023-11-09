@@ -181,7 +181,7 @@ void IndexedDBTransaction::SetCommitFlag() {
   }
 
   is_commit_pending_ = true;
-  bucket_context_->delegate().on_tasks_available.Run();
+  bucket_context_->QueueRunTasks();
 }
 
 void IndexedDBTransaction::ScheduleTask(blink::mojom::IDBTaskType type,
@@ -198,7 +198,7 @@ void IndexedDBTransaction::ScheduleTask(blink::mojom::IDBTaskType type,
     preemptive_task_queue_.push(std::move(task));
   }
   if (state() == STARTED)
-    bucket_context_->delegate().on_tasks_available.Run();
+    bucket_context_->QueueRunTasks();
 }
 
 void IndexedDBTransaction::ScheduleAbortTask(AbortOperation abort_task) {
@@ -252,7 +252,7 @@ leveldb::Status IndexedDBTransaction::Abort(
 
   if (database_)
     database_->TransactionFinished(mode_, false);
-  bucket_context_->delegate().on_tasks_available.Run();
+  bucket_context_->QueueRunTasks();
   bucket_context_.Release();
   return leveldb::Status::OK();
 }
@@ -290,7 +290,7 @@ void IndexedDBTransaction::Start() {
   state_ = STARTED;
   DCHECK(!locks_receiver_.locks.empty());
   diagnostics_.start_time = base::Time::Now();
-  bucket_context_->delegate().on_tasks_available.Run();
+  bucket_context_->QueueRunTasks();
 }
 
 // static
@@ -488,7 +488,7 @@ leveldb::Status IndexedDBTransaction::BlobWriteComplete(
     }
     case BlobWriteResult::kRunPhaseTwoAsync:
       ScheduleTask(base::BindOnce(&CommitPhaseTwoProxy));
-      bucket_context_->delegate().on_tasks_available.Run();
+      bucket_context_->QueueRunTasks();
       return leveldb::Status::OK();
     case BlobWriteResult::kRunPhaseTwoAndReturnResult: {
       return CommitPhaseTwo();

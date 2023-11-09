@@ -63,7 +63,8 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
         db_(db),
         connection_coordinator_(connection_coordinator),
         tasks_available_callback_(
-            bucket_context.delegate().on_tasks_available) {}
+            base::BindRepeating(&IndexedDBBucketContext::QueueRunTasks,
+                                bucket_context.AsWeakPtr())) {}
 
   ConnectionRequest(const ConnectionRequest&) = delete;
   ConnectionRequest& operator=(const ConnectionRequest&) = delete;
@@ -571,7 +572,7 @@ void IndexedDBConnectionCoordinator::ScheduleOpenConnection(
   request_queue_.push(std::make_unique<OpenRequest>(
       *bucket_context_, db_, std::move(connection), this,
       std::move(client_state_checker)));
-  bucket_context_->delegate().on_tasks_available.Run();
+  bucket_context_->QueueRunTasks();
 }
 
 void IndexedDBConnectionCoordinator::ScheduleDeleteDatabase(
@@ -580,7 +581,7 @@ void IndexedDBConnectionCoordinator::ScheduleDeleteDatabase(
   request_queue_.push(std::make_unique<DeleteRequest>(
       *bucket_context_, db_, std::move(factory_client),
       std::move(on_deletion_complete), this));
-  bucket_context_->delegate().on_tasks_available.Run();
+  bucket_context_->QueueRunTasks();
 }
 
 leveldb::Status IndexedDBConnectionCoordinator::PruneTasksForForceClose() {

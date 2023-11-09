@@ -35,6 +35,8 @@ class MockMojoIndexedDBDatabaseCallbacks
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
   BindNewEndpointAndPassDedicatedRemote();
 
+  void FlushForTesting();
+
   MOCK_METHOD0(ForcedClose, void());
   MOCK_METHOD2(VersionChange, void(int64_t old_version, int64_t new_version));
   MOCK_METHOD3(Abort,

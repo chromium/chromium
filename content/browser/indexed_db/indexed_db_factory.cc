@@ -272,45 +272,48 @@ void IndexedDBFactory::Open(
   const absl::optional<storage::BucketInfo>& bucket =
       receivers_.current_context().bucket;
 
+  auto factory_client = std::make_unique<IndexedDBFactoryClient>(
+      std::move(pending_factory_client));
+
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!bucket) {
-    IndexedDBFactoryClient(std::move(pending_factory_client))
-        .OnError(IndexedDBDatabaseError(
-            blink::mojom::IDBException::kUnknownError, u"Internal error."));
+    factory_client->OnError(IndexedDBDatabaseError(
+        blink::mojom::IDBException::kUnknownError, u"Internal error."));
     return;
   }
 
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
   // created) if this origin is already over quota.
 
-  auto callbacks = std::make_unique<IndexedDBFactoryClient>(
-      std::move(pending_factory_client));
-  auto database_callbacks = std::make_unique<IndexedDBDatabaseCallbacks>(
-      std::move(database_callbacks_remote));
-
   const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
   const base::FilePath data_directory = context_->GetDataPath(bucket_locator);
-
-  auto connection = std::make_unique<IndexedDBPendingConnection>(
-      std::move(callbacks), std::move(database_callbacks), transaction_id,
-      version, std::move(transaction_receiver));
 
   IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
   IndexedDBBucketContextHandle bucket_context_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
-  std::tie(bucket_context_handle, s, error, connection->data_loss_info,
-           connection->was_cold_open) =
+  IndexedDBDataLossInfo data_loss_info;
+  bool was_cold_open;
+  std::tie(bucket_context_handle, s, error, data_loss_info, was_cold_open) =
       GetOrCreateBucketContext(*bucket, data_directory,
                                /*create_if_missing=*/true);
   if (!bucket_context_handle.IsHeld() ||
       !bucket_context_handle.bucket_context()) {
-    connection->factory_client->OnError(error);
+    factory_client->OnError(error);
     if (s.IsCorruption()) {
       HandleBackingStoreCorruption(bucket_locator, error);
     }
     return;
   }
+
+  auto connection = std::make_unique<IndexedDBPendingConnection>(
+      std::move(factory_client),
+      std::make_unique<IndexedDBDatabaseCallbacks>(
+          std::move(database_callbacks_remote)),
+      transaction_id, version, std::move(transaction_receiver));
+  connection->was_cold_open = was_cold_open;
+  connection->data_loss_info = data_loss_info;
+
   auto it = bucket_context_handle->databases().find(name);
   if (it != bucket_context_handle->databases().end()) {
     it->second->ScheduleOpenConnection(
@@ -340,16 +343,15 @@ void IndexedDBFactory::DeleteDatabase(
   const absl::optional<storage::BucketInfo>& bucket =
       receivers_.current_context().bucket;
 
-  // Return error if failed to retrieve bucket from the QuotaManager.
-  if (!bucket) {
-    IndexedDBFactoryClient(std::move(pending_factory_client))
-        .OnError(IndexedDBDatabaseError(
-            blink::mojom::IDBException::kUnknownError, u"Internal error."));
-    return;
-  }
-
   auto factory_client = std::make_unique<IndexedDBFactoryClient>(
       std::move(pending_factory_client));
+
+  // Return error if failed to retrieve bucket from the QuotaManager.
+  if (!bucket) {
+    factory_client->OnError(IndexedDBDatabaseError(
+        blink::mojom::IDBException::kUnknownError, u"Internal error."));
+    return;
+  }
 
   const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
   IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
@@ -370,6 +372,9 @@ void IndexedDBFactory::DeleteDatabase(
     return;
   }
 
+  // First, check the databases that are already represented by
+  // `IndexedDBDatabase` objects. If one exists, schedule it to be deleted and
+  // we're done.
   auto it = bucket_context_handle->databases().find(name);
   if (it != bucket_context_handle->databases().end()) {
     base::WeakPtr<IndexedDBDatabase> database = it->second->AsWeakPtr();
@@ -386,6 +391,8 @@ void IndexedDBFactory::DeleteDatabase(
     return;
   }
 
+  // Otherwise, verify that a database with the given name exists in the backing
+  // store. If not, report success.
   std::vector<std::u16string> names;
   s = bucket_context_handle->backing_store()->GetDatabaseNames(&names);
   if (!s.ok()) {
@@ -405,6 +412,8 @@ void IndexedDBFactory::DeleteDatabase(
     return;
   }
 
+  // If it exists but does not already have an `IndexedDBDatabase` object,
+  // create it and initiate deletion.
   auto database = std::make_unique<IndexedDBDatabase>(
       name, *bucket_context_handle.bucket_context(),
       std::move(unique_identifier));
@@ -485,18 +494,7 @@ void IndexedDBFactory::ForceClose(storage::BucketId bucket_id,
     return;
   }
 
-  base::WeakPtr<IndexedDBBucketContext> weak_ptr;
-  {
-    IndexedDBBucketContextHandle bucket_context_handle(*it->second);
-
-    if (will_be_deleted) {
-      bucket_context_handle->Doom();
-    }
-    bucket_context_handle->ForceClose();
-    weak_ptr = bucket_context_handle->AsWeakPtr();
-  }
-  // Run tasks so the storage_key state is deleted.
-  RunTasksForBucket(std::move(weak_ptr));
+  it->second->ForceClose(/*doom=*/will_be_deleted);
 }
 
 void IndexedDBFactory::ForceSchemaDowngrade(
@@ -535,7 +533,7 @@ void IndexedDBFactory::ContextDestroyed() {
   // to avoid holding a handle to call ForceClose();
   bucket_context_destruction_weak_factory_.InvalidateWeakPtrs();
   for (const auto& pair : bucket_contexts_) {
-    pair.second->ForceClose();
+    pair.second->ForceClose(/*doom=*/false);
   }
   bucket_contexts_.clear();
 }
@@ -749,18 +747,22 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
   }
 
   IndexedDBBucketContext::Delegate bucket_delegate;
-  bucket_delegate.on_tasks_available = base::BindRepeating(
-      &IndexedDBFactory::MaybeRunTasksForBucket,
-      bucket_context_destruction_weak_factory_.GetWeakPtr(), bucket_locator);
   bucket_delegate.on_fatal_error = base::BindRepeating(
       [](const storage::BucketLocator& bucket_locator,
          base::WeakPtr<IndexedDBFactory> factory, leveldb::Status s) {
-        if (!factory) {
-          return;
+        if (factory) {
+          factory->OnDatabaseError(bucket_locator, s, nullptr);
         }
-        factory->OnDatabaseError(bucket_locator, s, nullptr);
       },
       bucket_locator, weak_factory_.GetWeakPtr());
+  bucket_delegate.on_ready_for_destruction = base::BindRepeating(
+      [](const storage::BucketLocator& bucket_locator,
+         base::WeakPtr<IndexedDBFactory> factory) {
+        if (factory) {
+          factory->bucket_contexts_.erase(bucket_locator.id);
+        }
+      },
+      bucket_locator, bucket_context_destruction_weak_factory_.GetWeakPtr());
   bucket_delegate.on_content_changed = base::BindRepeating(
       [](base::WeakPtr<IndexedDBFactory> factory,
          storage::BucketLocator bucket_locator,
@@ -1012,49 +1014,6 @@ void IndexedDBFactory::OnDatabaseDeleted(
     return;
   }
   context_->DatabaseDeleted(bucket_locator);
-}
-
-void IndexedDBFactory::MaybeRunTasksForBucket(
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto it = bucket_contexts_.find(bucket_locator.id);
-  if (it == bucket_contexts_.end()) {
-    return;
-  }
-
-  IndexedDBBucketContext* bucket_context = it->second.get();
-  if (bucket_context->is_task_run_scheduled()) {
-    return;
-  }
-
-  bucket_context->set_task_run_scheduled();
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&IndexedDBFactory::RunTasksForBucket,
-                     bucket_context_destruction_weak_factory_.GetWeakPtr(),
-                     bucket_context->AsWeakPtr()));
-}
-
-void IndexedDBFactory::RunTasksForBucket(
-    base::WeakPtr<IndexedDBBucketContext> bucket_context) {
-  if (!bucket_context) {
-    return;
-  }
-  storage::BucketLocator bucket_locator = bucket_context->bucket_locator();
-  IndexedDBBucketContext::RunTasksResult result;
-  leveldb::Status status;
-  std::tie(result, status) = bucket_context->RunTasks();
-  switch (result) {
-    case IndexedDBBucketContext::RunTasksResult::kDone:
-      return;
-    case IndexedDBBucketContext::RunTasksResult::kError:
-      OnDatabaseError(bucket_locator, status, nullptr);
-      return;
-    case IndexedDBBucketContext::RunTasksResult::kCanBeDestroyed:
-      bucket_contexts_.erase(bucket_locator.id);
-      return;
-  }
 }
 
 bool IndexedDBFactory::IsDatabaseOpen(

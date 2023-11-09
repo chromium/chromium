@@ -662,7 +662,7 @@ TEST_F(IndexedDBFactoryTest, FactoryForceClose) {
           /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_context_handle.IsHeld()) << s.ToString();
 
-  StorageBucketFromHandle(bucket_context_handle)->ForceClose();
+  StorageBucketFromHandle(bucket_context_handle)->ForceClose(/*doom=*/false);
   bucket_context_handle.Release();
 
   EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));

@@ -212,9 +212,6 @@ class CONTENT_EXPORT IndexedDBFactory
   // Called when the database has been deleted on disk.
   void OnDatabaseDeleted(const storage::BucketLocator& bucket_locator);
 
-  void MaybeRunTasksForBucket(const storage::BucketLocator& bucket_locator);
-  void RunTasksForBucket(base::WeakPtr<IndexedDBBucketContext> bucket_context);
-
   // Testing helpers, so unit tests don't need to grovel through internal state.
   bool IsDatabaseOpen(const storage::BucketLocator& bucket_locator,
                       const std::u16string& name) const;
