@@ -141,8 +141,9 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
 
   // If persistent storage is empty we can immediately notify the callback of
   // persistence restoration completion and quit early.
+  std::vector<std::unique_ptr<HoldingSpaceItem>> restored_items;
   if (persisted_holding_space_items.empty()) {
-    std::move(persistence_restored_callback_).Run();
+    std::move(persistence_restored_callback_).Run(std::move(restored_items));
     return;
   }
 
@@ -154,12 +155,13 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
             base::BindOnce(&holding_space_util::ResolveImage,
                            base::Unretained(thumbnail_loader_)));
 
-    if (!ShouldIgnoreItem(profile(), holding_space_item.get()))
-      service()->AddItem(std::move(holding_space_item));
+    if (!ShouldIgnoreItem(profile(), holding_space_item.get())) {
+      restored_items.push_back(std::move(holding_space_item));
+    }
   }
 
   // Notify completion of persistence restoration.
-  std::move(persistence_restored_callback_).Run();
+  std::move(persistence_restored_callback_).Run(std::move(restored_items));
 }
 
 void HoldingSpacePersistenceDelegate::MaybeRemoveItemsFromPersistence() {
