@@ -998,6 +998,15 @@ BUILD_ELEMENTWISE_UNARY_OP(neg,
                                  webnn::DataTypeConstraint::kSignedInteger))
 BUILD_ELEMENTWISE_UNARY_OP(sin, kSin, webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(tan, kTan, webnn::DataTypeConstraint::kFloat)
+BUILD_ELEMENTWISE_UNARY_OP(erf, kErf, webnn::DataTypeConstraint::kFloat)
+BUILD_ELEMENTWISE_UNARY_OP(identity, kIdentity, webnn::DataTypeConstraint::kAll)
+BUILD_ELEMENTWISE_UNARY_OP(logicalNot,
+                           kLogicalNot,
+                           {webnn::Operand::DataType::kUint8})
+BUILD_ELEMENTWISE_UNARY_OP(reciprocal,
+                           kReciprocal,
+                           webnn::DataTypeConstraint::kFloat)
+BUILD_ELEMENTWISE_UNARY_OP(sqrt, kSqrt, webnn::DataTypeConstraint::kFloat)
 
 #define BUILD_REDUCE_OP(op, op_kind)                                   \
   MLOperand* MLGraphBuilder::op(const MLOperand* input,                \

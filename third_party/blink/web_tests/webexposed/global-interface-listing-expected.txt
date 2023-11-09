@@ -5626,13 +5626,16 @@ interface MLGraphBuilder
     method cos
     method div
     method elu
+    method erf
     method exp
     method floor
     method gemm
     method hardSwish
+    method identity
     method input
     method leakyRelu
     method log
+    method logicalNot
     method matmul
     method max
     method maxPool2d
@@ -5642,6 +5645,7 @@ interface MLGraphBuilder
     method pad
     method pow
     method prelu
+    method reciprocal
     method reduceL1
     method reduceL2
     method reduceLogSum
@@ -5661,6 +5665,7 @@ interface MLGraphBuilder
     method softmax
     method softsign
     method split
+    method sqrt
     method sub
     method tan
     method tanh

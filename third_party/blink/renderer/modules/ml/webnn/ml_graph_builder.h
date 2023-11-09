@@ -156,6 +156,13 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* neg(const MLOperand* input, ExceptionState& exception_state);
   MLOperand* sin(const MLOperand* input, ExceptionState& exception_state);
   MLOperand* tan(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* erf(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* identity(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* logicalNot(const MLOperand* input,
+                        ExceptionState& exception_state);
+  MLOperand* reciprocal(const MLOperand* input,
+                        ExceptionState& exception_state);
+  MLOperand* sqrt(const MLOperand* input, ExceptionState& exception_state);
 
   MLOperand* elu(const MLOperand* input,
                  const MLEluOptions* options,

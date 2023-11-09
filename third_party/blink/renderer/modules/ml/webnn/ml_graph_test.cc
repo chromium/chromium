@@ -331,6 +331,25 @@ struct ElementWiseUnaryTester {
       case ElementWiseUnaryKind::kTan:
         output_operand = builder->tan(input_operand, scope.GetExceptionState());
         break;
+      case ElementWiseUnaryKind::kErf:
+        output_operand = builder->erf(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kIdentity:
+        output_operand =
+            builder->identity(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kLogicalNot:
+        output_operand =
+            builder->logicalNot(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kReciprocal:
+        output_operand =
+            builder->reciprocal(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kSqrt:
+        output_operand =
+            builder->sqrt(input_operand, scope.GetExceptionState());
+        break;
     }
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});

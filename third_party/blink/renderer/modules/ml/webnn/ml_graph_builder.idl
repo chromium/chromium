@@ -148,6 +148,11 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand neg(MLOperand x);
   [RaisesException] MLOperand sin(MLOperand x);
   [RaisesException] MLOperand tan(MLOperand x);
+  [RaisesException] MLOperand erf(MLOperand x);
+  [RaisesException] MLOperand identity(MLOperand x);
+  [RaisesException] MLOperand logicalNot(MLOperand x);
+  [RaisesException] MLOperand reciprocal(MLOperand x);
+  [RaisesException] MLOperand sqrt(MLOperand x);
 
   [RaisesException] MLOperand elu(MLOperand x, optional MLEluOptions options = {});
   [RaisesException] MLActivation elu(optional MLEluOptions options = {});

@@ -2985,6 +2985,21 @@ struct ElementWiseUnaryTester {
       case ElementWiseUnaryKind::kTan:
         output = builder->tan(input, scope.GetExceptionState());
         break;
+      case ElementWiseUnaryKind::kErf:
+        output = builder->erf(input, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kIdentity:
+        output = builder->identity(input, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kLogicalNot:
+        output = builder->logicalNot(input, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kReciprocal:
+        output = builder->reciprocal(input, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kSqrt:
+        output = builder->sqrt(input, scope.GetExceptionState());
+        break;
     }
     return output;
   }
@@ -3024,6 +3039,21 @@ struct ElementWiseUnaryTester {
         break;
       case ElementWiseUnaryKind::kTan:
         EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kTan);
+        break;
+      case ElementWiseUnaryKind::kErf:
+        EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kErf);
+        break;
+      case ElementWiseUnaryKind::kIdentity:
+        EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kIdentity);
+        break;
+      case ElementWiseUnaryKind::kLogicalNot:
+        EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kLogicalNot);
+        break;
+      case ElementWiseUnaryKind::kReciprocal:
+        EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kReciprocal);
+        break;
+      case ElementWiseUnaryKind::kSqrt:
+        EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kSqrt);
         break;
     }
     EXPECT_EQ(op->IsConnected(), true);
@@ -3184,6 +3214,67 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
     EXPECT_EQ(
         scope.GetExceptionState().Message(),
         "The input type must be one of the float32,float16,int32,int8 types.");
+  }
+  {
+    // Test building element-wise Erf.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kErf,
+        .input_info = {.type = V8MLOperandType::Enum::kFloat32,
+                       .dimensions = {8, 6, 2}}}
+        .Test(scope);
+  }
+  {
+    // Test building element-wise reciprocal.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kReciprocal,
+        .input_info = {.type = V8MLOperandType::Enum::kFloat32,
+                       .dimensions = {8, 6, 2}}}
+        .Test(scope);
+  }
+  {
+    // Test building element-wise sqrt.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kSqrt,
+        .input_info = {.type = V8MLOperandType::Enum::kFloat32,
+                       .dimensions = {8, 6, 2}}}
+        .Test(scope);
+  }
+  {
+    // Test building element-wise logical not.
+    ElementWiseUnaryTester<uint8_t>{
+        .kind = ElementWiseUnaryKind::kLogicalNot,
+        .input_info = {.type = V8MLOperandType::Enum::kUint8,
+                       .dimensions = {8, 6, 2}}}
+        .Test(scope);
+  }
+  {
+    // Test throwing exception when building logicalNot with uint32 input.
+    const MLOperand* output = ElementWiseUnaryTester<uint32_t>{
+        .kind = ElementWiseUnaryKind::kLogicalNot,
+        .input_info = {
+            .type = V8MLOperandType::Enum::kUint32,
+            .dimensions = {3, 4}}}.BuildElementWiseUnary(scope);
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input type must be one of the uint8 types.");
+  }
+  {
+    // Test building element-wise identity.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kIdentity,
+        .input_info = {.type = V8MLOperandType::Enum::kFloat32,
+                       .dimensions = {8, 6, 2}}}
+        .Test(scope);
+  }
+  {
+    // Test building element-wise identity.
+    ElementWiseUnaryTester<uint8_t>{
+        .kind = ElementWiseUnaryKind::kIdentity,
+        .input_info = {.type = V8MLOperandType::Enum::kUint8,
+                       .dimensions = {8, 6, 2}}}
+        .Test(scope);
   }
 }
 

@@ -76,7 +76,12 @@ enum class ElementWiseUnaryKind {
   kLog,
   kNeg,
   kSin,
-  kTan
+  kTan,
+  kErf,
+  kIdentity,
+  kLogicalNot,
+  kReciprocal,
+  kSqrt,
 };
 
 MLOperand* BuildPad(V8TestingScope& scope,

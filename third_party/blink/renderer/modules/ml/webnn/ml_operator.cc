@@ -46,6 +46,16 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "sin";
     case MLOperator::OperatorKind::kTan:
       return "tan";
+    case MLOperator::OperatorKind::kErf:
+      return "erf";
+    case MLOperator::OperatorKind::kIdentity:
+      return "identity";
+    case MLOperator::OperatorKind::kLogicalNot:
+      return "logicalNot";
+    case MLOperator::OperatorKind::kReciprocal:
+      return "reciprocal";
+    case MLOperator::OperatorKind::kSqrt:
+      return "sqrt";
     case MLOperator::OperatorKind::kLeakyRelu:
       return "leakyRelu";
     case MLOperator::OperatorKind::kMax:
