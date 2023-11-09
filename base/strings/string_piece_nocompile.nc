@@ -11,16 +11,12 @@
 
 namespace base {
 
-#if defined(NCTEST_DANGLING_XVALUE)  // [r"object backing the pointer will be destroyed at the end of the full-expression"]
-
 // Returns a std::string xvalue (temporary object).
-std::string f() { return std::string(); };
+std::string f();
 
 
 void HoldsDanglingReferenceToString() {
-  [[maybe_unused]] StringPiece piece = f();
+  [[maybe_unused]] StringPiece piece = f();  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
 }
-
-#endif
 
 }  // namespace base

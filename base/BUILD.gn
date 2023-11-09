@@ -4135,6 +4135,7 @@ if (enable_nocompile_tests_new) {
       "no_destructor_nocompile.nc",
       "observer_list_nocompile.nc",
       "sequence_checker_nocompile.nc",
+      "strings/string_piece_nocompile.nc",
       "strings/stringprintf_nocompile.nc",
       "task/bind_post_task_nocompile.nc",
       "task/task_traits_nocompile.nc",
@@ -4162,7 +4163,6 @@ if (enable_nocompile_tests) {
       "memory/ref_counted_nocompile.nc",
       "metrics/field_trial_params_nocompile.nc",
       "metrics/histogram_nocompile.nc",
-      "strings/string_piece_nocompile.nc",
     ]
 
     deps = [
