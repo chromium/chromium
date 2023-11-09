@@ -25,7 +25,9 @@ class MediaSquigglyProgressViewTest : public views::ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
     widget_ = CreateTestWidget();
-    ui::ColorId id;
+    // This test just needs to construct a progress view, without caring about
+    // what specific color IDs are used, so just use an arbitrary value.
+    ui::ColorId id = ui::kUiColorsStart;
     view_ =
         widget_->SetContentsView(std::make_unique<MediaSquigglyProgressView>(
             id, id, id, id, id,
