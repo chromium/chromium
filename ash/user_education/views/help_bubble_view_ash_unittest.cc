@@ -17,6 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
@@ -225,6 +226,8 @@ TEST_P(HelpBubbleViewAshStyleTest, HitTest) {
   auto* const help_bubble_view = CreateHelpBubbleView(style());
   auto* const help_bubble_widget = help_bubble_view->GetWidget();
   auto* const help_bubble_window = help_bubble_widget->GetNativeWindow();
+  auto* const root_window = help_bubble_window->GetRootWindow();
+  auto* const root_window_targeter = root_window->targeter();
 
   // Case: Event within help bubble contents bounds.
   // NOTE: We inset `contents_bounds` to account for fractional pixel rounding
@@ -234,22 +237,42 @@ TEST_P(HelpBubbleViewAshStyleTest, HitTest) {
 
   // Events within help bubble `contents_bounds` should be handled.
   for (const gfx::Point& point : GetPerimeterPoints(contents_bounds)) {
-    EXPECT_THAT(window_util::GetEventHandlerForEvent(CreateMouseMovedEvent(
-                    help_bubble_window->GetRootWindow(), point)),
+    EXPECT_THAT(window_util::GetEventHandlerForEvent(
+                    CreateMouseMovedEvent(root_window, point)),
                 AnyOf(Eq(help_bubble_window), Contains(help_bubble_window)));
+
+    // Confirm that the help bubble window will be targeted for the event so its
+    // events don't leak through to windows behind it.
+    // TODO(http://b/307780200): Possibly remove this when `WindowTargeter` is
+    // updated, since it should be tested at that level
+    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, point, point,
+                         base::TimeTicks::Now(), ui::EF_NONE,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+    EXPECT_EQ(root_window_targeter->FindTargetForEvent(root_window, &press),
+              help_bubble_window);
   }
 
   // Case: Event within help bubble shadow bounds.
   // NOTE: We outset contents bounds to enlarge the rect into the shadow.
   gfx::Rect shadow_bounds(help_bubble_view->GetBoundsInScreen());
   shadow_bounds.Outset(1);
-
-  // Events within help bubble `shadow_bounds` should *not* be handled.
+  // Events within help bubble `shadow_bounds` should *not* be handled, nor
+  // should they target that window.
   for (const gfx::Point& point : GetPerimeterPoints(shadow_bounds)) {
     EXPECT_THAT(
         window_util::GetEventHandlerForEvent(
-            CreateMouseMovedEvent(help_bubble_window->GetRootWindow(), point)),
+            CreateMouseMovedEvent(root_window, point)),
         Not(AnyOf(Eq(help_bubble_window), Contains(help_bubble_window))));
+
+    // Also confirm that the help bubble window will not be targeted for the
+    // event so it doesn't block events in its shadow.
+    // TODO(http://b/307780200): Possibly remove this when `WindowTargeter` is
+    // updated, since it should be tested at that level
+    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, point, point,
+                         base::TimeTicks::Now(), ui::EF_NONE,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+    EXPECT_NE(root_window_targeter->FindTargetForEvent(root_window, &press),
+              help_bubble_window);
   }
 }
 

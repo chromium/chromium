@@ -72,6 +72,10 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   views::LabelButton* GetDefaultButtonForTesting() const;
   views::LabelButton* GetNonDefaultButtonForTesting(int index) const;
 
+  // Gets the `gfx::Rect` representing the area of this view's widget/window for
+  // which located events should be targeted to this view.
+  gfx::Rect GetHitRect() const;
+
   HelpBubbleId id() const { return id_; }
   HelpBubbleStyle style() const { return style_; }
 
