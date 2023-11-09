@@ -428,6 +428,13 @@ enum ServerFieldType {
 
   // Reserved for a server-side-only use: 158-159
 
+  // Similar to `SINGLE_USERNAME`, but for the case when there are additional
+  // fields between single username and password forms.
+  // Will be used to rollout new predictions based on new votes of Username
+  // First Flow with intermediate values.
+  // TODO(b/294195764): Deprecate after fully rolling out new predictions.
+  SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES = 160,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with ServerFieldType from
@@ -435,7 +442,7 @@ enum ServerFieldType {
   // * tools/typescript/definitions/autofill_private.d.ts
   // Please update `tools/metrics/histograms/enums.xml` by executing
   // `tools/metrics/histograms/update_autofill_enums.py`.
-  MAX_VALID_FIELD_TYPE = 160,
+  MAX_VALID_FIELD_TYPE = 161,
 };
 
 enum class FieldTypeGroup {

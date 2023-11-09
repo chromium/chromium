@@ -61,6 +61,7 @@ CredentialFieldType DeriveFromServerFieldType(ServerFieldType type) {
       return CredentialFieldType::kUsername;
     case autofill::SINGLE_USERNAME:
     case autofill::SINGLE_USERNAME_FORGOT_PASSWORD:
+    case autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
       return CredentialFieldType::kSingleUsername;
     case autofill::PASSWORD:
       return CredentialFieldType::kCurrentPassword;

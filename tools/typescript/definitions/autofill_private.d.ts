@@ -116,6 +116,7 @@ declare global {
         SINGLE_USERNAME_FORGOT_PASSWORD,
         ADDRESS_HOME_APT,
         ADDRESS_HOME_APT_TYPE,
+        SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
       }
 
       export enum AddressSource {
