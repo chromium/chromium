@@ -20,6 +20,63 @@
     ],
     "channel": "stable"
   },
+  "os.diagnostics.runFanRoutine": {
+    "dependencies": [
+      "permission:os.diagnostics.runFanRoutine"
+    ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable",
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
+  },
+  "os.diagnostics.createVolumeButtonRoutine": {
+    "dependencies": [
+      "permission:os.diagnostics"
+    ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable",
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
+  },
+  "os.diagnostics.isVolumeButtonRoutineArgumentSupported": {
+    "dependencies": [
+      "permission:os.diagnostics"
+    ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable",
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
+  },
+  "os.diagnostics.onVolumeButtonRoutineFinished": {
+    "dependencies": [
+      "permission:os.diagnostics"
+    ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable",
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
+  },
+
   "os.events": {
     "dependencies": [
       "permission:os.events"

@@ -14,6 +14,7 @@
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -500,6 +501,60 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionDiagnosticsApiV2BrowserTest,
+    IsVolumeButtonRoutineArgumentSupportedWithoutFeatureFlagError) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function isVolumeButtonRoutineArgumentSupportedFail() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.isVolumeButtonRoutineArgumentSupported({
+            button_type: "volume_up",
+            timeout_seconds: 10,
+          });
+        }, [],
+          'chrome.os.diagnostics.isVolumeButtonRoutineArgumentSupported ' +
+          'is not a function'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateVolumeButtonRoutineWithoutFeatureFlagError) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function createVolumeButtonRoutineFail() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.createVolumeButtonRoutine({
+            button_type: "volume_up",
+            timeout_seconds: 10,
+          });
+        }, [],
+          'chrome.os.diagnostics.createVolumeButtonRoutine is not a function'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+class TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval
+    : public TelemetryExtensionDiagnosticsApiV2BrowserTest {
+ public:
+  TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
     IsVolumeButtonRoutineArgSupportedWithFeatureFlagApiInternalError) {
   fake_service().SetIsRoutineArgumentSupportedResponse(
       crosapi::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0));
@@ -523,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTest,
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
     IsVolumeButtonRoutineArgSupportedWithFeatureFlagException) {
   auto exception = crosapi::TelemetryExtensionException::New();
   exception->debug_message = "TEST_MESSAGE";
@@ -550,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTest,
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
     IsVolumeButtonRoutineArgSupportedWithFeatureFlagSuccess) {
   fake_service().SetIsRoutineArgumentSupportedResponse(
       crosapi::TelemetryExtensionSupportStatus::NewSupported(
@@ -575,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTest,
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
     CreateVolumeButtonRoutineWithFeatureFlagCompanionUiNotOpenError) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -595,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTest,
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
     CreateVolumeButtonRoutineWithFeatureFlagResetConnection) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
@@ -640,8 +695,9 @@ IN_PROC_BROWSER_TEST_F(
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
-                       CreateVolumeButtonRoutineWithFeatureFlagSuccess) {
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    CreateVolumeButtonRoutineWithFeatureFlagSuccess) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
         crosapi::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton);
