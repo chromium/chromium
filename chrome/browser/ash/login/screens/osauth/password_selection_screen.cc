@@ -124,7 +124,15 @@ void PasswordSelectionScreen::ProcessOptions() {
                     "online password";
     CHECK(has_online_password_)
         << "Skipping post-login screens requires non-empty GAIA password";
-    exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
+    // Some test configurations might already have a password configured for the
+    // user.
+    if (auth_factors_config_.HasConfiguredFactor(
+            cryptohome::AuthFactorType::kPassword)) {
+      LOG(WARNING) << "User already has a password configured.";
+      exit_callback_.Run(Result::NOT_APPLICABLE);
+    } else {
+      exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
+    }
     return;
   }
 
