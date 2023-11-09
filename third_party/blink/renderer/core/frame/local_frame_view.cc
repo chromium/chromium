@@ -4252,13 +4252,6 @@ IntersectionUpdateResult LocalFrameView::UpdateViewportIntersectionsForSubtree(
     }
   }
 
-  UMA_HISTOGRAM_COUNTS_1000(
-      "Blink.IntersectionObservation.FrameMinScrollDeltaToUpdateX",
-      base::saturated_cast<int>(min_scroll_delta_to_update_intersection_.x()));
-  UMA_HISTOGRAM_COUNTS_1000(
-      "Blink.IntersectionObservation.FrameMinScrollDeltaToUpdateY",
-      base::saturated_cast<int>(min_scroll_delta_to_update_intersection_.y()));
-
   if (DocumentFencedFrames* fenced_frames =
           DocumentFencedFrames::Get(*frame_->GetDocument())) {
     for (HTMLFencedFrameElement* fenced_frame :
@@ -4402,38 +4395,11 @@ void LocalFrameView::SetIntersectionObservationState(
   }
 }
 
-namespace {
-
-enum class IntersectionObservationStateOnScroll {
-  kViewportOnly = 0,
-  kNewlyDesired = 1,
-  kAlreadyDesired = 2,
-  kAlreadyRequired = 3,
-  kMaxValue = 3,
-};
-
-void ReportIntersectionObservationStateOnScroll(
-    IntersectionObservationStateOnScroll state) {
-  UMA_HISTOGRAM_ENUMERATION("Blink.IntersectionObservation.StateOnScroll",
-                            state);
-}
-
-}  // anonymous namespace
-
 void LocalFrameView::UpdateIntersectionObservationStateOnScroll(
     gfx::Vector2dF scroll_delta) {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
   accumulated_scroll_delta_since_last_intersection_update_ +=
       gfx::Vector2dF(std::abs(scroll_delta.x()), std::abs(scroll_delta.y()));
-  if (intersection_observation_state_ == kDesired) {
-    ReportIntersectionObservationStateOnScroll(
-        IntersectionObservationStateOnScroll::kAlreadyDesired);
-    return;
-  }
-  if (intersection_observation_state_ == kRequired) {
-    ReportIntersectionObservationStateOnScroll(
-        IntersectionObservationStateOnScroll::kAlreadyRequired);
+  if (intersection_observation_state_ >= kDesired) {
     return;
   }
   if (min_scroll_delta_to_update_intersection_.x() <=
@@ -4444,8 +4410,6 @@ void LocalFrameView::UpdateIntersectionObservationStateOnScroll(
     // exceeded min_scroll_delta_to_update_intersection_ since the last
     // intersection observer update, which may change intersection status.
     SetIntersectionObservationState(kDesired);
-    ReportIntersectionObservationStateOnScroll(
-        IntersectionObservationStateOnScroll::kNewlyDesired);
   } else {
     DCHECK(RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
     // Frame viewport intersection is always updated on scroll, regardless of
@@ -4455,8 +4419,6 @@ void LocalFrameView::UpdateIntersectionObservationStateOnScroll(
     // viewport intersection updates are much faster than intersection
     // observer updates, based on UMA data.
     SetIntersectionObservationState(kFrameViewportIntersectionOnly);
-    ReportIntersectionObservationStateOnScroll(
-        IntersectionObservationStateOnScroll::kViewportOnly);
   }
 }
 
