@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -27,6 +28,8 @@ class AssistantViewDelegate;
 // model events.
 class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
     : public AnimatedContainerView {
+  METADATA_HEADER(UiElementContainerView, AnimatedContainerView)
+
  public:
   explicit UiElementContainerView(AssistantViewDelegate* delegate);
 

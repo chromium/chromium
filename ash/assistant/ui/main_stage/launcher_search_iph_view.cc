@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/rand_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -204,5 +205,8 @@ void LauncherSearchIphView::OpenAssistantPage() {
   }
   delegate_->OpenAssistantPage();
 }
+
+BEGIN_METADATA(LauncherSearchIphView)
+END_METADATA
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_client.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
@@ -17,6 +18,8 @@
 namespace ash {
 
 class LauncherSearchIphView : public views::View {
+  METADATA_HEADER(LauncherSearchIphView, views::View)
+
  public:
   // Delegate for handling actions of `LauncherSearchIphView`.
   class Delegate {

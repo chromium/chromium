@@ -11,6 +11,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -26,6 +27,8 @@ class SuggestionContainerView;
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantFooterView
     : public views::View,
       public AssistantStateObserver {
+  METADATA_HEADER(AssistantFooterView, views::View)
+
  public:
   explicit AssistantFooterView(AssistantViewDelegate* delegate);
 

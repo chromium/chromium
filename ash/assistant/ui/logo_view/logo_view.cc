@@ -6,6 +6,7 @@
 
 #include "build/buildflag.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "ash/assistant/ui/logo_view/logo_view_impl.h"
@@ -25,5 +26,8 @@ std::unique_ptr<LogoView> LogoView::Create() {
   return std::make_unique<LogoView>();
 #endif
 }
+
+BEGIN_METADATA(LogoView)
+END_METADATA
 
 }  // namespace ash

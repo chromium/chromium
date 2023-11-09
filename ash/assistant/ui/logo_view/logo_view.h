@@ -8,11 +8,14 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 class COMPONENT_EXPORT(ASSISTANT_UI) LogoView : public views::View {
+  METADATA_HEADER(LogoView, views::View)
+
  public:
   enum class State {
     kUndefined,

@@ -23,6 +23,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -185,5 +186,8 @@ void AssistantZeroStateView::RunLauncherSearchQuery(
 void AssistantZeroStateView::OpenAssistantPage() {
   NOTREACHED_NORETURN();
 }
+
+BEGIN_METADATA(AssistantZeroStateView)
+END_METADATA
 
 }  // namespace ash
