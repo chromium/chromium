@@ -259,8 +259,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #if BUILDFLAG(IS_ANDROID)
     {wf::EnableGetDisplayMedia, raw_ref(features::kUserMediaScreenCapturing)},
 #endif
-    {wf::EnableIdleDetection, raw_ref(features::kIdleDetection),
-     kSetOnlyIfOverridden},
     {wf::EnableInstalledApp, raw_ref(features::kInstalledApp)},
     {wf::EnableLazyInitializeMediaControls,
      raw_ref(features::kLazyInitializeMediaControls)},

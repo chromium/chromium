@@ -114,7 +114,6 @@ CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kFirstPartySetsNavigationThrottleTimeout;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFractionalScrollOffsets);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kGreaseUACH);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kIdleDetection);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledApp);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledAppProvider);
 // LINT.IfChange

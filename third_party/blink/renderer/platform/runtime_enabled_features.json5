@@ -2062,12 +2062,6 @@
       status: "experimental",
     },
     {
-      name: "IdleDetection",
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "ImplicitRootScroller",
       public: true,
       settable_from_internals: true,
