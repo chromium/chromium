@@ -45,6 +45,7 @@ public class PageInfoCookiesController
     private int mAllowedSites;
     private int mBlockedSites;
     private int mStatus;
+    private int mEnforcement;
     private boolean mIsEnforced;
     private long mExpiration;
     private int mConfidenceLevel;
@@ -127,7 +128,7 @@ public class PageInfoCookiesController
         params.blockAll3PC = mBlockAll3PC;
         mSubPage.setParams(params);
         if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
-            mSubPage.setCookieStatus(mStatus, mIsEnforced, mExpiration);
+            mSubPage.setCookieStatus(mStatus, mEnforcement, mExpiration);
             mSubPage.setSitesCount(mAllowedSites, mBlockedSites);
         } else {
             mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
@@ -222,13 +223,13 @@ public class PageInfoCookiesController
     @Override
     public void onStatusChanged(int status, int enforcement, int blockingStatus, long expiration) {
         mStatus = status;
-        mIsEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
+        mEnforcement = enforcement;
         mExpiration = expiration;
 
         updateRowViewSubtitle();
 
         if (mSubPage != null) {
-            mSubPage.setCookieStatus(mStatus, mIsEnforced, expiration);
+            mSubPage.setCookieStatus(mStatus, mEnforcement, expiration);
         }
     }
 

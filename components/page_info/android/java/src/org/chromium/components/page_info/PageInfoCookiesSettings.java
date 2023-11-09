@@ -24,6 +24,7 @@ import org.chromium.components.browser_ui.site_settings.ForwardingManagedPrefere
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -45,6 +46,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private TextMessagePreference mThirdPartyCookiesTitle;
     private TextMessagePreference mThirdPartyCookiesSummary;
     private Runnable mOnClearCallback;
+    private Runnable mOnCookieSettingsLinkClicked;
     private Callback<Activity> mOnFeedbackClicked;
     private Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
@@ -103,9 +105,14 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     public void setParams(PageInfoCookiesViewParams params) {
         mTrackingProtectionUI = params.showTrackingProtectionUI;
         mBlockAll3PC = params.blockAll3PC;
+        mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
-        NoUnderlineClickableSpan linkSpan = new NoUnderlineClickableSpan(
-                getContext(), (view) -> { params.onCookieSettingsLinkClicked.run(); });
+        NoUnderlineClickableSpan linkSpan =
+                new NoUnderlineClickableSpan(
+                        getContext(),
+                        (view) -> {
+                            mOnCookieSettingsLinkClicked.run();
+                        });
         int summaryString;
         if (mTrackingProtectionUI && mBlockAll3PC) {
             summaryString = R.string.page_info_tracking_protection_blocked_cookies_description;
@@ -189,12 +196,36 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     // Only used when UserBypassUI flag is on.
     public void setCookieStatus(
-            @CookieControlsStatus int status, final boolean isEnforced, long expiration) {
+            @CookieControlsStatus int status,
+            @CookieControlsEnforcement int enforcement,
+            long expiration) {
         assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
             : "This should only be invoked when UserBypassUI is enabled.";
 
         boolean visible = status != CookieControlsStatus.DISABLED;
         boolean blockingEnabled = status == CookieControlsStatus.ENABLED;
+        boolean isEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
+
+        if (enforcement == CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT) {
+            // Hide all the 3PC controls.
+            mCookieSwitch.setVisible(false);
+            mThirdPartyCookiesTitle.setVisible(false);
+            mThirdPartyCookiesSummary.setVisible(false);
+            // TODO(crbug.com/1499873): Move this to the bottom section of the view.
+            Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
+            NoUnderlineClickableSpan linkSpan =
+                    new NoUnderlineClickableSpan(
+                            getContext(),
+                            (view) -> {
+                                mOnCookieSettingsLinkClicked.run();
+                            });
+            cookieSummary.setSummary(
+                    SpanApplier.applySpans(
+                            getString(
+                                    R.string.page_info_tracking_protection_site_grant_description),
+                            new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
+            return;
+        }
 
         mCookieSwitch.setVisible(visible);
         mThirdPartyCookiesTitle.setVisible(visible);
