@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include "build/chromeos_buildflags.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -150,7 +151,12 @@ IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, BasicFullscreen) {
                                     IsFullscreenExpected() ? 1 : 0);
 }
 
-IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, AboutBlankFullscreen) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_AboutBlankFullscreen DISABLED_AboutBlankFullscreen
+#else
+#define MAYBE_AboutBlankFullscreen AboutBlankFullscreen
+#endif
+IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, MAYBE_AboutBlankFullscreen) {
   Browser* popup =
       OpenPopup(browser(), "open('about:blank', '_blank', 'popup,fullscreen')",
                 ShouldTestWithUserGesture());
