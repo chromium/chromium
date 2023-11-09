@@ -90622,6 +90622,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="Product is Untracked"/>
 </enum>
 
+<enum name="PriceTrackingIconInteractionState">
+  <int value="0" label="Clicked (not expanded)"/>
+  <int value="1" label="Clicked (after expansion)"/>
+  <int value="2" label="Not clicked (not expanded)"/>
+  <int value="3" label="Not clicked (after expansion)"/>
+</enum>
+
 <enum name="PriceTrackingState">
   <int value="0" label="Price tracking shown"/>
   <int value="1" label="Price tracking enabled"/>

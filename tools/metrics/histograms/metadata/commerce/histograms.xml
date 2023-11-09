@@ -567,6 +567,20 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PriceTracking.IconInteractionState"
+    enum="PriceTrackingIconInteractionState" expires_after="2024-06-01">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the state the price tracking page action icon was in and whether it
+    was interacted with. This only records clicks that would result in tracking
+    the product, excludes cases where the icon was not shown, and is only
+    recorded the first time the event happens for a page load. This will give us
+    a clear picture of the effect that expanding the action to show the label
+    has on click-through.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PriceTracking.IOS.ProductStatus"
     enum="PriceNotificationProductStatus" expires_after="2024-07-21">
   <owner>danieltwhite@google.com</owner>

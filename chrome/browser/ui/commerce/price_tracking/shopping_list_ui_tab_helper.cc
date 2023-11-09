@@ -135,6 +135,10 @@ void ShoppingListUiTabHelper::DidFinishNavigation(
     return;
   }
 
+  // The page action icon may not have been used for the last page load. If
+  // that's the case, make sure we record it.
+  RecordPriceTrackingIconMetrics(/*from_icon_use=*/false);
+
   previous_main_frame_url_ = navigation_handle->GetURL();
   last_fetched_image_ = gfx::Image();
   last_fetched_image_url_ = GURL();
@@ -148,9 +152,11 @@ void ShoppingListUiTabHelper::DidFinishNavigation(
   got_initial_subscription_status_for_page_ = false;
   page_has_discounts_ = false;
   page_action_to_expand_ = absl::nullopt;
+  page_action_expanded_ = absl::nullopt;
   pending_tracking_state_.reset();
   is_first_load_for_nav_finished_ = false;
   price_insights_info_.reset();
+  icon_use_recorded_for_page_ = false;
 
   MakeShoppingInsightsSidePanelUnavailable();
 
@@ -202,6 +208,12 @@ void ShoppingListUiTabHelper::DidStopLoading() {
   is_first_load_for_nav_finished_ = true;
 
   TriggerUpdateForIconView();
+}
+
+void ShoppingListUiTabHelper::WebContentsDestroyed() {
+  // If the tab or browser is closed, try recording whether the price tracking
+  // icon was used.
+  RecordPriceTrackingIconMetrics(/*from_icon_use=*/false);
 }
 
 void ShoppingListUiTabHelper::TriggerUpdateForIconView() {
@@ -746,10 +758,62 @@ bool ShoppingListUiTabHelper::ShouldExpandPageActionIcon(
   // expanding multiple times per page load.
   if (page_action_to_expand_.has_value() &&
       type == page_action_to_expand_.value()) {
+    page_action_expanded_ = page_action_to_expand_.value();
     page_action_to_expand_ = absl::nullopt;
     return true;
   }
   return false;
+}
+
+void ShoppingListUiTabHelper::OnPriceTrackingIconClicked() {
+  RecordPriceTrackingIconMetrics(/*from_icon_use=*/true);
+}
+
+void ShoppingListUiTabHelper::RecordPriceTrackingIconMetrics(
+    bool from_icon_use) {
+  // Ignore cases where these is no cluster ID or the metric was already
+  // recorded for the page.
+  if (!cluster_id_for_page_.has_value() || icon_use_recorded_for_page_) {
+    return;
+  }
+
+  icon_use_recorded_for_page_ = true;
+
+  // Ignore any instances where the product is already tracked. This will not
+  // stop cases where the icon is being used to newly track a product since
+  // this logic will run prior to subscriptions updating.
+  if (is_cluster_id_tracked_by_user_) {
+    return;
+  }
+
+  std::string histogram_name = "Commerce.PriceTracking.IconInteractionState";
+
+  bool price_tracking_expanded =
+      page_action_expanded_.has_value() &&
+      page_action_expanded_.value() == PageActionIconType::kPriceTracking;
+
+  // Clicking the icon for a product that is already tracked does not
+  // immediately untrack the product. If we made it this far, we can assume the
+  // interaction was to track a product, otherwise we would have been blocked
+  // above.
+  if (from_icon_use) {
+    if (!price_tracking_expanded) {
+      base::UmaHistogramEnumeration(histogram_name,
+                                    PageActionIconInteractionState::kClicked);
+    } else {
+      base::UmaHistogramEnumeration(
+          histogram_name, PageActionIconInteractionState::kClickedExpanded);
+    }
+
+  } else {
+    if (!price_tracking_expanded) {
+      base::UmaHistogramEnumeration(
+          histogram_name, PageActionIconInteractionState::kNotClicked);
+    } else {
+      base::UmaHistogramEnumeration(
+          histogram_name, PageActionIconInteractionState::kNotClickedExpanded);
+    }
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ShoppingListUiTabHelper);
