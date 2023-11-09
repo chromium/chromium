@@ -293,12 +293,18 @@ class PredictionManagerTest : public testing::WithParamInterface<bool>,
          {{"fetch_startup_delay_ms", "2000"}}},
         {optimization_guide::features::kOptimizationGuideModelDownloading, {}},
     };
+    std::vector<base::test::FeatureRef> disabled_features;
     if (ShouldEnableInstallWideModelStore()) {
       enabled_features.emplace_back(
           optimization_guide::features::kOptimizationGuideInstallWideModelStore,
           base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(
+          optimization_guide::features::
+              kOptimizationGuideInstallWideModelStore);
     }
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   bool ShouldEnableInstallWideModelStore() const { return GetParam(); }
@@ -447,12 +453,18 @@ class PredictionManagerModelDownloadingBrowserTest
         {optimization_guide::features::kOptimizationGuideModelDownloading,
          {{"unrestricted_model_downloading", "true"}}},
     };
+    std::vector<base::test::FeatureRef> disabled_features;
     if (ShouldEnableInstallWideModelStore()) {
       enabled_features.emplace_back(
           optimization_guide::features::kOptimizationGuideInstallWideModelStore,
           base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(
+          optimization_guide::features::
+              kOptimizationGuideInstallWideModelStore);
     }
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
  protected:

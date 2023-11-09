@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/translate/model/language_detection_model_service_factory.h"
 #import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -36,6 +37,7 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
     PlatformTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
         {translate::kTFLiteLanguageDetectionEnabled}, {});
+    OptimizationGuideServiceFactory::InitializePredictionModelStore();
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
@@ -58,6 +60,7 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;

@@ -268,7 +268,7 @@ BASE_FEATURE(kOptimizationHintsComponent,
 // the models across user profiles.
 BASE_FEATURE(kOptimizationGuideInstallWideModelStore,
              "OptimizationGuideInstallWideModelStore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse,
              "ExtractRelatedSearchesFromPrefetchedZPSResponse",

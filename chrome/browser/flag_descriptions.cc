@@ -2584,12 +2584,6 @@ const char kOptimizationGuideDebugLogsDescription[] =
     "Enables the optimization guide to log and save debug messages that can be "
     "shown in the internals page.";
 
-const char kOptimizationGuideInstallWideModelStoreName[] =
-    "Enables the new optimization guide install-wide model store";
-const char kOptimizationGuideInstallWideModelStoreDescription[] =
-    "Enables the new model store that is per Chrome installation and can "
-    "share models across user profiles.";
-
 const char kOptimizationGuideModelExecutionName[] =
     "Enables optimization guide model execution";
 const char kOptimizationGuideModelExecutionDescription[] =

@@ -6039,11 +6039,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "optimization-guide-install-wide-model-store",
-    "owners": [ "rajendrant@chromium.org", "sophiechang@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "optimization-guide-model-execution",
     "owners": [ "rajendrant@chromium.org", "sophiechang@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 125

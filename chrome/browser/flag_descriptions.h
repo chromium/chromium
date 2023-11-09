@@ -1493,9 +1493,6 @@ extern const char kOneTimePermissionDescription[];
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 
-extern const char kOptimizationGuideInstallWideModelStoreName[];
-extern const char kOptimizationGuideInstallWideModelStoreDescription[];
-
 extern const char kOptimizationGuideModelExecutionName[];
 extern const char kOptimizationGuideModelExecutionDescription[];
 

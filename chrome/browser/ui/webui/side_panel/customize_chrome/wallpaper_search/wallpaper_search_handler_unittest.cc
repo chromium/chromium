@@ -19,9 +19,7 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/image_fetcher/core/mock_image_decoder.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
@@ -66,7 +64,9 @@ class MockWallpaperSearchBackgroundManager
 };
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    TestingPrefServiceSimple* local_state) {
+  MockOptimizationGuideKeyedService::Initialize(local_state);
   TestingProfile::Builder profile_builder;
   profile_builder.AddTestingFactory(
       OptimizationGuideKeyedServiceFactory::GetInstance(),
@@ -118,7 +118,8 @@ class WallpaperSearchHandlerTest : public testing::Test {
   WallpaperSearchHandlerTest()
       : profile_(MakeTestingProfile(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_))),
+                &test_url_loader_factory_),
+            &local_state_)),
         mock_optimization_guide_keyed_service_(
             static_cast<MockOptimizationGuideKeyedService*>(
                 OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -139,12 +140,10 @@ class WallpaperSearchHandlerTest : public testing::Test {
                               optimization_guide::features::
                                   kOptimizationGuideModelExecution},
         /*disabled_features=*/{});
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-    RegisterLocalState(local_state_.registry());
   }
 
   void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+    MockOptimizationGuideKeyedService::TearDown();
     test_url_loader_factory_.ClearResponses();
   }
 
@@ -180,8 +179,8 @@ class WallpaperSearchHandlerTest : public testing::Test {
  private:
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   raw_ptr<MockOptimizationGuideKeyedService>

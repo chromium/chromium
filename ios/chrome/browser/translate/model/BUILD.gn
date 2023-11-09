@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common:string_util",
+    "//ios/chrome/test:test_support",
     "//ios/web/public",
     "//ios/web/public/test:test",
     "//ios/web/public/test:util",
