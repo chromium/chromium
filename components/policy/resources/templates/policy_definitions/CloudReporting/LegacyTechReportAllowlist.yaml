@@ -9,7 +9,6 @@ desc: |-
   The matching patterns use a similar format to those for the '<ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>' policy, which are documented at https://support.google.com/chrome/a?p=url_blocklist_filter_format. With a few exceptions below:
    * No wildcard '*' support.
    * Schema, port and query are ignored.
-   * subdomain must always be specified to be matched.
    * At most 100 URLs can be added into the allowlist,
 
   For <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, this policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph>.
