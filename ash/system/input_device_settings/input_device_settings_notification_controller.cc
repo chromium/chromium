@@ -424,7 +424,7 @@ void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
   seen_mouse_list.Append(mouse.device_key);
   prefs->SetList(prefs::kPeripheralNotificationMiceSeen,
                  std::move(seen_mouse_list));
-  // TODO(yyhyyh@): Push peripheral notification.
+  NotifyMouseIsCustomizable(mouse);
 }
 
 void InputDeviceSettingsNotificationController::
@@ -449,7 +449,7 @@ void InputDeviceSettingsNotificationController::
   seen_graphics_tablet_list.Append(graphics_tablet->device_key);
   prefs->SetList(prefs::kPeripheralNotificationGraphicsTabletsSeen,
                  std::move(seen_graphics_tablet_list));
-  // TODO(yyhyyh@): Push peripheral notification.
+  NotifyGraphicsTabletIsCustomizable(*graphics_tablet);
 }
 
 void InputDeviceSettingsNotificationController::

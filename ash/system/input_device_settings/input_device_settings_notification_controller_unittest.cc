@@ -383,8 +383,11 @@ TEST_F(InputDeviceSettingsNotificationControllerTest, LearnMoreButtonClicked) {
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
        NotifyMouseFirstTimeConnected) {
+  size_t expected_notification_count = 1;
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->device_key = "0001:0001";
+  mojom_mouse->id = 1;
+
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
 
@@ -396,7 +399,12 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
                      base::Value("0001:0001")));
   controller()->NotifyMouseFirstTimeConnected(*mojom_mouse);
   EXPECT_EQ(prefs->GetList(prefs::kPeripheralNotificationMiceSeen).size(), 1u);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_mouse_1"));
 
+  mojom_mouse->id = 2;
   mojom_mouse->device_key = "0001:0002";
 
   controller()->NotifyMouseFirstTimeConnected(*mojom_mouse);
@@ -404,11 +412,16 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_TRUE(
       base::Contains(prefs->GetList(prefs::kPeripheralNotificationMiceSeen),
                      base::Value("0001:0002")));
+  EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_mouse_2"));
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
        NotifyGraphicsTabletFirstTimeConnected) {
+  size_t expected_notification_count = 1;
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
+  mojom_graphics_tablet->id = 1;
   mojom_graphics_tablet->device_key = "0002:0001";
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -420,6 +433,11 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(
       prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
       1u);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_graphics_tablet_1"));
+
   EXPECT_TRUE(base::Contains(
       prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen),
       base::Value("0002:0001")));
@@ -429,6 +447,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).size(),
       1u);
 
+  mojom_graphics_tablet->id = 2;
   mojom_graphics_tablet->device_key = "0002:0002";
 
   controller()->NotifyGraphicsTabletFirstTimeConnected(
@@ -439,6 +458,9 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_TRUE(base::Contains(
       prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen),
       base::Value("0002:0002")));
+  EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_graphics_tablet_2"));
 }
 
 }  // namespace ash
