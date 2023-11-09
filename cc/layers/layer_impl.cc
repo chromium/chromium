@@ -325,6 +325,8 @@ void LayerImpl::UpdateScrollable() {
       return;
   }
 
+  const bool container_bounds_changed =
+      scrollable_ && scroll_node->container_bounds != scroll_container_bounds_;
   scroll_container_bounds_ =
       scrollable_ ? scroll_node->container_bounds : gfx::Size();
   scroll_contents_bounds_ = scrollable_ ? scroll_node->bounds : gfx::Size();
@@ -334,7 +336,13 @@ void LayerImpl::UpdateScrollable() {
 
   if (layer_tree_impl()->settings().scrollbar_animator ==
       LayerTreeSettings::AURA_OVERLAY) {
-    set_needs_show_scrollbars(scrollable_);
+    if (layer_tree_impl()->settings().enable_fluent_overlay_scrollbar) {
+      // Show scrollbars when resizing scrollable areas and
+      // not when the inside content gets expanded.
+      set_needs_show_scrollbars(scrollable_ && container_bounds_changed);
+    } else {
+      set_needs_show_scrollbars(scrollable_);
+    }
   }
 
   NoteLayerPropertyChanged();

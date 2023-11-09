@@ -43,6 +43,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::Bool;
+
 namespace cc {
 
 class FakeResourceTrackingUIResourceManager : public UIResourceManager {
@@ -102,12 +104,15 @@ class FakeResourceTrackingUIResourceManager : public UIResourceManager {
 class BaseScrollbarLayerTest : public testing::Test {
  public:
   explicit BaseScrollbarLayerTest(
-      LayerTreeSettings::ScrollbarAnimator animator) {
+      LayerTreeSettings::ScrollbarAnimator animator,
+      bool enable_fluent_overlay_scrollbar = false) {
     layer_tree_settings_.single_thread_proxy_scheduler = false;
     layer_tree_settings_.use_zero_copy = true;
     layer_tree_settings_.scrollbar_animator = animator;
     layer_tree_settings_.scrollbar_fade_delay = base::Milliseconds(20);
     layer_tree_settings_.scrollbar_fade_duration = base::Milliseconds(20);
+    layer_tree_settings_.enable_fluent_overlay_scrollbar =
+        enable_fluent_overlay_scrollbar;
 
     animation_host_ = AnimationHost::CreateForTesting(ThreadInstance::kMain);
 
@@ -150,10 +155,13 @@ class ScrollbarLayerTest : public BaseScrollbarLayerTest {
       : BaseScrollbarLayerTest(LayerTreeSettings::ANDROID_OVERLAY) {}
 };
 
-class AuraScrollbarLayerTest : public BaseScrollbarLayerTest {
+class AuraScrollbarLayerTest : public BaseScrollbarLayerTest,
+                               public testing::WithParamInterface<bool> {
  public:
-  AuraScrollbarLayerTest()
-      : BaseScrollbarLayerTest(LayerTreeSettings::AURA_OVERLAY) {}
+  explicit AuraScrollbarLayerTest(
+      bool enable_fluent_overlay_scrollbar = GetParam())
+      : BaseScrollbarLayerTest(LayerTreeSettings::AURA_OVERLAY,
+                               enable_fluent_overlay_scrollbar) {}
 };
 
 class FakePaintedOverlayScrollbar : public FakeScrollbar {
@@ -809,7 +817,7 @@ TEST_F(ScrollbarLayerTest, ScrollbarLayerOpacity) {
   EXPECT_EQ(node->opacity, 0.25f);
 }
 
-TEST_F(AuraScrollbarLayerTest, ScrollbarLayerPushProperties) {
+TEST_P(AuraScrollbarLayerTest, ScrollbarLayerPushProperties) {
   // Pushing changed bounds of scroll layer can lead to calling
   // OnOpacityAnimated on scrollbar layer which means OnOpacityAnimated should
   // be independent of scrollbar layer's properties as scrollbar layer can push
@@ -852,7 +860,10 @@ TEST_F(AuraScrollbarLayerTest, ScrollbarLayerPushProperties) {
   const EffectNode* node =
       host_impl->active_tree()->property_trees()->effect_tree().Node(
           scrollbar_layer->effect_tree_index());
-  EXPECT_EQ(node->opacity, 1.f);
+  // If Fluent overlay scrollbars are active, changing the bounds scrollable
+  // content shouldn't make the scrollbars appear.
+  EXPECT_EQ(node->opacity,
+            layer_tree_settings_.enable_fluent_overlay_scrollbar ? 0.f : 1.f);
 }
 
 TEST_F(ScrollbarLayerTest, SubPixelCanScrollOrientation) {
@@ -985,7 +996,7 @@ TEST_F(ScrollbarLayerTest, UpdateScrollbarGeometriesScrollNodeOnContainer) {
   impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
 }
 
-TEST_F(AuraScrollbarLayerTest, ScrollbarLayerCreateAfterSetScrollable) {
+TEST_P(AuraScrollbarLayerTest, ScrollbarLayerCreateAfterSetScrollable) {
   // Scrollbar Layer can be created after SetScrollable is called and in a
   // separate commit. Ensure we do not missing the DidRequestShowFromMainThread
   // call.
@@ -1505,5 +1516,7 @@ TEST_F(ScaledScrollbarLayerTestScaledRasterization, TestLostPrecisionInClip) {
   TestScale(gfx::Rect(0, 1240, 1333, 15), 2.7754839f);
   TestScale(gfx::Rect(0, 1240, 677, 15), 2.46677136f);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, AuraScrollbarLayerTest, Bool());
 
 }  // namespace cc
