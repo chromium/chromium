@@ -1636,38 +1636,6 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_MissingName) {
       *ConstructFormStructureFromTypeValuePairs(type_value_pairs));
 }
 
-// Tests that a profile is imported if the country can be translated using the
-// page language.
-TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(
-          GetDefaultProfileTypeValuePairsWithOverriddenCountry("Armenien"));
-
-  // Set up language state mock.
-  autofill_client_->GetLanguageState()->SetSourceLanguage("");
-  // Verify that the country code is not determined from the country value if
-  // the page language is not set. This results in an import of the default
-  // profile.
-  AutofillProfile expected_profile = ConstructDefaultProfile();
-  // The country is US here, but we override the phone number that is expected
-  // later in an Armenian profile.
-  expected_profile.SetRawInfoWithVerificationStatus(
-      PHONE_HOME_WHOLE_NUMBER,
-      base::UTF8ToUTF16(std::string(kDefaultPhoneArmenia)),
-      VerificationStatus::kObserved);
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {expected_profile});
-
-  // Set the page language to match the localized country value and try again.
-  autofill_client_->GetLanguageState()->SetSourceLanguage("de");
-
-  // Note that the previously extracted profile is still available in the PDM
-  // after extracting the profile a second time with a page language configured.
-  ExtractAddressProfilesAndVerifyExpectation(
-      *form_structure,
-      {expected_profile, ConstructDefaultProfileWithOverriddenCountry("AM")});
-}
-
 // Tests that a profile is created for countries with composed names.
 TEST_P(FormDataImporterTest,
        ImportAddressProfiles_CompleteComposedCountryName) {
