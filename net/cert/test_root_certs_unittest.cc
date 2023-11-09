@@ -39,17 +39,16 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc() {
   if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
     return CertVerifyProc::CreateBuiltinWithChromeRootStore(
         /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
-        /*root_store_data=*/nullptr, /*instance_params=*/{});
+        /*root_store_data=*/nullptr);
   }
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
   return CertVerifyProc::CreateBuiltinWithChromeRootStore(
       /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
-      /*root_store_data=*/nullptr, /*instance_params=*/{});
+      /*root_store_data=*/nullptr);
 #elif BUILDFLAG(IS_FUCHSIA)
-  return CertVerifyProc::CreateBuiltinVerifyProc(
-      /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
-      /*instance_params=*/{});
+  return CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr,
+                                                 CRLSet::BuiltinCRLSet().get());
 #else
   return CertVerifyProc::CreateSystemVerifyProc(/*cert_net_fetcher=*/nullptr,
                                                 CRLSet::BuiltinCRLSet().get());
@@ -94,10 +93,10 @@ TEST(TestRootCertsTest, OverrideTrust) {
   int flags = 0;
   CertVerifyResult bad_verify_result;
   scoped_refptr<CertVerifyProc> verify_proc(CreateCertVerifyProc());
-  int bad_status = verify_proc->Verify(test_cert.get(), "127.0.0.1",
-                                       /*ocsp_response=*/std::string(),
-                                       /*sct_list=*/std::string(), flags,
-                                       &bad_verify_result, NetLogWithSource());
+  int bad_status = verify_proc->Verify(
+      test_cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+      /*sct_list=*/std::string(), flags, CertificateList(), &bad_verify_result,
+      NetLogWithSource());
   EXPECT_NE(OK, bad_status);
   EXPECT_NE(0u, bad_verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
   EXPECT_FALSE(bad_verify_result.is_issued_by_known_root);
@@ -114,7 +113,7 @@ TEST(TestRootCertsTest, OverrideTrust) {
   CertVerifyResult good_verify_result;
   int good_status = verify_proc->Verify(
       test_cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-      /*sct_list=*/std::string(), flags, &good_verify_result,
+      /*sct_list=*/std::string(), flags, CertificateList(), &good_verify_result,
       NetLogWithSource());
   EXPECT_THAT(good_status, IsOk());
   EXPECT_EQ(0u, good_verify_result.cert_status);
@@ -129,8 +128,8 @@ TEST(TestRootCertsTest, OverrideTrust) {
   CertVerifyResult restored_verify_result;
   int restored_status = verify_proc->Verify(
       test_cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-      /*sct_list=*/std::string(), flags, &restored_verify_result,
-      NetLogWithSource());
+      /*sct_list=*/std::string(), flags, CertificateList(),
+      &restored_verify_result, NetLogWithSource());
   EXPECT_NE(OK, restored_status);
   EXPECT_NE(0u,
             restored_verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
@@ -162,7 +161,7 @@ TEST(TestRootCertsTest, OverrideKnownRoot) {
   int good_status =
       verify_proc->Verify(leaf->GetX509Certificate().get(), "www.example.com",
                           /*ocsp_response=*/std::string(),
-                          /*sct_list=*/std::string(), flags,
+                          /*sct_list=*/std::string(), flags, CertificateList(),
                           &good_verify_result, NetLogWithSource());
   EXPECT_THAT(good_status, IsOk());
   EXPECT_EQ(0u, good_verify_result.cert_status);
@@ -181,7 +180,7 @@ TEST(TestRootCertsTest, OverrideKnownRoot) {
   int restored_status =
       verify_proc->Verify(leaf->GetX509Certificate().get(), "www.example.com",
                           /*ocsp_response=*/std::string(),
-                          /*sct_list=*/std::string(), flags,
+                          /*sct_list=*/std::string(), flags, CertificateList(),
                           &restored_verify_result, NetLogWithSource());
   EXPECT_THAT(restored_status, IsOk());
   EXPECT_EQ(0u, restored_verify_result.cert_status);
@@ -208,10 +207,10 @@ TEST(TestRootCertsTest, Moveable) {
 
     // Test that the good certificate fails verification, because the root
     // certificate should not yet be trusted.
-    bad_status = verify_proc->Verify(test_cert.get(), "127.0.0.1",
-                                     /*ocsp_response=*/std::string(),
-                                     /*sct_list=*/std::string(), flags,
-                                     &bad_verify_result, NetLogWithSource());
+    bad_status = verify_proc->Verify(
+        test_cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        /*sct_list=*/std::string(), flags, CertificateList(),
+        &bad_verify_result, NetLogWithSource());
     EXPECT_NE(OK, bad_status);
     EXPECT_NE(0u,
               bad_verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
@@ -229,8 +228,8 @@ TEST(TestRootCertsTest, Moveable) {
       CertVerifyResult good_verify_result;
       int good_status = verify_proc->Verify(
           test_cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-          /*sct_list=*/std::string(), flags, &good_verify_result,
-          NetLogWithSource());
+          /*sct_list=*/std::string(), flags, CertificateList(),
+          &good_verify_result, NetLogWithSource());
       EXPECT_THAT(good_status, IsOk());
       EXPECT_EQ(0u, good_verify_result.cert_status);
 
@@ -251,8 +250,8 @@ TEST(TestRootCertsTest, Moveable) {
     CertVerifyResult good_verify_result;
     int good_status = verify_proc->Verify(
         test_cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-        /*sct_list=*/std::string(), flags, &good_verify_result,
-        NetLogWithSource());
+        /*sct_list=*/std::string(), flags, CertificateList(),
+        &good_verify_result, NetLogWithSource());
     EXPECT_THAT(good_status, IsOk());
     EXPECT_EQ(0u, good_verify_result.cert_status);
   }
@@ -264,8 +263,8 @@ TEST(TestRootCertsTest, Moveable) {
   CertVerifyResult restored_verify_result;
   int restored_status = verify_proc->Verify(
       test_cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-      /*sct_list=*/std::string(), flags, &restored_verify_result,
-      NetLogWithSource());
+      /*sct_list=*/std::string(), flags, CertificateList(),
+      &restored_verify_result, NetLogWithSource());
   EXPECT_NE(OK, restored_status);
   EXPECT_NE(0u,
             restored_verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);

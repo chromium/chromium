@@ -18,7 +18,6 @@
 #include "components/services/storage/public/mojom/local_storage_control.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/mojom/cert_verifier_service.mojom-forward.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
@@ -104,9 +103,6 @@ class CONTENT_EXPORT StoragePartition {
   // or restarts, the raw pointer will not be valid or safe to use. Therefore,
   // caller should not hold onto this pointer beyond the same message loop task.
   virtual network::mojom::NetworkContext* GetNetworkContext() = 0;
-
-  virtual cert_verifier::mojom::CertVerifierServiceUpdater*
-  GetCertVerifierServiceUpdater() = 0;
 
   // Returns the SharedStorageManager for the StoragePartition, or nullptr if it
   // doesn't exist because the feature is disabled.

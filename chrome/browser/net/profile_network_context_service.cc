@@ -146,11 +146,10 @@ std::string ComputeAcceptLanguageFromPref(const std::string& language_pref) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-cert_verifier::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
+network::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
     const policy::PolicyCertService* policy_cert_service,
     const base::FilePath& storage_partition_path) {
-  auto additional_certificates =
-      cert_verifier::mojom::AdditionalCertificates::New();
+  auto additional_certificates = network::mojom::AdditionalCertificates::New();
   policy_cert_service->GetPolicyCertificatesForStoragePartition(
       storage_partition_path, &(additional_certificates->all_certificates),
       &(additional_certificates->trust_anchors));
@@ -355,8 +354,8 @@ void ProfileNetworkContextService::UpdateAdditionalCertificates() {
          content::StoragePartition* storage_partition) {
         auto additional_certificates = GetAdditionalCertificates(
             policy_cert_service, storage_partition->GetPath());
-        storage_partition->GetCertVerifierServiceUpdater()
-            ->UpdateAdditionalCertificates(std::move(additional_certificates));
+        storage_partition->GetNetworkContext()->UpdateAdditionalCertificates(
+            std::move(additional_certificates));
       },
       policy_cert_service));
 }
@@ -774,12 +773,12 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
 #if BUILDFLAG(IS_CHROMEOS)
 void ProfileNetworkContextService::PopulateInitialAdditionalCerts(
     const base::FilePath& relative_partition_path,
-    cert_verifier::mojom::CertVerifierCreationParams* creation_params) {
+    network::mojom::NetworkContextParams* network_context_params) {
   if (policy::PolicyCertServiceFactory::CreateAndStartObservingForProfile(
           profile_)) {
     const policy::PolicyCertService* policy_cert_service =
         policy::PolicyCertServiceFactory::GetForProfile(profile_);
-    creation_params->initial_additional_certificates =
+    network_context_params->initial_additional_certificates =
         GetAdditionalCertificates(policy_cert_service,
                                   GetPartitionPath(relative_partition_path));
   }
@@ -950,7 +949,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   }
 
   PopulateInitialAdditionalCerts(relative_partition_path,
-                                 cert_verifier_creation_params);
+                                 network_context_params);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -975,7 +974,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   }
   if (profile_supports_policy_certs) {
     PopulateInitialAdditionalCerts(relative_partition_path,
-                                   cert_verifier_creation_params);
+                                   network_context_params);
   }
 #endif
 

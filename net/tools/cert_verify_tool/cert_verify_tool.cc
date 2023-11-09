@@ -203,7 +203,7 @@ class DummySystemTrustStore : public net::SystemTrustStore {
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  int64_t chrome_root_store_version() const override { return 0; }
+  int64_t chrome_root_store_version() override { return 0; }
 #endif
 
  private:
@@ -264,7 +264,7 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
         "CertVerifyProcBuiltin",
         net::CreateCertVerifyProcBuiltin(
             std::move(cert_net_fetcher), std::move(crl_set),
-            CreateSystemTrustStore(impl_name, root_store_type), {}));
+            CreateSystemTrustStore(impl_name, root_store_type)));
   }
 
   if (impl_name == "pathbuilder") {

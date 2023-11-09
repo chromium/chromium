@@ -24,8 +24,8 @@ typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 
 namespace network {
 
-// Wraps a net::CertVerifier to run a callback if the additional trust anchors
-// configured by the ONC user policy are used.
+// Wraps a net::CertVerifier to make it use the additional trust anchors
+// configured by the ONC user policy.
 class COMPONENT_EXPORT(NETWORK_SERVICE) CertVerifierWithTrustAnchors
     : public net::CertVerifier {
  public:
@@ -46,6 +46,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CertVerifierWithTrustAnchors
   // this method.
   void InitializeOnIOThread(std::unique_ptr<net::CertVerifier> delegate);
 
+  // Sets the additional trust anchors and untrusted authorities to be
+  // considered as intermediates.
+  void SetAdditionalCerts(const net::CertificateList& trust_anchors,
+                          const net::CertificateList& untrusted_authorities);
+
   // CertVerifier:
   int Verify(const RequestParams& params,
              net::CertVerifyResult* verify_result,
@@ -57,6 +62,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CertVerifierWithTrustAnchors
   void RemoveObserver(Observer* observer) override;
 
  private:
+  net::CertVerifier::Config orig_config_;
+  net::CertificateList trust_anchors_;
+  net::CertificateList untrusted_authorities_;
   base::RepeatingClosure anchor_used_callback_;
   std::unique_ptr<CertVerifier> delegate_;
   THREAD_CHECKER(thread_checker_);

@@ -83,7 +83,6 @@
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/network/shared_dictionary_util.h"
 #include "content/browser/network_context_client_base_impl.h"
-#include "content/browser/network_service_instance_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -1666,15 +1665,6 @@ network::mojom::NetworkContext* StoragePartitionImpl::GetNetworkContext() {
     InitNetworkContext();
   }
   return network_context_.get();
-}
-
-cert_verifier::mojom::CertVerifierServiceUpdater*
-StoragePartitionImpl::GetCertVerifierServiceUpdater() {
-  DCHECK(initialized_);
-  if (!cert_verifier_service_updater_.is_bound()) {
-    InitNetworkContext();
-  }
-  return cert_verifier_service_updater_.get();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -3369,10 +3359,8 @@ void StoragePartitionImpl::InitNetworkContext() {
          "NetworkContextParams, as they will be replaced with a new pipe to "
          "the CertVerifierService.";
 
-  cert_verifier_service_updater_.reset();
-  context_params->cert_verifier_params = GetCertVerifierParamsWithUpdater(
-      std::move(cert_verifier_creation_params),
-      cert_verifier_service_updater_.BindNewPipeAndPassReceiver());
+  context_params->cert_verifier_params =
+      GetCertVerifierParams(std::move(cert_verifier_creation_params));
 
   // This mechanisms should be used only for legacy internal headers. You can
   // find a recommended alternative approach on URLRequest::cors_exempt_headers

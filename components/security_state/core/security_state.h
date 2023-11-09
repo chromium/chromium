@@ -63,8 +63,6 @@ enum SecurityLevel {
   // a MITM was present.
   //
   // Used only on ChromeOS, this status is unreached on other platforms.
-  // TODO(https://crbug.com/1477317): make this work on all platforms when the
-  // non-chromeos-specific policies are added.
   SECURE_WITH_POLICY_INSTALLED_CERT = 4,
 
   // Attempted HTTPS and failed, page not authenticated, HTTPS with

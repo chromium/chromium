@@ -29,8 +29,7 @@ bool IsUsingCertNetFetcher();
 std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
     mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-    const net::CertVerifyProc::ImplParams& impl_params,
-    const net::CertVerifyProc::InstanceParams& instance_params);
+    const net::CertVerifyProcFactory::ImplParams& impl_params);
 
 }  // namespace cert_verifier
 

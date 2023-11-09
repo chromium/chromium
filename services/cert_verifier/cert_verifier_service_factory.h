@@ -40,8 +40,7 @@ class CertVerifierServiceFactoryImpl
 
   // mojom::CertVerifierServiceFactory implementation:
   void GetNewCertVerifier(
-      mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
-      mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
+      mojo::PendingReceiver<mojom::CertVerifierService> receiver,
       mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
       mojom::CertVerifierCreationParamsPtr creation_params) override;
 
@@ -50,7 +49,6 @@ class CertVerifierServiceFactoryImpl
   // CertNetFetcherURLLoader is in use.
   void GetNewCertVerifierForTesting(
       mojo::PendingReceiver<mojom::CertVerifierService> receiver,
-      mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
       mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
       mojom::CertVerifierCreationParamsPtr creation_params,
       scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr);
@@ -72,17 +70,13 @@ class CertVerifierServiceFactoryImpl
   // Remove a CertVerifyService from needing updates to the Chrome Root Store.
   void RemoveService(internal::CertVerifierServiceImpl* service_impl);
 
-  const net::CertVerifyProc::ImplParams& get_impl_params() const {
-    return proc_params_;
-  }
-
  private:
   // Update all the `verifier_services_` with the current data.
   void UpdateVerifierServices();
 
   void OnCRLSetParsed(scoped_refptr<net::CRLSet> parsed_crl_set);
 
-  net::CertVerifyProc::ImplParams proc_params_;
+  net::CertVerifyProcFactory::ImplParams proc_params_;
 
   mojo::Receiver<mojom::CertVerifierServiceFactory> receiver_;
 

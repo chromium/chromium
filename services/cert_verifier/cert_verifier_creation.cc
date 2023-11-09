@@ -73,22 +73,20 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
 
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-      const net::CertVerifyProc::ImplParams& impl_params,
-      const net::CertVerifyProc::InstanceParams& instance_params) override {
+      const CertVerifyProcFactory::ImplParams& impl_params) override {
 #if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
     return CreateNewCertVerifyProc(
         cert_net_fetcher, impl_params.crl_set,
-        base::OptionalToPtr(impl_params.root_store_data), instance_params);
+        base::OptionalToPtr(impl_params.root_store_data));
 #else
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     if (impl_params.use_chrome_root_store) {
       return CreateNewCertVerifyProc(
           cert_net_fetcher, impl_params.crl_set,
-          base::OptionalToPtr(impl_params.root_store_data), instance_params);
+          base::OptionalToPtr(impl_params.root_store_data));
     }
 #endif
-    return CreateOldCertVerifyProc(cert_net_fetcher, impl_params.crl_set,
-                                   instance_params);
+    return CreateOldCertVerifyProc(cert_net_fetcher, impl_params.crl_set);
 #endif
   }
 
@@ -102,12 +100,11 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
   // return a CertVerifyProc that supports that configuration.
   scoped_refptr<net::CertVerifyProc> CreateOldCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-      scoped_refptr<net::CRLSet> crl_set,
-      const net::CertVerifyProc::InstanceParams& instance_params) {
+      scoped_refptr<net::CRLSet> crl_set) {
 #if BUILDFLAG(IS_FUCHSIA)
-    return net::CreateCertVerifyProcBuiltin(
-        std::move(cert_net_fetcher), std::move(crl_set),
-        net::CreateSslSystemTrustStore(), instance_params);
+    return net::CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
+                                            std::move(crl_set),
+                                            net::CreateSslSystemTrustStore());
 #else
     return net::CertVerifyProc::CreateSystemVerifyProc(
         std::move(cert_net_fetcher), std::move(crl_set));
@@ -121,8 +118,7 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
   scoped_refptr<net::CertVerifyProc> CreateNewCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
       scoped_refptr<net::CRLSet> crl_set,
-      const net::ChromeRootStoreData* root_store_data,
-      const net::CertVerifyProc::InstanceParams& instance_params) {
+      const net::ChromeRootStoreData* root_store_data) {
     std::unique_ptr<net::TrustStoreChrome> chrome_root =
         root_store_data
             ? std::make_unique<net::TrustStoreChrome>(*root_store_data)
@@ -155,9 +151,9 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
     // tests that don't use threads otherwise.
     net::InitializeTrustStoreAndroid();
 #endif
-    return net::CreateCertVerifyProcBuiltin(
-        std::move(cert_net_fetcher), std::move(crl_set), std::move(trust_store),
-        instance_params);
+    return net::CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
+                                            std::move(crl_set),
+                                            std::move(trust_store));
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
@@ -180,15 +176,13 @@ bool IsUsingCertNetFetcher() {
 std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
     mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-    const net::CertVerifyProc::ImplParams& impl_params,
-    const net::CertVerifyProc::InstanceParams& instance_params) {
+    const net::CertVerifyProcFactory::ImplParams& impl_params) {
   DCHECK(cert_net_fetcher || !IsUsingCertNetFetcher());
 
   scoped_refptr<net::CertVerifyProcFactory> proc_factory =
       base::MakeRefCounted<CertVerifyProcFactoryImpl>(creation_params);
   return std::make_unique<net::MultiThreadedCertVerifier>(
-      proc_factory->CreateCertVerifyProc(cert_net_fetcher, impl_params,
-                                         instance_params),
+      proc_factory->CreateCertVerifyProc(cert_net_fetcher, impl_params),
       proc_factory);
 }
 

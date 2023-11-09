@@ -892,9 +892,6 @@ SystemNetworkContextManager::CreateDefaultNetworkContextParams() {
       cert_verifier_creation_params =
           cert_verifier::mojom::CertVerifierCreationParams::New();
   ConfigureDefaultNetworkContextParams(network_context_params.get());
-  // The system network context doesn't update the CertVerifyProc
-  // InstanceParams while running, so it does not attach a
-  // CertVerifierServiceUpdater.
   network_context_params->cert_verifier_params =
       content::GetCertVerifierParams(std::move(cert_verifier_creation_params));
   network_context_params->acam_preflight_spec_conformant =

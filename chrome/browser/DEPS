@@ -441,6 +441,7 @@ include_rules = [
   "+services/media_session/public",
   "+services/metrics/metrics_mojo_service.h",
   "+services/metrics/public",
+  "+services/network/cert_verifier_with_trust_anchors.h",
   "+services/network/network_service.h",
   "+services/network/public",
   "+services/network/test",
