@@ -90,7 +90,7 @@ class EmbeddedPermissionPrompt
   void RebuildRequests();
 
   Variant embedded_prompt_variant_ = Variant::kUninitialized;
-  raw_ptr<EmbeddedPermissionPromptBaseView> prompt_view_;
+  views::ViewTracker prompt_view_tracker_;
 
   raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 

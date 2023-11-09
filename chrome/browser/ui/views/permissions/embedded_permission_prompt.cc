@@ -167,14 +167,16 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     PrioritizeAndMergeNewVariant(current_request_variant, type);
   }
 
+  raw_ptr<EmbeddedPermissionPromptBaseView> prompt_view = nullptr;
+
   switch (embedded_prompt_variant_) {
     case Variant::kAsk:
-      prompt_view_ = new EmbeddedPermissionPromptAskView(
+      prompt_view = new EmbeddedPermissionPromptAskView(
           browser(), weak_factory_.GetWeakPtr());
       break;
     case Variant::kPreviouslyGranted:
       if (first_prompt) {
-        prompt_view_ = new EmbeddedPermissionPromptPreviouslyGrantedView(
+        prompt_view = new EmbeddedPermissionPromptPreviouslyGrantedView(
             browser(), weak_factory_.GetWeakPtr());
       } else {
         delegate()->FinalizeCurrentRequests();
@@ -182,24 +184,24 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
       }
       break;
     case Variant::kPreviouslyDenied:
-      prompt_view_ = new EmbeddedPermissionPromptPreviouslyDeniedView(
+      prompt_view = new EmbeddedPermissionPromptPreviouslyDeniedView(
           browser(), weak_factory_.GetWeakPtr());
       break;
     case Variant::kOsPrompt:
-      prompt_view_ = new EmbeddedPermissionPromptShowSystemPromptView(
+      prompt_view = new EmbeddedPermissionPromptShowSystemPromptView(
           browser(), weak_factory_.GetWeakPtr());
       break;
     case Variant::kOsSystemSettings:
-      prompt_view_ = new EmbeddedPermissionPromptSystemSettingsView(
+      prompt_view = new EmbeddedPermissionPromptSystemSettingsView(
           browser(), weak_factory_.GetWeakPtr());
       break;
     case Variant::kAdministratorGranted:
-      prompt_view_ = new EmbeddedPermissionPromptPolicyView(
+      prompt_view = new EmbeddedPermissionPromptPolicyView(
           browser(), weak_factory_.GetWeakPtr(),
           /*is_permission_allowed=*/true);
       break;
     case Variant::kAdministratorDenied:
-      prompt_view_ = new EmbeddedPermissionPromptPolicyView(
+      prompt_view = new EmbeddedPermissionPromptPolicyView(
           browser(), weak_factory_.GetWeakPtr(),
           /*is_permission_allowed=*/false);
       break;
@@ -207,24 +209,24 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
       NOTREACHED();
   }
 
-  if (prompt_view_) {
+  if (prompt_view) {
     RebuildRequests();
-    prompt_view_->Show();
+    prompt_view_tracker_.SetView(prompt_view);
+    prompt_view->Show();
   }
 }
 
 void EmbeddedPermissionPrompt::CloseView() {
-  if (!prompt_view_) {
-    return;
+  if (auto* prompt_view = static_cast<EmbeddedPermissionPromptBaseView*>(
+          prompt_view_tracker_.view())) {
+    prompt_view->PrepareToClose();
+    prompt_view->GetWidget()->Close();
+    prompt_view_tracker_.SetView(nullptr);
+
+    requests_.clear();
+    prompt_types_.clear();
+    embedded_prompt_variant_ = Variant::kUninitialized;
   }
-
-  prompt_view_->PrepareToClose();
-  prompt_view_->GetWidget()->Close();
-  prompt_view_ = nullptr;
-
-  requests_.clear();
-  prompt_types_.clear();
-  embedded_prompt_variant_ = Variant::kUninitialized;
 }
 
 EmbeddedPermissionPrompt::TabSwitchingBehavior

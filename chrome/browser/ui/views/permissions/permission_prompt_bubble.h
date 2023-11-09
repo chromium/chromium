@@ -42,9 +42,12 @@ class PermissionPromptBubble : public PermissionPromptDesktop,
   views::Widget* GetPromptBubbleWidgetForTesting() override;
 
  private:
-  // The popup bubble. Not owned by this class; it will delete itself when a
-  // decision is made.
-  raw_ptr<PermissionPromptBubbleBaseView> prompt_bubble_ = nullptr;
+  PermissionPromptBubbleBaseView* GetPromptBubble();
+  const PermissionPromptBubbleBaseView* GetPromptBubble() const;
+
+  // The popup bubble tracker. We use a tracker because the bubble is not owned
+  // by this class; it will delete itself when a decision is made.
+  views::ViewTracker prompt_bubble_tracker_;
 
   base::TimeTicks permission_requested_time_;
 
