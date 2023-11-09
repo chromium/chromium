@@ -12,16 +12,24 @@ namespace autofill::autofill_metrics {
 // The below issuer names are used for logging purposes, and they thus must be
 // consistent with the Autofill.CreditCardIssuerId in the
 // autofill/histograms.xml file.
-constexpr char kAmericanExpress[] = "Amex";
-constexpr char kCapitalOne[] = "CapitalOne";
-constexpr char kDiscover[] = "Discover";
-constexpr char kMarqeta[] = "Marqeta";
+constexpr std::string_view kAmericanExpress = "Amex";
+constexpr std::string_view kAnz = "Anz";
+constexpr std::string_view kCapitalOne = "CapitalOne";
+constexpr std::string_view kChase = "Chase";
+constexpr std::string_view kCiti = "Citi";
+constexpr std::string_view kDiscover = "Discover";
+constexpr std::string_view kLloyds = "Lloyds";
+constexpr std::string_view kMarqeta = "Marqeta";
+constexpr std::string_view kNab = "Nab";
+constexpr std::string_view kNatwest = "Natwest";
 
-constexpr char kProductNameAndArtImageBothShownSuffix[] =
+constexpr std::string_view kProductNameAndArtImageBothShownSuffix =
     "ProductDescriptionAndArtImageShown";
-constexpr char kProductNameShownOnlySuffix[] = "ProductDescriptionShown";
-constexpr char kArtImageShownOnlySuffix[] = "ArtImageShown";
-constexpr char kProductNameAndArtImageNotShownSuffix[] = "MetadataNotShown";
+constexpr std::string_view kProductNameShownOnlySuffix =
+    "ProductDescriptionShown";
+constexpr std::string_view kArtImageShownOnlySuffix = "ArtImageShown";
+constexpr std::string_view kProductNameAndArtImageNotShownSuffix =
+    "MetadataNotShown";
 
 // Enum for different types of form events. Used for metrics logging.
 enum class CardMetadataLoggingEvent {
@@ -57,6 +65,8 @@ struct CardMetadataLoggingContext {
   // had metadata.
   base::flat_map<std::string, bool> issuer_to_metadata_availability;
 };
+
+std::string_view GetCardIssuerIdSuffix(const std::string& card_issuer_id);
 
 // Get the CardMetadataLoggingContext for the given credit cards.
 CardMetadataLoggingContext GetMetadataLoggingContext(
