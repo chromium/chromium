@@ -690,11 +690,12 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
             StorableSource::Result::kInsufficientSourceCapacity);
 
   int64_t file_size = histograms.GetTotalSum(
-      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached");
+      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2");
   EXPECT_GT(file_size, 0);
 
   int64_t file_size_per_source = histograms.GetTotalSum(
-      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached.PerSource");
+      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2."
+      "PerSource");
   EXPECT_EQ(file_size_per_source, file_size * 1024 / 2);
 
   ASSERT_THAT(storage()->GetActiveSources(),

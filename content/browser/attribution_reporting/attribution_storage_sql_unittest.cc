@@ -1114,10 +1114,10 @@ TEST_P(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramsRecorded) {
     histograms.ExpectUniqueSample("Conversions.Storage.Sql.InitStatus2",
                                   AttributionStorageSql::InitStatus::kSuccess,
                                   1);
-    EXPECT_GT(histograms.GetTotalSum("Conversions.Storage.Sql.FileSize"), 0);
+    EXPECT_GT(histograms.GetTotalSum("Conversions.Storage.Sql.FileSize2"), 0);
     // The per source histogram should not be recorded when there is no sources
     // in the db.
-    histograms.ExpectTotalCount("Conversions.Storage.Sql.FileSize.PerSource",
+    histograms.ExpectTotalCount("Conversions.Storage.Sql.FileSize2.PerSource",
                                 0u);
   }
   {
@@ -1134,10 +1134,10 @@ TEST_P(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramsRecorded) {
                                   1);
 
     int64_t file_size =
-        histograms.GetTotalSum("Conversions.Storage.Sql.FileSize");
+        histograms.GetTotalSum("Conversions.Storage.Sql.FileSize2");
     EXPECT_GT(file_size, 0);
     int64_t file_size_per_source =
-        histograms.GetTotalSum("Conversions.Storage.Sql.FileSize.PerSource");
+        histograms.GetTotalSum("Conversions.Storage.Sql.FileSize2.PerSource");
     EXPECT_EQ(file_size_per_source, file_size * 1024 / 2);
   }
 }
@@ -1178,13 +1178,13 @@ TEST_P(AttributionStorageSqlTest,
 
     // The histograms should have been recorded even if there were no sources in
     // the db when initialized.
-    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin.1st", 0,
+    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin2.1st", 0,
                                   1);
-    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin.3rd", 0,
+    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin2.3rd", 0,
                                   1);
-    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin.7th", 0,
+    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin2.7th", 0,
                                   1);
-    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin.20th", 0,
+    histograms.ExpectUniqueSample("Conversions.SourcesPerSourceOrigin2.20th", 0,
                                   1);
   }
   {
@@ -1196,14 +1196,14 @@ TEST_P(AttributionStorageSqlTest,
     storage()->StoreSource(SourceBuilder().Build());
     CloseDatabase();
 
-    EXPECT_EQ(histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin.1st"),
+    EXPECT_EQ(histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin2.1st"),
               8u);
-    EXPECT_EQ(histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin.3rd"),
+    EXPECT_EQ(histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin2.3rd"),
               6u);
-    EXPECT_EQ(histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin.7th"),
+    EXPECT_EQ(histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin2.7th"),
               4u);
-    EXPECT_EQ(histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin.20th"),
-              2u);
+    EXPECT_EQ(
+        histograms.GetTotalSum("Conversions.SourcesPerSourceOrigin2.20th"), 2u);
   }
 }
 
