@@ -31,6 +31,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_store_test_helpers.h"
@@ -892,9 +893,8 @@ TEST_F(CookieManagerTest, GetCookieListCookiePartitionKeyCollection) {
           base::Time(), base::Time(),
           /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
           net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
-          absl::make_optional<net::CookiePartitionKey>(
-              net::CookiePartitionKey::FromURLForTesting(
-                  GURL("https://www.a.com")))),
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://www.a.com"))),
       "https", true));
   ASSERT_TRUE(SetCanonicalCookie(
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -902,9 +902,8 @@ TEST_F(CookieManagerTest, GetCookieListCookiePartitionKeyCollection) {
           base::Time(), base::Time(),
           /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
           net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
-          absl::make_optional<net::CookiePartitionKey>(
-              net::CookiePartitionKey::FromURLForTesting(
-                  GURL("https://www.b.com")))),
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://www.b.com"))),
       "https", true));
   ASSERT_TRUE(SetCanonicalCookie(
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -912,9 +911,18 @@ TEST_F(CookieManagerTest, GetCookieListCookiePartitionKeyCollection) {
           base::Time(), base::Time(),
           /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
           net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
-          absl::make_optional<net::CookiePartitionKey>(
-              net::CookiePartitionKey::FromURLForTesting(
-                  GURL("https://www.c.com")))),
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://www.c.com"))),
+      "https", true));
+  // Set a partitioned cookie that has the same filed value as the unpartitioned
+  // cookie, except for the partition_key field.
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "__Host-A", "2", kCookieDomain, "/", base::Time(), base::Time(),
+          base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+          net::CookiePartitionKey::FromURLForTesting(GURL(kCookieHttpsURL))),
       "https", true));
 
   // Test empty key_collection.
@@ -956,11 +964,27 @@ TEST_F(CookieManagerTest, GetCookieListCookiePartitionKeyCollection) {
       GURL("https://foo_host.com/with/path"),
       net::CookieOptions::MakeAllInclusive(),
       net::CookiePartitionKeyCollection::ContainsAll());
-  ASSERT_EQ(4u, cookies.size());
+  ASSERT_EQ(5u, cookies.size());
   EXPECT_EQ("__Host-A", cookies[0].Name());
   EXPECT_EQ("__Host-B", cookies[1].Name());
   EXPECT_EQ("__Host-C", cookies[2].Name());
   EXPECT_EQ("__Host-D", cookies[3].Name());
+  EXPECT_EQ("__Host-A", cookies[4].Name());
+
+  // Test key_collection with single partition key that's same-site to the
+  // cookie domain.
+  cookies = service_wrapper()->GetCookieList(
+      GURL("https://foo_host.com/with/path"),
+      net::CookieOptions::MakeAllInclusive(),
+      net::CookiePartitionKeyCollection(
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL("https://foo_host.com"))));
+  ASSERT_EQ(2u, cookies.size());
+  EXPECT_EQ("__Host-A", cookies[0].Name());
+  EXPECT_EQ("__Host-A", cookies[1].Name());
+  EXPECT_EQ(
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://foo_host.com")),
+      cookies[1].PartitionKey());
 }
 
 TEST_F(CookieManagerTest, GetCookieListAccessTime) {

@@ -245,9 +245,17 @@ class CookieRetrieverNetworkService
                   const net::CookieAccessResultList& excluded_cookies) {
     for (const auto& cookie_with_access_result : cookies) {
       const net::CanonicalCookie& cookie = cookie_with_access_result.cookie;
+      std::string serialized_partition_key;
+      // We could be missing cookies that have unserializable partition key.
+      // Reference the CookiePartitionKey::IsSerializable docs for more details.
+      if (!net::CookiePartitionKey::Serialize(cookie.PartitionKey(),
+                                              serialized_partition_key)) {
+        serialized_partition_key = "invalid";
+      }
       std::string key = base::StringPrintf(
-          "%s::%s::%s::%d", cookie.Name().c_str(), cookie.Domain().c_str(),
-          cookie.Path().c_str(), cookie.IsSecure());
+          "%s::%s::%s::%d::%s", cookie.Name().c_str(), cookie.Domain().c_str(),
+          cookie.Path().c_str(), cookie.IsSecure(),
+          serialized_partition_key.c_str());
       all_cookies_.emplace(std::move(key), cookie);
     }
   }
