@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/metrics/structured/storage.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -281,7 +282,16 @@ TEST_F(ExternalMetricsTest, DroppedEventsWhenDisabled) {
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
 }
 
-TEST_F(ExternalMetricsTest, ProducedAndDroppedEventMetricCollected) {
+// TODO(crbug.com/1500822): Failing consistently on MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ProducedAndDroppedEventMetricCollected \
+  DISABLED_ProducedAndDroppedEventMetricCollected
+#else
+#define MAYBE_ProducedAndDroppedEventMetricCollected \
+  ProducedAndDroppedEventMetricCollected
+#endif
+
+TEST_F(ExternalMetricsTest, MAYBE_ProducedAndDroppedEventMetricCollected) {
   base::test::ScopedFeatureList feature_list;
   const int file_limit = 5;
   feature_list.InitAndEnableFeatureWithParameters(
