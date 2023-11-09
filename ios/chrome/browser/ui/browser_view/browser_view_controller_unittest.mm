@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
+#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
@@ -191,6 +192,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         OCMProtocolMock(@protocol(SnackbarCommands));
     [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
                              forProtocol:@protocol(SnackbarCommands)];
+    id mockParcelTrackingCommandHandler =
+        OCMProtocolMock(@protocol(ParcelTrackingOptInCommands));
+    [dispatcher
+        startDispatchingToTarget:mockParcelTrackingCommandHandler
+                     forProtocol:@protocol(ParcelTrackingOptInCommands)];
 
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
     // to ApplicationSettingsCommands, that needs to be mocked and dispatched
