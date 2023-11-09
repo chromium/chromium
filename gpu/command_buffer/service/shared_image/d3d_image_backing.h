@@ -10,8 +10,12 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <array>
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
@@ -36,7 +40,7 @@ struct Mailbox;
 // Implementation of SharedImageBacking that holds buffer (front buffer/back
 // buffer of swap chain) texture (as gles2::Texture/gles2::TexturePassthrough)
 // and a reference to created swap chain.
-class GPU_GLES2_EXPORT D3DImageBacking
+class GPU_GLES2_EXPORT D3DImageBacking final
     : public ClearTrackingSharedImageBacking {
  public:
   // Create a backing wrapping given D3D11 texture, optionally with a shared
@@ -54,8 +58,8 @@ class GPU_GLES2_EXPORT D3DImageBacking
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
       GLenum texture_target,
-      size_t array_slice = 0u,
-      size_t plane_index = 0u);
+      size_t array_slice,
+      size_t plane_index);
 
   static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffer(
       const Mailbox& mailbox,
@@ -91,12 +95,14 @@ class GPU_GLES2_EXPORT D3DImageBacking
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
   bool PresentSwapChain() override;
+#if BUILDFLAG(USE_DAWN)
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
       std::vector<wgpu::TextureFormat> view_formats) override;
+#endif  // BUILDFLAG(USE_DAWN)
   void UpdateExternalFence(
       scoped_refptr<gfx::D3DSharedFence> external_fence) override;
 
@@ -141,8 +147,14 @@ class GPU_GLES2_EXPORT D3DImageBacking
     }
 
     void* egl_image() const { return egl_image_.get(); }
+    void set_needs_rebind(bool needs_rebind) { needs_rebind_ = needs_rebind; }
 
+    bool BindEGLImageToTexture();
     void MarkContextLost();
+
+    base::WeakPtr<GLTextureHolder> GetWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
 
    private:
     friend class base::RefCounted<GLTextureHolder>;
@@ -151,6 +163,9 @@ class GPU_GLES2_EXPORT D3DImageBacking
 
     const scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
     const gl::ScopedEGLImage egl_image_;
+    bool needs_rebind_ = false;
+
+    base::WeakPtrFactory<GLTextureHolder> weak_ptr_factory_{this};
   };
 
   static scoped_refptr<GLTextureHolder> CreateGLTexture(
@@ -185,10 +200,12 @@ class GPU_GLES2_EXPORT D3DImageBacking
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
+#if BUILDFLAG(SKIA_USE_DAWN)
   std::unique_ptr<SkiaGraphiteImageRepresentation> ProduceSkiaGraphite(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 
   std::unique_ptr<VideoDecodeImageRepresentation> ProduceVideoDecode(
       SharedImageManager* manager,
@@ -205,7 +222,6 @@ class GPU_GLES2_EXPORT D3DImageBacking
       SkAlphaType alpha_type,
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      std::vector<scoped_refptr<GLTextureHolder>> gl_texture_holders,
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = nullptr,
       GLenum texture_target = GL_TEXTURE_2D,
       size_t array_slice = 0u,
@@ -245,8 +261,8 @@ class GPU_GLES2_EXPORT D3DImageBacking
   // Texture could be nullptr if an empty backing is needed for testing.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
 
-  // Can be null for backings owned by non-GL producers e.g. WebGPU.
-  std::vector<scoped_refptr<GLTextureHolder>> gl_texture_holders_;
+  // Weak pointers for gl textures which are owned by GL texture representation.
+  std::array<base::WeakPtr<GLTextureHolder>, 3> gl_texture_holders_;
 
   // Holds DXGI shared handle and the keyed mutex if present.  Can be shared
   // between plane shared image backings of a multi-plane texture, or between
