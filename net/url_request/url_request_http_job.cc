@@ -1765,6 +1765,11 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
       UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.PrefilterBytesRead.Net",
                                   prefilter_bytes_read(), 1, 50000000, 50);
 
+      if (request_->ad_tagged()) {
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.PrefilterBytesRead.Ads.Net",
+                                    prefilter_bytes_read(), 1, 50000000, 50);
+      }
+
       if (is_https_google && used_quic) {
         UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpJob.TotalTimeNotCached.Secure.Quic",
                                    total_time);

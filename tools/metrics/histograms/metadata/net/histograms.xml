@@ -1943,6 +1943,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpJob.PrefilterBytesRead.Ads.Net" units="bytes"
+    expires_after="2024-11-09">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    Total prefilter (e.g., before decompression) bytes read for an HttpJob
+    request that is run on behalf of a request tagged as advertising related.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.PrefilterBytesRead{Source}" units="bytes"
     expires_after="2024-03-22">
   <owner>jkarlin@chromium.org</owner>
