@@ -98,17 +98,6 @@ chromium-metrics-reviews@google.com.
   <int value="44" label="Not using HTTPS"/>
 </enum>
 
-<enum name="GeolocationHeaderSentOrNot">
-  <int value="0" label="Location disabled for Google domain"/>
-  <int value="1" label="Location preference not set for Google domain"/>
-  <int value="2" label="Location not available"/>
-  <int value="3" label="Location stale"/>
-  <int value="4" label="Header sent"/>
-  <int value="5" label="Location disabled for Chrome app"/>
-  <int value="6" label="iOS: Location disabled for Omnibox query"/>
-  <int value="7" label="Google domain does not accept locations"/>
-</enum>
-
 <enum name="NetworkLocationRequestEvent">
   <int value="0" label="REQUEST_START"/>
   <int value="1" label="REQUEST_CANCEL"/>
