@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsCoordinator;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
-import org.chromium.chrome.browser.autofill.settings.AutofillCreditCardEditor;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
@@ -596,10 +595,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     new ChromeTrackingProtectionDelegate(mProfile));
             tpFragment.setCustomTabIntentHelper(
                     LaunchIntentDispatcher::createCustomTabActivityIntent);
-        }
-        if (fragment instanceof AutofillCreditCardEditor) {
-            ((AutofillCreditCardEditor) fragment)
-                    .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
         }
     }
 

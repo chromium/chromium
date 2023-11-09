@@ -6,14 +6,7 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -25,13 +18,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -43,8 +32,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 /** Instrumentation tests for AutofillLocalCardEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -98,13 +85,10 @@ public class AutofillLocalCardEditorTest {
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "123");
 
-    @Mock private ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplierMock;
-    @Mock private PersonalDataManager mPersonalDataManagerMock;
     private AutofillTestHelper mAutofillTestHelper;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mAutofillTestHelper = new AutofillTestHelper();
     }
 
@@ -522,78 +506,6 @@ public class AutofillLocalCardEditorTest {
         setNicknameOnEditor(autofillLocalCardEditorFragment, validNickname);
 
         assertThat(autofillLocalCardEditorFragment.mDoneButton.isEnabled()).isFalse();
-    }
-
-    @Test
-    @MediumTest
-    public void deleteCreditCardConfirmationDialog_deleteEntryCanceled_dialogDismissed()
-            throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-
-        PersonalDataManager.setInstanceForTesting(mPersonalDataManagerMock);
-
-        FakeModalDialogManager fakeModalDialogManager =
-                new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
-        openDeleteCreditCardConfirmationDialog(
-                autofillLocalCardEditorFragment, fakeModalDialogManager);
-
-        // Verify the dialog is open
-        Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
-        TestThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickNegativeButton());
-
-        // Verify the dialog is closed
-        Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
-
-        // Verify the card entry is not deleted
-        verify(mPersonalDataManagerMock, never()).deleteCreditCard(guid);
-    }
-
-    @Test
-    @MediumTest
-    public void
-            deleteCreditCardConfirmationDialog_deleteEntryConfirmed_dialogDismissedAndEntryDeleted()
-                    throws Exception {
-        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
-        SettingsActivity activity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
-        AutofillLocalCardEditor autofillLocalCardEditorFragment =
-                (AutofillLocalCardEditor) activity.getMainFragment();
-
-        PersonalDataManager.setInstanceForTesting(mPersonalDataManagerMock);
-
-        FakeModalDialogManager fakeModalDialogManager =
-                new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
-        openDeleteCreditCardConfirmationDialog(
-                autofillLocalCardEditorFragment, fakeModalDialogManager);
-
-        // Verify the dialog is open
-        Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
-        TestThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickPositiveButton());
-
-        // Verify the dialog is closed
-        Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
-
-        // Verify the card entry is deleted
-        verify(mPersonalDataManagerMock, times(1)).deleteCreditCard(guid);
-    }
-
-    private void openDeleteCreditCardConfirmationDialog(
-            AutofillLocalCardEditor autofillLocalCardEditorFragment,
-            ModalDialogManager modalDialogManager) {
-        when(mModalDialogManagerSupplierMock.get()).thenReturn(modalDialogManager);
-        autofillLocalCardEditorFragment.setModalDialogManagerSupplier(
-                mModalDialogManagerSupplierMock);
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    MenuItem deleteButton = mock(MenuItem.class);
-                    when(deleteButton.getItemId()).thenReturn(R.id.delete_menu_id);
-                    autofillLocalCardEditorFragment.onOptionsItemSelected(deleteButton);
-                });
     }
 
     private void setExpirationDateOnEditor(
