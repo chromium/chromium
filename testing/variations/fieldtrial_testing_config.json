@@ -3411,11 +3411,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "params": {
-                        "critical_threshold_percentage": "1500"
-                    },
-                    "enable_features": [
+                    "name": "Disabled",
+                    "disable_features": [
                         "ChromeOSMemoryPressureSignalStudyNonArc"
                     ]
                 }
