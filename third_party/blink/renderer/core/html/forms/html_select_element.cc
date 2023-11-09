@@ -334,9 +334,9 @@ void HTMLSelectElement::SetValue(const String& value,
 
 void HTMLSelectElement::SetAutofillValue(const String& value,
                                          WebAutofillState autofill_state) {
-  bool user_has_edited_the_field = user_has_edited_the_field_;
+  auto interacted_state = interacted_state_;
   SetValue(value, true, autofill_state);
-  SetUserHasEditedTheField(user_has_edited_the_field);
+  interacted_state_ = interacted_state;
 }
 
 String HTMLSelectElement::SuggestedValue() const {
@@ -1116,8 +1116,9 @@ void HTMLSelectElement::DefaultEventHandler(Event& event) {
     return;
 
   if (event.type() == event_type_names::kClick ||
-      event.type() == event_type_names::kChange) {
-    user_has_edited_the_field_ = true;
+      event.type() == event_type_names::kChange ||
+      event.type() == event_type_names::kKeydown) {
+    SetUserHasEditedTheField();
   }
 
   if (IsDisabledFormControl()) {
@@ -1446,7 +1447,7 @@ void HTMLSelectElement::ResetTypeAheadSessionForTesting() {
 void HTMLSelectElement::CloneNonAttributePropertiesFrom(const Element& source,
                                                         NodeCloningData& data) {
   const auto& source_element = static_cast<const HTMLSelectElement&>(source);
-  user_has_edited_the_field_ = source_element.user_has_edited_the_field_;
+  interacted_state_ = source_element.interacted_state_;
   HTMLFormControlElement::CloneNonAttributePropertiesFrom(source, data);
 }
 

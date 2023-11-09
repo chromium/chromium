@@ -47,22 +47,29 @@ class CORE_EXPORT HTMLFormControlElementWithState
   bool ClassSupportsStateRestore() const override;
   bool ShouldSaveAndRestoreFormControlState() const override;
 
-  bool UserHasEditedTheField() const { return user_has_edited_the_field_; }
-  void SetUserHasEditedTheField(bool value) {
-    user_has_edited_the_field_ = value;
+  bool UserHasEditedTheField() const {
+    return interacted_state_ >= InteractedState::kInteractedAndStillFocused;
   }
-  // This is only used in tests, to fake the user's action
-  void SetUserHasEditedTheFieldForTest() { user_has_edited_the_field_ = true; }
+  void SetUserHasEditedTheField();
+  void ClearUserHasEditedTheField() {
+    interacted_state_ = InteractedState::kNotInteracted;
+    force_user_valid_ = false;
+  }
+  bool UserHasEditedTheFieldAndBlurred() const {
+    return interacted_state_ >= InteractedState::kInteractedAndBlurred;
+  }
+  void SetUserHasEditedTheFieldAndBlurred();
+
+  void ForceUserValid() { force_user_valid_ = true; }
+
+  bool MatchesUserInvalidPseudo();
+  bool MatchesUserValidPseudo();
 
   void DispatchInputEvent();
   void DispatchChangeEvent();
   void DispatchCancelEvent();
 
  protected:
-  // Flag that denotes whether the user made some manual modifications to the
-  // field since page load.
-  bool user_has_edited_the_field_ = false;
-
   HTMLFormControlElementWithState(const QualifiedName& tag_name, Document&);
 
   void FinishParsingChildren() override;
@@ -70,17 +77,48 @@ class CORE_EXPORT HTMLFormControlElementWithState
 
   void ResetImpl() override;
 
+  // State machine that denotes whether the user made some manual modifications
+  // to the field since page load or form reset. Used for autofill and for
+  // :user-valid/:user-invalid. The order of this enum matters:
+  // kInteractedAndBlurred implies kInteractedAndStillFocused.
+  enum class InteractedState {
+    // kNotInteracted means that the user has not interacted with this element
+    // since page load or since the owner form was reset.
+    kNotInteracted = 0,
+    // kInteracted means that the user has interacted with this element, but has
+    // not blurred the element yet. In this state, autofill considers the
+    // element dirty but :user-valid and :user-invalid should not match yet.
+    kInteractedAndStillFocused = 1,
+    // kInteractedAndBlurred is intended to signal that this element should be
+    // eligible to match :user-valid/:user-invalid, and corresponds to "user
+    // interacted" in HTML:
+    // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#user-interacted
+    // This is set when the user edits an input and then blurs by focusing
+    // something else, which may fire a change event, or when form submission
+    // occurs.
+    kInteractedAndBlurred = 2,
+  };
+  InteractedState interacted_state_ = InteractedState::kNotInteracted;
+
  private:
   int DefaultTabIndex() const override;
 
   // https://html.spec.whatwg.org/C/#autofill-anchor-mantle
   bool IsWearingAutofillAnchorMantle() const;
+
+  // Flag that is set by form submission to force :user-valid/:user-invalid to
+  // start applying regardless of the InteractedState.
+  bool force_user_valid_ = false;
 };
 
 template <>
 struct DowncastTraits<HTMLFormControlElementWithState> {
   static bool AllowFrom(const ListedElement& control) {
     return control.IsFormControlElementWithState();
+  }
+  static bool AllowFrom(const Node& node) {
+    auto* form_control = DynamicTo<HTMLFormControlElement>(node);
+    return form_control && form_control->IsFormControlElementWithState();
   }
 };
 

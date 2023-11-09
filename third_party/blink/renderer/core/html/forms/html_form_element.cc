@@ -340,8 +340,14 @@ void HTMLFormElement::PrepareForSubmission(
   }
 
   for (ListedElement* element : ListedElements()) {
-    if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
-      form_control->SetInteractedSinceLastFormSubmit(true);
+    if (auto* form_control =
+            DynamicTo<HTMLFormControlElementWithState>(element)) {
+      // After attempting form submission we have to make the controls start
+      // matching :user-valid/:user-invalid. We could do this by calling
+      // SetUserHasEditedTheFieldAndBlurred() even though the user has not
+      // actually taken those actions, but that would have side effects on
+      // autofill.
+      form_control->ForceUserValid();
     }
   }
 

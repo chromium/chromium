@@ -146,8 +146,6 @@ class CORE_EXPORT HTMLSelectListElement final
   void ResetOptionParts();
   void ResetToDefaultSelection();
   void DispatchInputAndChangeEventsIfNeeded();
-  void DispatchInputEvent();
-  void DispatchChangeEvent();
 
   bool IsValidButtonPart(const Node* node, bool show_warning) const;
   bool IsValidListboxPart(const Node* node, bool show_warning) const;

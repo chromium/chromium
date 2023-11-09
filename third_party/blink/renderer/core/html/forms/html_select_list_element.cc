@@ -514,9 +514,9 @@ bool HTMLSelectListElement::open() const {
 
 void HTMLSelectListElement::SetAutofillValue(const String& value,
                                              WebAutofillState autofill_state) {
-  bool user_has_edited_the_field = user_has_edited_the_field_;
+  auto interacted_state = interacted_state_;
   setValue(value, /*send_events=*/true, autofill_state);
-  SetUserHasEditedTheField(user_has_edited_the_field);
+  interacted_state_ = interacted_state;
 }
 
 String HTMLSelectListElement::SuggestedValue() const {
@@ -900,16 +900,6 @@ void HTMLSelectListElement::DispatchInputAndChangeEventsIfNeeded() {
     // we'll  fire change later when the listbox closes.
     DispatchChangeEvent();
   }
-}
-
-void HTMLSelectListElement::DispatchInputEvent() {
-  Event* input_event = Event::CreateBubble(event_type_names::kInput);
-  input_event->SetComposed(true);
-  DispatchScopedEvent(*input_event);
-}
-
-void HTMLSelectListElement::DispatchChangeEvent() {
-  DispatchScopedEvent(*Event::CreateBubble(event_type_names::kChange));
 }
 
 void HTMLSelectListElement::OptionPartInserted(
@@ -1406,7 +1396,7 @@ void HTMLSelectListElement::DefaultEventHandler(Event& event) {
   }
 
   if (event.type() == event_type_names::kChange) {
-    user_has_edited_the_field_ = true;
+    SetUserHasEditedTheField();
   }
 }
 
@@ -1459,7 +1449,7 @@ void HTMLSelectListElement::CloneNonAttributePropertiesFrom(
     NodeCloningData& data) {
   const auto& source_element =
       static_cast<const HTMLSelectListElement&>(source);
-  user_has_edited_the_field_ = source_element.user_has_edited_the_field_;
+  interacted_state_ = source_element.interacted_state_;
   HTMLFormControlElement::CloneNonAttributePropertiesFrom(source, data);
 }
 
