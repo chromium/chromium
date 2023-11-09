@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
@@ -202,7 +203,7 @@ class OOFCandidateStyleIterator {
 
     CHECK(position_fallback_index_);
     ++*position_fallback_index_;
-    style_ = element_->StyleForPositionFallback(*position_fallback_index_);
+    style_ = UpdateStyle(*position_fallback_index_);
     CHECK(style_);
     SetUpAutoAnchorFallbackData();
   }
@@ -218,17 +219,17 @@ class OOFCandidateStyleIterator {
 
   bool HasNextPositionFallback() const {
     return position_fallback_index_ && element_ &&
-           element_->StyleForPositionFallback(*position_fallback_index_ + 1);
+           HasTryRule(*position_fallback_index_ + 1);
   }
 
   void Initialize() {
-    if (UNLIKELY(style_->PositionFallback())) {
+    position_fallback_ = style_->PositionFallback();
+    if (UNLIKELY(position_fallback_)) {
       CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
       if (element_) {
-        if (const ComputedStyle* fallback_style =
-                element_->StyleForPositionFallback(0)) {
+        if (HasTryRule(0)) {
           position_fallback_index_ = 0;
-          style_ = fallback_style;
+          style_ = UpdateStyle(0);
         }
       }
     }
@@ -279,11 +280,31 @@ class OOFCandidateStyleIterator {
     auto_anchor_flip_inline_ = false;
   }
 
-  Element* element_;
+  bool HasTryRule(wtf_size_t index) const {
+    DCHECK(position_fallback_);
+    StyleEngine& style_engine = element_->GetDocument().GetStyleEngine();
+    return style_engine.HasTryRule(*element_, position_fallback_, index);
+  }
+
+  const ComputedStyle* UpdateStyle(wtf_size_t index) {
+    DCHECK(position_fallback_);
+    if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
+      StyleEngine& style_engine = element_->GetDocument().GetStyleEngine();
+      style_engine.UpdateStyleForPositionFallback(*element_, position_fallback_,
+                                                  index);
+      return element_->GetComputedStyle();
+    } else {
+      return element_->StyleForPositionFallback(index);
+    }
+  }
+
+  Element* element_ = nullptr;
 
   // The current candidate style if no auto anchor fallback is triggered.
   // Otherwise, the base style for generating auto anchor fallbacks.
-  const ComputedStyle* style_;
+  const ComputedStyle* style_ = nullptr;
+
+  const ScopedCSSName* position_fallback_ = nullptr;
 
   // If the current style is created from an `@try` rule, index of the rule;
   // Otherwise nullopt.
@@ -1725,7 +1746,13 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   while (!offset_info) {
     const bool has_next_fallback_style = iter.HasNextStyle();
     NonOverflowingScrollRange non_overflowing_range;
-    offset_info = TryCalculateOffset(node_info, iter.GetStyle(), anchor_queries,
+    // Do @try placement decisions on the *base style* to avoid interference
+    // from animations and transitions.
+    const ComputedStyle& style =
+        RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()
+            ? *iter.GetStyle().GetBaseComputedStyleOrThis()
+            : iter.GetStyle();
+    offset_info = TryCalculateOffset(node_info, style, anchor_queries,
                                      implicit_anchor, has_next_fallback_style,
                                      is_first_run, &non_overflowing_range);
 
@@ -1741,6 +1768,15 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     if (!offset_info) {
       iter.MoveToNextStyle();
     }
+  }
+
+  if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
+    // Once the @try placement has been decided, calculate the offset again,
+    // using the non-base style.
+    NonOverflowingScrollRange non_overflowing_range_unused;
+    offset_info = TryCalculateOffset(
+        node_info, iter.GetStyle(), anchor_queries, implicit_anchor,
+        iter.HasNextStyle(), is_first_run, &non_overflowing_range_unused);
   }
 
   if (iter.UsesFallbackStyle()) {

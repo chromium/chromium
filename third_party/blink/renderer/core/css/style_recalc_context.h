@@ -10,9 +10,10 @@
 
 namespace blink {
 
-class Element;
 class ComputedStyle;
+class Element;
 class HTMLSlotElement;
+class ScopedCSSName;
 class StyleScopeFrame;
 
 // StyleRecalcContext is an object that is passed on the stack during
@@ -96,6 +97,12 @@ class CORE_EXPORT StyleRecalcContext {
   // TODO(crbug.com/831568): Elements outside the flat tree should
   // not have a style.
   bool is_outside_flat_tree = false;
+
+  // If non-nullptr, causes declarations from the specified @try rule
+  // (by index) within the named @position-fallback rule to be added
+  // to the cascade.
+  const ScopedCSSName* position_fallback = nullptr;
+  unsigned position_fallback_index = 0;
 };
 
 }  // namespace blink

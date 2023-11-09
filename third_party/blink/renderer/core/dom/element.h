@@ -1466,7 +1466,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // reach this element during the subsequent layout to continue doing
   // interleaved style and layout.
   bool SkipStyleRecalcForContainer(const ComputedStyle& style,
-                                   const StyleRecalcChange& child_change);
+                                   const StyleRecalcChange& child_change,
+                                   const StyleRecalcContext&);
 
   void MarkNonSlottedHostChildrenForStyleRecalc();
 
@@ -1482,7 +1483,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const StyleRecalcChange,
       const StyleRecalcContext&,
       const AtomicString& view_transition_name = g_null_atom);
-
   enum class StyleUpdatePhase {
     kRecalc,
     kRebuildLayoutTree,

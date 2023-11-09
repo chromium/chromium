@@ -608,6 +608,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // recalcs when we found out the container is eligible for size containment
   // after all.
   void UpdateStyleForNonEligibleContainer(Element& container);
+  void UpdateStyleForPositionFallback(Element& element,
+                                      const ScopedCSSName* position_fallback,
+                                      unsigned position_fallback_index);
+  bool HasTryRule(Element& element,
+                  const ScopedCSSName* position_fallback,
+                  unsigned position_fallback_index);
   void RecalcStyle();
 
   void ClearEnsuredDescendantStyles(Element& element);
@@ -616,6 +622,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool InDOMRemoval() const { return in_dom_removal_; }
   bool InContainerQueryStyleRecalc() const {
     return in_container_query_style_recalc_;
+  }
+  bool InPositionFallbackStyleRecalc() const {
+    return in_position_fallback_style_recalc_;
   }
   // If we are in a container query style recalc, return the container element,
   // otherwise return nullptr.
@@ -828,6 +837,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void RecalcStyle(StyleRecalcChange, const StyleRecalcContext&);
   void RecalcStyleForContainer(Element& container, StyleRecalcChange change);
   void RecalcHighlightStylesForContainer(Element& container);
+  void RecalcPositionFallbackStyleForPseudoElement(
+      PseudoElement& pseudo_element,
+      const StyleRecalcChange,
+      const StyleRecalcContext&);
 
   void RecalcTransitionPseudoStyle();
 
@@ -914,6 +927,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   int64_t skipped_container_recalc_{0};
   bool in_layout_tree_rebuild_{false};
   bool in_container_query_style_recalc_{false};
+  bool in_position_fallback_style_recalc_{false};
   bool in_dom_removal_{false};
   bool in_detach_scope_{false};
   bool in_apply_animation_update_{false};

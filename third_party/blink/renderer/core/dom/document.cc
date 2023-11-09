@@ -9149,6 +9149,7 @@ void Document::RunLCPPredictedCallbacks(const Element& lcp_element) {
 bool Document::InStyleRecalc() const {
   return lifecycle_.GetState() == DocumentLifecycle::kInStyleRecalc ||
          style_engine_->InContainerQueryStyleRecalc() ||
+         style_engine_->InPositionFallbackStyleRecalc() ||
          style_engine_->InEnsureComputedStyle();
 }
 

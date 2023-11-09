@@ -775,6 +775,11 @@
       base_feature: "none",
     },
     {
+      // Use full cascading for applying @try fallback for anchor positioning
+      // during layout.
+      name: "CSSAnchorPositioningCascadeFallback",
+    },
+    {
       name: "CSSAnimationComposition",
       status: "stable",
       base_feature: "none",

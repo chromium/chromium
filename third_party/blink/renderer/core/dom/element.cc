@@ -3117,6 +3117,7 @@ const ComputedStyle* Element::StyleForLayoutObject(
     // necessary if the animated property flipped back to the old style with no
     // change as the result.
     DCHECK(GetDocument().GetStyleEngine().InContainerQueryStyleRecalc() ||
+           GetDocument().GetStyleEngine().InPositionFallbackStyleRecalc() ||
            element_animations->CssAnimations().PendingUpdate().IsEmpty());
     element_animations->CssAnimations().ClearPendingUpdate();
   }
@@ -3181,7 +3182,8 @@ void Element::RecalcStyleForTraversalRootAncestor() {
 
 bool Element::SkipStyleRecalcForContainer(
     const ComputedStyle& style,
-    const StyleRecalcChange& child_change) {
+    const StyleRecalcChange& child_change,
+    const StyleRecalcContext& style_recalc_context) {
   if (!GetDocument().GetStyleEngine().SkipStyleRecalcAllowed()) {
     return false;
   }
@@ -3215,6 +3217,12 @@ bool Element::SkipStyleRecalcForContainer(
   // reach the box for ::backdrop during layout. Don't skip style recalc for
   // children of containers in the top layer for this reason.
   if (style.IsRenderedInTopLayer(*this)) {
+    return false;
+  }
+
+  // We are both a size container and trying to compute position-fallback styles
+  // from layout. Our children should be the first opportunity to skip recalc.
+  if (style_recalc_context.position_fallback) {
     return false;
   }
 
@@ -3329,6 +3337,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   StyleRecalcContext child_recalc_context = local_style_recalc_context;
+  child_recalc_context.position_fallback = nullptr;
 
   if (const ComputedStyle* style = GetComputedStyle()) {
     if (style->CanMatchSizeContainerQueries(*this)) {
@@ -3347,7 +3356,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
               cq_data->ClearAndReturnRecalcChangeForChildren().Combine(
                   child_change);
         }
-      } else if (SkipStyleRecalcForContainer(*style, child_change)) {
+      } else if (SkipStyleRecalcForContainer(*style, child_change,
+                                             style_recalc_context)) {
         return;
       }
     }

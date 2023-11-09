@@ -3435,6 +3435,43 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       container.GetLayoutObject());
 }
 
+void StyleEngine::UpdateStyleForPositionFallback(
+    Element& element,
+    const ScopedCSSName* position_fallback,
+    unsigned position_fallback_index) {
+  base::AutoReset<bool> pf_recalc(&in_position_fallback_style_recalc_, true);
+
+  UpdateViewportSize();
+
+  StyleRecalcContext style_recalc_context =
+      StyleRecalcContext::FromAncestors(element);
+  style_recalc_context.position_fallback = position_fallback;
+  style_recalc_context.position_fallback_index = position_fallback_index;
+
+  StyleRecalcChange change = StyleRecalcChange().ForceRecalcChildren();
+
+  if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
+    RecalcPositionFallbackStyleForPseudoElement(*pseudo_element, change,
+                                                style_recalc_context);
+  } else {
+    element.SetChildNeedsStyleRecalc();
+    style_recalc_root_.Update(nullptr, &element);
+    RecalcStyle(change, style_recalc_context);
+  }
+}
+
+bool StyleEngine::HasTryRule(Element& element,
+                             const ScopedCSSName* position_fallback,
+                             unsigned position_fallback_index) {
+  DCHECK(position_fallback);
+  StyleRulePositionFallback* position_fallback_rule =
+      GetStyleResolver().ResolvePositionFallbackRule(
+          position_fallback->GetTreeScope(), position_fallback->GetName());
+  return position_fallback_rule &&
+         (position_fallback_index <
+          position_fallback_rule->ChildRules().size());
+}
+
 void StyleEngine::RecalcStyle(StyleRecalcChange change,
                               const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().documentElement());
@@ -3458,6 +3495,18 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
   if (!parent || IsA<HTMLBodyElement>(root_element)) {
     PropagateWritingModeAndDirectionToHTMLRoot();
   }
+}
+
+void StyleEngine::RecalcPositionFallbackStyleForPseudoElement(
+    PseudoElement& pseudo_element,
+    const StyleRecalcChange style_recalc_change,
+    const StyleRecalcContext& style_recalc_context) {
+  ScriptForbiddenScope forbid_script;
+  SkipStyleRecalcScope skip_scope(*this);
+  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(&GetDocument());
+  SelectorFilterRootScope filter_scope(
+      FlatTreeTraversal::ParentElement(*pseudo_element.OriginatingElement()));
+  pseudo_element.RecalcStyle(style_recalc_change, style_recalc_context);
 }
 
 void StyleEngine::RecalcTransitionPseudoStyle() {

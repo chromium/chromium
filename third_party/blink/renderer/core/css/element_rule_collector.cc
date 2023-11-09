@@ -362,6 +362,19 @@ void ElementRuleCollector::AddElementStyleProperties(
   }
 }
 
+void ElementRuleCollector::AddTryStyleProperties(
+    const CSSPropertyValueSet* property_set) {
+  if (!property_set) {
+    return;
+  }
+  auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
+  result_.AddMatchedProperties(
+      property_set, CascadeOrigin::kAuthor,
+      {.link_match_type = AdjustLinkMatchType(inside_link_, link_match_type),
+       .valid_property_filter = ValidPropertyFilter::kPositionFallback});
+  result_.SetIsCacheable(false);
+}
+
 static bool RulesApplicableInCurrentTreeScope(
     const Element* element,
     const ContainerNode* scoping_node) {

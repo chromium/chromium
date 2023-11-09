@@ -3027,6 +3027,328 @@ TEST_F(StyleResolverTest, PositionFallbackPropertyValueChange) {
   }
 }
 
+TEST_F(StyleResolverTest, PositionFallbackStylesBasic_Cascade) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @position-fallback --fallback {
+        @try { }
+        @try { left: 100px; }
+        @try { top: 100px; }
+        @try { inset: 50px; }
+      }
+      #target {
+        position: absolute;
+        position-fallback: --fallback;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ScopedCSSName* fallback_name = MakeGarbageCollected<ScopedCSSName>(
+      AtomicString("--fallback"), &GetDocument());
+  Element* target = GetElementById("target");
+  const ComputedStyle* base_style = target->GetComputedStyle();
+  ASSERT_TRUE(base_style);
+  EXPECT_EQ(Length::Auto(), GetTop(*base_style));
+  EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
+
+  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  const ComputedStyle* try1 = target->GetComputedStyle();
+  ASSERT_TRUE(try1);
+  EXPECT_EQ(Length::Auto(), GetTop(*try1));
+  EXPECT_EQ(Length::Fixed(100), GetLeft(*try1));
+
+  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 2);
+  const ComputedStyle* try2 = target->GetComputedStyle();
+  ASSERT_TRUE(try2);
+  EXPECT_EQ(Length::Fixed(100), GetTop(*try2));
+  EXPECT_EQ(Length::Auto(), GetLeft(*try2));
+
+  // Shorthand should also work
+  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 3);
+  const ComputedStyle* try3 = target->GetComputedStyle();
+  ASSERT_TRUE(try3);
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*try3));
+
+  // Style without fallback when index is out of bounds.
+  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 4);
+  const ComputedStyle* try4 = target->GetComputedStyle();
+  EXPECT_EQ(Length::Auto(), GetTop(*try4));
+  EXPECT_EQ(Length::Auto(), GetLeft(*try4));
+}
+
+TEST_F(StyleResolverTest,
+       PositionFallbackStylesResolveLogicalProperties_Cascade) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @position-fallback --fallback {
+        @try { }
+        @try { inset-inline-start: 100px; }
+        @try { inset-block: 100px 90px; }
+      }
+      #target {
+        position: absolute;
+        writing-mode: vertical-rl;
+        direction: rtl;
+        inset: 50px;
+        position-fallback: --fallback;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ScopedCSSName* fallback_name = MakeGarbageCollected<ScopedCSSName>(
+      AtomicString("--fallback"), &GetDocument());
+  Element* target = GetElementById("target");
+  const ComputedStyle* base_style = target->GetComputedStyle();
+  ASSERT_TRUE(base_style);
+  EXPECT_EQ(Length::Fixed(50), GetTop(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
+
+  // 'inset-inline-start' should resolve to 'bottom'
+  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  const ComputedStyle* try1 = target->GetComputedStyle();
+  ASSERT_TRUE(try1);
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*try1));
+  EXPECT_EQ(Length::Fixed(100), GetBottom(*try1));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
+
+  // 'inset-block' with two parameters should set 'right' and then 'left'
+  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 2);
+  const ComputedStyle* try2 = target->GetComputedStyle();
+  ASSERT_TRUE(try2);
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
+  EXPECT_EQ(Length::Fixed(90), GetLeft(*try2));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*try2));
+  EXPECT_EQ(Length::Fixed(100), GetRight(*try2));
+
+  // @try index out of bounds
+  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 3);
+  const ComputedStyle* try3 = target->GetComputedStyle();
+  ASSERT_TRUE(try3);
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*try3));
+}
+
+TEST_F(StyleResolverTest,
+       PositionFallbackStylesResolveRelativeLengthUnits_Cascade) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @position-fallback --fallback {
+        @try { }
+        @try { top: 2em; }
+      }
+      #target {
+        position: absolute;
+        font-size: 20px;
+        position-fallback: --fallback;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ScopedCSSName* fallback_name = MakeGarbageCollected<ScopedCSSName>(
+      AtomicString("--fallback"), &GetDocument());
+  Element* target = GetElementById("target");
+  const ComputedStyle* base_style = target->GetComputedStyle();
+  ASSERT_TRUE(base_style);
+  EXPECT_EQ(Length::Auto(), GetTop(*base_style));
+
+  // '2em' should resolve to '40px'
+  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  const ComputedStyle* try1 = target->GetComputedStyle();
+  ASSERT_TRUE(try1);
+  EXPECT_EQ(Length::Fixed(40), GetTop(*try1));
+}
+
+TEST_F(StyleResolverTest, PositionFallbackStylesInBeforePseudoElement_Cascade) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @position-fallback --fallback {
+        @try { }
+        @try { top: 50px; }
+      }
+      #target::before {
+        display: block;
+        content: 'before';
+        position: absolute;
+        position-fallback: --fallback;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ScopedCSSName* fallback_name = MakeGarbageCollected<ScopedCSSName>(
+      AtomicString("--fallback"), &GetDocument());
+  Element* target = GetElementById("target");
+  Element* before = target->GetPseudoElement(kPseudoIdBefore);
+  ASSERT_TRUE(before);
+
+  const ComputedStyle* base_style = before->GetComputedStyle();
+  ASSERT_TRUE(base_style);
+  EXPECT_EQ(Length::Auto(), GetTop(*base_style));
+
+  // 'position-fallback' applies to ::before pseudo-element.
+  GetStyleEngine().UpdateStyleForPositionFallback(*before, fallback_name, 1);
+  const ComputedStyle* try1 = before->GetComputedStyle();
+  ASSERT_TRUE(try1);
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
+}
+
+TEST_F(StyleResolverTest, PositionFallbackStylesCSSWideKeywords_Cascade) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @position-fallback --fallback {
+        @try { }
+        @try { top: initial }
+        @try { left: inherit }
+        @try { right: unset }
+        /" 'revert' and 'revert-layer' are already rejected by parser */
+      }
+      #target {
+        position: absolute;
+        inset: 50px;
+        position-fallback: --fallback;
+      }
+      #container {
+        position: absolute;
+        inset: 100px;
+      }
+    </style>
+    <div id="container">
+      <div id="target"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ScopedCSSName* fallback_name = MakeGarbageCollected<ScopedCSSName>(
+      AtomicString("--fallback"), &GetDocument());
+  Element* target = GetElementById("target");
+  const ComputedStyle* base_style = target->GetComputedStyle();
+  ASSERT_TRUE(base_style);
+  EXPECT_EQ(Length::Fixed(50), GetTop(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
+
+  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 1);
+  const ComputedStyle* try1 = target->GetComputedStyle();
+  ASSERT_TRUE(try1);
+  EXPECT_EQ(Length::Auto(), GetTop(*try1));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*try1));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*try1));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
+
+  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 2);
+  const ComputedStyle* try2 = target->GetComputedStyle();
+  ASSERT_TRUE(try2);
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
+  EXPECT_EQ(Length::Fixed(100), GetLeft(*try2));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*try2));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*try2));
+
+  GetStyleEngine().UpdateStyleForPositionFallback(*target, fallback_name, 3);
+  const ComputedStyle* try3 = target->GetComputedStyle();
+  ASSERT_TRUE(try3);
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*try3));
+  EXPECT_EQ(Length::Auto(), GetRight(*try3));
+}
+
+TEST_F(StyleResolverTest, PositionFallbackPropertyValueChange_Cascade) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+  ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @position-fallback --foo {
+        @try { }
+        @try { top: 100px }
+      }
+      @position-fallback --bar {
+        @try { }
+        @try { left: 100px }
+      }
+      #target {
+        position: absolute;
+        position-fallback: --foo;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ScopedCSSName* foo_name = MakeGarbageCollected<ScopedCSSName>(
+      AtomicString("--foo"), &GetDocument());
+  ScopedCSSName* bar_name = MakeGarbageCollected<ScopedCSSName>(
+      AtomicString("--bar"), &GetDocument());
+  Element* target = GetElementById("target");
+
+  {
+    const ComputedStyle* base_style = target->GetComputedStyle();
+    ASSERT_TRUE(base_style);
+    EXPECT_EQ(Length::Auto(), GetTop(*base_style));
+    EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
+
+    GetStyleEngine().UpdateStyleForPositionFallback(*target, foo_name, 1);
+    const ComputedStyle* fallback = target->GetComputedStyle();
+    ASSERT_TRUE(fallback);
+    EXPECT_EQ(Length::Fixed(100), GetTop(*fallback));
+    EXPECT_EQ(Length::Auto(), GetLeft(*fallback));
+  }
+
+  target->SetInlineStyleProperty(CSSPropertyID::kPositionFallback, "--bar");
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    const ComputedStyle* base_style = target->GetComputedStyle();
+    ASSERT_TRUE(base_style);
+    EXPECT_EQ(Length::Auto(), GetTop(*base_style));
+    EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
+
+    GetStyleEngine().UpdateStyleForPositionFallback(*target, bar_name, 1);
+    const ComputedStyle* fallback = target->GetComputedStyle();
+    ASSERT_TRUE(fallback);
+    ASSERT_TRUE(fallback);
+    EXPECT_EQ(Length::Auto(), GetTop(*fallback));
+    EXPECT_EQ(Length::Fixed(100), GetLeft(*fallback));
+  }
+}
+
 TEST_F(StyleResolverTest,
        PseudoElementWithAnimationAndOriginatingElementStyleChange) {
   SetBodyInnerHTML(R"HTML(
