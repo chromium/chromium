@@ -415,7 +415,7 @@ export let Device;
  * effectively paused state when on a metered network.
  *
  * @typedef {{
- *   connectionType: (chrome.fileManagerPrivate.DeviceConnectionState),
+ *   connectionType: (chrome.fileManagerPrivate.DriveConnectionStateType),
  *   offlineReason: (chrome.fileManagerPrivate.DriveOfflineReason|undefined),
  * }}
  */
