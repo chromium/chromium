@@ -486,9 +486,10 @@ class PaymentsClient {
   // Triggers a request to the Payments server to unmask an IBAN. `callback` is
   // the callback function that is triggered when a response is received from
   // the server and the full IBAN value is returned via callback.
-  void UnmaskIban(const UnmaskIbanRequestDetails& request_details,
-                  base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                                          const std::u16string&)> callback);
+  void UnmaskIban(
+      const UnmaskIbanRequestDetails& request_details,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                              const std::u16string&)> callback);
 
   // Opts-in or opts-out the user to use FIDO authentication for card unmasking
   // on this device.

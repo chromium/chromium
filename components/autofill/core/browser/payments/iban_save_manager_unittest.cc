@@ -11,6 +11,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/payments/mock_test_payments_client.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -51,27 +52,6 @@ constexpr char kInvalidLegalMessageLines[] =
     "}";
 
 }  // namespace
-
-class MockTestPaymentsClient : public payments::TestPaymentsClient {
- public:
-  MockTestPaymentsClient()
-      : payments::TestPaymentsClient(
-            /*url_loader_factory=*/nullptr,
-            /*identity_manager=*/nullptr,
-            /*personal_data_manager=*/nullptr) {}
-  MockTestPaymentsClient(const MockTestPaymentsClient&) = delete;
-  MockTestPaymentsClient& operator=(const MockTestPaymentsClient&) = delete;
-
-  MOCK_METHOD(void,
-              GetIbanUploadDetails,
-              (const std::string&,
-               int64_t,
-               int,
-               (base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                                        const std::u16string&,
-                                        std::unique_ptr<base::Value::Dict>)>)),
-              (override));
-};
 
 class IbanSaveManagerTest : public testing::Test {
  public:

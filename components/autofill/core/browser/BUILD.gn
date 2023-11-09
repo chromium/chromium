@@ -809,6 +809,8 @@ static_library("test_support") {
     "mock_merchant_promo_code_manager.h",
     "mock_single_field_form_fill_router.cc",
     "mock_single_field_form_fill_router.h",
+    "payments/mock_test_payments_client.cc",
+    "payments/mock_test_payments_client.h",
     "payments/test/mock_mandatory_reauth_manager.cc",
     "payments/test/mock_mandatory_reauth_manager.h",
     "payments/test/test_credit_card_otp_authenticator.cc",
