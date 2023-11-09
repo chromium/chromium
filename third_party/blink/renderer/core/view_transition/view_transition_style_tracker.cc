@@ -317,6 +317,16 @@ gfx::Transform ComputeViewportTransform(const LayoutObject& object) {
 
   auto transform = GeometryMapper::SourceToDestinationProjection(
       paint_properties.Transform(), root_properties.Transform());
+  if (auto* layout_inline = DynamicTo<LayoutInline>(object)) {
+    // The paint_properties we get from
+    // `first_fragment.LocalBorderBoxProperties()` correspond to the origin of
+    // the inline's container's border-box. So the transform from GeometryMapper
+    // maps a point from the viewport to the container's border-box origin. We
+    // need the extra translation to map from container's border box origin to
+    // inline's border box origin.
+    transform.Translate(
+        gfx::Vector2dF(layout_inline->PhysicalLinesBoundingBox().offset));
+  }
 
   if (!transform.HasPerspective()) {
     transform.Round2dTranslationComponents();
@@ -1849,6 +1859,17 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     if (auto* layout_box = DynamicTo<LayoutBox>(&box);
         layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
       result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
+    } else if (auto* layout_inline = DynamicTo<LayoutInline>(box)) {
+      // We need the `overflow_rect` to be relative to the inline's
+      // border-box. However, `LayoutInline::LinesVisualOverflowBoundingBox()`
+      // is relative to the inline's container's border-box. The offset below
+      // removes the translation between the container's border-box and the
+      // inline's border-box.
+      //
+      // This mapping is done internally by
+      // `LayoutObject::MapToVisualRectInAncestorSpace` so its not necessary
+      // when computing overflow for an ancestor.
+      overflow_rect.Move(-layout_inline->PhysicalLinesBoundingBox().offset);
     }
 
     if (visible) {
