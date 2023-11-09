@@ -95,7 +95,7 @@ packager_builder(
 )
 
 packager_builder(
-    name = "3pp-win-amd64-packager",
+    name = "3pp-windows-amd64-packager",
     description_html = "3PP Packager for Windows",
     executable = "recipe:chromium_3pp",
     # TODO(crbug.com/1267449): Trigger builds routinely once works fine.
@@ -112,7 +112,7 @@ packager_builder(
     notifies = ["chromium-infra"],
     properties = {
         "$build/chromium_3pp": {
-            "platform": "win-amd64",
+            "platform": "windows-amd64",
             "gclient_config": "chromium",
         },
     },

@@ -64,7 +64,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "3pp-win-amd64-packager",
+    name = "3pp-windows-amd64-packager",
     description_html = "3PP Packager for Windows",
     executable = "recipe:chromium_3pp",
     builderless = True,
@@ -72,7 +72,7 @@ try_.builder(
     contact_team_email = "chrome-browser-infra-team@google.com",
     properties = {
         "$build/chromium_3pp": {
-            "platform": "win-amd64",
+            "platform": "windows-amd64",
             "package_prefix": "chromium_3pp",
             "gclient_config": "chromium",
         },
