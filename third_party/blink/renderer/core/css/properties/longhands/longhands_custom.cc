@@ -8586,9 +8586,7 @@ const CSSValue* Translate::ParseSingleValue(
     if (translate_z && translate_z->IsZero()) {
       translate_z = nullptr;
     }
-    if (translate_y->IsZero() &&
-        (!translate_y->HasPercentage() ||
-         !RuntimeEnabledFeatures::CSSTranslatePreserveYPercentEnabled()) &&
+    if (translate_y->IsZero() && !translate_y->HasPercentage() &&
         !translate_z) {
       return list;
     }
@@ -8622,10 +8620,7 @@ const CSSValue* Translate::CSSValueFromComputedStyleInternal(
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ComputedStyleUtils::ZoomAdjustedPixelValueForLength(x, style));
 
-  if (!y.IsZero() ||
-      (y.IsPercentOrCalc() &&
-       RuntimeEnabledFeatures::CSSTranslatePreserveYPercentEnabled()) ||
-      z != 0) {
+  if (!y.IsZero() || y.IsPercentOrCalc() || z != 0) {
     list->Append(
         *ComputedStyleUtils::ZoomAdjustedPixelValueForLength(y, style));
   }
