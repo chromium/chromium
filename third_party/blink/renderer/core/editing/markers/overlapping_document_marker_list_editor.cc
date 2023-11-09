@@ -91,7 +91,7 @@ bool OverlappingDocumentMarkerListEditor::ShiftMarkers(
   bool did_shift_marker = false;
   HeapVector<Member<DocumentMarker>> unremoved_markers;
   for (const Member<DocumentMarker>& marker : *list) {
-    absl::optional<DocumentMarker::MarkerOffsets> result =
+    std::optional<DocumentMarker::MarkerOffsets> result =
         marker->ComputeOffsetsAfterShift(offset, old_length, new_length);
     if (!result) {
       did_shift_marker = true;

@@ -107,7 +107,7 @@ void HighlightRegistry::ValidateHighlightMarkers() {
 
   // Process all of the nodes to remove overlapping custom highlights and
   // update the markers to avoid overlaps.
-  markers_controller.ProcessCustomHighlightMarkersForOverlap();
+  markers_controller.MergeOverlappingMarkers(DocumentMarker::kCustomHighlight);
 
   // We need to invalidate ink overflow for nodes with highlights that now have
   // visual overflow. At the same time, record the overflow status on the marker

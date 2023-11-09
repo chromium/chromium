@@ -48,6 +48,8 @@ class CORE_EXPORT ActiveSuggestionMarkerListImpl final
                     unsigned old_length,
                     unsigned new_length) final;
 
+  void MergeOverlappingMarkers() final {}
+
   void Trace(Visitor*) const override;
 
  private:

@@ -177,13 +177,14 @@ class CORE_EXPORT DocumentMarkerController final
 
   // Apply a function to all the markers of a particular type. The
   // function receives the text node and marker, for every <node,marker>
-  // pair in the marker set.
+  // pair in the marker set. The function MUST NOT modify marker offsets, as
+  // doing so may violate the requirement that markers be sorted.
   void ApplyToMarkersOfType(
       base::FunctionRef<void(const Text&, DocumentMarker*)>,
       DocumentMarker::MarkerType);
 
   DocumentMarkerVector ComputeMarkersToPaint(const Text&) const;
-  void ProcessCustomHighlightMarkersForOverlap();
+  void MergeOverlappingMarkers(DocumentMarker::MarkerType);
 
   bool PossiblyHasTextMatchMarkers() const;
   Vector<gfx::Rect> LayoutRectsForTextMatchMarkers();

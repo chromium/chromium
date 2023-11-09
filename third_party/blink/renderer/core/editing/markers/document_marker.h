@@ -23,7 +23,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_DOCUMENT_MARKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_DOCUMENT_MARKER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
+#include "base/bits.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -145,6 +147,12 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     bool Intersects(const MarkerTypes& types) const {
       return (mask_ & types.mask_);
     }
+    std::optional<MarkerType> IsOneMarkerType() {
+      if (base::bits::IsPowerOfTwo(mask_)) {
+        return static_cast<MarkerType>(mask_);
+      }
+      return std::nullopt;
+    }
     bool operator==(const MarkerTypes& other) const {
       return mask_ == other.mask_;
     }
@@ -177,7 +185,7 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     unsigned end_offset;
   };
 
-  absl::optional<MarkerOffsets> ComputeOffsetsAfterShift(
+  std::optional<MarkerOffsets> ComputeOffsetsAfterShift(
       unsigned offset,
       unsigned old_length,
       unsigned new_length) const;

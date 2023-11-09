@@ -780,6 +780,15 @@ DocumentMarkerVector DocumentMarkerController::MarkersFor(
   if (!PossiblyHasMarkers(marker_types))
     return result;
 
+  // If requesting a single marker type, make use of the fact
+  // that markers are already sorted.
+  std::optional<DocumentMarker::MarkerType> lone_marker =
+      marker_types.IsOneMarkerType();
+  if (lone_marker) {
+    DocumentMarkerList* const list = FindMarkersForType(*lone_marker, &text);
+    return list ? list->GetMarkers() : result;
+  }
+
   for (DocumentMarker::MarkerType type : marker_types) {
     DocumentMarkerList* const list = FindMarkersForType(type, &text);
     if (!list) {
@@ -833,62 +842,15 @@ void DocumentMarkerController::ApplyToMarkersOfType(
   }
 }
 
-void DocumentMarkerController::ProcessCustomHighlightMarkersForOverlap() {
-  MarkerMap* marker_map =
-      markers_[MarkerTypeToMarkerIndex(DocumentMarker::kCustomHighlight)];
+void DocumentMarkerController::MergeOverlappingMarkers(
+    DocumentMarker::MarkerType type) {
+  MarkerMap* marker_map = markers_[MarkerTypeToMarkerIndex(type)];
   if (!marker_map) {
     return;
   }
   for (auto& node_markers : *marker_map) {
     DCHECK(node_markers.value);
-
-    // DocumentMarkerController::MarkersFor() returns markers sorted by start
-    // offset. So use it instead of result->GetMarkers().
-    // TODO(schenney) Keep marker lists sorted and iterate on the list directly,
-    // rather than sorting into a vector copy.
-    DocumentMarkerVector custom_highlight_markers = MarkersFor(
-        *node_markers.key,
-        DocumentMarker::MarkerTypes(DocumentMarker::kCustomHighlight));
-
-    // CLear and repopulate the existing list.
-    node_markers.value->Clear();
-
-    using NameToCustomHighlightMarkerMap =
-        HeapHashMap<String, Member<CustomHighlightMarker>>;
-    NameToCustomHighlightMarkerMap name_to_last_custom_highlight_marker_seen;
-
-    for (const auto& current_marker : custom_highlight_markers) {
-      CustomHighlightMarker* current_custom_highlight_marker =
-          To<CustomHighlightMarker>(current_marker.Get());
-
-      NameToCustomHighlightMarkerMap::AddResult insert_result =
-          name_to_last_custom_highlight_marker_seen.insert(
-              current_custom_highlight_marker->GetHighlightName(),
-              current_custom_highlight_marker);
-
-      if (!insert_result.is_new_entry) {
-        CustomHighlightMarker* stored_custom_highlight_marker =
-            insert_result.stored_value->value;
-        if (current_custom_highlight_marker->StartOffset() >=
-            stored_custom_highlight_marker->EndOffset()) {
-          // Markers don't intersect, so the stored one is fine to be painted.
-          node_markers.value->Add(stored_custom_highlight_marker);
-          insert_result.stored_value->value = current_custom_highlight_marker;
-        } else {
-          // Markers overlap, so expand the stored marker to cover both and
-          // discard the current one.
-          stored_custom_highlight_marker->SetEndOffset(
-              std::max(stored_custom_highlight_marker->EndOffset(),
-                       current_custom_highlight_marker->EndOffset()));
-        }
-      }
-    }
-
-    for (const auto& name_to_custom_highlight_marker_iterator :
-         name_to_last_custom_highlight_marker_seen) {
-      node_markers.value->Add(
-          name_to_custom_highlight_marker_iterator.value.Get());
-    }
+    node_markers.value->MergeOverlappingMarkers();
   }
 }
 
@@ -951,7 +913,7 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
     suggestion_ends.push_back(suggestion_marker->EndOffset());
   }
 
-  std::sort(suggestion_starts.begin(), suggestion_starts.end());
+  // StartOffsets are already sorted.
   std::sort(suggestion_ends.begin(), suggestion_ends.end());
 
   unsigned suggestion_starts_index = 0;

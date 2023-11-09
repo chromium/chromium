@@ -64,6 +64,10 @@ class CORE_EXPORT DocumentMarkerList
                             unsigned old_length,
                             unsigned new_length) = 0;
 
+  // Update the marker list by merging any overlapping markers that should be
+  // merged. Only Custom Highlights and Text Fragment markers need to merge.
+  virtual void MergeOverlappingMarkers() = 0;
+
   virtual void Trace(Visitor* visitor) const {}
 
  protected:
