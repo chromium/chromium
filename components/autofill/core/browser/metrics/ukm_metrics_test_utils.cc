@@ -42,7 +42,7 @@ FieldSignature Collapse(FieldSignature sig) {
 
 MATCHER(CompareMetricsIgnoringMillisecondsSinceFormParsed, "") {
   const auto& lhs = ::testing::get<0>(arg);
-  const std::pair<const char*, int64_t>& rhs = ::testing::get<1>(arg);
+  const std::pair<std::string, int64_t>& rhs = ::testing::get<1>(arg);
   return lhs.first == base::HashMetricName(rhs.first) &&
          (lhs.second == rhs.second ||
           (lhs.second > 0 &&

@@ -6909,9 +6909,7 @@ TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric_NoUkmService) {
 }
 
 // Test the ukm recorded when Suggestion is shown.
-//
-// Flaky on all platforms. TODO(crbug.com/876897): Fix it.
-TEST_F(AutofillMetricsTest, DISABLED_AutofillSuggestionShownTest) {
+TEST_F(AutofillMetricsTest, AutofillSuggestionsShownTest) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/false,
                       /*include_full_server_credit_card=*/false,
