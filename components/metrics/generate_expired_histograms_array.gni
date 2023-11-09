@@ -113,6 +113,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/input/histograms.xml",
       "//tools/metrics/histograms/metadata/installer/histograms.xml",
       "//tools/metrics/histograms/metadata/interstitial/histograms.xml",
+      "//tools/metrics/histograms/metadata/ios/enums.xml",
       "//tools/metrics/histograms/metadata/ios/histograms.xml",
       "//tools/metrics/histograms/metadata/kerberos/histograms.xml",
       "//tools/metrics/histograms/metadata/kiosk/histograms.xml",
