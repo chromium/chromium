@@ -4298,8 +4298,9 @@ absl::optional<TextDirection> Element::ResolveAutoDirectionality(
     }
 
     if (slot && RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-      ShadowRoot* root = slot->ContainingShadowRoot();
-      return root->host().CachedDirectionality();
+      if (ShadowRoot* root = slot->ContainingShadowRoot()) {
+        return root->host().CachedDirectionality();
+      }
     }
 
     if (node->IsTextNode()) {
@@ -4309,7 +4310,7 @@ absl::optional<TextDirection> Element::ResolveAutoDirectionality(
       }
     }
 
-    if (slot) {
+    if (slot && !RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
       absl::optional<TextDirection> text_direction =
           slot->ResolveAutoDirectionality<FlatTreeTraversal>(is_deferred,
                                                              stay_within);
