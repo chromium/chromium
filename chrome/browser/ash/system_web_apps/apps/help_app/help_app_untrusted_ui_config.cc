@@ -80,10 +80,10 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
                         "device-help-content-id"));
 
   // Add any features that have been enabled.
-  source->AddBoolean("colorThemes", true);
   source->AddBoolean("HelpAppAppsGamesBannerV2", true);
-  source->AddBoolean("HelpAppDynamicHomePageBanner", true);
-  source->AddBoolean("HelpAppReleaseNotes", true);
+  source->AddBoolean(
+      "HelpAppCrosComponents",
+      base::FeatureList::IsEnabled(ash::features::kHelpAppCrosComponents));
   source->AddBoolean(
       "HelpAppHomePageAppArticles",
       base::FeatureList::IsEnabled(ash::features::kHelpAppHomePageAppArticles));
@@ -99,7 +99,6 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
   source->AddBoolean("isCloudGamingDevice",
                      chromeos::features::IsCloudGamingDeviceEnabled());
-  source->AddBoolean("jelly", chromeos::features::IsJellyEnabled());
 
   Profile* profile = Profile::FromWebUI(web_ui);
   PrefService* pref_service = profile->GetPrefs();

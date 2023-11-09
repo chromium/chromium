@@ -6501,6 +6501,10 @@ const char kHelpAppAutoTriggerInstallDialogDescription[] =
     "Enables the logic that auto triggers the install dialog during the web "
     "app install flow initiated from the Help App.";
 
+const char kHelpAppCrosComponentsName[] = "Help App cros components";
+const char kHelpAppCrosComponentsDescription[] =
+    "If enabled, the Help app will render with Cros components.";
+
 const char kHelpAppHomePageAppArticlesName[] =
     "Help App home page app articles";
 const char kHelpAppHomePageAppArticlesDescription[] =

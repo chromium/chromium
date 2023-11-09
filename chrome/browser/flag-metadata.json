@@ -4514,6 +4514,11 @@
     "expiry_milestone": 117
   },
   {
+    "name": "help-app-cros-components",
+    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "help-app-home-page-app-articles",
     "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
     "expiry_milestone": 124

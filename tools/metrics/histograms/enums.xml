@@ -41866,6 +41866,7 @@ from previous Chrome versions.
   <int value="-1701728664" label="TrackingProtectionSentimentSurvey:enabled"/>
   <int value="-1701123067" label="ShowManagedUi:enabled"/>
   <int value="-1700764114" label="HelpAppBackgroundPage:enabled"/>
+  <int value="-1700068858" label="HelpAppCrosComponents:disabled"/>
   <int value="-1699960514" label="ChromeOSSyncedSessionSharing:enabled"/>
   <int value="-1699700244"
       label="VirtualKeyboardMultipasteSuggestion:disabled"/>
@@ -44596,6 +44597,7 @@ from previous Chrome versions.
   <int value="-399333540" label="FiltersInRecents:disabled"/>
   <int value="-398922143" label="IframeOneGoogleBar:enabled"/>
   <int value="-398623652" label="CCTTargetTranslateLanguage:enabled"/>
+  <int value="-398325847" label="HelpAppCrosComponents:enabled"/>
   <int value="-398012541"
       label="CertificateTransparency2022PolicyAllCerts:enabled"/>
   <int value="-397959190" label="ClipboardHistory:enabled"/>
