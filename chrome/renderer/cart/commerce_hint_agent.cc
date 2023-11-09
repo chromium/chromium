@@ -31,6 +31,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/loader/http_body_element_type.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -865,7 +866,7 @@ void CommerceHintAgent::ExtractCartWithUpdatedScript(
   DVLOG(2) << "is_extraction_running_ = " << is_extraction_running_;
 
   blink::WebLocalFrame* main_frame = render_frame()->GetWebFrame();
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(main_frame->GetAgentGroupScheduler()->Isolate());
   blink::WebScriptSource source = blink::WebScriptSource(
       GetProductExtractionScript(product_id_json, cart_extraction_script));
 
