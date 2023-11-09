@@ -340,18 +340,6 @@ class DictationTest : public DictationTestBase {
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    NetworkTextArea,
-    DictationTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
-                                 EditableType::kTextArea)));
-
-INSTANTIATE_TEST_SUITE_P(
-    NetworkInput,
-    DictationTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
-                                 EditableType::kInput)));
-
-INSTANTIATE_TEST_SUITE_P(
     NetworkContentEditable,
     DictationTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
@@ -889,12 +877,6 @@ INSTANTIATE_TEST_SUITE_P(
                                  EditableType::kTextArea)));
 
 INSTANTIATE_TEST_SUITE_P(
-    NetworkInput,
-    DictationJaTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
-                                 EditableType::kInput)));
-
-INSTANTIATE_TEST_SUITE_P(
     NetworkContentEditable,
     DictationJaTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
@@ -1023,12 +1005,6 @@ class DictationRegexCommandsTest : public DictationTest {
     DictationTest::TearDownOnMainThread();
   }
 };
-
-INSTANTIATE_TEST_SUITE_P(
-    NetworkTextArea,
-    DictationRegexCommandsTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
-                                 EditableType::kTextArea)));
 
 INSTANTIATE_TEST_SUITE_P(
     NetworkInput,
@@ -1686,12 +1662,6 @@ INSTANTIATE_TEST_SUITE_P(
                                  EditableType::kTextArea)));
 
 INSTANTIATE_TEST_SUITE_P(
-    NetworkInput,
-    DictationPumpkinTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
-                                 EditableType::kInput)));
-
-INSTANTIATE_TEST_SUITE_P(
     NetworkContentEditable,
     DictationPumpkinTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
@@ -1972,12 +1942,6 @@ class DictationContextCheckingTest : public DictationTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<DictationBubbleTestHelper> dictation_bubble_test_helper_;
 };
-
-INSTANTIATE_TEST_SUITE_P(
-    NetworkTextArea,
-    DictationContextCheckingTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
-                                 EditableType::kTextArea)));
 
 INSTANTIATE_TEST_SUITE_P(
     NetworkInput,
