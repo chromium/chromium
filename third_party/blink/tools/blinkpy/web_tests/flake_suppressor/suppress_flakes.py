@@ -77,7 +77,7 @@ def main() -> int:
             expectations_processor.CreateExpectationsForAllResults(
                 aggregated_results, args.group_by_tags, args.include_all_tags,
                 args.build_fail_total_number_threshold,
-                args.build_fail_consecutive_day_threshold)
+                args.build_fail_consecutive_days_threshold)
         else:
             if len(args.builder_names) > 0:
                 result_counts = querier_instance.\
