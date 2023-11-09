@@ -14,6 +14,7 @@ js_type_check("closure_compile") {
     ":cryptohome_recovery_setup",
     ":fingerprint_setup",
     ":local_password_setup",
+    ":osauth_error",
     ":password_selection",
     ":pin_setup",
   ]
@@ -77,6 +78,19 @@ js_library("local_password_setup") {
   extra_deps = [ ":web_components" ]
 }
 
+js_library("osauth_error") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/osauth_error.js" ]
+  deps = [
+    "../../components:oobe_types",
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_text_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
 js_library("password_selection") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/password_selection.js" ]
   deps = [
@@ -123,6 +137,7 @@ html_to_js("web_components") {
     "cryptohome_recovery_setup.js",
     "fingerprint_setup.js",
     "local_password_setup.js",
+    "osauth_error.js",
     "password_selection.js",
     "pin_setup.js",
   ]

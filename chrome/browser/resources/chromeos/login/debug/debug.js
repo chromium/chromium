@@ -884,6 +884,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
+      id: 'osauth-error',
+      kind: ScreenKind.ERROR,
+    },
+    {
       id: 'saml-confirm-password',
       kind: ScreenKind.OTHER,
       suffix: 'SAML',

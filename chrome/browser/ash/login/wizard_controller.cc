@@ -97,6 +97,7 @@
 #include "chrome/browser/ash/login/screens/online_authentication_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/apply_online_password_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_password_setup_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/osauth_error_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
@@ -187,6 +188,7 @@
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/apply_online_password_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/osauth/osauth_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
@@ -934,6 +936,11 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
+  append(std::make_unique<OSAuthErrorScreen>(
+      oobe_ui->GetView<OSAuthErrorScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnOSAuthErrorScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
   return result;
 }
 
@@ -1111,6 +1118,10 @@ void WizardController::ShowCryptohomeRecoverySetupScreen() {
 
 void WizardController::ShowPasswordSelectionScreen() {
   SetCurrentScreen(GetScreen(PasswordSelectionScreenView::kScreenId));
+}
+
+void WizardController::ShowOSAuthErrorScreen() {
+  SetCurrentScreen(GetScreen(OSAuthErrorScreenView::kScreenId));
 }
 
 void WizardController::ShowFingerprintSetupScreen() {
@@ -2238,11 +2249,22 @@ void WizardController::OnApplyOnlinePasswordScreenExit(
                ApplyOnlinePasswordScreen::GetResultString(result));
   switch (result) {
     case ApplyOnlinePasswordScreen::Result::kError:
-      // TODO: show error
+      ShowOSAuthErrorScreen();
       return;
     case ApplyOnlinePasswordScreen::Result::kSuccess:
     case ApplyOnlinePasswordScreen::Result::kNotApplicable:
       ShowFingerprintSetupScreen();
+      return;
+  }
+}
+
+void WizardController::OnOSAuthErrorScreenExit(
+    OSAuthErrorScreen::Result result) {
+  OnScreenExit(OSAuthErrorScreenView::kScreenId,
+               OSAuthErrorScreen::GetResultString(result));
+  switch (result) {
+    case OSAuthErrorScreen::Result::kAbortSignin:
+      ShowLoginScreen();
       return;
   }
 }
@@ -2792,6 +2814,10 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowConsumerUpdateScreen();
   } else if (screen_id == PasswordSelectionScreenView::kScreenId) {
     ShowPasswordSelectionScreen();
+  } else if (screen_id == ApplyOnlinePasswordScreenView::kScreenId) {
+    ShowApplyOnlinePasswordScreen();
+  } else if (screen_id == OSAuthErrorScreenView::kScreenId) {
+    ShowOSAuthErrorScreen();
   } else if (screen_id == LocalPasswordSetupView::kScreenId) {
     ShowLocalPasswordSetupScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||

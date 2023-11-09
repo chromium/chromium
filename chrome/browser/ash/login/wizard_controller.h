@@ -60,6 +60,7 @@
 #include "chrome/browser/ash/login/screens/os_trial_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/apply_online_password_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_password_setup_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/osauth_error_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
@@ -347,6 +348,7 @@ class WizardController : public OobeUI::Observer {
   void ShowPasswordSelectionScreen();
   void ShowLocalPasswordSetupScreen();
   void ShowApplyOnlinePasswordScreen();
+  void ShowOSAuthErrorScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -449,7 +451,7 @@ class WizardController : public OobeUI::Observer {
   void OnLocalPasswordSetupScreenExit(LocalPasswordSetupScreen::Result result);
   void OnApplyOnlinePasswordScreenExit(
       ApplyOnlinePasswordScreen::Result result);
-
+  void OnOSAuthErrorScreenExit(OSAuthErrorScreen::Result result);
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
   void OnDeviceDisabledChecked(bool device_disabled);

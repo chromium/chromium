@@ -51,6 +51,7 @@ import './screens/osauth/apply_online_password.js';
 import './screens/osauth/cryptohome_recovery_setup.js';
 import './screens/osauth/fingerprint_setup.js';
 import './screens/osauth/local_password_setup.js';
+import './screens/osauth/osauth_error.js';
 import './screens/osauth/password_selection.js';
 import './screens/osauth/pin_setup.js';
 // SCREENS USED DURING THE LOGIN FLOW
@@ -142,6 +143,7 @@ export const commonScreensList = [
     id: 'online-authentication-screen',
   },
   {tag: 'oobe-reset-element', id: 'reset'},
+  {tag: 'osauth-error-element', id: 'osauth-error'},
   {
     tag: 'os-install-element',
     id: 'os-install',
