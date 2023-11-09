@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++View textSize:16.00 style:0 bundle:[display="inline", htmlTag="label"]
+++++++TextView text:"Choose a pokemon " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++++EditText text:"Choose a pokemon" textSize:13.33 style:0 bundle:[display="inline-block", htmlTag="input", list="pokemon"]
+++++++++View textSize:13.33 style:0 bundle:[display="flow-root", htmlTag="div"]

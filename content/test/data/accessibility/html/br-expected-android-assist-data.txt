@@ -1,0 +1,8 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View text:"\n" textSize:16.00 style:0 bundle:[display="", htmlTag="br"]
+++TextView text:"Text line 1" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p"]
+++++TextView text:"Text line 2" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++View text:"\n" textSize:16.00 style:0 bundle:[display="", htmlTag="br"]
+++++TextView text:"Text line 3" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View text:"\n" textSize:16.00 style:0 bundle:[display="", htmlTag="br"]

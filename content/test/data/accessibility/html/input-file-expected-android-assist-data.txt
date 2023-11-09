@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++Button textSize:13.33 style:0 bundle:[display="inline-block", htmlTag="input", type="file"]
+++++++Button text:"Choose File" textSize:13.33 style:0 bgColor:-1052689 bundle:[aria-hidden="true", display="inline-block", htmlTag="input", id="file-upload-button", pseudo="-webkit-file-upload-button", type="button", value="Choose File"]

@@ -1,0 +1,4 @@
+WebView text:"HTML element" textSize:16.00 style:0 bundle:[display="", htmlTag="#document", metadata="[<title>Even the HTML element is part of the page.</title>]"]
+++View text:"BODY element" textSize:16.00 style:0 bundle:[aria-label="BODY element", display="block", htmlTag="body"]
+++++Button text:"Button element" textSize:13.33 style:0 bgColor:-1052689 bundle:[aria-label="Button element", display="inline-block", htmlTag="button"]
+++++++TextView text:"Button" textSize:13.33 style:0 bgColor:-1052689 bundle:[display="", htmlTag=""]

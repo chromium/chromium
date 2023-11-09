@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++View textSize:16.00 style:4 fgColor:-16776978 bundle:[display="inline", href="http://www.google.com", htmlTag="a"]
+++++++TextView text:"normal link" textSize:16.00 style:4 fgColor:-16776978 bundle:[display="", htmlTag=""]

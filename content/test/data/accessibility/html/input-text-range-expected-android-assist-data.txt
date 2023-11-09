@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++SeekBar text:"medium" textSize:13.33 style:0 fgColor:-6449522 bundle:[aria-valuetext="medium", display="inline-block", htmlTag="input", max="2", min="0", type="range", value="1"]
+++++View textSize:16.00 style:0 bundle:[display="inline", for="in2", htmlTag="label"]
+++++++TextView text:"This is a test label " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++++SeekBar text:"small" textSize:13.33 style:0 fgColor:-6449522 bundle:[aria-valuetext="small", display="inline-block", htmlTag="input", max="2", min="0", type="range", value="0"]

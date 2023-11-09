@@ -1,0 +1,8 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++Spinner text:"2008-09-01" textSize:13.33 style:0 bgColor:-1052689 bundle:[display="inline-flex", htmlTag="input", type="date", value="2008-09-01"]
+++++++View textSize:13.33 style:0 bundle:[display="block", htmlTag="div", pseudo="-webkit-date-and-time-value"]
+++++++++TextView text:"09/01/2008" textSize:13.33 style:0 bundle:[display="", htmlTag=""]
+++++Spinner text:"When" textSize:13.33 style:0 bgColor:-1052689 bundle:[aria-label="When", display="inline-flex", htmlTag="input", type="date", value="2008-09-01"]
+++++++View textSize:13.33 style:0 bundle:[display="block", htmlTag="div", pseudo="-webkit-date-and-time-value"]
+++++++++TextView text:"09/01/2008" textSize:13.33 style:0 bundle:[display="", htmlTag=""]

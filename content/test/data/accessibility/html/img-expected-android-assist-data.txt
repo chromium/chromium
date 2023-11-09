@@ -1,0 +1,8 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++Image text:"pipe" textSize:16.00 style:0 bundle:[alt="pipe", display="inline", htmlTag="img", src="pipe.jpg"]
+++++TextView text:" " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:" " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++Image text:"  " textSize:16.00 style:0 bundle:[alt=" ", display="inline", htmlTag="img", src="pipe.jpg"]
+++++TextView text:" " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++Image text:"SVG face" textSize:16.00 style:0 bundle:[alt="SVG face", display="inline", htmlTag="img", src="svg-face.svg"]

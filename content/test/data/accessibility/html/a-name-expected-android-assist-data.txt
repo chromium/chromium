@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:4 bundle:[display="block", htmlTag="a", name="named_anchor_1"]
+++++TextView text:"named anchor" textSize:16.00 style:4 bundle:[display="", htmlTag=""]
+++View textSize:16.00 style:4 fgColor:-16776978 bundle:[display="block", href="#foo", htmlTag="a", name="named_anchor_2"]
+++++TextView text:"both a named anchor and a link" textSize:16.00 style:4 fgColor:-16776978 bundle:[display="", htmlTag=""]

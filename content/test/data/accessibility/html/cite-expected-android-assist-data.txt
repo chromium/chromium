@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++Image text:"Pipe" textSize:16.00 style:0 bundle:[alt="Pipe", display="inline", height="277", htmlTag="img", src="pipe.jpg", width="220"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p"]
+++++TextView text:"The pipe" textSize:16.00 style:2 bundle:[display="", htmlTag=""]
+++++TextView text:" clicked by SomeOne." textSize:16.00 style:0 bundle:[display="", htmlTag=""]

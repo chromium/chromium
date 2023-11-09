@@ -1,0 +1,5 @@
+WebView text:"Actions" textSize:16.00 style:0 bundle:[display="", htmlTag="#document", metadata="[<title>Actions</title>]"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++SeekBar textSize:13.33 style:0 fgColor:-6449522 bundle:[aria-valuemax="100", aria-valuemin="1", aria-valuenow="50", display="inline-block", htmlTag="input", max="100", min="1", role="slider", step="1", type="range", value="50"]
+++++EditText text:"Test textfield" textSize:13.33 style:0 bundle:[display="inline-block", htmlTag="input", placeholder="Test textfield", type="text"]
+++++++View textSize:13.33 style:0 bundle:[display="flow-root", htmlTag="div"]

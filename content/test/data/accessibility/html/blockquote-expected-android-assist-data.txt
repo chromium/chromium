@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="blockquote"]
+++++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p"]
+++++++TextView text:"First blockquote has a child element." textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="blockquote"]
+++++TextView text:"Second blockquote has no child." textSize:16.00 style:0 bundle:[display="", htmlTag=""]
