@@ -49,6 +49,7 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
       'getVersionCardData',
       'getSafetyHubHasRecommendations',
       'getSafetyHubEntryPointSubheader',
+      'dismissActiveMenuNotification',
     ]);
   }
 
@@ -162,5 +163,9 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
 
   setSafetyHubEntryPointSubheader(value: string) {
     this.entryPointSubheader_ = value;
+  }
+
+  dismissActiveMenuNotification() {
+    this.methodCalled('dismissActiveMenuNotification');
   }
 }

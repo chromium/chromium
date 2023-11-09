@@ -115,6 +115,12 @@ export interface SafetyHubBrowserProxy {
   /** Resets the notification permission for the origins. */
   resetNotificationPermissionForOrigins(origin: string[]): void;
 
+  /**
+   * When Safety Hub is visited, the active three-dot menu notification is
+   * dismissed, if there is any.
+   */
+  dismissActiveMenuNotification(): void;
+
   /** Gets data for the password top card. */
   getPasswordCardData(): Promise<CardInfo>;
 
@@ -182,6 +188,10 @@ export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
 
   resetNotificationPermissionForOrigins(origins: string[]) {
     chrome.send('resetNotificationPermissionForOrigins', [origins]);
+  }
+
+  dismissActiveMenuNotification() {
+    chrome.send('dismissActiveMenuNotification');
   }
 
   getPasswordCardData() {

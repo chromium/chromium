@@ -83,6 +83,12 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // returned.
   absl::optional<MenuNotificationEntry> GetNotificationToShow();
 
+  // Dismisses all the active menu notifications.
+  void DismissActiveNotification();
+
+  // Dismisses the active menu notification of the password module.
+  void DismissPasswordNotification();
+
   // Returns the |service_info_map_|. For testing purposes only.
   SafetyHubMenuNotification* GetNotificationForTesting(
       safety_hub::SafetyHubModuleType service_type);
