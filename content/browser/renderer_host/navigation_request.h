@@ -2110,7 +2110,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Whether the navigation should be sent to a renderer a process. This is
   // true, except for 204/205 responses and downloads.
-  bool response_should_be_rendered_ = false;
+  bool response_should_be_rendered_ = true;
 
   // Whether devtools overrides were applied on the User-Agent request header.
   bool devtools_user_agent_override_ = false;

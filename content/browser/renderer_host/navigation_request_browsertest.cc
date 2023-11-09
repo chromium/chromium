@@ -3289,6 +3289,11 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
                   ->common_params()
                   .download_policy.IsDownloadAllowed());
 
+  // This is not a download (though allowed), so the response should be
+  // rendered.
+  EXPECT_TRUE(manager.WaitForResponse());
+  EXPECT_TRUE(root->navigation_request()->response_should_be_rendered());
+
   // The response is not handled as a download.
   ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_FALSE(handle_observer.is_download());
@@ -3312,6 +3317,10 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
   EXPECT_TRUE(root->navigation_request()
                   ->common_params()
                   .download_policy.IsDownloadAllowed());
+
+  // Downloads do not need to be rendered, and should not be rendered.
+  EXPECT_TRUE(manager.WaitForResponse());
+  EXPECT_FALSE(root->navigation_request()->response_should_be_rendered());
 
   // The response is handled as a download.
   ASSERT_TRUE(manager.WaitForNavigationFinished());
@@ -3713,6 +3722,10 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
               NavigationRequest::From(navigation_handle);
           EXPECT_TRUE(request->is_synchronous_renderer_commit());
           EXPECT_TRUE(navigation_handle->GetRenderFrameHost());
+
+          // Ensure that response_should_be_rendered() is true even for pages
+          // that do not require a URLLoader.
+          EXPECT_TRUE(request->response_should_be_rendered());
         }));
     CreateSubframe(popup, "popup_subframe", GURL(),
                    /*wait_for_navigation*/ true);
@@ -4439,6 +4452,13 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // failed navigation.
   manager.ResumeNavigation();
   installer.WaitForThrottleWillFail();
+
+  // Ensure that response_should_be_rendered() is true even for error pages.
+  EXPECT_TRUE(static_cast<WebContentsImpl*>(shell()->web_contents())
+                  ->GetPrimaryMainFrame()
+                  ->frame_tree_node()
+                  ->navigation_request()
+                  ->response_should_be_rendered());
 
   // Kill the error page process. This will cause the navigation to `url_b2` to
   // return early in `NavigationRequest::ReadyToCommitNavigation()` and not
