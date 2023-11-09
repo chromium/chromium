@@ -40,7 +40,6 @@ void LegacyTechURLMatcher::OnPrefUpdated() {
     // Scheme, port and query in the pattern will be ignored while subdomains
     // must be fully specified.
     components.scheme = "";
-    components.match_subdomains = false;
     components.port = 0;
     components.query = "";
 
