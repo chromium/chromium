@@ -867,13 +867,15 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.DuplicatesCountAtStartup" units="tabs"
     expires_after="2024-03-17">
   <owner>ewannpv@chromium.org</owner>
+  <owner>lpromero@google.com</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
-    [iOS] The number of duplicated tabs restored at cold launch.
+    [iOS] The number of redundant active tabs restored at cold launch.
 
-    Note: This metric counts each non-unique tab as a duplicate. E.g. if there
-    are 3 tabs with the same URL, this metric will reprepresnet the amount of
-    total duplicates (i.e. two duplicates).
+    Note: This metric counts each non-unique tab from the active browser as a
+    redundant tab. E.g. if there are 3 active tabs with the same URL, this
+    metric will represent the amount of total duplicates (i.e. two duplicates).
+    Inactive tabs are not counted towards that metric.
   </summary>
 </histogram>
 
