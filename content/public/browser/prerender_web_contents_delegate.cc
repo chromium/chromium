@@ -125,6 +125,16 @@ void PrerenderWebContentsDelegate::OnDidBlockNavigation(
   NOTREACHED_NORETURN();
 }
 
+bool PrerenderWebContentsDelegate::ShouldAllowRunningInsecureContent(
+    WebContents* web_contents,
+    bool allowed_per_prefs,
+    const url::Origin& origin,
+    const GURL& resource_url) {
+  // MixedContentChecker::ShouldBlockNavigation() should cancel prerendering
+  // for mixed contents before this is called.
+  NOTREACHED_NORETURN();
+}
+
 PreloadingEligibility PrerenderWebContentsDelegate::IsPrerender2Supported(
     WebContents& web_contents) {
   // This should be checked in the initiator's WebContents.

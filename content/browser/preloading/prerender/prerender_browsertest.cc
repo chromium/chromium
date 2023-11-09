@@ -9922,9 +9922,24 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DoNotUpdateUserActivationState) {
   EXPECT_FALSE(prerendered_rfh->frame_tree_node()->HasStickyUserActivation());
 }
 
+// Used for running tests that should commonly pass regardless of target hints.
+class PrerenderTargetAgnosticBrowserTest
+    : public PrerenderBrowserTest,
+      public testing::WithParamInterface<std::string> {
+ protected:
+  std::string GetTargetHint() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderTargetAgnosticBrowserTest,
+                         testing::Values("_self", "_blank"),
+                         [](const testing::TestParamInfo<std::string>& info) {
+                           return info.param;
+                         });
+
 // Tests that prerendering is cancelled when a mixed content subframe is
 // detected.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MixedContent) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, MixedContent) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerendering");
 
@@ -9932,12 +9947,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MixedContent) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Make a prerendered page.
-  int host_id = AddPrerender(kPrerenderingUrl);
-  auto* prerendered_rfh = GetPrerenderedMainFrameHost(host_id);
+  int host_id = prerender_helper()->AddPrerender(
+      kPrerenderingUrl, /*eagerness=*/absl::nullopt, GetTargetHint());
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  auto* prerendered_rfh =
+      test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+          *prerender_web_contents, host_id);
   CHECK(prerendered_rfh);
   EXPECT_TRUE(AddTestUtilJS(prerendered_rfh));
 
-  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  test::PrerenderHostObserver host_observer(*prerender_web_contents, host_id);
 
   // Make a mixed content iframe.
   std::ignore =
@@ -9946,7 +9965,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MixedContent) {
              EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
 
   host_observer.WaitForDestroyed();
-  EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
+  EXPECT_EQ(test::PrerenderTestHelper::GetHostForUrl(*prerender_web_contents,
+                                                     kPrerenderingUrl),
             RenderFrameHost::kNoFrameTreeNodeId);
 
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kMixedContent);

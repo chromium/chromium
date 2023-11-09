@@ -112,6 +112,7 @@ class PrerenderTestHelper {
 
   // Attempts to lookup the host for the given |gurl|. Returns
   // RenderFrameHost::kNoFrameTreeNodeId upon failure.
+  static int GetHostForUrl(WebContents& web_contents, const GURL& gurl);
   int GetHostForUrl(const GURL& gurl);
 
   // Waits until a prerender has finished loading. Note: this may not be called
@@ -177,6 +178,9 @@ class PrerenderTestHelper {
   [[nodiscard]] ::testing::AssertionResult VerifyPrerenderingState(
       const GURL& gurl);
 
+  // Returns RenderFrameHost corresponding to `host_id`.
+  static RenderFrameHost* GetPrerenderedMainFrameHost(WebContents& web_contents,
+                                                      int host_id);
   RenderFrameHost* GetPrerenderedMainFrameHost(int host_id);
 
   int GetRequestCount(const GURL& url);

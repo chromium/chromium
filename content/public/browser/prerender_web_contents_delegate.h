@@ -56,6 +56,10 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
       const GURL& blocked_url,
       const GURL& initiator_url,
       blink::mojom::NavigationBlockedReason reason) override;
+  bool ShouldAllowRunningInsecureContent(WebContents* web_contents,
+                                         bool allowed_per_prefs,
+                                         const url::Origin& origin,
+                                         const GURL& resource_url) override;
   PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents) override;
   std::unique_ptr<WebContents> ActivatePortalWebContents(

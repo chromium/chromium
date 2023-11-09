@@ -328,11 +328,17 @@ void PrerenderTestHelper::RegisterServerRequestMonitor(
       &PrerenderTestHelper::MonitorResourceRequest, base::Unretained(this)));
 }
 
-int PrerenderTestHelper::GetHostForUrl(const GURL& gurl) {
+// static
+int PrerenderTestHelper::GetHostForUrl(WebContents& web_contents,
+                                       const GURL& gurl) {
   auto* host =
-      GetPrerenderHostRegistry(GetWebContents()).FindHostByUrlForTesting(gurl);
+      GetPrerenderHostRegistry(&web_contents).FindHostByUrlForTesting(gurl);
   return host ? host->frame_tree_node_id()
               : RenderFrameHost::kNoFrameTreeNodeId;
+}
+
+int PrerenderTestHelper::GetHostForUrl(const GURL& gurl) {
+  return GetHostForUrl(*GetWebContents(), gurl);
 }
 
 void PrerenderTestHelper::WaitForPrerenderLoadCompletion(int host_id) {
@@ -570,10 +576,17 @@ void PrerenderTestHelper::NavigatePrimaryPage(const GURL& gurl) {
   return ::testing::AssertionSuccess();
 }
 
-RenderFrameHost* PrerenderTestHelper::GetPrerenderedMainFrameHost(int host_id) {
-  auto* prerender_host = GetPrerenderHostById(GetWebContents(), host_id);
+// static
+RenderFrameHost* PrerenderTestHelper::GetPrerenderedMainFrameHost(
+    WebContents& web_contents,
+    int host_id) {
+  auto* prerender_host = GetPrerenderHostById(&web_contents, host_id);
   EXPECT_NE(prerender_host, nullptr);
   return prerender_host->GetPrerenderedMainFrameHost();
+}
+
+RenderFrameHost* PrerenderTestHelper::GetPrerenderedMainFrameHost(int host_id) {
+  return GetPrerenderedMainFrameHost(*GetWebContents(), host_id);
 }
 
 int PrerenderTestHelper::GetRequestCount(const GURL& url) {
