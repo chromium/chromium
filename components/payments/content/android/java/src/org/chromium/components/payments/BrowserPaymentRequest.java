@@ -159,13 +159,12 @@ public interface BrowserPaymentRequest {
 
     /**
      * Opens a payment handler window and creates a WebContents with the given url to display in it.
+     *
      * @param url The url of the page to be opened in the window.
-     * @param isOffTheRecord Whether the profile is off the record.
      * @param ukmSourceId The ukm source id assigned to the payment app.
      * @return The created WebContents.
      */
-    default WebContents openPaymentHandlerWindow(
-            GURL url, boolean isOffTheRecord, long ukmSourceId) {
+    default WebContents openPaymentHandlerWindow(GURL url, long ukmSourceId) {
         return null;
     }
 

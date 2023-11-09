@@ -288,7 +288,9 @@ public class ChromePaymentRequestService
             PaymentApp selectedApp = mPaymentUiService.getSelectedPaymentApp();
             dimBackgroundIfNotPaymentHandler(selectedApp);
             mJourneyLogger.setSkippedShow();
-            invokePaymentApp(null /* selectedShippingAddress */, null /* selectedShippingOption */,
+            invokePaymentApp(
+                    /* selectedShippingAddress= */ null,
+                    /* selectedShippingOption= */ null,
                     selectedApp);
         } else {
             mPaymentUiService.createShippingSectionIfNeeded(context);
@@ -298,11 +300,9 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public @Nullable WebContents openPaymentHandlerWindow(
-            GURL url, boolean isOffTheRecord, long ukmSourceId) {
+    public @Nullable WebContents openPaymentHandlerWindow(GURL url, long ukmSourceId) {
         @Nullable
-        WebContents paymentHandlerWebContents =
-                mPaymentUiService.showPaymentHandlerUI(url, isOffTheRecord);
+        WebContents paymentHandlerWebContents = mPaymentUiService.showPaymentHandlerUI(url);
         if (paymentHandlerWebContents != null) {
             ServiceWorkerPaymentAppBridge.onOpeningPaymentAppWindow(
                     /*paymentRequestWebContents=*/mWebContents,

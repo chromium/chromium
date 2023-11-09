@@ -631,7 +631,7 @@ public class PaymentRequestService
         assert invokedPaymentApp != null;
         assert invokedPaymentApp.getPaymentAppType() == PaymentAppType.SERVICE_WORKER_APP;
         return sShowingPaymentRequest.mBrowserPaymentRequest.openPaymentHandlerWindow(
-                url, sShowingPaymentRequest.mIsOffTheRecord, invokedPaymentApp.getUkmSourceId());
+                url, invokedPaymentApp.getUkmSourceId());
     }
 
     /**

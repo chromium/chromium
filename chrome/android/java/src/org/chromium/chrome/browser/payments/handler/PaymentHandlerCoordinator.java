@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.payments.handler;
 import android.app.Activity;
 
 import org.chromium.chrome.browser.content.WebContentsFactory;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -62,27 +61,29 @@ public class PaymentHandlerCoordinator {
      *
      * @param paymentRequestWebContents The WebContents of the merchant's frame.
      * @param url The url of the payment handler app, i.e., that of
-     *         "PaymentRequestEvent.openWindow(url)".
-     * @param isIncognito Whether the tab is in incognito mode.
+     *     "PaymentRequestEvent.openWindow(url)".
      * @param uiObserver The {@link PaymentHandlerUiObserver} that observes this Payment Handler UI.
      * @return The WebContents of the payment handler that's just opened when the showing is
-     *         successful; null if failed. When null is returned, caller should also call hide().
+     *     successful; null if failed. When null is returned, caller should also call hide().
      */
-    public WebContents show(WebContents paymentRequestWebContents, GURL url, boolean isIncognito,
-            PaymentHandlerUiObserver uiObserver) {
+    public WebContents show(
+            WebContents paymentRequestWebContents, GURL url, PaymentHandlerUiObserver uiObserver) {
         assert mHider == null : "Already showing payment-handler UI";
         assert paymentRequestWebContents != null;
         WindowAndroid windowAndroid = paymentRequestWebContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return null;
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) return null;
+        Profile profile = Profile.fromWebContents(paymentRequestWebContents);
+        if (profile == null) return null;
+
         mInputProtector.markShowTime();
-        Profile profile = IncognitoUtils.getProfileFromWindowAndroid(windowAndroid, isIncognito);
         mPaymentHandlerWebContents =
-                WebContentsFactory.createWebContents(profile, /*initiallyHidden=*/false, false);
+                WebContentsFactory.createWebContents(profile, /* initiallyHidden= */ false, false);
         PaymentHandlerNavigationThrottle.markPaymentHandlerWebContents(mPaymentHandlerWebContents);
-        ContentView webContentView = ContentView.createContentView(
-                activity, null /* eventOffsetHandler */, mPaymentHandlerWebContents);
+        ContentView webContentView =
+                ContentView.createContentView(
+                        activity, /* eventOffsetHandler= */ null, mPaymentHandlerWebContents);
         initializeWebContents(windowAndroid, webContentView, url);
 
         mToolbarCoordinator = new PaymentHandlerToolbarCoordinator(

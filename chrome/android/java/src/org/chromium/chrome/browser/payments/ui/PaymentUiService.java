@@ -825,17 +825,17 @@ public class PaymentUiService
 
     /**
      * Create and show the (BottomSheet) PaymentHandler UI.
+     *
      * @param url The URL of the payment app.
-     * @param isOffTheRecord Whether the merchant page is currently in an OffTheRecord tab.
      * @return The WebContents of the payment handler that's just opened when the opening is
-     *         successful; null if failed.
+     *     successful; null if failed.
      */
-    public @Nullable WebContents showPaymentHandlerUI(GURL url, boolean isOffTheRecord) {
+    public @Nullable WebContents showPaymentHandlerUI(GURL url) {
         if (mPaymentHandlerUi != null) return null;
         PaymentHandlerCoordinator paymentHandlerUi = new PaymentHandlerCoordinator();
-        WebContents paymentHandlerWebContents = paymentHandlerUi.show(
-                /*paymentRequestWebContents=*/mWebContents, url, isOffTheRecord,
-                /*uiObserver=*/this);
+        WebContents paymentHandlerWebContents =
+                paymentHandlerUi.show(
+                        /* paymentRequestWebContents= */ mWebContents, url, /* uiObserver= */ this);
         if (paymentHandlerWebContents == null) {
             paymentHandlerUi.hide();
             return null;
