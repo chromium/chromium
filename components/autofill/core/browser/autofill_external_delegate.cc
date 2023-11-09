@@ -415,7 +415,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 
 void AutofillExternalDelegate::DidAcceptSuggestion(
     const Suggestion& suggestion,
-    int position,
+    const SuggestionPosition& position,
     AutofillSuggestionTriggerSource trigger_source) {
   switch (suggestion.popup_item_id) {
     case PopupItemId::kAutofillOptions:
@@ -527,7 +527,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail)});
       break;
     case PopupItemId::kAutocompleteEntry:
-      AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position);
+      AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position.row);
       ABSL_FALLTHROUGH_INTENDED;
     case PopupItemId::kMerchantPromoCodeEntry:
       // User selected an Autocomplete or Merchant Promo Code field, so we fill
@@ -618,7 +618,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.popup_item_id ==
               PopupItemId::kFillEverythingFromAddressProfile) {
         autofill_metrics::LogAutofillSuggestionAcceptedIndex(
-            position, popup_type_, manager_->client().IsOffTheRecord());
+            position.row, popup_type_, manager_->client().IsOffTheRecord());
         if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
             suggestion.popup_item_id ==
                 PopupItemId::kFillEverythingFromAddressProfile) {

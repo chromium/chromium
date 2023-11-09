@@ -59,7 +59,7 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
           autofill::AutofillSuggestionTriggerSource::kPasswordManager) override;
   void DidAcceptSuggestion(
       const autofill::Suggestion& suggestion,
-      int position,
+      const SuggestionPosition& position,
       autofill::AutofillSuggestionTriggerSource trigger_source =
           autofill::AutofillSuggestionTriggerSource::kPasswordManager) override;
   void DidPerformButtonActionForSuggestion(

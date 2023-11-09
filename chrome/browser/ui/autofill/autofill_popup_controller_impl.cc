@@ -427,7 +427,9 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index,
     view_->AxAnnounce(*announcement);
   }
 
-  delegate_->DidAcceptSuggestion(suggestion, index, trigger_source_);
+  delegate_->DidAcceptSuggestion(
+      suggestion, AutofillPopupDelegate::SuggestionPosition{.row = index},
+      trigger_source_);
 #if BUILDFLAG(IS_ANDROID)
   if ((suggestion.popup_item_id == PopupItemId::kPasswordEntry ||
        suggestion.popup_item_id == PopupItemId::kUsernameEntry) &&

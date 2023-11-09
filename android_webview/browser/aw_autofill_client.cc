@@ -348,7 +348,7 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
                                           jint position) {
   if (delegate_) {
     delegate_->DidAcceptSuggestion(
-        suggestions_[position], position,
+        suggestions_[position], {.row = position},
         autofill::AutofillSuggestionTriggerSource::kAndroidWebView);
   }
 }

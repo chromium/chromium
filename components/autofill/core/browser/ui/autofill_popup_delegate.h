@@ -19,6 +19,16 @@ namespace autofill {
 // of events by the controller.
 class AutofillPopupDelegate {
  public:
+  // Defines the position of the suggestion that was selected.
+  // This is useful for desktop where popups can have sub-popups.
+  struct SuggestionPosition {
+    // Defines the row selected in the list of suggestions.
+    int row = 0;
+    // On desktop, it defines the subpopup that contains the suggestion
+    // selected.
+    int sub_popup_level = 0;
+  };
+
   // Called when the Autofill popup is shown. If the popup supports sub-popups
   // only the root one triggers it.
   virtual void OnPopupShown() = 0;
@@ -34,12 +44,12 @@ class AutofillPopupDelegate {
       const Suggestion& suggestion,
       AutofillSuggestionTriggerSource trigger_source) = 0;
 
-  // Informs the delegate that a row in the popup has been chosen. |suggestion|
-  // is the suggestion that was chosen in the popup. |position| refers to the
-  // index of the suggestion in the suggestion list.
+  // Informs the delegate that a row in the popup has been chosen. `suggestion`
+  // is the suggestion that was chosen in the popup. `position` refers to the
+  // row and level of the suggestion in the suggestions layout.
   virtual void DidAcceptSuggestion(
       const Suggestion& suggestion,
-      int position,
+      const SuggestionPosition& position,
       AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Informs the delegate that the user chose to perform the button action

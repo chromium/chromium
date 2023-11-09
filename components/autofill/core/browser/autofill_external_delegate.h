@@ -57,7 +57,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
       AutofillSuggestionTriggerSource trigger_source) override;
   void DidAcceptSuggestion(
       const Suggestion& suggestion,
-      int position,
+      const SuggestionPosition& position,
       AutofillSuggestionTriggerSource trigger_source) override;
   void DidPerformButtonActionForSuggestion(
       const Suggestion& suggestion) override;

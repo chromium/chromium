@@ -96,6 +96,7 @@ using testing::ReturnRef;
 using testing::SizeIs;
 using testing::Unused;
 
+using SuggestionPosition = autofill::AutofillPopupDelegate::SuggestionPosition;
 using UkmEntry = ukm::builders::PageWithPassword;
 
 namespace autofill {
@@ -509,7 +510,7 @@ TEST_F(PasswordAutofillManagerTest, ExternalDelegatePasswordSuggestions) {
                 ? autofill::PopupItemId::kPasswordEntry
                 : autofill::PopupItemId::kUsernameEntry,
             test_username_),
-        1);
+        SuggestionPosition{.row = 1});
 
     histograms.ExpectUniqueSample(
         kDropdownSelectedHistogram,
@@ -594,7 +595,7 @@ TEST_F(PasswordAutofillManagerTest,
                 ? autofill::PopupItemId::kAccountStoragePasswordEntry
                 : autofill::PopupItemId::kAccountStorageUsernameEntry,
             test_username_),
-        /*position=*/1);
+        SuggestionPosition{.row = 0});
   }
 }
 
@@ -703,7 +704,7 @@ TEST_F(PasswordAutofillManagerTest,
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordAccountStorageOptIn, test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 
   ASSERT_GE(suggestions.size(), 2u);
   EXPECT_TRUE(suggestions.back().is_loading);
@@ -741,7 +742,7 @@ TEST_F(PasswordAutofillManagerTest,
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate,
           test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 
   ASSERT_GE(suggestions.size(), 2u);
   EXPECT_TRUE(suggestions.back().is_loading);
@@ -764,7 +765,7 @@ TEST_F(PasswordAutofillManagerTest, ClickOnReSiginTriggersSigninAndHides) {
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordAccountStorageReSignin,
           test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 }
 
 // Test that the popup is updated once "opt in and fill" is clicked and the
@@ -813,7 +814,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndFillUpdatesPopup) {
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordAccountStorageOptIn, test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 
   ASSERT_GE(suggestions.size(), 2u);
   EXPECT_FALSE(suggestions.back().is_loading);
@@ -867,7 +868,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndGenerateUpdatesPopup) {
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate,
           test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 
   ASSERT_GE(suggestions.size(), 2u);
   EXPECT_FALSE(suggestions.back().is_loading);
@@ -904,7 +905,7 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInAndFillHidesPopup) {
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordAccountStorageOptIn, test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 }
 
 // Test that the popup is hidden and password generation is triggered once
@@ -945,7 +946,7 @@ TEST_F(PasswordAutofillManagerTest,
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate,
           test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 }
 
 // Test that the popup shows an empty state if opted-into an empty store.
@@ -1231,7 +1232,8 @@ TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
       autofill_client,
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
 
-  password_autofill_manager_->DidAcceptSuggestion(suggestion, /*position=*/1);
+  password_autofill_manager_->DidAcceptSuggestion(suggestion,
+                                                  SuggestionPosition{.row = 0});
 
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 }
@@ -1283,7 +1285,8 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnPasswordField) {
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
 
   password_autofill_manager_->DidAcceptSuggestion(
-      Suggestion(autofill::PopupItemId::kAllSavedPasswordsEntry), 0);
+      Suggestion(autofill::PopupItemId::kAllSavedPasswordsEntry),
+      SuggestionPosition{.row = 0});
 
   histograms.ExpectUniqueSample(
       kDropdownSelectedHistogram,
@@ -1410,7 +1413,8 @@ TEST_F(PasswordAutofillManagerTest,
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
 
   password_autofill_manager_->DidAcceptSuggestion(
-      Suggestion(autofill::PopupItemId::kGeneratePasswordEntry), 1);
+      Suggestion(autofill::PopupItemId::kGeneratePasswordEntry),
+      SuggestionPosition{.row = 1});
 
   histograms.ExpectUniqueSample(
       kDropdownSelectedHistogram,
@@ -1586,7 +1590,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
     password_autofill_manager_->DidAcceptSuggestion(
         autofill::test::CreateAutofillSuggestion(
             autofill::PopupItemId::kPasswordEntry, test_username_),
-        1);
+        SuggestionPosition{.row = 1});
   }
 }
 
@@ -1656,7 +1660,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
     password_autofill_manager_->DidAcceptSuggestion(
         autofill::test::CreateAutofillSuggestion(
             autofill::PopupItemId::kPasswordEntry, test_username_),
-        1);
+        SuggestionPosition{.row = 1});
   }
 }
 
@@ -1724,7 +1728,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
     password_autofill_manager_->DidAcceptSuggestion(
         autofill::test::CreateAutofillSuggestion(
             autofill::PopupItemId::kPasswordEntry, test_username_),
-        1);
+        SuggestionPosition{.row = 1});
   }
 }
 
@@ -1777,7 +1781,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordEntry, test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 
   EXPECT_CALL(*authenticator_ptr, Cancel());
 }
@@ -1832,7 +1836,7 @@ TEST_F(PasswordAutofillManagerTest,
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordEntry, test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 
   EXPECT_CALL(*authenticator_ptr, Cancel());
   password_autofill_manager_->DeleteFillData();
@@ -1888,7 +1892,7 @@ TEST_F(PasswordAutofillManagerTest,
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordEntry, test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 
   EXPECT_CALL(*authenticator_ptr, Cancel());
   password_autofill_manager_->OnAddPasswordFillData(CreateTestFormFillData());
@@ -1923,7 +1927,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordEntry, test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 
   auto authenticator2 =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -1939,7 +1943,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordEntry, test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 
   // Destroying the manager should cancel ongoing authentication.
   EXPECT_CALL(*authenticator_ptr2, Cancel());
@@ -1978,7 +1982,7 @@ TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           autofill::PopupItemId::kPasswordEntry, test_username_),
-      1);
+      SuggestionPosition{.row = 1});
 
   // Simulate successful authentication and expect successful filling.
   EXPECT_CALL(*client.mock_driver(),
@@ -2078,7 +2082,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   password_autofill_manager_->DidAcceptSuggestion(suggestion,
-                                                  /*position=*/1);
+                                                  SuggestionPosition{.row = 0});
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2268,7 +2272,8 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
   suggestion.popup_item_id =
       autofill::PopupItemId::kWebauthnSignInWithAnotherDevice;
   suggestion.payload = autofill::Suggestion::BackendId();
-  password_autofill_manager_->DidAcceptSuggestion(suggestion, /*position=*/1);
+  password_autofill_manager_->DidAcceptSuggestion(suggestion,
+                                                  SuggestionPosition{.row = 0});
 }
 
 // Test that the AutofillSuggestionAvailability is set according to the popup

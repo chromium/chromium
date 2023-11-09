@@ -30,7 +30,7 @@ class MockAutofillPopupDelegate : public AutofillPopupDelegate {
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion& suggestion,
-               int position,
+               const AutofillPopupDelegate::SuggestionPosition& position,
                AutofillSuggestionTriggerSource trigger_source),
               (override));
   MOCK_METHOD(void,

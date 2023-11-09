@@ -426,7 +426,7 @@ void PasswordAutofillManager::OnUnlockItemAccepted(
 
 void PasswordAutofillManager::DidAcceptSuggestion(
     const autofill::Suggestion& suggestion,
-    int position,
+    const SuggestionPosition& position,
     autofill::AutofillSuggestionTriggerSource trigger_source) {
   using metrics_util::PasswordDropdownSelectedOption;
   switch (suggestion.popup_item_id) {
