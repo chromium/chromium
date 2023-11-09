@@ -39,6 +39,7 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -259,9 +260,9 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(b/309864078): move `AddNearbyShareData` to multidevice section.
 void AddNearbyShareData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"nearbyShareTitle", IDS_SETTINGS_NEARBY_SHARE_TITLE},
       {"nearbyShareSetUpButtonTitle",
        IDS_SETTINGS_NEARBY_SHARE_SET_UP_BUTTON_TITLE},
       {"nearbyShareDeviceNameRowTitle",
@@ -326,6 +327,18 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_SAVE}};
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  const char localized_title_string[] = "nearbyShareTitle";
+
+  if (features::IsNameEnabled()) {
+    html_source->AddString(
+        localized_title_string,
+        NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
+            IDS_SETTINGS_NEARBY_SHARE_TITLE_PH));
+  } else {
+    html_source->AddLocalizedString(localized_title_string,
+                                    IDS_SETTINGS_NEARBY_SHARE_TITLE);
+  }
 
   // To use lottie, the worker-src CSP needs to be updated for the web ui that
   // is using it. Since as of now there are only a couple of webuis using
