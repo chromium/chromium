@@ -893,11 +893,6 @@
       status: "stable",
     },
     {
-      name: "CSSFocusVisible",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       // @font-face Font property descriptors auto range.
       // https://www.w3.org/TR/css-fonts-4/#font-prop-desc
       name: "CSSFontFaceAutoVariableRange",

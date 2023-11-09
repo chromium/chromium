@@ -624,11 +624,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if (match->type == CSSSelector::kPseudoFocusVisible &&
-      !RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
   if (match->type == CSSSelector::kPseudoPaused &&
       !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled()) {
     return CSSSelector::kPseudoUnknown;

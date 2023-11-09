@@ -2829,8 +2829,7 @@ void Node::UpdateHadKeyboardEvent(const Event& event) {
   if (GetLayoutObject()) {
     InvalidateIfHasEffectiveAppearance();
 
-    auto* this_element = DynamicTo<Element>(this);
-    if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled() && this_element) {
+    if (auto* this_element = DynamicTo<Element>(this)) {
       this_element->FocusVisibleStateChanged();
     }
   }

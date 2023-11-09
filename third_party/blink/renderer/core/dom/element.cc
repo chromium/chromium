@@ -5856,15 +5856,13 @@ void Element::SetFocused(bool received, mojom::blink::FocusType focus_type) {
   }
   PseudoStateChanged(CSSSelector::kPseudoFocus);
 
-  if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
-    if (!ChildrenOrSiblingsAffectedByFocusVisible()) {
-      SetNeedsStyleRecalc(kLocalStyleChange,
-                          StyleChangeReasonForTracing::CreateWithExtraData(
-                              style_change_reason::kPseudoClass,
-                              style_change_extra_data::g_focus_visible));
-    }
-    PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
+  if (!ChildrenOrSiblingsAffectedByFocusVisible()) {
+    SetNeedsStyleRecalc(kLocalStyleChange,
+                        StyleChangeReasonForTracing::CreateWithExtraData(
+                            style_change_reason::kPseudoClass,
+                            style_change_extra_data::g_focus_visible));
   }
+  PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
 
   if (!ChildrenOrSiblingsAffectedByFocusWithin()) {
     SetNeedsStyleRecalc(kLocalStyleChange,
@@ -6169,9 +6167,6 @@ void Element::FocusStateChanged() {
 }
 
 void Element::FocusVisibleStateChanged() {
-  if (!RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
-    return;
-  }
   StyleChangeType change_type =
       GetComputedStyle()->HasPseudoElementStyle(kPseudoIdFirstLetter)
           ? kSubtreeStyleChange

@@ -2307,7 +2307,6 @@ static void RecordUsageAndDeprecationsOneSelector(
       feature = WebFeature::kCSSSelectorPseudoIs;
       break;
     case CSSSelector::kPseudoFocusVisible:
-      DCHECK(RuntimeEnabledFeatures::CSSFocusVisibleEnabled());
       feature = WebFeature::kCSSSelectorPseudoFocusVisible;
       break;
     case CSSSelector::kPseudoFocus:
