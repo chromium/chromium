@@ -12,6 +12,7 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -34,13 +35,14 @@ constexpr int kMaxPreviewWidthDp =
 // The border padding value of the container view.
 constexpr auto kInsideContainerBorderInset = gfx::Insets(2);
 
-// Spacing between the child `WindowCycleItemView`s of the container view.
+// Spacing between the `WindowCycleItemView`s hosted by the container view.
 constexpr int kBetweenCycleItemsSpacing = 2;
 
 }  // namespace
 
 WindowCycleItemView::WindowCycleItemView(aura::Window* window)
-    : WindowMiniView(window) {
+    : WindowMiniView(window),
+      window_cycle_controller_(Shell::Get()->window_cycle_controller()) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);
 
@@ -51,12 +53,12 @@ WindowCycleItemView::WindowCycleItemView(aura::Window* window)
 }
 
 void WindowCycleItemView::OnMouseEntered(const ui::MouseEvent& event) {
-  Shell::Get()->window_cycle_controller()->SetFocusedWindow(source_window());
+  window_cycle_controller_->SetFocusedWindow(source_window());
 }
 
 bool WindowCycleItemView::OnMousePressed(const ui::MouseEvent& event) {
-  Shell::Get()->window_cycle_controller()->SetFocusedWindow(source_window());
-  Shell::Get()->window_cycle_controller()->CompleteCycling();
+  window_cycle_controller_->SetFocusedWindow(source_window());
+  window_cycle_controller_->CompleteCycling();
   return true;
 }
 
@@ -131,8 +133,8 @@ bool WindowCycleItemView::HandleAccessibleAction(
   // event, then with a mouse release event), override the base impl from
   // triggering that behavior which leads to a UAF.
   if (action_data.action == ax::mojom::Action::kDoDefault) {
-    Shell::Get()->window_cycle_controller()->SetFocusedWindow(source_window());
-    Shell::Get()->window_cycle_controller()->CompleteCycling();
+    window_cycle_controller_->SetFocusedWindow(source_window());
+    window_cycle_controller_->CompleteCycling();
     return true;
   }
 
@@ -149,10 +151,10 @@ BEGIN_METADATA(WindowCycleItemView, WindowMiniView)
 END_METADATA
 
 GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group) {
-  mini_view1_ = AddChildView(
-      std::make_unique<WindowCycleItemView>(snap_group->window1()));
-  mini_view2_ = AddChildView(
-      std::make_unique<WindowCycleItemView>(snap_group->window2()));
+  mini_views_.push_back(AddChildView(
+      std::make_unique<WindowCycleItemView>(snap_group->window1())));
+  mini_views_.push_back(AddChildView(
+      std::make_unique<WindowCycleItemView>(snap_group->window2())));
   SetShowPreview(/*show=*/true);
   RefreshItemVisuals();
 
@@ -160,7 +162,7 @@ GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  // TODO(michelefan@): Orientation should correspond to the window layout.
+  // TODO(michelefan): Window layout should correspond to screen orientation.
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
@@ -172,16 +174,15 @@ GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group) {
 GroupContainerCycleView::~GroupContainerCycleView() = default;
 
 bool GroupContainerCycleView::Contains(aura::Window* window) const {
-  return (mini_view1_ && mini_view1_->Contains(window)) ||
-         (mini_view2_ && mini_view2_->Contains(window));
+  return base::ranges::any_of(mini_views_,
+                              [window](const WindowCycleItemView* mini_view) {
+                                return mini_view->Contains(window);
+                              });
 }
 
 aura::Window* GroupContainerCycleView::GetWindowAtPoint(
     const gfx::Point& screen_point) const {
-  for (auto mini_view : {mini_view1_, mini_view2_}) {
-    if (!mini_view) {
-      continue;
-    }
+  for (auto* mini_view : mini_views_) {
     if (auto* window = mini_view->GetWindowAtPoint(screen_point)) {
       return window;
     }
@@ -190,55 +191,44 @@ aura::Window* GroupContainerCycleView::GetWindowAtPoint(
 }
 
 void GroupContainerCycleView::SetShowPreview(bool show) {
-  for (auto mini_view : {mini_view1_, mini_view2_}) {
-    if (mini_view) {
-      mini_view->SetShowPreview(show);
-    }
+  for (auto* mini_view : mini_views_) {
+    mini_view->SetShowPreview(show);
   }
 }
 
 void GroupContainerCycleView::RefreshItemVisuals() {
-  if (mini_view1_ && mini_view2_) {
-    mini_view1_->SetRoundedCornersRadius(gfx::RoundedCornersF(
+  if (mini_views_.size() == 2u) {
+    mini_views_[0]->SetRoundedCornersRadius(gfx::RoundedCornersF(
         /*upper_left=*/WindowMiniView::kWindowMiniViewCornerRadius,
         /*upper_right=*/0, /*lower_right=*/0,
         /*lower_left=*/WindowMiniView::kWindowMiniViewCornerRadius));
-    mini_view2_->SetRoundedCornersRadius(gfx::RoundedCornersF(
+    mini_views_[1]->SetRoundedCornersRadius(gfx::RoundedCornersF(
         /*upper_left=*/0,
         /*upper_right=*/WindowMiniView::kWindowMiniViewCornerRadius,
         /*lower_right=*/WindowMiniView::kWindowMiniViewCornerRadius,
         /*lower_left=*/0));
   }
 
-  for (auto mini_view : {mini_view1_, mini_view2_}) {
-    if (mini_view) {
-      mini_view->RefreshItemVisuals();
-    }
+  for (auto* mini_view : mini_views_) {
+    mini_view->RefreshItemVisuals();
   }
 }
 
 int GroupContainerCycleView::TryRemovingChildItem(
     aura::Window* destroying_window) {
-  std::vector<raw_ptr<WindowCycleItemView>*> mini_views_ptrs = {&mini_view1_,
-                                                                &mini_view2_};
-  for (auto* mini_view_ptr : mini_views_ptrs) {
-    if (auto& mini_view = *mini_view_ptr; mini_view) {
-      // Explicitly reset the current visuals.
-      mini_view->ResetRoundedCorners();
-      if (mini_view->Contains(destroying_window)) {
-        auto* temp = mini_view.get();
-        // Explicitly reset the `mini_view` to avoid dangling pointer detection.
-        mini_view = nullptr;
-        RemoveChildViewT(temp);
-      }
+  for (auto* mini_view : mini_views_) {
+    // Explicitly reset the current visuals so that the default rounded corners
+    // i.e. rounded corners on four corners will be applied on the remaining
+    // item.
+    mini_view->ResetRoundedCorners();
+    if (mini_view->Contains(destroying_window)) {
+      base::Erase(mini_views_, mini_view);
+      RemoveChildViewT(mini_view);
     }
   }
 
   RefreshItemVisuals();
-
-  return base::ranges::count_if(
-      mini_views_ptrs,
-      [](raw_ptr<WindowCycleItemView>* ptr) { return *ptr != nullptr; });
+  return mini_views_.size();
 }
 
 void GroupContainerCycleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -250,29 +240,30 @@ void GroupContainerCycleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 gfx::RoundedCornersF GroupContainerCycleView::GetRoundedCorners() const {
-  if (!mini_view1_ && !mini_view2_) {
+  if (mini_views_.empty()) {
     return gfx::RoundedCornersF();
   }
 
-  // In normal use cases, the left corners (`upper_left` and `lower_left`) will
-  // depend on the primary snapped window, and likewise for the right corners.
-  // However, if one window gets destructed leaving only one mini view hosted by
-  // this. All the rounded corners have to be from the remaining mini view.
-  // TODO(b/294294344): for vertical split view, the upper corners will depend
-  // on the primary snapped window and likewise for the lower corners.
-  const float upper_left = mini_view1_
-                               ? mini_view1_->GetRoundedCorners().upper_left()
-                               : mini_view2_->GetRoundedCorners().upper_left();
-  const float upper_right =
-      mini_view2_ ? mini_view2_->GetRoundedCorners().upper_right()
-                  : mini_view1_->GetRoundedCorners().upper_right();
-  const float lower_right = mini_view2_
-                                ? mini_view2_->GetRoundedCorners().lower_right()
-                                : mini_view1_->GetRoundedCorners().lower_left();
-  const float lower_left = mini_view1_
-                               ? mini_view1_->GetRoundedCorners().lower_left()
-                               : mini_view2_->GetRoundedCorners().lower_right();
+  if (mini_views_.size() == 1u) {
+    return mini_views_[0]->GetRoundedCorners();
+  }
+
+  CHECK_EQ(mini_views_.size(), 2u);
+  // The left corners (`upper_left` and `lower_left`) will depend on the primary
+  // snapped window, and likewise for the right corners.
+  // TODO(http://b/294294344): for vertical split view, the upper corners will
+  // depend on the primary snapped window and likewise for the lower corners.
+  const float upper_left = mini_views_[0]->GetRoundedCorners().upper_left();
+  const float upper_right = mini_views_[1]->GetRoundedCorners().upper_right();
+  const float lower_right = mini_views_[1]->GetRoundedCorners().lower_right();
+  const float lower_left = mini_views_[0]->GetRoundedCorners().lower_left();
   return gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left);
+}
+
+void GroupContainerCycleView::UpdateFocusState(bool focus) {
+  for (auto* mini_view : mini_views_) {
+    mini_view->UpdateFocusState(focus);
+  }
 }
 
 BEGIN_METADATA(GroupContainerCycleView, WindowMiniViewBase)

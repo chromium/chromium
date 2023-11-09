@@ -2537,7 +2537,7 @@ TEST_F(SnapGroupTest, WindowCycleItemRoundedCorners) {
               gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
   }
 
-  // Destroy `window0` which belongs to a snap group.
+  // Destroy `window0` which belongs to a snap group while cycling.
   window0.reset();
   auto& new_cycle_item_views = cycle_view->cycle_views_for_testing();
   EXPECT_EQ(new_cycle_item_views.size(), 2u);
@@ -2553,7 +2553,9 @@ TEST_F(SnapGroupTest, WindowCycleItemRoundedCorners) {
 
 // Tests that the window cycle view will not show with only one snap group
 // available which is the same behavior pattern as free-form window cycling.
-TEST_F(SnapGroupTest, NoWindowCycleViewWithOneSnapGroup) {
+// TODO(michelefan): Remove or re-purpose this test after confirming with the
+// team since it may not be applicable with the latest product decision.
+TEST_F(SnapGroupTest, DISABLED_NoWindowCycleViewWithOneSnapGroup) {
   std::unique_ptr<aura::Window> window0 = CreateAppWindow(gfx::Rect(100, 200));
   std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(200, 300));
   SnapTwoTestWindows(window0.get(), window1.get());
