@@ -10,7 +10,7 @@
 #import "components/plus_addresses/plus_address_client.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 // static
 plus_addresses::PlusAddressService*

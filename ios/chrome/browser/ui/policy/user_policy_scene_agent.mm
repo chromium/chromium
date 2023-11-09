@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"

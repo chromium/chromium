@@ -24,7 +24,7 @@ source_set("notifications") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/settings/notifications/tracking_price",
     "//ios/chrome/common/ui/colors",
     "//ui/base",

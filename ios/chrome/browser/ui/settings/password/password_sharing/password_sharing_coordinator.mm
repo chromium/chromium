@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_coordinator.h"

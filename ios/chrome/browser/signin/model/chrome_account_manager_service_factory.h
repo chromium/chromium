@@ -5,6 +5,35 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_CHROME_ACCOUNT_MANAGER_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_CHROME_ACCOUNT_MANAGER_SERVICE_FACTORY_H_
 
-#include "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#include "base/no_destructor.h"
+#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+
+class ChromeBrowserState;
+class ChromeAccountManagerService;
+
+// Singleton that owns all ChromeAccountManagerServices and associates them with
+// ChromeBrowserState.
+class ChromeAccountManagerServiceFactory
+    : public BrowserStateKeyedServiceFactory {
+ public:
+  ChromeAccountManagerServiceFactory(const BrowserStateKeyedServiceFactory&) =
+      delete;
+  ChromeAccountManagerServiceFactory& operator=(
+      const BrowserStateKeyedServiceFactory&) = delete;
+
+  static ChromeAccountManagerService* GetForBrowserState(
+      ChromeBrowserState* browser_state);
+  static ChromeAccountManagerServiceFactory* GetInstance();
+
+ private:
+  friend class base::NoDestructor<ChromeAccountManagerServiceFactory>;
+
+  ChromeAccountManagerServiceFactory();
+  ~ChromeAccountManagerServiceFactory() override;
+
+  // ChromeAccountManagerServiceFactory implementation.
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      web::BrowserState* context) const override;
+};
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_CHROME_ACCOUNT_MANAGER_SERVICE_FACTORY_H_

@@ -8,7 +8,7 @@ include_rules = [
   "+ios/chrome/browser/voice/model",
   "+ios/chrome/browser/tabs/model",
   "+ios/chrome/browser/translate/model",
-  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/signin/model",
 ]
 
 specific_include_rules = {

@@ -17,7 +17,7 @@ source_set("logging") {
     "//components/prefs",
     "//components/version_info",
     "//ios/chrome/browser/first_run",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin/model",
   ]
   public_deps = [
     "//ios/chrome/browser/ui/authentication/signin:constants",

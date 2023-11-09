@@ -8,7 +8,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/supervised_user/core/browser/list_family_members_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 // static
 supervised_user::ListFamilyMembersService*

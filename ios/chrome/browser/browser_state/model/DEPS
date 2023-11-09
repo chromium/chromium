@@ -9,7 +9,7 @@ include_rules = [
   "+ios/chrome/browser/optimization_guide",
   "+ios/chrome/browser/push_notification",
   "+ios/chrome/browser/segmentation_platform",
-  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/unified_consent/model",
 ]

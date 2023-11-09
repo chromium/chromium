@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
-#include "ios/chrome/browser/signin/constants.h"
+#include "ios/chrome/browser/signin/model/constants.h"
 
 @class UIViewController;
 

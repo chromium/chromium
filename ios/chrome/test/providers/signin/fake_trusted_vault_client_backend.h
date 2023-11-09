@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_TEST_PROVIDERS_SIGNIN_FAKE_TRUSTED_VAULT_CLIENT_BACKEND_H_
 #define IOS_CHROME_TEST_PROVIDERS_SIGNIN_FAKE_TRUSTED_VAULT_CLIENT_BACKEND_H_
 
-#include "ios/chrome/browser/signin/trusted_vault_client_backend.h"
+#include "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
 
 @class FakeTrustedVaultClientBackendViewController;
 

@@ -25,7 +25,7 @@ source_set("utils") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ui/base",
   ]
@@ -82,7 +82,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/bookmarks/common",
     "//components/sync/base",
-    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

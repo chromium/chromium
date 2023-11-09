@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "ios/chrome/browser/signin/trusted_vault_client_backend.h"
-#include "ios/chrome/browser/signin/trusted_vault_configuration.h"
+#include "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
+#include "ios/chrome/browser/signin/model/trusted_vault_configuration.h"
 
 namespace ios {
 namespace provider {

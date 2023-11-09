@@ -15,7 +15,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/signin/pattern_account_restriction.h"
+#import "ios/chrome/browser/signin/model/pattern_account_restriction.h"
 
 namespace policy {
 

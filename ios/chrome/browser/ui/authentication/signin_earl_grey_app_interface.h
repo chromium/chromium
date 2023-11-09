@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/signin/capabilities_dict.h"
+#import "ios/chrome/browser/signin/model/capabilities_dict.h"
 #import "url/gurl.h"
 
 @class FakeSystemIdentity;

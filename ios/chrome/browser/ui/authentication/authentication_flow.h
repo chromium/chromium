@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/browser/signin/constants.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 

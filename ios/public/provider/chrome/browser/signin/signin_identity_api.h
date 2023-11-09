@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ios/chrome/browser/signin/system_identity_manager.h"
+#include "ios/chrome/browser/signin/model/system_identity_manager.h"
 #include "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
 
 namespace ios {

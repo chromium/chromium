@@ -43,7 +43,7 @@ source_set("password_details") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/settings/password:common",
     "//ios/chrome/browser/ui/settings/password:features",

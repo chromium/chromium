@@ -10,8 +10,8 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/trusted_vault/features.h"
 #import "components/trusted_vault/trusted_vault_registration_verifier.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/trusted_vault_client_backend.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {

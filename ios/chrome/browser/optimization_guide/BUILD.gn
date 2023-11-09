@@ -41,7 +41,7 @@ source_set("optimization_guide") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin/model",
     "//ios/web",
   ]
   frameworks = [ "UIKit.framework" ]

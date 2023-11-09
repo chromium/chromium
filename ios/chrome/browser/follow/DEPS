@@ -4,7 +4,7 @@ include_rules = [
   "+ios/chrome/browser/history",
   "+ios/chrome/browser/ntp/new_tab_page_util.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
-  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/signin/model",
 ]
 
 specific_include_rules = {

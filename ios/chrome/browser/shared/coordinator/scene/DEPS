@@ -15,7 +15,7 @@ include_rules = [
   "+ios/chrome/browser/promos_manager",
   "+ios/chrome/browser/screenshot/model",
   "+ios/chrome/browser/sessions",
-  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web",
