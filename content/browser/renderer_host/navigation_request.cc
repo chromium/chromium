@@ -3366,6 +3366,10 @@ NavigationRequest::GetContentSettingsForTesting() {
   return commit_params_->content_settings->Clone();
 }
 
+void NavigationRequest::SetIsAdTagged() {
+  is_ad_tagged_ = true;
+}
+
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
   // Check whether an origin-keyed agent cluster is explicitly requested, either
   // opting in or out, before attempting to isolate it. If an explicit request
@@ -4988,7 +4992,7 @@ void NavigationRequest::OnStartChecksComplete(
           initiator_document_token_, GetPreviousRenderFrameHostId(),
           std::move(serving_page_metrics_container),
           allow_cookies_from_browser_, navigation_id_,
-          shared_storage_writable_eligible_),
+          shared_storage_writable_eligible_, is_ad_tagged_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       std::move(prefetched_signed_exchange_cache_), this, loader_type,
       CreateCookieAccessObserver(), CreateTrustTokenAccessObserver(),

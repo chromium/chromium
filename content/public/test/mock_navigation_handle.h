@@ -246,6 +246,7 @@ class MockNavigationHandle : public NavigationHandle {
       override {
     return nullptr;
   }
+  MOCK_METHOD(void, SetIsAdTagged, ());
 
   blink::RuntimeFeatureStateContext& GetMutableRuntimeFeatureStateContext()
       override {

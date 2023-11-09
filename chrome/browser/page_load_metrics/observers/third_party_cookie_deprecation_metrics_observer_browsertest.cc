@@ -18,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -59,9 +60,11 @@ class ThirdPartyCookieDeprecationObserverBrowserTest
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
+    https_server()->ServeFilesFromSourceDirectory("components/test/data");
     ASSERT_TRUE(https_server()->Start());
     SetRulesetWithRules(
-        {subresource_filter::testing::CreateSuffixRule("isad=1")});
+        {subresource_filter::testing::CreateSuffixRule("isad=1"),
+         subresource_filter::testing::CreateSuffixRule("ad_script.js")});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -72,10 +75,12 @@ class ThirdPartyCookieDeprecationObserverBrowserTest
 
   void SetUpThirdPartyCookieExperiment() {
     // Experiment feature param requests 3PCs blocked.
-    tpcd_experiment_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kCookieDeprecationFacilitatedTesting,
-        {{tpcd::experiment::kDisable3PCookiesName,
-          is_experiment_cookies_disabled_ ? "true" : "false"}});
+    tpcd_experiment_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kCookieDeprecationFacilitatedTesting,
+          {{tpcd::experiment::kDisable3PCookiesName,
+            is_experiment_cookies_disabled_ ? "true" : "false"}}},
+         {subresource_filter::kTPCDAdHeuristicSubframeRequestTagging, {}}},
+        {});
   }
 
   void SetUpThirdPartyCookieExperimentWithClientState() {
@@ -95,6 +100,12 @@ class ThirdPartyCookieDeprecationObserverBrowserTest
 
   void NavigateToPageWithFrame(const std::string& host) {
     GURL main_url(https_server()->GetURL(host, "/iframe.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  }
+
+  void NavigateToPageWithAdFrameFactory(const std::string& host) {
+    GURL main_url(
+        https_server()->GetURL(host, "/ad_tagging/frame_factory.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   }
 
@@ -405,16 +416,53 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
   observer.Wait();
 
   NavigateToUntrackedUrl();
-
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kThirdPartyCookieAdAccessBlockByExperiment, 0);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment",
+      IsRecordThirdPartyCookiesExperimentMetrics(), 1);
   if (IsRecordThirdPartyCookiesExperimentMetrics()) {
+    histogram_tester.ExpectBucketCount(
+        "Blink.UseCounter.Features",
+        blink::mojom::WebFeature::kThirdPartyCookieAdAccessBlockByExperiment,
+        1);
     histogram_tester.ExpectUniqueSample(
-        "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd",
-        false, 1);
+        "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd", true,
+        1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
+                       ThirdPartyAdCookieReadScriptTaggedSubframe) {
+  SetUpThirdPartyCookieExperimentWithClientState();
+
+  base::HistogramTester histogram_tester;
+  NavigateToPageWithFrame("a.com");  // Same origin cookie read.
+  // 3p cookie write
+  NavigateFrameTo("b.com",
+                  "/set-cookie?thirdparty=1;SameSite=None;Secure&isad=1");
+
+  // Create a frame tagged by ad script heuristic.
+  NavigateToPageWithAdFrameFactory("a.com");  // Same origin cookie read.
+
+  content::CookieChangeObserver observer(web_contents(), 1);
+  GURL ad_url = https_server()->GetURL("b.com", "/empty.html");
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     "createAdFrame('" + ad_url.spec() + "', '');",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  observer.Wait();
+
+  NavigateToUntrackedUrl();
+  histogram_tester.ExpectUniqueSample(
+      "PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment",
+      IsRecordThirdPartyCookiesExperimentMetrics(), 1);
+  if (IsRecordThirdPartyCookiesExperimentMetrics()) {
+    histogram_tester.ExpectBucketCount(
+        "Blink.UseCounter.Features",
+        blink::mojom::WebFeature::kThirdPartyCookieAdAccessBlockByExperiment,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd", true,
+        1);
   }
 }
 
