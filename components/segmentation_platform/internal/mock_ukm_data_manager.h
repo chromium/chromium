@@ -19,7 +19,7 @@ class MockUkmDataManager : public UkmDataManager {
 
   MOCK_METHOD(void,
               Initialize,
-              (const base::FilePath& database_path, UkmObserver*),
+              (const base::FilePath& database_path, bool, UkmObserver*),
               (override));
 
   MOCK_METHOD(bool, IsUkmEngineEnabled, (), (override));

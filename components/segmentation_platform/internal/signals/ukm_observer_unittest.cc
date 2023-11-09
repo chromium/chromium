@@ -76,6 +76,7 @@ class UkmObserverTest : public testing::Test {
   }
 
   void TearDown() override {
+    ukm_data_manager_.reset();
     ukm_observer_.reset();
     ukm_recorder_.reset();
   }
@@ -94,6 +95,8 @@ class UkmObserverTest : public testing::Test {
   }
 
   void InitializeUkmObserver(ukm::UkmConsentState consent_state) {
+    ukm_data_manager_.reset();
+    ukm_observer_.reset();
     ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get());
     ukm_observer_->OnUkmAllowedStateChanged(consent_state);
     auto ukm_database = std::make_unique<MockUkmDatabase>();

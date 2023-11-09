@@ -5,11 +5,10 @@
 #ifndef CHROME_BROWSER_SEGMENTATION_PLATFORM_UKM_DATA_MANAGER_TEST_UTILS_H_
 #define CHROME_BROWSER_SEGMENTATION_PLATFORM_UKM_DATA_MANAGER_TEST_UTILS_H_
 
-#include <set>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -26,7 +25,10 @@ namespace segmentation_platform {
 // Utility used for testing UKM based engine.
 class UkmDataManagerTestUtils {
  public:
-  explicit UkmDataManagerTestUtils(ukm::TestUkmRecorder* ukm_recorder);
+  // `owned_db_client` is used for unittests that require multiple clients in
+  // the same process.
+  explicit UkmDataManagerTestUtils(ukm::TestUkmRecorder* ukm_recorder,
+                                   bool owned_db_client = true);
   ~UkmDataManagerTestUtils();
 
   UkmDataManagerTestUtils(const UkmDataManagerTestUtils&) = delete;
@@ -37,6 +39,14 @@ class UkmDataManagerTestUtils {
   void PreProfileInit(
       const std::map<proto::SegmentId, proto::SegmentationModelMetadata>&
           default_overrides);
+
+  // Sets up the UKM testing for the `profile`. Can be called multiple times in
+  // the same process for different profiles, but WillDestroyProfile() must be
+  // called before setting up the next profile.
+  void SetupForProfile(Profile* profile);
+
+  // Must be called before destroying `profile`.
+  void WillDestroyProfile(Profile* profile);
 
   // The UKM observers are registered after platform initialization. Wait for it
   // to register observers, so that the UKM signals written by tests will be
@@ -64,10 +74,17 @@ class UkmDataManagerTestUtils {
     history_service_ = history_service;
   }
 
+  UkmDatabaseClient* ukm_database_client() {
+    return ukm_database_client_.get();
+  }
+
  private:
   const raw_ptr<ukm::TestUkmRecorder> ukm_recorder_;
   int source_id_counter_ = 1;
   raw_ptr<history::HistoryService, DanglingUntriaged> history_service_;
+  raw_ptr<UkmDatabaseClient> ukm_database_client_;
+
+  std::unique_ptr<UkmDatabaseClient> owned_db_client_;
 
   std::map<proto::SegmentId, MockDefaultModelProvider*> default_overrides_;
 

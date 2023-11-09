@@ -161,7 +161,7 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   params->clock = base::DefaultClock::GetInstance();
 
   params->ukm_data_manager =
-      UkmDatabaseClient::GetInstance().GetUkmDataManager();
+      UkmDatabaseClientHolder::GetClientInstance(profile).GetUkmDataManager();
   params->profile_prefs = profile->GetPrefs();
   params->configs = GetSegmentationPlatformConfig(context);
   params->input_delegate_holder = SetUpInputDelegates(

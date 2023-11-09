@@ -4,11 +4,11 @@
 
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 
-#include <utility>
-
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/synchronization/lock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -19,12 +19,6 @@
 #include "components/ukm/ukm_service.h"
 
 namespace segmentation_platform {
-
-// static
-UkmDatabaseClient& UkmDatabaseClient::GetInstance() {
-  static base::NoDestructor<UkmDatabaseClient> instance;
-  return *instance;
-}
 
 UkmDatabaseClient::UkmDatabaseClient() {
   if (base::FeatureList::IsEnabled(
@@ -42,7 +36,7 @@ segmentation_platform::UkmDataManager* UkmDatabaseClient::GetUkmDataManager() {
   return ukm_data_manager_.get();
 }
 
-void UkmDatabaseClient::PreProfileInit() {
+void UkmDatabaseClient::PreProfileInit(bool in_memory_database) {
   if (ukm_recorder_for_testing_) {
     ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_for_testing_);
   } else {
@@ -56,7 +50,13 @@ void UkmDatabaseClient::PreProfileInit() {
   DCHECK(result);
   ukm_data_manager_->Initialize(
       local_data_dir.Append(FILE_PATH_LITERAL("segmentation_platform/ukm_db")),
-      ukm_observer_.get());
+      in_memory_database, ukm_observer_.get());
+}
+
+void UkmDatabaseClient::TearDownForTesting() {
+  ukm_data_manager_.reset();
+  ukm_observer_.reset();
+  ukm_recorder_for_testing_ = nullptr;
 }
 
 void UkmDatabaseClient::PostMessageLoopRun() {
@@ -69,6 +69,51 @@ void UkmDatabaseClient::PostMessageLoopRun() {
     // Some of the content browser implementations do not invoke
     // PreProfileInit().
     ukm_observer_->StopObserving();
+  }
+}
+
+// static
+UkmDatabaseClientHolder& UkmDatabaseClientHolder::GetInstance() {
+  static base::NoDestructor<UkmDatabaseClientHolder> instance;
+  return *instance;
+}
+
+// static
+UkmDatabaseClient& UkmDatabaseClientHolder::GetClientInstance(
+    Profile* profile) {
+  UkmDatabaseClientHolder& instance = GetInstance();
+  base::AutoLock l(instance.lock_);
+  if (!instance.clients_for_testing_.empty()) {
+    CHECK_IS_TEST();
+    CHECK(profile);
+    CHECK(instance.clients_for_testing_.count(profile));
+    return *instance.clients_for_testing_[profile];
+  }
+  return *instance.main_client_;
+}
+
+// static
+void UkmDatabaseClientHolder::SetUkmClientForTesting(
+    Profile* profile,
+    UkmDatabaseClient* client) {
+  UkmDatabaseClientHolder& instance = GetInstance();
+  instance.SetUkmClientForTestingInternal(profile, client);
+}
+
+UkmDatabaseClientHolder::UkmDatabaseClientHolder()
+    : main_client_(std::make_unique<UkmDatabaseClient>()) {}
+
+UkmDatabaseClientHolder::~UkmDatabaseClientHolder() = default;
+
+void UkmDatabaseClientHolder::SetUkmClientForTestingInternal(
+    Profile* profile,
+    UkmDatabaseClient* client) {
+  base::AutoLock l(lock_);
+  CHECK(profile);
+  if (client) {
+    clients_for_testing_[profile] = client;
+  } else {
+    clients_for_testing_.erase(profile);
   }
 }
 

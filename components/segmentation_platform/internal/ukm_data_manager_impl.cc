@@ -33,6 +33,9 @@ UkmDataManagerImpl::~UkmDataManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_check_);
   DCHECK_EQ(ref_count_, 0);
 
+  if (ukm_observer_) {
+    ukm_observer_->set_ukm_data_manager(nullptr);
+  }
   url_signal_handler_.reset();
   ukm_database_.reset();
 }
@@ -44,8 +47,9 @@ void UkmDataManagerImpl::InitializeForTesting(
 }
 
 void UkmDataManagerImpl::Initialize(const base::FilePath& database_path,
+                                    bool in_memory,
                                     UkmObserver* ukm_observer) {
-  InitiailizeImpl(std::make_unique<UkmDatabaseImpl>(database_path),
+  InitiailizeImpl(std::make_unique<UkmDatabaseImpl>(database_path, in_memory),
                   ukm_observer);
 }
 

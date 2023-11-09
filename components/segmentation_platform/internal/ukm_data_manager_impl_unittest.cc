@@ -160,19 +160,19 @@ class UkmDataManagerImplTest : public testing::Test {
   void SetUp() override {
     SegmentationPlatformService::RegisterLocalStatePrefs(prefs_.registry());
     LocalStateHelper::GetInstance().Initialize(&prefs_);
-    data_manager_ = std::make_unique<UkmDataManagerImpl>();
     ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
     auto ukm_db = std::make_unique<MockUkmDatabase>();
     ukm_database_ = ukm_db.get();
     ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get());
+    data_manager_ = std::make_unique<UkmDataManagerImpl>();
     data_manager_->InitializeForTesting(std::move(ukm_db), ukm_observer_.get());
   }
 
   void TearDown() override {
-    ukm_observer_.reset();
-    ukm_recorder_.reset();
     ukm_database_ = nullptr;
     data_manager_.reset();
+    ukm_observer_.reset();
+    ukm_recorder_.reset();
   }
 
   void RecordUkmAndWaitForDatabase(ukm::mojom::UkmEntryPtr entry) {}

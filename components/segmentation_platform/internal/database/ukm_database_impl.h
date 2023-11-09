@@ -24,7 +24,7 @@ class UkmDatabaseBackend;
 
 class UkmDatabaseImpl : public UkmDatabase {
  public:
-  explicit UkmDatabaseImpl(const base::FilePath& database_path);
+  explicit UkmDatabaseImpl(const base::FilePath& database_path, bool in_memory);
   ~UkmDatabaseImpl() override;
 
   UkmDatabaseImpl(const UkmDatabaseImpl&) = delete;

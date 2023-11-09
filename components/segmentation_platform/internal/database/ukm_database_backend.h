@@ -33,6 +33,7 @@ class UkmDatabaseBackend : public UkmDatabase {
  public:
   UkmDatabaseBackend(
       const base::FilePath& database_path,
+      bool in_memory,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
   ~UkmDatabaseBackend() override;
 
@@ -81,6 +82,7 @@ class UkmDatabaseBackend : public UkmDatabase {
   void RestartTransaction();
 
   const base::FilePath database_path_;
+  const bool in_memory_;
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);

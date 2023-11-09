@@ -10,12 +10,14 @@
 
 namespace segmentation_platform {
 
-UkmDatabaseImpl::UkmDatabaseImpl(const base::FilePath& database_path)
+UkmDatabaseImpl::UkmDatabaseImpl(const base::FilePath& database_path,
+                                 bool in_memory)
     : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       backend_(std::make_unique<UkmDatabaseBackend>(
           database_path,
+          in_memory,
           base::SequencedTaskRunner::GetCurrentDefault())) {}
 
 UkmDatabaseImpl::~UkmDatabaseImpl() {

@@ -91,7 +91,7 @@ class UkmDatabaseBackendTest : public testing::Test {
   void CreateAndInitBackend() {
     backend_ = std::make_unique<UkmDatabaseBackend>(
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("ukm_database")),
-        task_runner_);
+        /*in_memory=*/false, task_runner_);
     base::RunLoop wait_for_init;
     backend_->InitDatabase(base::BindOnce(
         [](base::OnceClosure quit,
@@ -614,7 +614,7 @@ class FailedUkmDatabaseTest : public UkmDatabaseBackendTest {
   void SetUp() override {
     task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
     backend_ = std::make_unique<UkmDatabaseBackend>(
-        base::FilePath(kBadFilePath), task_runner_);
+        base::FilePath(kBadFilePath), /*in_memory=*/false, task_runner_);
     base::RunLoop wait_for_init;
     backend_->InitDatabase(base::BindOnce(
         [](base::OnceClosure quit,
