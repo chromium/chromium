@@ -1286,10 +1286,10 @@ AutomationNodeImpl.prototype = {
   },
 
   dispatchEventAtCapturing_: function(event, path) {
-    privates(event).impl.eventPhase = Event.CAPTURING_PHASE;
+    event.eventPhase = Event.CAPTURING_PHASE;
     for (let i = path.length - 1; i >= 0; i--) {
       this.fireEventListeners_(path[i], event);
-      if (privates(event).impl.propagationStopped) {
+      if (event.propagationStopped) {
         return false;
       }
     }
@@ -1297,16 +1297,16 @@ AutomationNodeImpl.prototype = {
   },
 
   dispatchEventAtTargeting_: function(event) {
-    privates(event).impl.eventPhase = Event.AT_TARGET;
+    event.eventPhase = Event.AT_TARGET;
     this.fireEventListeners_(this.wrapper, event);
-    return !privates(event).impl.propagationStopped;
+    return !event.propagationStopped;
   },
 
   dispatchEventAtBubbling_: function(event, path) {
-    privates(event).impl.eventPhase = Event.BUBBLING_PHASE;
+    event.eventPhase = Event.BUBBLING_PHASE;
     for (let i = 0; i < path.length; i++) {
       this.fireEventListeners_(path[i], event);
-      if (privates(event).impl.propagationStopped) {
+      if (event.propagationStopped) {
         return false;
       }
     }
