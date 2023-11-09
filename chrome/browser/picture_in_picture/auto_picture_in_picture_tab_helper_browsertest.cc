@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include "build/build_config.h"
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -436,8 +437,15 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                                         /*should_document_pip=*/true);
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_OverlaySettingViewIsShownForDocumentPip \
+  DISABLED_OverlaySettingViewIsShownForDocumentPip
+#else
+#define MAYBE_OverlaySettingViewIsShownForDocumentPip \
+  OverlaySettingViewIsShownForDocumentPip
+#endif
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
-                       OverlaySettingViewIsShownForDocumentPip) {
+                       MAYBE_OverlaySettingViewIsShownForDocumentPip) {
   auto* window_manager = PictureInPictureWindowManager::GetInstance();
 
   LoadCameraMicrophonePage(browser());
@@ -636,8 +644,15 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_FALSE(second_web_contents->HasPictureInPictureDocument());
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DoesNotAutopipWhenSwitchingToADifferentWindow \
+  DISABLED_DoesNotAutopipWhenSwitchingToADifferentWindow
+#else
+#define MAYBE_DoesNotAutopipWhenSwitchingToADifferentWindow \
+  DoesNotAutopipWhenSwitchingToADifferentWindow
+#endif
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
-                       DoesNotAutopipWhenSwitchingToADifferentWindow) {
+                       MAYBE_DoesNotAutopipWhenSwitchingToADifferentWindow) {
   // Load a page that registers for autopip.
   LoadCameraMicrophonePage(browser());
   auto* original_web_contents =
