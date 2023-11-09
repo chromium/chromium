@@ -36,11 +36,26 @@ namespace extensions {
 
 namespace {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-// Prepopulated id hardcoded in test_extension.
-const int kTestExtensionPrepopulatedId = 3;
+// Prepopulated id hardcoded in test_extension. We select it to be a
+// prepopulated ID unlikely to match an engine that is part of the TopEngines
+// tier for the environments where the test run, but still matches some
+// known engine (context around these requirements: https://crbug.com/1500526).
+// The default set of engines (when no country is available) has ids 1, 2
+// and 3. The ID 83 is associated with mail.ru, chosen because it's not part
+// of the prepopulated set where we run tests.
+// TODO(crbug.com/1500526): Update the test to fix the country in such a way
+// that we have more control on what is in the prepopulated set or not.
+const int kTestExtensionPrepopulatedId = 83;
 // TemplateURLData with search engines settings from test extension manifest.
 // chrome/test/data/extensions/settings_override/manifest.json
 std::unique_ptr<TemplateURLData> TestExtensionSearchEngine(PrefService* prefs) {
+  // Enforcing that `kTestExtensionPrepopulatedId` is not part of the
+  // prepopulated set for the current profile's country.
+  for (auto& data :
+       TemplateURLPrepopulateData::GetPrepopulatedEngines(prefs, nullptr)) {
+    EXPECT_NE(data->prepopulate_id, kTestExtensionPrepopulatedId);
+  }
+
   auto result = std::make_unique<TemplateURLData>();
   result->SetShortName(u"name.de");
   result->SetKeyword(u"keyword.de");
@@ -56,8 +71,9 @@ std::unique_ptr<TemplateURLData> TestExtensionSearchEngine(PrefService* prefs) {
   result->input_encodings.push_back("UTF-8");
 
   std::unique_ptr<TemplateURLData> prepopulated =
-      TemplateURLPrepopulateData::GetPrepopulatedEngine(
+      TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
           prefs, kTestExtensionPrepopulatedId);
+  CHECK(prepopulated);
   // Values below do not exist in extension manifest and are taken from
   // prepopulated engine with prepopulated_id set in extension manifest.
   result->contextual_search_url = prepopulated->contextual_search_url;
