@@ -71,6 +71,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // other sinks connected do not use alpha.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowDropAlphaForMediaStream);
 
+// Enables rate obfuscation mitigation in compute pressure, to prevent
+// cross-channel attacks.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kComputePressureRateObfuscationMitigation);
+
 // Feature for allowing page with open IDB connection to be
 // stored in back/forward cache.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowPageWithIDBConnectionInBFCache);

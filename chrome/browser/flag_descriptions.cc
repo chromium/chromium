@@ -149,6 +149,16 @@ const char kClipboardWellFormedHtmlSanitizationWriteDescription[] =
     "New sanitization routine when writing HTML to clipboard with the async "
     "clipboard web API.";
 
+const char kComputePressureRateObfuscationMitigationName[] =
+    "Enable mitigation algorithm for rate obfuscation in compute pressure";
+const char kComputePressureRateObfuscationMitigationDescription[] =
+    "Rate Obfuscation Mitigation is used to avoid fingerprinting attacks. Its "
+    "usage introduces some timing penalties to the compute pressure results."
+    "This mitigation might introduce slight precision errors."
+    "When disabled this helps to test how predictable and accurate compute "
+    "pressure is, but the Compute Pressure API can be susceptible to "
+    "fingerprinting attacks.";
+
 const char kContentLanguagesInLanguagePickerName[] =
     "Content languages in language picker";
 const char kContentLanguagesInLanguagePickerDescription[] =

@@ -125,6 +125,9 @@ extern const char kClipboardWellFormedHtmlSanitizationWriteDescription[];
 extern const char kClipboardMaximumAgeName[];
 extern const char kClipboardMaximumAgeDescription[];
 
+extern const char kComputePressureRateObfuscationMitigationName[];
+extern const char kComputePressureRateObfuscationMitigationDescription[];
+
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
 

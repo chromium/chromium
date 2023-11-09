@@ -40866,6 +40866,8 @@ from previous Chrome versions.
   <int value="-1826309726" label="ArcCustomTabsExperiment:disabled"/>
   <int value="-1825184776" label="TangibleSync:disabled"/>
   <int value="-1824539611" label="U2fPermissionPrompt:disabled"/>
+  <int value="-1824166290"
+      label="ComputePressureRateObfuscationMitigation:disabled"/>
   <int value="-1823193038" label="QuietNotificationPrompts:disabled"/>
   <int value="-1823073826" label="TabGroupsSave:disabled"/>
   <int value="-1822825246" label="DragFromShelfToHomeOrOverview:enabled"/>
@@ -43783,6 +43785,8 @@ from previous Chrome versions.
   <int value="-418717972"
       label="ClipboardWellFormedHtmlSanitizationWrite:enabled"/>
   <int value="-418676305" label="ScanningUI:enabled"/>
+  <int value="-418629709"
+      label="ComputePressureRateObfuscationMitigation:enabled"/>
   <int value="-418041538" label="HelpAppHomePageAppArticles:disabled"/>
   <int value="-417633330" label="MessagesForAndroidInfrastructure:enabled"/>
   <int value="-416660617" label="EnforceTLS13Downgrade:disabled"/>

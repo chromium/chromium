@@ -10615,6 +10615,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          network::features::kCompressionDictionaryTransportBackend)},
 
+    {"enable-compute-pressure-rate-obfuscation-mitigation",
+     flag_descriptions::kComputePressureRateObfuscationMitigationName,
+     flag_descriptions::kComputePressureRateObfuscationMitigationDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kComputePressureRateObfuscationMitigation)},
+
     {"enable-zstd-content-encoding",
      flag_descriptions::kZstdContentEncodingName,
      flag_descriptions::kZstdContentEncodingDescription, kOsAll,

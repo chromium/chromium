@@ -168,31 +168,34 @@ void PressureObserver::OnUpdate(ExecutionContext* execution_context,
 
   auto* record = MakeGarbageCollected<PressureRecord>(source, state, timestamp);
 
-  const auto source_index = ToSourceIndex(source);
-  // Steps 4.5.1 and 4.5.2
-  // https://w3c.github.io/compute-pressure/#dfn-data-delivery
-  if (pending_delayed_report_to_callback_[source_index].IsActive()) {
-    after_penalty_records_[source_index] = record;
-    return;
-  }
-
-  change_rate_monitor_.ResetIfNeeded();
-  change_rate_monitor_.IncreaseChangeCount(source);
-
-  if (!PassesRateObfuscation(source)) {
-    // Steps 4.6.1 and 4.6.2
+  if (base::FeatureList::IsEnabled(
+          features::kComputePressureRateObfuscationMitigation)) {
+    const auto source_index = ToSourceIndex(source);
+    // Steps 4.5.1 and 4.5.2
     // https://w3c.github.io/compute-pressure/#dfn-data-delivery
-    after_penalty_records_[source_index] = record;
-    pending_delayed_report_to_callback_[source_index] =
-        PostDelayedCancellableTask(
-            *execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI),
-            FROM_HERE,
-            WTF::BindOnce(&PressureObserver::QueueAfterPenaltyRecord,
-                          WrapWeakPersistent(this),
-                          WrapWeakPersistent(execution_context), source),
-            change_rate_monitor_.penalty_duration());
-    change_rate_monitor_.ResetChangeCount(source);
-    return;
+    if (pending_delayed_report_to_callback_[source_index].IsActive()) {
+      after_penalty_records_[source_index] = record;
+      return;
+    }
+
+    change_rate_monitor_.ResetIfNeeded();
+    change_rate_monitor_.IncreaseChangeCount(source);
+
+    if (!PassesRateObfuscation(source)) {
+      // Steps 4.6.1 and 4.6.2
+      // https://w3c.github.io/compute-pressure/#dfn-data-delivery
+      after_penalty_records_[source_index] = record;
+      pending_delayed_report_to_callback_[source_index] =
+          PostDelayedCancellableTask(
+              *execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI),
+              FROM_HERE,
+              WTF::BindOnce(&PressureObserver::QueueAfterPenaltyRecord,
+                            WrapWeakPersistent(this),
+                            WrapWeakPersistent(execution_context), source),
+              change_rate_monitor_.penalty_duration());
+      change_rate_monitor_.ResetChangeCount(source);
+      return;
+    }
   }
 
   QueuePressureRecord(execution_context, source, record);
