@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
@@ -156,6 +157,11 @@ gfx::Rect CalculateAvailableBounds(aura::Window* root_window) {
     height -= shelf_size;
   }
   return gfx::Rect(x, y, width, height);
+}
+
+SkAlpha GetAlpha(float opacity_percent) {
+  return base::saturated_cast<SkAlpha>(std::numeric_limits<SkAlpha>::max() *
+                                       opacity_percent);
 }
 
 }  // namespace arc::input_overlay

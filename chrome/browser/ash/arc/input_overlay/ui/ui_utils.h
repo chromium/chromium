@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace aura {
@@ -28,6 +29,10 @@ std::u16string GetDisplayTextAccessibleName(const std::u16string& text);
 
 // Returns bounds of `root_window` excluding the shelf if the shelf is visible.
 gfx::Rect CalculateAvailableBounds(aura::Window* root_window);
+
+// `opacity_percent` is contained within [0.0, 1.0] where 0.0 corresponds to
+// fully transparent and 1.0 corresponds to fully opaque.
+SkAlpha GetAlpha(float opacity_percent);
 
 }  // namespace arc::input_overlay
 
