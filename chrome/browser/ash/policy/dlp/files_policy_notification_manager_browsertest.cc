@@ -85,6 +85,35 @@ using DialogInfoMap =
 
 class MockFilesPolicyDialogFactory : public FilesPolicyDialogFactory {
  public:
+  MockFilesPolicyDialogFactory() {
+    ON_CALL(*this, CreateWarnDialog)
+        .WillByDefault([](WarningWithJustificationCallback callback,
+                          dlp::FileAction file_action,
+                          gfx::NativeWindow modal_parent,
+                          absl::optional<DlpFileDestination> destination,
+                          FilesPolicyDialog::Info dialog_info) {
+          views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+              std::make_unique<FilesPolicyWarnDialog>(
+                  std::move(callback), file_action, modal_parent, destination,
+                  std::move(dialog_info)),
+              /*context=*/nullptr, modal_parent);
+          widget->Show();
+          return widget;
+        });
+
+    ON_CALL(*this, CreateErrorDialog)
+        .WillByDefault([](const DialogInfoMap& dialog_info_map,
+                          dlp::FileAction action,
+                          gfx::NativeWindow modal_parent) {
+          views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+              std::make_unique<FilesPolicyErrorDialog>(dialog_info_map, action,
+                                                       modal_parent),
+              /*context=*/nullptr, modal_parent);
+          widget->Show();
+          return widget;
+        });
+  }
+
   MOCK_METHOD(views::Widget*,
               CreateWarnDialog,
               (WarningWithJustificationCallback,
@@ -439,27 +468,15 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
   std::vector<base::FilePath> warning_files;
   warning_files.emplace_back("file1.txt");
   warning_files.emplace_back("file2.txt");
-  // Set factory to create a real dialog.
-  // Null modal parent means the dialog is a system modal.
+
   EXPECT_CALL(*factory_,
               CreateWarnDialog(
                   base::test::IsNotNullCallback(), action, testing::IsNull(),
+                  // Null modal parent means the dialog is a system modal.
                   testing::Eq(absl::nullopt),
                   FilesPolicyDialog::Info::Warn(
                       FilesPolicyDialog::BlockReason::kDlp, warning_files)))
-      .Times(1)
-      .WillOnce([](WarningWithJustificationCallback callback,
-                   dlp::FileAction file_action, gfx::NativeWindow modal_parent,
-                   absl::optional<DlpFileDestination> destination,
-                   FilesPolicyDialog::Info dialog_info) {
-        views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-            std::make_unique<FilesPolicyWarnDialog>(
-                std::move(callback), file_action, nullptr, destination,
-                std::move(dialog_info)),
-            /*context=*/nullptr, /*parent=*/nullptr);
-        widget->Show();
-        return widget;
-      });
+      .Times(1);
 
   // No Files app opened.
   ASSERT_FALSE(FindFilesApp());
@@ -693,21 +710,12 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog_Timeout) {
                           FilesPolicyDialog::Info::Error(
                               FilesPolicyDialog::BlockReason::kDlp, paths)});
 
-  // Set factory to create a real dialog.
-  // Null modal parent means the dialog is a system modal.
-  EXPECT_CALL(*factory_,
-              CreateErrorDialog(dialog_info_map, action, testing::IsNull()))
-      .Times(1)
-      .WillOnce([](const DialogInfoMap& dialog_info_map,
-                   dlp::FileAction file_action,
-                   gfx::NativeWindow modal_parent) {
-        views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-            std::make_unique<FilesPolicyErrorDialog>(dialog_info_map,
-                                                     file_action, modal_parent),
-            /*context=*/nullptr, /*parent=*/modal_parent);
-        widget->Show();
-        return widget;
-      });
+  EXPECT_CALL(
+      *factory_,
+      CreateErrorDialog(dialog_info_map, action,
+                        // Null modal parent means the dialog is a system modal.
+                        testing::IsNull()))
+      .Times(1);
 
   // No Files app opened.
   ASSERT_FALSE(FindFilesApp());
