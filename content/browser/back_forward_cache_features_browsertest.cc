@@ -95,8 +95,11 @@ class BackForwardCacheWithDedicatedWorkerBrowserTest
   BackForwardCacheWithDedicatedWorkerBrowserTest() { server_.Start(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (IsPlzDedicatedWorkerEnabled())
+    if (IsPlzDedicatedWorkerEnabled()) {
       EnableFeatureAndSetParams(blink::features::kPlzDedicatedWorker, "", "");
+    } else {
+      DisableFeature(blink::features::kPlzDedicatedWorker);
+    }
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kLoadingTasksUnfreezable,

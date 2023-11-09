@@ -60,6 +60,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -693,6 +694,14 @@ void VariationsHttpHeadersBrowserTest::GoogleWebVisibilityTopFrameTest(
                 variations::mojom::GoogleWebVisibility::FIRST_PARTY)
           : signed_out_headers->headers_map.at(
                 variations::mojom::GoogleWebVisibility::ANY);
+  // TODO(crbug.com/906991): Revisit this after PlzDedicatedWorker launch.
+  // If PlzDedicatedWorker is enabled, Document's context will not be
+  // inherited for loading the worker script.
+  const std::string expected_header_value_for_worker =
+      base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)
+          ? signed_out_headers->headers_map.at(
+                variations::mojom::GoogleWebVisibility::ANY)
+          : expected_header_value;
 
   // Load a top frame.
   const GURL top_frame_url =
@@ -726,7 +735,7 @@ void VariationsHttpHeadersBrowserTest::GoogleWebVisibilityTopFrameTest(
       GetGoogleSubresourceFetchingWorkerUrl(), GetGoogleSubresourceUrl()));
   EXPECT_EQ(GetReceivedHeader(GetGoogleSubresourceFetchingWorkerUrl(),
                               "X-Client-Data"),
-            expected_header_value);
+            expected_header_value_for_worker);
   EXPECT_EQ(GetReceivedHeader(GetGoogleSubresourceUrl(), "X-Client-Data"),
             expected_header_value);
 }

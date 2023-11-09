@@ -161,7 +161,13 @@ class CrElementsWithPixelOutputTest : public WebUIMochaBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CrElementsWithPixelOutputTest, CrLottie) {
+// TOD(crbug.com/906991): revisit after PlzDedicatedWorker launch.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CrLottie DISABLED_CrLottie
+#else
+#define MAYBE_CrLottie CrLottie
+#endif
+IN_PROC_BROWSER_TEST_F(CrElementsWithPixelOutputTest, MAYBE_CrLottie) {
   RunTest("cr_elements/cr_lottie_test.js", "mocha.run()");
 }
 
