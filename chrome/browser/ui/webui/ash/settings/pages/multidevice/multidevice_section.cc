@@ -9,15 +9,16 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/multidevice/multidevice_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/multidevice/multidevice_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -37,6 +38,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/nearby_sharing/internal/resources/grit/nearby_share_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash::settings {
 
@@ -191,48 +196,74 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedOutSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetNearbyShareOnSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_MULTIDEVICE_NEARBY_SHARE,
-       mojom::kNearbyShareSubpagePath,
-       mojom::SearchResultIcon::kNearbyShare,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kNearbyShare}},
-      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_OFF,
-       mojom::kNearbyShareSubpagePath,
-       mojom::SearchResultIcon::kNearbyShare,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kNearbyShareOnOff},
-       {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_OFF_ALT1,
-        SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_NAME,
-       mojom::kNearbyShareSubpagePath,
-       mojom::SearchResultIcon::kNearbyShare,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kNearbyShareDeviceName}},
-      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY,
-       mojom::kNearbyShareSubpagePath,
-       mojom::SearchResultIcon::kNearbyShare,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kNearbyShareDeviceVisibility},
-       {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY_ALT1,
-        SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_CONTACTS,
-       mojom::kNearbyShareSubpagePath,
-       mojom::SearchResultIcon::kNearbyShare,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kNearbyShareContacts}},
-      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DATA_USAGE,
-       mojom::kNearbyShareSubpagePath,
-       mojom::SearchResultIcon::kNearbyShare,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kNearbyShareDataUsage}},
-  });
+  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
+    int ns_tag = IDS_OS_SETTINGS_TAG_MULTIDEVICE_NEARBY_SHARE;
+    int ns_turn_off_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_OFF;
+    int ns_turn_off_alt_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_OFF_ALT1;
+    int ns_device_name_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_NAME;
+    int ns_device_visibility_tag =
+        IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY;
+    int ns_device_visibility_alt_tag =
+        IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY_ALT1;
+    int ns_contacts_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_CONTACTS;
+    int ns_data_usage_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DATA_USAGE;
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (::features::IsNameEnabled()) {
+      ns_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_MULTIDEVICE_NEARBY_SHARE;
+      ns_turn_off_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_OFF;
+      ns_turn_off_alt_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_OFF_ALT1;
+      ns_device_name_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_DEVICE_NAME;
+      ns_device_visibility_tag =
+          IDS_NEARBY_SHARE_SETTINGS_TAG_DEVICE_VISIBILITY;
+      ns_device_visibility_alt_tag =
+          IDS_NEARBY_SHARE_SETTINGS_TAG_DEVICE_VISIBILITY_ALT1;
+      ns_contacts_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_CONTACTS;
+      ns_data_usage_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_DATA_USAGE;
+    }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+    return std::vector<SearchConcept>({
+        {ns_tag,
+         mojom::kNearbyShareSubpagePath,
+         mojom::SearchResultIcon::kNearbyShare,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSubpage,
+         {.subpage = mojom::Subpage::kNearbyShare}},
+        {ns_turn_off_tag,
+         mojom::kNearbyShareSubpagePath,
+         mojom::SearchResultIcon::kNearbyShare,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kNearbyShareOnOff},
+         {ns_turn_off_alt_tag, SearchConcept::kAltTagEnd}},
+        {ns_device_name_tag,
+         mojom::kNearbyShareSubpagePath,
+         mojom::SearchResultIcon::kNearbyShare,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kNearbyShareDeviceName}},
+        {ns_device_visibility_tag,
+         mojom::kNearbyShareSubpagePath,
+         mojom::SearchResultIcon::kNearbyShare,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kNearbyShareDeviceVisibility},
+         {ns_device_visibility_alt_tag, SearchConcept::kAltTagEnd}},
+        {ns_contacts_tag,
+         mojom::kNearbyShareSubpagePath,
+         mojom::SearchResultIcon::kNearbyShare,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kNearbyShareContacts}},
+        {ns_data_usage_tag,
+         mojom::kNearbyShareSubpagePath,
+         mojom::SearchResultIcon::kNearbyShare,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kNearbyShareDataUsage}},
+    });
+  }());
   return *tags;
 }
 
@@ -263,16 +294,27 @@ GetNearbyShareBackgroundScanningOffSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetNearbyShareOffSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_ON,
-       mojom::kMultiDeviceSectionPath,
-       mojom::SearchResultIcon::kNearbyShare,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kNearbyShareOnOff},
-       {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_ON_ALT1,
-        SearchConcept::kAltTagEnd}},
-  });
+  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
+    int ns_turn_on_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_ON;
+    int ns_turn_on_alt_tag = IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_ON_ALT1;
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (::features::IsNameEnabled()) {
+      ns_turn_on_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_ON;
+      ns_turn_on_alt_tag = IDS_NEARBY_SHARE_SETTINGS_TAG_TURN_ON_ALT1;
+    }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+    return std::vector<SearchConcept>({
+        {ns_turn_on_tag,
+         mojom::kMultiDeviceSectionPath,
+         mojom::SearchResultIcon::kNearbyShare,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kNearbyShareOnOff},
+         {ns_turn_on_alt_tag, SearchConcept::kAltTagEnd}},
+    });
+  }());
   return *tags;
 }
 

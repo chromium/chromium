@@ -3816,7 +3816,10 @@ static_library("ui") {
     ]
 
     if (is_chrome_branded) {
-      deps += [ "//chrome/browser/nearby_sharing/internal/icons" ]
+      deps += [
+        "//chrome/browser/nearby_sharing/internal/icons",
+        "//chrome/browser/nearby_sharing/internal/resources:nearby_share_internal_strings",
+      ]
     }
 
     if (!is_official_build) {
