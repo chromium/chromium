@@ -33,6 +33,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
@@ -223,11 +224,9 @@ namespace update_client {
 
 class BackgroundDownloaderSharedSessionImpl {
  public:
-  BackgroundDownloaderSharedSessionImpl(
-      scoped_refptr<base::SequencedTaskRunner> callback_sequence,
-      const base::FilePath& download_cache,
-      const std::string& session_identifier)
-      : callback_sequence_(callback_sequence), download_cache_(download_cache) {
+  BackgroundDownloaderSharedSessionImpl(const base::FilePath& download_cache,
+                                        const std::string& session_identifier)
+      : download_cache_(download_cache) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     DownloadDelegate* delegate = [[DownloadDelegate alloc]
@@ -478,9 +477,8 @@ class BackgroundDownloaderSharedSessionImpl {
     metrics::RecordBDMResultRequestorKnown(requestor_known);
     if (requestor_known) {
       DownloadResult result = results_.at(url);
-      callback_sequence_->PostTask(
-          FROM_HERE, base::BindOnce(downloads_.at(url), result.is_handled,
-                                    result.result, result.download_metrics));
+      downloads_.at(url).Run(result.is_handled, result.result,
+                             result.download_metrics);
       results_.erase(url);
       downloads_.erase(url);
     }
@@ -496,7 +494,6 @@ class BackgroundDownloaderSharedSessionImpl {
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  scoped_refptr<base::SequencedTaskRunner> callback_sequence_;
   const base::FilePath download_cache_;
   NSURLSession* session_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -527,8 +524,10 @@ BackgroundDownloader::~BackgroundDownloader() = default;
 base::OnceClosure BackgroundDownloader::DoStartDownload(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DoStartDownload(
-      url, base::BindRepeating(&BackgroundDownloader::OnDownloadComplete,
-                               base::WrapRefCounted(this)));
+      url, base::BindPostTaskToCurrentDefault(
+               base::BindRepeating(&BackgroundDownloader::OnDownloadComplete,
+                                   base::WrapRefCounted(this)),
+               FROM_HERE));
 }
 
 base::OnceClosure BackgroundDownloader::DoStartDownload(
@@ -551,10 +550,7 @@ class BackgroundDownloaderSharedSessionProxy
       scoped_refptr<base::SequencedTaskRunner> background_sequence,
       const base::FilePath& download_cache,
       const std::string& session_identifier)
-      : impl_(background_sequence,
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              download_cache,
-              session_identifier) {}
+      : impl_(background_sequence, download_cache, session_identifier) {}
 
   void DoStartDownload(
       const GURL& url,
