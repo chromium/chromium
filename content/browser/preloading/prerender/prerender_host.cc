@@ -37,6 +37,16 @@
 
 namespace content {
 
+namespace {
+
+base::OnceCallback<void(int)>& GetHostCreationCallbackForTesting() {
+  static base::NoDestructor<base::OnceCallback<void(int)>>
+      host_creation_callback_for_testing;
+  return *host_creation_callback_for_testing;
+}
+
+}  // namespace
+
 // static
 PrerenderHost* PrerenderHost::GetFromFrameTreeNodeIfPrerendering(
     FrameTreeNode& frame_tree_node) {
@@ -117,6 +127,12 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   return false;
 }
 
+// static
+void PrerenderHost::SetHostCreationCallbackForTesting(
+    base::OnceCallback<void(int host_id)> callback) {
+  GetHostCreationCallbackForTesting() = std::move(callback);  // IN-TEST
+}
+
 PrerenderHost::PrerenderHost(
     const PrerenderAttributes& attributes,
     WebContentsImpl& web_contents,
@@ -183,6 +199,11 @@ PrerenderHost::PrerenderHost(
       frame_tree_->root()->render_manager()->current_frame_host());
 
   frame_tree_node_id_ = frame_tree_->root()->frame_tree_node_id();
+
+  if (GetHostCreationCallbackForTesting()) {
+    std::move(GetHostCreationCallbackForTesting())  // IN-TEST
+        .Run(frame_tree_node_id_);
+  }
 }
 
 // static

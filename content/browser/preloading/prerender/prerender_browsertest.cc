@@ -291,6 +291,30 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
   }
 };
 
+// This waits for creation of PrerenderHost and then returns its host id.
+class PrerenderHostCreationWaiter {
+ public:
+  PrerenderHostCreationWaiter() {
+    PrerenderHost::SetHostCreationCallbackForTesting(
+        base::BindLambdaForTesting([&](int host_id) {
+          created_host_id_ = host_id;
+          run_loop_.QuitClosure().Run();
+        }));
+  }
+  ~PrerenderHostCreationWaiter() = default;
+
+  int Wait() {
+    EXPECT_EQ(created_host_id_, RenderFrameHost::kNoFrameTreeNodeId);
+    run_loop_.Run();
+    EXPECT_NE(created_host_id_, RenderFrameHost::kNoFrameTreeNodeId);
+    return created_host_id_;
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  int created_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+};
+
 class PrerenderBrowserTest : public ContentBrowserTest,
                              public WebContentsObserver {
  public:
@@ -834,6 +858,21 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
       "Prerender.Experimental.ActivationIPCDelay", 1u);
 }
 
+// Used for running tests that should commonly pass regardless of target hints.
+class PrerenderTargetAgnosticBrowserTest
+    : public PrerenderBrowserTest,
+      public testing::WithParamInterface<std::string> {
+ protected:
+  std::string GetTargetHint() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderTargetAgnosticBrowserTest,
+                         testing::Values("_self", "_blank"),
+                         [](const testing::TestParamInfo<std::string>& info) {
+                           return info.param;
+                         });
+
 enum class PrerenderingResult { kSuccess, kFailed };
 enum class BodySize { kSmall, kLarge };
 
@@ -1357,7 +1396,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ResponseHeaders) {
 
 // Tests that prerendering is cancelled if a network request for the
 // navigation results in an empty response with 404 status.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOnEmptyBody404) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
+                       PrerenderCancelledOnEmptyBody404) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   // Specify a URL for which we don't have a corresponding file in the data dir.
   const GURL kPrerenderingUrl = GetUrl("/404");
@@ -1366,21 +1406,22 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOnEmptyBody404) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering `kPrerenderingUrl`.
-  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
-  AddPrerenderAsync(kPrerenderingUrl);
-  registry_observer.WaitForTrigger(kPrerenderingUrl);
-  int host_id = GetHostForUrl(kPrerenderingUrl);
-  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  PrerenderHostCreationWaiter host_creation_waiter;
+  prerender_helper()->AddPrerendersAsync(
+      {kPrerenderingUrl}, /*eagerness=*/absl::nullopt, GetTargetHint());
+  int host_id = host_creation_waiter.Wait();
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  test::PrerenderHostObserver host_observer(*prerender_web_contents, host_id);
   host_observer.WaitForDestroyed();
+
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kNavigationBadHttpStatus);
 }
 
 // Tests that prerendering is cancelled if a network request for the
 // navigation results in an non-empty response with 404 status.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
                        PrerenderCancelledOnNonEmptyBody404) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page404.html");
@@ -1389,19 +1430,23 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Add prerendering to the 404 error page, then check that it got cancelled.
-  test::PrerenderHostObserver host_observer(*web_contents_impl(),
-                                            kPrerenderingUrl);
-  AddPrerenderAsync(kPrerenderingUrl);
+  PrerenderHostCreationWaiter host_creation_waiter;
+  prerender_helper()->AddPrerendersAsync(
+      {kPrerenderingUrl}, /*eagerness=*/absl::nullopt, GetTargetHint());
+  int host_id = host_creation_waiter.Wait();
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  test::PrerenderHostObserver host_observer(*prerender_web_contents, host_id);
   host_observer.WaitForDestroyed();
+
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kNavigationBadHttpStatus);
 }
 
 // Tests that prerendering is cancelled if a network request for the
 // navigation results in an non-empty response with 500 status.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn500Page) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
+                       PrerenderCancelledOn500Page) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page500.html");
 
@@ -1409,54 +1454,63 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn500Page) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Add prerendering to the 500 error page, then check that it got cancelled.
-  test::PrerenderHostObserver host_observer(*web_contents_impl(),
-                                            kPrerenderingUrl);
-  AddPrerenderAsync(kPrerenderingUrl);
+  PrerenderHostCreationWaiter host_creation_waiter;
+  prerender_helper()->AddPrerendersAsync(
+      {kPrerenderingUrl}, /*eagerness=*/absl::nullopt, GetTargetHint());
+  int host_id = host_creation_waiter.Wait();
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  test::PrerenderHostObserver host_observer(*prerender_web_contents, host_id);
   host_observer.WaitForDestroyed();
-  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kNavigationBadHttpStatus);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn204Page) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
+                       PrerenderCancelledOn204Page) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/title1.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering `kPrerenderingUrl` that returns 204 response code.
   const GURL kPrerenderingUrl = GetUrl("/echo?status=204");
-  test::PrerenderHostObserver host_observer(*web_contents_impl(),
-                                            kPrerenderingUrl);
-  AddPrerenderAsync(kPrerenderingUrl);
+  PrerenderHostCreationWaiter host_creation_waiter;
+  prerender_helper()->AddPrerendersAsync(
+      {kPrerenderingUrl}, /*eagerness=*/absl::nullopt, GetTargetHint());
+  int host_id = host_creation_waiter.Wait();
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  test::PrerenderHostObserver host_observer(*prerender_web_contents, host_id);
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
-  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
-            RenderFrameHost::kNoFrameTreeNodeId);
 
   // Cancellation must have occurred due to bad http status code.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kNavigationBadHttpStatus);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn205Page) {
+IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
+                       PrerenderCancelledOn205Page) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/title1.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering `kPrerenderingUrl` that returns 205 response code.
   const GURL kPrerenderingUrl = GetUrl("/echo?status=205");
-  test::PrerenderHostObserver host_observer(*web_contents_impl(),
-                                            kPrerenderingUrl);
-  AddPrerenderAsync(kPrerenderingUrl);
+  PrerenderHostCreationWaiter host_creation_waiter;
+  prerender_helper()->AddPrerendersAsync(
+      {kPrerenderingUrl}, /*eagerness=*/absl::nullopt, GetTargetHint());
+  int host_id = host_creation_waiter.Wait();
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  test::PrerenderHostObserver host_observer(*prerender_web_contents, host_id);
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
-  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
-            RenderFrameHost::kNoFrameTreeNodeId);
 
   // Cancellation must have occurred due to bad http status code.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kNavigationBadHttpStatus);
 }
@@ -9948,21 +10002,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DoNotUpdateUserActivationState) {
 
   EXPECT_FALSE(prerendered_rfh->frame_tree_node()->HasStickyUserActivation());
 }
-
-// Used for running tests that should commonly pass regardless of target hints.
-class PrerenderTargetAgnosticBrowserTest
-    : public PrerenderBrowserTest,
-      public testing::WithParamInterface<std::string> {
- protected:
-  std::string GetTargetHint() { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderTargetAgnosticBrowserTest,
-                         testing::Values("_self", "_blank"),
-                         [](const testing::TestParamInfo<std::string>& info) {
-                           return info.param;
-                         });
 
 // Tests that prerendering is cancelled when a mixed content subframe is
 // detected.

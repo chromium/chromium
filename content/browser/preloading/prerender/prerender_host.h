@@ -118,6 +118,10 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
       PrerenderTriggerType trigger_type,
       const std::string& embedder_histogram_suffix);
 
+  // Sets a callback to be called on PrerenderHost creation.
+  static void SetHostCreationCallbackForTesting(
+      base::OnceCallback<void(int host_id)> callback);
+
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContentsImpl& web_contents,
                 base::WeakPtr<PreloadingAttempt> attempt,
