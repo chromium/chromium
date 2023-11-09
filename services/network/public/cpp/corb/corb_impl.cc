@@ -1023,6 +1023,8 @@ Decision CrossOriginReadBlocking::CorbResponseAnalyzer::GetCorbDecision() {
 // static
 bool CrossOriginReadBlocking::CorbResponseAnalyzer::HasNoSniff(
     const mojom::URLResponseHead& response) {
+  // TODO(vogelheim): Check for compatibility with spec &
+  //   ParseContentTypeOptionsHeader. Maybe move this to parsed_headers.
   if (!response.headers)
     return false;
   std::string nosniff_header;

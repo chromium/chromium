@@ -666,6 +666,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
+// Kill-switch for new parsing behaviour of the X-Content-Type-Options header.
+// (Should be removed after the new behaviour has been launched.)
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLegacyParsingOfXContentTypeOptions);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLightweightNoStatePrefetch);
 
 // Enables the Link Preview.

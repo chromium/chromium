@@ -37,6 +37,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -50,6 +51,7 @@
 #include "services/network/public/mojom/supports_loading_mode.mojom-blink.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
@@ -525,15 +527,41 @@ AtomicString ExtractMIMETypeFromMediaType(const AtomicString& media_type) {
       media_type.GetString().Substring(type_start, type_end - type_start));
 }
 
+bool IsHTTPTabOrSpace(UChar c) {
+  // https://fetch.spec.whatwg.org/#http-tab-or-space
+  return c == kSpaceCharacter || c == kTabulationCharacter;
+}
+
 ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
     const String& value) {
+  // The spec prescribes how to split the header value, and wants to include
+  // empty entries and to strip only particular type of whitespace.
+  // Spec: https://fetch.spec.whatwg.org/#x-content-type-options-header
+  // Test: external/wpt/fetch/nosniff/parsing-nosniff.window.html
+
   if (value.empty())
     return kContentTypeOptionsNone;
 
-  Vector<String> results;
-  value.Split(",", results);
-  if (results.size() && results[0].StripWhiteSpace().LowerASCII() == "nosniff")
+  String decodedAndSplitHeaderValue;
+  if (base::FeatureList::IsEnabled(
+          features::kLegacyParsingOfXContentTypeOptions)) {
+    // Header parsing, as used until M120.
+    Vector<String> results;
+    value.Split(",", results);
+    if (results.size()) {
+      decodedAndSplitHeaderValue = results[0].StripWhiteSpace();
+    }
+  } else {
+    // Header parsing, as demanded by the spec.
+    Vector<String> results;
+    value.Split(",", /* allow_empty_entries */ true, results);
+    CHECK(results.size());  // allow_empty_entries guarantees >= 1 results.
+    decodedAndSplitHeaderValue = results[0].StripWhiteSpace(IsHTTPTabOrSpace);
+  }
+
+  if (decodedAndSplitHeaderValue.LowerASCII() == "nosniff") {
     return kContentTypeOptionsNosniff;
+  }
   return kContentTypeOptionsNone;
 }
 
