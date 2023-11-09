@@ -47,8 +47,8 @@ def Fix(line):
     if result:
       line = result.group(1)
   # For Android tests:
-  if line[:2] == 'I ':
-    result = re.search('I.*run_tests_on_device\([^\)]+\)\s+(.*)',
+  if line[:2] == 'I ' or line[:2] == 'E ':
+    result = re.search('[I|E].*run_tests_on_device\([^\)]+\)\s+(.*)',
                        line)
     if result:
       line = result.group(1)
