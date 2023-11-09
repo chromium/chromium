@@ -135,9 +135,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
   // You must know the length of the file, you cannot use kuint64max to specify
   // the whole file.  This method creates a ShareableFileReference to the given
   // file, which is stored in this builder. The callback `file_access` is used
-  // to grant or deny access to files under dlp restrictions. Leaving it at
-  // NullCallback will lead to default behaviour, which currently is granting it
-  // (until b/265908846 is done).
+  // to grant or deny access to files under dlp restrictions. Passing a
+  // NullCallback will lead to default behaviour of
+  // ScopedFileAccessDelegate::RequestDefaultFilesAccessIO.
   void AppendFile(
       const base::FilePath& file_path,
       uint64_t offset,

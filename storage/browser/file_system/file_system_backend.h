@@ -127,8 +127,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemBackend {
   // This method itself does *not* check if the given path exists and is a
   // regular file. At most |max_bytes_to_read| can be fetched from the file
   // stream reader. The callback `file_access` grants access to dlp restricted
-  // files. If it is a NullCallback currently the access will be granted. This
-  // will change to being denied after b/265908846
+  // files. Passing a NullCallback will lead to default behaviour of
+  // ScopedFileAccessDelegate::RequestDefaultFilesAccessIO.
   virtual std::unique_ptr<FileStreamReader> CreateFileStreamReader(
       const FileSystemURL& url,
       int64_t offset,

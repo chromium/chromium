@@ -32,6 +32,9 @@ class ScopedFileAccessDelegateTestInstance : public ScopedFileAccessDelegate {
   void RequestFilesAccessForSystem(
       const std::vector<base::FilePath>& files,
       base::OnceCallback<void(ScopedFileAccess)> callback) override {}
+  void RequestDefaultFilesAccess(
+      const std::vector<base::FilePath>& files,
+      base::OnceCallback<void(ScopedFileAccess)> callback) override {}
   RequestFilesAccessIOCallback CreateFileAccessCallback(
       const GURL& destination) const override {
     return base::DoNothing();
