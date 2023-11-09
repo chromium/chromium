@@ -94,6 +94,7 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
+        "chromium.compilator_can_outlive_parent": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
