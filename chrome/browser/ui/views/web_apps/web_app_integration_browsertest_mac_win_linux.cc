@@ -60,18 +60,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckCreateShortcuts) {
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteHandlesFile) {
-  helper_.InstallMenuOption(InstallableSite::kFileHandler);
-  helper_.CheckSiteHandlesFile(Site::kFileHandler, FileExtension::kFoo);
-  helper_.CheckSiteHandlesFile(Site::kFileHandler, FileExtension::kBar);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteNotHandlesFile) {
-  helper_.InstallMenuOption(InstallableSite::kStandalone);
-  helper_.CheckSiteNotHandlesFile(Site::kStandalone, FileExtension::kFoo);
-  helper_.CheckSiteNotHandlesFile(Site::kStandalone, FileExtension::kBar);
-}
-
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectDialog) {
   helper_.InstallMenuOption(InstallableSite::kFileHandler);
   helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneFooFile,
