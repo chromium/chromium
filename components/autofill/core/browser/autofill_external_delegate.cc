@@ -617,8 +617,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.popup_item_id == PopupItemId::kCreditCardEntry ||
           suggestion.popup_item_id ==
               PopupItemId::kFillEverythingFromAddressProfile) {
-        autofill_metrics::LogAutofillSuggestionAcceptedIndex(
-            position.row, popup_type_, manager_->client().IsOffTheRecord());
+        // Only log suggestion selection index of the main popup
+        // (position.sub_popup_level == 0). This metrics intends to give us an
+        // understanding of how well we are sorting the first level suggestions,
+        // therefore logging for selections on the second/third level is
+        // undesirable.
+        if (position.sub_popup_level == 0) {
+          autofill_metrics::LogAutofillSuggestionAcceptedIndex(
+              position.row, popup_type_, manager_->client().IsOffTheRecord());
+        }
         if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
             suggestion.popup_item_id ==
                 PopupItemId::kFillEverythingFromAddressProfile) {

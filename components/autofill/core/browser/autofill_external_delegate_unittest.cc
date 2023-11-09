@@ -56,6 +56,8 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/origin.h"
 
+using SuggestionPosition = autofill::AutofillPopupDelegate::SuggestionPosition;
+
 namespace autofill {
 
 namespace {
@@ -1221,6 +1223,46 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion) {
       test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"John Legend",
                                      Suggestion::BackendId(profile.guid())),
       SuggestionPosition{.row = 2}, kDefaultTriggerSource);
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       AcceptFirstPopupLevelSuggestion_LogSuggestionAcceptedMetric) {
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
+  const int suggestion_accepted_row = 2;
+  base::HistogramTester histogram_tester;
+
+  external_delegate_->DidAcceptSuggestion(
+      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"John Legend",
+                                     Suggestion::BackendId(profile.guid())),
+      AutofillPopupDelegate::SuggestionPosition{.row = suggestion_accepted_row},
+      kDefaultTriggerSource);
+
+  histogram_tester.ExpectUniqueSample("Autofill.SuggestionAcceptedIndex",
+                                      suggestion_accepted_row, 1);
+}
+
+// When a suggestion is selected in one of the subpopups, we do not emit
+// Autofill.SuggestionAcceptedIndex, since for example selecting the first
+// suggestion in a supopup that was open from the third suggestion in the root
+// popup, does not mean the same as choosing the first suggestion from the root
+// popup.
+TEST_F(AutofillExternalDelegateUnitTest,
+       AcceptSecondPopupevelSuggestion_DoNotLogSuggestionAcceptedMetric) {
+  const AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
+  const int suggestion_accepted_row = 2;
+  base::HistogramTester histogram_tester;
+
+  external_delegate_->DidAcceptSuggestion(
+      test::CreateAutofillSuggestion(PopupItemId::kAddressEntry, u"John Legend",
+                                     Suggestion::BackendId(profile.guid())),
+      AutofillPopupDelegate::SuggestionPosition{.row = suggestion_accepted_row,
+                                                .sub_popup_level = 1},
+      kDefaultTriggerSource);
+
+  histogram_tester.ExpectUniqueSample("Autofill.SuggestionAcceptedIndex",
+                                      suggestion_accepted_row, 0);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
