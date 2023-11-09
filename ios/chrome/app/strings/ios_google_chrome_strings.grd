@@ -391,6 +391,12 @@ Things to consider:
       <message name="IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME" desc="Name of the Setting to protect Incognito tabs with biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
        Lock Incognito Tabs When You Close Chrome
       </message>
+      <message name="IDS_IOS_INTENTS_ADD_BOOKMARK_TITLE" desc="Shortcut name to add bookmarks to Chrome [iOS only].">
+        Add Bookmarks to Chrome
+      </message>
+      <message name="IDS_IOS_INTENTS_ADD_BOOKMARK_DESCRIPTION" desc="Shortcut description to add a bookmark to Chrome [iOS only].">
+        Adds the inputted URLs to your bookmarks in Chrome.
+      </message>
       <message name="IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's location information while the app is in use [Length: unlimited] [iOS only].">
           Chrome shares your location with sites you allow.
       </message>

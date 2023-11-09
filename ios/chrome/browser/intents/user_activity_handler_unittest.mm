@@ -21,7 +21,6 @@
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
-#import "ios/chrome/browser/intents/intents_constants.h"
 #import "ios/chrome/app/application_delegate/mock_tab_opener.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
@@ -30,6 +29,7 @@
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/intents/intents_constants.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_connection_information.h"
@@ -41,8 +41,10 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
 #import "ios/chrome/common/intents/ClearBrowsingDataIntent.h"
 #import "ios/chrome/common/intents/ManagePasswordsIntent.h"
 #import "ios/chrome/common/intents/ManagePaymentMethodsIntent.h"
@@ -973,6 +975,129 @@ TEST_F(UserActivityHandlerTest, PerformActionForShortcutItemWithFirstRunUI) {
   EXPECT_TRUE(completionHandlerExecuted());
   EXPECT_FALSE(completionHandlerArgument());
   EXPECT_FALSE(getHandleStartupParametersHasBeenCalled());
+}
+
+// Tests that Chrome does continue the activity for the Add Bookmarks intent.
+TEST_F(UserActivityHandlerTest, ContinueUserActivityBookmarks) {
+  NSUserActivity* userActivity = [[NSUserActivity alloc]
+      initWithActivityType:kSiriShortcutAddBookmarkToChrome];
+
+  AddBookmarkToChromeIntent* intent = [[AddBookmarkToChromeIntent alloc] init];
+  NSArray<NSURL*>* URLs =
+      @[ [[NSURL alloc] initWithString:@"https://google.com"] ];
+  intent.url = URLs;
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+
+  FakeStartupInformation* fakeStartupInformation =
+      [[FakeStartupInformation alloc] init];
+  FakeConnectionInformation* connectionInformationMock =
+      [[FakeConnectionInformation alloc] init];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  [UserActivityHandler continueUserActivity:mock_user_activity
+                        applicationIsActive:YES
+                                  tabOpener:tabOpener
+                      connectionInformation:connectionInformationMock
+                         startupInformation:fakeStartupInformation
+                               browserState:nullptr
+                                  initStage:InitStageFinal];
+
+  EXPECT_EQ(ADD_BOOKMARKS,
+            [connectionInformationMock startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome does not continue the activity for the Add Bookmarks intent
+// due to still being in first run.
+TEST_F(UserActivityHandlerTest, ContinueUserActivityBookmarksFailsFirstRun) {
+  NSUserActivity* userActivity = [[NSUserActivity alloc]
+      initWithActivityType:@"AddBookmarkToChromeIntent"];
+
+  NSArray<NSURL*>* URLs =
+      @[ [[NSURL alloc] initWithString:@"https://google.com"] ];
+  AddBookmarkToChromeIntent* intent = [[AddBookmarkToChromeIntent alloc] init];
+  intent.url = URLs;
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+  id startupInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(StartupInformation)];
+  id connectionInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(ConnectionInformation)];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  BOOL result =
+      [UserActivityHandler continueUserActivity:mock_user_activity
+                            applicationIsActive:NO
+                                      tabOpener:tabOpener
+                          connectionInformation:connectionInformationMock
+                             startupInformation:startupInformationMock
+                                   browserState:nullptr
+                                      initStage:InitStageFirstRun];
+
+  EXPECT_FALSE(result);
+}
+
+// Tests that Chrome does not continue the activity if the intent URLs array is
+// empty.
+TEST_F(UserActivityHandlerTest,
+       ContinueUserActivityBookmarksFailsURLsArrayEmpty) {
+  NSUserActivity* userActivity = [[NSUserActivity alloc]
+      initWithActivityType:@"AddBookmarkToChromeIntent"];
+
+  NSArray<NSURL*>* URLs = @[];
+  AddBookmarkToChromeIntent* intent = [[AddBookmarkToChromeIntent alloc] init];
+  intent.url = URLs;
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+  id startupInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(StartupInformation)];
+  id connectionInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(ConnectionInformation)];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  BOOL result =
+      [UserActivityHandler continueUserActivity:mock_user_activity
+                            applicationIsActive:NO
+                                      tabOpener:tabOpener
+                          connectionInformation:connectionInformationMock
+                             startupInformation:startupInformationMock
+                                   browserState:nullptr
+                                      initStage:InitStageFirstRun];
+
+  EXPECT_FALSE(result);
+}
+
+// Tests that Chrome does not continue the activity if the intent URLs are not
+// set for the Add Bookmarks intent.
+TEST_F(UserActivityHandlerTest, ContinueUserActivityBookmarksFailsNoURLs) {
+  NSUserActivity* userActivity = [[NSUserActivity alloc]
+      initWithActivityType:@"AddBookmarkToChromeIntent"];
+
+  id startupInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(StartupInformation)];
+  id connectionInformationMock =
+      [OCMockObject niceMockForProtocol:@protocol(ConnectionInformation)];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  BOOL result =
+      [UserActivityHandler continueUserActivity:userActivity
+                            applicationIsActive:NO
+                                      tabOpener:tabOpener
+                          connectionInformation:connectionInformationMock
+                             startupInformation:startupInformationMock
+                                   browserState:nullptr
+                                      initStage:InitStageFirstRun];
+
+  EXPECT_FALSE(result);
 }
 
 // Test that Chrome respond to open reading list intent.

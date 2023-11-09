@@ -18,7 +18,6 @@
 #import "components/handoff/handoff_utility.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/app_startup_parameters.h"
-#import "ios/chrome/browser/intents/intents_constants.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_mode.h"
@@ -27,6 +26,7 @@
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/browser/intents/intent_type.h"
+#import "ios/chrome/browser/intents/intents_constants.h"
 #import "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
@@ -71,6 +72,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       [activityType isEqualToString:kShortcutQRScanner] ||
       [activityType isEqualToString:kShortcutLensFromAppIconLongPress] ||
       [activityType isEqualToString:kShortcutLensFromSpotlight] ||
+      [activityType isEqualToString:kSiriShortcutAddBookmarkToChrome] ||
       [activityType isEqualToString:kSiriShortcutSearchInChrome] ||
       [activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     return @[ kRegularMode, kIncognitoMode ];
@@ -325,6 +327,25 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                          initStage:initStage];
     return YES;
 
+  } else if ([userActivity.activityType
+                 isEqualToString:kSiriShortcutAddBookmarkToChrome]) {
+    base::UmaHistogramEnumeration(kAppLaunchSource,
+                                  AppLaunchSource::SIRI_SHORTCUT);
+    base::RecordAction(
+        UserMetricsAction("IOSLaunchedByAddBookmarkToChromeIntent"));
+
+    AddBookmarkToChromeIntent* intent =
+        base::apple::ObjCCastStrict<AddBookmarkToChromeIntent>(
+            userActivity.interaction.intent);
+
+    if (!intent || !intent.url || intent.url.count == 0) {
+      return NO;
+    }
+
+    AppStartupParameters* startupParams =
+        [self startupParametersForOpeningNewTabWithAction:ADD_BOOKMARKS];
+    startupParams.inputURLs = intent.url;
+    [connectionInformation setStartupParameters:startupParams];
   } else if ([userActivity.activityType isEqualToString:kSiriOpenLatestTab]) {
     base::UmaHistogramEnumeration("IOS.Spotlight.LaunchedIntentType",
                                   IntentType::kOpenLatestTab);

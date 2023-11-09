@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
 #import "ios/chrome/common/intents/ClearBrowsingDataIntent.h"
 #import "ios/chrome/common/intents/ManagePasswordsIntent.h"
 #import "ios/chrome/common/intents/ManagePaymentMethodsIntent.h"
@@ -27,7 +28,8 @@
 #import "ios/chrome/common/intents/SetChromeDefaultBrowserIntent.h"
 #import "ios/chrome/common/intents/ViewHistoryIntent.h"
 
-@interface ChromeIntentsHandler () <OpenInChromeIncognitoIntentHandling,
+@interface ChromeIntentsHandler () <AddBookmarkToChromeIntentHandling,
+                                    OpenInChromeIncognitoIntentHandling,
                                     OpenInChromeIntentHandling,
                                     SearchInChromeIntentHandling,
                                     OpenReadingListIntentHandling,
@@ -53,6 +55,37 @@
 
 - (id)handlerForIntent:(INIntent*)intent {
   return self;
+}
+
+#pragma mark - AddBookmarkToChromeIntentHandling
+
+- (void)resolveUrlForAddBookmarkToChrome:(AddBookmarkToChromeIntent*)intent
+                          withCompletion:
+                              (void (^)(NSArray<INURLResolutionResult*>*))
+                                  completion {
+  NSMutableArray<INURLResolutionResult*>* result =
+      [NSMutableArray arrayWithCapacity:intent.url.count];
+
+  for (NSURL* url in intent.url) {
+    [result addObject:[INURLResolutionResult successWithResolvedURL:url]];
+  }
+
+  completion(result);
+}
+
+- (void)handleAddBookmarkToChrome:(AddBookmarkToChromeIntent*)intent
+                       completion:(void (^)(AddBookmarkToChromeIntentResponse*))
+                                      completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass(
+                               [AddBookmarkToChromeIntent class])];
+
+  AddBookmarkToChromeIntentResponse* response =
+      [[AddBookmarkToChromeIntentResponse alloc]
+          initWithCode:AddBookmarkToChromeIntentResponseCodeContinueInApp
+          userActivity:activity];
+
+  completion(response);
 }
 
 #pragma mark - OpenInChromeIncognitoIntentHandling

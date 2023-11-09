@@ -12,6 +12,7 @@ NSString* const kShortcutLensFromAppIconLongPress =
     @"OpenLensFromAppIconLongPress";
 NSString* const kShortcutLensFromSpotlight = @"OpenLensFromSpotlight";
 
+NSString* const kSiriShortcutAddBookmarkToChrome = @"AddBookmarkToChromeIntent";
 NSString* const kSiriShortcutOpenInChrome = @"OpenInChromeIntent";
 NSString* const kSiriShortcutSearchInChrome = @"SearchInChromeIntent";
 NSString* const kSiriShortcutOpenInIncognito = @"OpenInChromeIncognitoIntent";

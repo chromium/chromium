@@ -13098,6 +13098,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSLaunchedByAddBookmarkToChromeIntent">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>User added bookmarks to Chrome via Apple Shortcuts.</description>
+</action>
+
 <action name="IOSLaunchedByOpenInChromeIntent">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>

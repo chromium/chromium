@@ -24,6 +24,8 @@ extern NSString* const kShortcutLensFromSpotlight;
 
 // Constants for Siri shortcuts.
 //
+// NSUserActivity for Add Bookmark to Chrome intent.
+extern NSString* const kSiriShortcutAddBookmarkToChrome;
 // NSUserActivity for Open in Chrome intent.
 extern NSString* const kSiriShortcutOpenInChrome;
 // NSUserActivity for Search in Chrome intent.

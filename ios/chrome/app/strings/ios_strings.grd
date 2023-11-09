@@ -1643,6 +1643,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INSPECT_UI_CONSOLE_STOP_LOGGING" desc="The button on the top of the debugging page to stop JavaScript console logging [iOS only].">
         Stop Logging
       </message>
+      <message name="IDS_IOS_INTENTS_ADD_BOOKMARK_PARAMETER_COMBINATION_TITLE" desc="Apple Shortcuts.app format for displaying the URL input [iOS only].">
+        Add ${url} to bookmarks
+      </message>
+      <message name="IDS_IOS_INTENTS_ADD_BOOKMARK_PROMPT_DIALOG" desc="Prompt dialog shown or spoken to the user (by Siri) asking them to clarify which URL they'd like to bookmark for the Add Bookmark Shortcut [iOS only]. This is required by iOS, but never actually shown to the user hence why the attached screenshot is empty.">
+        What URL would you like to bookmark?
+      </message>
       <message name="IDS_IOS_INTENTS_OPEN_IN_CHROME_TITLE" desc="Shortcut name to open URL in Chrome [iOS only].">
         Open URLs in Chrome
       </message>
@@ -1676,6 +1682,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INTENTS_SEARCH_IN_CHROME_PARAMETER_COMBINATION_TITLE" desc="Apple Shortcuts App's format for displaying the user search phrase input, shown by the Siri Shortcut app when the
           user is adding or editing a Search in Chrome shortcut[iOS only].">
           Search ${searchPhrase} in Chrome
+      </message>
+      <message name="IDS_IOS_INTENTS_URL_PARAMETER" desc="The URL the user would like to pass as input parameter to Shortcuts that require a URL as input [iOS only].">
+        URL
       </message>
       <message name="IDS_IOS_JAVA_SCRIPT_DIALOG_BLOCKING_BUTTON_TEXT" desc="The text used for the button added to JavaScript dialogs to prevent a page from spamming the user with endless alerts. [Length:27em]">
         Suppress Dialogs

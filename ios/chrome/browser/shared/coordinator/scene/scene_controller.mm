@@ -87,6 +87,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
@@ -2444,6 +2445,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf openClearBrowsingDataDialog];
       };
+    case ADD_BOOKMARKS:
+      return ^{
+        [weakSelf addBookmarks:weakSelf.startupParameters.inputURLs];
+      };
     default:
       return nil;
   }
@@ -2591,6 +2596,17 @@ void InjectNTP(Browser* browser) {
   webStateList->ActivateWebStateAt(index);
 }
 
+- (void)addBookmarks:(NSArray<NSURL*>*)URLs {
+  if (!self.currentInterface.browser || [URLs count] < 1) {
+    return;
+  }
+
+  id<BookmarksCommands> bookmarksCommandsHandler = HandlerForProtocol(
+      self.currentInterface.browser->GetCommandDispatcher(), BookmarksCommands);
+
+  [bookmarksCommandsHandler bulkCreateBookmarksWithURLs:URLs];
+}
+
 #pragma mark - TabOpening implementation.
 
 - (void)dismissModalsAndMaybeOpenSelectedTabInMode:
@@ -2672,7 +2688,7 @@ void InjectNTP(Browser* browser) {
   if (currentWebState) {
     web::NavigationManager* navigation_manager =
         currentWebState->GetNavigationManager();
-    // Check if the current tab is in the procress of restoration and whether it
+    // Check if the current tab is in the process of restoration and whether it
     // is an NTP. If so, add the tabs-opening action to the
     // RestoreCompletionCallback queue so that the tabs are opened only after
     // the NTP finishes restoring. This is to avoid an edge where multiple tabs

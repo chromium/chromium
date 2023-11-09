@@ -30,6 +30,7 @@
 			<array/>
 			<key>IntentsSupported</key>
 			<array>
+				<string>AddBookmarkToChromeIntent</string>
 				<string>OpenInChromeIncognitoIntent</string>
 				<string>OpenInChromeIntent</string>
 				<string>SearchInChromeIntent</string>
