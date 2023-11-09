@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 
 import java.util.concurrent.TimeUnit;
 
@@ -78,7 +79,8 @@ import java.util.concurrent.TimeUnit;
         shadows = {PartialCustomTabTestRule.ShadowSemanticColorUtils.class})
 @EnableFeatures({
     ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-    ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE
+    ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE,
+    UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
 })
 @LooperMode(Mode.PAUSED)
 public class PartialCustomTabBottomSheetStrategyTest {

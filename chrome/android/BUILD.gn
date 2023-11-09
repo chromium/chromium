@@ -1238,6 +1238,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/google-truth:google_truth_java",
       "//third_party/hamcrest:hamcrest_java",
       "//ui/accessibility:ax_base_java",
+      "//ui/accessibility:ui_accessibility_features_java",
       "//ui/android:ui_java",
       "//ui/android:ui_java_test_support",
       "//ui/android:ui_junit_test_support",

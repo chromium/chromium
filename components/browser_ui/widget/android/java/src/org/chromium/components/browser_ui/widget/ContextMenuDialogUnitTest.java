@@ -40,10 +40,15 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPhoneWindow;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 import org.chromium.ui.widget.UiWidgetFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** Unit test for {@link ContextMenuDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -91,6 +96,10 @@ public class ContextMenuDialogUnitTest {
         Mockito.when(mockContentView.getMeasuredHeight()).thenReturn(DIALOG_SIZE_DIP);
         Mockito.when(mockContentView.getMeasuredWidth()).thenReturn(DIALOG_SIZE_DIP);
         Mockito.doReturn(mockContentView).when(mSpyPopupWindow).getContentView();
+
+        Map<String, Boolean> featureMap = new HashMap<>();
+        featureMap.put(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK, false);
+        FeatureList.setTestFeatures(featureMap);
     }
 
     @After

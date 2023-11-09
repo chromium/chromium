@@ -82,6 +82,7 @@ import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -90,7 +91,11 @@ import java.util.List;
 
 /** Unit tests for {@link TabbedAppMenuPropertiesDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.BOOKMARKS_REFRESH})
+@EnableFeatures({
+    ChromeFeatureList.WEB_FEED,
+    ChromeFeatureList.BOOKMARKS_REFRESH,
+    UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
+})
 @DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.
