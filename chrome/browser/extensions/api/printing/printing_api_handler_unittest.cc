@@ -188,8 +188,12 @@ absl::optional<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
   api::printing::SubmitJobRequest request;
   request.job.printer_id = printer_id;
   request.job.title = title;
-  EXPECT_TRUE(api::printer_provider::PrintJob::Ticket::Populate(
-      base::test::ParseJsonDict(ticket), request.job.ticket));
+  if (auto result = api::printer_provider::PrintJob::Ticket::FromValue(
+          base::test::ParseJsonDict(ticket))) {
+    request.job.ticket = std::move(result).value();
+  } else {
+    ADD_FAILURE() << "Failed to parse ticket \"" << ticket << "\".";
+  }
   request.job.content_type = content_type;
   request.document_blob_uuid = std::move(document_blob_uuid);
 
