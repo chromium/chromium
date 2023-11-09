@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("compute_pressure") {
   sources = [
+    "change_rate_monitor.cc",
+    "change_rate_monitor.h",
     "pressure_client_impl.cc",
     "pressure_client_impl.h",
     "pressure_observer.cc",
@@ -14,6 +16,8 @@ blink_modules_sources("compute_pressure") {
     "pressure_observer_manager.h",
     "pressure_record.cc",
     "pressure_record.h",
+    "pressure_source_index.cc",
+    "pressure_source_index.h",
   ]
 
   deps = [
