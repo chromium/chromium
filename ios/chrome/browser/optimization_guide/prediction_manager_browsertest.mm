@@ -104,10 +104,6 @@ class PredictionManagerTestBase : public PlatformTest {
 
     InitializeFeatureList();
     if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
-      // Reinitialize the store, so that tests do not use state from the
-      // previous test.
-      optimization_guide::PredictionModelStore::GetInstance()
-          ->ResetForTesting();
       OptimizationGuideServiceFactory::InitializePredictionModelStore();
     }
 
@@ -167,6 +163,12 @@ class PredictionManagerTestBase : public PlatformTest {
   void TearDown() override {
     download::BackgroundDownloadTaskHelper::SetIgnoreLocalSSLErrorForTesting(
         false);
+    if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+      // Reinitialize the store, so that tests do not use state from the
+      // previous test.
+      optimization_guide::PredictionModelStore::GetInstance()
+          ->ResetForTesting();
+    }
     PlatformTest::TearDown();
   }
 

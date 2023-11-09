@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
+
 #import "base/files/file_util.h"
 #import "base/metrics/metrics_hashes.h"
 #import "base/path_service.h"
@@ -10,6 +11,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/values.h"
+#import "components/optimization_guide/core/optimization_guide_features.h"
+#import "components/optimization_guide/core/prediction_model_store.h"
 #import "components/translate/core/browser/translate_metrics_logger.h"
 #import "components/translate/core/common/translate_util.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
@@ -37,7 +40,9 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
     PlatformTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
         {translate::kTFLiteLanguageDetectionEnabled}, {});
-    OptimizationGuideServiceFactory::InitializePredictionModelStore();
+    if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+      OptimizationGuideServiceFactory::InitializePredictionModelStore();
+    }
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
@@ -56,6 +61,17 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
                                    std::move(web_frames_manager));
     ChromeIOSTranslateClient::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
+  }
+
+  void TearDown() override {
+    if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+      // Reinitialize the store, so that tests do not use state from the
+      // previous test.
+      optimization_guide::PredictionModelStore::GetInstance()
+          ->ResetForTesting();
+    }
+
+    PlatformTest::TearDown();
   }
 
  protected:

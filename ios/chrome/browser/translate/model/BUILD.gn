@@ -82,6 +82,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/language/core/browser",
     "//components/language/ios/browser",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:prediction",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
