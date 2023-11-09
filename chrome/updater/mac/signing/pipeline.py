@@ -106,7 +106,7 @@ def _package_and_sign_pkg(paths, config):
         '--component',
         os.path.join(paths.work, config.app_dir),
         '--install-location',
-        '/tmp'
+        '/tmp',
         '--scripts',
         os.path.join(paths.input, config.packaging_dir, 'signing'),
         '--sign',
