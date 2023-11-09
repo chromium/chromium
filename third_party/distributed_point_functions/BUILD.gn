@@ -3,13 +3,8 @@
 # found in the LICENSE file.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
-
-proto_library("proto") {
-  sources = [ "code/dpf/distributed_point_function.proto" ]
-  proto_out_dir = "third_party/distributed_point_functions/dpf"
-  cc_generator_options = "lite"
-}
 
 if (!defined(dpf_abseil_cpp_dir)) {
   dpf_abseil_cpp_dir = "//third_party/abseil-cpp"
@@ -18,7 +13,54 @@ if (!defined(dpf_highway_cpp_dir)) {
   dpf_highway_cpp_dir = "//third_party/highway"
 }
 
-config("distributed_point_functions_includes") {
+# This is Chromium's interface with the third-party distributed_point_functions
+# library. It prevents macros like absl/log/check.h's CHECK from leaking into
+# Chromium code via header includes. Chromium already defines CHECK in
+# base/check.h, so direct includes can lead to macro redefinition errors. For
+# more context, see <https://crbug.com/1499970>.
+static_library("distributed_point_functions") {
+  sources = [
+    "shim/distributed_point_function_shim.cc",
+    "shim/distributed_point_function_shim.h",
+  ]
+  deps = [ ":internal" ]
+  public_deps = [ ":proto" ]
+  configs += [ ":includes" ]
+}
+
+proto_library("proto") {
+  sources = [ "code/dpf/distributed_point_function.proto" ]
+  proto_out_dir = "third_party/distributed_point_functions/dpf"
+  cc_generator_options = "lite"
+}
+
+test("distributed_point_functions_unittests") {
+  sources = [ "shim/distributed_point_function_shim_unittest.cc" ]
+  deps = [
+    ":distributed_point_functions",
+    "$dpf_abseil_cpp_dir:absl",
+    "//testing/gtest",
+    "//testing/gtest:gtest_main",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+fuzzer_test("dpf_fuzzer") {
+  sources = [ "fuzz/dpf_fuzzer.cc" ]
+  deps = [ ":internal" ]
+
+  # Do not apply Chromium code rules to this third-party code.
+  suppressed_configs = [ "//build/config/compiler:chromium_code" ]
+  additional_configs = [ "//build/config/compiler:no_chromium_code" ]
+
+  additional_configs += [ ":includes" ]
+}
+
+# The targets below this line are internal-only; they should only be visible to
+# targets in this directory.
+visibility = [ ":*" ]
+
+config("includes") {
   include_dirs = [
     ".",
     "code",
@@ -26,7 +68,7 @@ config("distributed_point_functions_includes") {
   ]
 }
 
-source_set("distributed_point_functions") {
+source_set("internal") {
   sources = [
     "code/dpf/aes_128_fixed_key_hash.cc",
     "code/dpf/aes_128_fixed_key_hash.h",
@@ -61,14 +103,5 @@ source_set("distributed_point_functions") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  public_configs = [ ":distributed_point_functions_includes" ]
-}
-
-fuzzer_test("dpf_fuzzer") {
-  sources = [ "fuzz/dpf_fuzzer.cc" ]
-  deps = [ ":distributed_point_functions" ]
-
-  # Do not apply Chromium code rules to this third-party code.
-  suppressed_configs = [ "//build/config/compiler:chromium_code" ]
-  additional_configs = [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ ":includes" ]
 }

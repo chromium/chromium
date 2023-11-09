@@ -6,6 +6,7 @@ include_rules = [
   "+gmock",
   "+google/protobuf",
   "+gtest",
+  "+testing",
   "+hwy",
   "+openssl",
 ]
