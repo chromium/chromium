@@ -285,14 +285,14 @@ TEST_F(FrameNodeImplTest, IsAdFrame) {
   // again when it goes from true to false.
   EXPECT_CALL(obs, OnIsAdFrameChanged(frame_node.get())).Times(2);
 
-  EXPECT_FALSE(frame_node->is_ad_frame());
+  EXPECT_FALSE(frame_node->IsAdFrame());
   frame_node->SetIsAdFrame(true);
-  EXPECT_TRUE(frame_node->is_ad_frame());
+  EXPECT_TRUE(frame_node->IsAdFrame());
   frame_node->SetIsAdFrame(true);
-  EXPECT_TRUE(frame_node->is_ad_frame());
+  EXPECT_TRUE(frame_node->IsAdFrame());
 
   frame_node->SetIsAdFrame(false);
-  EXPECT_FALSE(frame_node->is_ad_frame());
+  EXPECT_FALSE(frame_node->IsAdFrame());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }
@@ -532,24 +532,12 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
             public_frame_node->GetPageNode());
   EXPECT_EQ(static_cast<const ProcessNode*>(frame_node->process_node()),
             public_frame_node->GetProcessNode());
-  EXPECT_EQ(frame_node->browsing_instance_id(),
-            public_frame_node->GetBrowsingInstanceId());
-  EXPECT_EQ(frame_node->site_instance_id(),
-            public_frame_node->GetSiteInstanceId());
 
   auto child_frame_nodes = public_frame_node->GetChildFrameNodes();
   for (auto* child : frame_node->child_frame_nodes())
     EXPECT_TRUE(base::Contains(child_frame_nodes, child));
   EXPECT_EQ(child_frame_nodes.size(), frame_node->child_frame_nodes().size());
 
-  EXPECT_EQ(frame_node->lifecycle_state(),
-            public_frame_node->GetLifecycleState());
-  EXPECT_EQ(frame_node->has_nonempty_beforeunload(),
-            public_frame_node->HasNonemptyBeforeUnload());
-  EXPECT_EQ(frame_node->is_current(), public_frame_node->IsCurrent());
-  EXPECT_EQ(frame_node->network_almost_idle(),
-            public_frame_node->GetNetworkAlmostIdle());
-  EXPECT_EQ(frame_node->is_ad_frame(), public_frame_node->IsAdFrame());
   EXPECT_EQ(frame_node->is_holding_weblock(),
             public_frame_node->IsHoldingWebLock());
   EXPECT_EQ(frame_node->is_holding_indexeddb_lock(),

@@ -105,9 +105,9 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardMultipleCurrentMainFrames) {
 
   // frame_node() is created with a URL. `other_frame_node` starts without.
   ASSERT_FALSE(frame_node()->GetURL().is_empty());
-  ASSERT_TRUE(frame_node()->is_current());
+  ASSERT_TRUE(frame_node()->IsCurrent());
   ASSERT_TRUE(other_frame_node->GetURL().is_empty());
-  ASSERT_TRUE(other_frame_node->is_current());
+  ASSERT_TRUE(other_frame_node->IsCurrent());
 
   // An arbitrary "current" frame will be returned by GetMainFrameNode(). Make
   // sure the page can be discarded even if the one without a url is returned.
@@ -119,9 +119,9 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardMultipleCurrentMainFrames) {
   SetPageAndFrameUrl(GURL(), page_node(), frame_node());
 
   ASSERT_TRUE(frame_node()->GetURL().is_empty());
-  ASSERT_TRUE(frame_node()->is_current());
+  ASSERT_TRUE(frame_node()->IsCurrent());
   ASSERT_TRUE(other_frame_node->GetURL().is_empty());
-  ASSERT_TRUE(other_frame_node->is_current());
+  ASSERT_TRUE(other_frame_node->IsCurrent());
 
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
@@ -131,9 +131,9 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardMultipleCurrentMainFrames) {
                      other_frame_node.get());
 
   ASSERT_TRUE(frame_node()->GetURL().is_empty());
-  ASSERT_TRUE(frame_node()->is_current());
+  ASSERT_TRUE(frame_node()->IsCurrent());
   ASSERT_FALSE(other_frame_node->GetURL().is_empty());
-  ASSERT_TRUE(other_frame_node->is_current());
+  ASSERT_TRUE(other_frame_node->IsCurrent());
 
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::PROACTIVE));

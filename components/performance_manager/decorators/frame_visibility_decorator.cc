@@ -25,7 +25,7 @@ FrameNode::Visibility GetFrameNodeVisibility(FrameNodeImpl* frame_node,
   }
 
   // Only frame nodes that are current can be visible.
-  if (!frame_node->is_current()) {
+  if (!frame_node->IsCurrent()) {
     return FrameNode::Visibility::kNotVisible;
   }
 

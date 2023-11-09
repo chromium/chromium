@@ -116,7 +116,7 @@ void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
   // Go back to not idling. We should transition back to kLoadedNotIdling, and
   // a timer should still be running.
   frame_node->OnNavigationCommitted(GURL(), false);
-  EXPECT_FALSE(frame_node->network_almost_idle());
+  EXPECT_FALSE(frame_node->GetNetworkAlmostIdle());
   EXPECT_EQ(LIS::kLoadedNotIdling, page_data->load_idle_state());
   EXPECT_TRUE(page_data->timer_.IsRunning());
 
@@ -128,7 +128,7 @@ void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
   } else {
     // Go back to idling.
     frame_node->SetNetworkAlmostIdle();
-    EXPECT_TRUE(frame_node->network_almost_idle());
+    EXPECT_TRUE(frame_node->GetNetworkAlmostIdle());
     EXPECT_EQ(LIS::kLoadedAndIdling, page_data->load_idle_state());
     EXPECT_EQ(LS::kLoadedBusy, page_node->loading_state());
     EXPECT_TRUE(page_data->timer_.IsRunning());
@@ -144,7 +144,7 @@ void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
   EXPECT_FALSE(Data::GetForTesting(page_node));
   EXPECT_EQ(LS::kLoadedIdle, page_node->loading_state());
   frame_node->OnNavigationCommitted(GURL(), false);
-  EXPECT_FALSE(frame_node->network_almost_idle());
+  EXPECT_FALSE(frame_node->GetNetworkAlmostIdle());
   EXPECT_FALSE(Data::GetForTesting(page_node));
   EXPECT_EQ(LS::kLoadedIdle, page_node->loading_state());
 }

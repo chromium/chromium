@@ -411,8 +411,9 @@ FrameNodeImpl* PageNodeImpl::GetMainFrameNodeImpl() const {
   // Return the current frame node if there is one. Iterating over this set is
   // fine because it is almost always of length 1 or 2.
   for (auto* frame : main_frame_nodes_) {
-    if (frame->is_current())
+    if (frame->IsCurrent()) {
       return frame;
+    }
   }
 
   // Otherwise, return any old main frame node.

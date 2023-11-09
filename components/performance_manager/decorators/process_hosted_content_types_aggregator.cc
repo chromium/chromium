@@ -74,7 +74,7 @@ void ProcessHostedContentTypesAggregator::OnIsAdFrameChanged(
   auto* frame_node_impl = FrameNodeImpl::FromNode(frame_node);
 
   // No need to handle untagging as content hosted in the past is still counted.
-  if (frame_node_impl->is_ad_frame()) {
+  if (frame_node_impl->IsAdFrame()) {
     frame_node_impl->process_node()->add_hosted_content_type(
         ProcessNode::ContentType::kAd);
   }

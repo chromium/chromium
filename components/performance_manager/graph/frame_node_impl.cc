@@ -136,12 +136,12 @@ const blink::LocalFrameToken& FrameNodeImpl::GetFrameToken() const {
 
 content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browsing_instance_id();
+  return browsing_instance_id_;
 }
 
 content::SiteInstanceId FrameNodeImpl::GetSiteInstanceId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return site_instance_id();
+  return site_instance_id_;
 }
 
 resource_attribution::FrameContext FrameNodeImpl::GetResourceContext() const {
@@ -155,12 +155,12 @@ bool FrameNodeImpl::IsMainFrame() const {
 
 FrameNodeImpl::LifecycleState FrameNodeImpl::GetLifecycleState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return lifecycle_state();
+  return lifecycle_state_.value();
 }
 
 bool FrameNodeImpl::HasNonemptyBeforeUnload() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return has_nonempty_beforeunload();
+  return document_.has_nonempty_beforeunload;
 }
 
 const GURL& FrameNodeImpl::GetURL() const {
@@ -170,17 +170,17 @@ const GURL& FrameNodeImpl::GetURL() const {
 
 bool FrameNodeImpl::IsCurrent() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_current();
+  return is_current_.value();
 }
 
 bool FrameNodeImpl::GetNetworkAlmostIdle() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return network_almost_idle();
+  return document_.network_almost_idle.value();
 }
 
 bool FrameNodeImpl::IsAdFrame() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_ad_frame();
+  return is_ad_frame_.value();
 }
 
 bool FrameNodeImpl::IsHoldingWebLock() const {
@@ -225,7 +225,7 @@ FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
 
 const RenderFrameHostProxy& FrameNodeImpl::GetRenderFrameHostProxy() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return render_frame_host_proxy();
+  return render_frame_host_proxy_;
 }
 
 uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
@@ -275,21 +275,6 @@ int FrameNodeImpl::render_frame_id() const {
   return render_frame_id_;
 }
 
-content::BrowsingInstanceId FrameNodeImpl::browsing_instance_id() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browsing_instance_id_;
-}
-
-content::SiteInstanceId FrameNodeImpl::site_instance_id() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return site_instance_id_;
-}
-
-const RenderFrameHostProxy& FrameNodeImpl::render_frame_host_proxy() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return render_frame_host_proxy_;
-}
-
 const base::flat_set<FrameNodeImpl*>& FrameNodeImpl::child_frame_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return child_frame_nodes_;
@@ -304,31 +289,6 @@ const base::flat_set<PageNodeImpl*>& FrameNodeImpl::embedded_page_nodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return embedded_page_nodes_;
-}
-
-mojom::LifecycleState FrameNodeImpl::lifecycle_state() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return lifecycle_state_.value();
-}
-
-bool FrameNodeImpl::has_nonempty_beforeunload() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return document_.has_nonempty_beforeunload;
-}
-
-bool FrameNodeImpl::is_current() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_current_.value();
-}
-
-bool FrameNodeImpl::network_almost_idle() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return document_.network_almost_idle.value();
-}
-
-bool FrameNodeImpl::is_ad_frame() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_ad_frame_.value();
 }
 
 bool FrameNodeImpl::is_holding_weblock() const {

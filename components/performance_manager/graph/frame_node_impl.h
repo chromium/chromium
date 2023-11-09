@@ -109,19 +109,11 @@ class FrameNodeImpl
   PageNodeImpl* page_node() const;
   ProcessNodeImpl* process_node() const;
   int render_frame_id() const;
-  content::BrowsingInstanceId browsing_instance_id() const;
-  content::SiteInstanceId site_instance_id() const;
-  const RenderFrameHostProxy& render_frame_host_proxy() const;
 
   // Getters for non-const properties. These are not thread safe.
   const base::flat_set<FrameNodeImpl*>& child_frame_nodes() const;
   const base::flat_set<PageNodeImpl*>& opened_page_nodes() const;
   const base::flat_set<PageNodeImpl*>& embedded_page_nodes() const;
-  LifecycleState lifecycle_state() const;
-  bool has_nonempty_beforeunload() const;
-  bool is_current() const;
-  bool network_almost_idle() const;
-  bool is_ad_frame() const;
   bool is_holding_weblock() const;
   bool is_holding_indexeddb_lock() const;
   const base::flat_set<WorkerNodeImpl*>& child_worker_nodes() const;

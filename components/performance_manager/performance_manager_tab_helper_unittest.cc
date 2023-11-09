@@ -105,7 +105,7 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
     // Expect all frame nodes to be current. This fails if our
     // implementation of RenderFrameHostChanged is borked.
     for (auto* frame : graph->GetAllFrameNodeImpls()) {
-      EXPECT_TRUE(frame->is_current());
+      EXPECT_TRUE(frame->IsCurrent());
     }
 
     ASSERT_EQ(1u, graph->GetAllPageNodeImpls().size());
