@@ -31,8 +31,10 @@ void OmniboxPopupCloser::OnMouseEvent(ui::MouseEvent* event) {
     LocationBarView* location_bar_view = browser_view_->GetLocationBarView();
     CHECK(location_bar_view);
     const auto* const view = static_cast<views::View*>(event->target());
+    CHECK(view);
     const auto* const popup_view = static_cast<OmniboxPopupViewViews*>(
         location_bar_view->omnibox_view()->model()->get_popup_view());
+    CHECK(popup_view);
     if (!location_bar_view->Contains(view) && !popup_view->Contains(view)) {
       location_bar_view->omnibox_view()->CloseOmniboxPopup();
     }
