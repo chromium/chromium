@@ -2036,13 +2036,6 @@
       name: "HTMLParserYieldAndDelayOftenForTesting",
     },
     {
-      // TODO(crbug.com/1307772): Enables the Popover API.
-      name: "HTMLPopoverAttribute",
-      status: "stable",
-      origin_trial_feature_name: "HTMLPopupAttribute",
-      implied_by: ["HTMLSelectListElement","HTMLPopoverHint"],
-    },
-    {
       // TODO(crbug.com/1416284): Enables popover=hint functionality.
       name: "HTMLPopoverHint",
       status: "experimental",
