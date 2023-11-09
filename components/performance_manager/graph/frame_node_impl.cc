@@ -173,6 +173,11 @@ bool FrameNodeImpl::IsCurrent() const {
   return is_current_.value();
 }
 
+const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return priority_and_reason_.value();
+}
+
 bool FrameNodeImpl::GetNetworkAlmostIdle() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return document_.network_almost_idle.value();
@@ -305,11 +310,6 @@ const base::flat_set<WorkerNodeImpl*>& FrameNodeImpl::child_worker_nodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return child_worker_nodes_;
-}
-
-const PriorityAndReason& FrameNodeImpl::priority_and_reason() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return priority_and_reason_.value();
 }
 
 bool FrameNodeImpl::had_form_interaction() const {
@@ -634,11 +634,6 @@ bool FrameNodeImpl::VisitChildDedicatedWorkers(
     }
   }
   return true;
-}
-
-const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return priority_and_reason();
 }
 
 void FrameNodeImpl::AddChildFrame(FrameNodeImpl* child_frame_node) {

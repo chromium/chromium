@@ -49,6 +49,7 @@ class WorkerNodeImpl
   const blink::WorkerToken& GetWorkerToken() const override;
   resource_attribution::WorkerContext GetResourceContext() const override;
   const GURL& GetURL() const override;
+  const PriorityAndReason& GetPriorityAndReason() const override;
   uint64_t GetResidentSetKbEstimate() const override;
   uint64_t GetPrivateFootprintKbEstimate() const override;
 
@@ -78,7 +79,6 @@ class WorkerNodeImpl
   const base::flat_set<FrameNodeImpl*>& client_frames() const;
   const base::flat_set<WorkerNodeImpl*>& client_workers() const;
   const base::flat_set<WorkerNodeImpl*>& child_workers() const;
-  const PriorityAndReason& priority_and_reason() const;
   uint64_t resident_set_kb_estimate() const;
   uint64_t private_footprint_kb_estimate() const;
 
@@ -110,7 +110,6 @@ class WorkerNodeImpl
   bool VisitClientWorkers(const WorkerNodeVisitor&) const override;
   const base::flat_set<const WorkerNode*> GetChildWorkers() const override;
   bool VisitChildDedicatedWorkers(const WorkerNodeVisitor&) const override;
-  const PriorityAndReason& GetPriorityAndReason() const override;
 
   // Invoked when |worker_node| becomes a child of this worker.
   void AddChildWorker(WorkerNodeImpl* worker_node);

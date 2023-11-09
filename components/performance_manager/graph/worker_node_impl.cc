@@ -67,6 +67,11 @@ const GURL& WorkerNodeImpl::GetURL() const {
   return url_;
 }
 
+const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return priority_and_reason_.value();
+}
+
 uint64_t WorkerNodeImpl::GetResidentSetKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return resident_set_kb_estimate();
@@ -195,11 +200,6 @@ const base::flat_set<WorkerNodeImpl*>& WorkerNodeImpl::child_workers() const {
   return child_workers_;
 }
 
-const PriorityAndReason& WorkerNodeImpl::priority_and_reason() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return priority_and_reason_.value();
-}
-
 uint64_t WorkerNodeImpl::resident_set_kb_estimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return resident_set_kb_estimate_;
@@ -314,10 +314,6 @@ bool WorkerNodeImpl::VisitChildDedicatedWorkers(
     }
   }
   return true;
-}
-
-const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {
-  return priority_and_reason();
 }
 
 void WorkerNodeImpl::AddChildWorker(WorkerNodeImpl* worker_node) {

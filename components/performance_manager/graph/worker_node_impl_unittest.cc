@@ -199,13 +199,13 @@ TEST_F(WorkerNodeImplTest, PriorityAndReason) {
                                                 process.get());
 
   // Initially the default priority.
-  EXPECT_EQ(worker_impl->priority_and_reason(),
+  EXPECT_EQ(worker_impl->GetPriorityAndReason(),
             PriorityAndReason(base::TaskPriority::LOWEST,
                               WorkerNodeImpl::kDefaultPriorityReason));
 
   worker_impl->SetPriorityAndReason(kTestPriorityAndReason);
 
-  EXPECT_EQ(worker_impl->priority_and_reason(), kTestPriorityAndReason);
+  EXPECT_EQ(worker_impl->GetPriorityAndReason(), kTestPriorityAndReason);
 }
 
 class TestWorkerNodeObserver : public WorkerNodeObserver {
@@ -394,7 +394,7 @@ TEST_F(WorkerNodeImplTest, Observer_OnPriorityAndReasonChanged) {
                                                     "this is a reason!");
   worker->SetPriorityAndReason(kPriorityAndReason);
   EXPECT_TRUE(worker_node_observer.on_priority_and_reason_changed_called());
-  EXPECT_EQ(worker->priority_and_reason(), kPriorityAndReason);
+  EXPECT_EQ(worker->GetPriorityAndReason(), kPriorityAndReason);
 
   graph()->RemoveWorkerNodeObserver(&worker_node_observer);
 }

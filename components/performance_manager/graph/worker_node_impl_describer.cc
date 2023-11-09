@@ -47,12 +47,12 @@ base::Value::Dict WorkerNodeImplDescriber::DescribeWorkerNodeData(
     return base::Value::Dict();
 
   base::Value::Dict ret;
+  ret.Set("worker_type", WorkerTypeToString(impl->worker_type()));
   ret.Set("browser_context_id", impl->browser_context_id());
   ret.Set("worker_token", impl->GetWorkerToken().ToString());
-  ret.Set("url", impl->GetURL().spec());
-  ret.Set("worker_type", WorkerTypeToString(impl->worker_type()));
-  ret.Set("priority", PriorityAndReasonToValue(impl->priority_and_reason()));
   ret.Set("resource_context", impl->GetResourceContext().ToString());
+  ret.Set("url", impl->GetURL().spec());
+  ret.Set("priority", PriorityAndReasonToValue(impl->GetPriorityAndReason()));
 
   base::Value::Dict metrics;
   metrics.Set("resident_set",

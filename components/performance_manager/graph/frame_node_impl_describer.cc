@@ -82,8 +82,7 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("is_holding_indexeddb_lock",
           impl->is_holding_indexeddb_lock_.value());
   ret.Set("is_current", impl->is_current_.value());
-  ret.Set("priority",
-          PriorityAndReasonToValue(impl->priority_and_reason_.value()));
+  ret.Set("priority", PriorityAndReasonToValue(impl->GetPriorityAndReason()));
   ret.Set("is_audible", impl->is_audible_.value());
   ret.Set("viewport_intersection",
           IntersectsViewportToString(impl->intersects_viewport_.value()));

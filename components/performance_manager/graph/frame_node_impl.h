@@ -88,6 +88,7 @@ class FrameNodeImpl
   bool HasNonemptyBeforeUnload() const override;
   const GURL& GetURL() const override;
   bool IsCurrent() const override;
+  const PriorityAndReason& GetPriorityAndReason() const override;
   bool GetNetworkAlmostIdle() const override;
   bool IsAdFrame() const override;
   bool IsHoldingWebLock() const override;
@@ -117,7 +118,6 @@ class FrameNodeImpl
   bool is_holding_weblock() const;
   bool is_holding_indexeddb_lock() const;
   const base::flat_set<WorkerNodeImpl*>& child_worker_nodes() const;
-  const PriorityAndReason& priority_and_reason() const;
   bool had_form_interaction() const;
   bool had_user_edits() const;
   bool is_audible() const;
@@ -197,7 +197,6 @@ class FrameNodeImpl
   const base::flat_set<const WorkerNode*> GetChildWorkerNodes() const override;
   bool VisitChildDedicatedWorkers(
       const WorkerNodeVisitor& visitor) const override;
-  const PriorityAndReason& GetPriorityAndReason() const override;
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.

@@ -74,7 +74,7 @@ class ExecutionContextImpl : public ExecutionContext,
   // the execution context having that particular priority.
   const PriorityAndReason& GetPriorityAndReason() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return node_->priority_and_reason();
+    return node_->GetPriorityAndReason();
   }
 
   const FrameNode* GetFrameNode() const override {

@@ -346,7 +346,7 @@ TEST_F(FrameNodeImplTest, Priority) {
 
   // By default the priority should be "lowest".
   EXPECT_EQ(base::TaskPriority::LOWEST,
-            frame_node->priority_and_reason().priority());
+            frame_node->GetPriorityAndReason().priority());
 
   // Changed the reason only.
   static const char kDummyReason[] = "this is a reason!";
@@ -358,7 +358,7 @@ TEST_F(FrameNodeImplTest, Priority) {
   frame_node->SetPriorityAndReason(
       PriorityAndReason(base::TaskPriority::LOWEST, kDummyReason));
   EXPECT_EQ(PriorityAndReason(base::TaskPriority::LOWEST, kDummyReason),
-            frame_node->priority_and_reason());
+            frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 
   // Change the priority only.
@@ -369,14 +369,14 @@ TEST_F(FrameNodeImplTest, Priority) {
   frame_node->SetPriorityAndReason(
       PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason));
   EXPECT_EQ(PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason),
-            frame_node->priority_and_reason());
+            frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 
   // Change neither.
   frame_node->SetPriorityAndReason(
       PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason));
   EXPECT_EQ(PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason),
-            frame_node->priority_and_reason());
+            frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 
   // Change both the priority and the reason.
@@ -387,7 +387,7 @@ TEST_F(FrameNodeImplTest, Priority) {
   frame_node->SetPriorityAndReason(
       PriorityAndReason(base::TaskPriority::LOWEST, nullptr));
   EXPECT_EQ(PriorityAndReason(base::TaskPriority::LOWEST, nullptr),
-            frame_node->priority_and_reason());
+            frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 
   graph()->RemoveFrameNodeObserver(&obs);
