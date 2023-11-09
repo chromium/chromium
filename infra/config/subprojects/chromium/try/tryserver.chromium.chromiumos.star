@@ -144,6 +144,12 @@ try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-compilator",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     cores = "8|16",
+    caches = [
+        swarming.cache(
+            name = "shared_chromeos_amd64_generic_rel_cache",
+            path = "builder",
+        ),
+    ],
     main_list_view = "try",
 )
 
