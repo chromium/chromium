@@ -605,13 +605,13 @@ public abstract class SyncConsentFragmentBase extends Fragment
     /** Sets texts for immutable elements. Accept button text is set by {@link #setHasAccounts}. */
     private void updateConsentText() {
         if (mSyncConsentView != null) {
-            updateSyncConsentViewText(R.string.no_thanks);
+            updateSyncConsentViewText(R.string.signin_sync_decline_button);
         } else {
             final @StringRes int refuseButtonTextId =
                     mSigninAccessPoint == SigninAccessPoint.SIGNIN_PROMO
-                            || mSigninAccessPoint == SigninAccessPoint.START_PAGE
-                    ? R.string.no_thanks
-                    : R.string.cancel;
+                                    || mSigninAccessPoint == SigninAccessPoint.START_PAGE
+                            ? R.string.signin_sync_decline_button
+                            : R.string.cancel;
             updateSigninViewText(refuseButtonTextId);
         }
     }
