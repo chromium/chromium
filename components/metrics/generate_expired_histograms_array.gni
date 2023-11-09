@@ -152,6 +152,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/performance_manager/histograms.xml",
       "//tools/metrics/histograms/metadata/permissions/histograms.xml",
       "//tools/metrics/histograms/metadata/phonehub/histograms.xml",
+      "//tools/metrics/histograms/metadata/platform/enums.xml",
       "//tools/metrics/histograms/metadata/platform/histograms.xml",
       "//tools/metrics/histograms/metadata/plugin/histograms.xml",
       "//tools/metrics/histograms/metadata/plugin_vm/histograms.xml",
