@@ -1799,6 +1799,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // completes. Among other things, this ensures that any `SafeRef`s from
   // `DocumentService` and `RenderFrameHostUserData` subclasses are still valid
   // when their destructors run.
+  document_associated_data_->RemoveAllServices();
   document_associated_data_.reset();
 
   // If this was the last active frame in the SiteInstanceGroup, the
@@ -16027,13 +16028,17 @@ RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
   }
 }
 
-RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() {
+void RenderFrameHostImpl::DocumentAssociatedData::RemoveAllServices() {
   while (!services_.empty()) {
     // DocumentServiceBase unregisters itself at destruction time.
     services_.back()->WillBeDestroyed(
         DocumentServiceDestructionReason::kEndOfDocumentLifetime);
     services_.back()->ResetAndDeleteThis();
   }
+}
+
+RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() {
+  RemoveAllServices();
 
   // Explicitly clear all user data here, so that the other fields of
   // DocumentAssociatedData are still valid while user data is being destroyed.

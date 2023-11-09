@@ -4902,6 +4902,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
     DocumentAssociatedData(const DocumentAssociatedData&) = delete;
     DocumentAssociatedData& operator=(const DocumentAssociatedData&) = delete;
 
+    // Removes all services. We do that on the destructor of
+    // DocumentAssociatedData, but also before resetting
+    // `document_associated_data_` in RenderFrameHostImpl. This is because
+    // otherwise, when services in DocumentAssociatedData try to remove
+    // themselves from DocumentAssociatedData through the RenderFrameHostImpl
+    // optional, it will not be valid anymore.
+    void RemoveAllServices();
+
     // An opaque token that uniquely identifies the document currently
     // associated with this RenderFrameHost. Note that in the case of
     // speculative RenderFrameHost that has not yet committed, the renderer side
