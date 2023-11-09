@@ -139,7 +139,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 120;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 121;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1263,5 +1263,29 @@ TEST_F(WebDatabaseMigrationTest, MigrationVersion119ToCurrent) {
     EXPECT_TRUE(connection.DoesTableExist("payment_instruments_metadata"));
     EXPECT_TRUE(
         connection.DoesTableExist("payment_instrument_supported_rails"));
+  }
+}
+
+// Tests that the server_address* tables are dropped.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion120ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_120.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(120, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesTableExist("server_addresses"));
+    EXPECT_TRUE(connection.DoesTableExist("server_address_metadata"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesTableExist("server_addresses"));
+    EXPECT_FALSE(connection.DoesTableExist("server_address_metadata"));
   }
 }

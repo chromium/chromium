@@ -243,28 +243,6 @@ constexpr std::string_view kMaskedIbansMetadataTable = "masked_ibans_metadata";
 // kUseCount = "use_count"
 // kUseDate = "use_date"
 
-constexpr std::string_view kServerAddressesTable = "server_addresses";
-// kId = "id"
-constexpr std::string_view kRecipientName = "recipient_name";
-// kCompanyName = "company_name"
-// kStreetAddress = "street_address"
-constexpr std::string_view kAddress1 = "address_1";
-constexpr std::string_view kAddress2 = "address_2";
-constexpr std::string_view kAddress3 = "address_3";
-constexpr std::string_view kAddress4 = "address_4";
-constexpr std::string_view kPostalCode = "postal_code";
-// kSortingCode = "sorting_code"
-// kCountryCode = "country_code"
-// kLanguageCode = "language_code"
-constexpr std::string_view kPhoneNumber = "phone_number";
-
-constexpr std::string_view kServerAddressMetadataTable =
-    "server_address_metadata";
-// kId = "id"
-// kUseCount = "use_count"
-// kUseDate = "use_date"
-constexpr std::string_view kHasConverted = "has_converted";
-
 constexpr std::string_view kAutofillSyncMetadataTable =
     "autofill_sync_metadata";
 constexpr std::string_view kModelType = "model_type";
@@ -1220,8 +1198,7 @@ WebDatabaseTable::TypeKey AutofillTable::GetTypeKey() const {
 bool AutofillTable::CreateTablesIfNecessary() {
   return InitMainTable() && InitCreditCardsTable() && InitLocalIbansTable() &&
          InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
-         InitServerCardMetadataTable() && InitServerAddressesTable() &&
-         InitServerAddressMetadataTable() && InitAutofillSyncMetadataTable() &&
+         InitServerCardMetadataTable() && InitAutofillSyncMetadataTable() &&
          InitModelTypeStateTable() && InitPaymentsCustomerDataTable() &&
          InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
          InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable() &&
@@ -1354,6 +1331,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 120:
       *update_compatible_version = false;
       return MigrateToVersion120AddPaymentInstrumentAndBankAccountTables();
+    case 121:
+      *update_compatible_version = true;
+      return MigrateToVersion121DropServerAddressTables();
   }
   return true;
 }
@@ -1890,132 +1870,6 @@ bool AutofillTable::GetAutofillProfilesFromLegacyTable(
   return s.Succeeded();
 }
 
-bool AutofillTable::GetServerProfiles(
-    std::vector<std::unique_ptr<AutofillProfile>>* profiles) const {
-  profiles->clear();
-
-  sql::Statement s;
-  SelectBuilder(
-      db_, s, kServerAddressesTable,
-      {kId, kUseCount, kUseDate, kRecipientName, kCompanyName, kStreetAddress,
-       kAddress1,     // ADDRESS_HOME_STATE
-       kAddress2,     // ADDRESS_HOME_CITY
-       kAddress3,     // ADDRESS_HOME_DEPENDENT_LOCALITY
-       kAddress4,     // Not supported in AutofillProfile yet.
-       kPostalCode,   // ADDRESS_HOME_ZIP
-       kSortingCode,  // ADDRESS_HOME_SORTING_CODE
-       kCountryCode,  // ADDRESS_HOME_COUNTRY
-       kPhoneNumber,  // PHONE_HOME_WHOLE_NUMBER
-       kLanguageCode, kHasConverted},
-      "LEFT OUTER JOIN server_address_metadata USING (id)");
-
-  while (s.Step()) {
-    int index = 0;
-    std::unique_ptr<AutofillProfile> profile =
-        std::make_unique<AutofillProfile>(AutofillProfile::SERVER_PROFILE,
-                                          s.ColumnString(index++));
-    profile->set_use_count(s.ColumnInt64(index++));
-    profile->set_use_date(
-        base::Time::FromInternalValue(s.ColumnInt64(index++)));
-    // Modification date is not tracked for server profiles. Explicitly set it
-    // here to override the default value of AutofillClock::Now().
-    profile->set_modification_date(base::Time());
-
-    std::u16string recipient_name = s.ColumnString16(index++);
-    for (ServerFieldType type :
-         {COMPANY_NAME, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STATE,
-          ADDRESS_HOME_CITY, ADDRESS_HOME_DEPENDENT_LOCALITY}) {
-      profile->SetRawInfo(type, s.ColumnString16(index++));
-    }
-    index++;  // Skip address_4 which we haven't added to AutofillProfile yet.
-    for (ServerFieldType type :
-         {ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE, ADDRESS_HOME_COUNTRY}) {
-      profile->SetRawInfo(type, s.ColumnString16(index++));
-    }
-    std::u16string phone_number = s.ColumnString16(index++);
-    profile->set_language_code(s.ColumnString(index++));
-    profile->set_has_converted(s.ColumnBool(index++));
-
-    // SetInfo instead of SetRawInfo so the constituent pieces will be parsed
-    // for these data types.
-    profile->SetInfo(NAME_FULL, recipient_name, profile->language_code());
-    profile->SetInfo(PHONE_HOME_WHOLE_NUMBER, phone_number,
-                     profile->language_code());
-
-    // For more-structured profiles, the profile must be finalized to fully
-    // populate the name fields.
-    profile->FinalizeAfterImport();
-
-    profiles->push_back(std::move(profile));
-  }
-
-  return s.Succeeded();
-}
-
-void AutofillTable::SetServerProfilesAndMetadata(
-    const std::vector<AutofillProfile>& profiles,
-    bool update_metadata) {
-  sql::Transaction transaction(db_);
-  if (!transaction.Begin())
-    return;
-
-  // Delete all old ones first.
-  Delete(db_, kServerAddressesTable);
-
-  sql::Statement insert;
-  InsertBuilder(db_, insert, kServerAddressesTable,
-                {kId, kRecipientName, kCompanyName, kStreetAddress,
-                 kAddress1,     // ADDRESS_HOME_STATE
-                 kAddress2,     // ADDRESS_HOME_CITY
-                 kAddress3,     // ADDRESS_HOME_DEPENDENT_LOCALITY
-                 kAddress4,     // Not supported in AutofillProfile yet.
-                 kPostalCode,   // ADDRESS_HOME_ZIP
-                 kSortingCode,  // ADDRESS_HOME_SORTING_CODE
-                 kCountryCode,  // ADDRESS_HOME_COUNTRY
-                 kPhoneNumber,  // PHONE_HOME_WHOLE_NUMBER
-                 kLanguageCode});
-  for (const auto& profile : profiles) {
-    DCHECK(profile.record_type() == AutofillProfile::SERVER_PROFILE);
-
-    int index = 0;
-    insert.BindString(index++, profile.server_id());
-    for (ServerFieldType type :
-         {NAME_FULL, COMPANY_NAME, ADDRESS_HOME_STREET_ADDRESS,
-          ADDRESS_HOME_STATE, ADDRESS_HOME_CITY,
-          ADDRESS_HOME_DEPENDENT_LOCALITY}) {
-      insert.BindString16(index++, profile.GetRawInfo(type));
-    }
-    index++;  // Skip address_4 which we haven't added to AutofillProfile yet.
-    for (ServerFieldType type :
-         {ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE, ADDRESS_HOME_COUNTRY,
-          PHONE_HOME_WHOLE_NUMBER}) {
-      insert.BindString16(index++, profile.GetRawInfo(type));
-    }
-    insert.BindString(index++, profile.language_code());
-
-    insert.Run();
-    insert.Reset(/*clear_bound_vars=*/true);
-
-    if (update_metadata) {
-      // Save the use count and use date of the profile.
-      UpdateServerAddressMetadata(profile);
-    }
-  }
-
-  if (update_metadata) {
-    // Delete metadata that's no longer relevant.
-    Delete(db_, kServerAddressMetadataTable,
-           "id NOT IN (SELECT id FROM server_addresses)");
-  }
-
-  transaction.Commit();
-}
-
-void AutofillTable::SetServerProfiles(
-    const std::vector<AutofillProfile>& profiles) {
-  SetServerProfilesAndMetadata(profiles, /*update_metadata=*/true);
-}
-
 bool AutofillTable::AddBankAccount(const BankAccount& bank_account) {
   // TODO(crbug.com/1475426): Add implementation.
   return false;
@@ -2548,91 +2402,6 @@ bool AutofillTable::GetServerCardsMetadata(
   return s.Succeeded();
 }
 
-bool AutofillTable::AddServerAddressMetadata(
-    const AutofillMetadata& address_metadata) {
-  sql::Statement s;
-  InsertBuilder(db_, s, kServerAddressMetadataTable,
-                {kUseCount, kUseDate, kHasConverted, kId});
-  s.BindInt64(0, address_metadata.use_count);
-  s.BindInt64(1, address_metadata.use_date.ToInternalValue());
-  s.BindBool(2, address_metadata.has_converted);
-  s.BindString(3, address_metadata.id);
-  s.Run();
-
-  return db_->GetLastChangeCount() > 0;
-}
-
-// TODO(crbug.com/680182): Record the address conversion status when a server
-// address gets converted.
-bool AutofillTable::UpdateServerAddressMetadata(
-    const AutofillProfile& profile) {
-  DCHECK_EQ(AutofillProfile::SERVER_PROFILE, profile.record_type());
-
-  sql::Transaction transaction(db_);
-  if (!transaction.Begin())
-    return false;
-
-  DeleteWhereColumnEq(db_, kServerAddressMetadataTable, kId,
-                      profile.server_id());
-
-  sql::Statement s;
-  InsertBuilder(db_, s, kServerAddressMetadataTable,
-                {kUseCount, kUseDate, kHasConverted, kId});
-
-  s.BindInt64(0, profile.use_count());
-  s.BindInt64(1, profile.use_date().ToInternalValue());
-  s.BindBool(2, profile.has_converted());
-  s.BindString(3, profile.server_id());
-  s.Run();
-
-  transaction.Commit();
-
-  return db_->GetLastChangeCount() > 0;
-}
-
-bool AutofillTable::UpdateServerAddressMetadata(
-    const AutofillMetadata& address_metadata) {
-  // Do not check if there was a record that got deleted. Inserting a new one is
-  // also fine.
-  RemoveServerAddressMetadata(address_metadata.id);
-  sql::Statement s;
-  InsertBuilder(db_, s, kServerAddressMetadataTable,
-                {kUseCount, kUseDate, kHasConverted, kId});
-  s.BindInt64(0, address_metadata.use_count);
-  s.BindInt64(1, address_metadata.use_date.ToInternalValue());
-  s.BindBool(2, address_metadata.has_converted);
-  s.BindString(3, address_metadata.id);
-  s.Run();
-
-  return db_->GetLastChangeCount() > 0;
-}
-
-bool AutofillTable::RemoveServerAddressMetadata(const std::string& id) {
-  DeleteWhereColumnEq(db_, kServerAddressMetadataTable, kId, id);
-  return db_->GetLastChangeCount() > 0;
-}
-
-bool AutofillTable::GetServerAddressesMetadata(
-    std::map<std::string, AutofillMetadata>* addresses_metadata) const {
-  addresses_metadata->clear();
-
-  sql::Statement s;
-  SelectBuilder(db_, s, kServerAddressMetadataTable,
-                {kId, kUseCount, kUseDate, kHasConverted});
-  while (s.Step()) {
-    int index = 0;
-
-    AutofillMetadata address_metadata;
-    address_metadata.id = s.ColumnString(index++);
-    address_metadata.use_count = s.ColumnInt64(index++);
-    address_metadata.use_date =
-        base::Time::FromInternalValue(s.ColumnInt64(index++));
-    address_metadata.has_converted = s.ColumnBool(index++);
-    (*addresses_metadata)[address_metadata.id] = address_metadata;
-  }
-  return s.Succeeded();
-}
-
 bool AutofillTable::AddOrUpdateServerIbanMetadata(const Iban& iban) {
   CHECK_EQ(Iban::RecordType::kServerIban, iban.record_type());
   // There's no need to verify if removal succeeded, because if it's a new IBAN,
@@ -2719,11 +2488,6 @@ void AutofillTable::SetServerCardsData(
          "id NOT IN (SELECT id FROM masked_credit_cards)");
 
   transaction.Commit();
-}
-
-void AutofillTable::SetServerAddressesData(
-    const std::vector<AutofillProfile>& profiles) {
-  SetServerProfilesAndMetadata(profiles, /*update_metadata=*/false);
 }
 
 void AutofillTable::SetCreditCardCloudTokenData(
@@ -3076,8 +2840,7 @@ bool AutofillTable::ClearAllServerData() {
   bool changed = false;
   for (std::string_view table_name :
        {kMaskedCreditCardsTable, kMaskedIbansTable, kUnmaskedCreditCardsTable,
-        kServerAddressesTable, kServerCardMetadataTable,
-        kServerAddressMetadataTable, kPaymentsCustomerDataTable,
+        kServerCardMetadataTable, kPaymentsCustomerDataTable,
         kServerCardCloudTokenDataTable, kOfferDataTable,
         kOfferEligibleInstrumentTable, kOfferMerchantDomainTable,
         kVirtualCardUsageDataTable}) {
@@ -3766,6 +3529,13 @@ bool AutofillTable::
          transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion121DropServerAddressTables() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() && DropTableIfExists(db_, "server_addresses") &&
+         DropTableIfExists(db_, "server_address_metadata") &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutocompleteChange>* changes,
@@ -4199,32 +3969,6 @@ bool AutofillTable::InitServerCardMetadataTable() {
                                  {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                                  {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
                                  {kBillingAddressId, "VARCHAR"}});
-}
-
-bool AutofillTable::InitServerAddressesTable() {
-  return CreateTableIfNotExists(db_, kServerAddressesTable,
-                                {{kId, "VARCHAR"},
-                                 {kCompanyName, "VARCHAR"},
-                                 {kStreetAddress, "VARCHAR"},
-                                 {kAddress1, "VARCHAR"},
-                                 {kAddress2, "VARCHAR"},
-                                 {kAddress3, "VARCHAR"},
-                                 {kAddress4, "VARCHAR"},
-                                 {kPostalCode, "VARCHAR"},
-                                 {kSortingCode, "VARCHAR"},
-                                 {kCountryCode, "VARCHAR"},
-                                 {kLanguageCode, "VARCHAR"},
-                                 {kRecipientName, "VARCHAR"},
-                                 {kPhoneNumber, "VARCHAR"}});
-}
-
-bool AutofillTable::InitServerAddressMetadataTable() {
-  return CreateTableIfNotExists(
-      db_, kServerAddressMetadataTable,
-      {{kId, "VARCHAR NOT NULL"},
-       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
-       {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
-       {kHasConverted, "BOOL NOT NULL DEFAULT FALSE"}});
 }
 
 bool AutofillTable::InitAutofillSyncMetadataTable() {

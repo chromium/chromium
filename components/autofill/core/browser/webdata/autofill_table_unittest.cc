@@ -2213,29 +2213,6 @@ TEST_F(AutofillTableTest, SetGetRemoveServerCardMetadata) {
   EXPECT_EQ(0U, outputs.size());
 }
 
-TEST_F(AutofillTableTest, SetGetRemoveServerAddressMetadata) {
-  // Create and set the metadata.
-  AutofillMetadata input;
-  input.id = "server id";
-  input.use_count = 50;
-  input.use_date = AutofillClock::Now();
-  input.has_converted = true;
-  table_->AddServerAddressMetadata(input);
-
-  // Make sure it was added correctly.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
-
-  // Remove the metadata from the table.
-  EXPECT_TRUE(table_->RemoveServerAddressMetadata(input.id));
-
-  // Make sure it was removed correctly.
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  EXPECT_EQ(0U, outputs.size());
-}
-
 // Test that masked IBAN metadata can be added, retrieved and removed
 // successfully.
 TEST_F(AutofillTableTest, SetGetRemoveServerIbanMetadata) {
@@ -2256,37 +2233,6 @@ TEST_F(AutofillTableTest, SetGetRemoveServerIbanMetadata) {
   // Make sure it was removed correctly.
   outputs = table_->GetServerIbansMetadata();
   EXPECT_EQ(0u, outputs.size());
-}
-
-TEST_F(AutofillTableTest, AddUpdateServerAddressMetadata) {
-  // Create and set the metadata.
-  AutofillMetadata input;
-  input.id = "server id";
-  input.use_count = 50;
-  input.use_date = AutofillClock::Now();
-  input.has_converted = true;
-  ASSERT_TRUE(table_->AddServerAddressMetadata(input));
-
-  // Make sure it was added correctly.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
-  ASSERT_EQ(input, outputs[input.id]);
-
-  // Update the metadata in the table.
-  input.use_count = 51;
-  EXPECT_TRUE(table_->UpdateServerAddressMetadata(input));
-
-  // Make sure it was updated correctly.
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
-
-  // Insert a new entry using update - that should also be legal.
-  input.id = "another server id";
-  EXPECT_TRUE(table_->UpdateServerAddressMetadata(input));
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(2U, outputs.size());
 }
 
 TEST_F(AutofillTableTest, AddUpdateServerCardMetadata) {
@@ -2318,38 +2264,6 @@ TEST_F(AutofillTableTest, AddUpdateServerCardMetadata) {
   EXPECT_TRUE(table_->UpdateServerCardMetadata(input));
   ASSERT_TRUE(table_->GetServerCardsMetadata(&outputs));
   ASSERT_EQ(2U, outputs.size());
-}
-
-TEST_F(AutofillTableTest, UpdateServerAddressMetadataDoesNotChangeData) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
-                      AddressCountryCode("ES"));
-  std::vector<AutofillProfile> inputs;
-  inputs.push_back(one);
-  table_->SetServerProfiles(inputs);
-
-  std::vector<std::unique_ptr<AutofillProfile>> outputs;
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-
-  // Update metadata in the profile.
-  ASSERT_NE(outputs[0]->use_count(), 51u);
-  outputs[0]->set_use_count(51);
-
-  AutofillMetadata input_metadata = outputs[0]->GetMetadata();
-  EXPECT_TRUE(table_->UpdateServerAddressMetadata(input_metadata));
-
-  // Make sure it was updated correctly.
-  std::map<std::string, AutofillMetadata> output_metadata;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&output_metadata));
-  ASSERT_EQ(1U, output_metadata.size());
-  EXPECT_EQ(input_metadata, output_metadata[input_metadata.id]);
-
-  // Make sure nothing else got updated.
-  std::vector<std::unique_ptr<AutofillProfile>> outputs2;
-  table_->GetServerProfiles(&outputs2);
-  ASSERT_EQ(1u, outputs2.size());
-  EXPECT_TRUE(outputs[0]->EqualsForLegacySyncPurposes(*outputs2[0]));
 }
 
 TEST_F(AutofillTableTest, UpdateServerCardMetadataDoesNotChangeData) {
@@ -2523,88 +2437,6 @@ TEST_F(AutofillTableTest, SetServerCardsData_ExistingMetadata) {
   ASSERT_TRUE(table_->GetServerCardsMetadata(&outputs));
   ASSERT_EQ(1U, outputs.size());
   EXPECT_EQ(input, outputs[input.id]);
-}
-
-TEST_F(AutofillTableTest, SetServerAddressesData) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
-                      AddressCountryCode("ES"));
-  std::vector<AutofillProfile> inputs;
-  inputs.push_back(one);
-  table_->SetServerAddressesData(inputs);
-
-  // Make sure the address was added correctly.
-  std::vector<std::unique_ptr<AutofillProfile>> outputs;
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-
-  outputs.clear();
-
-  // Make sure no metadata was added.
-  std::map<std::string, AutofillMetadata> metadata_map;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&metadata_map));
-  ASSERT_EQ(0U, metadata_map.size());
-
-  // Set a different profile.
-  AutofillProfile two(AutofillProfile::SERVER_PROFILE, "b456");
-  inputs[0] = two;
-  table_->SetServerAddressesData(inputs);
-
-  // The original one should have been replaced.
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(two.server_id(), outputs[0]->server_id());
-
-  // Make sure no metadata was added.
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&metadata_map));
-  ASSERT_EQ(0U, metadata_map.size());
-}
-
-// Tests that adding server addresses data does not delete the existing
-// metadata.
-TEST_F(AutofillTableTest, SetServerAddressesData_ExistingMetadata) {
-  // Create and set some metadata.
-  AutofillMetadata input;
-  input.id = "server id";
-  input.use_count = 50;
-  input.use_date = AutofillClock::Now();
-  input.has_converted = true;
-  table_->AddServerAddressMetadata(input);
-
-  // Set an address data.
-  std::vector<AutofillProfile> inputs;
-  inputs.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, "server id"));
-  table_->SetServerAddressesData(inputs);
-
-  // Make sure the metadata is still intact.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
-}
-
-TEST_F(AutofillTableTest, RemoveWrongServerAddressMetadata) {
-  // Crete and set some metadata.
-  AutofillMetadata input;
-  input.id = "server id";
-  input.use_count = 50;
-  input.use_date = AutofillClock::Now();
-  input.has_converted = true;
-  table_->AddServerAddressMetadata(input);
-
-  // Make sure it was added correctly.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
-
-  // Try removing some non-existent metadata.
-  EXPECT_FALSE(table_->RemoveServerAddressMetadata("a_wrong_id"));
-
-  // Make sure the metadata was not removed.
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
 }
 
 TEST_F(AutofillTableTest, MaskUnmaskServerCards) {
@@ -2783,75 +2615,6 @@ TEST_F(AutofillTableTest, SetServerCardUpdateUsageStatsAndBillingAddress) {
   EXPECT_NE(base::Time(), outputs[0]->use_date());
   EXPECT_EQ(base::Time(), outputs[0]->modification_date());
   EXPECT_EQ("1", outputs[0]->billing_address_id());
-  outputs.clear();
-}
-
-TEST_F(AutofillTableTest, SetServerProfile) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
-                      AddressCountryCode("ES"));
-  std::vector<AutofillProfile> inputs;
-  inputs.push_back(one);
-  table_->SetServerProfiles(inputs);
-
-  std::vector<std::unique_ptr<AutofillProfile>> outputs;
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-
-  outputs.clear();
-
-  // Set a different profile.
-  AutofillProfile two(AutofillProfile::SERVER_PROFILE, "b456",
-                      AddressCountryCode("ES"));
-  inputs[0] = two;
-  table_->SetServerProfiles(inputs);
-
-  // The original one should have been replaced.
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(two.server_id(), outputs[0]->server_id());
-
-  outputs.clear();
-}
-
-TEST_F(AutofillTableTest, SetServerProfileUpdateUsageStats) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
-                      AddressCountryCode("ES"));
-  std::vector<AutofillProfile> inputs;
-  inputs.push_back(one);
-  table_->SetServerProfiles(inputs);
-
-  std::vector<std::unique_ptr<AutofillProfile>> outputs;
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-  EXPECT_EQ(1U, outputs[0]->use_count());
-  EXPECT_NE(base::Time(), outputs[0]->use_date());
-  // We don't track modification date for server profiles. It should always be
-  // base::Time().
-  EXPECT_EQ(base::Time(), outputs[0]->modification_date());
-  outputs.clear();
-
-  // Update the usage stats; make sure they're reflected in GetServerProfiles.
-  inputs.back().set_use_count(4U);
-  inputs.back().set_use_date(AutofillClock::Now());
-  table_->UpdateServerAddressMetadata(inputs.back());
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-  EXPECT_EQ(4U, outputs[0]->use_count());
-  EXPECT_NE(base::Time(), outputs[0]->use_date());
-  EXPECT_EQ(base::Time(), outputs[0]->modification_date());
-  outputs.clear();
-
-  // Setting the profiles again shouldn't delete the usage stats.
-  table_->SetServerProfiles(inputs);
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-  EXPECT_EQ(4U, outputs[0]->use_count());
-  EXPECT_NE(base::Time(), outputs[0]->use_date());
-  EXPECT_EQ(base::Time(), outputs[0]->modification_date());
   outputs.clear();
 }
 

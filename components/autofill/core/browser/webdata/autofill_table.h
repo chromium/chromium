@@ -391,48 +391,6 @@ struct ServerCvc {
 //   use_date           The date this IBAN was last used to fill a form,
 //                      in time_t.
 //
-// server_addresses     This table contains Autofill address data synced from
-//                      the wallet server. It's basically the same as the
-//                      autofill_profiles table but locally immutable.
-//
-//   id                 String assigned by the server to identify this address.
-//                      This is opaque to the client.
-//   recipient_name     Added in v63.
-//   company_name
-//   street_address     The combined lines of the street address.
-//   address_1          Also known as "administrative area". This is normally
-//                      the state or province in most countries.
-//   address_2          Also known as "locality". In the US this is the city.
-//   address_3          A sub-classification beneath the city, e.g. an
-//                      inner-city district or suburb. Also known as
-//                      "dependent_locality".
-//   address_4          Used in certain countries. Also known as
-//                      "sub_dependent_locality".
-//   postal_code
-//   sorting_code       Similar to the zipcode column, but used for businesses
-//                      or organizations that might not be geographically
-//                      contiguous. The canonical example is CEDEX in France.
-//   country_code
-//   language_code      The BCP 47 language code used to format the address for
-//                      display. For example, a JP address with "ja" language
-//                      code starts with the postal code, but a JP address with
-//                      "ja-latn" language code starts with the recipient name.
-//   phone_number       Phone number. This is a string and has no formatting
-//                      constraints. Added in version 64.
-//
-// server_address_metadata
-//                      Metadata (currently, usage data) about server addresses.
-//                      This will be synced.
-//
-//   id                 The server ID, which matches an ID from the
-//                      server_addresses table.
-//   use_count          The number of times this address has been used to fill
-//                      a form.
-//   use_date           The date this address was last used to fill a form,
-//                      in internal t.
-//   has_converted      Whether this server address has been converted to a
-//                      local autofill profile.
-//
 // autofill_sync_metadata
 //                      Sync-specific metadata for autofill records.
 //
@@ -751,19 +709,12 @@ class AutofillTable : public WebDatabaseTable,
       const std::string& guid,
       AutofillProfile::Source profile_source) const;
 
-  // Retrieves local/server profiles in the database. They are returned in
-  // unspecified order.
+  // Retrieves profiles in the database. They are returned in unspecified order.
   // The `profile_source` specifies if profiles from the legacy or the remote
   // backend should be retrieved.
   virtual bool GetAutofillProfiles(
       AutofillProfile::Source profile_source,
       std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
-  virtual bool GetServerProfiles(
-      std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
-
-  // Sets the server profiles. All old profiles are deleted and replaced with
-  // the given ones.
-  void SetServerProfiles(const std::vector<AutofillProfile>& profiles);
 
   // Records a single BankAccount in the bank accounts table. Returns true if
   // the BankAccount was successfully added to the database.
@@ -848,28 +799,20 @@ class AutofillTable : public WebDatabaseTable,
   // This will clear all the local cvcs.
   bool ClearLocalCvcs();
 
-  // Methods to add, update, remove and get the metadata for server cards,
-  // addresses, and IBANs. Return true if the operations succeeded.
+  // Methods to add, update, remove and get the metadata for server cards and
+  // IBANs. Return true if the operations succeeded.
   bool AddServerCardMetadata(const AutofillMetadata& card_metadata);
   bool UpdateServerCardMetadata(const CreditCard& credit_card);
   bool UpdateServerCardMetadata(const AutofillMetadata& card_metadata);
   bool RemoveServerCardMetadata(const std::string& id);
   bool GetServerCardsMetadata(
       std::map<std::string, AutofillMetadata>* cards_metadata) const;
-  bool AddServerAddressMetadata(const AutofillMetadata& address_metadata);
-  bool UpdateServerAddressMetadata(const AutofillProfile& profile);
-  bool UpdateServerAddressMetadata(const AutofillMetadata& address_metadata);
-  bool RemoveServerAddressMetadata(const std::string& id);
-  bool GetServerAddressesMetadata(
-      std::map<std::string, AutofillMetadata>* addresses_metadata) const;
   bool AddOrUpdateServerIbanMetadata(const Iban& iban);
   bool RemoveServerIbanMetadata(const std::string& instrument_id);
   std::vector<AutofillMetadata> GetServerIbansMetadata() const;
 
-  // Methods to add the server cards and addresses data independently from the
-  // metadata.
+  // Method to add the server cards independently from the metadata.
   void SetServerCardsData(const std::vector<CreditCard>& credit_cards);
-  void SetServerAddressesData(const std::vector<AutofillProfile>& profiles);
 
   // Setters and getters related to the CreditCardCloudTokenData of server
   // cards. Used by AutofillWalletSyncBridge to interact with the stored data.
@@ -1007,6 +950,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion118RemovePaymentsUpiVpaTable();
   bool MigrateToVersion119AddMaskedIbanTablesAndRenameLocalIbanTable();
   bool MigrateToVersion120AddPaymentInstrumentAndBankAccountTables();
+  bool MigrateToVersion121DropServerAddressTables();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -1091,12 +1035,6 @@ class AutofillTable : public WebDatabaseTable,
   bool DeleteFromMaskedCreditCards(const std::string& id);
   bool DeleteFromUnmaskedCreditCards(const std::string& id);
 
-  // Helper function extracting common code between `SetServerProfiles()` and
-  // `SetServerAddressData()`.
-  void SetServerProfilesAndMetadata(
-      const std::vector<AutofillProfile>& profiles,
-      bool update_metadata);
-
   // Reads profiles from the deprecated autofill_profiles table.
   std::unique_ptr<AutofillProfile> GetAutofillProfileFromLegacyTable(
       const std::string& guid) const;
@@ -1117,8 +1055,6 @@ class AutofillTable : public WebDatabaseTable,
   bool InitMaskedIbansMetadataTable();
   bool InitUnmaskedCreditCardsTable();
   bool InitServerCardMetadataTable();
-  bool InitServerAddressesTable();
-  bool InitServerAddressMetadataTable();
   bool InitAutofillSyncMetadataTable();
   bool InitModelTypeStateTable();
   bool InitPaymentsCustomerDataTable();
