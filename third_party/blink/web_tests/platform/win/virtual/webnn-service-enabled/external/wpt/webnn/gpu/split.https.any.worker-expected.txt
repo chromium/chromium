@@ -1,20 +1,12 @@
 This is a testharness.js-based test.
-[FAIL] split float32 1D tensor number splits default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] split float32 2D tensor number splits default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] split float32 3D tensor number splits default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] split float32 4D tensor number splits default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] split float32 5D tensor number splits default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] split float32 4D tensor array splits default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] split float32 4D tensor number splits options.axis / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] split float32 5D tensor array splits options.axis / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
+[PASS] split float32 1D tensor number splits default options / sync
+[PASS] split float32 2D tensor number splits default options / sync
+[PASS] split float32 3D tensor number splits default options / sync
+[PASS] split float32 4D tensor number splits default options / sync
+[PASS] split float32 5D tensor number splits default options / sync
+[PASS] split float32 4D tensor array splits default options / sync
+[PASS] split float32 4D tensor number splits options.axis / sync
+[PASS] split float32 5D tensor array splits options.axis / sync
 [FAIL] split float32 1D tensor number splits default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] split float32 2D tensor number splits default options / async

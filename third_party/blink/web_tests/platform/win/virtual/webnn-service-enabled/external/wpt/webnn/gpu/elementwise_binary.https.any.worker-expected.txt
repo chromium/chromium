@@ -1,131 +1,68 @@
 This is a testharness.js-based test.
-Found 126 tests; 0 PASS, 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] add float32 1D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] add float32 2D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] add float32 3D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] add float32 4D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] add float32 5D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] add float32 broadcast 1D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] add float32 broadcast 2D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] add float32 broadcast 3D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] add float32 broadcast 4D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] sub float32 1D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] sub float32 2D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] sub float32 3D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] sub float32 4D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] sub float32 5D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] sub float32 broadcast 1D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] sub float32 broadcast 2D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] sub float32 broadcast 3D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] sub float32 broadcast 4D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] mul float32 1D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] mul float32 2D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] mul float32 3D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] mul float32 4D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] mul float32 5D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] mul float32 broadcast 1D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] mul float32 broadcast 2D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] mul float32 broadcast 3D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] mul float32 broadcast 4D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] div float32 1D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] div float32 2D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] div float32 3D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] div float32 4D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] div float32 5D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] div float32 broadcast 1D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] div float32 broadcast 2D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] div float32 broadcast 3D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] div float32 broadcast 4D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] max float32 1D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] max float32 2D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] max float32 3D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] max float32 4D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] max float32 5D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] max float32 broadcast 1D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] max float32 broadcast 2D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] max float32 broadcast 3D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] max float32 broadcast 4D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] min float32 1D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] min float32 2D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] min float32 3D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] min float32 4D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] min float32 5D tensors / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] min float32 broadcast 1D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] min float32 broadcast 2D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] min float32 broadcast 3D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] min float32 broadcast 4D to 4D / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] pow float32 1D base tensor and 1D integer exponent tensor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] pow float32 2D base tensor and 2D integer exponent tensor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] pow float32 3D base tensor and 3D integer exponent tensor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] pow float32 4D base tensor and 4D integer exponent tensor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] pow float32 5D base tensor and 5D integer exponent tensor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] pow (square) float32 4D base tensor and broadcastable 1D integer exponent tensor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] pow (sqrt) float32 4D positive base tensor and broadcastable 1D integer exponent tensor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] pow float32 4D base tensor and broadcastable 2D integer exponent tensor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
-[FAIL] pow float32 4D base tensor and broadcastable 3D integer exponent tensor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (2) of the array buffer views doesn't match the expectation (0).
+Found 126 tests; 63 PASS, 63 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[PASS] add float32 1D tensors / sync
+[PASS] add float32 2D tensors / sync
+[PASS] add float32 3D tensors / sync
+[PASS] add float32 4D tensors / sync
+[PASS] add float32 5D tensors / sync
+[PASS] add float32 broadcast 1D to 4D / sync
+[PASS] add float32 broadcast 2D to 4D / sync
+[PASS] add float32 broadcast 3D to 4D / sync
+[PASS] add float32 broadcast 4D to 4D / sync
+[PASS] sub float32 1D tensors / sync
+[PASS] sub float32 2D tensors / sync
+[PASS] sub float32 3D tensors / sync
+[PASS] sub float32 4D tensors / sync
+[PASS] sub float32 5D tensors / sync
+[PASS] sub float32 broadcast 1D to 4D / sync
+[PASS] sub float32 broadcast 2D to 4D / sync
+[PASS] sub float32 broadcast 3D to 4D / sync
+[PASS] sub float32 broadcast 4D to 4D / sync
+[PASS] mul float32 1D tensors / sync
+[PASS] mul float32 2D tensors / sync
+[PASS] mul float32 3D tensors / sync
+[PASS] mul float32 4D tensors / sync
+[PASS] mul float32 5D tensors / sync
+[PASS] mul float32 broadcast 1D to 4D / sync
+[PASS] mul float32 broadcast 2D to 4D / sync
+[PASS] mul float32 broadcast 3D to 4D / sync
+[PASS] mul float32 broadcast 4D to 4D / sync
+[PASS] div float32 1D tensors / sync
+[PASS] div float32 2D tensors / sync
+[PASS] div float32 3D tensors / sync
+[PASS] div float32 4D tensors / sync
+[PASS] div float32 5D tensors / sync
+[PASS] div float32 broadcast 1D to 4D / sync
+[PASS] div float32 broadcast 2D to 4D / sync
+[PASS] div float32 broadcast 3D to 4D / sync
+[PASS] div float32 broadcast 4D to 4D / sync
+[PASS] max float32 1D tensors / sync
+[PASS] max float32 2D tensors / sync
+[PASS] max float32 3D tensors / sync
+[PASS] max float32 4D tensors / sync
+[PASS] max float32 5D tensors / sync
+[PASS] max float32 broadcast 1D to 4D / sync
+[PASS] max float32 broadcast 2D to 4D / sync
+[PASS] max float32 broadcast 3D to 4D / sync
+[PASS] max float32 broadcast 4D to 4D / sync
+[PASS] min float32 1D tensors / sync
+[PASS] min float32 2D tensors / sync
+[PASS] min float32 3D tensors / sync
+[PASS] min float32 4D tensors / sync
+[PASS] min float32 5D tensors / sync
+[PASS] min float32 broadcast 1D to 4D / sync
+[PASS] min float32 broadcast 2D to 4D / sync
+[PASS] min float32 broadcast 3D to 4D / sync
+[PASS] min float32 broadcast 4D to 4D / sync
+[PASS] pow float32 1D base tensor and 1D integer exponent tensor / sync
+[PASS] pow float32 2D base tensor and 2D integer exponent tensor / sync
+[PASS] pow float32 3D base tensor and 3D integer exponent tensor / sync
+[PASS] pow float32 4D base tensor and 4D integer exponent tensor / sync
+[PASS] pow float32 5D base tensor and 5D integer exponent tensor / sync
+[PASS] pow (square) float32 4D base tensor and broadcastable 1D integer exponent tensor / sync
+[PASS] pow (sqrt) float32 4D positive base tensor and broadcastable 1D integer exponent tensor / sync
+[PASS] pow float32 4D base tensor and broadcastable 2D integer exponent tensor / sync
+[PASS] pow float32 4D base tensor and broadcastable 3D integer exponent tensor / sync
 [FAIL] add float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] add float32 2D tensors / async

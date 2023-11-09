@@ -1,16 +1,10 @@
 This is a testharness.js-based test.
-[FAIL] elu float32 1D tensor default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] elu float32 2D tensor default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] elu float32 3D tensor default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] elu float32 4D tensor default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] elu float32 5D tensor default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] elu float32 4D tensor positive options.alpha / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
+[PASS] elu float32 1D tensor default options / sync
+[PASS] elu float32 2D tensor default options / sync
+[PASS] elu float32 3D tensor default options / sync
+[PASS] elu float32 4D tensor default options / sync
+[PASS] elu float32 5D tensor default options / sync
+[PASS] elu float32 4D tensor positive options.alpha / sync
 [FAIL] elu float32 4D tensor negative options.alpha / sync
   Failed to execute 'elu' on 'MLGraphBuilder': The value of alpha must be greater than 0.
 [FAIL] elu float32 1D tensor default options / async

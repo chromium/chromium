@@ -1,75 +1,41 @@
 This is a testharness.js-based test.
-Found 70 tests; 0 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] averagePool2d float32 4D tensor all positive default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor all negative default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.windowDimensions / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.padding / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.strides / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
+Found 70 tests; 34 PASS, 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[PASS] averagePool2d float32 4D tensor all positive default options / sync
+[PASS] averagePool2d float32 4D tensor all negative default options / sync
+[PASS] averagePool2d float32 4D tensor options.windowDimensions / sync
+[PASS] averagePool2d float32 4D tensor options.padding / sync
+[PASS] averagePool2d float32 4D tensor options.strides / sync
 [FAIL] averagePool2d float32 4D tensor options.dilations / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Dilations are not supported for average pooling operator.
-[FAIL] averagePool2d float32 4D tensor options.autoPad=explicit / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-upper / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-lower / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.layout=nchw / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.layout=nhwc / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.roundingType=floor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.roundingType=ceil / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] averagePool2d float32 4D tensor options.dilations with options.strides / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor default options / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.windowDimensions / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.padding / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.strides / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.dilations / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.autoPad=explicit / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-upper / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-lower / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.layout=nchw / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.layout=nhwc / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.roundingType=floor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.roundingType=ceil / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
-[FAIL] maxPool2d float32 4D tensor options.dilations with options.strides / sync
-  Failed to execute 'computeSync' on 'MLContext': Invalid inputs: The number (1) of the array buffer views doesn't match the expectation (0).
+[PASS] averagePool2d float32 4D tensor options.autoPad=explicit / sync
+[PASS] averagePool2d float32 4D tensor options.autoPad=same-upper / sync
+[PASS] averagePool2d float32 4D tensor options.autoPad=same-lower / sync
+[PASS] averagePool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / sync
+[PASS] averagePool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / sync
+[PASS] averagePool2d float32 4D tensor options.layout=nchw / sync
+[PASS] averagePool2d float32 4D tensor options.layout=nhwc / sync
+[PASS] averagePool2d float32 4D tensor options.roundingType=floor / sync
+[PASS] averagePool2d float32 4D tensor options.roundingType=ceil / sync
+[PASS] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / sync
+[PASS] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / sync
+[PASS] averagePool2d float32 4D tensor options.dilations with options.strides / sync
+[PASS] maxPool2d float32 4D tensor default options / sync
+[PASS] maxPool2d float32 4D tensor options.windowDimensions / sync
+[PASS] maxPool2d float32 4D tensor options.padding / sync
+[PASS] maxPool2d float32 4D tensor options.strides / sync
+[PASS] maxPool2d float32 4D tensor options.dilations / sync
+[PASS] maxPool2d float32 4D tensor options.autoPad=explicit / sync
+[PASS] maxPool2d float32 4D tensor options.autoPad=same-upper / sync
+[PASS] maxPool2d float32 4D tensor options.autoPad=same-lower / sync
+[PASS] maxPool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / sync
+[PASS] maxPool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / sync
+[PASS] maxPool2d float32 4D tensor options.layout=nchw / sync
+[PASS] maxPool2d float32 4D tensor options.layout=nhwc / sync
+[PASS] maxPool2d float32 4D tensor options.roundingType=floor / sync
+[PASS] maxPool2d float32 4D tensor options.roundingType=ceil / sync
+[PASS] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / sync
+[PASS] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / sync
+[PASS] maxPool2d float32 4D tensor options.dilations with options.strides / sync
 [FAIL] averagePool2d float32 4D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] averagePool2d float32 4D tensor all negative default options / async

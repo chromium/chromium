@@ -133,7 +133,7 @@ MLGraph* MLGraphMojo::ValidateAndBuildSync(ScriptState* script_state,
                                            const MLNamedOperands& named_outputs,
                                            ExceptionState& exception_state) {
   auto* graph = MakeGarbageCollected<MLGraphMojo>(script_state, context);
-  return graph->BuildSyncImpl(script_state, named_outputs, exception_state);
+  return graph->BuildSync(script_state, named_outputs, exception_state);
 }
 
 MLGraphMojo::MLGraphMojo(ScriptState* script_state, MLContextMojo* context)
