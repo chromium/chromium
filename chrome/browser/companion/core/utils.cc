@@ -77,7 +77,7 @@ bool ShouldEnableOpenCompanionForImageSearch() {
   // Allow multiple field trials to control the value. This is needed because
   // companion may be enabled by any of the field trials.
   return base::GetFieldTrialParamByFeatureAsBool(
-      *GetFeatureToUse(), "open-companion-for-image-search", false);
+      *GetFeatureToUse(), "open-companion-for-image-search", true);
 }
 
 bool ShouldEnableOpenCompanionForWebSearch() {
@@ -85,13 +85,13 @@ bool ShouldEnableOpenCompanionForWebSearch() {
   // companion may be enabled by any of the field trials.
 
   return base::GetFieldTrialParamByFeatureAsBool(
-      *GetFeatureToUse(), "open-companion-for-web-search", false);
+      *GetFeatureToUse(), "open-companion-for-web-search", true);
 }
 bool ShouldOpenLinksInCurrentTab() {
   // Allow multiple field trials to control the value. This is needed because
   // companion may be enabled by any of the field trials.
   return base::GetFieldTrialParamByFeatureAsBool(
-      *GetFeatureToUse(), "open-links-in-current-tab", false);
+      *GetFeatureToUse(), "open-links-in-current-tab", true);
 }
 
 std::string GetExpsRegistrationSuccessPageURLs() {
@@ -110,7 +110,7 @@ bool ShouldOpenContextualLensPanel() {
   // Allow multiple field trials to control the value. This is needed because
   // companion may be enabled by any of the field trials.
   return base::GetFieldTrialParamByFeatureAsBool(
-      *GetFeatureToUse(), "open-contextual-lens-panel", false);
+      *GetFeatureToUse(), "open-contextual-lens-panel", true);
 }
 
 // Checks to see if the page url is a valid one to be sent to companion.
