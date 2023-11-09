@@ -49,7 +49,7 @@ class DownloadNativeTaskImplTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   FakeWebState web_state_;
-  WKDownload* fake_download_ API_AVAILABLE(ios(15)) = nil;
+  WKDownload* fake_download_ = nil;
   id<DownloadNativeTaskBridgeDelegate> fake_delegate_ = nil;
   FakeNativeTaskBridge* fake_task_bridge_ = nil;
   std::unique_ptr<DownloadNativeTaskImpl> task_;

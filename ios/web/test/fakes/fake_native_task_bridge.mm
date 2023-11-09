@@ -56,7 +56,7 @@
 
 #pragma mark - Private methods
 
-- (void)downloadInitialized API_AVAILABLE(ios(15)) {
+- (void)downloadInitialized {
   // Instantiates _startDownloadBlock, so when we call
   // startDownload:progressionHandler:completionHandler method, the block is
   // initialized.
@@ -74,7 +74,7 @@
   }
 }
 
-- (void)destinationDecided:(NSURL*)url API_AVAILABLE(ios(15)) {
+- (void)destinationDecided:(NSURL*)url {
   _calledStartDownloadBlock = YES;
   [self downloadDidFinish:_download];
 }
@@ -100,7 +100,7 @@
   }
 }
 
-- (void)downloadDidFinish:(WKDownload*)download API_AVAILABLE(ios(15)) {
+- (void)downloadDidFinish:(WKDownload*)download {
   [self stopObservingDownloadProgress];
   if (!_completeCallback.is_null()) {
     web::DownloadResult download_result(net::OK);

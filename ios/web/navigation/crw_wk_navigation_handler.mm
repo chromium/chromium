@@ -1120,7 +1120,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
 - (void)webView:(WKWebView*)webView
      navigationAction:(WKNavigationAction*)navigationAction
-    didBecomeDownload:(WKDownload*)WKDownload API_AVAILABLE(ios(15)) {
+    didBecomeDownload:(WKDownload*)WKDownload {
   // As Chromium never return WKNavigationResponsePolicyDownload
   // when deciding the policy for an action, WebKit should never
   // invoke this delegate method.
@@ -1129,7 +1129,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
 - (void)webView:(WKWebView*)webView
     navigationResponse:(WKNavigationResponse*)navigationResponse
-     didBecomeDownload:(WKDownload*)WKDownload API_AVAILABLE(ios(15)) {
+     didBecomeDownload:(WKDownload*)WKDownload {
   // Send navigation callback if the download occurs in the main frame.
   if (navigationResponse.forMainFrame) {
     const GURL responseURL =
@@ -1162,7 +1162,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 // in CRWWkNavigationHandler so method can interact with WKWebView. Returns NO
 // if the download cannot be started.
 - (BOOL)onDownloadNativeTaskBridgeReadyForDownload:
-    (DownloadNativeTaskBridge*)bridge API_AVAILABLE(ios(15)) {
+    (DownloadNativeTaskBridge*)bridge {
   __attribute__((objc_precise_lifetime))
   DownloadNativeTaskBridge* nativeTaskBridge = bridge;
   [_nativeTaskBridges removeObject:bridge];
@@ -1194,8 +1194,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 }
 
 - (void)resumeDownloadNativeTask:(NSData*)data
-               completionHandler:(void (^)(WKDownload*))completionHandler
-    API_AVAILABLE(ios(15)) {
+               completionHandler:(void (^)(WKDownload*))completionHandler {
   [self.delegate resumeDownloadWithData:data
                       completionHandler:completionHandler];
 }
