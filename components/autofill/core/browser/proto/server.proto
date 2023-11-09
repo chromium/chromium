@@ -225,7 +225,7 @@ message AutofillRandomizedFieldMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 47
+// Next available id: 48
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -391,6 +391,11 @@ message AutofillUploadContents {
     // but has intermediate fields between the candidate and the password
     // form.
     optional bool is_most_recent_single_username_candidate = 46;
+
+    // Set to `true` if the field had a value on page load and it was changed
+    // between then and form submission. Set to `false` if the pre-filled value
+    // wasn't changed. Not set if the field didn't have a pre-filled value.
+    optional bool initial_value_changed = 47;
   }
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;

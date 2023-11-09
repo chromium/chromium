@@ -1087,6 +1087,10 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         // GeoIP, we want to hold on to these values.
         const bool same_value_as_on_page_load =
             field->value == cached_field->value;
+        if (!cached_field->value.empty() &&
+            !field->IsSelectOrSelectListElement()) {
+          field->set_initial_value_changed(!same_value_as_on_page_load);
+        }
         const bool field_is_neither_state_nor_country =
             field->server_type() != ADDRESS_HOME_COUNTRY &&
             field->server_type() != ADDRESS_HOME_STATE;
@@ -1445,6 +1449,11 @@ void FormStructure::EncodeFormFieldsForUpload(
 
     if (field->initial_value_hash()) {
       added_field->set_initial_value_hash(field->initial_value_hash().value());
+    }
+
+    if (field->initial_value_changed().has_value()) {
+      added_field->set_initial_value_changed(
+          field->initial_value_changed().value());
     }
 
     added_field->set_signature(field->GetFieldSignature().value());

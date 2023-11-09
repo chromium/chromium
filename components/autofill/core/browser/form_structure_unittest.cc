@@ -6779,4 +6779,39 @@ TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsEnabled) {
   }
 }
 
+TEST_F(FormStructureTestImpl, EncodeUploadRequest_SetsInitialValueChanged) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST},
+                  {.role = NAME_LAST, .value = u"Doe"},
+                  {.role = EMAIL_ADDRESS, .value = u"test@example.com"}}});
+  // Form structure preserving the state from page load.
+  FormStructure cached_form_structure(form);
+  // Form structure containing the state on submit.
+  FormStructure form_structure(form);
+
+  // Simulate user changed non-pre-filled field value.
+  form_structure.field(0)->value = u"John";
+  // Simulate user changed pre-filled field value.
+  form_structure.field(2)->value = u"changed@example.com";
+
+  // Sets `initial_value_changed` on `form_structure::fields_`.
+  form_structure.RetrieveFromCache(
+      cached_form_structure,
+      FormStructure::RetrieveFromCacheReason::kFormImport);
+
+  const std::vector<AutofillUploadContents> uploads =
+      form_structure.EncodeUploadRequest(
+          /*available_field_types=*/{}, /*form_was_autofilled=*/false,
+          /*login_form_signature=*/"", /*observed_submission=*/true);
+  ASSERT_EQ(uploads.size(), 1UL);
+  const AutofillUploadContents& upload = uploads[0];
+
+  ASSERT_EQ(upload.field_size(), 3);
+  EXPECT_FALSE(upload.field(0).has_initial_value_changed());
+  EXPECT_TRUE(upload.field(1).has_initial_value_changed());
+  EXPECT_FALSE(upload.field(1).initial_value_changed());
+  EXPECT_TRUE(upload.field(2).has_initial_value_changed());
+  EXPECT_TRUE(upload.field(2).initial_value_changed());
+}
+
 }  // namespace autofill
