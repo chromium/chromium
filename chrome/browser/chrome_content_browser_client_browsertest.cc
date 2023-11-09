@@ -31,6 +31,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -1015,7 +1016,8 @@ class AutomaticBeaconCredentialsBrowserTest : public InProcessBrowserTest,
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{privacy_sandbox::
                                   kOverridePrivacySandboxSettingsLocalTesting},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            content_settings::features::kTrackingProtection3pcd});
   }
 
   AutomaticBeaconCredentialsBrowserTest(
