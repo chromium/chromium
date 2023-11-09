@@ -79,6 +79,12 @@ class Address : public FormGroup {
   VerificationStatus GetVerificationStatusImpl(
       ServerFieldType type) const override;
 
+  // Updates the address' country, builds the hierarchy model corresponding to
+  // `country_code` and transfers the content of the old data model into the new
+  // one.
+  void SetAddressCountryCode(const std::u16string& country_code,
+                             VerificationStatus status);
+
   // This data structure holds the address information if the structured address
   // feature is enabled.
   std::unique_ptr<AddressComponent> structured_address_;

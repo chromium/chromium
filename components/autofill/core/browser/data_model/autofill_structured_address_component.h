@@ -264,6 +264,10 @@ class AddressComponent {
   // |GetAdditionalSupportedFieldTypes()| to add field types.
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const;
 
+  // Recursively adds only the storable types to the set. No computed type is
+  // ever added (e.g. GetAdditionalSupportedFieldTypes).
+  void GetStorableTypes(ServerFieldTypeSet* supported_types) const;
+
   // Adds the additional supported field types to |supported_types|.
   // The method should DCHECK that the added types are not part of the set yet.
   virtual const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const;
@@ -552,6 +556,10 @@ class AddressComponent {
   // ancestors). Previously set values are not overridden.
   bool AssignParsedValuesToSubcomponentsRespectingSetValues(
       i18n_model_definition::ValueParsingResults values);
+
+  // Recursively adds the supported types to the set. If `!storable_only`, calls
+  // |GetAdditionalSupportedFieldTypes()| to add computed field types.
+  void GetTypes(bool storable_only, ServerFieldTypeSet* supported_types) const;
 
   // This method verifies that the `value` is token compatible with this node
   // and all the node's descendants.
