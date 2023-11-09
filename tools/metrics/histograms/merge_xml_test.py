@@ -73,26 +73,17 @@ class MergeXmlTest(unittest.TestCase):
 </histogram>
 
 <histogram name="Test.EnumHistogram" enum="TestEnum" expires_after="M81">
-  <obsolete>
-    Obsolete message
-  </obsolete>
   <owner>uma@chromium.org</owner>
   <summary>A enum histogram.</summary>
 </histogram>
 
 <histogram name="Test.Histogram" units="microseconds" expires_after="M85">
-  <obsolete>
-    Removed 6/2020.
-  </obsolete>
   <owner>person@chromium.org</owner>
   <summary>Summary 2</summary>
 </histogram>
 
 <histogram name="Test.TokenHistogram{TestToken}" units="microseconds"
     expires_after="M85">
-  <obsolete>
-    Removed 6/2020.
-  </obsolete>
   <owner>person@chromium.org</owner>
   <summary>Summary 2</summary>
   <token key="TestToken" variants="TestToken"/>
@@ -177,26 +168,17 @@ class MergeXmlTest(unittest.TestCase):
 </histogram>
 
 <histogram name="Test.EnumHistogram" enum="TestEnum" expires_after="M81">
-  <obsolete>
-    Obsolete message
-  </obsolete>
   <owner>uma@chromium.org</owner>
   <summary>A enum histogram.</summary>
 </histogram>
 
 <histogram name="Test.Histogram" units="microseconds" expires_after="M85">
-  <obsolete>
-    Removed 6/2020.
-  </obsolete>
   <owner>person@chromium.org</owner>
   <summary>Summary 2</summary>
 </histogram>
 
 <histogram name="Test.TokenHistogram{TestToken}" units="microseconds"
     expires_after="M85">
-  <obsolete>
-    Removed 6/2020.
-  </obsolete>
   <owner>person@chromium.org</owner>
   <summary>Summary 2</summary>
   <token key="TestToken" variants="TestToken"/>
