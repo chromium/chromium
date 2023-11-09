@@ -403,17 +403,17 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           <message name="IDS_ACCESSIBLE_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window">
             <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Chromium
           </message>
-          <message name="IDS_ACCESSIBLE_BETA_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window for the beta channel version of the browser">
-            <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Chromium Beta
-          </message>
-          <message name="IDS_ACCESSIBLE_DEV_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window for the developer (dev) channel version of the browser">
-            <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Chromium Dev
-          </message>
-          <message name="IDS_ACCESSIBLE_CANARY_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window for the canary (nightly build) channel version of the browser">
-            <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Chromium Canary
-          </message>
         </else>
       </if>
+      <message name="IDS_ACCESSIBLE_BETA_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window for the beta channel version of the browser">
+        <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Chromium Beta
+      </message>
+      <message name="IDS_ACCESSIBLE_DEV_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window for the developer (dev) channel version of the browser">
+        <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Chromium Dev
+      </message>
+      <message name="IDS_ACCESSIBLE_CANARY_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window for the canary (nightly build) channel version of the browser">
+        <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Chromium Canary
+      </message>
       <if expr="_is_chrome_for_testing_branded">
         <then>
           <message name="IDS_ABOUT_VERSION_COMPANY_NAME" desc="Company name on the about pages">
