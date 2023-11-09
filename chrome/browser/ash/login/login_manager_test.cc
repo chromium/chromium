@@ -85,6 +85,7 @@ UserContext LoginManagerTest::CreateUserContext(const AccountId& account_id,
   UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
                            account_id);
   user_context.SetKey(Key(password));
+  user_context.SetGaiaPassword(GaiaPassword(password));
   user_context.SetPasswordKey(Key(password));
   if (account_id.GetUserEmail() == FakeGaiaMixin::kEnterpriseUser1) {
     user_context.SetRefreshToken(FakeGaiaMixin::kTestRefreshToken1);
