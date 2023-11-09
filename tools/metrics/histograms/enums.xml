@@ -36696,6 +36696,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="45" label="Service worker not required for install."/>
 </enum>
 
+<enum name="InstallAttributesStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="TPM not owned"/>
+  <int value="2" label="First Install"/>
+  <int value="3" label="Valid"/>
+  <int value="4" label="Invalid"/>
+</enum>
+
 <enum name="InstallReason">
   <int value="0" label="Installed with unknown reason"/>
   <int value="1"

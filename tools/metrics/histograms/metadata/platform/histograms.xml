@@ -335,6 +335,19 @@ chromium-metrics-reviews@google.com.
   <summary>Result of a detachable base RW firmware update.</summary>
 </histogram>
 
+<histogram name="Platform.DeviceManagement.InstallAttributesStatus"
+    enum="InstallAttributesStatus" expires_after="2024-11-09">
+  <owner>sadmansakib@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the result of the install_attributes initialization status.
+    This is logged when DeviceManagement::Initialize() completes initialization
+    of install_attributes. See InstallAttributes::Status in
+    src/platform2/device_management/install_attributes/install_attributes.h for
+    context.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Discod.AutoWbBwUtilization" units="%"
     expires_after="2024-08-07">
   <owner>dlunev@chromium.org</owner>
