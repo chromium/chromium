@@ -170,7 +170,6 @@
       </description>
       <arg name="id" type="uint" summary="ID of the processed request"/>
     </event>
-  </interface>
 
   <!-- Version 3 additions -->
     <request name="set_display_info_id" since="3">
@@ -224,4 +223,5 @@
         <arg name="id" type="uint"
           summary="will be echoed back in the matching sent event"/>
     </request>
+  </interface>
 </protocol>
