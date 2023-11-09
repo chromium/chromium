@@ -773,7 +773,11 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8MinorMS"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS,
-                "Inject platform-specific Javascript APIs.")
+                "Inject platform-specific Javascript APIs."),
+        Flag.baseFeature(
+                "PMProcessPriorityPolicy",
+                "Controls whether the priority of renderers is controlled by the performance "
+                        + "manager."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
