@@ -3337,6 +3337,13 @@ crbug.com/1147998 external/wpt/pointerevents/pointerevent_after_target_removed.h
 crbug.com/1147674 external/wpt/pointerevents/pointerevent_after_target_removed.html?pen [ Failure ]
 crbug.com/1147674 external/wpt/pointerevents/pointerevent_after_target_removed.html?touch [ Failure ]
 
+crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_appended_interleaved.tentative.html?mouse [ Failure Timeout ]
+crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_appended_interleaved.tentative.html?pen [ Failure Timeout ]
+crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_appended_interleaved.tentative.html?touch [ Failure Timeout ]
+crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_removed_interleaved.tentative.html?mouse [ Failure ]
+crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_removed_interleaved.tentative.html?pen [ Failure ]
+crbug.com/1500354 external/wpt/pointerevents/pointerevent_after_target_removed_interleaved.tentative.html?touch [ Failure ]
+
 ### external/wpt/speculation-rules/prerender
 crbug.com/1126305 external/wpt/speculation-rules/prerender/restrictions.html [ Skip Timeout ]
 # This test is failing on Mac due to the race condition between visibility

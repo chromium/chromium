@@ -1,5 +1,12 @@
 <!DOCTYPE HTML>
-<title>Enter/leave events fired to parent after child is removed</title>
+<!--
+   Tentative due to:
+   https://github.com/w3c/pointerevents/issues/492
+-->
+<title>
+  Enter/leave events fired to parent after child is removed
+  right before compat mouse-event
+</title>
 <meta name="variant" content="?mouse">
 <meta name="variant" content="?touch">
 <meta name="variant" content="?pen">
@@ -56,6 +63,7 @@
         targets[i].addEventListener("pointer" + suffix, logEvent);
         targets[i].addEventListener("mouse" + suffix, logEvent);
       });
+      targets[i].addEventListener("click", logEvent);
     }
   }
 
@@ -103,31 +111,18 @@
 
   setup();
 
-  // Tests for dispatched pointer events.
-  addPromiseTest("pointerdown", "pointer", [
-    "pointerover@child", "pointerenter@parent", "pointerenter@child",
-    "pointerdown@child", "(child-removed)", "pointerover@parent", "pointerup@parent",
-    "pointerdown@parent", "pointerup@parent",
-    "pointerout@parent", "pointerleave@parent"
-  ]);
-  addPromiseTest("pointerup", "pointer", [
-    "pointerover@child", "pointerenter@parent", "pointerenter@child",
-    "pointerdown@child", "pointerup@child", "(child-removed)",
-    "pointerover@parent", "pointerdown@parent", "pointerup@parent",
-    "pointerout@parent", "pointerleave@parent"
-  ]);
-
-  // Same tests for dispatched compatibility mouse events.
-  addPromiseTest("mousedown", "mouse", [
+  // Tests for dispatched compatibility mouse events
+  // after DOM modification through pointer events.
+  addPromiseTest("pointerdown", "mouse", [
     "mouseover@child", "mouseenter@parent", "mouseenter@child",
-    "mousedown@child", "(child-removed)", "mouseover@parent", "mouseup@parent",
-    "mousedown@parent", "mouseup@parent",
+    "(child-removed)", "mouseover@parent", "mousedown@parent", "mouseup@parent", "click@parent",
+    "mousedown@parent", "mouseup@parent", "click@parent",
     "mouseout@parent", "mouseleave@parent"
   ]);
-  addPromiseTest("mouseup", "mouse", [
+  addPromiseTest("pointerup", "mouse", [
     "mouseover@child", "mouseenter@parent", "mouseenter@child",
-    "mousedown@child", "mouseup@child", "(child-removed)",
-    "mouseover@parent", "mousedown@parent", "mouseup@parent",
+    "mousedown@child", "(child-removed)", "mouseover@parent", "mouseup@parent",  "click@parent",
+    "mousedown@parent", "mouseup@parent", "click@parent",
     "mouseout@parent", "mouseleave@parent"
   ]);
 </script>

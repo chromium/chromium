@@ -1,5 +1,12 @@
 <!DOCTYPE HTML>
-<title>Enter/leave events fired to parent after child is added</title>
+<!--
+   Tentative due to:
+   https://github.com/w3c/pointerevents/issues/492
+-->
+<title>
+  Enter/leave events fired to parent after child is added
+  right before compat mouse-event
+</title>
 <meta name="variant" content="?mouse">
 <meta name="variant" content="?touch">
 <meta name="variant" content="?pen">
@@ -68,6 +75,7 @@
         targets[i].addEventListener("pointer" + suffix, logEvent);
         targets[i].addEventListener("mouse" + suffix, logEvent);
       });
+      targets[i].addEventListener("click", logEvent);
     }
   }
 
@@ -157,67 +165,36 @@
 
   setup();
 
-  // Tests for dispatched pointer events.
-  addPromiseTestForNewChild("pointerdown", "pointer", [
-    "pointerover@parent", "pointerenter@parent",
-    "pointerdown@parent", "(child-attached)",
-    "pointerover@child", "pointerenter@child",
-    "pointerup@child",
-    "pointerdown@child", "pointerup@child",
-    "pointerout@child", "pointerleave@child", "pointerleave@parent"
-  ]);
-  addPromiseTestForNewChild("pointerup", "pointer", [
-    "pointerover@parent", "pointerenter@parent",
-    "pointerdown@parent", "pointerup@parent", "(child-attached)",
-    "pointerover@child", "pointerenter@child",
-    "pointerdown@child", "pointerup@child",
-    "pointerout@child", "pointerleave@child", "pointerleave@parent"
-  ]);
-  addPromiseTestForMovedChild("pointerdown", "pointer", [
-    "pointerover@child", "pointerenter@parent", "pointerenter@child",
-    "pointerdown@child", "(child-moved)",
-    "pointerover@child", "pointerenter@child",
-    "pointerup@child",
-    "pointerdown@child", "pointerup@child",
-    "pointerout@child", "pointerleave@child", "pointerleave@parent"
-  ]);
-  addPromiseTestForMovedChild("pointerup", "pointer", [
-    "pointerover@child", "pointerenter@parent", "pointerenter@child",
-    "pointerdown@child", "pointerup@child", "(child-moved)",
-    "pointerover@child", "pointerenter@child",
-    "pointerdown@child", "pointerup@child",
-    "pointerout@child", "pointerleave@child", "pointerleave@parent"
-  ]);
-
-  // Same tests for dispatched compatibility mouse events.
-  addPromiseTestForNewChild("mousedown", "mouse", [
+  // Tests for dispatched compatibility mouse events
+  // after DOM modification through pointer events.
+  addPromiseTestForNewChild("pointerdown", "mouse", [
     "mouseover@parent", "mouseenter@parent",
     "mousedown@parent", "(child-attached)",
     "mouseover@child", "mouseenter@child",
-    "mouseup@child",
-    "mousedown@child", "mouseup@child",
+    "mouseup@child", "click@parent",
+    "mousedown@child", "mouseup@child", "click@child",
     "mouseout@child", "mouseleave@child", "mouseleave@parent"
   ]);
-  addPromiseTestForNewChild("mouseup", "mouse", [
+  addPromiseTestForNewChild("pointerup", "mouse", [
     "mouseover@parent", "mouseenter@parent",
-    "mousedown@parent", "mouseup@parent", "(child-attached)",
+    "mousedown@parent", "mouseup@parent", "(child-attached)", "click@parent",
     "mouseover@child", "mouseenter@child",
-    "mousedown@child", "mouseup@child",
+    "mousedown@child", "mouseup@child", "click@child",
     "mouseout@child", "mouseleave@child", "mouseleave@parent"
   ]);
-  addPromiseTestForMovedChild("mousedown", "mouse", [
+  addPromiseTestForMovedChild("pointerdown", "mouse", [
     "mouseover@child", "mouseenter@parent", "mouseenter@child",
     "mousedown@child", "(child-moved)",
     "mouseover@child", "mouseenter@child",
-    "mouseup@child",
-    "mousedown@child", "mouseup@child",
+    "mouseup@child", "click@child",
+    "mousedown@child", "mouseup@child", "click@child",
     "mouseout@child", "mouseleave@child", "mouseleave@parent"
   ]);
-  addPromiseTestForMovedChild("mouseup", "mouse", [
+  addPromiseTestForMovedChild("pointerup", "mouse", [
     "mouseover@child", "mouseenter@parent", "mouseenter@child",
-    "mousedown@child", "mouseup@child", "(child-moved)",
+    "mousedown@child", "mouseup@child", "(child-moved)", "click@child",
     "mouseover@child", "mouseenter@child",
-    "mousedown@child", "mouseup@child",
+    "mousedown@child", "mouseup@child", "click@child",
     "mouseout@child", "mouseleave@child", "mouseleave@parent"
   ]);
 </script>
