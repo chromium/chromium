@@ -178,14 +178,6 @@ export function setupI18nElements(rootElement: DocumentFragment|Element): void {
     }
     element.append(getMessage(element, 'i18n-text'));
   }
-  for (const element of getElements('i18n-tooltip-true')) {
-    element.setAttribute(
-        'tooltip-true', getMessage(element, 'i18n-tooltip-true'));
-  }
-  for (const element of getElements('i18n-tooltip-false')) {
-    element.setAttribute(
-        'tooltip-false', getMessage(element, 'i18n-tooltip-false'));
-  }
   for (const attribute of ['i18n-aria', 'i18n-label']) {
     for (const element of getElements(attribute)) {
       setAriaLabel(element, attribute);

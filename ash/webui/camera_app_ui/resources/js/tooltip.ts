@@ -64,16 +64,7 @@ function show(element: HTMLElement) {
   assert(tooltipElement !== null);
 
   hide();
-  let message = element.getAttribute('aria-label');
-  if (element instanceof HTMLInputElement) {
-    if (element.hasAttribute('tooltip-true') && element.checked) {
-      message = element.getAttribute('tooltip-true');
-    }
-    if (element.hasAttribute('tooltip-false') && !element.checked) {
-      message = element.getAttribute('tooltip-false');
-    }
-  }
-  tooltipElement.textContent = message;
+  tooltipElement.textContent = element.getAttribute('aria-label');
   activeElement = element;
   triggerPosition(element);
   tooltipElement.classList.add('visible');
