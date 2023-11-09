@@ -31814,6 +31814,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="kRejected"/>
   <int value="6" label="kTaskFailedUnknownError"/>
   <int value="7" label="kTaskTimeoutAbort"/>
+  <int value="8" label="kExampleSelectorCriteriaParsingError"/>
+  <int value="9" label="kTaskNameEmptyError"/>
+  <int value="10" label="kGetNextExampleInvalidArgumentError"/>
 </enum>
 
 <enum name="FederatedServiceEvent">
