@@ -15,8 +15,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/extension_menu_icon_loader.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/menu_manager_test_observer.h"
+#include "chrome/browser/extensions/test_extension_menu_icon_loader.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
@@ -920,6 +922,43 @@ TEST_F(MenuManagerTest, RemoveAllIncognito) {
   manager_.RemoveAllIncognitoContextItems();
   EXPECT_EQ(2u, manager_.MenuItems(key1)->size());
   EXPECT_EQ(1u, manager_.MenuItems(key2)->size());
+}
+
+TEST_F(MenuManagerTest, SetMenuIconLoader) {
+  const Extension* extension = AddExtension("test");
+  MenuItem::ExtensionKey extension_key(extension->id());
+  auto menu_icon_loader = std::make_unique<TestExtensionMenuIconLoader>();
+  TestExtensionMenuIconLoader* extension_menu_icon_loader =
+      menu_icon_loader.get();
+
+  manager_.SetMenuIconLoader(extension_key, std::move(menu_icon_loader));
+
+  // Ensure that adding and removing the context menu item calls LoadIcon and
+  // RemoveIcon on TestExtensionMenuIconLoader.
+  {
+    std::unique_ptr<MenuItem> item = CreateTestItem(extension);
+    const MenuItem::Id& item_id = item->id();
+    manager_.AddContextItem(extension, std::move(item));
+    EXPECT_EQ(1, extension_menu_icon_loader->load_icon_calls());
+
+    manager_.RemoveContextMenuItem(item_id);
+    EXPECT_EQ(1, extension_menu_icon_loader->remove_icon_calls());
+  }
+  extension_menu_icon_loader->Reset();
+
+  // Ensure that adding two context menu items for the same extension only
+  // calls LoadIcon once and removing all context menu items calls RemoveIcon
+  // once.
+  {
+    std::unique_ptr<MenuItem> item1 = CreateTestItem(extension);
+    std::unique_ptr<MenuItem> item2 = CreateTestItem(extension);
+    manager_.AddContextItem(extension, std::move(item1));
+    manager_.AddContextItem(extension, std::move(item2));
+    EXPECT_EQ(1, extension_menu_icon_loader->load_icon_calls());
+
+    manager_.RemoveAllContextItems(extension_key);
+    EXPECT_EQ(1, extension_menu_icon_loader->remove_icon_calls());
+  }
 }
 
 // TODO(https://crbug.com/1150988): This should be unified with the existing

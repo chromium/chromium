@@ -41,6 +41,8 @@ struct ContextMenuParams;
 
 namespace extensions {
 class Extension;
+class ExtensionMenuIconLoader;
+class MenuIconLoader;
 class StateStore;
 
 // Represents a menu item added by an extension.
@@ -364,10 +366,10 @@ class MenuManager : public ProfileObserver,
                       const content::ContextMenuParams& params,
                       const MenuItem::Id& menu_item_id);
 
-  // This returns a image of width/height kFaviconSize, loaded either from an
-  // entry specified in the extension's 'icon' section of the manifest, or a
-  // default extension icon.
-  gfx::Image GetIconForExtension(const std::string& extension_id);
+  // This returns a image of width/height kFaviconSize, loaded through the
+  // MenuIconLoader associated with the |extension_key|.
+  gfx::Image GetIconForExtensionKey(
+      const MenuItem::ExtensionKey& extension_key);
 
   // ProfileObserver:
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
@@ -392,6 +394,13 @@ class MenuManager : public ProfileObserver,
 
   // Removes all "incognito" "split" mode context items.
   void RemoveAllIncognitoContextItems();
+
+  // Associates |extension_key| with the given |menu_icon_loader|.
+  void SetMenuIconLoader(MenuItem::ExtensionKey extension_key,
+                         std::unique_ptr<MenuIconLoader> menu_icon_loader);
+
+  // Returns the MenuIconLoader associated with |extension_key|.
+  MenuIconLoader* GetMenuIconLoader(MenuItem::ExtensionKey extension_key);
 
   void AddObserver(TestObserver* observer);
   void RemoveObserver(TestObserver* observer);
@@ -433,7 +442,13 @@ class MenuManager : public ProfileObserver,
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
 
-  ExtensionIconManager icon_manager_;
+  // Holds the default MenuIconLoader to use for extensions Context Menus API.
+  std::unique_ptr<ExtensionMenuIconLoader> extension_menu_icon_loader_;
+
+  // We keep a map of ExtensionKey to the MenuIconLoader that should be used to
+  // load that context's menu icon for a WebView Context Menus API use.
+  std::map<MenuItem::ExtensionKey, std::unique_ptr<MenuIconLoader>>
+      webview_menu_icon_loaders_;
 
   raw_ptr<content::BrowserContext> browser_context_;
 

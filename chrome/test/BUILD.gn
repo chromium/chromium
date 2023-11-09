@@ -955,6 +955,8 @@ static_library("test_support") {
       "../browser/extensions/permissions_test_util.h",
       "../browser/extensions/test_extension_environment.cc",
       "../browser/extensions/test_extension_environment.h",
+      "../browser/extensions/test_extension_menu_icon_loader.cc",
+      "../browser/extensions/test_extension_menu_icon_loader.h",
       "../browser/extensions/test_extension_prefs.cc",
       "../browser/extensions/test_extension_prefs.h",
       "../browser/policy/extension_force_install_mixin.cc",

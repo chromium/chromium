@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/extension_menu_icon_loader.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -344,6 +345,7 @@ MenuManager::MenuManager(content::BrowserContext* context, StateStore* store)
         profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   if (store_)
     store_->RegisterKey(kContextMenusKey);
+  extension_menu_icon_loader_ = std::make_unique<ExtensionMenuIconLoader>();
 }
 
 MenuManager::~MenuManager() = default;
@@ -395,7 +397,7 @@ bool MenuManager::AddContextItem(const Extension* extension,
 
   // If this is the first item for this extension, start loading its icon.
   if (first_item && extension) {
-    icon_manager_.LoadIcon(browser_context_, extension);
+    GetMenuIconLoader(key)->LoadIcon(browser_context_, extension, key);
   }
 
   return true;
@@ -541,7 +543,7 @@ bool MenuManager::RemoveContextMenuItem(const MenuItem::Id& id) {
 
   if (list.empty()) {
     context_items_.erase(extension_key);
-    icon_manager_.RemoveIcon(extension_key.extension_id);
+    GetMenuIconLoader(extension_key)->RemoveIcon(extension_key);
   }
   return result;
 }
@@ -569,7 +571,7 @@ void MenuManager::RemoveAllContextItems(
     }
   }
   context_items_.erase(extension_key);
-  icon_manager_.RemoveIcon(extension_id);
+  GetMenuIconLoader(extension_key)->RemoveIcon(extension_key);
 }
 
 MenuItem* MenuManager::GetItemById(const MenuItem::Id& id) const {
@@ -936,8 +938,9 @@ void MenuManager::OnProfileWillBeDestroyed(Profile* profile) {
     RemoveAllIncognitoContextItems();
 }
 
-gfx::Image MenuManager::GetIconForExtension(const std::string& extension_id) {
-  return icon_manager_.GetIcon(extension_id);
+gfx::Image MenuManager::GetIconForExtensionKey(
+    const MenuItem::ExtensionKey& extension_key) {
+  return GetMenuIconLoader(extension_key)->GetIcon(extension_key);
 }
 
 void MenuManager::RemoveAllIncognitoContextItems() {
@@ -955,6 +958,22 @@ void MenuManager::RemoveAllIncognitoContextItems() {
 
 void MenuManager::AddObserver(TestObserver* observer) {
   observers_.AddObserver(observer);
+}
+
+void MenuManager::SetMenuIconLoader(
+    MenuItem::ExtensionKey extension_key,
+    std::unique_ptr<MenuIconLoader> menu_icon_loader) {
+  webview_menu_icon_loaders_.insert(
+      {extension_key, std::move(menu_icon_loader)});
+}
+
+MenuIconLoader* MenuManager::GetMenuIconLoader(
+    MenuItem::ExtensionKey extension_key) {
+  if (!base::Contains(webview_menu_icon_loaders_, extension_key)) {
+    return extension_menu_icon_loader_.get();
+  }
+  DCHECK(base::Contains(webview_menu_icon_loaders_, extension_key));
+  return webview_menu_icon_loaders_[extension_key].get();
 }
 
 void MenuManager::RemoveObserver(TestObserver* observer) {
