@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 /**
- * Main class for GameFace.
+ * Main class for FaceGaze.
  */
-export class GameFace {
+export class FaceGaze {
   constructor() {}
 
   /**
    * Destructor to remove any listeners.
    */
-  onGameFaceDisabled() {}
+  onFaceGazeDisabled() {}
 }

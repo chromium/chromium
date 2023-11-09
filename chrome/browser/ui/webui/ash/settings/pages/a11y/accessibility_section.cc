@@ -455,8 +455,8 @@ int GetDisplayAndMangificationLinkDescriptionResourceId() {
     return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_NEW_DESCRIPTION;
 }
 
-bool IsAccessibilityGameFaceIntegrationEnabled() {
-  return ::features::IsAccessibilityGameFaceIntegrationEnabled();
+bool IsAccessibilityFaceGazeEnabled() {
+  return ::features::IsAccessibilityFaceGazeEnabled();
 }
 
 }  // namespace
@@ -524,11 +524,11 @@ void AccessibilitySection::AddLoadTimeData(
       {"a11yWebStore", IDS_SETTINGS_ACCESSIBILITY_WEB_STORE},
       {"accessibleImageLabelsSubtitle",
        IDS_SETTINGS_ACCESSIBLE_IMAGE_LABELS_SUBTITLE},
-      {"accessibilityFaceTrackingLabel",
+      {"accessibilityFaceGazeLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACE_TRACKING_LABEL},
-      {"accessibilityFaceTrackingDescription",
+      {"accessibilityFaceGazeDescription",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACE_TRACKING_DESCRIPTION},
-      {"accessibilityFaceTrackingSettings",
+      {"accessibilityFaceGazeSettings",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACE_TRACKING_SETTINGS},
       {"accessibleImageLabelsTitle",
        IDS_SETTINGS_ACCESSIBLE_IMAGE_LABELS_TITLE},
@@ -1119,8 +1119,8 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("pdfOcrEnabled",
                           base::FeatureList::IsEnabled(::features::kPdfOcr));
 
-  html_source->AddBoolean("isAccessibilityGameFaceIntegrationEnabled",
-                          IsAccessibilityGameFaceIntegrationEnabled());
+  html_source->AddBoolean("isAccessibilityFaceGazeEnabled",
+                          IsAccessibilityFaceGazeEnabled());
 
   ::settings::AddCaptionSubpageStrings(html_source);
 }

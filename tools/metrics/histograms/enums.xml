@@ -44063,6 +44063,7 @@ from previous Chrome versions.
   <int value="-2371418" label="disable-display-list-2d-canvas"/>
   <int value="-1978322" label="BlinkExtension:enabled"/>
   <int value="-1164379" label="EnterpriseReportingInChromeOS:disabled"/>
+  <int value="-319686" label="AccessibilityFaceGaze:disabled"/>
   <int value="0" label="BAD_FLAG_FORMAT">
     Command-line flag doesn't start with two dashes.
   </int>
@@ -44271,6 +44272,7 @@ from previous Chrome versions.
   <int value="103347629" label="WinrtSensorsImplementation:enabled"/>
   <int value="103560544" label="ViewportHeightClientHintHeader:disabled"/>
   <int value="103932290" label="show-autofill-type-predictions"/>
+  <int value="104175200" label="AccessibilityFaceGaze:enabled"/>
   <int value="105046382" label="ParallelDownloading:disabled"/>
   <int value="105164136" label="EnterpriseReportingUI:enabled"/>
   <int value="105284154" label="PromiseIcons:enabled"/>

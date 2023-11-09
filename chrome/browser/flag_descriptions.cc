@@ -1101,10 +1101,9 @@ const char kAccessibilityDictationKeyboardImprovementsDescription[] =
     "supported keyboards. This feature also includes some UI enhancements for "
     "Dictation, including notifications during error states.";
 
-const char kAccessibilityGameFaceIntegrationName[] =
-    "Experimental GameFace integration";
-const char kAccessibilityGameFaceIntegrationDescription[] =
-    "This option enables the experimental GameFace ChromeOS integration";
+const char kAccessibilityFaceGazeName[] = "Experimental FaceGaze integration";
+const char kAccessibilityFaceGazeDescription[] =
+    "This option enables the experimental FaceGaze ChromeOS integration";
 
 const char kAccessibilitySelectToSpeakHoverTextImprovementsName[] =
     "Select-to-Speak Hover Text Improvements";

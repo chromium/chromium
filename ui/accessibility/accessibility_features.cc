@@ -190,13 +190,12 @@ bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled() {
       ::features::kAccessibilityAcceleratorNotificationsTimeout);
 }
 
-BASE_FEATURE(kAccessibilityGameFaceIntegration,
-             "AccessibilityGameFaceIntegration",
+BASE_FEATURE(kAccessibilityFaceGaze,
+             "AccessibilityFaceGaze",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsAccessibilityGameFaceIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityGameFaceIntegration);
+bool IsAccessibilityFaceGazeEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityFaceGaze);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

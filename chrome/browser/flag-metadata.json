@@ -1950,8 +1950,8 @@
     "expiry_milestone": 125
   },
   {
-    "name": "enable-accessibility-gameface-integration",
-    "owners": [ "bkersting@chromium.org", "eariassoto@chromium.org", "//ui/accessibility/OWNERS" ],
+    "name": "enable-accessibility-facegaze",
+    "owners": [ "bkersting@chromium.org", "eariassoto@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 140
   },
   {

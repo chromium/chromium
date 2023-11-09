@@ -276,7 +276,7 @@ chrome.accessibilityPrivate.AcceleratorAction = {
 chrome.accessibilityPrivate.AccessibilityFeature = {
   GOOGLE_TTS_LANGUAGE_PACKS: 'googleTtsLanguagePacks',
   DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
-  GAME_FACE_INTEGRATION: 'gameFaceIntegration',
+  FACE_GAZE: 'faceGaze',
   GOOGLE_TTS_HIGH_QUALITY_VOICES: 'googleTtsHighQualityVoices',
 };
 

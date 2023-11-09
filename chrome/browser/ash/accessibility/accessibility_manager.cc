@@ -1585,6 +1585,14 @@ void AccessibilityManager::SetProfile(Profile* profile) {
                        base::Unretained(this)));
     }
 
+    if (::features::IsAccessibilityFaceGazeEnabled()) {
+      pref_change_registrar_->Add(
+          prefs::kAccessibilityFaceGazeEnabled,
+          base::BindRepeating(
+              &AccessibilityManager::OnAccessibilityCommonChanged,
+              base::Unretained(this)));
+    }
+
     local_state_pref_change_registrar_ =
         std::make_unique<PrefChangeRegistrar>();
     local_state_pref_change_registrar_->Init(g_browser_process->local_state());
@@ -1629,6 +1637,11 @@ void AccessibilityManager::SetProfile(Profile* profile) {
 
   for (const std::string& feature : kAccessibilityCommonFeatures)
     OnAccessibilityCommonChanged(feature);
+
+  if (::features::IsAccessibilityFaceGazeEnabled()) {
+    OnAccessibilityCommonChanged(prefs::kAccessibilityFaceGazeEnabled);
+  }
+
   // Dictation is not in kAccessibilityCommonFeatures because it needs to
   // be handled in OnDictationChanged also. OnDictationChanged will call to
   // OnAccessibilityCommonChanged.

@@ -146,11 +146,11 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 // Returns true if kAccessibilityAcceleratorNotificationsTimeout is enabled.
 AX_BASE_EXPORT bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled();
 
-// Enables the experimental GameFace integration.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityGameFaceIntegration);
+// Enables the experimental FaceGaze integration.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFaceGaze);
 
-// Returns true if the GameFace integration is enabled.
-AX_BASE_EXPORT bool IsAccessibilityGameFaceIntegrationEnabled();
+// Returns true if the FaceGaze integration is enabled.
+AX_BASE_EXPORT bool IsAccessibilityFaceGazeEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // A feature that makes PDFs displayed in the ChromeOS Media App (AKA Backlight)

@@ -240,7 +240,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": [ "googleTtsLanguagePacks", "dictationContextChecking", "gameFaceIntegration", "googleTtsHighQualityVoices"],
+        "enum": [ "googleTtsLanguagePacks", "dictationContextChecking", "faceGaze", "googleTtsHighQualityVoices"],
         "description": "Subset of accessibility features."
       },
       {
