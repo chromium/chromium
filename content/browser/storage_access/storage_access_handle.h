@@ -40,6 +40,9 @@ class StorageAccessHandle
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
   void GetDirectory(GetDirectoryCallback callback) override;
   void Estimate(EstimateCallback callback) override;
+  void BindBlobStorage(
+      mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver)
+      override;
 
  private:
   StorageAccessHandle(

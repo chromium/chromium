@@ -18,17 +18,27 @@
 namespace blink {
 
 class StorageAccessHandleTest
-    : public testing::TestWithParam<
-          testing::tuple<bool, bool, bool, bool, bool, bool, bool, bool>> {
+    : public testing::TestWithParam<testing::tuple<bool,
+                                                   bool,
+                                                   bool,
+                                                   bool,
+                                                   bool,
+                                                   bool,
+                                                   bool,
+                                                   bool,
+                                                   bool,
+                                                   bool>> {
  public:
   bool all() { return std::get<0>(GetParam()); }
-  bool session_storage() { return std::get<1>(GetParam()); }
-  bool local_storage() { return std::get<2>(GetParam()); }
-  bool indexed_db() { return std::get<3>(GetParam()); }
+  bool sessionStorage() { return std::get<1>(GetParam()); }
+  bool localStorage() { return std::get<2>(GetParam()); }
+  bool indexedDB() { return std::get<3>(GetParam()); }
   bool locks() { return std::get<4>(GetParam()); }
   bool caches() { return std::get<5>(GetParam()); }
   bool getDirectory() { return std::get<6>(GetParam()); }
   bool estimate() { return std::get<7>(GetParam()); }
+  bool createObjectURL() { return std::get<8>(GetParam()); }
+  bool revokeObjectURL() { return std::get<9>(GetParam()); }
 
   LocalDOMWindow* getLocalDOMWindow() {
     test::ScopedMockedURLLoad scoped_mocked_url_load_root(
@@ -49,13 +59,15 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   StorageAccessTypes* storage_access_types =
       MakeGarbageCollected<StorageAccessTypes>();
   storage_access_types->setAll(all());
-  storage_access_types->setSessionStorage(session_storage());
-  storage_access_types->setLocalStorage(local_storage());
-  storage_access_types->setIndexedDB(indexed_db());
+  storage_access_types->setSessionStorage(sessionStorage());
+  storage_access_types->setLocalStorage(localStorage());
+  storage_access_types->setIndexedDB(indexedDB());
   storage_access_types->setLocks(locks());
   storage_access_types->setCaches(caches());
   storage_access_types->setGetDirectory(getDirectory());
   storage_access_types->setEstimate(estimate());
+  storage_access_types->setCreateObjectURL(createObjectURL());
+  storage_access_types->setRevokeObjectURL(revokeObjectURL());
   StorageAccessHandle* storage_access_handle =
       MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
   EXPECT_TRUE(window->document()->IsUseCounted(
@@ -68,17 +80,17 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage),
-      session_storage());
+      sessionStorage());
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage),
-      local_storage());
+      localStorage());
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB),
-      indexed_db());
+      indexedDB());
   EXPECT_EQ(window->document()->IsUseCounted(
                 WebFeature::
                     kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks),
@@ -98,6 +110,16 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate),
       estimate());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL),
+      createObjectURL());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL),
+      revokeObjectURL());
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
@@ -119,14 +141,20 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              (all() || session_storage()) ? DOMExceptionCode::kNoError
-                                           : DOMExceptionCode::kSecurityError);
+              (all() || sessionStorage()) ? DOMExceptionCode::kNoError
+                                          : DOMExceptionCode::kSecurityError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              (all() || session_storage())
+              (all() || sessionStorage())
                   ? nullptr
                   : StorageAccessHandle::kSessionStorageNotRequested);
   }
@@ -134,10 +162,10 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
     V8TestingScope scope;
     storage_access_handle->localStorage(scope.GetExceptionState());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              (all() || local_storage()) ? DOMExceptionCode::kNoError
-                                         : DOMExceptionCode::kSecurityError);
+              (all() || localStorage()) ? DOMExceptionCode::kNoError
+                                        : DOMExceptionCode::kSecurityError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              (all() || local_storage())
+              (all() || localStorage())
                   ? nullptr
                   : StorageAccessHandle::kLocalStorageNotRequested);
   }
@@ -145,10 +173,10 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
     V8TestingScope scope;
     storage_access_handle->indexedDB(scope.GetExceptionState());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              (all() || indexed_db()) ? DOMExceptionCode::kNoError
-                                      : DOMExceptionCode::kSecurityError);
+              (all() || indexedDB()) ? DOMExceptionCode::kNoError
+                                     : DOMExceptionCode::kSecurityError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              (all() || indexed_db())
+              (all() || indexedDB())
                   ? nullptr
                   : StorageAccessHandle::kIndexedDBNotRequested);
   }
@@ -207,21 +235,44 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
                 StorageAccessHandle::kEstimateNotRequested);
     }
   }
+  {
+    V8TestingScope scope;
+    storage_access_handle->createObjectURL(
+        Blob::Create(scope.GetExecutionContext()), scope.GetExceptionState());
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              (all() || createObjectURL()) ? DOMExceptionCode::kNoError
+                                           : DOMExceptionCode::kSecurityError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              (all() || createObjectURL())
+                  ? nullptr
+                  : StorageAccessHandle::kCreateObjectURLNotRequested);
+  }
+  {
+    V8TestingScope scope;
+    storage_access_handle->revokeObjectURL("", scope.GetExceptionState());
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              (all() || revokeObjectURL()) ? DOMExceptionCode::kNoError
+                                           : DOMExceptionCode::kSecurityError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              (all() || revokeObjectURL())
+                  ? nullptr
+                  : StorageAccessHandle::kRevokeObjectURLNotRequested);
+  }
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use),
-      all() || session_storage());
+      all() || sessionStorage());
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage_Use),
-      all() || local_storage());
+      all() || localStorage());
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use),
-      all() || indexed_db());
+      all() || indexedDB());
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
@@ -242,32 +293,54 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use),
       all() || estimate());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use),
+      all() || createObjectURL());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use),
+      all() || revokeObjectURL());
 }
 
 // Test all handles.
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     StorageAccessHandleTest,
-    testing::ValuesIn(
-        std::vector<std::tuple<bool, bool, bool, bool, bool, bool, bool, bool>>{
-            // Nothing:
-            {false, false, false, false, false, false, false, false},
-            // All:
-            {true, false, false, false, false, false, false, false},
-            // Session Storage:
-            {false, true, false, false, false, false, false, false},
-            // Local Storage:
-            {false, false, true, false, false, false, false, false},
-            // IndexedDB:
-            {false, false, false, true, false, false, false, false},
-            // Web Locks:
-            {false, false, false, false, true, false, false, false},
-            // Cache Storage:
-            {false, false, false, false, false, true, false, false},
-            // Origin Private File System:
-            {false, false, false, false, false, false, true, false},
-            // Quota:
-            {false, false, false, false, false, false, false, true},
-        }));
+    testing::ValuesIn(std::vector<std::tuple<bool,
+                                             bool,
+                                             bool,
+                                             bool,
+                                             bool,
+                                             bool,
+                                             bool,
+                                             bool,
+                                             bool,
+                                             bool>>{
+        // Nothing:
+        {false, false, false, false, false, false, false, false, false, false},
+        // All:
+        {true, false, false, false, false, false, false, false, false, false},
+        // Session Storage:
+        {false, true, false, false, false, false, false, false, false, false},
+        // Local Storage:
+        {false, false, true, false, false, false, false, false, false, false},
+        // IndexedDB:
+        {false, false, false, true, false, false, false, false, false, false},
+        // Web Locks:
+        {false, false, false, false, true, false, false, false, false, false},
+        // Cache Storage:
+        {false, false, false, false, false, true, false, false, false, false},
+        // Origin Private File System:
+        {false, false, false, false, false, false, true, false, false, false},
+        // Quota:
+        {false, false, false, false, false, false, false, true, false, false},
+        // createObjectURL:
+        {false, false, false, false, false, false, false, false, true, false},
+        // revokeObjectURL:
+        {false, false, false, false, false, false, false, false, false, true},
+    }));
 
 }  // namespace blink

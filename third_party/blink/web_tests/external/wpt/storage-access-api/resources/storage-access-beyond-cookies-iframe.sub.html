@@ -62,6 +62,15 @@
         }
         break;
       }
+      case "blobStorage": {
+        const blob = await fetch(atob(id)).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "") {
+          message = "Cross-site first-party blob storage should be empty";
+        }
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;

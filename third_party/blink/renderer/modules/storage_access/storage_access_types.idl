@@ -11,7 +11,8 @@ dictionary StorageAccessTypes {
     boolean caches = false;
     boolean getDirectory = false;
     boolean estimate = false;
-    // TODO(crbug.com/1484966): Add blob storage
+    boolean createObjectURL = false;
+    boolean revokeObjectURL = false;
     // TODO(crbug.com/1484966): Add broadcast channel
     // TODO(crbug.com/1484966): Add shared worker
 };

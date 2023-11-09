@@ -22,6 +22,8 @@
     await handle.caches.keys();
     await handle.getDirectory();
     await handle.estimate();
+    const url = handle.createObjectURL(new Blob(["TEST"]));
+    handle.revokeObjectURL(url);
   } catch (_) {
     message = "NoAccess";
   }

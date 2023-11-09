@@ -31411,6 +31411,14 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_estimate"/>
   <int value="4724"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use"/>
+  <int value="4725"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL"/>
+  <int value="4726"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use"/>
+  <int value="4727"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL"/>
+  <int value="4728"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

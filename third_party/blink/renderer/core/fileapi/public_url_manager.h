@@ -63,6 +63,12 @@ class CORE_EXPORT PublicURLManager final
  public:
   explicit PublicURLManager(ExecutionContext*);
 
+  // This constructor is for the Storage Access API, other users should use the
+  // constructor above which will select the correct BlobURLStore to use.
+  explicit PublicURLManager(
+      ExecutionContext*,
+      mojo::PendingAssociatedRemote<mojom::blink::BlobURLStore>);
+
   // Generates a new Blob URL and registers the URLRegistrable to the
   // corresponding URLRegistry with the Blob URL. Returns the serialization
   // of the Blob URL.

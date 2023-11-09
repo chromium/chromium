@@ -100,6 +100,44 @@
         }
         break;
       }
+      case "blobStorage": {
+        const handle = await document.requestStorageAccess({createObjectURL: true, revokeObjectURL: true});
+        let blob = await fetch(atob(id)).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "TEST") {
+          message = "Blob storage should be readable in this context";
+        }
+        URL.revokeObjectURL(atob(id));
+        blob = await fetch(atob(id)).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "TEST") {
+          message = "Handle should not override window blob storage";
+        }
+        handle.revokeObjectURL(atob(id));
+        blob = await fetch(atob(id)).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "") {
+          message = "No first-party blob access";
+        }
+        const url = handle.createObjectURL(new Blob(["TEST2"]));
+        blob = await fetch(url).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "TEST2") {
+          message = "A blob url created via the handle should be readable";
+        }
+        handle.revokeObjectURL(url);
+        blob = await fetch(url).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "") {
+          message = "A blob url removed via the handle should be cleared";
+        }
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;

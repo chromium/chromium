@@ -350,6 +350,14 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate,
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use,
       }));
   return *opt_in_features;
 }

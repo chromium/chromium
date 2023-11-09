@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_handle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_access_types.h"
+#include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory.h"
@@ -21,6 +22,7 @@
 
 namespace blink {
 
+class Blob;
 class ExceptionState;
 
 class MODULES_EXPORT StorageAccessHandle final
@@ -37,6 +39,8 @@ class MODULES_EXPORT StorageAccessHandle final
   static const char kCachesNotRequested[];
   static const char kGetDirectoryNotRequested[];
   static const char kEstimateNotRequested[];
+  static const char kCreateObjectURLNotRequested[];
+  static const char kRevokeObjectURLNotRequested[];
 
   explicit StorageAccessHandle(LocalDOMWindow& window,
                                const StorageAccessTypes* storage_access_types);
@@ -50,17 +54,21 @@ class MODULES_EXPORT StorageAccessHandle final
   ScriptPromise getDirectory(ScriptState* script_state,
                              ExceptionState& exception_state) const;
   ScriptPromise estimate(ScriptState* script_state,
-                         ExceptionState& exception_state);
+                         ExceptionState& exception_state) const;
+  String createObjectURL(Blob* blob, ExceptionState& exception_state) const;
+  void revokeObjectURL(const String& url,
+                       ExceptionState& exception_state) const;
 
  private:
   void InitSessionStorage();
   void InitLocalStorage();
-  HeapMojoRemote<mojom::blink::StorageAccessHandle>& GetRemote();
+  HeapMojoRemote<mojom::blink::StorageAccessHandle>& InitRemote();
   void InitIndexedDB();
   void InitLocks();
   void InitCaches();
   void InitGetDirectory();
   void InitQuota();
+  void InitBlobStorage();
 
   void GetDirectoryImpl(ScriptPromiseResolver* resolver) const;
 
@@ -71,6 +79,7 @@ class MODULES_EXPORT StorageAccessHandle final
   Member<IDBFactory> indexed_db_;
   Member<LockManager> locks_;
   Member<CacheStorage> caches_;
+  Member<PublicURLManager> blob_storage_;
 };
 
 }  // namespace blink

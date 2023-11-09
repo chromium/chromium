@@ -144,6 +144,21 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
   }
 }
 
+PublicURLManager::PublicURLManager(
+    ExecutionContext* execution_context,
+    mojo::PendingAssociatedRemote<mojom::blink::BlobURLStore>
+        frame_url_store_remote)
+    : ExecutionContextLifecycleObserver(execution_context),
+      frame_url_store_(execution_context),
+      worker_url_store_(execution_context) {
+  if (base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl)) {
+    execution_context_type_ = ExecutionContextIdForHistogram::kFrame;
+  }
+  frame_url_store_.Bind(
+      std::move(frame_url_store_remote),
+      execution_context->GetTaskRunner(TaskType::kFileReading));
+}
+
 mojom::blink::BlobURLStore& PublicURLManager::GetBlobURLStore() {
   DCHECK_NE(frame_url_store_.is_bound(), worker_url_store_.is_bound());
   if (frame_url_store_.is_bound()) {

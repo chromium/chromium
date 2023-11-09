@@ -4061,6 +4061,10 @@ enum WebFeature {
   kWebAppManifestIdField = 4722,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate = 4723,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use = 4724,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL = 4725,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use = 4726,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL = 4727,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use = 4728,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

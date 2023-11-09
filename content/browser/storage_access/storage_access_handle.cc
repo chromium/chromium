@@ -146,6 +146,16 @@ void StorageAccessHandle::EstimateImpl(
                          std::move(callback)));
 }
 
+void StorageAccessHandle::BindBlobStorage(
+    mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
+  static_cast<RenderFrameHostImpl&>(render_frame_host())
+      .GetStoragePartition()
+      ->GetBlobUrlRegistry()
+      ->AddReceiver(blink::StorageKey::CreateFirstParty(
+                        render_frame_host().GetStorageKey().origin()),
+                    std::move(receiver));
+}
+
 StorageAccessHandle::StorageAccessHandle(
     RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver)

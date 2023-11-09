@@ -7,6 +7,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_usage_details.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
@@ -47,6 +48,16 @@ const char StorageAccessHandle::kGetDirectoryNotRequested[] =
 const char StorageAccessHandle::kEstimateNotRequested[] =
     "The estimate function for Quota was not requested when storage access "
     "handle was initialized.";
+
+// static
+const char StorageAccessHandle::kCreateObjectURLNotRequested[] =
+    "The createObjectURL function for Blob Stoage was not requested when "
+    "storage access handle was initialized.";
+
+// static
+const char StorageAccessHandle::kRevokeObjectURLNotRequested[] =
+    "The revokeObjectURL function for Blob Stoage was not requested when "
+    "storage access handle was initialized.";
 
 namespace {
 
@@ -122,6 +133,16 @@ StorageAccessHandle::StorageAccessHandle(
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate);
   }
+  if (storage_access_types_->createObjectURL()) {
+    window.CountUse(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL);
+  }
+  if (storage_access_types_->revokeObjectURL()) {
+    window.CountUse(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL);
+  }
   if (storage_access_types_->all() || storage_access_types_->sessionStorage()) {
     InitSessionStorage();
   }
@@ -143,6 +164,11 @@ StorageAccessHandle::StorageAccessHandle(
   if (storage_access_types_->all() || storage_access_types_->estimate()) {
     InitQuota();
   }
+  if (storage_access_types_->all() ||
+      storage_access_types_->createObjectURL() ||
+      storage_access_types_->revokeObjectURL()) {
+    InitBlobStorage();
+  }
 }
 
 void StorageAccessHandle::Trace(Visitor* visitor) const {
@@ -153,6 +179,7 @@ void StorageAccessHandle::Trace(Visitor* visitor) const {
   visitor->Trace(indexed_db_);
   visitor->Trace(locks_);
   visitor->Trace(caches_);
+  visitor->Trace(blob_storage_);
   ScriptWrappable::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
@@ -272,8 +299,9 @@ void StorageAccessHandle::GetDirectoryImpl(
                     WrapPersistent(resolver)));
 }
 
-ScriptPromise StorageAccessHandle::estimate(ScriptState* script_state,
-                                            ExceptionState& exception_state) {
+ScriptPromise StorageAccessHandle::estimate(
+    ScriptState* script_state,
+    ExceptionState& exception_state) const {
   ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
@@ -293,6 +321,39 @@ ScriptPromise StorageAccessHandle::estimate(ScriptState* script_state,
   remote_->Estimate(WTF::BindOnce(&EstimateImplAfterRemoteEstimate,
                                   WrapPersistent(resolver)));
   return promise;
+}
+
+String StorageAccessHandle::createObjectURL(
+    Blob* blob,
+    ExceptionState& exception_state) const {
+  if (!storage_access_types_->all() &&
+      !storage_access_types_->createObjectURL()) {
+    exception_state.ThrowSecurityError(kCreateObjectURLNotRequested);
+    return "";
+  }
+  GetSupplementable()->CountUse(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use);
+  GetSupplementable()->CountUse(WebFeature::kCreateObjectURLBlob);
+  CHECK(blob);
+  return blob_storage_->RegisterURL(blob);
+}
+
+void StorageAccessHandle::revokeObjectURL(
+    const String& url,
+    ExceptionState& exception_state) const {
+  if (!storage_access_types_->all() &&
+      !storage_access_types_->revokeObjectURL()) {
+    exception_state.ThrowSecurityError(kRevokeObjectURLNotRequested);
+    return;
+  }
+  GetSupplementable()->CountUse(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use);
+  KURL resolved_url(NullURL(), url);
+  GetSupplementable()->GetExecutionContext()->RemoveURLFromMemoryCache(
+      resolved_url);
+  blob_storage_->Revoke(resolved_url);
 }
 
 void StorageAccessHandle::InitSessionStorage() {
@@ -333,7 +394,7 @@ void StorageAccessHandle::InitLocalStorage() {
 }
 
 HeapMojoRemote<mojom::blink::StorageAccessHandle>&
-StorageAccessHandle::GetRemote() {
+StorageAccessHandle::InitRemote() {
   if (!remote_) {
     mojo::PendingRemote<mojom::blink::StorageAccessHandle> remote;
     GetSupplementable()
@@ -351,13 +412,12 @@ void StorageAccessHandle::InitIndexedDB() {
   if (!GetSupplementable()->GetSecurityOrigin()->CanAccessDatabase()) {
     return;
   }
-  HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
-  if (!remote) {
+  if (!InitRemote()) {
     return;
   }
-  indexed_db_ = MakeGarbageCollected<IDBFactory>(GetSupplementable());
   mojo::PendingRemote<mojom::blink::IDBFactory> indexed_db_remote;
-  remote->BindIndexedDB(indexed_db_remote.InitWithNewPipeAndPassReceiver());
+  remote_->BindIndexedDB(indexed_db_remote.InitWithNewPipeAndPassReceiver());
+  indexed_db_ = MakeGarbageCollected<IDBFactory>(GetSupplementable());
   indexed_db_->SetRemote(std::move(indexed_db_remote));
 }
 
@@ -365,13 +425,12 @@ void StorageAccessHandle::InitLocks() {
   if (!GetSupplementable()->GetSecurityOrigin()->CanAccessLocks()) {
     return;
   }
-  HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
-  if (!remote) {
+  if (!InitRemote()) {
     return;
   }
-  locks_ = MakeGarbageCollected<LockManager>(*GetSupplementable()->navigator());
   mojo::PendingRemote<mojom::blink::LockManager> locks_remote;
-  remote->BindLocks(locks_remote.InitWithNewPipeAndPassReceiver());
+  remote_->BindLocks(locks_remote.InitWithNewPipeAndPassReceiver());
+  locks_ = MakeGarbageCollected<LockManager>(*GetSupplementable()->navigator());
   locks_->SetManager(std::move(locks_remote),
                      GetSupplementable()->GetExecutionContext());
 }
@@ -380,8 +439,7 @@ void StorageAccessHandle::InitCaches() {
   if (!GetSupplementable()->GetSecurityOrigin()->CanAccessCacheStorage()) {
     return;
   }
-  HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
-  if (!remote) {
+  if (!InitRemote()) {
     return;
   }
   mojo::PendingRemote<mojom::blink::CacheStorage> cache_remote;
@@ -396,7 +454,7 @@ void StorageAccessHandle::InitGetDirectory() {
   if (!GetSupplementable()->GetSecurityOrigin()->CanAccessFileSystem()) {
     return;
   }
-  GetRemote();
+  InitRemote();
   // Nothing else to init as getDirectory is an async function not a handle.
 }
 
@@ -404,8 +462,23 @@ void StorageAccessHandle::InitQuota() {
   if (GetSupplementable()->GetSecurityOrigin()->IsOpaque()) {
     return;
   }
-  GetRemote();
+  InitRemote();
   // Nothing else to init as all Quota usage is via async functions.
+}
+
+void StorageAccessHandle::InitBlobStorage() {
+  if (GetSupplementable()->GetSecurityOrigin()->IsOpaque()) {
+    return;
+  }
+  if (!InitRemote()) {
+    return;
+  }
+  mojo::PendingAssociatedRemote<mojom::blink::BlobURLStore> blob_storage_remote;
+  remote_->BindBlobStorage(
+      blob_storage_remote.InitWithNewEndpointAndPassReceiver());
+  blob_storage_ = MakeGarbageCollected<PublicURLManager>(
+      GetSupplementable()->GetExecutionContext(),
+      std::move(blob_storage_remote));
 }
 
 }  // namespace blink
