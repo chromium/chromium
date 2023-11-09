@@ -334,7 +334,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::string GetTitleForMediaControls();
 
   // WebContents ------------------------------------------------------
-  WebContentsDelegate* GetDelegate() override;
+  WebContentsDelegate* GetDelegate() final;
   void SetDelegate(WebContentsDelegate* delegate) override;
   NavigationControllerImpl& GetController() override;
   BrowserContext* GetBrowserContext() override;
