@@ -10916,34 +10916,6 @@
             ]
         }
     ],
-    "OffsetParentNewSpecBehaviorKillswitch": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Control",
-                    "enable_features": [
-                        "OffsetParentNewSpecBehavior"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "OffsetParentNewSpecBehavior"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxActionsUISimplification": [
         {
             "platforms": [

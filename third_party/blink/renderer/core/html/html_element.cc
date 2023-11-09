@@ -2999,8 +2999,6 @@ int HTMLElement::OffsetTopOrLeft(bool top) {
   HeapHashSet<Member<TreeScope>> ancestor_tree_scopes = GetAncestorTreeScopes();
   LayoutUnit offset;
   Element* offset_parent = this;
-  bool new_spec_behavior =
-      RuntimeEnabledFeatures::OffsetParentNewSpecBehaviorEnabled();
   // This loop adds up all of the offsetTop/offsetLeft values for this and
   // parent shadow-hidden offsetParents up the flat tree. If
   // |ancestor_tree_scopes| doesn't contain the next |offset_parent|'s
@@ -3017,7 +3015,7 @@ int HTMLElement::OffsetTopOrLeft(bool top) {
       }
     }
     offset_parent = next_offset_parent;
-  } while (new_spec_behavior && offset_parent &&
+  } while (offset_parent &&
            !ancestor_tree_scopes.Contains(&offset_parent->GetTreeScope()));
 
   return AdjustedOffsetForZoom(offset);

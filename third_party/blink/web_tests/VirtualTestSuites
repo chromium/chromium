@@ -1120,18 +1120,6 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "offsetparent-old-behavior",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/css/css-contain/content-visibility",
-      "external/wpt/shadow-dom",
-      "fast/dom/shadow"
-    ],
-    "args": ["--disable-features=OffsetParentNewSpecBehavior",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "non-streaming-declarative-shadow-dom-enabled",
     "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],

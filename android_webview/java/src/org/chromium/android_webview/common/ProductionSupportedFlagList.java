@@ -411,9 +411,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.DEPRECATE_UNLOAD,
                 "If false prevents the gradual deprecation of the unload event."),
         Flag.baseFeature(
-                BlinkFeatures.OFFSET_PARENT_NEW_SPEC_BEHAVIOR,
-                "Enables new HTMLElement.offsetParent behavior to match other browsers."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_RECORD_APP_DATA_DIRECTORY_SIZE,
                 "Record the size of the embedding app's data directory"),
         Flag.baseFeature(

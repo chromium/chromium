@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Verifies that HTMLElement.offsetTop accounts for shadow boundaries.
-  assert_equals: expected 38 but got 20
-[FAIL] Verifies that HTMLElement.offsetLeft accounts for shadow boundaries.
-  assert_equals: expected 8 but got 0
-[FAIL] Verifies that HTMLElement.offsetTop accounts for shadow boundaries when nested in multiple shadow roots.
-  assert_equals: expected 88 but got 20
-Harness: the test ran to completion.
-

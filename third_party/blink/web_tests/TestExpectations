@@ -2768,7 +2768,6 @@ crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/css/css-backgrounds/
 crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibility-on-g.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-005.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-006.html [ Failure ]
-crbug.com/626703 virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/content-visibility-on-g.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/light-dark-currentcolor.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/light-dark-inheritance.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mathml/presentation-markup/operators/non-spacing-accent-1.xhtml [ Failure ]

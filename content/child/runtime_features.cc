@@ -498,22 +498,6 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
     }
   }
 
-  // Enable or disable OffsetParentNewSpecBehavior for Enterprise Policy. This
-  // overrides any existing settings via base::Feature.
-  if (command_line.HasSwitch(
-          blink::switches::kOffsetParentNewSpecBehaviorPolicy)) {
-    const std::string value = command_line.GetSwitchValueASCII(
-        blink::switches::kOffsetParentNewSpecBehaviorPolicy);
-    if (value ==
-        blink::switches::kOffsetParentNewSpecBehaviorPolicy_ForceEnable) {
-      WebRuntimeFeatures::EnableOffsetParentNewSpecBehavior(true);
-    }
-    if (value ==
-        blink::switches::kOffsetParentNewSpecBehaviorPolicy_ForceDisable) {
-      WebRuntimeFeatures::EnableOffsetParentNewSpecBehavior(false);
-    }
-  }
-
   // Enable or disable SendMouseEventsDisabledFormControls for Enterprise
   // Policy. This overrides any existing settings via base::Feature.
   if (command_line.HasSwitch(

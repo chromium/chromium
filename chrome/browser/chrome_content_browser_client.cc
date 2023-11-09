@@ -2795,19 +2795,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(switches::kDisableScrollToTextFragment);
       }
 
-      // Override OffsetParentNewSpecBehavior feature if its Enterprise policy
-      // is specified.
-      if (prefs->HasPrefPath(
-              policy::policy_prefs::kOffsetParentNewSpecBehaviorEnabled)) {
-        command_line->AppendSwitchASCII(
-            blink::switches::kOffsetParentNewSpecBehaviorPolicy,
-            prefs->GetBoolean(
-                policy::policy_prefs::kOffsetParentNewSpecBehaviorEnabled)
-                ? blink::switches::
-                      kOffsetParentNewSpecBehaviorPolicy_ForceEnable
-                : blink::switches::
-                      kOffsetParentNewSpecBehaviorPolicy_ForceDisable);
-      }
       // Override SendMouseEventsDisabledFormControls feature if its Enterprise
       // Policy is specified.
       if (prefs->HasPrefPath(policy::policy_prefs::
