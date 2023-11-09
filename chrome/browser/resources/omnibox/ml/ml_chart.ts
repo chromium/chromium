@@ -33,6 +33,7 @@ interface Plot {
   color: string;
   xAxisLabel: string;
   xAxisOffset: number;
+  xAxisScale: number;
 }
 
 // Helps do vector math.
@@ -193,20 +194,34 @@ export class MlChartElement extends CustomElement {
 
     interface MlRequest {
       x: number;
+      scale: number;
       modifiedSignals: Signals;
       score: number;
     }
     const mlRequestPromises: Array<Array<Promise<MlRequest>>> =
         chartSignalNames.map(signalName => {
-          return xValues.filter(x => Number(this.signals_[signalName]) + x > 0)
-              .map(async(x): Promise<MlRequest> => {
+          const signal = this.signals_[signalName];
+          // For signals such as elapsedTimeLastVisitSecs, it's sometimes
+          // more useful to visualize on a zoomed-out x-axis. When their values
+          // are small though, we still want to use the normal scale so we can
+          // see patterns like score humps that tend to be in the 1-100 range.
+          // So zoom-out based on the signal value; when the signal is [0-99]
+          // scale is 1; when the signal is [100, 999], scale by 10; etc.
+          const scale =
+              (typeof signal === 'number' || typeof signal === 'bigint') ?
+              10 ** Math.max(Math.floor(Math.log10(Number(signal)) - 1), 0) :
+              1;
+          return xValues
+              .map((x): [number, number] => [x, Number(signal) + x * scale])
+              .filter(([_, modifiedSignal]) => modifiedSignal > 0)
+              .map(async([x, modifiedSignal]): Promise<MlRequest> => {
                 const modifiedSignals = {
                   ...this.signals_,
-                  [signalName]: String(Number(this.signals_[signalName]) + x),
+                  [signalName]: modifiedSignal,
                 };
                 const score =
                     await this.mlBrowserProxy_.makeMlRequest(modifiedSignals);
-                return {x, modifiedSignals, score};
+                return {x, scale, modifiedSignals, score};
               });
         });
     const mlRequests: MlRequest[][] = await Promise.all(
@@ -223,7 +238,8 @@ export class MlChartElement extends CustomElement {
                       ...chartSignalNames.map(
                           (signalName2, k): TextLine => ({
                             text: `${signalName2}: ${
-                                mlRequest.modifiedSignals[signalName2]}`,
+                                Number(mlRequest.modifiedSignals[signalName2]!)
+                                    .toLocaleString('en-US')}`,
                             color: colors[k % colors.length]!,
                             fontSize: 12,
                             bold: signalName2 === signalName,
@@ -241,6 +257,7 @@ export class MlChartElement extends CustomElement {
         color: colors[i % colors.length]!,
         xAxisLabel: signalName,
         xAxisOffset: Number(this.signals_[signalName]),
+        xAxisScale: mlRequests[i]![0]?.scale || 1,
       };
     });
 
@@ -309,7 +326,7 @@ export class MlChartElement extends CustomElement {
         this.canvasSize.subtract(this.axisPadding.scale(2)).invertY(0);
     const tickLength = new Vector(15);
     const labelOffset = new Vector(20);
-    const nTicks = 10;
+    const nTicks = 5;
     const xAxisColor = closestPlot ? closestPlot.color : this.primaryColor;
     // Draw the axes ticks and tick labels.
     for (let i = 0; i <= nTicks; i++) {
@@ -319,10 +336,14 @@ export class MlChartElement extends CustomElement {
           tick.setY(axisOrigin.subtract(tickLength.scale(.5)).y),
           tickLength.setX(0), 1, xAxisColor);
       if (closestPlot) {
+        const tickLabel =
+            (tickGrid.x * closestPlot.xAxisScale + closestPlot!.xAxisOffset)
+                .toLocaleString(
+                    'en-US',
+                    {minimumFractionDigits: 1, maximumFractionDigits: 1});
         this.drawText(
-            (tickGrid.x + closestPlot!.xAxisOffset).toFixed(2),
-            tick.setY(axisOrigin.add(labelOffset).y), xAxisColor, 12, false,
-            'center', 'middle');
+            tickLabel, tick.setY(axisOrigin.add(labelOffset).y), xAxisColor, 12,
+            false, 'center', 'middle');
       }
       this.drawLine(
           tick.setX(axisOrigin.subtract(tickLength.scale(.5)).x),
