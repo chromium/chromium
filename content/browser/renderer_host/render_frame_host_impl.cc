@@ -1604,7 +1604,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
             base::Unretained(this)));
     broker_.ApplyMojoBinderPolicies(mojo_binder_policy_applier_.get());
   } else if (frame_tree_->page_delegate()->IsInPreviewMode()) {
-    // TODO(b:299240273): Relax the policy on the tab promotion.
     mojo_binder_policy_applier_ = MojoBinderPolicyApplier::CreateForPreview(
         base::BindOnce(&RenderFrameHostImpl::CancelPreviewByMojoBinderPolicy,
                        base::Unretained(this)));
@@ -11868,7 +11867,7 @@ void RenderFrameHostImpl::CancelPreviewByMojoBinderPolicy(
   frame_tree_->page_delegate()->CancelPreviewByMojoBinderPolicy(interface_name);
 }
 
-void RenderFrameHostImpl::RendererWillActivateForPrerendering() {
+void RenderFrameHostImpl::RendererWillActivateForPrerenderingOrPreview() {
   // Loosen the policies of the Mojo capability control during dispatching the
   // prerenderingchange event in Blink, because the page may start legitimately
   // using controlled interfaces once prerenderingchange is dispatched. We
@@ -11876,8 +11875,8 @@ void RenderFrameHostImpl::RendererWillActivateForPrerendering() {
   // binders, because the Mojo message pipes are not channel-associated and we
   // should ensure that ActivateForPrerendering() arrives on the renderer
   // earlier than these deferred messages.
-  DCHECK(mojo_binder_policy_applier_)
-      << "prerendering pages should have a policy applier";
+  CHECK(mojo_binder_policy_applier_)
+      << "activating prerender or preview pages should have a policy applier";
   mojo_binder_policy_applier_->PrepareToGrantAll();
 }
 

@@ -2171,7 +2171,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Called when the Activate IPC is sent to the renderer. Puts the
   // MojoPolicyBinderApplier in "loose" mode via PrepareToGrantAll() until
   // DidActivateForPrerending() is called.
-  void RendererWillActivateForPrerendering();
+  void RendererWillActivateForPrerenderingOrPreview();
 
   // Prerender2:
   // Called when the Activate IPC is acknowledged by the renderer. Relinquishes

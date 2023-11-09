@@ -275,6 +275,14 @@ class WebContents : public PageNavigator,
     // Options specific to WebContents created for picture-in-picture windows.
     absl::optional<blink::mojom::PictureInPictureWindowOptions>
         picture_in_picture_options;
+
+    // WebContentsDelegate given for the case early initialization code depends
+    // on the delegate callbacks.
+    // For instance, WebContentsDelegate::IsInPreviewMode() will be called in
+    // RenderFrameHostImpl::ctor for the initial instance that is constructed
+    // in WebContents::Create() call, and callers have no chance to set their
+    // delegates.
+    raw_ptr<WebContentsDelegate> delegate = nullptr;
   };
 
   // Token that causes input to be blocked on this WebContents for at least as

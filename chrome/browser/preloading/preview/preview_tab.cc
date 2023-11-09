@@ -26,6 +26,20 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+namespace {
+
+content::WebContents::CreateParams CreateWebContentsCreateParams(
+    content::BrowserContext* context,
+    content::WebContentsDelegate* delegate) {
+  CHECK(context);
+  CHECK(delegate);
+  content::WebContents::CreateParams params(context);
+  params.delegate = delegate;
+  return params;
+}
+
+}  // namespace
+
 class PreviewTab::PreviewWidget final : public views::Widget {
  public:
   explicit PreviewWidget(PreviewManager* preview_manager)
@@ -94,15 +108,14 @@ class PreviewTab::WebContentsObserver final
 PreviewTab::PreviewTab(PreviewManager* preview_manager,
                        content::WebContents& initiator_web_contents,
                        const GURL& url)
-    : web_contents_(
-          content::WebContents::Create(content::WebContents::CreateParams(
-              initiator_web_contents.GetBrowserContext()))),
+    : web_contents_(content::WebContents::Create(CreateWebContentsCreateParams(
+          initiator_web_contents.GetBrowserContext(),
+          this))),
       widget_(std::make_unique<PreviewWidget>(preview_manager)),
       view_(std::make_unique<views::WebView>(nullptr)),
       url_(url) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kLinkPreview));
 
-  web_contents_->SetDelegate(this);
   // WebView setup.
   view_->SetWebContents(web_contents_.get());
 

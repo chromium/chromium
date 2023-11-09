@@ -1282,6 +1282,7 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
   std::unique_ptr<WebContentsImpl> new_contents(
       new WebContentsImpl(params.browser_context));
   new_contents->SetOpenerForNewContents(opener, params.opener_suppressed);
+  new_contents->SetDelegate(params.delegate);
 
   // If the opener is sandboxed, a new popup must inherit the opener's sandbox
   // flags, and these flags take effect immediately.  An exception is if the
@@ -10379,18 +10380,17 @@ void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
 void WebContentsImpl::ActivatePreviewPage() {
   TRACE_EVENT0("content", "WebContentsImpl::ActivatePreviewPage");
 
-  // TODO(b:299240273): Relax capability control here.
+  PageImpl& preview_page = GetPrimaryPage();
+  preview_page.SetActivationStartTime(base::TimeTicks::Now());
 
-  auto params = blink::mojom::PrerenderPageActivationParams::New();
-  base::TimeTicks activation_time = base::TimeTicks::Now();
-  params->activation_start = activation_time;
-  // No way to activate the previewed page other than with a user action, or
-  // testing only methods. So, we always set kYes here.
-  params->was_user_activated = blink::mojom::WasActivatedOption::kYes;
-  GetRenderViewHost()->ActivatePrerenderedPage(
-      std::move(params),
+  // TODO(b:299240273): Gather all relevant RVHs.
+  StoredPage::RenderViewHostImplSafeRefSet render_view_hosts;
+  render_view_hosts.insert(GetRenderViewHost()->GetSafeRef());
+
+  preview_page.Activate(
+      PageImpl::ActivationType::kPreview, render_view_hosts, absl::nullopt,
       base::BindOnce(&WebContentsImpl::DidActivatePreviewedPage,
-                     weak_factory_.GetWeakPtr(), activation_time));
+                     weak_factory_.GetWeakPtr()));
 }
 
 VisibleTimeRequestTrigger& WebContentsImpl::GetVisibleTimeRequestTrigger() {
