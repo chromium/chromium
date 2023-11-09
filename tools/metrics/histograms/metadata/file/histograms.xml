@@ -54,6 +54,11 @@ chromium-metrics-reviews@google.com.
                365"/>
 </variants>
 
+<variants name="GraphApiGetDeltaCallType">
+  <variant name="GetDeltaIncremental" summary="incremental delta HTTP call"/>
+  <variant name="GetDeltaInitial" summary="initial delta HTTP call"/>
+</variants>
+
 <variants name="GraphAPIMethod">
   <variant name="CopyEntry"/>
   <variant name="CreateDirectory"/>
@@ -70,6 +75,10 @@ chromium-metrics-reviews@google.com.
       summary="incremental delta fetch (sum of all result pages)"/>
   <variant name="GetDeltaAllInitial"
       summary="initial delta fetch (sum of all result pages)"/>
+  <variant name="GetDeltaIncremental"
+      summary="incremental delta HTTP call fetching a single results page"/>
+  <variant name="GetDeltaInitial"
+      summary="initial delta HTTP call fetching a single results page"/>
   <variant name="GetDrive"/>
   <variant name="GetEntry"/>
   <variant name="GetProfile"/>
@@ -981,6 +990,19 @@ chromium-metrics-reviews@google.com.
     <variant name="Incremental"/>
     <variant name="Initial"/>
   </token>
+</histogram>
+
+<histogram
+    name="FileBrowser.OfficeFiles.ODFS.GraphAPI.LastResponseCode.{GetDeltaCallType}"
+    enum="OfficeGraphAPIResult" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Records the status code of the last request in a
+    logical group of &quot;get delta&quot; calls, where each request fetches a
+    single page.
+  </summary>
+  <token key="GetDeltaCallType" variants="GraphApiGetDeltaCallType"/>
 </histogram>
 
 <histogram
