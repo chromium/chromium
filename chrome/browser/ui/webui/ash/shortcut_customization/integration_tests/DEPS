@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  'add_custom_accelerator_and_reset_interactive_uitest\.cc': [
+  '.*interactive_uitest\.cc': [
     '+ash/ash_element_identifiers.h',
   ],
 }

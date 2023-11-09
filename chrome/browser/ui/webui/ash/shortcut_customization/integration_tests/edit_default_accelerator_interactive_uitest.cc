@@ -18,7 +18,7 @@ namespace ash {
 namespace {
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTestBase,
-                       AddCustomAcceleratorAndReset) {
+                       EditDefaultAccelerator) {
   ui::Accelerator default_accel(ui::VKEY_C, ui::EF_COMMAND_DOWN);
   ui::Accelerator new_accel(ui::VKEY_N,
                             ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
@@ -31,31 +31,18 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTestBase,
       WaitForWebContentsReady(kShortcutAppWebContentsId,
                               GURL("chrome://shortcut-customization")),
       InAnyContext(Steps(
-          FocusWebContents(webcontents_id_),
-          SendAccelerator(webcontents_id_, new_accel),
-          EnsureNotPresent(kCalendarViewElementId),
-          Log("Verify that the custom shortcut does not open the calendar "
-              "before it's added as a shortcut"),
-          OpenCalendarShortcutDialog(), AddCustomCalendarShortcut(new_accel),
-          Log("Adding Search + Ctrl + n as a custom open/close calendar "
+          OpenCalendarShortcutDialog(), EditDefaultShortcut(new_accel),
+          Log("Setting Search + Ctrl + n as the default open/close calendar "
               "shortcut"),
-          FocusWebContents(webcontents_id_), EnsureAcceleratorsAreProcessed(),
           SendAccelerator(webcontents_id_, new_accel), FlushEvents(),
           WaitForShow(kCalendarViewElementId),
-          Log("Custom shortcut opens calendar"),
+          Log("New accelerator opens calendar"),
           SendAccelerator(webcontents_id_, new_accel), FlushEvents(),
           WaitForHide(kCalendarViewElementId),
-          Log("Custom shortcut closes calendar"), ResetCalendarShortcuts(),
-          Log("Open/Close calendar shortcut reset to defaults"),
-          FocusWebContents(webcontents_id_), EnsureAcceleratorsAreProcessed(),
+          Log("New accelerator closes calendar"),
           SendAccelerator(webcontents_id_, default_accel), FlushEvents(),
-          WaitForShow(kCalendarViewElementId),
-          SendAccelerator(webcontents_id_, default_accel), FlushEvents(),
-          WaitForHide(kCalendarViewElementId),
-          Log("Default shortcut still works"),
-          SendAccelerator(webcontents_id_, new_accel), FlushEvents(),
           EnsureNotPresent(kCalendarViewElementId),
-          Log("Custom shortcut no longer works"))));
+          Log("Default accelerator no longer opens the calendar"))));
 }
 
 }  // namespace

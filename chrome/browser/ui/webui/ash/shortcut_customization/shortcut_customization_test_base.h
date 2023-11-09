@@ -61,6 +61,13 @@ class ShortcutCustomizationInteractiveUiTestBase
       "#doneButton",
   };
 
+  const DeepQuery kEditShortcutButtonQuery{
+      "shortcut-customization-app",
+      "#editDialog",
+      "accelerator-edit-view",
+      "#editButton",
+  };
+
   const DeepQuery kRestoreDefaultsButtonQuery{
       "shortcut-customization-app",
       "#editDialog",
@@ -85,7 +92,7 @@ class ShortcutCustomizationInteractiveUiTestBase
   auto EditDefaultShortcut(ui::Accelerator new_accel) {
     CHECK(webcontents_id_);
     return Steps(
-        ExecuteJsAt(webcontents_id_, kAddShortcutButtonQuery, kClickFn),
+        ExecuteJsAt(webcontents_id_, kEditShortcutButtonQuery, kClickFn),
         InAnyContext(SendAccelerator(webcontents_id_, new_accel)),
         ExecuteJsAt(webcontents_id_, kDoneButtonQuery, kClickFn));
   }
