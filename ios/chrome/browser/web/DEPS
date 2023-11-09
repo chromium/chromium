@@ -18,7 +18,7 @@ include_rules = [
   "+ios/chrome/browser/metrics",
   "+ios/chrome/browser/ntp",
   "+ios/chrome/browser/ntp/new_tab_page_tab_helper.h",
-  "+ios/chrome/browser/open_from_clipboard",
+  "+ios/chrome/browser/open_from_clipboard/model",
   "+ios/chrome/browser/optimization_guide",
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/parcel_tracking",

@@ -277,7 +277,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/metrics:expired_histograms_array",
     "//ios/chrome/browser/ntp",
-    "//ios/chrome/browser/open_from_clipboard",
+    "//ios/chrome/browser/open_from_clipboard/model",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/policy",

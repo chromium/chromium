@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/open_from_clipboard/create_clipboard_recent_content.h"
+#import "ios/chrome/browser/open_from_clipboard/model/create_clipboard_recent_content.h"
 
 #import "components/open_from_clipboard/clipboard_recent_content_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"

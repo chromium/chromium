@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OPEN_FROM_CLIPBOARD_CREATE_CLIPBOARD_RECENT_CONTENT_H_
-#define IOS_CHROME_BROWSER_OPEN_FROM_CLIPBOARD_CREATE_CLIPBOARD_RECENT_CONTENT_H_
+#ifndef IOS_CHROME_BROWSER_OPEN_FROM_CLIPBOARD_MODEL_CREATE_CLIPBOARD_RECENT_CONTENT_H_
+#define IOS_CHROME_BROWSER_OPEN_FROM_CLIPBOARD_MODEL_CREATE_CLIPBOARD_RECENT_CONTENT_H_
 
 #include <memory>
 
@@ -16,4 +16,4 @@ class ClipboardRecentContent;
 // from a pure C++ (ClipboardRecentContentIOS is an Objective-C++).
 std::unique_ptr<ClipboardRecentContent> CreateClipboardRecentContentIOS();
 
-#endif  // IOS_CHROME_BROWSER_OPEN_FROM_CLIPBOARD_CREATE_CLIPBOARD_RECENT_CONTENT_H_
+#endif  // IOS_CHROME_BROWSER_OPEN_FROM_CLIPBOARD_MODEL_CREATE_CLIPBOARD_RECENT_CONTENT_H_
