@@ -81,6 +81,8 @@ std::u16string GetA11yName(SplitButtonView::SplitButtonType type,
 // SplitButton:
 // A button used for SplitButtonView to trigger snapping.
 class SplitButtonView::SplitButton : public views::Button {
+  METADATA_HEADER(SplitButton, views::Button)
+
  public:
   SplitButton(views::Button::PressedCallback pressed_callback,
               base::RepeatingClosure hovered_pressed_callback,
@@ -138,6 +140,9 @@ class SplitButtonView::SplitButton : public views::Button {
   // color.
   base::RepeatingClosure hovered_pressed_callback_;
 };
+
+BEGIN_METADATA(SplitButtonView, SplitButton, views::Button)
+END_METADATA
 
 // -----------------------------------------------------------------------------
 // SplitButtonView:

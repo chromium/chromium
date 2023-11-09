@@ -20,6 +20,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/tablet_state.h"
@@ -96,6 +97,8 @@ SnapDirection GetSnapDirection(const views::FrameCaptionButton* to_hover) {
 // long press or long hover will end.
 class FrameSizeButton::PieAnimationView : public views::View,
                                           public views::AnimationDelegateViews {
+  METADATA_HEADER(PieAnimationView, views::View)
+
  public:
   explicit PieAnimationView(FrameSizeButton* button)
       : views::AnimationDelegateViews(this), button_(button) {
@@ -182,6 +185,9 @@ class FrameSizeButton::PieAnimationView : public views::View,
   // The button `this` is associated with. Unowned.
   raw_ptr<FrameSizeButton> button_;
 };
+
+BEGIN_METADATA(FrameSizeButton, PieAnimationView, views::View)
+END_METADATA
 
 // The class to observe the to-be-snapped window during the waiting-for-snap
 // mode. If the window's window state is changed or the window is put in
