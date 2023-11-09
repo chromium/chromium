@@ -40,6 +40,12 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+#include <dawn/dawn_proc.h>
+#include <dawn/dawn_thread_dispatch_proc.h>
+#include <dawn/native/DawnNative.h>
+#endif
+
 namespace viz {
 
 namespace {
@@ -178,6 +184,16 @@ TestGpuServiceHolder::TestGpuServiceHolder(
         "FeatureList overrides must happen before the GPU service thread has "
         "been started.");
   }
+
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+  // The test will run both service and client in the same process, so we need
+  // to set dawn procs for both.
+  dawnProcSetProcs(&dawnThreadDispatchProcTable);
+
+  // Use the native procs as default procs for all threads. It will be used
+  // for GPU service side threads.
+  dawnProcSetDefaultThreadProcs(&dawn::native::GetProcs());
+#endif
 
   base::Thread::Options gpu_thread_options;
 #if BUILDFLAG(IS_OZONE)

@@ -6,7 +6,6 @@
 
 #include <dawn/dawn_proc.h>
 #include <dawn/dawn_thread_dispatch_proc.h>
-#include <dawn/native/DawnNative.h>
 #include <dawn/webgpu.h>
 
 #include "base/command_line.h"
@@ -95,16 +94,6 @@ void WebGPUTest::Initialize(const Options& options) {
   // this device has been marked as not supporting WebGPU.
   if (!WebGPUSupported()) {
     return;
-  }
-
-  // The test will run both service and client in the same process, so we need
-  // to set dawn procs for both.
-  dawnProcSetProcs(&dawnThreadDispatchProcTable);
-
-  {
-    // Use the native procs as default procs for all threads. It will be used
-    // for GPU service side threads.
-    dawnProcSetDefaultThreadProcs(&dawn::native::GetProcs());
   }
 
   gpu::GpuPreferences gpu_preferences;
