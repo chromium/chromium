@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 110 tests; 78 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 112 tests; 84 PASS, 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property display value 'grid'
 [PASS] Property display value 'inline-grid'
 [PASS] Property display value 'inline'
@@ -24,8 +24,10 @@ Found 110 tests; 78 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: 'run-in' is a supported value for display. expected true got false
 [PASS] Property display value 'flow'
 [PASS] Property display value 'flow-root'
-[FAIL] Property display value 'ruby'
-  assert_true: 'ruby' is a supported value for display. expected true got false
+[PASS] Property display value 'ruby'
+[FAIL] Property display value 'ruby-base'
+  assert_true: 'ruby-base' is a supported value for display. expected true got false
+[PASS] Property display value 'ruby-text'
 [PASS] Property display value 'flow list-item'
 [PASS] Property display value 'list-item flow'
 [PASS] Property display value 'flow-root list-item'
@@ -40,10 +42,8 @@ Found 110 tests; 78 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property display value 'block grid'
 [PASS] Property display value 'table block'
 [PASS] Property display value 'block table'
-[FAIL] Property display value 'block ruby'
-  assert_true: 'block ruby' is a supported value for display. expected true got false
-[FAIL] Property display value 'ruby block'
-  assert_true: 'ruby block' is a supported value for display. expected true got false
+[PASS] Property display value 'block ruby'
+[PASS] Property display value 'ruby block'
 [PASS] Property display value 'block list-item'
 [PASS] Property display value 'list-item block'
 [PASS] Property display value 'flow block list-item'
@@ -68,10 +68,8 @@ Found 110 tests; 78 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property display value 'inline grid'
 [PASS] Property display value 'table inline'
 [PASS] Property display value 'inline table'
-[FAIL] Property display value 'inline ruby'
-  assert_true: 'inline ruby' is a supported value for display. expected true got false
-[FAIL] Property display value 'ruby inline'
-  assert_true: 'ruby inline' is a supported value for display. expected true got false
+[PASS] Property display value 'inline ruby'
+[PASS] Property display value 'ruby inline'
 [PASS] Property display value 'inline list-item'
 [PASS] Property display value 'list-item inline'
 [PASS] Property display value 'flow inline list-item'
