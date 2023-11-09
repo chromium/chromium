@@ -6,6 +6,7 @@ hpack/huffman_constants
 Defines the constant Huffman table. This takes up an upsetting amount of space,
 but c'est la vie.
 """
+# flake8: noqa
 
 REQUEST_CODES = [
     0x1ff8,

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 h2/errors
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~
 
 Global error code registry containing the established HTTP/2 error codes.
 

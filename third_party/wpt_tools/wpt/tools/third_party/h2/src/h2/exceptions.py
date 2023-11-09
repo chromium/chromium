@@ -26,7 +26,7 @@ class FrameTooLargeError(ProtocolError):
     """
     The frame that we tried to send or that we received was too large.
     """
-    #: This error code that corresponds to this kind of Protocol Error.
+    #: The error code corresponds to this kind of Protocol Error.
     error_code = h2.errors.ErrorCodes.FRAME_SIZE_ERROR
 
 
@@ -36,7 +36,7 @@ class FrameDataMissingError(ProtocolError):
 
     .. versionadded:: 2.0.0
     """
-    #: The error code that corresponds to this kind of Protocol Error
+    #: The error code corresponds to this kind of Protocol Error.
     error_code = h2.errors.ErrorCodes.FRAME_SIZE_ERROR
 
 
@@ -52,8 +52,7 @@ class FlowControlError(ProtocolError):
     """
     An attempted action violates flow control constraints.
     """
-    #: The error code that corresponds to this kind of
-    #: :class:`ProtocolError <h2.exceptions.ProtocolError>`
+    #: The error code corresponds to this kind of Protocol Error.
     error_code = h2.errors.ErrorCodes.FLOW_CONTROL_ERROR
 
 
@@ -94,7 +93,7 @@ class NoSuchStreamError(ProtocolError):
        <h2.exceptions.ProtocolError>`
     """
     def __init__(self, stream_id):
-        #: The stream ID that corresponds to the non-existent stream.
+        #: The stream ID corresponds to the non-existent stream.
         self.stream_id = stream_id
 
 
@@ -106,7 +105,7 @@ class StreamClosedError(NoSuchStreamError):
     stream has been removed.
     """
     def __init__(self, stream_id):
-        #: The stream ID that corresponds to the nonexistent stream.
+        #: The stream ID corresponds to the nonexistent stream.
         self.stream_id = stream_id
 
         #: The relevant HTTP/2 error code.
@@ -145,13 +144,15 @@ class InvalidBodyLengthError(ProtocolError):
         )
 
 
-class UnsupportedFrameError(ProtocolError, KeyError):
+class UnsupportedFrameError(ProtocolError):
     """
     The remote peer sent a frame that is unsupported in this context.
 
     .. versionadded:: 2.1.0
+
+    .. versionchanged:: 4.0.0
+       Removed deprecated KeyError parent class.
     """
-    # TODO: Remove the KeyError in 3.0.0
     pass
 
 
@@ -181,6 +182,6 @@ class DenialOfServiceError(ProtocolError):
 
     .. versionadded:: 2.5.0
     """
-    #: The error code that corresponds to this kind of
+    #: The error code corresponds to this kind of
     #: :class:`ProtocolError <h2.exceptions.ProtocolError>`
     error_code = h2.errors.ErrorCodes.ENHANCE_YOUR_CALM

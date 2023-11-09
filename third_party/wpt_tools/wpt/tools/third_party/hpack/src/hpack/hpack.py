@@ -8,7 +8,6 @@ Implements the HPACK header compression algorithm as detailed by the IETF.
 import logging
 
 from .table import HeaderTable, table_entry_size
-from .compat import to_byte, to_bytes
 from .exceptions import (
     HPACKDecodingError, OversizedHeaderListError, InvalidTableSizeError
 )
@@ -46,8 +45,8 @@ def _unicode_if_needed(header, raw):
     Provides a header as a unicode string if raw is False, otherwise returns
     it as a bytestring.
     """
-    name = to_bytes(header[0])
-    value = to_bytes(header[1])
+    name = bytes(header[0])
+    value = bytes(header[1])
     if not raw:
         name = name.decode('utf-8')
         value = value.decode('utf-8')
@@ -106,10 +105,10 @@ def decode_integer(data, prefix_bits):
     mask = (0xFF >> (8 - prefix_bits))
 
     try:
-        number = to_byte(data[0]) & mask
+        number = data[0] & mask
         if number == max_number:
             while True:
-                next_byte = to_byte(data[index])
+                next_byte = data[index]
                 index += 1
 
                 if next_byte >= 128:
@@ -132,7 +131,7 @@ def decode_integer(data, prefix_bits):
 def _dict_to_iterable(header_dict):
     """
     This converts a dictionary to an iterable of two-tuples. This is a
-    HPACK-specific function becuase it pulls "special-headers" out first and
+    HPACK-specific function because it pulls "special-headers" out first and
     then emits them.
     """
     assert isinstance(header_dict, dict)
@@ -154,7 +153,7 @@ def _to_bytes(string):
     return string if isinstance(string, bytes) else string.encode('utf-8')
 
 
-class Encoder(object):
+class Encoder:
     """
     An HPACK encoder object. This object takes HTTP headers and emits encoded
     HTTP/2 header blocks.
@@ -187,7 +186,7 @@ class Encoder(object):
 
         :param headers: The headers to encode. Must be either an iterable of
                         tuples, an iterable of :class:`HeaderTuple
-                        <hpack.struct.HeaderTuple>`, or a ``dict``.
+                        <hpack.HeaderTuple>`, or a ``dict``.
 
                         If an iterable of tuples, the tuples may be either
                         two-tuples or three-tuples. If they are two-tuples, the
@@ -199,10 +198,10 @@ class Encoder(object):
                         ``sensitive`` defaults to ``False``.
 
                         If an iterable of :class:`HeaderTuple
-                        <hpack.struct.HeaderTuple>`, the tuples must always be
+                        <hpack.HeaderTuple>`, the tuples must always be
                         two-tuples. Instead of using ``sensitive`` as a third
                         tuple entry, use :class:`NeverIndexedHeaderTuple
-                        <hpack.struct.NeverIndexedHeaderTuple>` to request that
+                        <hpack.NeverIndexedHeaderTuple>` to request that
                         the field never be indexed.
 
                         .. warning:: HTTP/2 requires that all special headers
@@ -265,7 +264,12 @@ class Encoder(object):
         """
         This function takes a header key-value tuple and serializes it.
         """
-        log.debug("Adding %s to the header table", to_add)
+        log.debug(
+            "Adding %s to the header table, sensitive:%s, huffman:%s",
+            to_add,
+            sensitive,
+            huffman
+        )
 
         name, value = to_add
 
@@ -370,7 +374,7 @@ class Encoder(object):
         return block
 
 
-class Decoder(object):
+class Decoder:
     """
     An HPACK decoder object.
 
@@ -386,7 +390,7 @@ class Decoder(object):
         If this amount of data is exceeded, a `OversizedHeaderListError
         <hpack.OversizedHeaderListError>` exception will be raised. At this
         point the connection should be shut down, as the HPACK state will no
-        longer be useable.
+        longer be usable.
 
         Defaults to 64kB.
     :type max_header_list_size: ``int``
@@ -456,7 +460,7 @@ class Decoder(object):
         while current_index < data_len:
             # Work out what kind of header we're decoding.
             # If the high bit is 1, it's an indexed field.
-            current = to_byte(data[current_index])
+            current = data[current_index]
             indexed = True if current & 0x80 else False
 
             # Otherwise, if the second-highest bit is 1 it's a field that does
@@ -564,11 +568,11 @@ class Decoder(object):
         # When should_index is false, if the low four bits of the first byte
         # are nonzero the header name is indexed.
         if should_index:
-            indexed_name = to_byte(data[0]) & 0x3F
+            indexed_name = data[0] & 0x3F
             name_len = 6
             not_indexable = False
         else:
-            high_byte = to_byte(data[0])
+            high_byte = data[0]
             indexed_name = high_byte & 0x0F
             name_len = 4
             not_indexable = high_byte & 0x10
@@ -590,7 +594,7 @@ class Decoder(object):
             if len(name) != length:
                 raise HPACKDecodingError("Truncated header block")
 
-            if to_byte(data[0]) & 0x80:
+            if data[0] & 0x80:
                 name = decode_huffman(name)
             total_consumed = consumed + length + 1  # Since we moved forward 1.
 
@@ -602,7 +606,7 @@ class Decoder(object):
         if len(value) != length:
             raise HPACKDecodingError("Truncated header block")
 
-        if to_byte(data[0]) & 0x80:
+        if data[0] & 0x80:
             value = decode_huffman(value)
 
         # Updated the total consumed length.

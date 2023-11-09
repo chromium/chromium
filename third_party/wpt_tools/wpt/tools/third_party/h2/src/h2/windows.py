@@ -21,7 +21,7 @@ from .exceptions import FlowControlError
 LARGEST_FLOW_CONTROL_WINDOW = 2**31 - 1
 
 
-class WindowManager(object):
+class WindowManager:
     """
     A basic HTTP/2 window manager.
 

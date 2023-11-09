@@ -14,7 +14,7 @@ import binascii
 from .settings import ChangedSetting, _setting_code_from_int
 
 
-class Event(object):
+class Event:
     """
     Base class for h2 events.
     """
@@ -311,7 +311,7 @@ class RemoteSettingsChanged(Event):
     its settings. It contains a complete inventory of changed settings,
     including their previous values.
 
-    In HTTP/2, settings changes need to be acknowledged. hyper-h2 automatically
+    In HTTP/2, settings changes need to be acknowledged. h2 automatically
     acknowledges settings changes for efficiency. However, it is possible that
     the caller may not be happy with the changed setting.
 
@@ -322,7 +322,7 @@ class RemoteSettingsChanged(Event):
 
     .. versionchanged:: 2.0.0
        Prior to this version the user needed to acknowledge settings changes.
-       This is no longer the case: hyper-h2 now automatically acknowledges
+       This is no longer the case: h2 now automatically acknowledges
        them.
     """
     def __init__(self):
@@ -374,11 +374,16 @@ class PingReceived(Event):
         )
 
 
-class PingAcknowledged(Event):
+class PingAckReceived(Event):
     """
-    Same as PingAckReceived.
+    The PingAckReceived event is fired whenever a PING acknowledgment is
+    received. It contains the 'opaque data' of the PING+ACK frame, allowing the
+    user to correlate PINGs and calculate RTT.
 
-    .. deprecated:: 3.1.0
+    .. versionadded:: 3.1.0
+
+    .. versionchanged:: 4.0.0
+       Removed deprecated but equivalent ``PingAcknowledged``.
     """
     def __init__(self):
         #: The data included on the ping.
@@ -388,17 +393,6 @@ class PingAcknowledged(Event):
         return "<PingAckReceived ping_data:%s>" % (
             _bytes_representation(self.ping_data),
         )
-
-
-class PingAckReceived(PingAcknowledged):
-    """
-    The PingAckReceived event is fired whenever a PING acknowledgment is
-    received. It contains the 'opaque data' of the PING+ACK frame, allowing the
-    user to correlate PINGs and calculate RTT.
-
-    .. versionadded:: 3.1.0
-    """
-    pass
 
 
 class StreamEnded(Event):
@@ -420,10 +414,10 @@ class StreamReset(Event):
     The StreamReset event is fired in two situations. The first is when the
     remote party forcefully resets the stream. The second is when the remote
     party has made a protocol error which only affects a single stream. In this
-    case, Hyper-h2 will terminate the stream early and return this event.
+    case, h2 will terminate the stream early and return this event.
 
     .. versionchanged:: 2.0.0
-       This event is now fired when Hyper-h2 automatically resets a stream.
+       This event is now fired when h2 automatically resets a stream.
     """
     def __init__(self):
         #: The Stream ID of the stream that was reset.
@@ -567,12 +561,12 @@ class AlternativeServiceAvailable(Event):
 
     This event always carries the origin to which the ALTSVC information
     applies. That origin is either supplied by the server directly, or inferred
-    by hyper-h2 from the ``:authority`` pseudo-header field that was sent by
+    by h2 from the ``:authority`` pseudo-header field that was sent by
     the user when initiating a given stream.
 
     This event also carries what RFC 7838 calls the "Alternative Service Field
     Value", which is formatted like a HTTP header field and contains the
-    relevant alternative service information. Hyper-h2 does not parse or in any
+    relevant alternative service information. h2 does not parse or in any
     way modify that information: the user is required to do that.
 
     This event can only be fired on the client end of a connection.
@@ -582,13 +576,13 @@ class AlternativeServiceAvailable(Event):
     def __init__(self):
         #: The origin to which the alternative service field value applies.
         #: This field is either supplied by the server directly, or inferred by
-        #: hyper-h2 from the ``:authority`` pseudo-header field that was sent
+        #: h2 from the ``:authority`` pseudo-header field that was sent
         #: by the user when initiating the stream on which the frame was
         #: received.
         self.origin = None
 
         #: The ALTSVC field value. This contains information about the HTTP
-        #: alternative service being advertised by the server. Hyper-h2 does
+        #: alternative service being advertised by the server. h2 does
         #: not parse this field: it is left exactly as sent by the server. The
         #: structure of the data in this field is given by `RFC 7838 Section 3
         #: <https://tools.ietf.org/html/rfc7838#section-3>`_.
@@ -606,11 +600,11 @@ class AlternativeServiceAvailable(Event):
 class UnknownFrameReceived(Event):
     """
     The UnknownFrameReceived event is fired when the remote peer sends a frame
-    that hyper-h2 does not understand. This occurs primarily when the remote
-    peer is employing HTTP/2 extensions that hyper-h2 doesn't know anything
+    that h2 does not understand. This occurs primarily when the remote
+    peer is employing HTTP/2 extensions that h2 doesn't know anything
     about.
 
-    RFC 7540 requires that HTTP/2 implementations ignore these frames. hyper-h2
+    RFC 7540 requires that HTTP/2 implementations ignore these frames. h2
     does so. However, this event is fired to allow implementations to perform
     special processing on those frames if needed (e.g. if the implementation
     is capable of handling the frame itself).
@@ -637,12 +631,4 @@ def _bytes_representation(data):
     if data is None:
         return None
 
-    hex = binascii.hexlify(data)
-
-    # This is moderately clever: on all Python versions hexlify returns a byte
-    # string. On Python 3 we want an actual string, so we just check whether
-    # that's what we have.
-    if not isinstance(hex, str):  # pragma: no cover
-        hex = hex.decode('ascii')
-
-    return hex
+    return binascii.hexlify(data).decode('ascii')

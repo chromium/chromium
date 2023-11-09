@@ -25,8 +25,8 @@ class HeaderTuple(tuple):
 
     indexable = True
 
-    def __new__(_cls, *args):
-        return tuple.__new__(_cls, args)
+    def __new__(cls, *args):
+        return tuple.__new__(cls, args)
 
 
 class NeverIndexedHeaderTuple(HeaderTuple):

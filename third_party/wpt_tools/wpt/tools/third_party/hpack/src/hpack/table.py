@@ -23,7 +23,7 @@ def table_entry_size(name, value):
     return 32 + len(name) + len(value)
 
 
-class HeaderTable(object):
+class HeaderTable:
     """
     Implements the combined static and dynamic header table
 
@@ -170,14 +170,17 @@ class HeaderTable(object):
             - ``(index, name, None)`` for partial matches on name only.
             - ``(index, name, value)`` for perfect matches.
         """
-        offset = HeaderTable.STATIC_TABLE_LENGTH + 1
         partial = None
-        for (i, (n, v)) in enumerate(HeaderTable.STATIC_TABLE):
-            if n == name:
-                if v == value:
-                    return i + 1, n, v
-                elif partial is None:
-                    partial = (i + 1, n, None)
+
+        header_name_search_result = HeaderTable.STATIC_TABLE_MAPPING.get(name)
+        if header_name_search_result:
+            index = header_name_search_result[1].get(value)
+            if index is not None:
+                return index, name, value
+            else:
+                partial = (header_name_search_result[0], name, None)
+
+        offset = HeaderTable.STATIC_TABLE_LENGTH + 1
         for (i, (n, v)) in enumerate(self.dynamic_entries):
             if n == name:
                 if v == value:
@@ -213,3 +216,20 @@ class HeaderTable(object):
             cursize -= table_entry_size(name, value)
             log.debug("Evicting %s: %s from the header table", name, value)
         self._current_size = cursize
+
+
+def _build_static_table_mapping():
+    """
+    Build static table mapping from header name to tuple with next structure:
+    (<minimal index of header>, <mapping from header value to it index>).
+
+    static_table_mapping used for hash searching.
+    """
+    static_table_mapping = {}
+    for index, (name, value) in enumerate(HeaderTable.STATIC_TABLE, 1):
+        header_name_search_result = static_table_mapping.setdefault(name, (index, {}))
+        header_name_search_result[1][value] = index
+    return static_table_mapping
+
+
+HeaderTable.STATIC_TABLE_MAPPING = _build_static_table_mapping()

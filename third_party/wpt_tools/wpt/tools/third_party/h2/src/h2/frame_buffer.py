@@ -6,7 +6,7 @@ h2/frame_buffer
 A data structure that provides a way to iterate over a byte buffer in terms of
 frames.
 """
-from hyperframe.exceptions import InvalidFrameError
+from hyperframe.exceptions import InvalidFrameError, InvalidDataError
 from hyperframe.frame import (
     Frame, HeadersFrame, ContinuationFrame, PushPromiseFrame
 )
@@ -26,7 +26,7 @@ from .exceptions import (
 CONTINUATION_BACKLOG = 64
 
 
-class FrameBuffer(object):
+class FrameBuffer:
     """
     This is a data structure that expects to act as a buffer for HTTP/2 data
     that allows iteraton in terms of H2 frames.
@@ -56,20 +56,6 @@ class FrameBuffer(object):
             self._preamble = self._preamble[of_which_preamble:]
 
         self.data += data
-
-    def _parse_frame_header(self, data):
-        """
-        Parses the frame header from the data. Either returns a tuple of
-        (frame, length), or throws an exception. The returned frame may be None
-        if the frame is of unknown type.
-        """
-        try:
-            frame, length = Frame.parse_frame_header(data[:9])
-        except ValueError as e:
-            # The frame header is invalid. This is a ProtocolError
-            raise ProtocolError("Invalid frame header received: %s" % str(e))
-
-        return frame, length
 
     def _validate_frame_length(self, length):
         """
@@ -130,16 +116,18 @@ class FrameBuffer(object):
     def __iter__(self):
         return self
 
-    def next(self):  # Python 2
+    def __next__(self):
         # First, check that we have enough data to successfully parse the
         # next frame header. If not, bail. Otherwise, parse it.
         if len(self.data) < 9:
             raise StopIteration()
 
         try:
-            f, length = self._parse_frame_header(self.data)
-        except InvalidFrameError:  # pragma: no cover
-            raise ProtocolError("Received frame with invalid frame header.")
+            f, length = Frame.parse_frame_header(self.data[:9])
+        except (InvalidDataError, InvalidFrameError) as e:  # pragma: no cover
+            raise ProtocolError(
+                "Received frame with invalid header: %s" % str(e)
+            )
 
         # Next, check that we have enough length to parse the frame body. If
         # not, bail, leaving the frame header data in the buffer for next time.
@@ -149,13 +137,13 @@ class FrameBuffer(object):
         # Confirm the frame has an appropriate length.
         self._validate_frame_length(length)
 
-        # Don't try to parse the body if we didn't get a frame we know about:
-        # there's nothing we can do with it anyway.
-        if f is not None:
-            try:
-                f.parse_body(memoryview(self.data[9:9+length]))
-            except InvalidFrameError:
-                raise FrameDataMissingError("Frame data missing or invalid")
+        # Try to parse the frame body
+        try:
+            f.parse_body(memoryview(self.data[9:9+length]))
+        except InvalidDataError:
+            raise ProtocolError("Received frame with non-compliant data")
+        except InvalidFrameError:
+            raise FrameDataMissingError("Frame data missing or invalid")
 
         # At this point, as we know we'll use or discard the entire frame, we
         # can update the data.
@@ -169,7 +157,4 @@ class FrameBuffer(object):
         # frame in the sequence instead. Recurse back into ourselves to do
         # that. This is safe because the amount of work we have to do here is
         # strictly bounded by the length of the buffer.
-        return f if f is not None else self.next()
-
-    def __next__(self):  # Python 3
-        return self.next()
+        return f if f is not None else self.__next__()

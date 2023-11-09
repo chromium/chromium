@@ -6,10 +6,9 @@ hpack/huffman_decoder
 An implementation of a bitwise prefix tree specially built for decoding
 Huffman-coded content where we already know the Huffman table.
 """
-from .compat import to_byte, decode_hex
 
 
-class HuffmanEncoder(object):
+class HuffmanEncoder:
     """
     Encodes a string according to the Huffman encoding table defined in the
     HPACK specification.
@@ -33,8 +32,7 @@ class HuffmanEncoder(object):
         # Turn each byte into its huffman code. These codes aren't necessarily
         # octet aligned, so keep track of how far through an octet we are. To
         # handle this cleanly, just use a single giant integer.
-        for char in bytes_to_encode:
-            byte = to_byte(char)
+        for byte in bytes_to_encode:
             bin_int_len = self.huffman_code_list_lengths[byte]
             bin_int = self.huffman_code_list[byte] & (
                 2 ** (bin_int_len + 1) - 1
@@ -65,4 +63,4 @@ class HuffmanEncoder(object):
             missing_digits = expected_digits - len(final_num)
             final_num = ('0' * missing_digits) + final_num
 
-        return decode_hex(final_num)
+        return bytes.fromhex(final_num)

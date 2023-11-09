@@ -72,7 +72,7 @@ class AllowedStreamIDs(IntEnum):
     ODD = 1
 
 
-class H2ConnectionStateMachine(object):
+class H2ConnectionStateMachine:
     """
     A single HTTP/2 connection state machine.
 
@@ -236,7 +236,7 @@ class H2ConnectionStateMachine(object):
             return []
 
 
-class H2Connection(object):
+class H2Connection:
     """
     A low-level HTTP/2 connection object. This handles building and receiving
     frames and maintains both connection and per-stream state for all streams
@@ -806,8 +806,8 @@ class H2Connection(object):
         :class:`FrameTooLargeError <h2.exceptions.FrameTooLargeError>` will be
         raised.
 
-        Hyper-h2 does this to avoid buffering the data internally. If the user
-        has more data to send than hyper-h2 will allow, consider breaking it up
+        h2 does this to avoid buffering the data internally. If the user
+        has more data to send than h2 will allow, consider breaking it up
         and buffering it externally.
 
         :param stream_id: The ID of the stream on which to send the data.
@@ -1097,10 +1097,10 @@ class H2Connection(object):
         The explicit method of advertising can be done as long as the
         connection is active. The implicit method can only be done after the
         client has sent the request headers and before the server has sent the
-        response headers: outside of those points, Hyper-h2 will forbid sending
+        response headers: outside of those points, h2 will forbid sending
         the Alternative Service advertisement by raising a ProtocolError.
 
-        The ``field_value`` parameter is specified in RFC 7838. Hyper-h2 does
+        The ``field_value`` parameter is specified in RFC 7838. h2 does
         not validate or introspect this argument: the user is required to
         ensure that it's well-formed. ``field_value`` corresponds to RFC 7838's
         "Alternative Service Field Value".
@@ -1109,13 +1109,13 @@ class H2Connection(object):
                   advertising Alternative Services. The implicit method of
                   advertising Alternative Services has a number of subtleties
                   and can lead to inconsistencies between the server and
-                  client. Hyper-h2 allows both mechanisms, but caution is
+                  client. h2 allows both mechanisms, but caution is
                   strongly advised.
 
         .. versionadded:: 2.3.0
 
         :param field_value: The RFC 7838 Alternative Service Field Value. This
-            argument is not introspected by Hyper-h2: the user is responsible
+            argument is not introspected by h2: the user is responsible
             for ensuring that it is well-formed.
         :type field_value: ``bytes``
 
@@ -1173,17 +1173,17 @@ class H2Connection(object):
         stream is closed.
 
         .. warning:: RFC 7540 allows for servers to change the priority of
-                     streams. However, hyper-h2 **does not** allow server
+                     streams. However, h2 **does not** allow server
                      stacks to do this. This is because most clients do not
                      adequately know how to respond when provided conflicting
                      priority information, and relatively little utility is
                      provided by making that functionality available.
 
-        .. note:: hyper-h2 **does not** maintain any information about the
-                  RFC 7540 priority tree. That means that hyper-h2 does not
+        .. note:: h2 **does not** maintain any information about the
+                  RFC 7540 priority tree. That means that h2 does not
                   prevent incautious users from creating invalid priority
                   trees, particularly by creating priority loops. While some
-                  basic error checking is provided by hyper-h2, users are
+                  basic error checking is provided by h2, users are
                   strongly recommended to understand their prioritisation
                   strategies before using the priority tools here.
 
@@ -1481,6 +1481,7 @@ class H2Connection(object):
         .. versionchanged:: 2.0.0
            Removed from the public API.
         """
+        self.config.logger.trace("Received frame: %s", repr(frame))
         try:
             # I don't love using __class__ here, maybe reconsider it.
             frames, events = self._frame_dispatch_table[frame.__class__](frame)
@@ -1721,22 +1722,21 @@ class H2Connection(object):
         """
         Receive a WINDOW_UPDATE frame on the connection.
         """
-        # Validate the frame.
-        if not (1 <= frame.window_increment <= self.MAX_WINDOW_INCREMENT):
-            raise ProtocolError(
-                "Flow control increment must be between 1 and %d, received %d"
-                % (self.MAX_WINDOW_INCREMENT, frame.window_increment)
-            )
+        # hyperframe will take care of validating the window_increment.
+        # If we reach in here, we can assume a valid value.
 
         events = self.state_machine.process_input(
             ConnectionInputs.RECV_WINDOW_UPDATE
         )
 
         if frame.stream_id:
-            stream = self._get_stream_by_id(frame.stream_id)
-            frames, stream_events = stream.receive_window_update(
-                frame.window_increment
-            )
+            try:
+                stream = self._get_stream_by_id(frame.stream_id)
+                frames, stream_events = stream.receive_window_update(
+                    frame.window_increment
+                )
+            except StreamClosedError:
+                return [], events
         else:
             # Increment our local flow control window.
             self.outbound_flow_control_window = guard_increment_window(
@@ -2029,9 +2029,9 @@ def _add_frame_priority(frame, weight=None, depends_on=None, exclusive=None):
 def _decode_headers(decoder, encoded_header_block):
     """
     Decode a HPACK-encoded header block, translating HPACK exceptions into
-    sensible hyper-h2 errors.
+    sensible h2 errors.
 
-    This only ever returns bytestring headers: hyper-h2 may emit them as
+    This only ever returns bytestring headers: h2 may emit them as
     unicode later, but internally it processes them as bytestrings only.
     """
     try:

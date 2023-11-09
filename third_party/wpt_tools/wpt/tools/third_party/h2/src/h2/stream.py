@@ -80,7 +80,7 @@ STREAM_OPEN[StreamState.HALF_CLOSED_LOCAL] = True
 STREAM_OPEN[StreamState.HALF_CLOSED_REMOTE] = True
 
 
-class H2StreamStateMachine(object):
+class H2StreamStateMachine:
     """
     A single HTTP/2 stream state machine.
 
@@ -198,6 +198,8 @@ class H2StreamStateMachine(object):
         """
         Fires when data is received.
         """
+        if not self.headers_received:
+            raise ProtocolError("cannot receive data before headers")
         event = DataReceived()
         event.stream_id = self.stream_id
         return [event]
@@ -526,7 +528,7 @@ class H2StreamStateMachine(object):
 # For this reason, our state machine implementation below allows for
 # PUSH_PROMISE frames both in the IDLE state (as in the diagram), but also
 # in the OPEN, HALF_CLOSED_LOCAL, and HALF_CLOSED_REMOTE states.
-# Essentially, for hyper-h2, PUSH_PROMISE frames are effectively sent on
+# Essentially, for h2, PUSH_PROMISE frames are effectively sent on
 # two streams.
 #
 # The _transitions dictionary contains a mapping of tuples of
@@ -734,7 +736,7 @@ _transitions = {
 }
 
 
-class H2Stream(object):
+class H2Stream:
     """
     A low-level HTTP/2 stream object. This handles building and receiving
     frames and maintains per-stream state.
