@@ -65,7 +65,7 @@ DialogModel::Builder& DialogModel::Builder::AddButtonInternal(
   model_callback = std::move(callback);
   // NOTREACHED() is used below to make sure this callback isn't used.
   // DialogModelHost should be using OnDialogCanceled() instead.
-  model_button.emplace(model_->GetPassKey(), model_.get(),
+  model_button.emplace(model_->GetPassKey(),
                        base::BindRepeating([](const Event&) { NOTREACHED(); }),
                        params);
 
@@ -80,8 +80,8 @@ DialogModel::Builder& DialogModel::Builder::AddExtraButton(
   DCHECK(!model_->extra_link_);
   // Extra buttons are required to have labels.
   DCHECK(!params.label_.empty());
-  model_->extra_button_.emplace(model_->GetPassKey(), model_.get(),
-                                std::move(callback), params);
+  model_->extra_button_.emplace(model_->GetPassKey(), std::move(callback),
+                                params);
   return *this;
 }
 
@@ -134,15 +134,15 @@ DialogModel::~DialogModel() = default;
 void DialogModel::AddParagraph(const DialogModelLabel& label,
                                std::u16string header,
                                ElementIdentifier id) {
-  AddField(std::make_unique<DialogModelParagraph>(GetPassKey(), this, label,
-                                                  header, id));
+  AddField(
+      std::make_unique<DialogModelParagraph>(GetPassKey(), label, header, id));
 }
 
 void DialogModel::AddCheckbox(ElementIdentifier id,
                               const DialogModelLabel& label,
                               const DialogModelCheckbox::Params& params) {
-  AddField(std::make_unique<DialogModelCheckbox>(GetPassKey(), this, id, label,
-                                                 params));
+  AddField(
+      std::make_unique<DialogModelCheckbox>(GetPassKey(), id, label, params));
 }
 
 void DialogModel::AddCombobox(ElementIdentifier id,
@@ -150,21 +150,20 @@ void DialogModel::AddCombobox(ElementIdentifier id,
                               std::unique_ptr<ui::ComboboxModel> combobox_model,
                               const DialogModelCombobox::Params& params) {
   AddField(std::make_unique<DialogModelCombobox>(
-      GetPassKey(), this, id, std::move(label), std::move(combobox_model),
-      params));
+      GetPassKey(), id, std::move(label), std::move(combobox_model), params));
 }
 
 void DialogModel::AddSeparator() {
-  AddField(std::make_unique<DialogModelSeparator>(GetPassKey(), this));
+  AddField(std::make_unique<DialogModelSeparator>(GetPassKey()));
 }
 
 void DialogModel::AddMenuItem(ImageModel icon,
                               std::u16string label,
                               base::RepeatingCallback<void(int)> callback,
                               const DialogModelMenuItem::Params& params) {
-  AddField(std::make_unique<DialogModelMenuItem>(
-      GetPassKey(), this, std::move(icon), std::move(label),
-      std::move(callback), params));
+  AddField(std::make_unique<DialogModelMenuItem>(GetPassKey(), std::move(icon),
+                                                 std::move(label),
+                                                 std::move(callback), params));
 }
 
 void DialogModel::AddTextfield(ElementIdentifier id,
@@ -172,13 +171,13 @@ void DialogModel::AddTextfield(ElementIdentifier id,
                                std::u16string text,
                                const DialogModelTextfield::Params& params) {
   AddField(std::make_unique<DialogModelTextfield>(
-      GetPassKey(), this, id, std::move(label), std::move(text), params));
+      GetPassKey(), id, std::move(label), std::move(text), params));
 }
 
 void DialogModel::AddCustomField(
     std::unique_ptr<DialogModelCustomField::Field> field,
     ElementIdentifier id) {
-  AddField(std::make_unique<DialogModelCustomField>(GetPassKey(), this, id,
+  AddField(std::make_unique<DialogModelCustomField>(GetPassKey(), id,
                                                     std::move(field)));
 }
 

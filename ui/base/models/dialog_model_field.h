@@ -22,7 +22,6 @@
 
 namespace ui {
 
-class DialogModel;
 class DialogModelButton;
 class DialogModelParagraph;
 class DialogModelCheckbox;
@@ -32,6 +31,18 @@ class DialogModelHost;
 class DialogModelMenuItem;
 class DialogModelTextfield;
 class Event;
+
+// TODO(pbos): This is in place during an investigation to see if it makes sense
+// to be able to host DialogModelField classes in different model classes.
+// If that doesn't work out merge this into DialogModel. If it works out, then
+// this should probably be UiModelBase and everything in this file should be
+// UiModelFields.
+class DialogModelBase {
+ protected:
+  static base::PassKey<DialogModelBase> GetPassKey() {
+    return base::PassKey<DialogModelBase>();
+  }
+};
 
 // TODO(pbos): Move this to separate header.
 // DialogModelLabel is an exception to below classes. This is not a
@@ -207,8 +218,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
  protected:
   // Children of this class need to be constructed through DialogModel to help
   // enforce that they're added to the model.
-  DialogModelField(base::PassKey<DialogModel>,
-                   DialogModel* model,
+  DialogModelField(base::PassKey<DialogModelBase>,
                    Type type,
                    ElementIdentifier id,
                    base::flat_set<Accelerator> accelerators,
@@ -228,7 +238,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   friend class DialogModel;
   FRIEND_TEST_ALL_PREFIXES(DialogModelButtonTest, UsesParamsUniqueId);
 
-  const raw_ptr<DialogModel> model_;
   const Type type_;
   const ElementIdentifier id_;
 
@@ -272,8 +281,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
 
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
-  DialogModelButton(base::PassKey<DialogModel> pass_key,
-                    DialogModel* model,
+  DialogModelButton(base::PassKey<DialogModelBase> pass_key,
                     base::RepeatingCallback<void(const Event&)> callback,
                     const Params& params);
   DialogModelButton(const DialogModelButton&) = delete;
@@ -309,8 +317,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelParagraph : public DialogModelField {
  public:
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
-  DialogModelParagraph(base::PassKey<DialogModel> pass_key,
-                       DialogModel* model,
+  DialogModelParagraph(base::PassKey<DialogModelBase> pass_key,
                        const DialogModelLabel& label,
                        std::u16string header,
                        ElementIdentifier id);
@@ -359,8 +366,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCheckbox : public DialogModelField {
 
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
-  DialogModelCheckbox(base::PassKey<DialogModel> pass_key,
-                      DialogModel* model,
+  DialogModelCheckbox(base::PassKey<DialogModelBase> pass_key,
                       ElementIdentifier id,
                       const DialogModelLabel& label,
                       const Params& params);
@@ -424,8 +430,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
 
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
-  DialogModelCombobox(base::PassKey<DialogModel> pass_key,
-                      DialogModel* model,
+  DialogModelCombobox(base::PassKey<DialogModelBase> pass_key,
                       ElementIdentifier id,
                       std::u16string label,
                       std::unique_ptr<ui::ComboboxModel> combobox_model,
@@ -489,8 +494,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuItem : public DialogModelField {
 
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
-  DialogModelMenuItem(base::PassKey<DialogModel> pass_key,
-                      DialogModel* model,
+  DialogModelMenuItem(base::PassKey<DialogModelBase> pass_key,
                       ImageModel icon,
                       std::u16string label,
                       base::RepeatingCallback<void(int)> callback,
@@ -520,7 +524,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelSeparator : public DialogModelField {
  public:
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
-  DialogModelSeparator(base::PassKey<DialogModel> pass_key, DialogModel* model);
+  explicit DialogModelSeparator(base::PassKey<DialogModelBase> pass_key);
   DialogModelSeparator(const DialogModelSeparator&) = delete;
   DialogModelSeparator& operator=(const DialogModelSeparator&) = delete;
   ~DialogModelSeparator() override;
@@ -562,8 +566,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
 
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
-  DialogModelTextfield(base::PassKey<DialogModel> pass_key,
-                       DialogModel* model,
+  DialogModelTextfield(base::PassKey<DialogModelBase> pass_key,
                        ElementIdentifier id,
                        std::u16string label,
                        std::u16string text,
@@ -606,8 +609,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCustomField
 
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
-  DialogModelCustomField(base::PassKey<DialogModel> pass_key,
-                         DialogModel* model,
+  DialogModelCustomField(base::PassKey<DialogModelBase> pass_key,
                          ElementIdentifier id,
                          std::unique_ptr<DialogModelCustomField::Field> field);
   DialogModelCustomField(const DialogModelCustomField&) = delete;

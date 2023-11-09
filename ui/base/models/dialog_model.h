@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelDelegate {
 // views::Widget* const widget =
 //     views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
 // widget->Show();
-class COMPONENT_EXPORT(UI_BASE) DialogModel final {
+class COMPONENT_EXPORT(UI_BASE) DialogModel final : public DialogModelBase {
  public:
   // A variant for button callbacks that allows different behavior to be
   // specified when a button is pressed.
@@ -488,10 +488,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   }
 
  private:
-  base::PassKey<DialogModel> GetPassKey() {
-    return base::PassKey<DialogModel>();
-  }
-
   void AddField(std::unique_ptr<DialogModelField> field);
 
   // Runs the appropriate variant of the provided ButtonCallbackVariant and
