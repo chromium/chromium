@@ -37,15 +37,17 @@ struct TestTraits {
   const bool boolean_trait;
 };
 
-#if defined(NCTEST_TRAITS_BAG_REQUIRED_TRAIT_NOT_SET)  // [r"The traits bag is missing a required trait."]
-constexpr TestTraits traits = {};
-#elif defined(NCTEST_TRAITS_BAG_INVALID_TRAIT)  // [r"no matching constructor for initialization of 'const TestTraits'"]
-constexpr TestTraits traits = {RequiredTrait::A, NotAValidTrait{}};
-#elif defined(NCTEST_TASK_TRAITS_MULTIPLE_REQUIRED_TRAIT)  // [r"The traits bag contains multiple traits of the same type."]
-constexpr TestTraits traits = {RequiredTrait::A, RequiredTrait::B};
-#elif defined(NCTEST_TASK_TRAITS_REDUNDANT_BOOLEAN_TRAIT)  // [r"The traits bag contains multiple traits of the same type."]
-constexpr TestTraits traits = {RequiredTrait::A, BooleanTrait(),
-                               BooleanTrait()};
-#endif
+constexpr TestTraits traits = {};  // expected-error {{constexpr variable 'traits' must be initialized by a constant expression}}
+                                   // expected-error@base/traits_bag.h:* {{The traits bag is missing a required trait.}}
+                                   // expected-error@*:* {{no matching constructor for initialization of 'base::trait_helpers::RequiredEnumTraitFilter<base::RequiredTrait>'}}
+
+constexpr TestTraits traits2 = {RequiredTrait::A, NotAValidTrait{}};  // expected-error {{no matching constructor for initialization of 'const TestTraits'}}
+                                                                      // expected-error@*:* {{type occurs more than once in type list}}
+
+constexpr TestTraits traits3 = {RequiredTrait::A, RequiredTrait::B};  // expected-error {{constexpr variable 'traits3' must be initialized by a constant expression}}
+                                                                      // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
+
+constexpr TestTraits traits4 = {RequiredTrait::A, BooleanTrait(),  // expected-error {{constexpr variable 'traits4' must be initialized by a constant expression}}
+                                BooleanTrait()};                   // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
 
 }  // namespace base
