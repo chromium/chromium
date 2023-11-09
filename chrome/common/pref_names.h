@@ -1767,10 +1767,6 @@ inline constexpr char kWebRtcEventLogCollectionAllowed[] =
 // in ICE candidates.
 inline constexpr char kWebRtcLocalIpsAllowedUrls[] =
     "webrtc.local_ips_allowed_urls";
-// Whether WebRTC PeerConnections are allowed to use legacy versions of the TLS
-// and DTLS protocols.
-inline constexpr char kWebRTCAllowLegacyTLSProtocols[] =
-    "webrtc.allow_legacy_tls_protocols";
 // Whether WebRTC text log collection by Google domains is allowed.
 inline constexpr char kWebRtcTextLogCollectionAllowed[] =
     "webrtc.text_log_collection_allowed";

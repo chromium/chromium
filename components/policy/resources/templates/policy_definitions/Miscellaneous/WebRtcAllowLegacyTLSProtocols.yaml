@@ -7,8 +7,8 @@ desc: |-
         When this policy is disabled or not set, these TLS/DTLS versions are
         disabled.
 
-        This policy is deprecated and is planned to be removed in version M121
-        of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+        This policy was removed in version M121 of
+        <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 example_value: false
 features:
   dynamic_refresh: false
@@ -25,9 +25,8 @@ owners:
 - guidou@chromium.org
 schema:
   type: boolean
-# TODO(crbug.com/1132854): cleanup policy after M120
 supported_on:
-- chrome.*:87-
-- chrome_os:87-
+- chrome.*:87-120
+- chrome_os:87-120
 tags: []
 type: main

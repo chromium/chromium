@@ -191,11 +191,6 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
     params_->renderer_type = mojom::RendererType::DEFAULT_RENDERER;
   }
 
-  if (params_->webrtc_allow_legacy_tls_protocols) {
-    web_contents_->GetMutableRendererPrefs()
-        ->webrtc_allow_legacy_tls_protocols = true;
-  }
-
   web_contents_->SetPageBaseBackgroundColor(chromecast::GetSwitchValueColor(
       switches::kCastAppBackgroundColor, SK_ColorBLACK));
 

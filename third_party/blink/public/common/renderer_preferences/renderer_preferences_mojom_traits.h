@@ -142,11 +142,6 @@ struct BLINK_COMMON_EXPORT
     return data.webrtc_local_ips_allowed_urls;
   }
 
-  static const bool& webrtc_allow_legacy_tls_protocols(
-      const ::blink::RendererPreferences& data) {
-    return data.webrtc_allow_legacy_tls_protocols;
-  }
-
   static const ::blink::UserAgentOverride& user_agent_override(
       const ::blink::RendererPreferences& data) {
     return data.user_agent_override;

@@ -959,6 +959,10 @@ constexpr char kNightLightCachedLongitude[] =
 const char kPrivacySandboxAntiAbuseInitialized[] =
     "privacy_sandbox.anti_abuse_initialized";
 
+// Deprecated 11/2023.
+constexpr char kWebRTCAllowLegacyTLSProtocols[] =
+    "webrtc.allow_legacy_tls_protocols";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1353,6 +1357,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 11/2023.
   registry->RegisterBooleanPref(kPrivacySandboxAntiAbuseInitialized, false);
+
+  // Deprecated 11/2023.
+  registry->RegisterBooleanPref(kWebRTCAllowLegacyTLSProtocols, false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2539,6 +2546,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
 
   // Added 11/2023
   profile_prefs->ClearPref(kPrivacySandboxAntiAbuseInitialized);
+
+  // Added 11/2023.
+  profile_prefs->ClearPref(kWebRTCAllowLegacyTLSProtocols);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

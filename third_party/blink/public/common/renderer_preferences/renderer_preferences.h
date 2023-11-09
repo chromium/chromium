@@ -60,7 +60,6 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   uint16_t webrtc_udp_min_port{0};
   uint16_t webrtc_udp_max_port{0};
   std::vector<std::string> webrtc_local_ips_allowed_urls;
-  bool webrtc_allow_legacy_tls_protocols{false};
   UserAgentOverride user_agent_override;
   std::string accept_languages;
   bool send_subresource_notification{false};
