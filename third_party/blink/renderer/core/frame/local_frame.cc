@@ -2247,11 +2247,13 @@ void LocalFrame::SetViewportIntersectionFromParent(
       intersection_state_.outermost_main_frame_size !=
           intersection_state.outermost_main_frame_size) {
     int viewport_intersect_area =
-        intersection_state.viewport_intersection.size().GetArea();
+        intersection_state.viewport_intersection.size()
+            .GetCheckedArea()
+            .ValueOrDefault(INT_MAX);
     int outermost_main_frame_area =
-        intersection_state.outermost_main_frame_size.GetArea();
+        intersection_state.outermost_main_frame_size.GetCheckedArea()
+            .ValueOrDefault(INT_MAX);
     float ratio = 1.0f * viewport_intersect_area / outermost_main_frame_area;
-
     const float ratio_threshold =
         1.0f * features::kLargeFrameSizePercentThreshold.Get() / 100;
     GetFrameScheduler()->SetVisibleAreaLarge(ratio > ratio_threshold);
