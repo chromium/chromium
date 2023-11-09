@@ -6977,6 +6977,26 @@
             ]
         }
     ],
+    "FencedFramesEnableCredentialsForAutomaticBeacons": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FencedFramesAutomaticBeaconCredentials"
+                    ]
+                }
+            ]
+        }
+    ],
     "FenderScriptScheduling": [
         {
             "platforms": [
