@@ -281,12 +281,6 @@ BASE_DECLARE_FEATURE(kEnableFeedInvisibleForegroundRefresh);
 // Use IsWebChannelsEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableWebChannels);
 
-// Feature flag to enable Feed card menu promo feature, which displays a sign-in
-// promotion UI when signed out users click on personalization options within
-// the feed card menu.
-// Use IsFeedCardMenuSignInPromoEnabled() instead of this constant directly.
-BASE_DECLARE_FEATURE(kEnableFeedCardMenuSignInPromo);
-
 // Feature flag to disable the feed.
 BASE_DECLARE_FEATURE(kEnableFeedAblation);
 
@@ -490,9 +484,6 @@ bool IsIOSHideFeedWithSearchChoiceTargeted();
 // during foregrounding. The engagement signals may include a deep scroll or 4
 // views, and no sooner than 5 minutes from the last refresh.
 bool IsFeedUseInteractivityInvalidationForForegroundRefreshesEnabled();
-
-// YES if enabled Feed card menu promo.
-bool IsFeedCardMenuSignInPromoEnabled();
 
 // Whether the feed is disabled.
 bool IsFeedAblationEnabled();

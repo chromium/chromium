@@ -386,12 +386,6 @@ const char kEnableFeedContainmentName[] = "Enables feed containment";
 const char kEnableFeedContainmentDescription[] =
     "If enabled, the feed is contained in a module on the Home surface.";
 
-const char kEnableFeedCardMenuSignInPromoName[] =
-    "Enable Feed card menu sign-in promotion";
-const char kEnableFeedCardMenuSignInPromoDescription[] =
-    "Display a sign-in promotion UI when signed out users click on "
-    "personalization options within the feed card menu.";
-
 const char kEnableFeedSyntheticCapabilitiesName[] =
     "Enable Feed synthetic capabilities.";
 const char kEnableFeedSyntheticCapabilitiesDescription[] =

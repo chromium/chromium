@@ -2635,11 +2635,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-feed-card-menu-sign-in-promo",
-    "owners": [ "sczs@chromium.org", "tinazwang@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-feed-containment",
     "owners": [ "adamta@chromium.org", "chrome-feed-fundamentals@google.com" ],
     "expiry_milestone": 130
