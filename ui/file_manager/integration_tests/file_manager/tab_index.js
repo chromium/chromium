@@ -6,6 +6,7 @@ import {addEntries, RootPath, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {openAndWaitForClosingDialog, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /** The id attribute of the dismiss button in the educational banner. */
@@ -67,9 +68,10 @@ testcase.tabindexFocus = async () => {
       await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
   chrome.test.assertEq('list', element.attributes['class']);
 
-  // Send Tab key events to cycle through the tabable elements.
+  // Send Tab key events to cycle through the tabbable elements.
   chrome.test.assertTrue(
-      await remoteCall.checkNextTabFocus(appId, 'directory-tree'));
+      // format: directory-tree#<tree item label>
+      await remoteCall.checkNextTabFocus(appId, 'directory-tree#My Drive'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'search-button'));
   chrome.test.assertTrue(
@@ -105,9 +107,10 @@ testcase.tabindexFocusDownloads = async () => {
       await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
   chrome.test.assertEq('list', element.attributes['class']);
 
-  // Send Tab key events to cycle through the tabable elements.
+  // Send Tab key events to cycle through the tabbable elements.
   chrome.test.assertTrue(
-      await remoteCall.checkNextTabFocus(appId, 'directory-tree'));
+      // format: directory-tree#<tree item label>
+      await remoteCall.checkNextTabFocus(appId, 'directory-tree#Downloads'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'breadcrumbs'));
   chrome.test.assertTrue(
@@ -171,7 +174,8 @@ testcase.tabindexFocusDirectorySelected = async () => {
 
   // Send Tab key events to cycle through the tabable elements.
   chrome.test.assertTrue(
-      await remoteCall.checkNextTabFocus(appId, 'directory-tree'));
+      // format: directory-tree#<tree item label>
+      await remoteCall.checkNextTabFocus(appId, 'directory-tree#My Drive'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, pinnedToggleId));
   chrome.test.assertTrue(
@@ -228,10 +232,21 @@ async function tabindexFocus(
   ]);
 
   const selectAndCheckAndClose = async (appId) => {
+    const directoryTree =
+        await DirectoryTreePageObject.create(appId, remoteCall);
+
     if (dialogParams.type === 'saveFile') {
       await remoteCall.waitForElement(
           appId, ['#filename-input-textbox:focus-within']);
+    } else if (directoryTree.isNewTree) {
+      await directoryTree.waitForFocusedItemByType(volumeType);
     } else {
+      // The openAndWaitForClosingDialog() below will select the tree item with
+      // the corresponding `volumeType` by fake mouse click, for new tree it
+      // will focus the tree item we do that programmatically, but for the old
+      // tree it won't focus the tree because it rely on "tabindex=0" on the
+      // <tree> element to focus which only works with physical mouse/touch,
+      // hence the checking of "file-list:focus" below.
       await remoteCall.waitForElement(appId, ['#file-list:focus']);
     }
 
@@ -276,7 +291,8 @@ testcase.tabindexOpenDialogDownloads = async () => {
       async (appId) =>
           ['cancel-button',
            'ok-button',
-           'directory-tree',
+           // format: directory-tree#<tree item label>
+           'directory-tree#Downloads',
            /* first breadcrumb */ 'first',
            'search-button',
            'view-button',
@@ -309,7 +325,8 @@ testcase.tabindexOpenDialogDrive = async () => {
            'gear-button',
            'drive-learn-more-button',
            await getDismissButtonId(appId),
-           'directory-tree',
+           // format: directory-tree#<tree item label>
+           'directory-tree#My Drive',
            'file-list',
   ]);
 };
@@ -327,7 +344,8 @@ testcase.tabindexSaveFileDialogDownloads = async () => {
       async () =>
           ['cancel-button',
            'ok-button',
-           'directory-tree',
+           // format: directory-tree#<tree item label>
+           'directory-tree#Downloads',
            /* first breadcrumb */ 'first',
            'search-button',
            'view-button',
@@ -353,7 +371,8 @@ testcase.tabindexSaveFileDialogDrive = async () => {
       async () =>
           ['cancel-button',
            'ok-button',
-           'directory-tree',
+           // format: directory-tree#<tree item label>
+           'directory-tree#My Drive',
            'search-button',
            'view-button',
            'sort-button',

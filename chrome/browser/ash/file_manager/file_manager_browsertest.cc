@@ -1452,25 +1452,33 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("tabindexSearchBoxFocus").NewDirectoryTree(),
-        // TODO(b/307657533): enable the tests
-        // TestCase("tabindexFocus").NewDirectoryTree(),
-        // TestCase("tabindexFocus").EnableCrosComponents().NewDirectoryTree(),
-        // TestCase("tabindexFocusDownloads").NewDirectoryTree(),
-        // TestCase("tabindexFocusDownloads")
-        //     .EnableCrosComponents()
-        //     .NewDirectoryTree(),
-        // TestCase("tabindexFocusDownloads").InGuestMode().NewDirectoryTree(),
-        // TestCase("tabindexFocusDirectorySelected").NewDirectoryTree(),
-        // TestCase("tabindexFocusDirectorySelected")
-        //     .EnableCrosComponents()
-        //     .NewDirectoryTree(),
-        // TestCase("tabindexOpenDialogDownloads")
-        //     .WithBrowser()
-        //     .NewDirectoryTree(),
-        // TestCase("tabindexOpenDialogDownloads")
-        //     .WithBrowser()
-        //     .EnableCrosComponents()
-        //     .NewDirectoryTree(),
+        TestCase("tabindexFocus").NewDirectoryTree(),
+        TestCase("tabindexFocus").EnableCrosComponents().NewDirectoryTree(),
+        TestCase("tabindexFocusDownloads").NewDirectoryTree(),
+        TestCase("tabindexFocusDownloads")
+            .EnableCrosComponents()
+            .NewDirectoryTree(),
+        TestCase("tabindexFocusDownloads").InGuestMode().NewDirectoryTree(),
+        TestCase("tabindexFocusDirectorySelected").NewDirectoryTree(),
+        TestCase("tabindexFocusDirectorySelected")
+            .EnableCrosComponents()
+            .NewDirectoryTree(),
+        TestCase("tabindexOpenDialogDownloads")
+            .WithBrowser()
+            .NewDirectoryTree(),
+        TestCase("tabindexOpenDialogDownloads")
+            .WithBrowser()
+            .EnableCrosComponents()
+            .NewDirectoryTree(),
+        TestCase("tabindexOpenDialogDownloads")
+            .WithBrowser()
+            .InGuestMode()
+            .NewDirectoryTree(),
+        TestCase("tabindexOpenDialogDownloads")
+            .WithBrowser()
+            .InGuestMode()
+            .EnableCrosComponents()
+            .NewDirectoryTree(),
         // Section end - browser tests for new directory tree
         TestCase("tabindexSearchBoxFocus"),
         TestCase("tabindexFocus"),
@@ -1483,11 +1491,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("tabindexOpenDialogDownloads").WithBrowser(),
         TestCase("tabindexOpenDialogDownloads")
             .WithBrowser()
+            .EnableCrosComponents(),
+        TestCase("tabindexOpenDialogDownloads").WithBrowser().InGuestMode(),
+        TestCase("tabindexOpenDialogDownloads")
+            .WithBrowser()
+            .InGuestMode()
             .EnableCrosComponents()
-        // TODO(b/189173190): Enable
-        // TestCase("tabindexOpenDialogDownloads").WithBrowser(),
-        // TODO(b/189173190): Enable
-        // TestCase("tabindexOpenDialogDownloads").WithBrowser().InGuestMode(),
         // TODO(crbug.com/1236842): Remove flakiness and enable this test.
         //      ,
         //      TestCase("tabindexSaveFileDialogDrive").WithBrowser(),
