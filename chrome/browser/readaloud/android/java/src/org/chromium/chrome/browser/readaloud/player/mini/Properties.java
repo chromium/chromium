@@ -25,6 +25,8 @@ class Properties {
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey CONTENTS_OPAQUE =
             new WritableBooleanPropertyKey();
+    public static final WritableIntPropertyKey BACKGROUND_COLOR_ARGB = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey HEIGHT = new WritableIntPropertyKey();
     public static final PropertyKey[] ALL_KEYS = {
         VISIBILITY,
         ANIMATE_VISIBILITY_CHANGES,
@@ -32,5 +34,7 @@ class Properties {
         ANDROID_VIEW_VISIBILITY,
         COMPOSITED_VIEW_VISIBLE,
         CONTENTS_OPAQUE,
+        BACKGROUND_COLOR_ARGB,
+        HEIGHT,
     };
 }

@@ -63,6 +63,7 @@ public class MiniPlayerLayout extends LinearLayout {
     private @VisibilityState int mFinalVisibility;
     private MiniPlayerMediator mMediator;
     private float mFinalOpacity;
+    private @ColorInt int mBackgroundColorArgb;
 
     /** Constructor for inflating from XML. */
     public MiniPlayerLayout(Context context, AttributeSet attrs) {
@@ -89,16 +90,20 @@ public class MiniPlayerLayout extends LinearLayout {
         mErrorLayout = (LinearLayout) findViewById(R.id.error_layout);
 
         Context context = getContext();
-        @ColorInt int backgroundColor = SemanticColorUtils.getDefaultBgColor(context);
+        mBackgroundColorArgb = SemanticColorUtils.getDefaultBgColor(context);
         @ColorInt int progressBarColor = SemanticColorUtils.getDefaultIconColor(context);
         if (ColorUtils.inNightMode(context)) {
             // This color should change to "Surface Container High" in the next Material update.
-            backgroundColor = ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_4);
+            mBackgroundColorArgb =
+                    ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_4);
             progressBarColor = context.getColor(R.color.baseline_primary_80);
         }
-        findViewById(R.id.backdrop).setBackgroundColor(backgroundColor);
-        mProgressBar.setProgressTintList(ColorStateList.valueOf(progressBarColor));
+        findViewById(R.id.backdrop).setBackgroundColor(mBackgroundColorArgb);
+        if (mMediator != null) {
+            mMediator.onBackgroundColorUpdated(mBackgroundColorArgb);
+        }
 
+        mProgressBar.setProgressTintList(ColorStateList.valueOf(progressBarColor));
         mLastPlaybackState = PlaybackListener.State.UNKNOWN;
     }
 
@@ -114,6 +119,7 @@ public class MiniPlayerLayout extends LinearLayout {
         assert (mMediator != null)
                 : "onLayout() with nonzero height shouldn't happen before setMediator().";
         mMediator.onHeightKnown(height);
+        mMediator.onBackgroundColorUpdated(mBackgroundColorArgb);
     }
 
     void changeOpacity(float startValue, float endValue) {

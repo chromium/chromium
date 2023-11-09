@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.readaloud.player.mini;
 
 import android.view.View;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
@@ -116,6 +118,7 @@ public class MiniPlayerMediator {
         // (1.5) Grow bottom controls once player height has been measured.
         if (getVisibility() == VisibilityState.SHOWING && heightPx > 0 && mLayoutHeightPx == 0) {
             mLayoutHeightPx = heightPx;
+            mModel.set(Properties.HEIGHT, heightPx);
             growBottomControls();
         }
     }
@@ -168,6 +171,10 @@ public class MiniPlayerMediator {
      */
     public void onTransitionFinished(@VisibilityState int newState) {
         mModel.set(Properties.VISIBILITY, newState);
+    }
+
+    void onBackgroundColorUpdated(@ColorInt int backgroundColorArgb) {
+        mModel.set(Properties.BACKGROUND_COLOR_ARGB, backgroundColorArgb);
     }
 
     private void growBottomControls() {

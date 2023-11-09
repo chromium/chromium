@@ -66,6 +66,12 @@ public class MiniPlayerViewBinder {
             } else {
                 viewHolder.view.changeOpacity(/* startValue= */ 1f, /* endValue= */ 0f);
             }
+
+        } else if (key == Properties.BACKGROUND_COLOR_ARGB) {
+            viewHolder.sceneLayer.setColor(model.get(Properties.BACKGROUND_COLOR_ARGB));
+
+        } else if (key == Properties.HEIGHT) {
+            viewHolder.sceneLayer.setSize(0, model.get(Properties.HEIGHT));
         }
     }
 }

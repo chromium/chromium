@@ -89,6 +89,7 @@ public class MiniPlayerMediatorUnitTest {
         // Bottom controls resize should be triggered.
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(eq(false));
         verify(mBrowserControlsSizer).setBottomControlsHeight(eq(HEIGHT_PX), eq(HEIGHT_PX));
+        assertEquals(HEIGHT_PX, mModel.get(Properties.HEIGHT));
 
         // Simulate the bottom controls being resized instantly.
         onControlsOffsetChanged(0, HEIGHT_PX, false);
@@ -118,6 +119,7 @@ public class MiniPlayerMediatorUnitTest {
         // Bottom controls resize should be triggered.
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(eq(true));
         verify(mBrowserControlsSizer).setBottomControlsHeight(eq(HEIGHT_PX), eq(HEIGHT_PX));
+        assertEquals(HEIGHT_PX, mModel.get(Properties.HEIGHT));
 
         // Simulate the bottom controls being resized over a few externally driven
         // animation steps.
@@ -304,6 +306,12 @@ public class MiniPlayerMediatorUnitTest {
     }
 
     // TODO hide during show, show during hide
+
+    @Test
+    public void testOnBackgroundColorUpdated() {
+        mMediator.onBackgroundColorUpdated(0xAABBCCDD);
+        assertEquals(0xAABBCCDD, mModel.get(Properties.BACKGROUND_COLOR_ARGB));
+    }
 
     private void onControlsOffsetChanged(
             int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {

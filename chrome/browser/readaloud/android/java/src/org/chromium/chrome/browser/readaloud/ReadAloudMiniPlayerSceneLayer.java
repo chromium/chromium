@@ -39,7 +39,7 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
     private boolean mIsVisible;
     private int mWidth;
     private int mHeight;
-    private int mColorRgba;
+    private @ColorInt int mColorArgb;
 
     /**
      * Build the composited mini player placeholder.
@@ -74,10 +74,10 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
     /**
      * Set the view background color.
      *
-     * @param colorRgba Color in RGBA 8888 format.
+     * @param colorArgb Color in ARGB 8888 format.
      */
-    public void setColor(@ColorInt int colorRgba) {
-        mColorRgba = colorRgba;
+    public void setColor(@ColorInt int colorArgb) {
+        mColorArgb = colorArgb;
     }
 
     /**
@@ -112,11 +112,10 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
         ReadAloudMiniPlayerSceneLayerJni.get()
                 .updateReadAloudMiniPlayerLayer(
                         mNativePtr,
-                        mColorRgba,
-                        /* x= */ 0,
-                        /* y= */ (int) (viewport.bottom - mHeight),
-                        mWidth,
-                        mHeight,
+                        mColorArgb,
+                        /* width= */ (int) viewport.width(),
+                        /* viewportHeight= */ (int) viewport.height(),
+                        /* containerHeight= */ mHeight,
                         /* bottomOffset= */ mBrowserControlsStateProvider
                                 .getBottomControlsMinHeightOffset());
         return this;
@@ -171,11 +170,10 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
 
         void updateReadAloudMiniPlayerLayer(
                 long nativeReadAloudMiniPlayerSceneLayer,
-                int colorRgba,
-                int x,
-                int y,
+                int colorArgb,
                 int width,
-                int height,
+                int viewportHeight,
+                int containerHeight,
                 int bottomOffset);
     }
 }

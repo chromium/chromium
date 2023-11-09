@@ -72,7 +72,8 @@ public class MiniPlayerCoordinator {
         mLayout = layout;
         assert layout != null;
         mSceneLayer = sceneLayer;
-        layoutManager.addSceneOverlay(mSceneLayer);
+        sceneLayer.setIsVisible(true);
+        layoutManager.addSceneOverlay(sceneLayer);
 
         mPlayerModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
