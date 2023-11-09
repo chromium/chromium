@@ -126,6 +126,6 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
         mAdapter.registerType(
                 ListMenuItemType.DIVIDER,
                 new LayoutViewBuilder(R.layout.list_section_divider),
-                (m, v, p) -> {});
+                ListSectionDividerViewBinder::bind);
     }
 }

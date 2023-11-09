@@ -379,8 +379,8 @@ found in the LICENSE file.
 
     <!-- ListMenuButton -->
     <style name="ListMenuItemStyle">
-        <item name="android:paddingStart">@dimen/default_list_row_padding</item>
-        <item name="android:paddingEnd">@dimen/default_list_row_padding</item>
+        <item name="android:paddingStart">@dimen/list_menu_item_horizontal_padding</item>
+        <item name="android:paddingEnd">@dimen/list_menu_item_horizontal_padding</item>
     </style>
     <style name="ListMenuItemIconStyle">
         <item name="android:layout_width">@dimen/list_menu_item_icon_size</item>

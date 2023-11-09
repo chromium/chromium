@@ -6,8 +6,5 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <style name="ListMenuItemIconStyle.Start">
-        <item name="android:layout_marginStart">0dp</item>
-        <item name="android:layout_marginEnd">12dp</item>
-    </style>
+    <dimen name="list_menu_item_horizontal_padding">12dp</dimen>
 </resources>

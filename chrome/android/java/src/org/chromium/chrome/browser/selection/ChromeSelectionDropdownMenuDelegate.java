@@ -20,6 +20,7 @@ import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelega
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -113,7 +114,15 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
 
     @Override
     public ListItem getDivider() {
-        return BasicListMenu.buildMenuDivider();
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ListSectionDividerProperties.ALL_KEYS)
+                        .with(
+                                ListSectionDividerProperties.LEFT_PADDING_DIMEN_ID,
+                                R.dimen.list_menu_item_horizontal_padding)
+                        .with(
+                                ListSectionDividerProperties.RIGHT_PADDING_DIMEN_ID,
+                                R.dimen.list_menu_item_horizontal_padding);
+        return new ListItem(ListMenuItemType.DIVIDER, builder.build());
     }
 
     @Override
