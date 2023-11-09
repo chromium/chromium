@@ -149,7 +149,7 @@ class PPAPIDownloadRequest : public content::WebContentsObserver {
   SessionID tab_id_;
 
   // If the user interacted with this PPAPI plugin to trigger the download.
-  bool has_user_gesture_;
+  bool has_user_gesture_ = false;
 
   // Default download path requested by the PPAPI plugin.
   const base::FilePath default_file_path_;
