@@ -4,11 +4,8 @@
 
 package org.chromium.chrome.browser.readaloud.player.mini;
 
-import android.view.View;
-
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
-import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -52,18 +49,7 @@ public class MiniPlayerViewBinder {
 
     public static void bindMiniPlayerProperties(
             PropertyModel model, ViewHolder viewHolder, PropertyKey key) {
-        if (key == Properties.VISIBILITY) {
-            // TODO: temporary measure to keep show and hide working during changes, remove
-            // once mediator changes are in place.
-            if (model.get(Properties.VISIBILITY) == VisibilityState.SHOWING) {
-                viewHolder.view.setVisibility(View.VISIBLE);
-                model.set(Properties.VISIBILITY, VisibilityState.VISIBLE);
-            } else if (model.get(Properties.VISIBILITY) == VisibilityState.HIDING) {
-                viewHolder.view.setVisibility(View.GONE);
-                model.set(Properties.VISIBILITY, VisibilityState.GONE);
-            }
-
-        } else if (key == Properties.ANIMATE_VISIBILITY_CHANGES) {
+        if (key == Properties.ANIMATE_VISIBILITY_CHANGES) {
             viewHolder.view.enableAnimations(model.get(Properties.ANIMATE_VISIBILITY_CHANGES));
 
         } else if (key == Properties.MEDIATOR) {
