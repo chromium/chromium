@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/x11_display_util.h"
 #include "ui/base/x/x11_display_util.h"
@@ -71,7 +72,15 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderX11::GetCurrentDisplayInfo() {
     info.y = monitor.y;
     info.width = monitor.width;
     info.height = monitor.height;
-    info.dpi = GetMonitorDpi(monitor).x();
+
+    // Hard-code the default DPI instead of calculating it from the monitor's
+    // resolution and physical size. This avoids an issue where the website
+    // pre-multiplies the ClientResolution sizes by the host's pixels/DIPs
+    // ratio, sometimes leading to a feedback loop of ever-increasing resizes.
+    //
+    // TODO: b/309174172 - Change this back to GetMonitorDpi(monitor).x() when
+    // the website issue has been addressed.
+    info.dpi = kDefaultDpi;
     info.bpp = 24;
 
     result.AddDisplay(info);
