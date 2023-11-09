@@ -16594,54 +16594,6 @@
             ]
         }
     ],
-    "ServiceWorkerSkipIgnorableFetchHandler": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledSkipEmptyFetchHandlerAndStartServiceWorker_20230125",
-                    "params": {
-                        "SkipEmptyFetchHandler": "true",
-                        "StartServiceWorkerForEmptyFetchHandler": "true"
-                    },
-                    "enable_features": [
-                        "ServiceWorkerSkipIgnorableFetchHandler"
-                    ]
-                },
-                {
-                    "name": "EnabledSkipEmptyFetchHandlerAndStartServiceWorkerWithPostTask_20230125",
-                    "params": {
-                        "AsyncStartServiceWorkerForEmptyFetchHandler": "true",
-                        "SkipEmptyFetchHandler": "true",
-                        "StartServiceWorkerForEmptyFetchHandler": "true"
-                    },
-                    "enable_features": [
-                        "ServiceWorkerSkipIgnorableFetchHandler"
-                    ]
-                },
-                {
-                    "name": "EnablePostTask50_20230125",
-                    "params": {
-                        "AsyncStartServiceWorkerForEmptyFetchHandler": "true",
-                        "AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs": "50",
-                        "SkipEmptyFetchHandler": "true",
-                        "StartServiceWorkerForEmptyFetchHandler": "true"
-                    },
-                    "enable_features": [
-                        "ServiceWorkerSkipIgnorableFetchHandler"
-                    ]
-                }
-            ]
-        }
-    ],
     "ServiceWorkerStorageControl": [
         {
             "platforms": [

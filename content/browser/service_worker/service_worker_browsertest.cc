@@ -5130,19 +5130,30 @@ class ServiceWorkerSkipEmptyFetchHandlerBrowserTest
       case SkipEmptyFetchHandlerEnum::kEnabled:
         scoped_feature_list_.InitWithFeaturesAndParameters(
             {{features::kServiceWorkerSkipIgnorableFetchHandler,
-              {{"SkipEmptyFetchHandler", "true"}}}},
+              {
+                  {"SkipEmptyFetchHandler", "true"},
+                  {"StartServiceWorkerForEmptyFetchHandler", "false"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandler", "false"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs",
+                   "0"},
+              }}},
             {});
         break;
       case SkipEmptyFetchHandlerEnum::kEnabledAndStartWorker:
         scoped_feature_list_.InitWithFeaturesAndParameters(
             {{features::kServiceWorkerSkipIgnorableFetchHandler,
-              {{"SkipEmptyFetchHandler", "true"},
-               {"StartServiceWorkerForEmptyFetchHandler", "true"}}}},
+              {
+                  {"SkipEmptyFetchHandler", "true"},
+                  {"StartServiceWorkerForEmptyFetchHandler", "true"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandler", "false"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs",
+                   "0"},
+              }}},
             {});
         break;
       case SkipEmptyFetchHandlerEnum::kDisabled:
-        scoped_feature_list_.InitWithFeaturesAndParameters(
-            {}, {{features::kServiceWorkerSkipIgnorableFetchHandler}});
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kServiceWorkerSkipIgnorableFetchHandler);
         break;
     }
   }

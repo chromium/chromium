@@ -868,14 +868,14 @@ const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>
 // identified as ignorable.
 BASE_FEATURE(kServiceWorkerSkipIgnorableFetchHandler,
              "ServiceWorkerSkipIgnorableFetchHandler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature param controls if the empty service worker fetch handler is
 // skipped.
 constexpr base::FeatureParam<bool> kSkipEmptyFetchHandler{
     &kServiceWorkerSkipIgnorableFetchHandler,
     "SkipEmptyFetchHandler",
-    false,
+    true,
 };
 
 // This feature param controls if the service worker is started for an
@@ -883,7 +883,7 @@ constexpr base::FeatureParam<bool> kSkipEmptyFetchHandler{
 constexpr base::FeatureParam<bool> kStartServiceWorkerForEmptyFetchHandler{
     &kServiceWorkerSkipIgnorableFetchHandler,
     "StartServiceWorkerForEmptyFetchHandler",
-    false,
+    true,
 };
 
 // This feature param controls if the service worker is started for an
@@ -893,7 +893,7 @@ constexpr base::FeatureParam<bool> kStartServiceWorkerForEmptyFetchHandler{
 constexpr base::FeatureParam<bool> kAsyncStartServiceWorkerForEmptyFetchHandler{
     &kServiceWorkerSkipIgnorableFetchHandler,
     "AsyncStartServiceWorkerForEmptyFetchHandler",
-    false,
+    true,
 };
 
 // This feature param controls duration to start fetch handler
@@ -904,7 +904,7 @@ constexpr base::FeatureParam<int>
     kAsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs{
         &kServiceWorkerSkipIgnorableFetchHandler,
         "AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs",
-        0,
+        50,
     };
 
 // Enables ServiceWorker static routing API.
