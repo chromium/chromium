@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
@@ -240,6 +241,24 @@ void HandleRecommendAppsScreen() {
 
   OobeScreenExitWaiter(RecommendAppsScreenView::kScreenId).Wait();
   LOG(INFO) << "OobeInteractiveUITest: 'recommend-apps' screen done.";
+}
+
+// Waits for PasswordSelectionScreen to be shown, selects 'Gaia password' option
+// and clicks next to go to the next screen.
+void HandlePasswordSelectionScreen() {
+  OobeScreenWaiter(PasswordSelectionScreenView::kScreenId).Wait();
+  LOG(INFO)
+      << "OobeInteractiveUITest: Switched to 'password-selection' screen.";
+
+  test::OobeJS().CreateVisibilityWaiter(true, {"password-selection"})->Wait();
+
+  test::OobeJS().ClickOnPath({"password-selection", "gaiaPasswordButton"});
+
+  test::OobeJS().ExpectVisiblePath({"password-selection", "nextButton"});
+  test::OobeJS().ExecuteAsync("$('password-selection').$.nextButton.click()");
+
+  OobeScreenExitWaiter(PasswordSelectionScreenView::kScreenId).Wait();
+  LOG(INFO) << "OobeInteractiveUITest: 'password-selection' screen done.";
 }
 
 // Waits for AppDownloadingScreen to be shown, clicks 'Continue' button, and
@@ -744,6 +763,10 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
   test::WaitForSyncConsentScreen();
   RunSyncConsentScreenChecks();
   test::ExitScreenSyncConsent();
+
+  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
+    HandlePasswordSelectionScreen();
+  }
 
   if (test_setup()->is_quick_unlock_enabled()) {
     test::WaitForFingerprintScreen();
