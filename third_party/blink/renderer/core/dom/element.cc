@@ -3732,23 +3732,21 @@ StyleRecalcChange Element::RecalcOwnStyle(
               break;
           }
         }
-        if (RuntimeEnabledFeatures::CSSStyleQueriesEnabled()) {
-          if (diff != ComputedStyle::Difference::kEqual &&
-              (!base::ValuesEquivalent(old_style->InheritedVariables(),
-                                       new_style->InheritedVariables()) ||
-               !base::ValuesEquivalent(old_style->NonInheritedVariables(),
-                                       new_style->NonInheritedVariables()))) {
-            switch (evaluator->StyleContainerChanged()) {
-              case ContainerQueryEvaluator::Change::kNone:
-                break;
-              case ContainerQueryEvaluator::Change::kNearestContainer:
-                child_change = child_change.ForceRecalcStyleContainerChildren();
-                break;
-              case ContainerQueryEvaluator::Change::kDescendantContainers:
-                child_change =
-                    child_change.ForceRecalcStyleContainerDescendants();
-                break;
-            }
+        if (diff != ComputedStyle::Difference::kEqual &&
+            (!base::ValuesEquivalent(old_style->InheritedVariables(),
+                                     new_style->InheritedVariables()) ||
+             !base::ValuesEquivalent(old_style->NonInheritedVariables(),
+                                     new_style->NonInheritedVariables()))) {
+          switch (evaluator->StyleContainerChanged()) {
+            case ContainerQueryEvaluator::Change::kNone:
+              break;
+            case ContainerQueryEvaluator::Change::kNearestContainer:
+              child_change = child_change.ForceRecalcStyleContainerChildren();
+              break;
+            case ContainerQueryEvaluator::Change::kDescendantContainers:
+              child_change =
+                  child_change.ForceRecalcStyleContainerDescendants();
+              break;
           }
         }
       }

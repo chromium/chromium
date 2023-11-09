@@ -179,8 +179,7 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
     if (condition && block.AtEnd()) {
       return MediaQueryExpNode::Nested(condition);
     }
-  } else if (RuntimeEnabledFeatures::CSSStyleQueriesEnabled() &&
-             range.Peek().GetType() == kFunctionToken &&
+  } else if (range.Peek().GetType() == kFunctionToken &&
              range.Peek().FunctionId() == CSSValueID::kStyle) {
     // style( <style-query> )
     CSSParserTokenRange block = range.ConsumeBlock();

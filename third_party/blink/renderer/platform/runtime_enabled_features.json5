@@ -1131,18 +1131,6 @@
       status: "experimental",
     },
     {
-      // https://drafts.csswg.org/css-contain-3/#style-container
-      // This flag is for querying custom properties only.
-      name: "CSSStyleQueries",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
-      // Support style() queries that evaluate in a boolean context.
-      name: "CSSStyleQueriesBoolean",
-      status: "stable",
-    },
-    {
       // The AccentColor And AccentColorText CSS system color keywords
       name: "CSSSystemAccentColor",
       status: "experimental",
