@@ -825,6 +825,9 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
       sheet->ImportRules();
   for (unsigned i = 0; i < import_rules.size(); ++i) {
     StyleRuleImport* import_rule = import_rules[i].Get();
+    if (!import_rule->IsSupported()) {
+      continue;
+    }
     if (!MatchMediaForAddRules(medium, import_rule->MediaQueries())) {
       continue;
     }

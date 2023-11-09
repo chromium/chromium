@@ -41,6 +41,8 @@ class StyleRuleImport : public StyleRuleBase {
  public:
   StyleRuleImport(const String& href,
                   LayerName&& layer,
+                  bool supported,
+                  String&& supports,
                   const MediaQuerySet*,
                   OriginClean origin_clean);
   ~StyleRuleImport();
@@ -72,6 +74,9 @@ class StyleRuleImport : public StyleRuleBase {
   bool IsLayered() const { return layer_.size(); }
   const LayerName& GetLayerName() const { return layer_; }
   String GetLayerNameAsString() const;
+
+  bool IsSupported() const { return supported_; }
+  String GetSupportsString() const { return supports_string_; }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -112,9 +117,11 @@ class StyleRuleImport : public StyleRuleBase {
   Member<ImportedStyleSheetClient> style_sheet_client_;
   String str_href_;
   LayerName layer_;
+  String supports_string_;
   Member<const MediaQuerySet> media_queries_;
   Member<StyleSheetContents> style_sheet_;
   bool loading_;
+  bool supported_;
   // Whether the style sheet that has this import rule is origin-clean:
   // https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag
   const OriginClean origin_clean_;

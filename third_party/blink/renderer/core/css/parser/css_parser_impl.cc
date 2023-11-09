@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 using std::swap;
@@ -976,8 +977,30 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
     observer_->EndRuleBody(prelude_offset_end);
   }
 
+  // TODO(crbug.com/1500904) rework when CSS Parser APIs are unified.
+  // As currently the token range is converted to a string so that
+  // ConsumeSupportsCondition can use a stream.
+  // When the code around, e.g. media query parsing and layer name parsing
+  // support the stream parsing, the token->string hack can be removed.
+  String supports_string = g_null_atom;
+  CSSSupportsParser::Result supported = CSSSupportsParser::Result::kSupported;
+  if (RuntimeEnabledFeatures::CSSSupportsForImportRulesEnabled() &&
+      prelude.Peek().GetType() == kFunctionToken &&
+      prelude.Peek().FunctionId() == CSSValueID::kSupports) {
+    CSSParserTokenRange args = css_parsing_utils::ConsumeFunction(prelude);
+    supports_string = args.Serialize();
+    CSSTokenizer supports_tokenizer("(" + supports_string + ")");
+    CSSParserTokenStream supports_stream(supports_tokenizer);
+    supported =
+        CSSSupportsParser::ConsumeSupportsCondition(supports_stream, *this);
+    if (supported == CSSSupportsParser::Result::kParseFailure) {
+      return nullptr;
+    }
+  }
+
   return MakeGarbageCollected<StyleRuleImport>(
-      uri, std::move(layer),
+      uri, std::move(layer), supported == CSSSupportsParser::Result::kSupported,
+      std::move(supports_string),
       MediaQueryParser::ParseMediaQuerySet(prelude, offsets,
                                            context_->GetExecutionContext()),
       context_->IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse);

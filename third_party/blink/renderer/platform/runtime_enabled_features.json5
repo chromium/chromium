@@ -1126,6 +1126,10 @@
       status: "experimental",
     },
     {
+      name: "CSSSupportsForImportRules",
+      status: "experimental",
+    },
+    {
       // The AccentColor And AccentColorText CSS system color keywords
       name: "CSSSystemAccentColor",
       status: "experimental",
