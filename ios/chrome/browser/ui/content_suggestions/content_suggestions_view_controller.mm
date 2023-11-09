@@ -763,31 +763,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     }
   }];
 
-  __block NSUInteger safetyCheckModuleIndex = NSNotFound;
-
-  if (self.safetyCheckModuleContainer) {
-    // If there's an existing Safety Check module, find its current index.
-    [_magicStack.arrangedSubviews
-        enumerateObjectsUsingBlock:^(MagicStackModuleContainer* moduleContainer,
-                                     NSUInteger idx, BOOL* stop) {
-          if (moduleContainer.type ==
-                  ContentSuggestionsModuleType::kSafetyCheck ||
-              moduleContainer.type ==
-                  ContentSuggestionsModuleType::kSafetyCheckMultiRow ||
-              moduleContainer.type ==
-                  ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow) {
-            safetyCheckModuleIndex = idx;
-
-            *stop = YES;
-          }
-        }];
-
-    // Assert the updated Safety Check module will be replaced at the same index
-    // as the current module.
-    CHECK_EQ(safetyCheckModuleOrderIndex, safetyCheckModuleIndex);
-
-    [self.safetyCheckModuleContainer removeFromSuperview];
-  }
+  [self.safetyCheckModuleContainer removeFromSuperview];
 
   [self createSafetyCheck:state];
 
