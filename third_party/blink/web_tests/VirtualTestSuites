@@ -921,13 +921,16 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "never"
   },
+  "The elastic-overscroll virtual suite is testing a feature that is enabled",
+  "or not based on platform and settings, so it should not expire.",
   {
     "prefix": "elastic-overscroll",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
     "args": ["--enable-features=ElasticOverscroll",
              "--enable-threaded-compositing"],
-    "expires": "Jul 1, 2023"
+    "expires": "never",
+    "owners": ["arakeri@microsoft.com"]
   },
   "The non-overlay-scrollbar virtual suite is testing a feature that is",
   "enabled or not based on platform and settings, so it should not expire.",
