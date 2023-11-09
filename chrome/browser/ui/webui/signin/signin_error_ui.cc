@@ -138,7 +138,7 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
             .GetProfileAttributesWithPath(
                 last_login_error.another_profile_path());
     DCHECK(entry);
-    DCHECK(entry->IsAuthenticated());
+    DCHECK(entry->IsAuthenticated() || entry->CanBeManaged());
     handler->set_duplicate_profile_path(entry->GetPath());
     existing_name = entry->GetName();
     source->AddString("signinErrorMessage",
