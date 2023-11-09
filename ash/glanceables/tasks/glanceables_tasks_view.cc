@@ -33,12 +33,11 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -51,8 +50,6 @@ namespace {
 
 constexpr int kMaximumTasks = 5;
 constexpr int kInteriorGlanceableBubbleMargin = 16;
-constexpr int kAddNewButtonCornerRadius = 16;
-constexpr auto kAddNewTaskButtonMargins = gfx::Insets::TLBR(0, 0, 16, 0);
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
 
 constexpr char kTasksManagementPage[] =
@@ -69,24 +66,15 @@ std::unique_ptr<views::LabelButton> CreateAddNewTaskButton(
   add_new_task_button->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(kGlanceablesTasksAddNewTaskIcon,
-                                     cros_tokens::kCrosSysOnSurface));
-  add_new_task_button->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_CENTER);
-  add_new_task_button->SetImageLabelSpacing(8);
-  add_new_task_button->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, kAddNewButtonCornerRadius));
-  add_new_task_button->SetTextColorId(views::Button::ButtonState::STATE_NORMAL,
-                                      cros_tokens::kCrosSysOnSurface);
+                                     cros_tokens::kFocusRingColor));
+  add_new_task_button->SetImageLabelSpacing(18);
+  add_new_task_button->SetBackground(
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
+  add_new_task_button->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::VH(13, 18)));
+  add_new_task_button->SetEnabledTextColorIds(cros_tokens::kFocusRingColor);
   add_new_task_button->SetProperty(views::kMarginsKey,
-                                   kAddNewTaskButtonMargins);
-
-  views::FocusRing::Get(add_new_task_button.get())
-      ->SetColorId(cros_tokens::kCrosSysFocusRing);
-  views::HighlightPathGenerator::Install(
-      add_new_task_button.get(),
-      std::make_unique<views::RoundRectHighlightPathGenerator>(
-          gfx::Insets(), kAddNewButtonCornerRadius));
-
+                                   gfx::Insets::TLBR(0, 0, 2, 0));
   return add_new_task_button;
 }
 
@@ -122,23 +110,28 @@ GlanceablesTasksView::GlanceablesTasksView(
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
-  add_new_task_button_ = AddChildView(CreateAddNewTaskButton(
+  auto* const list_view = AddChildView(std::make_unique<views::View>());
+  list_view->SetPaintToLayer();
+  list_view->layer()->SetFillsBoundsOpaquely(false);
+  list_view->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(16));
+  list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+
+  add_new_task_button_ = list_view->AddChildView(CreateAddNewTaskButton(
       base::BindRepeating(&GlanceablesTasksView::AddNewTaskButtonPressed,
                           base::Unretained(this))));
 
-  task_items_container_view_ = AddChildView(std::make_unique<views::View>());
+  task_items_container_view_ =
+      list_view->AddChildView(std::make_unique<views::View>());
   task_items_container_view_->SetAccessibleRole(ax::mojom::Role::kList);
 
   task_items_container_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListContainer));
-  task_items_container_view_->SetPaintToLayer();
-  task_items_container_view_->layer()->SetFillsBoundsOpaquely(false);
-  task_items_container_view_->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(16));
-  auto* layout = task_items_container_view_->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
-  layout->set_between_child_spacing(2);
+  auto* task_items_container_view_layout =
+      task_items_container_view_->SetLayoutManager(
+          std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kVertical));
+  task_items_container_view_layout->set_between_child_spacing(2);
 
   auto* const header_icon =
       tasks_header_view_->AddChildView(std::make_unique<IconButton>(

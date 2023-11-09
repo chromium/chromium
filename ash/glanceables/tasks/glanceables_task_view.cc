@@ -31,6 +31,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -124,6 +125,11 @@ class TaskViewTextField : public views::Textfield,
   TaskViewTextField(const TaskViewTextField&) = delete;
   TaskViewTextField& operator=(const TaskViewTextField&) = delete;
   ~TaskViewTextField() override = default;
+
+  // views::Textfield:
+  gfx::Size CalculatePreferredSize() const override {
+    return gfx::Size(0, GetFontList().GetHeight());
+  }
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,

@@ -347,7 +347,9 @@ void GlanceableTrayBubbleView::OnGlanceablesContainerPreferredSizeChanged() {
 
 void GlanceableTrayBubbleView::OnGlanceablesContainerHeightChanged(
     int height_delta) {
-  if (!initialized_ || !IsDrawn() || !GetWidget() || GetWidget()->IsClosed()) {
+  if (!initialized_ || !IsDrawn() || !GetWidget() || GetWidget()->IsClosed() ||
+      base::FeatureList::IsEnabled(
+          features::kGlanceablesTimeManagementStableLaunch)) {
     return;
   }
 
