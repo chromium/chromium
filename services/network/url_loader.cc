@@ -2194,7 +2194,6 @@ void URLLoader::NotifyCompleted(int error_code) {
     status.encoded_data_length = url_request_->GetTotalReceivedBytes();
     status.encoded_body_length = url_request_->GetRawBodyBytes();
     status.decoded_body_length = total_written_bytes_;
-    status.proxy_server = url_request_->proxy_chain().proxy_server();
     status.resolve_error_info =
         url_request_->response_info().resolve_error_info;
     if (trust_token_status_)

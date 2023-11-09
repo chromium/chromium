@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -28,7 +28,6 @@ bool StructTraits<network::mojom::URLLoaderCompletionStatusDataView,
       !data.ReadTrustTokenOperationStatus(&out->trust_token_operation_status) ||
       !data.ReadSslInfo(&out->ssl_info) ||
       !data.ReadBlockedByResponseReason(&out->blocked_by_response_reason) ||
-      !data.ReadProxyServer(&out->proxy_server) ||
       !data.ReadResolveErrorInfo(&out->resolve_error_info)) {
     return false;
   }
