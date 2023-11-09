@@ -9,7 +9,7 @@
 #import "components/commerce/core/pref_names.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/push_notification/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 @implementation NotificationsSettingsObserver {

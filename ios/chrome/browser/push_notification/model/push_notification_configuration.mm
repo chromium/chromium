@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/push_notification_configuration.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
 
 @implementation PushNotificationConfiguration
 

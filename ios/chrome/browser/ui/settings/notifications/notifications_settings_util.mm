@@ -6,10 +6,10 @@
 
 #import "components/commerce/core/pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/push_notification/push_notification_account_context_manager.h"
-#import "ios/chrome/browser/push_notification/push_notification_client_id.h"
-#import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
-#import "ios/chrome/browser/push_notification/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace notifications_settings {

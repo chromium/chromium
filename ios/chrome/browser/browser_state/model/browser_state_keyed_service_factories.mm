@@ -57,7 +57,7 @@
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_event_exporter_factory.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
-#import "ios/chrome/browser/push_notification/push_notification_browser_state_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"

@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CLIENT_H_
 
 #import "components/optimization_guide/proto/push_notification.pb.h"
-#import "ios/chrome/browser/push_notification/push_notification_client.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
 #import <UIKit/UIKit.h>
 

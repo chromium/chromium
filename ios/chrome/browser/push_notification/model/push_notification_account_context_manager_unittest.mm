@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/push_notification_account_context_manager.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 
 #import "base/files/file_path.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/push_notification/push_notification_account_context_manager+testing.h"
-#import "ios/chrome/browser/push_notification/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager+testing.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

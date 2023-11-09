@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/push_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "ios/chrome/browser/push_notification/push_notification_util+testing.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util+testing.h"
 #import "testing/platform_test.h"
 
 namespace {

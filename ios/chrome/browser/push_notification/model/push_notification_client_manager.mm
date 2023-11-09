@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 
 #import <Foundation/Foundation.h>
 #import <vector>
@@ -10,7 +10,7 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
-#import "ios/chrome/browser/push_notification/push_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 
 PushNotificationClientManager::PushNotificationClientManager() {
   if (IsPriceNotificationsEnabled() &&

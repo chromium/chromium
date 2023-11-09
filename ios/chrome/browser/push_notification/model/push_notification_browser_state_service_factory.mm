@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/push_notification_browser_state_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
-#import "ios/chrome/browser/push_notification/push_notification_browser_state_service.h"
-#import "ios/chrome/browser/push_notification/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 

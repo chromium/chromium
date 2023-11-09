@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_CLIENT_MANAGER_H_
-#define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_CLIENT_MANAGER_H_
+#ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_MANAGER_H_
+#define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_MANAGER_H_
 
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 #import <memory>
 #import <unordered_map>
 
-#import "ios/chrome/browser/push_notification/push_notification_client.h"
-#import "ios/chrome/browser/push_notification/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 
 class PushNotificationClient;
 
@@ -86,4 +86,4 @@ class PushNotificationClientManager {
   ClientMap clients_;
 };
 
-#endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_CLIENT_MANAGER_H_
+#endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_MANAGER_H_

@@ -4,9 +4,9 @@
 
 #import <UserNotifications/UserNotifications.h>
 
-#import "ios/chrome/browser/push_notification/push_notification_client.h"
-#import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
-#import "ios/chrome/browser/push_notification/test_push_notification_client.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
+#import "ios/chrome/browser/push_notification/model/test_push_notification_client.h"
 #import "testing/platform_test.h"
 
 namespace {

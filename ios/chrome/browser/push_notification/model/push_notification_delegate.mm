@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/push_notification/push_notification_delegate.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
 
 #import "base/check.h"
 #import "base/files/file_path.h"
@@ -13,10 +13,10 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
-#import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
-#import "ios/chrome/browser/push_notification/push_notification_configuration.h"
-#import "ios/chrome/browser/push_notification/push_notification_delegate.h"
-#import "ios/chrome/browser/push_notification/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
