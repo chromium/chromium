@@ -267,9 +267,8 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, EstimatedSize) {
   shared_image.reset();
 }
 
-// TODO(crbug/994720): Failing on Android builders.
 // Test to check that only one context can write at a time
-TEST_F(AHardwareBufferImageBackingFactoryTest, DISABLED_OnlyOneWriter) {
+TEST_F(AHardwareBufferImageBackingFactoryTest, OnlyOneWriter) {
   GlLegacySharedImage gl_legacy_shared_image{
       backing_factory_.get(), /*is_thread_safe=*/true, &shared_image_manager_,
       &memory_type_tracker_, &shared_image_representation_factory_};
@@ -297,7 +296,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, DISABLED_OnlyOneWriter) {
   scoped_write_access2 = skia_representation2->BeginScopedWriteAccess(
       &begin_semaphores2, &end_semaphores2,
       SharedImageRepresentation::AllowUnclearedAccess::kYes);
-  EXPECT_FALSE(scoped_write_access);
+  EXPECT_FALSE(scoped_write_access2);
   EXPECT_EQ(0u, begin_semaphores2.size());
   EXPECT_EQ(0u, end_semaphores2.size());
   skia_representation2.reset();
