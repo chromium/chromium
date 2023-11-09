@@ -26,6 +26,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
@@ -68,6 +69,7 @@ UserContext LoginManagerMixin::CreateDefaultUserContext(
     const TestUserInfo& user_info) {
   UserContext user_context(user_info.user_type, user_info.account_id);
   user_context.SetKey(Key("password"));
+  user_context.SetGaiaPassword(GaiaPassword("password"));
   return user_context;
 }
 
