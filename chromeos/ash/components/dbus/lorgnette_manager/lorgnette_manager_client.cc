@@ -133,6 +133,24 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void SetOptions(const lorgnette::SetOptionsRequest& request,
+                  chromeos::DBusMethodCallback<lorgnette::SetOptionsResponse>
+                      callback) override {
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kSetOptionsMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode SetOptionsRequest protobuf";
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      return;
+    }
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&LorgnetteManagerClientImpl::OnSetOptionsResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void StartPreparedScan(
       const lorgnette::StartPreparedScanRequest& request,
       chromeos::DBusMethodCallback<lorgnette::StartPreparedScanResponse>
@@ -550,6 +568,27 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode CloseScannerResponse proto";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(response_proto);
+  }
+
+  // Handles the response received after calling SetOptions().
+  void OnSetOptionsResponse(
+      chromeos::DBusMethodCallback<lorgnette::SetOptionsResponse> callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to obtain SetOptionsResponse";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    lorgnette::SetOptionsResponse response_proto;
+    dbus::MessageReader reader(response);
+    if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+      LOG(ERROR) << "Failed to decode SetOptionsResponse proto";
       std::move(callback).Run(absl::nullopt);
       return;
     }

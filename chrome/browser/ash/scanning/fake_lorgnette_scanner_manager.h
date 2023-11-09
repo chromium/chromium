@@ -35,6 +35,8 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
                    OpenScannerCallback callback) override;
   void CloseScanner(const lorgnette::CloseScannerRequest& request,
                     CloseScannerCallback callback) override;
+  void SetOptions(const lorgnette::SetOptionsRequest& request,
+                  SetOptionsCallback callback) override;
   void StartPreparedScan(const lorgnette::StartPreparedScanRequest& request,
                          StartPreparedScanCallback callback) override;
   void ReadScanData(const lorgnette::ReadScanDataRequest& request,
@@ -71,6 +73,10 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void SetCloseScannerResponse(
       const absl::optional<lorgnette::CloseScannerResponse>& response);
 
+  // Sets the response returned by SetOptions().
+  void SetSetOptionsResponse(
+      const absl::optional<lorgnette::SetOptionsResponse>& response);
+
   // Sets the response returned by StartPreparedScan().
   void SetStartPreparedScanResponse(
       const absl::optional<lorgnette::StartPreparedScanResponse>& response);
@@ -93,6 +99,7 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   absl::optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
   absl::optional<lorgnette::OpenScannerResponse> open_scanner_response_;
   absl::optional<lorgnette::CloseScannerResponse> close_scanner_response_;
+  absl::optional<lorgnette::SetOptionsResponse> set_options_response_;
   absl::optional<lorgnette::StartPreparedScanResponse>
       start_prepared_scan_response_;
   absl::optional<lorgnette::ReadScanDataResponse> read_scan_data_response_;

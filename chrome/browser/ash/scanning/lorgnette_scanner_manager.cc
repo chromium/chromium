@@ -231,6 +231,15 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   }
 
   // LorgnetteScannerManager:
+  void SetOptions(const lorgnette::SetOptionsRequest& request,
+                  SetOptionsCallback callback) override {
+    GetLorgnetteManagerClient()->SetOptions(
+        request,
+        base::BindOnce(&LorgnetteScannerManagerImpl::OnSetOptionsResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // LorgnetteScannerManager:
   void StartPreparedScan(const lorgnette::StartPreparedScanRequest& request,
                          StartPreparedScanCallback callback) override {
     GetLorgnetteManagerClient()->StartPreparedScan(
@@ -427,6 +436,12 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   void OnCloseScannerResponse(
       CloseScannerCallback callback,
       absl::optional<lorgnette::CloseScannerResponse> response) {
+    std::move(callback).Run(response);
+  }
+
+  void OnSetOptionsResponse(
+      SetOptionsCallback callback,
+      absl::optional<lorgnette::SetOptionsResponse> response) {
     std::move(callback).Run(response);
   }
 

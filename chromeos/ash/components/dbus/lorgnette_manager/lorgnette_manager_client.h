@@ -71,6 +71,12 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
       chromeos::DBusMethodCallback<lorgnette::CloseScannerResponse>
           callback) = 0;
 
+  // Sets the options as described by |request| and returns the result using the
+  // provided |callback|.
+  virtual void SetOptions(
+      const lorgnette::SetOptionsRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::SetOptionsResponse> callback) = 0;
+
   // Starts a scan using information in |request| and returns the result using
   // the provided |callback|.
   virtual void StartPreparedScan(

@@ -46,6 +46,13 @@ void FakeLorgnetteManagerClient::CloseScanner(
       FROM_HERE, base::BindOnce(std::move(callback), close_scanner_response_));
 }
 
+void FakeLorgnetteManagerClient::SetOptions(
+    const lorgnette::SetOptionsRequest& request,
+    chromeos::DBusMethodCallback<lorgnette::SetOptionsResponse> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), set_options_response_));
+}
+
 void FakeLorgnetteManagerClient::StartPreparedScan(
     const lorgnette::StartPreparedScanRequest& request,
     chromeos::DBusMethodCallback<lorgnette::StartPreparedScanResponse>
@@ -144,6 +151,11 @@ void FakeLorgnetteManagerClient::SetCloseScannerResponse(
     const absl::optional<lorgnette::CloseScannerResponse>&
         close_scanner_response) {
   close_scanner_response_ = close_scanner_response;
+}
+
+void FakeLorgnetteManagerClient::SetSetOptionsResponse(
+    const absl::optional<lorgnette::SetOptionsResponse>& response) {
+  set_options_response_ = response;
 }
 
 void FakeLorgnetteManagerClient::SetStartPreparedScanResponse(

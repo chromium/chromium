@@ -169,6 +169,23 @@ lorgnette::CloseScannerResponse CreateCloseScannerResponse() {
   return response;
 }
 
+// Convenience method for creating a lorgnette::SetOptionsRequest.
+lorgnette::SetOptionsRequest CreateSetOptionsRequest() {
+  lorgnette::SetOptionsRequest request;
+  request.mutable_scanner()->set_token(kScannerHandle);
+
+  return request;
+}
+
+// Convenience method for creating a lorgnette::SetOptionsResponse.
+lorgnette::SetOptionsResponse CreateSetOptionsResponse() {
+  lorgnette::SetOptionsResponse response;
+  response.mutable_scanner()->set_token(kScannerHandle);
+  response.mutable_config()->mutable_scanner()->set_token(kScannerHandle);
+
+  return response;
+}
+
 // Convenience method for creating a lorgnette::StartPreparedScanRequest.
 lorgnette::StartPreparedScanRequest CreateStartPreparedScanRequest() {
   lorgnette::ScannerHandle handle;
@@ -506,6 +523,16 @@ class LorgnetteManagerClientTest : public testing::Test {
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnCloseScanner));
   }
 
+  // Adds an expectation to |mock_proxy_| that kSetOptionsMethod will be
+  // called. When called, |mock_proxy_| will respond with |response|.
+  void SetSetOptionsExpectation(dbus::Response* response) {
+    set_options_response_ = response;
+    EXPECT_CALL(*mock_proxy_.get(),
+                DoCallMethod(HasMember(lorgnette::kSetOptionsMethod),
+                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+        .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnSetOptions));
+  }
+
   // Adds an expectation to |mock_proxy_| that kStartPreparedScanMethod will be
   // called. When called, |mock_proxy_| will respond with |response|.
   void SetStartPreparedScanExpectation(dbus::Response* response) {
@@ -712,6 +739,20 @@ class LorgnetteManagerClientTest : public testing::Test {
         base::BindOnce(std::move(*callback), close_scanner_response_));
   }
 
+  // Responsible for responding to a kSetOptionsMethod call and verifying
+  // that |method_call| is formatted correctly.
+  void OnSetOptions(dbus::MethodCall* method_call,
+                    int timeout_ms,
+                    dbus::ObjectProxy::ResponseCallback* callback) {
+    // Verify that the set options request was created and sent correctly.
+    lorgnette::SetOptionsRequest request;
+    ASSERT_TRUE(
+        dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
+    EXPECT_THAT(request, EqualsProto(CreateSetOptionsRequest()));
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(*callback), set_options_response_));
+  }
+
   // Responsible for responding to a kStartPreparedScanMethod call and verifying
   // that |method_call| is formatted correctly.
   void OnStartPreparedScan(dbus::MethodCall* method_call,
@@ -835,6 +876,9 @@ class LorgnetteManagerClientTest : public testing::Test {
   // Used to respond to kCloseScannerMethod D-Bus calls.
   raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
       close_scanner_response_ = nullptr;
+  // Used to respond to kSetOptionsMethod D-Bus calls.
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
+      set_options_response_ = nullptr;
   // Used to respond to kStartPreparedScanMethod D-Bus calls.
   raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh>
       start_prepared_scan_response_ = nullptr;
@@ -1208,6 +1252,63 @@ TEST_F(LorgnetteManagerClientTest, CloseScannerInvalidResponse) {
       CreateCloseScannerRequest(),
       base::BindLambdaForTesting(
           [&](absl::optional<lorgnette::CloseScannerResponse> result) {
+            EXPECT_EQ(result, absl::nullopt);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+// Test that the client can set the options for a scanner.
+TEST_F(LorgnetteManagerClientTest, SetOptions) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  const lorgnette::SetOptionsResponse kExpectedResponse =
+      CreateSetOptionsResponse();
+  ASSERT_TRUE(dbus::MessageWriter(response.get())
+                  .AppendProtoAsArrayOfBytes(kExpectedResponse));
+  SetSetOptionsExpectation(response.get());
+
+  base::RunLoop run_loop;
+  GetClient()->SetOptions(
+      CreateSetOptionsRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::SetOptionsResponse> result) {
+            run_loop.Quit();
+            ASSERT_TRUE(result.has_value());
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
+          }));
+
+  run_loop.Run();
+}
+
+// Test that the client handles a null response to a kSetOptionsMethod
+// D-Bus call.
+TEST_F(LorgnetteManagerClientTest, SetOptionsNullResponse) {
+  SetSetOptionsExpectation(nullptr);
+
+  base::RunLoop run_loop;
+  GetClient()->SetOptions(
+      CreateSetOptionsRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::SetOptionsResponse> result) {
+            EXPECT_EQ(result, absl::nullopt);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+// Test that the client handles the case when it can't parse a response from a
+// kSetOptionsMethod D-Bus call into an appropriate protobuf.
+TEST_F(LorgnetteManagerClientTest, SetOptionsInvalidResponse) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  SetSetOptionsExpectation(response.get());
+
+  base::RunLoop run_loop;
+  GetClient()->SetOptions(
+      CreateSetOptionsRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::SetOptionsResponse> result) {
             EXPECT_EQ(result, absl::nullopt);
             run_loop.Quit();
           }));
