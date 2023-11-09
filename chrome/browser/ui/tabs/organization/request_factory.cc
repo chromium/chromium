@@ -28,7 +28,6 @@ namespace {
 
 bool CanUseOptimizationGuide(Profile* profile) {
   return OptimizationGuideKeyedServiceFactory::GetForProfile(profile) &&
-         profile->IsOffTheRecord() &&
          base::FeatureList::IsEnabled(
              optimization_guide::features::kOptimizationGuideModelExecution);
 }
