@@ -1485,7 +1485,7 @@ BASE_FEATURE(kPrivacySandboxAdsAPIs,
 // reports.
 BASE_FEATURE(kPrivateAggregationApi,
              "PrivateAggregationApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Selectively allows the JavaScript API to be disabled in just one of the
 // contexts. The Protected Audience param's name has not been updated (from
