@@ -83,6 +83,31 @@ constexpr base::optional_ref<const T> AsResult(const QueryResults& results) {
   return internal::GetFromVariantVector<T>(results);
 }
 
+inline bool operator==(const ResultMetadata& a, const ResultMetadata& b) {
+  static_assert(sizeof(ResultMetadata) ==
+                    sizeof(decltype(ResultMetadata::measurement_time)),
+                "update operator== when changing ResultMetadata");
+  return a.measurement_time == b.measurement_time;
+}
+
+inline bool operator!=(const ResultMetadata& a, const ResultMetadata& b) {
+  return !(a == b);
+}
+
+inline bool operator==(const CPUTimeResult& a, const CPUTimeResult& b) {
+  static_assert(sizeof(CPUTimeResult) ==
+                    sizeof(decltype(CPUTimeResult::metadata)) +
+                        sizeof(decltype(CPUTimeResult::start_time)) +
+                        sizeof(decltype(CPUTimeResult::cumulative_cpu)),
+                "update operator== when changing CPUTimeResult");
+  return a.metadata == b.metadata && a.start_time == b.start_time &&
+         a.cumulative_cpu == b.cumulative_cpu;
+}
+
+inline bool operator!=(const CPUTimeResult& a, const CPUTimeResult& b) {
+  return !(a == b);
+}
+
 }  // namespace performance_manager::resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_QUERY_RESULTS_H_

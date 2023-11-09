@@ -4,12 +4,29 @@
 
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 
+#include <utility>
+
 #include "base/check_op.h"
+#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/task_runner.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/resource_attribution/query_params.h"
 
 namespace performance_manager::resource_attribution {
+
+namespace {
+
+using QueryParams = internal::QueryParams;
+
+QueryScheduler* GetSchedulerFromGraph(Graph* graph) {
+  auto* scheduler = QueryScheduler::GetFromGraph(graph);
+  CHECK(scheduler);
+  return scheduler;
+}
+
+}  // namespace
 
 QueryScheduler::QueryScheduler() = default;
 
@@ -17,6 +34,15 @@ QueryScheduler::~QueryScheduler() = default;
 
 base::WeakPtr<QueryScheduler> QueryScheduler::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+// static
+void QueryScheduler::CallOnGraphWithScheduler(
+    base::OnceCallback<void(QueryScheduler*)> callback,
+    const base::Location& location) {
+  PerformanceManager::CallOnGraph(
+      location,
+      base::BindOnce(&GetSchedulerFromGraph).Then(std::move(callback)));
 }
 
 void QueryScheduler::AddCPUQuery() {
@@ -40,6 +66,28 @@ void QueryScheduler::RemoveCPUQuery() {
     CHECK(cpu_monitor_.IsMonitoring());
     cpu_monitor_.StopMonitoring();
   }
+}
+
+void QueryScheduler::AddScopedQuery(QueryParams* query_params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(query_params);
+  // TODO(crbug.com/1471683): Associate a notifier with the params so that when
+  // a scheduled measurement is done, the correct ScopedResourceUsageQuery can
+  // be notified.
+  if (query_params->resource_types.Has(ResourceType::kCPUTime)) {
+    AddCPUQuery();
+  }
+}
+
+void QueryScheduler::RemoveScopedQuery(
+    std::unique_ptr<QueryParams> query_params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(query_params);
+  // TODO(crbug.com/1471683): Forget the notifier associated with the params.
+  if (query_params->resource_types.Has(ResourceType::kCPUTime)) {
+    RemoveCPUQuery();
+  }
+  // `query_params` goes out of scope and is deleted here.
 }
 
 void QueryScheduler::RequestCPUResults(
