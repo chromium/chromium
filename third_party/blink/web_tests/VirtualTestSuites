@@ -926,7 +926,6 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
     "args": ["--enable-features=ElasticOverscroll",
-             "--enable-blink-features=FixedElementsDontOverscroll",
              "--enable-threaded-compositing"],
     "expires": "Jul 1, 2023"
   },

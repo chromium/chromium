@@ -220,9 +220,8 @@ CompositingReasons CompositingReasonsForViewportScrollEffect(
   // This ensures that the scroll_translation_for_fixed will be initialized in
   // FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation which in
   // turn ensures that a TransformNode is created (for fixed elements) in cc.
-  if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled() &&
-      frame->GetPage()->GetVisualViewport().GetOverscrollType() ==
-          OverscrollType::kTransform) {
+  if (frame->GetPage()->GetVisualViewport().GetOverscrollType() ==
+      OverscrollType::kTransform) {
     reasons |= CompositingReason::kFixedPosition;
     if (!To<LayoutBox>(layout_object)
              .AnchorPositionScrollAdjustmentAfectedByViewportScrolling()) {

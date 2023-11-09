@@ -1800,10 +1800,6 @@
       status: "experimental",
     },
     {
-      name: "FixedElementsDontOverscroll",
-      status: "stable",
-    },
-    {
       name: "Fledge",
       base_feature: "none",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
