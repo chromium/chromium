@@ -90,9 +90,6 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable KeyboardFocusableScrollers, used by AccessibilityScrollableOverflow.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "KeyboardFocusableScrollers");
-  // Enable HighlightAPI, used by AccessibilityCSSPseudoElementHighligh.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "HighlightAPI");
   // Enable ARIA touch pass through, used by AccessibilityAriaTouchPassthrough.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "AccessibilityAriaTouchPassthrough");
