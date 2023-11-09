@@ -7,7 +7,11 @@
 // META: variant=?5-8
 // META: variant=?9-12
 // META: variant=?13-16
-// META: variant=?17-last
+// META: variant=?17-20
+// META: variant=?21-24
+// META: variant=?25-28
+// META: variant=?29-32
+// META: variant=?33-last
 
 'use strict;'
 
@@ -45,14 +49,75 @@ function createBiddingScriptURLWithCurrency(uuid, currency) {
   });
 }
 
+// Creates a component-auction eligible bidding script returning a bid `bid` in
+// currency `currency`. It provides a reporting handler that logs bid and
+// highestScoringOtherBid along with their currencies.
+function createBiddingScriptURLForHighestScoringOther(uuid, bid, currency) {
+  return createBiddingScriptURL({
+    bid: bid,
+    bidCurrency: currency,
+    allowComponentAuction: true,
+    reportWin: `
+        sendReportTo(
+            '${createBidderReportURL(uuid, /*id=*/ '')}' +
+            browserSignals.bid + encodeURIComponent(browserSignals.bidCurrency) +
+            '_' + browserSignals.highestScoringOtherBid +
+            encodeURIComponent(browserSignals.highestScoringOtherBidCurrency));`,
+  });
+}
+
 function createDecisionURLExpectCurrency(uuid, currencyInScore) {
   return createDecisionScriptURL(uuid, {
     scoreAd: `
             if (browserSignals.bidCurrency !== '${currencyInScore}')
               throw 'Wrong currency';`,
     reportResult: `
-            sendReportTo('${createSellerReportURL(uuid, /*id=*/ '')}' +
+          sendReportTo('${createSellerReportURL(uuid, /*id=*/ '')}' +
                          browserSignals.bid + encodeURIComponent(browserSignals.bidCurrency)   );`,
+  });
+}
+
+// Creates a component-auction seller script, which by default just scores
+// bid * 2, but the `conversion` argument can be used to customize bid
+// modification and currenct conversion.
+//
+// The script provides a reporting handler that logs bid and
+// highestScoringOtherBid along with their currencies as well as `suffix`.
+function createDecisionURLForHighestScoringOther(
+    uuid, conversion = '', suffix = '') {
+  return createDecisionScriptURL(uuid, {
+    scoreAd: `
+      let converted = undefined;
+      let modified = undefined;
+      let modifiedCurrency = undefined;
+      ${conversion}
+      return {desirability: 2 * bid,
+              incomingBidInSellerCurrency: converted,
+              bid: modified,
+              bidCurrency: modifiedCurrency,
+              allowComponentAuction: true};
+    `,
+    reportResult: `
+        sendReportTo(
+            '${createSellerReportURL(uuid, /*id=*/ '')}' + '${suffix}' +
+            browserSignals.bid + encodeURIComponent(browserSignals.bidCurrency) +
+            '_' + browserSignals.highestScoringOtherBid +
+            encodeURIComponent(browserSignals.highestScoringOtherBidCurrency));`,
+  });
+}
+
+// Joins groups for 9USD and 10USD, with reporting including
+// highestScoringOtherBid.
+async function joinTwoGroupsForHighestScoringOther(test, uuid) {
+  await joinInterestGroup(test, uuid, {
+    name: 'group-9USD',
+    biddingLogicURL:
+        createBiddingScriptURLForHighestScoringOther(uuid, /*bid=*/ 9, 'USD')
+  });
+  await joinInterestGroup(test, uuid, {
+    name: 'group-10USD',
+    biddingLogicURL:
+        createBiddingScriptURLForHighestScoringOther(uuid, /*bid=*/ 10, 'USD')
   });
 }
 
@@ -73,6 +138,34 @@ async function runCurrencyComponentAuction(test, uuid, params = {}) {
                        browserSignals.bid + encodeURIComponent(browserSignals.bidCurrency))`,
         ...params.componentSellerScriptParamsOverride
       }),
+      interestGroupBuyers: [ORIGIN],
+      ...params.componentAuctionConfigOverrides
+    }],
+    ...params.topLevelAuctionConfigOverrides
+  };
+  return await runBasicFledgeAuction(test, uuid, auctionConfigOverrides);
+}
+
+// Runs a component auction with reporting scripts that report bid and
+// highestScoringOtherBid, along with their currencies.
+//
+// Customization points in `params` are:
+// componentAuctionConfigOverrides, topLevelAuctionConfigOverrides:
+// edit auctionConfig for given auction level.
+//
+// topLevelConversion and componentConversion:
+// Permit customizing how the scoring function does currency conversiona and
+// bid modification. See createDecisionURLForHighestScoringOther().
+async function runCurrencyComponentAuctionForHighestScoringOther(
+    test, uuid, params = {}) {
+  let auctionConfigOverrides = {
+    interestGroupBuyers: [],
+    decisionLogicURL: createDecisionURLForHighestScoringOther(
+        uuid, params.topLevelConversion || '', 'top_'),
+    componentAuctions: [{
+      seller: ORIGIN,
+      decisionLogicURL: createDecisionURLForHighestScoringOther(
+          uuid, params.componentConversion || '', 'component_'),
       interestGroupBuyers: [ORIGIN],
       ...params.componentAuctionConfigOverrides
     }],
@@ -358,6 +451,67 @@ subsetTest(promise_test, async test => {
   await joinInterestGroup(
       test, uuid,
       {biddingLogicURL: createBiddingScriptURLWithCurrency(uuid, 'USD')});
+  let config = await runCurrencyComponentAuction(test, uuid, {
+    componentAuctionConfigOverrides: {perBuyerCurrencies: {'*': 'USD'}},
+    componentSellerScriptParamsOverride: {
+      scoreAd: `
+        return {desirability: 2 * bid, allowComponentAuction: true,
+                 bid: 1.5 * bid, bidCurrency: 'CAD'}
+      `
+    },
+    topLevelSellerScriptParamsOverride: {
+      scoreAd: `
+                // scoreAd sees what's actually passed in.
+                if (browserSignals.bidCurrency !== 'CAD')
+                  throw 'Wrong currency';`
+    }
+  });
+  expectSuccess(config);
+  createAndNavigateFencedFrame(test, config);
+  await waitForObservedRequests(uuid, [
+    createSellerReportURL(uuid, 'top_13.5???'),
+    createSellerReportURL(uuid, 'component_9USD'),
+    createBidderReportURL(uuid, '9USD')
+  ]);
+}, 'Multi-seller auction --- only bidder currency in config, component uses explicit currency.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinInterestGroup(test, uuid, {
+    biddingLogicURL:
+        createBiddingScriptURLWithCurrency(uuid, /*bidCurrency=*/ undefined)
+  });
+  let config = await runCurrencyComponentAuction(test, uuid, {
+    componentAuctionConfigOverrides: {sellerCurrency: 'CAD'},
+    componentSellerScriptParamsOverride: {
+      scoreAd: `
+        return {desirability: 2 * bid, allowComponentAuction: true,
+                 incomingBidInSellerCurrency: 12345}
+      `
+    },
+    topLevelSellerScriptParamsOverride: {
+      scoreAd: `
+                // scoreAd sees what's actually passed in.
+                if (bid != 9)
+                  throw 'Wrong bid';
+                if (browserSignals.bidCurrency !== '???')
+                  throw 'Wrong currency';`
+    }
+  });
+  expectSuccess(config);
+  createAndNavigateFencedFrame(test, config);
+  await waitForObservedRequests(uuid, [
+    createSellerReportURL(uuid, 'top_9CAD'),
+    createSellerReportURL(uuid, 'component_9???'),
+    createBidderReportURL(uuid, '9???')
+  ]);
+}, 'Multi-seller auction --- incomingBidInSellerCurrency does not go to top-level; component sellerCurrency does.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinInterestGroup(
+      test, uuid,
+      {biddingLogicURL: createBiddingScriptURLWithCurrency(uuid, 'USD')});
   let result = await runCurrencyComponentAuction(test, uuid, {
     componentAuctionConfigOverrides: {sellerCurrency: 'EUR'},
     componentSellerScriptParamsOverride: {
@@ -467,10 +621,214 @@ subsetTest(promise_test, async test => {
   expectNoWinner(result);
 }, 'Multi-seller auction --- component sellerCurrency different from bid.');
 
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinInterestGroup(test, uuid);
+  await runBasicFledgeTestExpectingNoWinner(test, uuid, {
+    decisionLogicURL: createDecisionScriptURL(uuid, {
+      scoreAd: `
+          return {desirability: 2 * bid,
+                  incomingBidInSellerCurrency: 5* bid}
+        `
+    })
+  });
+}, 'Trying to use incomingBidInSellerCurrency w/o sellerCurrency set.');
 
-// TODO: highestScoringOtherBid bid stuff:
-// --- combination of sellerCurrency on/off, different conversion cases.
-// Rules on conversion. Not strictly highestScoringOtherBid, but it makes it
-// easier to check.
-//
-// PrivateAggregation stuff.
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinInterestGroup(test, uuid);
+  await runBasicFledgeTestExpectingWinner(test, uuid, {
+    decisionLogicURL: createDecisionScriptURL(uuid, {
+      scoreAd: `
+          return {desirability: 2 * bid,
+                  incomingBidInSellerCurrency: 5* bid}
+        `,
+    }),
+    sellerCurrency: 'USD'
+  });
+}, 'Trying to use incomingBidInSellerCurrency w/sellerCurrency set.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinInterestGroup(
+      test, uuid,
+      {biddingLogicURL: createBiddingScriptURLWithCurrency(uuid, 'USD')});
+  await runBasicFledgeTestExpectingNoWinner(test, uuid, {
+    decisionLogicURL: createDecisionScriptURL(uuid, {
+      scoreAd: `
+          return {desirability: 2 * bid,
+                  incomingBidInSellerCurrency: 5* bid}
+        `
+    }),
+    sellerCurrency: 'USD'
+  });
+}, 'Trying to use incomingBidInSellerCurrency to change bid already in that currency.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinInterestGroup(
+      test, uuid,
+      {biddingLogicURL: createBiddingScriptURLWithCurrency(uuid, 'USD')});
+  await runBasicFledgeTestExpectingWinner(test, uuid, {
+    decisionLogicURL: createDecisionScriptURL(uuid, {
+      scoreAd: `
+          return {desirability: 2 * bid,
+                  incomingBidInSellerCurrency: bid}
+        `
+    }),
+    sellerCurrency: 'USD'
+  });
+}, 'incomingBidInSellerCurrency repeating value of bid already in that currency is OK.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinTwoGroupsForHighestScoringOther(test, uuid);
+  await runBasicFledgeAuctionAndNavigate(
+      test, uuid,
+      {decisionLogicURL: createDecisionURLForHighestScoringOther(uuid)});
+  await waitForObservedRequests(uuid, [
+    createSellerReportURL(uuid, '10???_9???'),
+    createBidderReportURL(uuid, '10???_9???')
+  ]);
+}, 'highestScoringOtherBid with no sellerCurrency set.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinTwoGroupsForHighestScoringOther(test, uuid);
+  await runBasicFledgeAuctionAndNavigate(test, uuid, {
+    decisionLogicURL: createDecisionURLForHighestScoringOther(uuid),
+    sellerCurrency: 'USD'
+  });
+  await waitForObservedRequests(uuid, [
+    createSellerReportURL(uuid, '10???_9USD'),
+    createBidderReportURL(uuid, '10???_9USD')
+  ]);
+}, 'highestScoringOtherBid with sellerCurrency set matching.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinTwoGroupsForHighestScoringOther(test, uuid);
+  await runBasicFledgeAuctionAndNavigate(test, uuid, {
+    decisionLogicURL: createDecisionURLForHighestScoringOther(uuid),
+    sellerCurrency: 'EUR'
+  });
+  await waitForObservedRequests(uuid, [
+    createSellerReportURL(uuid, '10???_0EUR'),
+    createBidderReportURL(uuid, '10???_0EUR')
+  ]);
+}, 'highestScoringOtherBid with sellerCurrency different, no conversion.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinTwoGroupsForHighestScoringOther(test, uuid);
+  await runBasicFledgeAuctionAndNavigate(test, uuid, {
+    decisionLogicURL:
+        createDecisionURLForHighestScoringOther(uuid, 'converted = 3 * bid'),
+    sellerCurrency: 'EUR'
+  });
+  await waitForObservedRequests(uuid, [
+    createSellerReportURL(uuid, '10???_27EUR'),
+    createBidderReportURL(uuid, '10???_27EUR')
+  ]);
+}, 'highestScoringOtherBid with sellerCurrency different, conversion.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinTwoGroupsForHighestScoringOther(test, uuid);
+  let result =
+      await runCurrencyComponentAuctionForHighestScoringOther(test, uuid, {
+        componentConversion: `
+          modified = bid + 1;
+          modifiedCurrency = 'EUR';`,
+        componentAuctionConfigOverrides: {sellerCurrency: 'EUR'}
+      });
+  expectSuccess(result);
+  createAndNavigateFencedFrame(test, result);
+  await waitForObservedRequests(uuid, [
+    createSellerReportURL(uuid, 'top_11EUR_0???'),
+    createSellerReportURL(uuid, 'component_10???_0EUR'),
+    createBidderReportURL(uuid, '10???_0EUR')
+  ]);
+}, 'Modified bid does not act in place of incomingBidInSellerCurrency.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinTwoGroupsForHighestScoringOther(test, uuid);
+  let result =
+      await runCurrencyComponentAuctionForHighestScoringOther(test, uuid, {
+        componentConversion: `
+          modified = bid + 1;
+          modifiedCurrency = 'EUR';
+          converted = bid - 1;`,
+        componentAuctionConfigOverrides: {sellerCurrency: 'EUR'}
+      });
+  expectSuccess(result);
+  createAndNavigateFencedFrame(test, result);
+  await waitForObservedRequests(uuid, [
+    createSellerReportURL(uuid, 'top_11EUR_0???'),
+    createSellerReportURL(uuid, 'component_10???_8EUR'),
+    createBidderReportURL(uuid, '10???_8EUR')
+  ]);
+}, 'Both modified bid and incomingBidInSellerCurrency.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinTwoGroupsForHighestScoringOther(test, uuid);
+  let result =
+      await runCurrencyComponentAuctionForHighestScoringOther(test, uuid, {
+        componentConversion: `
+          modified = bid + 1;
+          modifiedCurrency = 'CAD';`,
+        topLevelAuctionConfigOverrides: {sellerCurrency: 'EUR'},
+        topLevelConversion: `converted = 3 * bid;`,
+      });
+  // Note that since highestScoringOtherBid isn't available at top-level, one
+  // can't actually observe the effect of conversion with just sendReportTo(),
+  // but error-checking for it still happens.
+  expectSuccess(result);
+  createAndNavigateFencedFrame(test, result);
+  await waitForObservedRequests(uuid, [
+    createSellerReportURL(uuid, 'top_11???_0???'),
+    createSellerReportURL(uuid, 'component_10???_9???'),
+    createBidderReportURL(uuid, '10???_9???')
+  ]);
+}, 'incomingBidInSellerCurrency at top-level trying to convert is OK.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinTwoGroupsForHighestScoringOther(test, uuid);
+  let result =
+      await runCurrencyComponentAuctionForHighestScoringOther(test, uuid, {
+        componentConversion: `
+          modified = bid + 1;
+          modifiedCurrency = 'EUR';`,
+        topLevelAuctionConfigOverrides: {sellerCurrency: 'EUR'},
+        topLevelConversion: `converted = 3 * bid;`,
+      });
+  // Tried to change a bid that was already in EUR.
+  expectNoWinner(result);
+}, 'incomingBidInSellerCurrency at top-level trying to change bid is not OK.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await joinTwoGroupsForHighestScoringOther(test, uuid);
+  let result =
+      await runCurrencyComponentAuctionForHighestScoringOther(test, uuid, {
+        componentConversion: `
+          modified = bid + 1;
+          modifiedCurrency = 'EUR';`,
+        topLevelAuctionConfigOverrides: {sellerCurrency: 'EUR'},
+        topLevelConversion: `converted = bid;`,
+      });
+  // Changing the bid to itself when it was already in right currency is OK.
+  expectSuccess(result);
+  createAndNavigateFencedFrame(test, result);
+  await waitForObservedRequests(uuid, [
+    createSellerReportURL(uuid, 'top_11???_0???'),
+    createSellerReportURL(uuid, 'component_10???_9???'),
+    createBidderReportURL(uuid, '10???_9???')
+  ]);
+}, 'incomingBidInSellerCurrency at top-level doing a no-op conversion OK.');
+
+// TODO: PrivateAggregation. It follows the same rules as
+// highestScoringOtherBid, but is actually visible at top-level.
