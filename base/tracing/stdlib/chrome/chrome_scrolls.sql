@@ -71,6 +71,8 @@ GROUP BY sa.scroll_id;
 CREATE PERFETTO VIEW chrome_scrolling_intervals(
   -- The unique identifier of the scroll interval. This may span multiple scrolls if they overlap.
   id INT,
+  -- Comma-separated list of scroll ids that are included in this interval.
+  scroll_ids STRING,
   -- The start timestamp of the scroll interval.
   ts INT,
   -- The duration of the scroll interval.

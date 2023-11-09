@@ -265,12 +265,14 @@ ORDER BY presentation_timestamp;
 CREATE PERFETTO VIEW chrome_frame_info_with_delay(
   -- gesture scroll slice id.
   id INT,
-  -- OS timestamp of the first touch move arrival within a frame.
-  min_start_ts INT,
   -- OS timestamp of the last touch move arrival within a frame.
   max_start_ts INT,
+  -- OS timestamp of the first touch move arrival within a frame.
+  min_start_ts INT,
   -- The scroll which the touch belongs to.
   scroll_id INT,
+  -- ID of the associated scroll update.
+  scroll_update_id INT,
   -- Trace ids of all frames presented in at this vsync.
   encapsulated_scroll_ids INT,
   -- Summation of all delta_y of all gesture scrolls in this frame.

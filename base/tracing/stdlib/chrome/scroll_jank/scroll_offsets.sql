@@ -97,11 +97,11 @@ LEFT JOIN internal_scroll_deltas
 
 -- All of the presented frame scroll update ids.
 CREATE PERFETTO VIEW chrome_deltas_presented_frame_scroll_update_ids(
-  -- ID slice of the presented frame.
-  arg_set_id INT,
   -- A scroll update id that was included in the presented frame.
   -- There may be zero, one, or more.
-  scroll_update_id INT
+  scroll_update_id INT,
+  -- Slice id
+  id INT
 ) AS
 SELECT
   args.int_value AS scroll_update_id,

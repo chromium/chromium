@@ -35,15 +35,14 @@ ORDER BY track_id, ts;
 -- If the trace doesnt contain the VSync TraceEvent we just fall back on
 -- assuming its 60 FPS (this is the 1.6e+7 in the COALESCE which
 -- corresponds to 16 ms or 60 FPS).
---
--- @ret FLOAT The average vsync interval on this time segment
--- or 1.6e+7, if trace doesn't contain the VSync TraceEvent.
 CREATE PERFETTO FUNCTION chrome_calculate_avg_vsync_interval(
   -- Interval start time.
   begin_ts LONG,
   -- Interval end time.
   end_ts LONG
 )
+-- The average vsync interval on this time segment
+-- or 1.6e+7, if trace doesn't contain the VSync TraceEvent.
 RETURNS FLOAT AS
 SELECT
   COALESCE((

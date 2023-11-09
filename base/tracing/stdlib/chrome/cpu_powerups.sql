@@ -109,22 +109,24 @@ CREATE PERFETTO TABLE chrome_cpu_power_first_sched_slice_after_powerup(
   -- Unique id for the thread that ran within the slice.
   utid INT,
   -- The CPU's power state before this slice.
-  previous_power_state INT
+  previous_power_state INT,
+  -- A unique ID for the CPU power-up.
+  powerup_id INT
 ) AS
-  SELECT
-    ts,
-    dur,
-    cpu,
-    id AS sched_id,
-    utid,
-    previous_power_state,
-    powerup_id
-  FROM internal_cpu_power_and_sched_slice
-  WHERE power_state = 0     -- Power-ups only.
-  GROUP BY cpu, powerup_id
-  HAVING ts = MIN(ts)       -- There will only be one MIN sched slice
-                            -- per CPU power up.
-  ORDER BY ts ASC;
+SELECT
+  ts,
+  dur,
+  cpu,
+  id AS sched_id,
+  utid,
+  previous_power_state,
+  powerup_id
+FROM internal_cpu_power_and_sched_slice
+WHERE power_state = 0     -- Power-ups only.
+GROUP BY cpu, powerup_id
+HAVING ts = MIN(ts)       -- There will only be one MIN sched slice
+                          -- per CPU power up.
+ORDER BY ts ASC;
 
 -- A view joining thread tracks and top-level slices.
 --

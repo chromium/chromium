@@ -77,10 +77,10 @@ FROM chrome_janky_event_latencies_v3;
 CREATE PERFETTO VIEW chrome_scroll_stats(
   -- Id of the individual scroll.
   scroll_id INT,
-  -- The number of missed vsyncs in the scroll.
-  missed_vsyncs INT,
   -- The number of frames in the scroll.
   frame_count INT,
+  -- The number of missed vsyncs in the scroll.
+  missed_vsyncs INT,
   -- The number presented frames in the scroll.
   presented_frame_count INT,
   -- The number of janky frames in the scroll.

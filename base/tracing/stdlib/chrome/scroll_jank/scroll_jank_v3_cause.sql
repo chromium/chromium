@@ -13,9 +13,6 @@ INCLUDE PERFETTO MODULE common.slices;
 -- and slice B has children named (X, Y) with durations of (9, 9), the function will return
 -- the slice id of the slice named Z that is A's child, as no matching slice named Z was found
 -- under B, making 5 - 0 = 5 the maximum delta between both slice's direct children
---
--- @ret LONG The slice id of the breakdown that has the maximum
---                          duration delta.
 CREATE PERFETTO FUNCTION chrome_get_v3_jank_cause_id(
   -- The slice id of the parent slice that we want to cause among it's children.
   janky_slice_id LONG,
@@ -23,6 +20,7 @@ CREATE PERFETTO FUNCTION chrome_get_v3_jank_cause_id(
   -- |janky_slice_id|.
   prev_slice_id LONG
 )
+-- The slice id of the breakdown that has the maximum duration delta.
 RETURNS LONG AS
 WITH
   current_breakdowns AS (

@@ -256,13 +256,15 @@ CREATE PERFETTO VIEW chrome_java_views(
   -- Whether this slice is a part of non-accelerated capture toolbar screenshot.
   is_software_screenshot BOOL,
   -- Whether this slice is a part of accelerated capture toolbar screenshot.
-  is_hardware_screenshot BOOL
+  is_hardware_screenshot BOOL,
+  -- Slice id.
+  slice_id INT
 ) AS
 SELECT
   java_view.name AS filtered_name,
   java_view.is_software_screenshot,
   java_view.is_hardware_screenshot,
-  slice.*
+  slice.id as slice_id
 FROM internal_chrome_java_views java_view
 JOIN slice USING (id);
 
@@ -317,7 +319,7 @@ WHERE
         "cc/trees/single_thread_proxy.cc:ScheduledActionSendBeginMainFrame");
 
 -- A list of Chrome tasks which were performing operations with Java views,
--- together with the names of the these views.
+-- together with the names of these views.
 -- @column id INT            Slice id.
 -- @column kind STRING       Type of the task.
 -- @column java_views STRING Concatenated names of Java views used by the task.
@@ -361,6 +363,8 @@ ORDER BY id;
 CREATE PERFETTO VIEW chrome_scheduler_tasks(
   -- Slice id.
   id INT,
+  -- Type.
+  type STRING,
   -- Name of the task.
   name STRING,
   -- Timestamp.
@@ -377,6 +381,8 @@ CREATE PERFETTO VIEW chrome_scheduler_tasks(
   process_name STRING,
   -- Same as slice.track_id.
   track_id INT,
+  -- Same as slice.category.
+  category STRING,
   -- Same as slice.depth.
   depth INT,
   -- Same as slice.parent_id.

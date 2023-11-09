@@ -78,7 +78,7 @@ SELECT
   fcp.dur AS fcp,
   fcp.ts + fcp.dur AS fcp_ts,
   lcp.dur AS lcp,
-  IFNULL(lcp.dur, 0) + IFNULL(lcp.ts, 0) AS lcp_ts,
+  lcp.dur + lcp.ts AS lcp_ts,
   load_fired.ts AS dom_content_loaded_event_ts,
   start_load.ts AS load_event_ts,
   timing_loaded.ts AS mark_fully_loaded_ts,
