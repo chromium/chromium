@@ -9,6 +9,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ConfigurableParams} from './compose.mojom-webui.js';
 import {getTemplate} from './textarea.html.js';
 
 export interface ComposeTextareaElement {
@@ -36,6 +37,7 @@ export class ComposeTextareaElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
+      inputParams: Object,
       readonly: {
         type: Boolean,
         value: false,
@@ -58,6 +60,7 @@ export class ComposeTextareaElement extends PolymerElement {
   }
 
   allowExitingReadonlyMode: boolean;
+  inputParams: ConfigurableParams;
   readonly: boolean;
   private tooLong_: boolean;
   private tooShort_: boolean;
@@ -74,8 +77,10 @@ export class ComposeTextareaElement extends PolymerElement {
 
   validate() {
     const value = this.$.input.value;
-    this.tooShort_ = !value || value.length < 10;
-    this.tooLong_ = !!value && value.length > 200;
+    const wordCount = value.match(/\S+/g)?.length || 0;
+    this.tooShort_ = wordCount < this.inputParams.minWordLimit;
+    this.tooLong_ = value.length > this.inputParams.maxCharacterLimit ||
+        wordCount > this.inputParams.maxWordLimit;
     return !this.tooLong_ && !this.tooShort_;
   }
 }

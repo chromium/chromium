@@ -254,7 +254,8 @@
         value="{{input_}}"
         readonly="[[submitted_]]"
         allow-exiting-readonly-mode="[[!loading_]]"
-        on-edit-click="onEditClick_">
+        on-edit-click="onEditClick_"
+        input-params="[[inputParams_]]">
     </compose-textarea>
 
     <div id="loading" hidden="[[!loading_]]">
@@ -344,7 +345,8 @@
   </div>
 
   <div id="editContainer" hidden$="[[!isEditingSubmittedInput_]]">
-    <compose-textarea id="editTextarea" value="{{editedInput_}}">
+    <compose-textarea id="editTextarea" value="{{editedInput_}}"
+        input-params="[[inputParams_]]">
     </compose-textarea>
     <div class="footer">
       <cr-button id="cancelEditButton" class="tonal-button"

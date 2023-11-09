@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/compose/core/browser/config.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -176,8 +177,12 @@ void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
   if (current_state_->response) {
     current_state_->response->undo_available = !undo_states_.empty();
   }
+  auto compose_config = compose::GetComposeConfig();
   std::move(callback).Run(compose::mojom::OpenMetadata::New(
-      initial_input_, current_state_->Clone()));
+      initial_input_, current_state_->Clone(),
+      compose::mojom::ConfigurableParams::New(compose_config.input_min_words,
+                                              compose_config.input_max_words,
+                                              compose_config.input_max_chars)));
 }
 
 void ComposeSession::SaveWebUIState(const std::string& webui_state) {

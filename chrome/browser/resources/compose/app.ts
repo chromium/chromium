@@ -22,7 +22,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, Length, Tone} from './compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, Length, Tone} from './compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeTextareaElement} from './textarea.js';
 
@@ -167,6 +167,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
   private editedInput_: string;
   private input_: string;
+  private inputParams_: ConfigurableParams;
   private isEditingSubmittedInput_: boolean;
   private isEditSubmitEnabled_: boolean;
   private isSubmitEnabled_: boolean;
@@ -211,6 +212,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private getInitialState_() {
     this.apiProxy_.requestInitialState().then(initialState => {
+      this.inputParams_ = initialState.configurableParams;
       if (initialState.initialInput) {
         this.input_ = initialState.initialInput;
       }

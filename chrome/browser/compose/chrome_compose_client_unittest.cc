@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/compose/core/browser/config.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -717,6 +718,22 @@ TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
 
   compose::mojom::OpenMetadataPtr result = open_test_future.Take();
   EXPECT_EQ("", result->compose_state->webui_state);
+}
+
+TEST_F(ChromeComposeClientTest, TestInputParams) {
+  compose::Config config;
+  config.input_min_words = 5;
+  config.input_max_words = 20;
+  config.input_max_chars = 100;
+  compose::SetComposeConfigForTesting(config);
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_EQ(5, result->configurable_params->min_word_limit);
+  EXPECT_EQ(20, result->configurable_params->max_word_limit);
+  EXPECT_EQ(100, result->configurable_params->max_character_limit);
 }
 
 // Tests that undo is not possible when compose is never called and no response

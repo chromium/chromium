@@ -66,6 +66,11 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     return Promise.resolve({
       composeState: this.initialState_,
       initialInput: this.initialInput_,
+      configurableParams: {
+        minWordLimit: 2,
+        maxWordLimit: 50,
+        maxCharacterLimit: 100,
+      },
     });
   }
 
@@ -95,7 +100,7 @@ suite('ComposeApp', () => {
   let app: ComposeAppElement;
   let testProxy: TestingApiProxy;
 
-  setup(() => {
+  setup(async () => {
     testProxy = new TestingApiProxy();
     ComposeApiProxyImpl.setInstance(testProxy);
 
@@ -103,6 +108,7 @@ suite('ComposeApp', () => {
     app = document.createElement('compose-app');
     document.body.appendChild(app);
 
+    await testProxy.whenCalled('requestInitialState');
     return flushTasks();
   });
 
@@ -118,6 +124,12 @@ suite('ComposeApp', () => {
         {status: status, undoAvailable: false, result});
     return testProxy.remote.$.flushForTesting();
   }
+
+  test('SendsInputParams', () => {
+    assertEquals(2, app.$.textarea.inputParams.minWordLimit);
+    assertEquals(50, app.$.textarea.inputParams.maxWordLimit);
+    assertEquals(100, app.$.textarea.inputParams.maxCharacterLimit);
+  });
 
   test('SubmitsAndAcceptsInput', async () => {
     // Starts off with submit disabled since input is empty.
