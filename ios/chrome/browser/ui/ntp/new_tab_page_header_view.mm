@@ -211,8 +211,12 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 @implementation NewTabPageHeaderView {
   CGFloat _lastAnimationPercent;
   BOOL _useNewBadgeForLensButton;
+  // The current scale of the transform for the hint label. 1 if not currently
+  //  scaled.
   CGFloat _currentHintLabelScale;
+  // Stores the small font used for the pinned fakebox.
   UIFont* _hintLabelFontSmall;
+  // Stores the big font used for the unpinned fakebox.
   UIFont* _hintLabelFontBig;
 }
 
@@ -225,7 +229,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.clipsToBounds = YES;
     _useNewBadgeForLensButton = useNewBadgeForLensButton;
     _lastAnimationPercent = 0;
-    _currentHintLabelScale = 0;
+    _currentHintLabelScale = 1;
   }
   return self;
 }
