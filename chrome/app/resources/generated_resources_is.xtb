@@ -447,8 +447,10 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1346748346194534595">Réttsælis</translation>
 <translation id="1347256498747320987">Setja upp uppfærslur og forrit. Með því að halda áfram samþykkirðu að þetta tæki geti einnig sjálfkrafa sótt og sett upp uppfærslur og forrit frá Google, símafyrirtækinu þínu og framleiðanda tækisins, mögulega með því að nota farsímagögn. Einhver þessara forrita kunna að bjóða upp á innkaup í forriti. <ph name="BEGIN_LINK1" />Frekari upplýsingar<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux-geymslurými</translation>
+<translation id="1347625331607114917">Staðfestu kóðann í Android símanum</translation>
 <translation id="1347975661240122359">Uppfærsla hefst þegar rafhlaðan nær <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Aðgengisstillingar músar</translation>
+<translation id="1352834119074414157">Þessi pakki kann að vera bilaður eða í hættu. Lokaðu þessum glugga og sæktu hann aftur</translation>
 <translation id="1353275871123211385">Til að nota barnalæsingar á borð við samþykki forrita og takmörkun á skjátíma þarf barn að vera með Google reikning í umsjá foreldris. Hægt er að bæta skólareikningi við síðar fyrir verkfæri á borð við Google Classroom.</translation>
 <translation id="135389172849514421">Virkar án nettengingar</translation>
 <translation id="1353980523955420967">PPD-skráin finnst ekki. Gættu þess að Chromebook tölvan sé nettengd og reyndu aftur.</translation>
@@ -4024,6 +4026,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4100853287411968461">Ný tímamörk á skjátíma</translation>
 <translation id="4101352914005291489">SSID falin</translation>
 <translation id="4102906002417106771">Endurræsa til að djúphreinsa</translation>
+<translation id="4103644672850109428">Skjálesari, stækkun</translation>
 <translation id="4104163789986725820">Flytja út...</translation>
 <translation id="4104944259562794668">Þú getur kveikt á þessu síðar í Stillingar &gt; Öryggi og persónuvernd &gt; Lásskjár og innskráning</translation>
 <translation id="4107048419833779140">Bera kennsl á og aftengja geymslutæki</translation>
@@ -5297,6 +5300,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5145876360421795017">Ekki skrá tækið</translation>
 <translation id="5146235736676876345">Veldu þitt eigið</translation>
 <translation id="5146896637028965135">Rödd kerfis</translation>
+<translation id="5147516217412920887">Fylgdu leiðbeiningunum í símanum til að staðfesta kóðann</translation>
 <translation id="5147992672778369947">Notaðu ráðlagt aðgangsorð</translation>
 <translation id="5148277445782867161">Staðsetningarþjónusta Google notar heimildir eins og Wi-Fi, farsímakerfi og skynjara til að ákvarða staðsetningu tækisins.</translation>
 <translation id="5148285448107770349">Aðgangsorð (verður að vera minnst 8 stafir)</translation>
@@ -5725,6 +5729,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5496587651328244253">Skipuleggja</translation>
 <translation id="5496730470963166430">Mega ekki senda sprettiglugga eða nota framsendingu</translation>
 <translation id="5497251278400702716">Þessi skrá</translation>
+<translation id="5497739595514726398">Chrome tókst ekki að staðfesta þennan uppsetningarpakka</translation>
 <translation id="5498967291577176373">Skrifaðu hraðar með tillögum í línum fyrir nafn þitt, heimilisfang eða símanúmer</translation>
 <translation id="5499211612787418966">Þessi gluggi er ekki í fókus. Ýttu á Alt-Shift A til að setja þennan glugga í fókus.</translation>
 <translation id="5499313591153584299">Þessi skrá getur skaðað tölvuna þína.</translation>
@@ -6522,6 +6527,10 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6143186082490678276">Fá hjálp</translation>
 <translation id="6143366292569327983">Veldu tungumál síðunnar sem á að þýða úr</translation>
 <translation id="6144938890088808325">Hjálpaðu okkur að bæta Chromebook</translation>
+<translation id="6145480071052696715">Settu <ph name="DEVICE_TYPE" /> auðveldlega upp með símanum þínum. Þú getur bætt við Wi-Fi og Google-reikningnum þínum án þess að slá aðgangsorðin þín handvirkt inn.
+    <ph name="BR" />
+    <ph name="BR" />
+    Sýnilegt sem <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Samstilling virkar ekki. Reyndu að skrá þig inn aftur.</translation>
 <translation id="6147020289383635445">Prentforskoðun mistókst.</translation>
 <translation id="6148576794665275391">Opna núna</translation>
@@ -7585,6 +7594,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6993050154661569036">Uppfærir Chrome vafra</translation>
 <translation id="6995899638241819463">Láta vita ef aðgangsorðin þín eru afhjúpuð vegna öryggisbrots</translation>
 <translation id="6995984090981858039">Lesa upplýsingar og gögn Chrome OS-tækis</translation>
+<translation id="6996245928508281884">Kveiktu á Bluetooth og Wi-Fi í símanum</translation>
 <translation id="6996438701394974959">Stækka skjá og texta</translation>
 <translation id="6997553674029032185">Fara á vefsvæði</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – notkunarskrá</translation>
@@ -7827,6 +7837,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7201118060536064622">„<ph name="DELETED_ITEM_NAME" />“ var eytt</translation>
 <translation id="7201420661433230412">Skoða skrár</translation>
 <translation id="7201535955609308429">Bíddu á meðan staðfesting stendur yfir</translation>
+<translation id="7202337678781136582">Skannaðu QR-kóðann með Android símanum</translation>
 <translation id="7203150201908454328">Stækkað</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Loka síðu}one{Loka síðum}other{Loka síðum}}</translation>
 <translation id="7207457272187520234">Senda notkunar- og greiningargögn. Þetta tæki sendir núna sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta mun stuðla að stöðugleika kerfa og forrita og öðrum endurbótum. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Eigandi valdi þessa stillingu. Ef kveikt er á ítarlegri vef- og forritavirkni geta þessi gögn verið vistuð á Google reikningnum þínum.</translation>
@@ -8793,6 +8804,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7943349879009553083">Ekki í boði í gestastillingu</translation>
 <translation id="7943368935008348579">Sækja PDF-skjöl</translation>
 <translation id="7943837619101191061">Bæta staðsetningu við...</translation>
+<translation id="79446453817422139">Þessi skrá kann að vera hættuleg</translation>
 <translation id="7944772052836377867">Samstilling verður að staðfesta að þetta sért þú</translation>
 <translation id="7945703887991230167">Ákjósanleg rödd</translation>
 <translation id="7946586320617670168">Uppruni verður að vera öruggur</translation>

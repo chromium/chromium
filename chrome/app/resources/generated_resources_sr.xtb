@@ -2899,6 +2899,7 @@
 <translation id="3237871032310650497">Желите да избришете податке о сајтовима за <ph name="SITE_NAME" /> издељене на <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="3238192140106069382">Повезује се и верификује</translation>
 <translation id="3239373508713281971">Временско ограничење је уклоњено за апликацију <ph name="APP_NAME" /></translation>
+<translation id="3240299564104448052">Изгледа да сте офлајн.</translation>
 <translation id="3240426699337459095">Линк је копиран</translation>
 <translation id="3241638166094654466">Ћелија у свакој линији:</translation>
 <translation id="3241680850019875542">Изаберите основни директоријум додатка за паковање. Да бисте ажурирали додатак, изаберите и датотеку приватног кључа која ће се поново користити.</translation>
@@ -3829,6 +3830,7 @@
 <translation id="3963753386716096475">Користите други телефон, таблет или безбедносни кључ</translation>
 <translation id="3964480518399667971">Искључи мобилну мрежу</translation>
 <translation id="3965965397408324205">Затвори <ph name="PROFILE_NAME" /></translation>
+<translation id="3965984916551757611">Обавештења, Google Play</translation>
 <translation id="3966072572894326936">Одабери други фолдер...</translation>
 <translation id="3966094581547899417">Детаљи о хотспоту</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
@@ -4250,6 +4252,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google налог}one{<ph name="EXTRA_ACCOUNTS" /> Google налог}few{<ph name="EXTRA_ACCOUNTS" /> Google налога}other{<ph name="EXTRA_ACCOUNTS" /> Google налога}}</translation>
 <translation id="4312866146174492540">Блокирај (подразумевано)</translation>
 <translation id="4314497418046265427">Будите продуктивнији када повежете телефон и <ph name="DEVICE_TYPE" /></translation>
+<translation id="4314561087119792062">Додајте нови назив приступне тачке</translation>
 <translation id="4314815835985389558">Управљајте синхронизацијом</translation>
 <translation id="4316850752623536204">Веб-сајт програмера</translation>
 <translation id="4317733381297736564">Куповине у апликацији</translation>
@@ -4538,6 +4541,7 @@
 <translation id="4546345569117159016">Десно дугме</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> жели да користи овај додатак:</translation>
 <translation id="4546692474302123343">Гласовни унос у Google помоћнику</translation>
+<translation id="4547538408998421970">Достигли сте ограничење за данас.</translation>
 <translation id="4547659257713117923">Нема картица са других уређаја</translation>
 <translation id="4547672827276975204">Подеси аутоматски</translation>
 <translation id="4548858987594081919">Да бисте помогли Google менаџеру лозинки да чува информације о пријављивању, додајте корисничко име за овај сајт</translation>
@@ -4826,6 +4830,7 @@
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4779766576531456629">Преименујте мобилну мрежу за eSIM</translation>
 <translation id="4780321648949301421">Сачувај страницу као...</translation>
+<translation id="4780558987886269159">За посао</translation>
 <translation id="4781443161433589743">Ви користите најјачу Chrome заштиту</translation>
 <translation id="4785719467058219317">Користите безбедносни кључ који није регистрован за овај веб-сајт</translation>
 <translation id="4785914069240823137">Откажите опсецање</translation>
@@ -5262,6 +5267,7 @@
 <translation id="5130675701626084557">Преузимање профила није успело. Пробајте поново касније или затражите помоћ од мобилног оператера.</translation>
 <translation id="5131591206283983824">Превлачење додиром по тачпеду</translation>
 <translation id="5135533361271311778">Није могуће направити обележивач.</translation>
+<translation id="513555878193063507">Додајте нови назив приступне тачке</translation>
 <translation id="5136343472380336530">Уверите се да су оба уређаја откључана, близу један другом и да је укључен Bluetooth. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="5138227688689900538">Прикажи мање</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> претрага</translation>
@@ -5674,6 +5680,7 @@
 <translation id="5473099001878321374">Ако наставите, прихватате да овај уређај може и аутоматски да преузима и инсталира ажурирања и апликације од Google-а, дететовог мобилног оператера и произвођача овог уређаја, уз могућ пренос података преко мобилног оператера. Неке од ових апликација можда нуде куповине у апликацијама.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN мора да садржи бар један знак}one{PIN мора да садржи бар # знак}few{PIN мора да садржи бар # знака}other{PIN мора да садржи бар # знакова}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> захтева да се одмах повежете на WiFi и да преузмете ажурирање. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).</translation>
+<translation id="5477089831058413614">Конфигуришите <ph name="DEVICE_TYPE" /> хотспот</translation>
 <translation id="5481273127572794904">Није им дозвољено да аутоматски преузимају више фајлова</translation>
 <translation id="5481941284378890518">Додај оближње штампаче</translation>
 <translation id="5484181871714116891">Када је ово укључено, приступни кодови се праве у iCloud Keychain-у и доступни су на свим Apple уређајима. Када је искључено, приступни кодови се праве у Chrome профилу на овом уређају.</translation>
@@ -6711,6 +6718,7 @@
 <translation id="6309510305002439352">Дозвола за микрофон је искључена</translation>
 <translation id="6310141306111263820">Инсталирање eSIM профила није успело. Обратите се мобилном оператеру да бисте потражили помоћ.</translation>
 <translation id="6311220991371174222">Не можемо да покренемо Chrome јер је дошло до проблема при отварању профила. Пробајте поново да покренете Chrome.</translation>
+<translation id="6311708879134408222">Можете да пробате поново сутра.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Безбедносна провера је покренута пре 1 дан}one{Безбедносна провера је покренута пре {NUM_DAYS} дан}few{Безбедносна провера је покренута пре {NUM_DAYS} дана}other{Безбедносна провера је покренута пре {NUM_DAYS} дана}}</translation>
 <translation id="6312638141433622592">Нуди приказивање чланака у режиму читача када је подржан</translation>
 <translation id="6313641880021325787">ИЗАЂИ ИЗ ВР-А</translation>
@@ -6784,6 +6792,7 @@
 <translation id="637642201764944055">Старе верзије Chrome апликација неће се отварати на Linux уређајима после децембра 2022. Обратите се администратору да бисте ажурирали ову апликацију на нову верзију или је уклонили.</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6378392501584240055">Отвори у WiFi мрежама</translation>
+<translation id="6379533146645857098">Изаберите период</translation>
 <translation id="6380143666419481200">Прихвати и настави</translation>
 <translation id="6383382161803538830">Режим читања није доступан на овој страници</translation>
 <translation id="638418309848716977">Подржани линкови</translation>
@@ -7238,6 +7247,7 @@
 <translation id="6749473226660745022">Слике</translation>
 <translation id="6750757184909117990">Онемогући мобилну мрежу</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (без архивирања)</translation>
+<translation id="6756059675436942777">Проверите интернет везу и пробајте поново.</translation>
 <translation id="6756157672127672536">Апликација Фајлови пружа брз приступ фајловима које сте сачували на Google диску, у спољној меморији или на Chrome ОС уређају.</translation>
 <translation id="6756643207511618722">Механизми говора</translation>
 <translation id="6757431299485455321">Помаже другим уређајима да пронађу овај хотспот.</translation>
@@ -8959,6 +8969,7 @@
 <translation id="8082106343289440791">Желите ли да упарите са „<ph name="DEVICE_NAME" />“?</translation>
 <translation id="8082390128630131497">Ако онемогућите ADB отклањање грешака, <ph name="DEVICE_TYPE" /> ће се ресетовати на фабричка подешавања. Сви кориснички налози и локални подаци ће бити обрисани.</translation>
 <translation id="8084114998886531721">Сачувана лозинка</translation>
+<translation id="8084429490152575036">Подешавања назива приступне тачке мобилне мреже</translation>
 <translation id="8084510406207562688">Врати све картице</translation>
 <translation id="8084628902026812045">Овај сајт не користи безбедну везу и фајл је можда неовлашћено мењан</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> се конфигурише…</translation>

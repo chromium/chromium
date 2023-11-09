@@ -1481,6 +1481,7 @@
 <translation id="2131077480075264">「<ph name="APP_NAME" />」は「<ph name="IMPORT_NAME" />」で許可されていないためインストールできません</translation>
 <translation id="2133775869826239001">設定するその他の機能を選択する</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> を再試行</translation>
+<translation id="2133939190018801302">このアプリケーションは、現在使用している Chrome プロフィールにインストールされます。<ph name="MANAGE_PROFILES" /></translation>
 <translation id="2134905185275441536">システム CA</translation>
 <translation id="21354425047973905">PIN を非表示</translation>
 <translation id="2135456203358955318">ドッキング拡大鏡</translation>
@@ -2772,6 +2773,7 @@
 <translation id="3117362587799608430">サポートされていないドックです</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> に <ph name="ATTACHMENTS" />を送信できませんでした}other{<ph name="DEVICE_NAME" /> に <ph name="ATTACHMENTS" />を送信できませんでした}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> ヘルプ</translation>
+<translation id="3118748462829336648">サイドパネルを開く</translation>
 <translation id="3119948370277171654">キャストしたコンテンツまたは URL を教えてください。</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">データ ディレクトリの作成に失敗しました</translation>
@@ -2897,6 +2899,7 @@
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" /> で分割された <ph name="SITE_NAME" /> のサイトデータを削除しますか？</translation>
 <translation id="3238192140106069382">接続と認証を行っています</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> の使用時間制限が削除されました</translation>
+<translation id="3240299564104448052">オフラインのようです。</translation>
 <translation id="3240426699337459095">リンクをコピーしました</translation>
 <translation id="3241638166094654466">各行のセル数:</translation>
 <translation id="3241680850019875542">パッケージ化する拡張機能のルート ディレクトリを選択します。拡張機能を更新するには、再使用する秘密鍵ファイルも選択してください。</translation>
@@ -4199,6 +4202,7 @@
 <translation id="4274673989874969668">ユーザーがサイトから離れた後も、サイトは同期を継続して、写真のアップロードやチャット メッセージの送信などのタスクを完了することがあります</translation>
 <translation id="4275291496240508082">起動音</translation>
 <translation id="4275397969489577657">イベント ストリームのログを有効にする</translation>
+<translation id="4275788652681621337">サイドパネルを閉じる</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
 <translation id="4277434192562187284">XML 構成の参照元</translation>
 <translation id="4278390842282768270">許可</translation>
@@ -4249,6 +4253,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 件の Google アカウント}other{<ph name="EXTRA_ACCOUNTS" /> 件の Google アカウント}}</translation>
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>
 <translation id="4314497418046265427">スマートフォンと <ph name="DEVICE_TYPE" /> をリンクすれば、生産性が向上します</translation>
+<translation id="4314561087119792062">新しいアクセス ポイント名を追加</translation>
 <translation id="4314815835985389558">同期を管理</translation>
 <translation id="4316850752623536204">デベロッパーのウェブサイト</translation>
 <translation id="4317733381297736564">アプリ内購入</translation>
@@ -4536,6 +4541,7 @@
 <translation id="4546345569117159016">右ボタン</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> が、この拡張機能の使用を求めています。</translation>
 <translation id="4546692474302123343">Google アシスタントの音声入力</translation>
+<translation id="4547538408998421970">今日の上限に達しました。</translation>
 <translation id="4547659257713117923">他のデバイスからのタブはありません</translation>
 <translation id="4547672827276975204">自動的に設定する</translation>
 <translation id="4548858987594081919">Google パスワード マネージャーでログイン情報を保存するには、このサイトのユーザー名を追加してください</translation>
@@ -5048,6 +5054,7 @@
 <translation id="4953808748584563296">デフォルトのオレンジのアバター</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> の公開設定</translation>
 <translation id="4955710816792587366">PIN の選択</translation>
+<translation id="4958090327979461112">Chrome プロフィールを管理する</translation>
 <translation id="4959262764292427323">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます</translation>
 <translation id="4960020053211143927">一部のアプリではサポート対象外</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -5261,6 +5268,7 @@
 <translation id="5130675701626084557">プロファイルをダウンロードできませんでした。しばらくしてからもう一度試すか、携帯通信会社にお問い合わせください。</translation>
 <translation id="5131591206283983824">タッチパッドのタップによるドラッグ</translation>
 <translation id="5135533361271311778">ブックマークの項目を作成できませんでした。</translation>
+<translation id="513555878193063507">新しい APN を追加</translation>
 <translation id="5136343472380336530">両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5138227688689900538">一部を表示</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />、<ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 検索</translation>
@@ -5626,6 +5634,7 @@
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> を検索:</translation>
 <translation id="5436575196282187764">Google フォトの「思い出」</translation>
 <translation id="5439680044267106777">スキップして新しいプロファイルを設定</translation>
+<translation id="5440425659852470030">サイドパネルを閉じる</translation>
 <translation id="544083962418256601">ショートカットを作成...</translation>
 <translation id="5441133529460183413">Chrome ブラウザからインストールしたウェブアプリ</translation>
 <translation id="5441292787273562014">ページの再読み込み</translation>
@@ -6715,6 +6724,7 @@
 <translation id="6309510305002439352">マイクがオフになっています</translation>
 <translation id="6310141306111263820">eSIM プロファイルをインストールできませんでした。ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="6311220991371174222">プロファイルを開こうとして問題が発生したため、Chrome を起動できません。Chrome を再起動してみてください。</translation>
+<translation id="6311708879134408222">明日、もう一度お試しください。</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{安全チェックを 1 日前に実行しました}other{安全チェックを {NUM_DAYS} 日前に実行しました}}</translation>
 <translation id="6312638141433622592">記事をリーダーモードで表示するか確認します（可能な場合）</translation>
 <translation id="6313641880021325787">VR を終了</translation>
@@ -7238,6 +7248,7 @@
 <translation id="6749473226660745022">写真</translation>
 <translation id="6750757184909117990">モバイルデータ通信を無効にする</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" />（シークレット モード）</translation>
+<translation id="6756059675436942777">インターネット接続を確認してから、もう一度お試しください。</translation>
 <translation id="6756157672127672536">ファイルアプリを使用すると、Google ドライブ、外部ストレージ、Chrome OS デバイスに保存したファイルにすばやくアクセスできます。</translation>
 <translation id="6756643207511618722">読み上げエンジン</translation>
 <translation id="6757431299485455321">このアクセス ポイントを他のデバイスで検出できるようにします。</translation>
@@ -8034,6 +8045,7 @@
 <translation id="7384804382450832142">Microsoft OneDrive に接続</translation>
 <translation id="7385490373498027129">この <ph name="DEVICE_TYPE" /> にあるすべてのユーザーのファイルとローカルデータをすべて完全に削除します。</translation>
 <translation id="7385854874724088939">印刷中に問題が発生しました。プリンタを確認してからもう一度お試しください。</translation>
+<translation id="7387107590792462040">インストール中のため、しばらくお待ちください</translation>
 <translation id="7387273928653486359">許容範囲内</translation>
 <translation id="7387951778417998929">既定と異なる検索エンジンを使用するには、アドレスバーに検索エンジンのショートカットを入力して、設定したキーボード ショートカットを押します。ここで既定の検索エンジンを変更することもできます。</translation>
 <translation id="7388209873137778229">サポートされているデバイスのみが表示されます。</translation>
@@ -8959,6 +8971,7 @@
 <translation id="8082106343289440791">「<ph name="DEVICE_NAME" />」とペア設定しますか？</translation>
 <translation id="8082390128630131497">ADB デバッグを無効にすると、この <ph name="DEVICE_TYPE" /> が出荷時の設定にリセットされます。ユーザー アカウントとローカルデータはすべて消去されます。</translation>
 <translation id="8084114998886531721">保存したパスワード</translation>
+<translation id="8084429490152575036">モバイル APN 設定</translation>
 <translation id="8084510406207562688">すべてのタブを復元(&amp;E)</translation>
 <translation id="8084628902026812045">このサイトは安全な接続を使用していないため、ファイルが改ざんされている可能性があります</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> を設定しています...</translation>
@@ -9176,6 +9189,7 @@
 <translation id="8260864402787962391">マウス</translation>
 <translation id="8261378640211443080">この拡張機能は <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供されていません。知らないうちに追加された可能性があります。</translation>
 <translation id="8261506727792406068">削除</translation>
+<translation id="8262971894813353037">WebUI の新しいデスクトップ デザインを有効にします。Chrome Refresh 2023 も有効にする必要があります。</translation>
 <translation id="8263336784344783289">このグループに名前を付ける</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> でマウスカーソルが無効になりました。</translation>
 <translation id="8264024885325823677">この設定は管理者によって管理されています。</translation>
@@ -10243,6 +10257,7 @@
 <translation id="9080175821499742274">メモリセーバーは、アクティブでないタブのメモリを解放し、アクティブなタブやその他のアプリが使用できるようにします。</translation>
 <translation id="9080971985541434310">興味や関心を推定 - Chrome でユーザーの関心の対象を推定します</translation>
 <translation id="9081543426177426948">シークレット モードでは、アクセスしたサイトは保存されません</translation>
+<translation id="9082750838489080452">アプリケーション: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">ウィンドウとして開く</translation>
 <translation id="9085256200913095638">選択したタブを複製</translation>
 <translation id="9085446486797400519">カメラへのアクセス</translation>
@@ -10411,6 +10426,7 @@
 <translation id="924818813611903184">Chrome OS の設定で言語を管理する</translation>
 <translation id="925270020047573546">このデバイスのデスクトップの音声をキャストすることはできません。</translation>
 <translation id="925575170771547168">サイトにより保存された <ph name="TOTAL_USAGE" /> のデータが削除されます</translation>
+<translation id="930193457234051160">Chrome WebUI Refresh 2023</translation>
 <translation id="930268624053534560">詳細なタイムスタンプ</translation>
 <translation id="930551443325541578">キーとアクセント記号の繰り返し</translation>
 <translation id="930893132043726269">現在ローミングあり</translation>

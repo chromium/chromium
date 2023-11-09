@@ -10,7 +10,6 @@
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1044891598689252897">Gagana nang normal ang mga site</translation>
 <translation id="1049743911850919806">Incognito</translation>
-<translation id="105093091697134113">Gumagamit ang mga sumusunod na account ng mga password na na-expose sa third-party na paglabag sa data, o nailagay sa mapanlinlang na website. Palitan kaagad ang mga password na ito para mapanatiling ligtas ang iyong mga account.</translation>
 <translation id="1053651653201045802">Nag-Sign out. Mag-sign in ulit para magamit ang mga bookmark, password, at higit pa sa iyong account.</translation>
 <translation id="1054045277222934172">Puwede mong baguhin ang default na view ng site sa desktop sa Mga Setting at pagkatapos ay Mga Setting ng Content</translation>
 <translation id="1054745118061919935">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_LINK" />.</translation>
@@ -735,7 +734,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4856498338299082007">Sa Iyong Google Account</translation>
 <translation id="4856841893565072365">I-Smart Sort ang Menu Bar</translation>
 <translation id="4860895144060829044">Tawagan</translation>
-<translation id="4872323082491632254">Suriin ang Mga Password</translation>
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="488785315393301722">Ipakita ang Mga Detalye</translation>
 <translation id="4894963374040315706">Binibigyang-daan ka nitong makapaghanap gamit ang iyong boses</translation>
@@ -1189,7 +1187,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7154343200458623869">Tapusin ang iyong gawain.</translation>
 <translation id="7161230316646448869">I-sync ang iyong mga bookmark, history, at higit pa sa lahat ng device</translation>
 <translation id="7162168282402939716">I-unlock ang Mga Tab na Incognito Gamit ang <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7172852049901402487">Panatilihing ligtas ang iyong mga password mula sa mga isyu sa seguridad</translation>
 <translation id="7173114856073700355">Buksan ang Mga Setting</translation>
 <translation id="7189598951263744875">Ibahagi...</translation>
 <translation id="719133302483559673">Pamahalaan ang iyong mga interes at preference.</translation>
@@ -1327,7 +1324,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">I-export Password...</translation>
 <translation id="794799177247607889">Ihinto ang Pag-log</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{Walang nakompromisong password}=1{{COUNT} Nakompromisong password}one{{COUNT} Nakompromisong password}other{{COUNT} na Nakompromisong password}}</translation>
 <translation id="7959441099968534758">PUMUNTA SA FEED</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>
 <translation id="7966516440812255683">Puwedeng gumamit ng cookies ang mga site para pahusayin ang iyong karanasan sa pag-browse, halimbawa, para mapanatili kang naka-sign in o para maalala ang mga item sa shopping cart mo.

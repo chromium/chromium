@@ -10,7 +10,6 @@
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1044891598689252897">Weby budú fungovať normálne</translation>
 <translation id="1049743911850919806">Inkognito</translation>
-<translation id="105093091697134113">Nasledujúce účty používajú heslá, ktoré boli prezradené v rámci porušenia ochrany údajov tretej strany alebo zadané na podvodnom webe. Ihneď ich zmeňte a zaistite tak bezpečnosť svojich účtov.</translation>
 <translation id="1053651653201045802">Účet je odhlásený. Ak chcete používať záložky, heslá a ďalšie položky v ňom, znova sa prihláste.</translation>
 <translation id="1054045277222934172">Predvolené zobrazenie webu môžete zmeniť na verziu pre počítače v sekcii Nastavenia, Nastavenia obsahu</translation>
 <translation id="1054745118061919935">Pokračovaním vyjadrujete súhlas so <ph name="BEGIN_LINK" />zmluvnými podmienkami<ph name="END_LINK" />.</translation>
@@ -735,7 +734,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4856498338299082007">V účte Google</translation>
 <translation id="4856841893565072365">Panel s ponukami inteligentného zoradenia</translation>
 <translation id="4860895144060829044">Volajte</translation>
-<translation id="4872323082491632254">Kontrola hesiel</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
 <translation id="488785315393301722">Zobraziť podrobnosti</translation>
 <translation id="4894963374040315706">Umožňuje vyhľadávať hlasom</translation>
@@ -1189,7 +1187,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7154343200458623869">Dokončite svoju úlohu.</translation>
 <translation id="7161230316646448869">Synchronizujte svoje záložky, históriu a ďalšie údaje vo všetkých zariadeniach</translation>
 <translation id="7162168282402939716">Odomknúť karty inkognito funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7172852049901402487">Ochráňte svoje heslá pred bezpečnostnými problémami</translation>
 <translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7189598951263744875">Zdieľať...</translation>
 <translation id="719133302483559673">Spravujte svoje záujmy a predvoľby.</translation>
@@ -1327,7 +1324,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportovať heslá...</translation>
 <translation id="794799177247607889">Zastaviť zapisovanie do denníka</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{Žiadne prelomené heslá}=1{{COUNT} prelomené heslo}few{{COUNT} prelomené heslá}many{{COUNT} Compromised passwords}other{{COUNT} prelomených hesiel}}</translation>
 <translation id="7959441099968534758">PREJSŤ NA FEED</translation>
 <translation id="7961015016161918242">Nikdy</translation>
 <translation id="7966516440812255683">Weby môžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku.

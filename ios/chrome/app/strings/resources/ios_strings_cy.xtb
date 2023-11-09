@@ -10,7 +10,6 @@
 <translation id="1036348656032585052">Diffodd</translation>
 <translation id="1044891598689252897">Bydd gwefannau'n gweithio fel arfer</translation>
 <translation id="1049743911850919806">Anhysbys</translation>
-<translation id="105093091697134113">Mae'r cyfrifon canlynol yn defnyddio cyfrineiriau a ddatgelwyd mewn achos o dor diogelwch data trydydd parti neu a roddwyd ar wefan dwyllodrus. Newidiwch y cyfrineiriau hyn ar unwaith i ddiogelu'ch cyfrifon.</translation>
 <translation id="1053651653201045802">Rydych wedi'ch allgofnodi. Mewngofnodwch eto i ddefnyddio'r nodau tudalen, y cyfrineiriau a rhagor yn eich cyfrif.</translation>
 <translation id="1054045277222934172">Gallwch newid y wedd gwefan ddiofyn i fwrdd gwaith yn y Gosodiadau yna Gosodiadau Cynnwys.</translation>
 <translation id="1054745118061919935">Drwy barhau, rydych yn cytuno i'r <ph name="BEGIN_LINK" />Telerau Gwasanaeth<ph name="END_LINK" />.</translation>
@@ -735,7 +734,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4856498338299082007">Yn eich Cyfrif Google</translation>
 <translation id="4856841893565072365">Bar Dewislen Trefnu Clyfar</translation>
 <translation id="4860895144060829044">Galw</translation>
-<translation id="4872323082491632254">Gwirio Cyfrineiriau</translation>
 <translation id="4881695831933465202">Agor</translation>
 <translation id="488785315393301722">Dangos Manylion</translation>
 <translation id="4894963374040315706">Mae hyn yn eich galluogi i chwilio gan ddefnyddio'ch llais</translation>
@@ -1189,7 +1187,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7154343200458623869">Cwblhau eich tasg.</translation>
 <translation id="7161230316646448869">Cysonwch eich nodau tudalen, hanes a rhagor ar bob dyfais</translation>
 <translation id="7162168282402939716">Datgloi Tabiau Anhysbys gyda <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7172852049901402487">Cadwch eich cyfrineiriau yn ddiogel rhag problemau diogelwch</translation>
 <translation id="7173114856073700355">Agor y Gosodiadau</translation>
 <translation id="7189598951263744875">Rhannu...</translation>
 <translation id="719133302483559673">Rheoli eich diddordebau a'ch dewisiadau.</translation>
@@ -1327,7 +1324,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Allforio cyfrineiriau...</translation>
 <translation id="794799177247607889">Stopio cofnodi</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{Dim cyfrineiriau sydd wedi'u darganfod}=1{{COUNT} Cyfrinair sydd wedi'i ddarganfod}two{{COUNT} Gyfrinair sydd wedi'u darganfod}few{{COUNT} Chyfrinair sydd wedi'u darganfod}many{{COUNT} Chyfrinair sydd wedi'u darganfod}other{{COUNT} Cyfrinair sydd wedi'u darganfod}}</translation>
 <translation id="7959441099968534758">MYND I'R FFRWD</translation>
 <translation id="7961015016161918242">Byth</translation>
 <translation id="7966516440812255683">Gall gwefannau ddefnyddio cwcis i wella'ch profiad pori, er enghraifft, i'ch cadw bod wedi'ch mewngofnodi neu i gofio eitemau yn eich basged siopa.

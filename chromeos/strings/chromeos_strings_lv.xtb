@@ -135,6 +135,7 @@
 <translation id="1852934301711881861">Instalēt Chrome OS Flex</translation>
 <translation id="1856388568474281774">Lejupvērstais bulttaustiņš</translation>
 <translation id="1858620243986915808">Pievienot ekrānuzņēmumu</translation>
+<translation id="1871413952174074704">APN garums nedrīkst pārsniegt <ph name="CHAR_LIMIT" /> rakstzīmes.</translation>
 <translation id="1871569928317311284">Izslēgt tumšo motīvu</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Izslēgt tumšo režīmu</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Gaiši rozā</translation>
 <translation id="982713511914535780">Veikt izlādes pārbaudi</translation>
 <translation id="987264212798334818">Vispārīgi</translation>
+<translation id="995062385528875723">Nedrīkst izmantot burtus ar diakritiskajām zīmēm, burtus, kas nav latīņu alfabētā, vai simbolus.</translation>
 </translationbundle>

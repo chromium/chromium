@@ -130,6 +130,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="146902737843070955">Administratorunuz bu dəyişikliyi tələb edib</translation>
 <translation id="1469148162491666137"><ph name="APP1_NAME" />, <ph name="APP2_NAME" />, kamera və mikrofon icazəsi olan tətbiq və veb-saytlar üçün giriş icazəsi verilir. Veb-səhifəni təzələməli, yaxud tətbiqi yenidən başlatmalı ola bilərsiniz.</translation>
 <translation id="147310119694673958">Telefonun batareyası: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">Hotspotu aktiv/deaktiv edin. Hotspot aktivdir. 1 cihaz qoşulub.</translation>
 <translation id="1479909375538722835">Üzən əlçatımlılıq menyusu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Diktə sayəsində səs ilə yazmaq olar. Mətn sahəsində diktə düyməsini basın və ya ekranın aşağısında mikrofon ikonasını seçin. Diktə dili <ph name="LANGUAGE" /> olaraq təyin edilib. Nitq emal üçün Google-a göndərilir. Ayarlar &gt; Əlçatımlıq bölməsində diktə dilini dəyişə bilərsiniz.</translation>
@@ -819,6 +820,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="4324840740119394760">Kamera icazəsi olan <ph name="APP_NAME" /> və bütün tətbiq və vebsaytlar üçün kameraya giriş icazəsi verir</translation>
 <translation id="4333628967105022692">Birdən çox istifadəçi daxil olduqda Lacros dəstəklənmir.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4351244548802238354">Dialoqu qapadın</translation>
 <translation id="4356872429719185452">Hotspot detallarını göstərin. Hotspot aktiv edilir.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> Qeydə alınır</translation>
 <translation id="4371348193907997655">Yayım ayarları</translation>
@@ -869,6 +871,14 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="4548482551627849548">Aktiv pəncərəni soldakı masaya doğru hərəkət etdirin</translation>
 <translation id="4560576029703263363">Aktiv</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Status bölməsi, vaxt: <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Parolu gizlədin</translation>
 <translation id="4566144812051858745">Heç bir təklif maraqlı deyil</translation>
 <translation id="4569753163207712681">Telefonun son foto, media və tətbiqlərinə baxın</translation>
@@ -878,6 +888,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="4577990005084629481">Önbaxışları göstərin</translation>
 <translation id="4578906031062871102">Ayarlar menyusu açılıb</translation>
 <translation id="458210817642223147">GIF yazın</translation>
+<translation id="4582666543382004902">Wi-Fi-dan istifadə etmək üçün hotspot söndürülüb. Hotspotdan istifadə etmək üçün Wi-Fi-ı söndürün.</translation>
 <translation id="4585337515783392668">Naməlum alıcının yayımını dayandırın</translation>
 <translation id="4596144739579517758">Tünd tema deaktivdir</translation>
 <translation id="4611292653554630842">Daxil olun</translation>
@@ -1084,6 +1095,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="5393156353051693207">Tətbiqləri yenidən sıralamaq üçün istənilən yerə toxunub saxlayın</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> <ph name="IN_PLACE_APP" /> tətbiqinin üzərindədir, qovluq yaratmaq üçün buraxın.</translation>
 <translation id="5397578532367286026">Bu istifadəçinin istifadəsi və tarixçəsi (<ph name="MANAGER_EMAIL" />) on chrome.com domenindəki menecer tərəfindən izlənə bilər.</translation>
+<translation id="540713187982329711">Hotspotu aktiv/deaktiv edin. Hotspot aktivdir. Cihaz qoşulmayıb.</translation>
 <translation id="5413656666631274079">Ayarlar səhifəsi</translation>
 <translation id="5414198321558177633">Profil siyahısı təzələnir. Bu, bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="5426063383988017631">Ayarlar menyusu bağlanıb</translation>
@@ -1174,9 +1186,11 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="576341972084747908"><ph name="FILENAME" /> endirilməsi təhlükəlidir</translation>
 <translation id="576453121877257266">Gecə İşığı aktivdir.</translation>
 <translation id="5764569119212455782">Seçilmiş son dilə dəyişin</translation>
+<translation id="5767730327234918501">Administrator hotspotu deaktiv edib.</translation>
 <translation id="5769373120130404283">Məxfilik ekranı</translation>
 <translation id="5773950591113557721">Bu, kamera və mikrofon icazələri olan <ph name="APP_NAME" /> və bütün tətbiq və vebsaytlara giriş icazəsi verir</translation>
 <translation id="5774295353725270860">Fayl tətbiqini açın</translation>
+<translation id="5775936059231769503">Hotspotu aktiv/deaktiv edin. Hotspot deaktivdir.</translation>
 <translation id="5777841717266010279">Ekran paylaşımı dayandırılsın?</translation>
 <translation id="5779721926447984944">Bərkidilmiş fayllar</translation>
 <translation id="5785221443435874078">Bu təklifi silin</translation>
@@ -1494,6 +1508,7 @@ Yeni quraşdırma</translation>
 <translation id="7068360136237591149">Faylları açın</translation>
 <translation id="7076293881109082629">Hesaba giriş</translation>
 <translation id="7076878155205969899">Səsləri səssiz rejimə keçirin</translation>
+<translation id="7084678090004350185">Hotspotu aktiv/deaktiv edin. Hotspot aktivdir. <ph name="DEVICECOUNT" /> cihaz qoşulub.</translation>
 <translation id="7086931198345821656">Bu güncəlləmə <ph name="DEVICE_TYPE" /> cihazını yenidən formatlamağı tələb edir. Bütün data silinəcək. Ən son <ph name="SYSTEM_APP_NAME" /> güncəlləməsi ilə bağlı ətraflı məlumat əldə edin.</translation>
 <translation id="7088960765736518739">Açarlı idarəetmə</translation>
 <translation id="709015856939120012">Səhifəni böyüdün</translation>

@@ -10,7 +10,6 @@
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
-<translation id="105093091697134113">次のアカウントでは、第三者のデータ侵害で漏洩したパスワード、または不正なサイトで入力されたパスワードが使用されています。アカウントのセキュリティ保護のため、今すぐ次のパスワードを変更してください。</translation>
 <translation id="1053651653201045802">ログアウトしました。再度ログインすると、アカウントのブックマークやパスワードなどを使用できます。</translation>
 <translation id="1054045277222934172">[設定] の [コンテンツの設定] で、デフォルトのサイトビューをデスクトップに変更できます</translation>
 <translation id="1054745118061919935">続行すると、<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />に同意したことになります。</translation>
@@ -735,7 +734,6 @@
 <translation id="4856498338299082007">Google アカウント</translation>
 <translation id="4856841893565072365">スマートソート メニューバー</translation>
 <translation id="4860895144060829044">通話</translation>
-<translation id="4872323082491632254">パスワードを確認</translation>
 <translation id="4881695831933465202">開く</translation>
 <translation id="488785315393301722">詳細を表示</translation>
 <translation id="4894963374040315706">音声を使って検索できます</translation>
@@ -1189,7 +1187,6 @@
 <translation id="7154343200458623869">タスクを完了します。</translation>
 <translation id="7161230316646448869">すべてのデバイスでブックマーク、履歴、その他の設定を同期する</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でシークレット タブのロックを解除</translation>
-<translation id="7172852049901402487">セキュリティの問題からパスワードを保護します</translation>
 <translation id="7173114856073700355">設定を開く</translation>
 <translation id="7189598951263744875">共有...</translation>
 <translation id="719133302483559673">あなたの興味や好みに関する情報を管理します。</translation>
@@ -1327,7 +1324,6 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">パスワードをエクスポート...</translation>
 <translation id="794799177247607889">ログ記録を停止</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: {COUNT} 件}other{不正使用されたパスワード: {COUNT} 件}}</translation>
 <translation id="7959441099968534758">フィードに移動</translation>
 <translation id="7961015016161918242">使用しない</translation>
 <translation id="7966516440812255683">サイトは、Cookie を使用してブラウジングの利便性を改善することができます。たとえばログイン状態の維持や、ショッピング カートの中身の保存が可能になります。

@@ -1692,6 +1692,7 @@
 <translation id="4386413576162606861">Παιχνίδια ρόλων</translation>
 <translation id="4390472908992056574">Χείλος</translation>
 <translation id="4393632246160856858">Προϊόντα περιποίησης νυχιών</translation>
+<translation id="4397059608630092079">Να γίνεται πάντα επαλήθευση κατά τη χρήση της αυτόματης συμπλήρωσης</translation>
 <translation id="4406883609789734330">Ζωντανοί υπότιτλοι</translation>
 <translation id="4406896451731180161">αποτελέσματα αναζήτησης</translation>
 <translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
@@ -1893,6 +1894,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα ένα νέο Φύλλο Google</translation>
 <translation id="4825507807291741242">Ισχυρό</translation>
 <translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
+<translation id="4827283332383516812">Διαγραφή κάρτας</translation>
 <translation id="4831993743164297314">Χαρτί φωτοστοιχειοθετικής μηχανής</translation>
 <translation id="483241715238664915">Ενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4834250788637067901">Τρόποι πληρωμής, προσφορές και διευθύνσεις μέσω Google Pay</translation>
@@ -2365,6 +2367,7 @@
 <translation id="5785756445106461925">Επίσης, αυτή η σελίδα περιέχει άλλους πόρους, οι οποίοι δεν είναι ασφαλείς. Αυτοί οι πόροι μπορούν να προβληθούν από άλλους χρήστες κατά τη μετάβαση και μπορούν να τροποποιηθούν από έναν εισβολέα ώστε να αλλάξει η εμφάνιση της σελίδας.</translation>
 <translation id="5786044859038896871">Θέλετε να συμπληρωθούν τα στοιχεία της κάρτας σας;</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793317771769868848">Αυτός ο τρόπος πληρωμής θα διαγραφεί από αυτήν τη συσκευή</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Κανένα}=1{δεδομένα σύνδεσης για έναν λογαριασμό}other{δεδομένα σύνδεσης για # λογαριασμούς}}</translation>
 <translation id="5800727402210090597">Υπηρεσίες επισκευής κινητών τηλεφώνων</translation>
 <translation id="580241730938216256">Έναρξη ενημέρωσης</translation>

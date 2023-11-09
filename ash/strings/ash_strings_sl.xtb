@@ -130,6 +130,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="146902737843070955">To spremembo je zahteval vaš skrbnik.</translation>
 <translation id="1469148162491666137">To omogoča dostop za aplikaciji <ph name="APP1_NAME" /> in <ph name="APP2_NAME" /> ter vse aplikacije in spletna mesta z dovoljenjem za kamero in mikrofon. Morda boste morali osvežiti spletno stran ali znova zagnati aplikacijo.</translation>
 <translation id="147310119694673958">Baterija telefona <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1475340220124222168">Preklop dostopne točke. Dostopna točka je vklopljena, povezana je 1 naprava.</translation>
 <translation id="1479909375538722835">Plavajoč meni s funkcijami za ljudi s posebnimi potrebami</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Z narekom lahko vnašate z glasom. Ko ste v polju z besedilom, pritisnite tipko za narek ali izberite ikono mikrofona na dnu zaslona. Jezik nareka je nastavljen na jezik <ph name="LANGUAGE" />. Govor je poslan Googlu zaradi obdelave. Jezik nareka lahko kadar koli spremenite v »Nastavitve &gt; Dostopnost«.</translation>
@@ -819,6 +820,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4324840740119394760">To omogoča dostop do kamere za aplikacijo <ph name="APP_NAME" /> in vse aplikacije ter spletna mesta z dovoljenjem za kamero.</translation>
 <translation id="4333628967105022692">Lacros ni podprt, če je prijavljenih več uporabnikov.</translation>
 <translation id="4338109981321384717">Povečevalno steklo</translation>
+<translation id="4351244548802238354">Zapri pogovorno okno</translation>
 <translation id="4356872429719185452">Prikaz podrobnosti dostopne točke. Dostopna točka se vklaplja.</translation>
 <translation id="4364101114148522660">Posnetek (<ph name="DURATION" />)</translation>
 <translation id="4371348193907997655">Nastavitve predvajanja</translation>
@@ -878,6 +880,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4577990005084629481">Prikaz predogledov</translation>
 <translation id="4578906031062871102">Meni z nastavitvami je odprt</translation>
 <translation id="458210817642223147">Posnemi GIF</translation>
+<translation id="4582666543382004902">Dostopna točka je izklopljena zaradi uporabe Wi-Fi-ja. Če želite uporabljati dostopno točko, izklopite Wi-Fi.</translation>
 <translation id="4585337515783392668">Ustavi predvajanje v neznanem sprejemniku</translation>
 <translation id="4596144739579517758">Temna tema je izklopljena</translation>
 <translation id="4611292653554630842">Prijava</translation>
@@ -1084,6 +1087,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="5393156353051693207">Če želite preurediti aplikacije, se kjer koli dotaknite in pridržite.</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> na <ph name="IN_PLACE_APP" />, spustite, da ustvarite mapo.</translation>
 <translation id="5397578532367286026">Upravitelj (<ph name="MANAGER_EMAIL" />) lahko na chrome.com pregleduje uporabo in zgodovino tega uporabnika.</translation>
+<translation id="540713187982329711">Preklop dostopne točke. Dostopna točka je vklopljena, nobena naprava ni povezana.</translation>
 <translation id="5413656666631274079">stran z nastavitvami</translation>
 <translation id="5414198321558177633">Osveževanje seznama profilov. To lahko traja nekaj minut.</translation>
 <translation id="5426063383988017631">Meni z nastavitvami je zaprt</translation>
@@ -1174,9 +1178,11 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="576341972084747908">Nevaren prenos <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">Nočna svetloba je vklopljena.</translation>
 <translation id="5764569119212455782">Preklop na zadnji izbrani jezik</translation>
+<translation id="5767730327234918501">Skrbnik je izklopil dostopno točko.</translation>
 <translation id="5769373120130404283">Zaslon za zasebnost</translation>
 <translation id="5773950591113557721">To omogoča dostop za aplikacijo <ph name="APP_NAME" /> ter vse aplikacije in spletna mesta z dovoljenji za kamero in mikrofon.</translation>
 <translation id="5774295353725270860">Odpiranje aplikacije Datoteke</translation>
+<translation id="5775936059231769503">Preklop dostopne točke. Dostopna točka je izklopljena.</translation>
 <translation id="5777841717266010279">Želite ustaviti skupno rabo zaslona?</translation>
 <translation id="5779721926447984944">Pripete datoteke</translation>
 <translation id="5785221443435874078">Odstrani ta predlog</translation>
@@ -1494,6 +1500,7 @@ Nova namestitev</translation>
 <translation id="7068360136237591149">Odpri datoteke</translation>
 <translation id="7076293881109082629">Prijava</translation>
 <translation id="7076878155205969899">Izklop zvoka</translation>
+<translation id="7084678090004350185">Preklop dostopne točke. Dostopna točka je vklopljena, povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7086931198345821656">Ta posodobitev zahteva, da izvedete postopek Powerwash v napravi <ph name="DEVICE_TYPE" />. Vsi podatki bodo izbrisani. Preberite več o najnovejši posodobitvi za <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Dostop s stikalom</translation>
 <translation id="709015856939120012">Povečanje strani</translation>

@@ -3848,6 +3848,7 @@
 <translation id="3963753386716096475">다른 휴대전화, 태블릿 또는 보안 키 사용</translation>
 <translation id="3964480518399667971">셀룰러 네트워크 끄기</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> 나가기</translation>
+<translation id="3965984916551757611">알림, Google Play</translation>
 <translation id="3966072572894326936">다른 폴더 선택...</translation>
 <translation id="3966094581547899417">핫스팟 세부정보</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
@@ -4844,6 +4845,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4779136857077979611">오니기리</translation>
 <translation id="4779766576531456629">eSIM 셀룰러 네트워크 이름 바꾸기</translation>
 <translation id="4780321648949301421">페이지를 다른 이름으로 저장...</translation>
+<translation id="4780558987886269159">업무용</translation>
 <translation id="4781443161433589743">Chrome의 가장 강력한 보안 기능으로 보호되고 있습니다.</translation>
 <translation id="4785719467058219317">이 웹사이트에 등록되지 않은 보안 키를 사용하고 있습니다.</translation>
 <translation id="4785914069240823137">자르기 취소</translation>
@@ -5693,6 +5695,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5473099001878321374">계속하면 이 기기에서 Google, 자녀의 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치하는 데 동의하는 것으로 간주됩니다(이때 모바일 데이터가 사용될 수도 있음). 일부 앱에서는 인앱 구매가 제공될 수도 있습니다.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN은 1자 이상이어야 합니다.}other{PIN은 #자 이상이어야 합니다.}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다. 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.</translation>
+<translation id="5477089831058413614"><ph name="DEVICE_TYPE" /> 핫스팟 구성</translation>
 <translation id="5481273127572794904">여러 파일 자동 다운로드가 허용되지 않음</translation>
 <translation id="5481941284378890518">주변 프린터 추가</translation>
 <translation id="5484181871714116891">사용 설정하면 iCloud 키체인에서 패스키가 생성되고 Apple 기기에서 사용할 수 있습니다. 사용 중지하면 이 기기의 Chrome 프로필에서 패스키가 생성됩니다.</translation>
@@ -6802,6 +6805,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="637642201764944055">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Linux 기기에서 열리지 않습니다. 관리자에게 문의하여 새 버전으로 업데이트하거나 앱을 삭제하세요.</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' 검색결과 1개</translation>
 <translation id="6378392501584240055">Wi-Fi 네트워크에서 열기</translation>
+<translation id="6379533146645857098">기간을 선택하세요</translation>
 <translation id="6380143666419481200">동의 및 계속</translation>
 <translation id="6383382161803538830">이 페이지에서는 읽기 모드를 사용할 수 없음</translation>
 <translation id="638418309848716977">지원되는 링크</translation>

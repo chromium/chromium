@@ -130,6 +130,7 @@
 <translation id="146902737843070955">관리자가 요청한 변경사항입니다.</translation>
 <translation id="1469148162491666137">카메라 및 마이크 액세스 권한이 있는 <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> 등 모든 앱과 웹사이트에서 액세스할 수 있게 됩니다. 웹페이지를 새로고침하거나 앱을 다시 시작해야 할 수도 있습니다.</translation>
 <translation id="147310119694673958">휴대전화 배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">핫스팟을 전환합니다. 핫스팟이 켜져 있으며 기기 1대가 연결되어 있습니다.</translation>
 <translation id="1479909375538722835">플로팅 접근성 메뉴</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" />(HDMI/DP)</translation>
 <translation id="1486307154719069822">음성기록을 사용하면 음성으로 입력할 수 있습니다. 텍스트 입력란에서 음성기록 키를 누르거나 화면 하단의 마이크 아이콘을 선택합니다. 음성기록 언어가 <ph name="LANGUAGE" />로 설정되어 있습니다. 처리를 위해 음성이 Google로 전송됩니다 언제든지 설정 &gt; 접근성에서 음성기록 언어를 변경할 수 있습니다.</translation>
@@ -819,6 +820,7 @@
 <translation id="4324840740119394760">카메라 액세스 권한이 있는 <ph name="APP_NAME" /> 앱을 포함한 모든 앱 및 웹사이트에서 카메라에 액세스할 수 있게 됩니다.</translation>
 <translation id="4333628967105022692">Lacros는 여러 사용자가 로그인된 상태에서 지원되지 않습니다.</translation>
 <translation id="4338109981321384717">돋보기</translation>
+<translation id="4351244548802238354">대화상자 닫기</translation>
 <translation id="4356872429719185452">핫스팟 세부정보를 표시합니다. 핫스팟을 켜는 중입니다.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  녹화 중</translation>
 <translation id="4371348193907997655">전송 설정</translation>
@@ -878,6 +880,7 @@
 <translation id="4577990005084629481">미리보기 표시</translation>
 <translation id="4578906031062871102">설정 메뉴가 열림</translation>
 <translation id="458210817642223147">GIF 녹화</translation>
+<translation id="4582666543382004902">Wi-Fi를 사용하기 위해 핫스팟이 사용 중지되었습니다. 핫스팟을 사용하려면 Wi-Fi를 사용 중지하세요.</translation>
 <translation id="4585337515783392668">알 수 없는 수신기에 전송 중지</translation>
 <translation id="4596144739579517758">어두운 테마가 꺼져 있습니다.</translation>
 <translation id="4611292653554630842">로그인</translation>
@@ -1084,6 +1087,7 @@
 <translation id="5393156353051693207">앱을 재정렬하려면 아무 곳이나 길게 터치합니다</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />을(를) <ph name="IN_PLACE_APP" /> 위로 드래그해서 놓으면 폴더가 만들어집니다.</translation>
 <translation id="5397578532367286026">관리자(<ph name="MANAGER_EMAIL" />)는 chrome.com에서 해당 사용자의 사용 및 방문 기록을 검토할 수 있습니다.</translation>
+<translation id="540713187982329711">핫스팟을 전환합니다. 핫스팟이 켜져 있으며 연결된 기기가 없습니다.</translation>
 <translation id="5413656666631274079">설정 페이지</translation>
 <translation id="5414198321558177633">프로필 목록을 새로고침하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="5426063383988017631">설정 메뉴 닫힘</translation>
@@ -1174,9 +1178,11 @@
 <translation id="576341972084747908">위험한 <ph name="FILENAME" /> 파일을 다운로드합니다</translation>
 <translation id="576453121877257266">야간 조명이 켜졌습니다.</translation>
 <translation id="5764569119212455782">최근 선택된 언어로 전환</translation>
+<translation id="5767730327234918501">관리자가 핫스팟을 사용 중지했습니다.</translation>
 <translation id="5769373120130404283">개인 정보 보호 화면</translation>
 <translation id="5773950591113557721"><ph name="APP_NAME" /> 등 카메라 및 마이크 권한이 있는 모든 앱과 웹사이트에 액세스 권한이 부여됩니다.</translation>
 <translation id="5774295353725270860">파일 앱 열기</translation>
+<translation id="5775936059231769503">핫스팟을 전환합니다. 핫스팟이 꺼져 있습니다.</translation>
 <translation id="5777841717266010279">화면 공유를 중단하시겠습니까?</translation>
 <translation id="5779721926447984944">고정된 파일</translation>
 <translation id="5785221443435874078">이 추천 삭제</translation>
@@ -1494,6 +1500,7 @@
 <translation id="7068360136237591149">파일을 열어 줘</translation>
 <translation id="7076293881109082629">로그인</translation>
 <translation id="7076878155205969899">음소거</translation>
+<translation id="7084678090004350185">핫스팟을 전환합니다. 핫스팟이 켜져 있으며 기기 <ph name="DEVICECOUNT" />대가 연결되어 있습니다.</translation>
 <translation id="7086931198345821656">이 업데이트를 적용하려면 <ph name="DEVICE_TYPE" />의 파워워시가 필요합니다. 모든 데이터가 삭제됩니다. 최신 <ph name="SYSTEM_APP_NAME" /> 업데이트에 관해 자세히 알아보세요.</translation>
 <translation id="7088960765736518739">스위치 제어</translation>
 <translation id="709015856939120012">페이지 확대</translation>

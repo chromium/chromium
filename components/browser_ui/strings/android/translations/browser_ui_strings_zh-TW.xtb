@@ -208,7 +208,6 @@
 <translation id="4644713492825682049">刪除並重設</translation>
 <translation id="4645575059429386691">你的家長已停用這項功能</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
-<translation id="4673958474310291465">請嘗試暫時允許使用第三方 Cookie，這代表保護程度較低，但網站功能較容易正常運作</translation>
 <translation id="4751476147751820511">動作或光源感應器</translation>
 <translation id="4779083564647765204">縮放</translation>
 <translation id="4811450222531576619">瞭解來源和主題</translation>
@@ -453,6 +452,7 @@
 <translation id="8816026460808729765">禁止網站存取感應器</translation>
 <translation id="8823559166155093873">封鎖 Cookie</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie，這代表網頁瀏覽保護程度較低，但網站功能較容易正常運作。</translation>
 <translation id="8889294078294184559">你隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資訊，確認你應該是真人</translation>
 <translation id="8899807382908246773">侵入式廣告</translation>
 <translation id="8903921497873541725">放大</translation>

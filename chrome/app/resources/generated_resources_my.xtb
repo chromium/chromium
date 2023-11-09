@@ -2914,6 +2914,7 @@
 <translation id="3237871032310650497"><ph name="PARTITION_SITE_NAME" /> တွင် ပိုင်းခြားထားသည့် <ph name="SITE_NAME" /> အတွက် ဝဘ်ဆိုက် ဒေတာကို ဖျက်မလား။</translation>
 <translation id="3238192140106069382">ချိတ်ဆက်ပြီး စိစစ်နေသည်</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> အတွက် အချိန်ကန့်သတ်ချက် ဖယ်ရှားလိုက်သည်</translation>
+<translation id="3240299564104448052">သင်သည် အော့ဖ်လိုင်း ဖြစ်နေပုံရသည်။</translation>
 <translation id="3240426699337459095">လင့်ခ်ကူးယူပြီးပါပြီ</translation>
 <translation id="3241638166094654466">စာကြောင်းတစ်ကြောင်းစီမှ ဆဲလ်များ−</translation>
 <translation id="3241680850019875542">ထုပ်ရန် အတွက် တိုးချဲ့မှု၏ ရင်းမြစ် ဒါရိုက်ထရီကို ရွေးပါ။ တိုးချဲ့မှု တစ်ခုကို အပ်ဒိတ်လုပ်ရန်၊ ကိုယ်ပိုင် သော့ ပြန်သုံးရန်ကိုပါ ရွေးပါ။</translation>
@@ -4265,6 +4266,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{Google Account 1 ခု}other{Google Account <ph name="EXTRA_ACCOUNTS" /> ခု}}</translation>
 <translation id="4312866146174492540">ပိတ်ဆို့ရန် (မူရင်း)</translation>
 <translation id="4314497418046265427">သင့်ဖုန်းနှင့် <ph name="DEVICE_TYPE" /> ကို ချိတ်ဆက်သည့်အခါ အလုပ်ပိုပြီးမြောက်နိုင်သည်</translation>
+<translation id="4314561087119792062">APN အချိတ်အဆက်အသစ် ထည့်ရန်</translation>
 <translation id="4314815835985389558">စင့်ခ်ကို စီမံရန်</translation>
 <translation id="4316850752623536204">Developer Website</translation>
 <translation id="4317733381297736564">အက်ပ်အတွင်း ဝယ်ယူခြင်းများ</translation>
@@ -4554,6 +4556,7 @@
 <translation id="4546345569117159016">ညာခလုတ်</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> က ဤနောက်ဆက်တွဲကို သုံးလိုသည်-</translation>
 <translation id="4546692474302123343">Google Assistant အသံဖြင့် ထည့်သွင်းရန်</translation>
+<translation id="4547538408998421970">ယနေ့ သင့်အတွက် ကန့်သတ်ချက် ပြည့်သွားပါပြီ။</translation>
 <translation id="4547659257713117923">အခြားစက်ပစ္စည်းများမှ တဲဘ်များ မရှိပါ</translation>
 <translation id="4547672827276975204">အလိုအလျောက် သတ်မှတ်ရန်</translation>
 <translation id="4548858987594081919">သင်၏လက်မှတ်ထိုးဝင်သည့် အချက်အလက်ကို Google Password Manager ကသိမ်းပေးနိုင်ရန် ဤဝဘ်ဆိုက်အတွက် သင့်အသုံးပြုသူအမည်ထည့်ပါ</translation>
@@ -5279,6 +5282,7 @@
 <translation id="5130675701626084557">ပရိုဖိုင်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ (သို့) အကူအညီအတွက် ဝန်ဆောင်မှုပေးသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="5131591206283983824">တာ့ချ်ပက် တို့၍ဖိဆွဲရန်</translation>
 <translation id="5135533361271311778">စာညှပ် အရာကို ဖန်တီး မပေးနိုင်ခဲ့ပါ။</translation>
+<translation id="513555878193063507">APN အသစ်ထည့်ရန်</translation>
 <translation id="5136343472380336530">စက်နှစ်ခုလုံးပွင့်နေပြီး အတူကပ်ထားကာ ဘလူးတုသ်ဖွင့်ထားကြောင်း သေချာပါစေ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="5138227688689900538">လျှော့ပြရန်</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />၊ <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
@@ -6729,6 +6733,7 @@
 <translation id="6309510305002439352">မိုက်ခရိုဖုန်း ပိတ်ထားသည်</translation>
 <translation id="6310141306111263820">eSIM ပရိုဖိုင်ကို ထည့်သွင်း၍မရပါ။ အကူအညီအတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="6311220991371174222">သင့်ပရိုဖိုင်ကို ဖွင့်စဉ်တွင် တစ်ခုခုချွတ်ယွင်းသွားသောကြောင့် Chrome ကို မစတင်နိုင်ခဲ့ပါ။ Chrome ကို ပြန်ဖွင့်ပါ။</translation>
+<translation id="6311708879134408222">မနက်ဖြန် ထပ်စမ်းကြည့်နိုင်ပါသည်။</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{ပြီးခဲ့သည့် ၁ ရက်က လုံခြုံရေးစစ်ဆေးခဲ့သည်}other{ပြီးခဲ့သည့် {NUM_DAYS} ရက်က လုံခြုံရေးစစ်ဆေးခဲ့သည်}}</translation>
 <translation id="6312638141433622592">ပံ့ပိုးထားသည့်အခါ ဆောင်းပါးများကို ဖတ်ရှုစနစ်မုဒ်တွင် ပြပေးနိုင်သည်</translation>
 <translation id="6313641880021325787">VR မှထွက်ရန်</translation>
@@ -7251,6 +7256,7 @@
 <translation id="6749473226660745022">ဓာတ်ပုံများ</translation>
 <translation id="6750757184909117990">ဆယ်လူလာ ပိတ်ရန်</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ရုပ်ဖျက်)</translation>
+<translation id="6756059675436942777">သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6756157672127672536">Files အက်ပ်က သင် Google Drive၊ ပြင်ပသိုလှောင်ခန်း (သို့) သင့် ChromeOS စက်များတွင် သိမ်းထားသော ဖိုင်များကို အမြန်သုံးခွင့်ပေးသည်။</translation>
 <translation id="6756643207511618722">စကားသံ အင်ဂျင်များ</translation>
 <translation id="6757431299485455321">အခြားစက်များ ဤဟော့စပေါ့ကို ရှာတွေ့ရန် ကူညီပေးသည်။</translation>
@@ -8970,6 +8976,7 @@
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" နှင့် တွဲချိတ်မလား။</translation>
 <translation id="8082390128630131497">ADB အမှားရှာပြင်ခြင်းကို ပိတ်ခြင်းအားဖြင့် ဤ <ph name="DEVICE_TYPE" /> ကို စက်ရုံထုတ်ဆက်တင်များအတိုင်း ပြင်ဆင်သတ်မှတ်သွားပါမည်။ အသုံးပြုသူ အကောင့်များနှင့် ဒေတာအားလုံး ဖယ်ရှားလိုက်ပါမည်။</translation>
 <translation id="8084114998886531721">သိမ်းဆည်းထားသော စကားဝှက်</translation>
+<translation id="8084429490152575036">ဆယ်လူလာ APN ဆက်တင်များ</translation>
 <translation id="8084510406207562688">တဘ်အားလုံး ပြန်&amp;ယူရန်</translation>
 <translation id="8084628902026812045">ဤဝဘ်ဆိုက်သည် လုံခြုံသောချိတ်ဆက်မှု သုံးမနေသည့်အတွက် ဖိုင်ကို ကလိထားနိုင်သည်</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> ကို စီစဉ်သတ်မှတ်နေသည် …</translation>

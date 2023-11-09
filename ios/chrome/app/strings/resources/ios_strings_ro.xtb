@@ -10,7 +10,6 @@
 <translation id="1036348656032585052">Dezactivează</translation>
 <translation id="1044891598689252897">Site-urile vor funcționa normal</translation>
 <translation id="1049743911850919806">Incognito</translation>
-<translation id="105093091697134113">Următoarele conturi folosesc parole care au fost expuse în urma unei încălcări a securității datelor de către terțe părți sau au fost introduse pe un site înșelător. Schimbă imediat următoarele parole pentru a-ți proteja conturile.</translation>
 <translation id="1053651653201045802">Te-ai deconectat. Conectează-te din nou pentru a folosi marcajele, parolele și altele în contul tău.</translation>
 <translation id="1054045277222934172">Poți seta afișarea prestabilită a site-urilor la versiunea pentru desktop în Setări &gt; Setări privind conținutul</translation>
 <translation id="1054745118061919935">Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK" />Termenii și condițiile<ph name="END_LINK" />.</translation>
@@ -735,7 +734,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4856498338299082007">În Contul Google</translation>
 <translation id="4856841893565072365">Bara de meniu pentru sortare inteligentă</translation>
 <translation id="4860895144060829044">Apelează</translation>
-<translation id="4872323082491632254">Verifică parolele</translation>
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="488785315393301722">Afișați detaliile</translation>
 <translation id="4894963374040315706">Astfel, cauți mai rapid folosind vocea</translation>
@@ -1189,7 +1187,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7154343200458623869">Finalizează activitatea.</translation>
 <translation id="7161230316646448869">Sincronizează marcajele, istoricul și alte date, pe toate dispozitivele</translation>
 <translation id="7162168282402939716">Deblochează filele incognito cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7172852049901402487">Protejează-ți parolele împotriva problemelor de securitate</translation>
 <translation id="7173114856073700355">Deschide Setările</translation>
 <translation id="7189598951263744875">Trimite...</translation>
 <translation id="719133302483559673">Gestionează-ți interesele și preferințele.</translation>
@@ -1327,7 +1324,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportă parolele...</translation>
 <translation id="794799177247607889">Oprește înregistrarea în jurnal</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{Nicio parolă compromisă}=1{{COUNT} parolă compromisă}few{{COUNT} parole compromise}other{{COUNT} de parole compromise}}</translation>
 <translation id="7959441099968534758">ACCESEAZĂ FEEDUL</translation>
 <translation id="7961015016161918242">Niciodată</translation>
 <translation id="7966516440812255683">Site-urile pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături.

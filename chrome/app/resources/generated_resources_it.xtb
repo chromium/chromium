@@ -3831,6 +3831,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3963753386716096475">Usa un altro smartphone, tablet o token di sicurezza</translation>
 <translation id="3964480518399667971">Disattiva rete mobile</translation>
 <translation id="3965965397408324205">Esci da <ph name="PROFILE_NAME" /></translation>
+<translation id="3965984916551757611">Notifiche, Google Play</translation>
 <translation id="3966072572894326936">Scegli un'altra cartella...</translation>
 <translation id="3966094581547899417">Dettagli hotspot</translation>
 <translation id="3967822245660637423">Download completato</translation>
@@ -4828,6 +4829,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Rinomina rete mobile eSIM</translation>
 <translation id="4780321648949301421">Salva pagina con nome...</translation>
+<translation id="4780558987886269159">Per il lavoro</translation>
 <translation id="4781443161433589743">Stai usando la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="4785719467058219317">Stai usando un token di sicurezza non registrato su questo sito web</translation>
 <translation id="4785914069240823137">Annulla ritaglio</translation>
@@ -5677,6 +5679,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5473099001878321374">Se prosegui, accetti che il dispositivo possa scaricare e installare automaticamente aggiornamenti e app da Google, dall'operatore di tuo figlio e dal produttore del dispositivo, utilizzando eventualmente la rete dati. Alcune di queste app potrebbero offrire acquisti in-app.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Il PIN deve contenere almeno un carattere}other{Il PIN deve contenere almeno # caratteri}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> richiede l'immediata connessione a una rete Wi-Fi per scaricare un aggiornamento. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).</translation>
+<translation id="5477089831058413614">Configura l'hotspot di <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Non possono scaricare automaticamente più file</translation>
 <translation id="5481941284378890518">Aggiungi stampanti nelle vicinanze</translation>
 <translation id="5484181871714116891">Se attivate, le passkey vengono create nel portachiavi iCloud e sono disponibili su tutti i tuoi dispositivi Apple. Se l'opzione è disattivata, le passkey vengono create nel tuo profilo Chrome su questo dispositivo.</translation>
@@ -6783,6 +6786,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="637642201764944055">Le versioni precedenti delle app di Chrome non si apriranno più sui dispositivi Linux dopo dicembre 2022. Contatta l'amministratore per eseguire l'aggiornamento a una nuova versione o per rimuovere questa app.</translation>
 <translation id="6377268785556383139">1 risultato per "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Apri nelle reti Wi-Fi</translation>
+<translation id="6379533146645857098">Seleziona un intervallo di tempo</translation>
 <translation id="6380143666419481200">Accetta e continua</translation>
 <translation id="6383382161803538830">Modalità di lettura non disponibile in questa pagina</translation>
 <translation id="638418309848716977">Link supportati</translation>

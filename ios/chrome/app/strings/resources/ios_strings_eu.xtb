@@ -10,7 +10,6 @@
 <translation id="1036348656032585052">Desaktibatu</translation>
 <translation id="1044891598689252897">Webguneek ohiko moduan funtzionatuko dute</translation>
 <translation id="1049743911850919806">Ezkutuko modua</translation>
-<translation id="105093091697134113">Kontu hauen pasahitzak agerian geratu dira hirugarrenen datuen isilpekotasuna urratu den batean, edo webgune engainagarri batean erabili dira. Kontua babesteko, aldatu pasahitzok berehala.</translation>
 <translation id="1053651653201045802">Amaitu da saioa. Hasi saioa berriro kontuko laster-markak, pasahitzak eta bestelakoak erabiltzeko.</translation>
 <translation id="1054045277222934172">Webgunearen ikuspegi lehenetsia ordenagailuetarako ikuspegira aldatzeko, sakatu Ezarpenak eta, gero, Edukiaren ezarpenak</translation>
 <translation id="1054745118061919935">Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_LINK" />Zerbitzu-baldintzak<ph name="END_LINK" />.</translation>
@@ -735,7 +734,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4856498338299082007">Zure Google-ko kontuan</translation>
 <translation id="4856841893565072365">Ordenatu menu-barra modu adimendunean</translation>
 <translation id="4860895144060829044">Deitu</translation>
-<translation id="4872323082491632254">Egiaztatu pasahitzak</translation>
 <translation id="4881695831933465202">Ireki</translation>
 <translation id="488785315393301722">Erakutsi xehetasunak</translation>
 <translation id="4894963374040315706">Honi esker, ahotsaren bidez bilatu ahal izango dituzu gauzak</translation>
@@ -1189,7 +1187,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7154343200458623869">Osatu zeregina.</translation>
 <translation id="7161230316646448869">Sinkronizatu laster-markak, historia eta beste gauza asko gailu guztietan</translation>
 <translation id="7162168282402939716">Desblokeatu ezkutuko moduko fitxak <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
-<translation id="7172852049901402487">Babestu zure pasahitzak segurtasun-arazo guztietatik</translation>
 <translation id="7173114856073700355">Ireki Ezarpenak</translation>
 <translation id="7189598951263744875">Partekatu…</translation>
 <translation id="719133302483559673">Kudeatu zure interesak eta hobespenak.</translation>
@@ -1327,7 +1324,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Esportatu pasahitzak…</translation>
 <translation id="794799177247607889">Utzi erregistratzeari</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{Ez dago pasahitzik arriskuan}=1{{COUNT} pasahitz arriskuan}other{{COUNT} pasahitz arriskuan}}</translation>
 <translation id="7959441099968534758">JOAN JARIORA</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>
 <translation id="7966516440812255683">Webguneek cookieak erabil ditzakete arakatze-zerbitzua hobetzeko; adibidez, saioa hasita mantentzeko edo erosketa-saskiko produktuak gogoratzeko.

@@ -559,6 +559,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2072275792380684364">Moda e estilo</translation>
 <translation id="2075497153347571252">O administrador bloqueou a permissão <ph name="PERMISSION" /> em <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Desfazer</translation>
+<translation id="2080021694978766903">Essa política não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas.</translation>
 <translation id="20817612488360358">As configurações de proxy do sistema são definidas para serem utilizadas, mas uma configuração explícita de proxy também foi especificada.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permitir em todos os acessos</translation>
@@ -638,6 +639,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2225927550500503913">Cartão virtual ativado</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Fazendo login<ph name="END_LINK" /> na rede Wi-Fi</translation>
 <translation id="2228057197024893428">Este endereço está salvo no Chrome. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="ACCOUNT" />.</translation>
+<translation id="2229456043301340598">Atalho não exclusivo ignorado: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
@@ -1890,6 +1892,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Planilhas Google</translation>
 <translation id="4825507807291741242">Intenso</translation>
 <translation id="4826588772550366629">a câmera e o microfone</translation>
+<translation id="4827283332383516812">Excluir cartão</translation>
 <translation id="4831993743164297314">Papel imagesetter</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4834250788637067901">Formas de pagamento, ofertas e endereços que usam o Google Pay</translation>
@@ -2331,6 +2334,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5720705177508910913">Usuário atual</translation>
 <translation id="572328651809341494">Guias recentes</translation>
 <translation id="5723287205918986743">Indústria bélica</translation>
+<translation id="5725297205162868298">O atalho não pode começar com o caractere @: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">O Chrome recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
 <translation id="5732392974455271431">Seus responsáveis podem desbloqueá-lo para você</translation>
 <translation id="573555826359077410">Botão "Criar formulário". Ative para criar rapidamente um novo arquivo no Formulários Google</translation>
@@ -2361,6 +2365,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5785756445106461925">Além disso, esta página inclui outros recursos que não são seguros. Esses recursos podem ser visualizados por outros usuários enquanto eles navegam e podem ser modificados por um invasor para alterar o comportamento da página.</translation>
 <translation id="5786044859038896871">Quer preencher as informações do cartão?</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793317771769868848">Essa forma de pagamento vai ser excluída do dispositivo</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Nenhum}=1{dados de login para 1 conta}one{dados de login para # conta}other{dados de login para # contas}}</translation>
 <translation id="5800727402210090597">Serviços e assistência técnica para smartphones</translation>
 <translation id="580241730938216256">Iniciar atualização</translation>
@@ -2848,6 +2853,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6793213097893210590">Papelão</translation>
 <translation id="679355240208270552">Ignorado porque a pesquisa padrão não foi ativada pela política.</translation>
 <translation id="6794951432696553238">Confirme seus cartões mais rapidamente usando o Windows Hello de agora em diante</translation>
+<translation id="6798066466127540426">A lista não contém um provedor de pesquisa válido.</translation>
 <translation id="6798460514924505775">Envelope Chou 3</translation>
 <translation id="6799145206637008376">Preencher o CVC deste cartão virtual</translation>
 <translation id="6805030849054648206">Envelope B6/C4</translation>
@@ -3237,6 +3243,7 @@ Mais detalhes:
 <translation id="7521825010239864438">Seção "<ph name="SECTION" />" oculta</translation>
 <translation id="752189128961566325">Ele pode ser usado em todos os produtos do Google</translation>
 <translation id="7523408071729642236">Indústria</translation>
+<translation id="7525804896095537619">O nome não pode ficar em branco</translation>
 <translation id="7526934274050461096">Sua conexão a este site não é particular</translation>
 <translation id="7529884293139707752">Educação domiciliar</translation>
 <translation id="7534987659046836932">Envelope C7</translation>
@@ -3458,6 +3465,7 @@ Mais detalhes:
 <translation id="7950027195171824198">Gerencie suas preferências de cookies nas configurações do Chrome</translation>
 <translation id="7951415247503192394">32 bits</translation>
 <translation id="7952192831285741665">EDP (Europa)</translation>
+<translation id="7952250633095257243">O atalho não pode ficar vazio</translation>
 <translation id="7952327717479677595">Botão "Gerenciar mecanismos de pesquisa". Ative para gerenciar a pesquisa no site e o mecanismo de pesquisa padrão</translation>
 <translation id="7953236668995583915">Atualize a página para aplicar as configurações atualizadas ao site</translation>
 <translation id="7953569069500808819">Costura na parte superior</translation>
@@ -3669,6 +3677,7 @@ Mais detalhes:
 <translation id="8344776605855290140">Registro de cartão virtual aberto no tamanho máximo</translation>
 <translation id="8347658365704983341">Ensino a distância</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
+<translation id="8350416046273606058">O atalho não pode conter espaços: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8352849934814541340">O administrador do dispositivo instalou aplicativos para funções adicionais. Os aplicativos têm acesso a alguns dos seus dados.</translation>
 <translation id="8355270400102541638">Contexto de falha local:</translation>

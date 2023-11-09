@@ -10,7 +10,6 @@
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1044891598689252897">Sites will work normally</translation>
 <translation id="1049743911850919806">Incognito</translation>
-<translation id="105093091697134113">The following accounts use passwords which were exposed in a third-party data breach or entered on a deceptive website. Change these passwords immediately to keep your accounts safe.</translation>
 <translation id="1053651653201045802">Signed out. Sign back in to use the bookmarks, passwords and more in your account.</translation>
 <translation id="1054045277222934172">You can change the default site view to desktop in Settings, then Content settings</translation>
 <translation id="1054745118061919935">By continuing, you agree to the <ph name="BEGIN_LINK" />Terms of Service<ph name="END_LINK" />.</translation>
@@ -257,7 +256,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="2310154074101836012">Edit carousel</translation>
 <translation id="2316709634732130529">Use suggested password</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
-<translation id="2348630484974447747">Package</translation>
+<translation id="2348630484974447747">Parcel</translation>
 <translation id="2351097562818989364">Your translate settings have been reset.</translation>
 <translation id="235789365079050412">Google Privacy Policy</translation>
 <translation id="2359043044084662842">Translate</translation>
@@ -735,7 +734,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4856498338299082007">In your Google Account</translation>
 <translation id="4856841893565072365">Smart Sort Menu Bar</translation>
 <translation id="4860895144060829044">Call</translation>
-<translation id="4872323082491632254">Check passwords</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="488785315393301722">Show details</translation>
 <translation id="4894963374040315706">This lets you search using your voice</translation>
@@ -1189,7 +1187,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7154343200458623869">Complete your task</translation>
 <translation id="7161230316646448869">Sync your bookmarks, history and more on all devices</translation>
 <translation id="7162168282402939716">Unlock incognito tabs with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7172852049901402487">Keep your passwords safe from security issues</translation>
 <translation id="7173114856073700355">Open settings</translation>
 <translation id="7189598951263744875">Share...</translation>
 <translation id="719133302483559673">Manage your interests and preferences.</translation>
@@ -1327,7 +1324,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Export passwords…</translation>
 <translation id="794799177247607889">Stop logging</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
 <translation id="7959441099968534758">GO TO FEED</translation>
 <translation id="7961015016161918242">Never</translation>
 <translation id="7966516440812255683">Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.

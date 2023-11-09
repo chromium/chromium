@@ -1890,6 +1890,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4825507807291741242">शक्तिशाली</translation>
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
+<translation id="4827283332383516812">कार्ड मेटाउनुहोस्</translation>
 <translation id="4831993743164297314">इमेज सेट्टर पेपर</translation>
 <translation id="483241715238664915">चेतावनी देखाउने सुविधा अन गर्नुहोस्</translation>
 <translation id="4834250788637067901">Google Pay प्रयोग गर्दा इम्पोर्ट गरिने भुक्तानी विधि, अफर र ठेगानाहरू</translation>
@@ -2362,6 +2363,7 @@
 <translation id="5785756445106461925">यसबाहेक, यस पृष्ठले सुरक्षित नभएका अन्य संसाधनहरू समावेश गर्छ। यी स्रोतहरू ट्रान्जिटमा भएको बेला अन्यले हेर्न सक्छन्, र पृष्ठको दृश्य परिवर्तन गर्न कुनै आक्रमणकारीद्वारा परिमार्जन गर्न सकिन्छ।</translation>
 <translation id="5786044859038896871">तपाईं आफ्नो कार्ड सम्बन्धी जानकारी भर्न चाहनुहुन्छ?</translation>
 <translation id="5789643057113097023">।</translation>
+<translation id="5793317771769868848">यो डिभाइसबाट यो भुक्तानी विधि हटाइने छ</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{कुनै पनि खाताको साइनइन डेटा छैन}=1{एउटा खाताको साइनइन डेटा}other{# वटा खाताको साइनइन डेटा}}</translation>
 <translation id="5800727402210090597">मोबाइल फोन मर्मत गर्ने सेवाहरू</translation>
 <translation id="580241730938216256">अपडेट सुरु गर्नुहोस्</translation>
@@ -3535,7 +3537,7 @@
 <translation id="8079031581361219619">साइट पुनः लोड गर्ने हो?</translation>
 <translation id="8079976827192572403">खतरनाक साइट</translation>
 <translation id="8081087320434522107">सेडान कारहरू</translation>
-<translation id="8086971161893892807">मस्यौदा</translation>
+<translation id="8086971161893892807">ड्राफ्ट</translation>
 <translation id="8088680233425245692">लेख गर्न असफल भयो।</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
 <translation id="8090403583893450254">आकार २०</translation>

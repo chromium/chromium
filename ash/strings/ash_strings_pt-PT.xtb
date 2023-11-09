@@ -130,6 +130,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="146902737843070955">O seu administrador pediu esta alteração</translation>
 <translation id="1469148162491666137">Isto permite o acesso para a app <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e para todas as apps e Websites com as autorizações da câmara e do microfone. Pode ter de atualizar a página Web ou reiniciar a app.</translation>
 <translation id="147310119694673958">Bateria do telemóvel a <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">Ative/desative a zona Wi-Fi. A zona Wi-Fi está ativada, 1 dispositivo ligado.</translation>
 <translation id="1479909375538722835">Menu de acessibilidade flutuante</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Com o ditado, pode escrever através da voz. Prima a tecla de ditado ou selecione o ícone de microfone na parte inferior do ecrã quando estiver num campo de texto. O idioma do ditado está definido como <ph name="LANGUAGE" />. A voz é enviada para a Google para processamento. Pode alterar o idioma do ditado em qualquer altura em Definições &gt; Acessibilidade.</translation>
@@ -819,6 +820,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4324840740119394760">Isto permite o acesso à câmara para a app <ph name="APP_NAME" /> e todas as apps e Websites com a autorização da câmara</translation>
 <translation id="4333628967105022692">O Lacros não é suportado enquanto vários utilizadores tiverem sessão iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4351244548802238354">Fechar caixa de diálogo</translation>
 <translation id="4356872429719185452">Veja os detalhes da zona Wi-Fi. A zona Wi-Fi está a ser ativada.</translation>
 <translation id="4364101114148522660">A gravar: <ph name="DURATION" /></translation>
 <translation id="4371348193907997655">Definições de transmissão</translation>
@@ -869,6 +871,14 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4548482551627849548">Mover janela ativa para o espaço de trabalho à esquerda</translation>
 <translation id="4560576029703263363">Ativado</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Tabuleiro do estado, hora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Ocultar palavra-passe</translation>
 <translation id="4566144812051858745">Não tenho interesse em quaisquer sugestões</translation>
 <translation id="4569753163207712681">Veja as fotos, os conteúdos multimédia e as notificações recentes do telemóvel</translation>
@@ -878,6 +888,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4577990005084629481">Mostrar pré-visualizações</translation>
 <translation id="4578906031062871102">Menu de definições aberto</translation>
 <translation id="458210817642223147">Gravar GIF</translation>
+<translation id="4582666543382004902">A zona Wi-Fi foi desativada para usar o Wi-Fi. Para usar a zona Wi-Fi, desative o Wi-Fi.</translation>
 <translation id="4585337515783392668">Parar a transmissão para um recetor desconhecido</translation>
 <translation id="4596144739579517758">O tema escuro está desativado.</translation>
 <translation id="4611292653554630842">Iniciar sessão</translation>
@@ -1084,6 +1095,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5393156353051693207">Toque sem soltar em qualquer local para reordenar as suas apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" />, solte para criar uma pasta.</translation>
 <translation id="5397578532367286026">A utilização e o histórico deste utilizador podem ser consultados pelo gestor (<ph name="MANAGER_EMAIL" />) em chrome.com.</translation>
+<translation id="540713187982329711">Ative/desative a zona Wi-Fi. A zona Wi-Fi está ativada, sem dispositivos ligados.</translation>
 <translation id="5413656666631274079">Página de definições</translation>
 <translation id="5414198321558177633">A atualizar a lista de perfis. Esta ação pode demorar alguns minutos.</translation>
 <translation id="5426063383988017631">Menu de definições fechado</translation>
@@ -1174,9 +1186,11 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="576341972084747908">Transferir ficheiro <ph name="FILENAME" /> perigoso</translation>
 <translation id="576453121877257266">A Luz noturna está ativada.</translation>
 <translation id="5764569119212455782">Mudar para o último idioma selecionado</translation>
+<translation id="5767730327234918501">O administrador desativou a zona Wi-Fi.</translation>
 <translation id="5769373120130404283">Ecrã de privacidade</translation>
 <translation id="5773950591113557721">Isto permite o acesso para a app <ph name="APP_NAME" /> e todas as apps e Websites com as autorizações da câmara e do microfone</translation>
 <translation id="5774295353725270860">Aplicação Abrir Ficheiros</translation>
+<translation id="5775936059231769503">Ative/desative a zona Wi-Fi. A zona Wi-Fi está desativada.</translation>
 <translation id="5777841717266010279">Parar partilha do ecrã?</translation>
 <translation id="5779721926447984944">Ficheiros fixados</translation>
 <translation id="5785221443435874078">Remover esta sugestão</translation>
@@ -1494,6 +1508,7 @@ Nova instalação</translation>
 <translation id="7068360136237591149">Abrir ficheiros</translation>
 <translation id="7076293881109082629">Iniciar sessão</translation>
 <translation id="7076878155205969899">Desativar som.</translation>
+<translation id="7084678090004350185">Ative/desative a zona Wi-Fi. A zona Wi-Fi está ativada, <ph name="DEVICECOUNT" /> dispositivos ligados.</translation>
 <translation id="7086931198345821656">Para fazer esta atualização, é necessário efetuar o Powerwash do dispositivo <ph name="DEVICE_TYPE" />. Todos os dados serão eliminados. Saiba mais sobre a mais recente atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Acesso por interruptor</translation>
 <translation id="709015856939120012">Aumentar o zoom na página</translation>

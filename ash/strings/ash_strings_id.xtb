@@ -130,6 +130,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="146902737843070955">Administrator Anda telah meminta perubahan ini</translation>
 <translation id="1469148162491666137">Tindakan ini akan mengizinkan akses untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, dan semua aplikasi serta situs yang memiliki izin kamera dan mikrofon. Anda mungkin perlu memuat ulang halaman web atau memulai ulang aplikasi.</translation>
 <translation id="147310119694673958">Baterai ponsel <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">Tombol hotspot. Hotspot aktif, 1 perangkat terhubung.</translation>
 <translation id="1479909375538722835">Menu aksesibilitas mengambang</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Dengan dikte, Anda dapat mengetik menggunakan suara. Tekan tombol dikte atau pilih ikon mikrofon di bagian bawah layar saat Anda berada di kolom teks. Bahasa dikte Anda disetel ke <ph name="LANGUAGE" />. Ucapan akan dikirim ke Google untuk diproses Anda dapat mengubah bahasa dikte kapan saja di Setelan &gt; Aksesibilitas.</translation>
@@ -819,6 +820,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4324840740119394760">Tindakan ini akan mengizinkan akses kamera untuk <ph name="APP_NAME" /> dan semua aplikasi serta situs yang memiliki izin kamera</translation>
 <translation id="4333628967105022692">Lacros tidak didukung saat beberapa pengguna login.</translation>
 <translation id="4338109981321384717">Kaca pembesar</translation>
+<translation id="4351244548802238354">Tutup dialog</translation>
 <translation id="4356872429719185452">Tampilkan detail hotspot. Hotspot sedang diaktifkan.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> Merekam</translation>
 <translation id="4371348193907997655">Setelan Transmisi</translation>
@@ -878,6 +880,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4577990005084629481">Tampilkan pratinjau</translation>
 <translation id="4578906031062871102">Menu setelan dibuka</translation>
 <translation id="458210817642223147">Rekam GIF</translation>
+<translation id="4582666543382004902">Hotspot telah dinonaktifkan untuk menggunakan Wi-Fi. Untuk menggunakan hotspot, nonaktifkan Wi-Fi.</translation>
 <translation id="4585337515783392668">Hentikan transmisi pada penerima yang tidak dikenal</translation>
 <translation id="4596144739579517758">Tema gelap nonaktif</translation>
 <translation id="4611292653554630842">Login</translation>
@@ -1084,6 +1087,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5393156353051693207">Sentuh lama di sembarang tempat untuk mengurutkan ulang aplikasi</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> di atas <ph name="IN_PLACE_APP" />, lalu lepaskan untuk membuat folder.</translation>
 <translation id="5397578532367286026">Penggunaan dan histori pengguna ini dapat ditinjau oleh pengelola (<ph name="MANAGER_EMAIL" />) di chrome.com.</translation>
+<translation id="540713187982329711">Tombol hotspot. Hotspot aktif, tidak ada perangkat yang terhubung.</translation>
 <translation id="5413656666631274079">Halaman setelan</translation>
 <translation id="5414198321558177633">Memperbarui daftar profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="5426063383988017631">Menu setelan ditutup</translation>
@@ -1174,9 +1178,11 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="576341972084747908">Download <ph name="FILENAME" /> berbahaya</translation>
 <translation id="576453121877257266">Mode Cahaya Malam aktif.</translation>
 <translation id="5764569119212455782">Beralih ke bahasa terakhir yang dipilih</translation>
+<translation id="5767730327234918501">Administrator Anda telah menonaktifkan hotspot.</translation>
 <translation id="5769373120130404283">Layar privasi</translation>
 <translation id="5773950591113557721">Tindakan ini akan mengizinkan akses untuk <ph name="APP_NAME" /> dan semua aplikasi dan situs yang memiliki izin kamera dan mikrofon</translation>
 <translation id="5774295353725270860">Membuka aplikasi File</translation>
+<translation id="5775936059231769503">Tombol hotspot. Hotspot nonaktif.</translation>
 <translation id="5777841717266010279">Berhenti membagikan layar?</translation>
 <translation id="5779721926447984944">File tersemat</translation>
 <translation id="5785221443435874078">Hapus saran ini</translation>
@@ -1494,6 +1500,7 @@ Baru diinstal</translation>
 <translation id="7068360136237591149">Buka file</translation>
 <translation id="7076293881109082629">Sedang masuk</translation>
 <translation id="7076878155205969899">Mematikan suara</translation>
+<translation id="7084678090004350185">Tombol hotspot. Hotspot aktif, <ph name="DEVICECOUNT" /> perangkat terhubung.</translation>
 <translation id="7086931198345821656">Update ini mengharuskan Anda melakukan powerwash <ph name="DEVICE_TYPE" />. Semua data akan dihapus. Pelajari update <ph name="SYSTEM_APP_NAME" /> terbaru lebih lanjut.</translation>
 <translation id="7088960765736518739">Tombol Akses</translation>
 <translation id="709015856939120012">Perbesar halaman</translation>

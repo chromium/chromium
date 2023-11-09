@@ -130,6 +130,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="146902737843070955">El teu administrador ha sol·licitat aquest canvi</translation>
 <translation id="1469148162491666137">Permet l'accés a <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> i a totes les aplicacions i tots els llocs web amb permisos per accedir a la càmera i al micròfon. És possible que hagis d'actualitzar la pàgina web o reiniciar l'aplicació.</translation>
 <translation id="147310119694673958">Bateria del telèfon: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">Commuta el punt d'accés Wi‐Fi. Està activat i hi ha 1 dispositiu connectat.</translation>
 <translation id="1479909375538722835">Menú flotant d'accessibilitat</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Amb la funció de dictat, pots escriure utilitzant la veu. Prem la tecla de dictat o selecciona la icona de micròfon que hi ha a la part inferior de la pantalla quan siguis en un camp de text. L'idioma del dictat s'ha configurat en <ph name="LANGUAGE" />. La parla s'envia a Google perquè la processi. Pots canviar l'idioma del dictat en qualsevol moment a Configuració &gt; Accessibilitat.</translation>
@@ -819,6 +820,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4324840740119394760">Permet l'accés a la càmera a <ph name="APP_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
 <translation id="4333628967105022692">Lacros no s'admet quan hi ha diversos usuaris amb la sessió iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4351244548802238354">Tanca el quadre de diàleg</translation>
 <translation id="4356872429719185452">Mostra els detalls del punt d'accés Wi‐Fi. El punt d'accés Wi‐Fi s'està activant.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  S'està gravant</translation>
 <translation id="4371348193907997655">Configuració d'emissió</translation>
@@ -878,6 +880,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4577990005084629481">Mostra les previsualitzacions</translation>
 <translation id="4578906031062871102">El menú de configuració s'ha obert</translation>
 <translation id="458210817642223147">Grava un GIF</translation>
+<translation id="4582666543382004902">El punt d'accés Wi‐Fi s'ha desactivat per utilitzar la Wi‐Fi. Desactiva la Wi‐Fi per fer servir el punt d'accés Wi‐Fi.</translation>
 <translation id="4585337515783392668">Deixa d'emetre en un receptor desconegut</translation>
 <translation id="4596144739579517758">El tema fosc està desactivat</translation>
 <translation id="4611292653554630842">Inicia la sessió</translation>
@@ -1084,6 +1087,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="5393156353051693207">Mantén premut qualsevol lloc per tornar a ordenar les aplicacions</translation>
 <translation id="5395308026110844773">L'aplicació <ph name="DRAGGED_APP_NAME" /> és a sobre de l'aplicació <ph name="IN_PLACE_APP" />. Deixa-la anar per crear una carpeta.</translation>
 <translation id="5397578532367286026">El gestor (<ph name="MANAGER_EMAIL" />) pot revisar l'ús i l'historial d'aquest usuari a chrome.com.</translation>
+<translation id="540713187982329711">Commuta el punt d'accés Wi‐Fi. Està activat i no hi ha cap dispositiu connectat.</translation>
 <translation id="5413656666631274079">Pàgina de configuració</translation>
 <translation id="5414198321558177633">S'està actualitzant la llista de perfils. Aquest procés pot tardar uns minuts.</translation>
 <translation id="5426063383988017631">El menú de configuració s'ha tancat</translation>
@@ -1174,9 +1178,11 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="576341972084747908">Baixa el fitxer perillós <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">La funció Llum nocturna està activada.</translation>
 <translation id="5764569119212455782">Canvia al darrer idioma seleccionat</translation>
+<translation id="5767730327234918501">L'administrador ha desactivat el punt d'accés Wi‐Fi.</translation>
 <translation id="5769373120130404283">Pantalla de privadesa</translation>
 <translation id="5773950591113557721">Permet l'accés a <ph name="APP_NAME" /> i a totes les aplicacions i tots els llocs web amb permís per accedir a la càmera i al micròfon.</translation>
 <translation id="5774295353725270860">Obre l'aplicació Fitxers</translation>
+<translation id="5775936059231769503">Commuta el punt d'accés Wi‐Fi. Està desactivat.</translation>
 <translation id="5777841717266010279">Vols aturar la compartició de pantalla?</translation>
 <translation id="5779721926447984944">Fitxers fixats</translation>
 <translation id="5785221443435874078">Suprimeix aquest suggeriment</translation>
@@ -1494,6 +1500,7 @@ Instal·lació nova</translation>
 <translation id="7068360136237591149">Obre fitxers</translation>
 <translation id="7076293881109082629">Inicia la sessió</translation>
 <translation id="7076878155205969899">Silencia el so</translation>
+<translation id="7084678090004350185">Commuta el punt d'accés Wi‐Fi. Està activat i hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="7086931198345821656">Aquesta actualització requereix executar la funció Powerwash al dispositiu <ph name="DEVICE_TYPE" />. Se'n suprimiran totes les dades. Obtén més informació sobre l'última actualització de: <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Accés amb interruptors</translation>
 <translation id="709015856939120012">Amplia la pàgina</translation>

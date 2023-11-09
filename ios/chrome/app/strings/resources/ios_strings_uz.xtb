@@ -10,7 +10,6 @@
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1044891598689252897">Saytlar xatosiz ishlaydi</translation>
 <translation id="1049743911850919806">Inkognito</translation>
-<translation id="105093091697134113">Quyidagi hisoblardagi parollar tashqi saytlarda oshkor qilingan yoki soxta saytda kiritilgan. Hisoblaringiz xavfsizligi uchun bu parollarni darhol almashtiring.</translation>
 <translation id="1053651653201045802">Hisobdan chiqqansiz. Bukmarklar, parollar va boshqalarni ishlatish uchun hisobga qayta kiring.</translation>
 <translation id="1054045277222934172">Saytning standart koʻrinishini kompyuter koʻrinishiga Sozlamalar &gt; Kontent sozlamalari orqali oʻzgartirish mumkin</translation>
 <translation id="1054745118061919935">Davom etish orqali siz <ph name="BEGIN_LINK" />xizmat shartlariga<ph name="END_LINK" /> rozilik bildirasiz</translation>
@@ -735,7 +734,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4856498338299082007">Google hisobingizda</translation>
 <translation id="4856841893565072365">Smart saralash menyu paneli</translation>
 <translation id="4860895144060829044">Chaqiruv</translation>
-<translation id="4872323082491632254">Parollarni tekshiring</translation>
 <translation id="4881695831933465202">Ochish</translation>
 <translation id="488785315393301722">Tafsilotlarini ko‘rsatish</translation>
 <translation id="4894963374040315706">Ovoz bilan qidirish imkonini beradi</translation>
@@ -1189,7 +1187,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7154343200458623869">Vazifani yakunlang.</translation>
 <translation id="7161230316646448869">Bukmarklar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlang</translation>
 <translation id="7162168282402939716">Inkognito varaqlar qulfini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan ochish</translation>
-<translation id="7172852049901402487">Parollaringizni mustahkam saqlang</translation>
 <translation id="7173114856073700355">Sozlamalarni ochish</translation>
 <translation id="7189598951263744875">Ulashish…</translation>
 <translation id="719133302483559673">Qiziqish va sozlamalaringizni boshqaring</translation>
@@ -1327,7 +1324,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Parollarni eksport qilish...</translation>
 <translation id="794799177247607889">Yozib olishni bas qilish</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{Hech qaysi parolingiz oshkor etilmagan}=1{{COUNT} ta parol oshkor etilgan}other{{COUNT} ta parol oshkor etilgan}}</translation>
 <translation id="7959441099968534758">TASMANI OCHISH</translation>
 <translation id="7961015016161918242">Hech qachon</translation>
 <translation id="7966516440812255683">Saytlar sahifalarni kezishingizni yaxshilash, jumladan, kirish axborotingiz yoki xarid qutingizni eslab qolish uchun cookie fayllardan foydalanishi mumkin.

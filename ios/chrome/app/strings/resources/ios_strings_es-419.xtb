@@ -10,7 +10,6 @@
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1044891598689252897">Los sitios funcionarán normalmente</translation>
 <translation id="1049743911850919806">Incógnito</translation>
-<translation id="105093091697134113">Las siguientes cuentas utilizan contraseñas que estuvieron expuestas en una violación de la seguridad de los datos de terceros o que se ingresaron en un sitio web engañoso. Cambia las contraseñas de inmediato para proteger tus cuentas.</translation>
 <translation id="1053651653201045802">Saliste de tu cuenta. Vuelve a acceder para usar los favoritos, las contraseñas y otros datos de tu cuenta.</translation>
 <translation id="1054045277222934172">Puedes cambiar la vista predeterminada de sitios a la versión de escritorio en Configuración y, luego, en Configuración de contenido</translation>
 <translation id="1054745118061919935">Si continúas, aceptas las <ph name="BEGIN_LINK" />Condiciones del Servicio<ph name="END_LINK" />.</translation>
@@ -735,7 +734,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4856498338299082007">En tu Cuenta de Google</translation>
 <translation id="4856841893565072365">Barra de menú con orden inteligente</translation>
 <translation id="4860895144060829044">Llamar</translation>
-<translation id="4872323082491632254">Revisar contraseñas</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="488785315393301722">Mostrar detalles</translation>
 <translation id="4894963374040315706">Te permite realizar búsquedas con tu voz</translation>
@@ -1189,7 +1187,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7154343200458623869">Completa tu tarea.</translation>
 <translation id="7161230316646448869">Sincroniza tus favoritos, historial y más en todos los dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7172852049901402487">Mantén protegidas tus contraseñas ante problemas de seguridad</translation>
 <translation id="7173114856073700355">Abrir la configuración</translation>
 <translation id="7189598951263744875">Compartir...</translation>
 <translation id="719133302483559673">Administra tus intereses y preferencias.</translation>
@@ -1327,7 +1324,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contraseñas…</translation>
 <translation id="794799177247607889">Detener registro</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{No tienes contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
 <translation id="7959441099968534758">IR AL FEED</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966516440812255683">Los sitios pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a ellos o recordar artículos en el carrito de compras.

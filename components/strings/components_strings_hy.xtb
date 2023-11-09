@@ -536,6 +536,7 @@
 <translation id="2025891858974379949">Վտանգավոր բովանդակություն</translation>
 <translation id="2027465737841872819">Պլաստիկ</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Ստուգել պրոքսի-սերվերի և հրապատի կազմաձևումը<ph name="END_LINK" /></translation>
+<translation id="2033900728810589426">Դյուրանցումը չի կարող լինել նույնը, ինչ կանխադրված որոնման մատակարարի հիմնաբառը՝ սահմանված <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />-ի կողմից՝ <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Պահել</translation>
 <translation id="2035400064145347639">Ճամփորդական ուղեցույցներ և նյութեր</translation>
 <translation id="2036514476578229158">Դուք այս կայքն այցելելու թույլտվություն եք խնդրել։ Ձեր ծնողները կարող են պատասխանել Family Link-ում։</translation>
@@ -1081,6 +1082,7 @@
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> տպիչ <ph name="SERVER_NAME" />֊ում</translation>
 <translation id="3197136577151645743">Կարող է հայցել թույլտվություն՝ տեղեկանալու, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Համաժամացվող տեղեկությունները Chrome-ի կարգավորումներում կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
+<translation id="3203025201812691413">URL-ը չի կարող դատարկ լինել</translation>
 <translation id="320323717674993345">Չեղարկել վճարումը</translation>
 <translation id="3203366800380907218">Համացանցից</translation>
 <translation id="3207960819495026254">Էջանշված է</translation>
@@ -1898,6 +1900,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Արագ Google աղյուսակ ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="4825507807291741242">Հզոր</translation>
 <translation id="4826588772550366629">տեսախցիկն ու խոսափողը</translation>
+<translation id="4827283332383516812">Ջնջել քարտը</translation>
 <translation id="4831993743164297314">Իմիջսեթերի թուղթ</translation>
 <translation id="483241715238664915">Միացնել զգուշացումները</translation>
 <translation id="4834250788637067901">Վճարման եղանակներ, առաջարկներ ու հասցեներ Google Pay-ից</translation>
@@ -2312,6 +2315,7 @@
 <translation id="5651323159439184939">Պերֆորացված թուղթ</translation>
 <translation id="5653432653077411130">Ջրամատակարարում և մաքրում</translation>
 <translation id="5654927323611874862">Խափանման մասին թարմացված հաշվետվության ID՝</translation>
+<translation id="5654965123204121933">URL-ը չի ներառում <ph name="SEARCH_TERMS_REPLACEMENT" /> պահանջվող փոխարինման տողը՝ <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Էլփոստ</translation>
 <translation id="5660122698869360728">Նոր խելացի պանակ, որը կօգնի ձեզ պահել ձեր գնումների բոլոր էջերը մեկ տեղում և ավտոմատ կերպով հետևել գներին, ինչպես նաև ստանալ գների մասին տեղեկություններ և շատ ավելին։</translation>
 <translation id="5663955426505430495">Այս սարքի ադմինիստրատորը լրացուցիչ գործառույթների համար ընդլայնումներ է տեղադրել: Ձեր տվյալների մի մասը հասանելի է այդ ընդլայնումներին:</translation>
@@ -2372,6 +2376,7 @@
 <translation id="5785756445106461925">Բացի այդ, այս էջը պարունակում է այլ ռեսուրսներ, որոնք ապահով չեն: Այս ռեսուրսները տարանցման ժամանակ կարող են դիտվել ուրիշների կողմից և փոփոխվել հարձակվողի կողմից, ինչը կփոխի էջի տեսքը:</translation>
 <translation id="5786044859038896871">Ուզո՞ւմ եք լրացնել ձեր քարտի տվյալները:</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793317771769868848">Վճարման այս եղանակը կջնջվի այս սարքից</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Ոչ մի}=1{1 հաշվի մուտքի տվյալներ}one{# հաշվի մուտքի տվյալներ}other{# հաշվի մուտքի տվյալներ}}</translation>
 <translation id="5800727402210090597">Բջջային հեռախոսների վերանորոգում և սպասարկում</translation>
 <translation id="580241730938216256">Թարմացնել</translation>

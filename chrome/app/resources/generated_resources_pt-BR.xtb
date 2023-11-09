@@ -3847,6 +3847,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3963753386716096475">Usar um smartphone, tablet ou chave de segurança diferente</translation>
 <translation id="3964480518399667971">Desativar a rede celular</translation>
 <translation id="3965965397408324205">Sair de <ph name="PROFILE_NAME" /></translation>
+<translation id="3965984916551757611">Notificações, Google Play</translation>
 <translation id="3966072572894326936">Escolher outra pasta...</translation>
 <translation id="3966094581547899417">Detalhes do ponto de acesso</translation>
 <translation id="3967822245660637423">Download concluído</translation>
@@ -4845,6 +4846,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4779136857077979611">Oniguiri</translation>
 <translation id="4779766576531456629">Renomear rede celular do eSIM</translation>
 <translation id="4780321648949301421">Salvar página como...</translation>
+<translation id="4780558987886269159">Para o trabalho</translation>
 <translation id="4781443161433589743">Você está usando o nível mais alto de segurança do Chrome</translation>
 <translation id="4785719467058219317">Você está usando uma chave de segurança que não está registrada neste site</translation>
 <translation id="4785914069240823137">Cancelar corte</translation>
@@ -5694,6 +5696,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5473099001878321374">Ao continuar, você concorda que este dispositivo também pode fazer o download e a instalação de atualizações de apps do Google, da operadora da criança e do fabricante do dispositivo automaticamente, possivelmente usando dados da rede celular. Alguns aplicativos podem oferecer compras no app.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN precisa ter pelo menos 1 caractere}one{O PIN precisa ter pelo menos # caractere}other{O PIN precisa ter pelo menos # caracteres}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi para fazer o download de uma atualização. Você também pode fazer o download em uma conexão limitada (sujeito a cobranças).</translation>
+<translation id="5477089831058413614">Configurar o ponto de acesso do <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Bloquear o download automático de vários arquivos</translation>
 <translation id="5481941284378890518">Adicionar impressoras próximas</translation>
 <translation id="5484181871714116891">Quando ativadas, as chaves de acesso serão criadas com as Chaves do iCloud e ficarão disponíveis nos seus dispositivos Apple. Quando desativadas, as chaves de acesso serão criadas no seu perfil do Chrome nesse dispositivo.</translation>
@@ -6804,6 +6807,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="637642201764944055">Depois de dezembro de 2022, não vai mais ser possível abrir as versões antigas dos apps do Chrome em dispositivos Linux. Entre em contato com seu administrador para instalar uma nova versão ou remover esse app.</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Abrir em redes Wi-Fi</translation>
+<translation id="6379533146645857098">Selecione um período</translation>
 <translation id="6380143666419481200">Aceitar e continuar</translation>
 <translation id="6383382161803538830">O modo de leitura não está disponível nesta página</translation>
 <translation id="638418309848716977">Links compatíveis</translation>

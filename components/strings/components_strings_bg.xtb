@@ -559,6 +559,7 @@
 <translation id="2072275792380684364">Мода и стил</translation>
 <translation id="2075497153347571252">Администраторът ви е блокирал разрешението „<ph name="PERMISSION" />“ на <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Отмяна</translation>
+<translation id="2080021694978766903">Това правило не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> записа.</translation>
 <translation id="20817612488360358">За използване са зададени системни настройки за прокси сървъра, но е посочена и изрична конфигурация.</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Разрешаване при всяко посещение</translation>
@@ -638,6 +639,7 @@
 <translation id="2225927550500503913">Виртуалната карта е включена</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Влизане в профила<ph name="END_LINK" /> в Wi-Fi мрежата</translation>
 <translation id="2228057197024893428">Понастоящем този адрес е запазен в Chrome. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="ACCOUNT" />).</translation>
+<translation id="2229456043301340598">Дублираният пряк път „<ph name="SHORTCUT_NAME" />“ е пренебрегнат</translation>
 <translation id="2233745931693710080">Компактдиск</translation>
 <translation id="2235344399760031203">„Бисквитките“ на трети страни са блокирани</translation>
 <translation id="2239100178324503013">Изпращане сега</translation>
@@ -1890,6 +1892,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо таблица в Google Таблици</translation>
 <translation id="4825507807291741242">Впечатляващо</translation>
 <translation id="4826588772550366629">камерата и микрофона ви</translation>
+<translation id="4827283332383516812">Изтриване на картата</translation>
 <translation id="4831993743164297314">Хартия за висококачествени изображения</translation>
 <translation id="483241715238664915">Включване на предупрежденията</translation>
 <translation id="4834250788637067901">Начини на плащане, оферти и адреси посредством Google Pay</translation>
@@ -2331,6 +2334,7 @@
 <translation id="5720705177508910913">Текущият потребител</translation>
 <translation id="572328651809341494">Скорошни раздели</translation>
 <translation id="5723287205918986743">Отбранителна промишленост</translation>
+<translation id="5725297205162868298">Прекият път „<ph name="SHORTCUT_NAME" />“ не може да започва със знака @</translation>
 <translation id="5730040223043577876">Chrome препоръчва да зададете повторно паролата си, ако сте я използвали и на други сайтове.</translation>
 <translation id="5732392974455271431">Родителите ви могат да го отблокират за вас</translation>
 <translation id="573555826359077410">Бутон за създаване на формуляр. Активирайте, за да създадете бързо формуляр в Google Формуляри</translation>
@@ -2361,6 +2365,7 @@
 <translation id="5785756445106461925">Освен това тази страница включва други ресурси, които не са защитени. Докато се предават, те могат да бъдат видени от други хора и да бъдат модифицирани от извършител на атака, така че да се промени изгледът на страницата.</translation>
 <translation id="5786044859038896871">Искате ли да се попълнят данните за кредитната ви карта?</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793317771769868848">Този начин на плащане ще бъде изтрит от това устройство</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Няма}=1{данни за вход за 1 профил}other{данни за вход за # профила}}</translation>
 <translation id="5800727402210090597">Ремонт и услуги за мобилни телефони</translation>
 <translation id="580241730938216256">Стартиране на актуализирането</translation>
@@ -2848,6 +2853,7 @@
 <translation id="6793213097893210590">Картон</translation>
 <translation id="679355240208270552">Бе пренебрегнато, защото основното търсене не е активирано чрез правило.</translation>
 <translation id="6794951432696553238">Потвърждавайте картите си по-бързо, като от сега нататък използвате Windows Hello</translation>
+<translation id="6798066466127540426">Списъкът не съдържа валидна търсеща машина.</translation>
 <translation id="6798460514924505775">Плик Chou 3</translation>
 <translation id="6799145206637008376">Попълнете кода за проверка за тази виртуална карта</translation>
 <translation id="6805030849054648206">Плик B6/C4</translation>
@@ -3237,6 +3243,7 @@
 <translation id="7521825010239864438">Секцията „<ph name="SECTION" />“ бе скрита</translation>
 <translation id="752189128961566325">Можете да го използвате в продуктите на Google</translation>
 <translation id="7523408071729642236">Производство</translation>
+<translation id="7525804896095537619">Трябва да въведете име</translation>
 <translation id="7526934274050461096">Връзката ви с този сайт не е частна</translation>
 <translation id="7529884293139707752">Домашно образование</translation>
 <translation id="7534987659046836932">Плик C7</translation>
@@ -3458,6 +3465,7 @@
 <translation id="7950027195171824198">Управление на предпочитанията ви за „бисквитките“ от настройките на Chrome</translation>
 <translation id="7951415247503192394">(32 бита)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952250633095257243">Трябва да въведете пряк път</translation>
 <translation id="7952327717479677595">Бутон за управление на търсещите машини. Активирайте, за да управлявате основната търсеща машина и настройките си за търсене в сайтовете</translation>
 <translation id="7953236668995583915">Презаредете страницата, за да приложите актуализираните настройки за този сайт</translation>
 <translation id="7953569069500808819">Зашиване на горния ръб</translation>
@@ -3669,6 +3677,7 @@
 <translation id="8344776605855290140">Диалоговият прозорец за регистриране на виртуална карта е отворен на пълната височина</translation>
 <translation id="8347658365704983341">Дистанционно обучение</translation>
 <translation id="8349305172487531364">Лента на отметките</translation>
+<translation id="8350416046273606058">Прекият път „<ph name="SHORTCUT_NAME" />“ не може да съдържа интервали</translation>
 <translation id="8351131234907093545">Създаване на бележка</translation>
 <translation id="8352849934814541340">Администраторът на това устройство е инсталирал приложения за допълнителни функции. Приложенията имат достъп до част от данните ви.</translation>
 <translation id="8355270400102541638">Локален контекст за срива:</translation>

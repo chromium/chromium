@@ -10,7 +10,6 @@
 <translation id="1036348656032585052">Išjungti</translation>
 <translation id="1044891598689252897">Svetainės veiks įprastai</translation>
 <translation id="1049743911850919806">Inkognito</translation>
-<translation id="105093091697134113">Toliau nurodytose paskyrose naudojami slaptažodžiai, kurie buvo atskleisti įvykus trečiosios šalies duomenų saugos pažeidimui arba patekus į apgaulingą svetainę. Nedelsdami pakeiskite šiuos slaptažodžius, kad apsaugotumėte paskyras.</translation>
 <translation id="1053651653201045802">Atsijungta. Vėl prisijunkite, kad paskyroje naudotumėte žymes, slaptažodžius ir kt.</translation>
 <translation id="1054045277222934172">Galite pakeisti numatytąjį svetainės rodinį į stalinį kompiuterį skiltyje „Nustatymai“, „Turinio nustatymai“</translation>
 <translation id="1054745118061919935">Tęsdami sutinkate su <ph name="BEGIN_LINK" />paslaugų teikimo sąlygomis<ph name="END_LINK" />.</translation>
@@ -735,7 +734,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4856498338299082007">„Google“ paskyroje</translation>
 <translation id="4856841893565072365">Išmaniojo rūšiavimo meniu juosta</translation>
 <translation id="4860895144060829044">Skambinti</translation>
-<translation id="4872323082491632254">Patikrinti slaptažodžius</translation>
 <translation id="4881695831933465202">Atidaryti</translation>
 <translation id="488785315393301722">Rodyti išsamią informaciją</translation>
 <translation id="4894963374040315706">Galite ieškoti balsu</translation>
@@ -1189,7 +1187,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7154343200458623869">Užbaikite užduotį.</translation>
 <translation id="7161230316646448869">Sinchronizuokite žymes, istoriją ir kt. visuose įrenginiuose</translation>
 <translation id="7162168282402939716">Atrakinti inkognito skirtukus naudojant <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7172852049901402487">Apsaugokite slaptažodžius nuo saugos problemų</translation>
 <translation id="7173114856073700355">Atidaryti nustatymus</translation>
 <translation id="7189598951263744875">Bendrinti...</translation>
 <translation id="719133302483559673">Tvarkykite pomėgius ir nuostatas.</translation>
@@ -1327,7 +1324,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksportuoti slaptažodžius...</translation>
 <translation id="794799177247607889">Pradėti įrašyti į žurnalą</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{Pažeistų slaptažodžių nėra}=1{{COUNT} pažeistas slaptažodis}one{{COUNT} pažeistas slaptažodis}few{{COUNT} pažeisti slaptažodžiai}many{{COUNT} pažeisto slaptažodžio}other{{COUNT} pažeistų slaptažodžių}}</translation>
 <translation id="7959441099968534758">EITI Į SKLAIDOS KANALĄ</translation>
 <translation id="7961015016161918242">Niekada</translation>
 <translation id="7966516440812255683">Svetainės gali naudoti slapukus, kad pagerintų naršymo kokybę, pvz., kad liktumėte prisijungę ar būtų įsimintos pirkinių krepšelyje esančios prekės.

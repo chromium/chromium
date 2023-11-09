@@ -820,6 +820,7 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4324840740119394760">To omogućuje pristup kameri za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web-lokacije s dopuštenjem za kameru</translation>
 <translation id="4333628967105022692">Lacros nije podržan dok je prijavljeno više korisnika.</translation>
 <translation id="4338109981321384717">Povećalo</translation>
+<translation id="4351244548802238354">Zatvori dijaloški okvir</translation>
 <translation id="4356872429719185452">Prikažite pojedinosti žarišne točke. Žarišna točka se uključuje.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Snimanje</translation>
 <translation id="4371348193907997655">Postavke emitiranja</translation>
@@ -870,6 +871,14 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4548482551627849548">Premještanje aktivnog prozora na radnu površinu slijeva</translation>
 <translation id="4560576029703263363">Uključeno</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Traka statusa, vrijeme <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Sakrij zaporku</translation>
 <translation id="4566144812051858745">Ne zanima me nijedan prijedlog</translation>
 <translation id="4569753163207712681">Prikaz nedavnih fotografija, medijskih sadržaja i obavijesti</translation>

@@ -10,7 +10,6 @@
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1044891598689252897">Os sitios funcionarán con normalidade</translation>
 <translation id="1049743911850919806">Modo de incógnito</translation>
-<translation id="105093091697134113">As contas seguintes utilizan contrasinais que quedaron expostas nunha violación da seguranza dos datos de terceiros ou que entraron nun sitio web enganoso. Cámbiaos inmediatamente para protexer as túas contas.</translation>
 <translation id="1053651653201045802">Pechouse a sesión. Volve iniciar sesión para usar os marcadores, os contrasinais e moito máis na túa conta.</translation>
 <translation id="1054045277222934172">Podes cambiar a vista predeterminada do sitio pola aplicable a ordenadores; tan só tes que acceder a Configuración e, logo, seleccionar Configuración de contido</translation>
 <translation id="1054745118061919935">Ao continuar, aceptas as <ph name="BEGIN_LINK" />Condicións de servizo<ph name="END_LINK" />.</translation>
@@ -735,7 +734,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4856498338299082007">Na túa Conta de Google</translation>
 <translation id="4856841893565072365">Barra de menú con orde intelixente</translation>
 <translation id="4860895144060829044">Chamar</translation>
-<translation id="4872323082491632254">Comprobar contrasinais</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="488785315393301722">Mostrar detalles</translation>
 <translation id="4894963374040315706">Permíteche buscar de forma máis rápida usando a voz</translation>
@@ -1189,7 +1187,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7154343200458623869">Completa a tarefa.</translation>
 <translation id="7161230316646448869">Sincroniza os teus marcadores e o historial, entre outras cousas, en todos os dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear pestanas do modo de incógnito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7172852049901402487">Protexe os teus contrasinais fronte a problemas de seguranza</translation>
 <translation id="7173114856073700355">Abrir Configuración</translation>
 <translation id="7189598951263744875">Compartir...</translation>
 <translation id="719133302483559673">Xestiona os teus intereses e preferencias.</translation>
@@ -1327,7 +1324,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contrasinais...</translation>
 <translation id="794799177247607889">Deter rexistro</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{Ningún contrasinal vulnerado}=1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>
 <translation id="7959441099968534758">IR AO FEED</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966516440812255683">Os sitios poden utilizar cookies para mellorar a túa experiencia de navegación a través de funcións como manter a sesión iniciada ou lembrar artigos da túa cesta da compra.

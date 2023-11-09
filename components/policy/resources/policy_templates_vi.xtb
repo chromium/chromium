@@ -7609,19 +7609,6 @@ Nếu bạn tắt hoặc không đặt chính sách này, thì các chế độ 
       Nếu bạn đặt chính sách này thành False hoặc không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ sử dụng chế độ cài đặt kiểm tra trạng thái thu hồi trực tuyến hiện có.
 
       Chính sách này không có hiệu lực trên <ph name="MAC_OS_NAME" /> nếu bạn đặt chính sách <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> thành False.</translation>
-<translation id="7277031272747335531">Chính sách này cho phép quản trị viên giới hạn việc bạn có thể dùng tài khoản nào để đăng nhập <ph name="MICROSOFT_ONE_DRIVE_NAME" /> khi bật <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" />.
-
-Nếu chính sách này chứa giá trị "<ph name="COMMON_NAME" />", thì bạn có thể dùng tài khoản bất kỳ để đăng nhập.
-
-Nếu chính sách này chứa giá trị "<ph name="ORGANIZATIONS_NAME" />", thì bạn có thể đăng nhập bằng tài khoản do cơ quan hoặc trường học của bạn cung cấp.
-
-Nếu chính sách này chứa giá trị "<ph name="CONSUMER_NAME" />", thì bạn có thể dùng tài khoản <ph name="MICROSOFT_NAME" /> cá nhân để đăng nhập.
-
-Nếu chính sách này chứa tên miền hoặc mã nhận dạng đối tượng thuê, thì bạn có thể dùng tài khoản thuộc các tên miền hoặc mã nhận dạng đối tượng thuê đó (xem https://learn.microsoft.com/vi-vn/azure/active-directory/develop/v2-protocols#endpoints) để đăng nhập.
-
-Nếu chính sách này không được đặt hoặc chỉ chứa một giá trị trống, thì chính sách sẽ hoạt động giống như bạn đã chỉ định "<ph name="ORGANIZATIONS_NAME" />".
-
-Khi bạn thay đổi chế độ hạn chế này, người dùng có thể bị đăng xuất khỏi tài khoản <ph name="MICROSOFT_ONE_DRIVE_NAME" /> của họ nếu tài khoản đó không tuân thủ chế độ hạn chế mới.</translation>
 <translation id="7278854311116092134">Tên của các máy chủ nhắn tin gốc sẽ được miễn trừ khỏi danh sách chặn</translation>
 <translation id="7291084543582732020">Nếu bạn bật tùy chọn cài đặt này, người dùng sẽ được phép sử dụng Smart Lock nếu đáp ứng được các yêu cầu của tính năng này.
 

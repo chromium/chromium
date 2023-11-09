@@ -559,6 +559,7 @@
 <translation id="2072275792380684364">패션 및 스타일</translation>
 <translation id="2075497153347571252">관리자가 <ph name="ORIGIN" />에서 <ph name="PERMISSION" /> 권한을 차단했습니다.</translation>
 <translation id="2079545284768500474">실행취소</translation>
+<translation id="2080021694978766903">정책의 항목이 <ph name="MAX_ITEMS_LIMIT" />개를 넘으면 안 됩니다.</translation>
 <translation id="20817612488360358">시스템 프록시 설정이 사용하도록 설정되었지만 명시적 프록시 설정도 지정되어 있습니다.</translation>
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
 <translation id="2083256696566019397">방문할 때마다 허용</translation>
@@ -638,6 +639,7 @@
 <translation id="2225927550500503913">가상 카드 사용 설정됨</translation>
 <translation id="2226636330183131181">Wi-Fi 네트워크에 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">이 주소는 현재 Chrome에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="ACCOUNT" />)에 저장하세요.</translation>
+<translation id="2229456043301340598">고유하지 않은 단축어는 무시됩니다. <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">컴팩트 디스크</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2239100178324503013">지금 보내기</translation>
@@ -1890,6 +1892,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 빠르게 새 Google 시트 만들기</translation>
 <translation id="4825507807291741242">강력함</translation>
 <translation id="4826588772550366629">카메라 및 마이크</translation>
+<translation id="4827283332383516812">카드 삭제</translation>
 <translation id="4831993743164297314">이미지 설정용 용지</translation>
 <translation id="483241715238664915">경고 켜기</translation>
 <translation id="4834250788637067901">Google Pay에 사용되는 결제 수단, 쿠폰, 주소</translation>
@@ -2331,6 +2334,7 @@
 <translation id="5720705177508910913">현재 사용자</translation>
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5723287205918986743">방위산업</translation>
+<translation id="5725297205162868298">단축어는 @ 문자로 시작할 수 없습니다. "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">다른 사이트에서 비밀번호를 재사용했다면 비밀번호를 재설정하는 것이 좋습니다.</translation>
 <translation id="5732392974455271431">부모님이 차단 해제할 수 있습니다.</translation>
 <translation id="573555826359077410">양식 만들기 버튼, Google Forms에서 새 양식을 빠르게 만들려면 활성화하세요.</translation>
@@ -2361,6 +2365,7 @@
 <translation id="5785756445106461925">또한 이 페이지에는 안전하지 않은 다른 리소스가 포함되어 있습니다. 이러한 리소스는 전송 중에 다른 사람이 볼 수 있으며 페이지의 모양을 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
 <translation id="5786044859038896871">카드 정보를 입력하시겠습니까?</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793317771769868848">기기에서 이 결제 수단이 삭제됩니다.</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{없음}=1{계정 1개의 로그인 데이터}other{계정 #개의 로그인 데이터}}</translation>
 <translation id="5800727402210090597">휴대전화 수리 및 서비스</translation>
 <translation id="580241730938216256">업데이트 시작</translation>
@@ -2848,6 +2853,7 @@
 <translation id="6793213097893210590">골판지</translation>
 <translation id="679355240208270552">정책에 의해 기본 검색이 사용 설정되지 않았기 때문에 무시되었습니다.</translation>
 <translation id="6794951432696553238">지금부터 Windows Hello를 사용하여 빠르게 카드를 확인합니다.</translation>
+<translation id="6798066466127540426">목록에 유효한 검색 공급자가 없습니다.</translation>
 <translation id="6798460514924505775">봉투 Chou 3</translation>
 <translation id="6799145206637008376">이 가상 카드의 CVC 입력</translation>
 <translation id="6805030849054648206">봉투 B6/C4</translation>
@@ -3236,6 +3242,7 @@
 <translation id="7521825010239864438">‘<ph name="SECTION" />’ 섹션 숨겨짐</translation>
 <translation id="752189128961566325">Google 제품 전반에서 사용할 수 있습니다.</translation>
 <translation id="7523408071729642236">제조업</translation>
+<translation id="7525804896095537619">이름은 비워둘 수 없습니다.</translation>
 <translation id="7526934274050461096">이 사이트로의 연결은 비공개가 아닙니다.</translation>
 <translation id="7529884293139707752">홈스쿨링</translation>
 <translation id="7534987659046836932">봉투 C7</translation>
@@ -3457,6 +3464,7 @@
 <translation id="7950027195171824198">Chrome 설정에서 쿠키 환경설정 관리</translation>
 <translation id="7951415247503192394">(32비트)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952250633095257243">단축어는 비워 둘 수 없습니다.</translation>
 <translation id="7952327717479677595">검색엔진 관리 버튼, 기본 검색엔진 및 사이트 검색을 관리하려면 활성화하세요.</translation>
 <translation id="7953236668995583915">이 페이지를 새로고침하여 이 사이트에 업데이트된 설정 적용</translation>
 <translation id="7953569069500808819">상단 에지 스티치</translation>
@@ -3668,6 +3676,7 @@
 <translation id="8344776605855290140">가상 카드 등록이 전체 높이로 열림</translation>
 <translation id="8347658365704983341">원격 교육</translation>
 <translation id="8349305172487531364">북마크바</translation>
+<translation id="8350416046273606058">단축어에는 공백을 포함할 수 없습니다. "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
 <translation id="8352849934814541340">이 기기의 관리자가 추가 기능을 위한 애플리케이션을 설치했습니다. 애플리케이션에는 내 데이터 중 일부에 액세스할 권한이 있습니다.</translation>
 <translation id="8355270400102541638">로컬 비정상 종료 컨텍스트:</translation>

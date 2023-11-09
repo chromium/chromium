@@ -559,6 +559,7 @@
 <translation id="2072275792380684364">Мода и стил</translation>
 <translation id="2075497153347571252">Администратор је блокирао дозволу (<ph name="PERMISSION" />) на <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Опозови</translation>
+<translation id="2080021694978766903">Ове смернице не смеју да имају више од <ph name="MAX_ITEMS_LIMIT" /> уноса.</translation>
 <translation id="20817612488360358">Подешено је да се користе системска подешавања проксија, али је наведена експлицитна конфигурација проксија.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. од <ph name="TOTAL_RESULTS" /> резултата</translation>
 <translation id="2083256696566019397">Дозволи при свакој посети</translation>
@@ -638,6 +639,7 @@
 <translation id="2225927550500503913">Виртуелна картица је укључена</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Пријављивање<ph name="END_LINK" /> на WiFi мрежу</translation>
 <translation id="2228057197024893428">Ова адреса је тренутно сачувана у Chrome-у. Да бисте је користили у свим Google производима, сачувајте је на Google налогу, <ph name="ACCOUNT" />.</translation>
+<translation id="2229456043301340598">Занемарена нејединствена пречица: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233745931693710080">Компактни диск</translation>
 <translation id="2235344399760031203">Колачићи треће стране су блокирани</translation>
 <translation id="2239100178324503013">Пошаљи одмах</translation>
@@ -1689,6 +1691,7 @@
 <translation id="4386413576162606861">Игре са улогама</translation>
 <translation id="4390472908992056574">Обод</translation>
 <translation id="4393632246160856858">Производи за негу ноктију</translation>
+<translation id="4397059608630092079">Увек верификуј при коришћењу аутоматског попуњавања</translation>
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4406896451731180161">резултати претраге</translation>
 <translation id="4408413947728134509">Колачићи (<ph name="NUM_COOKIES" />)</translation>
@@ -1890,6 +1893,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нову Google табелу</translation>
 <translation id="4825507807291741242">Моћно</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
+<translation id="4827283332383516812">Избришите картицу</translation>
 <translation id="4831993743164297314">Папир за штампање слика</translation>
 <translation id="483241715238664915">Укључи упозорења</translation>
 <translation id="4834250788637067901">Начини плаћања, понуде и адресе који користе Google Pay</translation>
@@ -2331,6 +2335,7 @@
 <translation id="5720705177508910913">Тренутни корисник</translation>
 <translation id="572328651809341494">Недавно коришћене картице</translation>
 <translation id="5723287205918986743">Војна индустрија</translation>
+<translation id="5725297205162868298">Пречица не може да почиње знаком @: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="5730040223043577876">Chrome вам препоручује да ресетујете лозинку ако сте је користили на другим сајтовима.</translation>
 <translation id="5732392974455271431">Родитељи могу да га одблокирају за тебе</translation>
 <translation id="573555826359077410">Дугме Направи упитник, активирајте га да бисте брзо направили нов упитник у Google упитницима</translation>
@@ -2361,6 +2366,7 @@
 <translation id="5785756445106461925">Поред тога, ова страница садржи и друге ресурсе који нису безбедни. Ове ресурсе могу да виде и други док су у пролазу и нападач може да их измени како би променио изглед странице.</translation>
 <translation id="5786044859038896871">Желите ли да попуните информације о картици?</translation>
 <translation id="5789643057113097023">,</translation>
+<translation id="5793317771769868848">Овај начин плаћања ће бити избрисан са овог уређаја</translation>
 <translation id="5793777472500812427">{COUNT,plural, =0{Ниједан}=1{подаци за пријављивање за 1 налог}one{подаци за пријављивање за # налог}few{подаци за пријављивање за # налога}other{подаци за пријављивање за # налога}}</translation>
 <translation id="5800727402210090597">Поправке и услуге у вези са мобилним телефонима</translation>
 <translation id="580241730938216256">Покрени ажурирање</translation>
@@ -2847,6 +2853,7 @@
 <translation id="6793213097893210590">Картон</translation>
 <translation id="679355240208270552">Занемарује се зато што смернице нису омогућиле подразумевани претраживач.</translation>
 <translation id="6794951432696553238">Од сада брже потврђујте картице уз Windows Hello</translation>
+<translation id="6798066466127540426">Листа не садржи важећег добављача претраге.</translation>
 <translation id="6798460514924505775">Коверта Chou 3</translation>
 <translation id="6799145206637008376">Унесите CVC за ову виртуелну картицу</translation>
 <translation id="6805030849054648206">Коверта B6/C4</translation>
@@ -3236,6 +3243,7 @@
 <translation id="7521825010239864438">Одељак „<ph name="SECTION" />“ је сакривен</translation>
 <translation id="752189128961566325">Можете да је користите у свим Google производима</translation>
 <translation id="7523408071729642236">Производња</translation>
+<translation id="7525804896095537619">Поље за назив не може да буде празно</translation>
 <translation id="7526934274050461096">Веза са овим сајтом није приватна</translation>
 <translation id="7529884293139707752">Школовање код куће</translation>
 <translation id="7534987659046836932">Коверта C7</translation>
@@ -3457,6 +3465,7 @@
 <translation id="7950027195171824198">Управљајте подешавањима колачића у подешавањима Chrome-а</translation>
 <translation id="7951415247503192394">(32-битни)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952250633095257243">Пречица не може да буде празна</translation>
 <translation id="7952327717479677595">Дугме Управљај претраживачима, активирајте га да бисте управљали подразумеваним претраживачем и претрагом сајта</translation>
 <translation id="7953236668995583915">Поново учитајте ову страницу да бисте применили ажурирана подешавања на овај сајт</translation>
 <translation id="7953569069500808819">Спајање ивица на врху</translation>
@@ -3668,6 +3677,7 @@
 <translation id="8344776605855290140">Регистрација за виртуелну картицу је отворена у пуној висини</translation>
 <translation id="8347658365704983341">Учење на даљину</translation>
 <translation id="8349305172487531364">Трака са обележивачима</translation>
+<translation id="8350416046273606058">Пречица не може да садржи размаке: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Направите белешку</translation>
 <translation id="8352849934814541340">Администратор овог уређаја је инсталирао апликације за додатне функције. Апликације имају приступ неким од података.</translation>
 <translation id="8355270400102541638">Контекст локалног отказивања:</translation>

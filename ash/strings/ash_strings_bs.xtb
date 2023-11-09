@@ -820,6 +820,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4324840740119394760">Ovo omogućava pristup kameri za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web lokacije s odobrenjem za nju</translation>
 <translation id="4333628967105022692">Preglednik Lacros nije podržan dok je istovremeno prijavljeno više korisnika.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4351244548802238354">Zatvori dijaloški okvir</translation>
 <translation id="4356872429719185452">Pogledajte detalje pristupne tačke. Pristupna tačka se uključuje.</translation>
 <translation id="4364101114148522660">Snimak u trajanju od <ph name="DURATION" /></translation>
 <translation id="4371348193907997655">Postavke emitiranja</translation>
@@ -870,6 +871,14 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4548482551627849548">Premjesti aktivni prozor na lijevu radnu površinu</translation>
 <translation id="4560576029703263363">Uključeno</translation>
 <translation id="4561267230861221837">3G</translation>
+<translation id="4564299521485948903">Traka statusa, vrijeme <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
 <translation id="4566144812051858745">Ne zanimaju me nikakvi prijedlozi</translation>
 <translation id="4569753163207712681">Pregledajte nedavne fotografije, medijske fajlove i aplikacije telefona</translation>

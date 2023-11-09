@@ -2902,6 +2902,7 @@ Quer pará-lo?</translation>
 <translation id="3237871032310650497">Eliminar os dados de sites para o site <ph name="SITE_NAME" /> particionado em <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="3238192140106069382">A ligar e a validar…</translation>
 <translation id="3239373508713281971">Limite de tempo removido para a app <ph name="APP_NAME" />.</translation>
+<translation id="3240299564104448052">Parece que está offline.</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3241638166094654466">Células em cada linha:</translation>
 <translation id="3241680850019875542">Selecione o directório raiz da extensão a comprimir. Para atualizar uma extensão, selecione também o ficheiro de chave privada a reutilizar.</translation>
@@ -3832,6 +3833,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3963753386716096475">Usar um telemóvel, um tablet ou uma chave de segurança diferente</translation>
 <translation id="3964480518399667971">Desativar rede móvel</translation>
 <translation id="3965965397408324205">Sair de <ph name="PROFILE_NAME" /></translation>
+<translation id="3965984916551757611">Notificações, Google Play</translation>
 <translation id="3966072572894326936">Escolher outra pasta...</translation>
 <translation id="3966094581547899417">Detalhes da zona Wi-Fi</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
@@ -4253,6 +4255,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Conta Google}other{<ph name="EXTRA_ACCOUNTS" /> Contas Google}}</translation>
 <translation id="4312866146174492540">Bloquear (predefinição)</translation>
 <translation id="4314497418046265427">Aumente a sua produtividade ao ligar o seu telemóvel ao dispositivo <ph name="DEVICE_TYPE" /></translation>
+<translation id="4314561087119792062">Adicione um novo Nome do Ponto de Acesso</translation>
 <translation id="4314815835985389558">Gerir sincronização</translation>
 <translation id="4316850752623536204">Website para programadores</translation>
 <translation id="4317733381297736564">Compras na app</translation>
@@ -4541,6 +4544,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4546345569117159016">Botão direito</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> quer usar esta extensão:</translation>
 <translation id="4546692474302123343">Entrada de texto por voz do Assistente Google</translation>
+<translation id="4547538408998421970">Atingiu o limite de hoje.</translation>
 <translation id="4547659257713117923">Sem separadores de outros dispositivos</translation>
 <translation id="4547672827276975204">Definir automaticamente</translation>
 <translation id="4548858987594081919">Para ajudar o Gestor de Palavras-passe da Google a guardar as suas informações de início de sessão, adicione o seu nome de utilizador para este site</translation>
@@ -4829,6 +4833,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Mudar o nome da rede móvel do eSIM</translation>
 <translation id="4780321648949301421">Guardar página como...</translation>
+<translation id="4780558987886269159">Para trabalho</translation>
 <translation id="4781443161433589743">Tem a segurança mais avançada do Chrome</translation>
 <translation id="4785719467058219317">Está a utilizar uma chave de segurança que não está registada neste Website.</translation>
 <translation id="4785914069240823137">Cancele o recorte</translation>
@@ -5265,6 +5270,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5130675701626084557">Não foi possível transferir o perfil. Tente mais tarde ou contacte o operador para obter ajuda.</translation>
 <translation id="5131591206283983824">Arrastamento através do toque do touchpad</translation>
 <translation id="5135533361271311778">Não foi possível criar item de marcador.</translation>
+<translation id="513555878193063507">Adicione um novo APN</translation>
 <translation id="5136343472380336530">Certifique-se de que ambos os dispositivos estão desbloqueados, próximos um do outro e têm o Bluetooth ativado. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, pesquisa no <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -5678,6 +5684,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5473099001878321374">Ao continuar, aceita que este dispositivo também pode transferir e instalar automaticamente atualizações e apps da Google, do operador da criança e do fabricante deste dispositivo, possivelmente através de dados móveis. Algumas destas apps podem oferecer compras na app.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN tem de ter, pelo menos, um caráter.}other{O PIN tem de ter, pelo menos, # carateres.}}</translation>
 <translation id="5474859849784484111">O domínio <ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi agora e transfira uma atualização. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).</translation>
+<translation id="5477089831058413614">Configure a zona Wi-Fi do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Sem autorização para transferir vários ficheiros automaticamente</translation>
 <translation id="5481941284378890518">Adicionar impressoras próximas</translation>
 <translation id="5484181871714116891">Quando a opção está ativada, as chaves de acesso são criadas no Porta-chaves iCloud e estão disponíveis nos seus dispositivos Apple. Quando a opção está desativada, as chaves de acesso são criadas no seu perfil do Chrome neste dispositivo.</translation>
@@ -6715,6 +6722,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6309510305002439352">O microfone está desligado</translation>
 <translation id="6310141306111263820">Não é possível instalar o perfil do eSIM. Para obter ajuda, contacte o seu operador.</translation>
 <translation id="6311220991371174222">Não é possível iniciar o Chrome porque ocorreu um erro ao abrir o seu perfil. Experimente reiniciar o Chrome.</translation>
+<translation id="6311708879134408222">Pode tentar amanhã.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{A verificação de segurança foi efetuada há 1 dia.}other{A verificação de segurança foi efetuada há {NUM_DAYS} dias.}}</translation>
 <translation id="6312638141433622592">Sugerir a apresentação de artigos no modo de leitor, quando tal for suportado.</translation>
 <translation id="6313641880021325787">SAIR DA RV</translation>
@@ -6788,6 +6796,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="637642201764944055">As versões antigas das Apps do Chrome não vão abrir nos dispositivos Linux depois de dezembro de 2022. Contacte o seu administrador para atualizar para uma nova versão ou remover esta app.</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Abrir nas redes Wi-Fi</translation>
+<translation id="6379533146645857098">Selecione um intervalo de tempo</translation>
 <translation id="6380143666419481200">Aceitar e continuar</translation>
 <translation id="6383382161803538830">O modo de leitura não está disponível nesta página</translation>
 <translation id="638418309848716977">Links suportados</translation>
@@ -7238,6 +7247,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6750757184909117990">Desativar rede móvel</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Navegação anónima)</translation>
+<translation id="6756059675436942777">Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="6756157672127672536">A app Files proporciona um acesso rápido aos ficheiros que guardou no Google Drive, armazenamento externo ou dispositivo com ChromeOS.</translation>
 <translation id="6756643207511618722">Motores de voz</translation>
 <translation id="6757431299485455321">Ajude outros dispositivos a encontrar esta zona Wi-Fi.</translation>
@@ -8959,6 +8969,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8082106343289440791">Sincronizar com o dispositivo "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">A desativação da depuração do adb vai repor as definições de fábrica deste <ph name="DEVICE_TYPE" />. Todos os dados locais e contas de utilizador serão apagados.</translation>
 <translation id="8084114998886531721">Palavra-passe guardada</translation>
+<translation id="8084429490152575036">Definições do APN da rede móvel</translation>
 <translation id="8084510406207562688">Restaurar todos os separadores</translation>
 <translation id="8084628902026812045">Este site não está a usar uma ligação segura e o ficheiro pode ter sido adulterado</translation>
 <translation id="8086015605808120405">A configurar <ph name="PRINTER_NAME" />…</translation>

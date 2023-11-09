@@ -1803,7 +1803,7 @@
 <translation id="2364498172489649528">已通過</translation>
 <translation id="2365507699358342471">這個網站可以讀取已複製到剪貼簿的文字和圖片。</translation>
 <translation id="2367972762794486313">顯示應用程式</translation>
-<translation id="2369058545741334020">以唯讀模式開啟</translation>
+<translation id="2369058545741334020">以閱讀模式開啟</translation>
 <translation id="236939127352773362">當附近的裝置正在分享內容時</translation>
 <translation id="2371076942591664043">完成後開啟(&amp;D)</translation>
 <translation id="237336063998926520">使用你的 IP 位址判定所在位置</translation>
@@ -3830,6 +3830,7 @@
 <translation id="3963753386716096475">使用其他手機、平板電腦或安全金鑰</translation>
 <translation id="3964480518399667971">關閉行動數據網路</translation>
 <translation id="3965965397408324205">離開<ph name="PROFILE_NAME" /></translation>
+<translation id="3965984916551757611">Google Play 的通知</translation>
 <translation id="3966072572894326936">選擇其他資料夾...</translation>
 <translation id="3966094581547899417">無線基地台詳細資料</translation>
 <translation id="3967822245660637423">下載完成</translation>
@@ -4827,6 +4828,7 @@
 <translation id="4779136857077979611">飯糰</translation>
 <translation id="4779766576531456629">重新命名 eSIM 卡的行動網路</translation>
 <translation id="4780321648949301421">另存網頁...</translation>
+<translation id="4780558987886269159">工作</translation>
 <translation id="4781443161433589743">你啟用了 Chrome 最強大的安全防護功能</translation>
 <translation id="4785719467058219317">你目前使用的安全金鑰並未在這個網站註冊</translation>
 <translation id="4785914069240823137">取消裁剪</translation>
@@ -5676,6 +5678,7 @@
 <translation id="5473099001878321374">如果選擇繼續，即表示您允許這部裝置自動下載及安裝來自 Google、貴子女的電信業者和裝置製造商的更新內容和應用程式，上述程序可能會使用行動數據。這類應用程式中，有些可能會提供應用程式內購。</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 碼必須包含至少一個字元}other{PIN 碼必須包含至少 # 個字元}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。</translation>
+<translation id="5477089831058413614">設定 <ph name="DEVICE_TYPE" /> 無線基地台</translation>
 <translation id="5481273127572794904">不得自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的印表機</translation>
 <translation id="5484181871714116891">開啟之後，系統會在 iCloud 鑰匙圈中建立密碼金鑰，方便你在 Apple 裝置上使用。如果關閉，系統會在這部裝置的 Chrome 設定檔中建立密碼金鑰。</translation>
@@ -6781,6 +6784,7 @@
 <translation id="637642201764944055">2022 年 12 月之後，舊版 Chrome 應用程式將無法在 Linux 裝置上開啟。如要更新至新版本或移除這個應用程式，請與系統管理員聯絡。</translation>
 <translation id="6377268785556383139">有 1 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
 <translation id="6378392501584240055">開啟 Wi-Fi 網路清單</translation>
+<translation id="6379533146645857098">選取時間範圍</translation>
 <translation id="6380143666419481200">接受並繼續</translation>
 <translation id="6383382161803538830">這個頁面上無法使用閱讀模式</translation>
 <translation id="638418309848716977">支援的連結</translation>

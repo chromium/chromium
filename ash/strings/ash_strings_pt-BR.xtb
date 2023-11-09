@@ -130,6 +130,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="146902737843070955">O administrador solicitou essa mudança</translation>
 <translation id="1469148162491666137">Essa ação libera o acesso para <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todos os apps e sites com as permissões de câmera e microfone. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="147310119694673958"><ph name="BATTERY_PERCENTAGE" />% de bateria no smartphone</translation>
+<translation id="1475340220124222168">Ative ou desative o ponto de acesso. O ponto de acesso está ativado e 1 dispositivo está conectado.</translation>
 <translation id="1479909375538722835">Menu de acessibilidade flutuante</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">É possível digitar com a voz usando o Ditado. Pressione a tecla de Ditado ou selecione o ícone de microfone na parte de baixo da tela quando estiver em um campo de texto. O idioma do Ditado está definido como <ph name="LANGUAGE" />. A fala é enviada ao Google para processamento. É possível mudar o idioma a qualquer momento em "Configurações" &gt; "Acessibilidade".</translation>
@@ -819,6 +820,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4324840740119394760">Dá acesso à câmera para o app <ph name="APP_NAME" /> e todos os apps e sites com essa permissão</translation>
 <translation id="4333628967105022692">O Lacros não é compatível com o login de vários usuários.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4351244548802238354">Fechar caixa de diálogo</translation>
 <translation id="4356872429719185452">Consulte detalhes do ponto de acesso. Ele está sendo ativado.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> (gravando)</translation>
 <translation id="4371348193907997655">Configurações de transmissão</translation>
@@ -878,6 +880,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4577990005084629481">Mostrar visualizações</translation>
 <translation id="4578906031062871102">Menu de configurações aberto</translation>
 <translation id="458210817642223147">Gravar GIF</translation>
+<translation id="4582666543382004902">O ponto de acesso foi desativado para usar o Wi-Fi. Para usar o ponto de acesso, desative o Wi-Fi.</translation>
 <translation id="4585337515783392668">Parar de transmitir para um destinatário desconhecido</translation>
 <translation id="4596144739579517758">O tema escuro está desativado</translation>
 <translation id="4611292653554630842">Fazer login</translation>
@@ -1084,6 +1087,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5393156353051693207">Toque em qualquer lugar na tela e a mantenha pressionada para reordenar os apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" />, solte para criar pasta.</translation>
 <translation id="5397578532367286026">O uso e o histórico deste usuário podem ser analisados pelo administrador (<ph name="MANAGER_EMAIL" />) em chrome.com.</translation>
+<translation id="540713187982329711">Ative ou desative o ponto de acesso. O ponto de acesso está ativado e nenhum dispositivo está conectado.</translation>
 <translation id="5413656666631274079">Página "Configurações"</translation>
 <translation id="5414198321558177633">Atualizando a lista de perfis. Pode levar alguns minutos..</translation>
 <translation id="5426063383988017631">Menu de configurações fechado</translation>
@@ -1174,9 +1178,11 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="576341972084747908">Fazendo o download do arquivo perigoso <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">O Modo noturno está ativado.</translation>
 <translation id="5764569119212455782">Mudar para o último idioma selecionado</translation>
+<translation id="5767730327234918501">O administrador desativou o ponto de acesso.</translation>
 <translation id="5769373120130404283">Tela de privacidade</translation>
 <translation id="5773950591113557721">Esta ação libera o acesso para o app <ph name="APP_NAME" /> e todos os apps e sites com essas permissões</translation>
 <translation id="5774295353725270860">Abrir aplicativo Arquivos</translation>
+<translation id="5775936059231769503">Ative ou desative o ponto de acesso. O ponto de acesso está desativado.</translation>
 <translation id="5777841717266010279">Interromper compartilhamento de tela?</translation>
 <translation id="5779721926447984944">Arquivos fixados</translation>
 <translation id="5785221443435874078">Remover esta sugestão</translation>
@@ -1494,6 +1500,7 @@ Nova instalação</translation>
 <translation id="7068360136237591149">Abrir arquivos</translation>
 <translation id="7076293881109082629">Como fazer login</translation>
 <translation id="7076878155205969899">Desativar som</translation>
+<translation id="7084678090004350185">Ative ou desative o ponto de acesso. O ponto de acesso está ativado e <ph name="DEVICECOUNT" /> dispositivos estão conectados.</translation>
 <translation id="7086931198345821656">Essa atualização exige que você faça um Powerwash no seu <ph name="DEVICE_TYPE" />. Todos os dados serão excluídos. Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Acesso com interruptor</translation>
 <translation id="709015856939120012">Aumentar zoom na página</translation>

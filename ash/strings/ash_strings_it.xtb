@@ -130,6 +130,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="146902737843070955">L'amministratore ha richiesto questa modifica</translation>
 <translation id="1469148162491666137">Consente l'accesso per <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, tutte le app e tutti i siti web che hanno le autorizzazioni di accesso al microfono e alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
 <translation id="147310119694673958">Batteria del telefono <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">Attiva/disattiva l'hotspot. L'hotspot è attivo, 1 dispositivo connesso.</translation>
 <translation id="1479909375538722835">Menu Accessibilità mobile</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Con la dettatura, puoi digitare usando la voce. Premi il tasto per la dettatura o seleziona l'icona a forma di microfono nella parte inferiore dello schermo quando è attivo un campo di testo. La lingua di dettatura è impostata su: <ph name="LANGUAGE" />. Il testo dettato viene inviato a Google per essere elaborato. Puoi cambiare la lingua di dettatura in qualsiasi momento in Impostazioni &gt; Accessibilità.</translation>
@@ -816,6 +817,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4324840740119394760">Consente l'accesso alla fotocamera per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
 <translation id="4333628967105022692">Lacros non è supportato quando più utenti hanno effettuato l'accesso.</translation>
 <translation id="4338109981321384717">Lente d'ingrandimento</translation>
+<translation id="4351244548802238354">Chiudi finestra di dialogo</translation>
 <translation id="4356872429719185452">Mostra i dettagli relativi all'hotspot. È in corso l'attivazione dell'hotspot.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />: registrazione in corso</translation>
 <translation id="4371348193907997655">Impostazioni di trasmissione</translation>
@@ -875,6 +877,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4577990005084629481">Mostra anteprime</translation>
 <translation id="4578906031062871102">Menu Impostazioni aperto</translation>
 <translation id="458210817642223147">Registra GIF</translation>
+<translation id="4582666543382004902">L'hotspot è stato disattivato per utilizzare il Wi-Fi. Per utilizzare l'hotspot, disattiva il Wi-Fi.</translation>
 <translation id="4585337515783392668">Interrompi la trasmissione su ricevitore sconosciuto</translation>
 <translation id="4596144739579517758">Tema scuro disattivato</translation>
 <translation id="4611292653554630842">Accedi</translation>
@@ -1081,6 +1084,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5393156353051693207">Tocca e tieni premuto un punto qualsiasi per riordinare le app</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sopra <ph name="IN_PLACE_APP" />, rilascia per creare una cartella.</translation>
 <translation id="5397578532367286026">L'utilizzo e la cronologia di questo utente possono essere esaminati dal gestore (<ph name="MANAGER_EMAIL" />) su chrome.com.</translation>
+<translation id="540713187982329711">Attiva/disattiva l'hotspot. L'hotspot è attivo, nessun dispositivo connesso.</translation>
 <translation id="5413656666631274079">Pagina Impostazioni</translation>
 <translation id="5414198321558177633">Aggiornamento dell'elenco di profili in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="5426063383988017631">Menu Impostazioni chiuso</translation>
@@ -1171,9 +1175,11 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="576341972084747908">Download di <ph name="FILENAME" /> (pericoloso) in corso…</translation>
 <translation id="576453121877257266">Luminosità notturna attiva.</translation>
 <translation id="5764569119212455782">Passa all'ultima lingua selezionata</translation>
+<translation id="5767730327234918501">L'amministratore ha disattivato l'hotspot.</translation>
 <translation id="5769373120130404283">Schermata sulla privacy</translation>
 <translation id="5773950591113557721">Consente l'accesso per <ph name="APP_NAME" /> e tutti i siti web e tutte le app che dispongono delle autorizzazioni di accesso al microfono e alla fotocamera</translation>
 <translation id="5774295353725270860">Apri l'applicazione File</translation>
+<translation id="5775936059231769503">Attiva/disattiva l'hotspot. L'hotspot è disattivato.</translation>
 <translation id="5777841717266010279">Interrompere la condivisione dello schermo?</translation>
 <translation id="5779721926447984944">File bloccati</translation>
 <translation id="5785221443435874078">Rimuovi questo suggerimento</translation>
@@ -1491,6 +1497,7 @@ Nuova installazione</translation>
 <translation id="7068360136237591149">Apri file</translation>
 <translation id="7076293881109082629">Accesso</translation>
 <translation id="7076878155205969899">Disattiva audio</translation>
+<translation id="7084678090004350185">Attiva/disattiva l'hotspot. Hotspot attivo, <ph name="DEVICECOUNT" /> dispositivi connessi.</translation>
 <translation id="7086931198345821656">Questo aggiornamento richiede il Powerwash di <ph name="DEVICE_TYPE" />. Tutti i dati verranno eliminati. Scopri di più sull'ultimo aggiornamento di <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="709015856939120012">Aumenta lo zoom sulla pagina</translation>
