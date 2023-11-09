@@ -299,6 +299,20 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
 #endif
   prefs->sans_serif_font_family_map[blink::web_pref::kCommonScript] =
       u"Helvetica";
+
+#if BUILDFLAG(IS_IOS)
+  // For web platform tests, the viewport should be set to 800x600.
+  // However, most of web platform tests do not include <meta
+  // name="viewport"..>, which leads to a scrollbar appearing with an 800x600
+  // size due to ViewportStyle::kMobile. To address this, the viewport style is
+  // changed to kDefault.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kPreventResizingContentsForTesting)) {
+    if (prefs->viewport_enabled) {
+      prefs->viewport_style = blink::mojom::ViewportStyle::kDefault;
+    }
+  }
+#endif
 }
 
 }  // namespace

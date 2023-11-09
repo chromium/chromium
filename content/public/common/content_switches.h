@@ -263,6 +263,10 @@ CONTENT_EXPORT extern const char kRemoteDebuggingSocketName[];
 CONTENT_EXPORT extern const char kRendererWaitForJavaDebugger[];
 #endif
 
+#if BUILDFLAG(IS_IOS)
+CONTENT_EXPORT extern const char kPreventResizingContentsForTesting[];
+#endif
+
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)

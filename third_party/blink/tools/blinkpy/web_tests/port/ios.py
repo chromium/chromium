@@ -11,6 +11,7 @@ import time
 from blinkpy.web_tests.port.ios_simulator_server_process import IOSSimulatorServerProcess
 from blinkpy.web_tests.port import base
 from blinkpy.web_tests.port import driver
+from blinkpy.web_tests.port import mac
 
 _log = logging.getLogger(__name__)
 
@@ -27,7 +28,8 @@ class IOSPort(base.Port):
 
     FALLBACK_PATHS = {}
 
-    FALLBACK_PATHS['ios16-simulator'] = ['ios']
+    FALLBACK_PATHS['ios16-simulator'] = (
+        ['ios'] + mac.MacPort.latest_platform_fallback_path())
 
     BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/ios/build_instructions.md'
 
