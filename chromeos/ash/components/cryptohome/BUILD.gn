@@ -36,6 +36,8 @@ component("cryptohome") {
     "cryptohome_parameters.h",
     "cryptohome_util.cc",
     "cryptohome_util.h",
+    "error_util.cc",
+    "error_util.h",
     "system_salt_getter.cc",
     "system_salt_getter.h",
     "userdataauth_util.cc",
@@ -44,10 +46,14 @@ component("cryptohome") {
 }
 
 source_set("public") {
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+  ]
   sources = [
     "common_types.h",
     "constants.h",
+    "error_types.h",
   ]
 }
 

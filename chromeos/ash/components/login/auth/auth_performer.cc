@@ -17,6 +17,8 @@
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
+#include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/constants/cryptohome_key_delegate_constants.h"
@@ -258,7 +260,8 @@ void AuthPerformer::MaybeRecordKnowledgeFactorAuthFailure(
     AuthOperationCallback callback,
     absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
   if (auto error = user_data_auth::ReplyToCryptohomeError(reply);
-      error == user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND) {
+      cryptohome::ErrorMatches(
+          error, user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)) {
     AuthEventsRecorder::Get()->OnKnowledgeFactorAuthFailue();
   }
   OnAuthenticateAuthFactor(request_start, std::move(context),
@@ -515,7 +518,7 @@ void AuthPerformer::OnStartAuthSession(
     StartSessionCallback callback,
     absl::optional<user_data_auth::StartAuthSessionReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(ERROR) << "Could not start authsession " << error;
     std::move(callback).Run(false, std::move(context),
                             AuthenticationError{error});
@@ -563,8 +566,9 @@ void AuthPerformer::OnInvalidateAuthSession(
   context->ResetAuthSessionIds();
 
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET &&
-      error != user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
+  if (cryptohome::HasError(error) &&
+      !cryptohome::ErrorMatches(
+          error, user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN)) {
     LOGIN_LOG(ERROR) << "Could not invalidate authsession " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
@@ -578,7 +582,7 @@ void AuthPerformer::OnPrepareAuthFactor(
     AuthOperationCallback callback,
     absl::optional<user_data_auth::PrepareAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(ERROR) << "Could not prepare auth factor " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
@@ -592,7 +596,7 @@ void AuthPerformer::OnTerminateAuthFactor(
     AuthOperationCallback callback,
     absl::optional<user_data_auth::TerminateAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(ERROR) << "Could not terminate auth factor " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
@@ -607,7 +611,7 @@ void AuthPerformer::OnAuthenticateAuthFactor(
     AuthOperationCallback callback,
     absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(EVENT)
         << "Failed to authenticate session via authfactor, error code "
         << error;
@@ -629,7 +633,8 @@ void AuthPerformer::OnGetAuthSessionStatus(
     absl::optional<user_data_auth::GetAuthSessionStatusReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
 
-  if (error == user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
+  if (cryptohome::ErrorMatches(
+          error, user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN)) {
     // Do not trigger error handling
     std::move(callback).Run(AuthSessionStatus(), base::TimeDelta(),
                             std::move(context),
@@ -637,7 +642,7 @@ void AuthPerformer::OnGetAuthSessionStatus(
     return;
   }
 
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(EVENT) << "Failed to get authsession status " << error;
     std::move(callback).Run(AuthSessionStatus(), base::TimeDelta(),
                             std::move(context), AuthenticationError{error});
@@ -678,7 +683,7 @@ void AuthPerformer::OnExtendAuthSession(
     AuthOperationCallback callback,
     absl::optional<user_data_auth::ExtendAuthSessionReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(EVENT) << "Failed to extend authsession lifetime " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
@@ -696,7 +701,7 @@ void AuthPerformer::OnGetRecoveryRequest(
     absl::optional<user_data_auth::GetRecoveryRequestReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
 
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(EVENT) << "Failed to obtain recovery request, error code "
                      << error;
     std::move(callback).Run(absl::nullopt, std::move(context),

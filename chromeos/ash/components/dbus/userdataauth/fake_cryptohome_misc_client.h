@@ -8,6 +8,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 
 #include "base/component_export.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 
 namespace ash {
@@ -76,7 +77,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomeMiscClient
   }
 
   // Sets the CryptohomeError value to return.
-  void set_cryptohome_error(::user_data_auth::CryptohomeErrorCode error) {
+  void set_cryptohome_error(::cryptohome::ErrorWrapper error) {
     cryptohome_error_ = error;
   }
 
@@ -98,7 +99,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomeMiscClient
       chromeos::DBusMethodCallback<ReplyType> callback);
 
   // The next error code to return for various functions.
-  ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
+  ::cryptohome::ErrorWrapper cryptohome_error_ =
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
 
   // The system salt to return.

@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
@@ -25,8 +26,7 @@ cryptohome::MountError
 // Returns a CryptohomeErrorCode code from |reply|, returning
 // CRYPTOHOME_ERROR_NOT_SET if the reply is well-formed and there is no error.
 template <typename ReplyType>
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-CryptohomeErrorCode
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)::cryptohome::ErrorWrapper
     ReplyToCryptohomeError(const absl::optional<ReplyType>& reply);
 
 // Extracts the account's disk usage size from |reply|.

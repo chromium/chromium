@@ -8,18 +8,18 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
-#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
@@ -155,7 +155,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
     // Sets the CryptohomeError value to return during next operation.
     void SetNextOperationError(Operation operation,
-                               ::user_data_auth::CryptohomeErrorCode error);
+                               ::cryptohome::ErrorWrapper error);
 
    private:
     FakeUserDataAuthClient::UserCryptohomeState& GetUserState(
@@ -330,7 +330,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // Sets the CryptohomeError value to return during next operation.
   void SetNextOperationError(Operation operation,
-                             ::user_data_auth::CryptohomeErrorCode error);
+                             ::cryptohome::ErrorWrapper error);
 
   // Checks if operation was called.
   template <Operation Op>
@@ -401,7 +401,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // returned.
   const AuthSessionData* GetAuthenticatedAuthSession(
       const std::string& auth_session_id,
-      ::user_data_auth::CryptohomeErrorCode* error) const;
+      ::cryptohome::ErrorWrapper* error) const;
 
   void RunPendingWaitForServiceToBeAvailableCallbacks();
 
@@ -417,7 +417,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       std::string* matched_factor_label = nullptr) const;
 
   // Checks if there is a per-operation error defined, and uses it.
-  ::user_data_auth::CryptohomeErrorCode TakeOperationError(Operation operation);
+  ::cryptohome::ErrorWrapper TakeOperationError(Operation operation);
 
   int prepare_guest_request_count_ = 0;
 
@@ -425,8 +425,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   bool last_unlock_webauthn_secret_;
 
   // The error that would be triggered once operation is called.
-  base::flat_map<Operation, ::user_data_auth::CryptohomeErrorCode>
-      operation_errors_;
+  base::flat_map<Operation, ::cryptohome::ErrorWrapper> operation_errors_;
 
   // Remembered requests.
   base::flat_map<Operation, std::unique_ptr<::google::protobuf::MessageLite>>

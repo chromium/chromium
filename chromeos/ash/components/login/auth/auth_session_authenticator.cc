@@ -17,6 +17,8 @@
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
+#include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
@@ -166,7 +168,7 @@ void AuthSessionAuthenticator::OnRemoveStaleUserForEphemeral(
     StartAuthSessionCallback callback,
     absl::optional<user_data_auth::RemoveReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+  if (cryptohome::HasError(error)) {
     LOGIN_LOG(ERROR) << "Stale ephemeral user removal failed with error "
                      << error;
     std::move(callback).Run(/*user_exists=*/true, std::move(original_context),
@@ -970,8 +972,7 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
     return;
   }
   DCHECK_EQ(error.get_origin(), AuthenticationError::Origin::kCryptohome);
-  DCHECK_NE(error.get_cryptohome_code(),
-            user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
+  DCHECK(cryptohome::HasError(error.get_cryptohome_code()));
 
   if (error.get_cryptohome_code() ==
       user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED) {
@@ -997,8 +998,9 @@ void AuthSessionAuthenticator::HandlePasswordChangeDetected(
     AuthErrorCallback fallback,
     std::unique_ptr<UserContext> context,
     AuthenticationError error) {
-  if (error.get_cryptohome_code() ==
-      user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED) {
+  if (cryptohome::ErrorMatches(
+          error.get_cryptohome_code(),
+          user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED)) {
     LOGIN_LOG(EVENT) << "Password change detected";
     if (!consumer_) {
       return;
@@ -1026,12 +1028,12 @@ void AuthSessionAuthenticator::HandleMigrationRequired(
     AuthErrorCallback fallback,
     std::unique_ptr<UserContext> context,
     AuthenticationError error) {
-  const bool migration_required =
-      error.get_cryptohome_code() ==
-      user_data_auth::CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION;
-  const bool incomplete_migration =
-      error.get_cryptohome_code() ==
-      user_data_auth::CRYPTOHOME_ERROR_MOUNT_PREVIOUS_MIGRATION_INCOMPLETE;
+  const bool migration_required = cryptohome::ErrorMatches(
+      error.get_cryptohome_code(),
+      user_data_auth::CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION);
+  const bool incomplete_migration = cryptohome::ErrorMatches(
+      error.get_cryptohome_code(),
+      user_data_auth::CRYPTOHOME_ERROR_MOUNT_PREVIOUS_MIGRATION_INCOMPLETE);
   if (migration_required || incomplete_migration) {
     LOGIN_LOG(EVENT) << "Old encryption detected";
     if (!consumer_) {
