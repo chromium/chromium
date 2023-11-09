@@ -227,7 +227,8 @@ AuthFactor KioskFactor() {
 
 }  // namespace
 
-class AuthSessionAuthenticatorTest : public ::testing::Test {
+class AuthSessionAuthenticatorTest : public testing::Test,
+                                     public testing::WithParamInterface<bool> {
  protected:
   const AccountId kAccountId = AccountId::FromUserEmail(kEmail);
 
@@ -264,6 +265,20 @@ class AuthSessionAuthenticatorTest : public ::testing::Test {
         .WillOnce([this]() {
           on_off_the_record_auth_success_future_.SetValue(true);
         });
+  }
+
+  void SetUp() override {
+    if (GetParam()) {
+      enabled_features_.emplace_back(features::kLocalPasswordForConsumers);
+    } else {
+      disabled_features_.emplace_back(features::kLocalPasswordForConsumers);
+    }
+    RefreshFeatureList();
+  }
+
+  void RefreshFeatureList() {
+    feature_list_.Reset();
+    feature_list_.InitWithFeatures(enabled_features_, disabled_features_);
   }
 
   ~AuthSessionAuthenticatorTest() override {
@@ -308,6 +323,9 @@ class AuthSessionAuthenticatorTest : public ::testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
 
+  std::vector<base::test::FeatureRef> enabled_features_;
+  std::vector<base::test::FeatureRef> disabled_features_;
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::TestFuture<UserContext> on_auth_success_future_;
@@ -324,8 +342,12 @@ class AuthSessionAuthenticatorTest : public ::testing::Test {
   std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         AuthSessionAuthenticatorTest,
+                         /*local_passwords_feature_enabled=*/testing::Bool());
+
 // Test the `CompleteLogin()` method in the new regular user scenario.
-TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularNew) {
+TEST_P(AuthSessionAuthenticatorTest, CompleteLoginRegularNew) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
@@ -343,12 +365,18 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularNew) {
   EXPECT_CALL(userdataauth(),
               PreparePersistentVault(WithFirstAuthSessionId(), _))
       .WillOnce(ReplyWith(PreparePersistentVaultReply()));
-  EXPECT_CALL(
-      userdataauth(),
-      AddAuthFactor(AllOf(WithFirstAuthSessionId(),
-                          WithPasswordFactorAdd(kCryptohomeGaiaKeyLabel)),
-                    _))
-      .WillOnce(ReplyWith(AddAuthFactorReply()));
+
+  if (!GetParam()) {
+    // We do not call `AddAuthFactor` during complete login if local passwords
+    // are enabled.
+    EXPECT_CALL(
+        userdataauth(),
+        AddAuthFactor(AllOf(WithFirstAuthSessionId(),
+                            WithPasswordFactorAdd(kCryptohomeGaiaKeyLabel)),
+                      _))
+        .WillOnce(ReplyWith(AddAuthFactorReply()));
+  }
+
   EXPECT_CALL(userdataauth(), ListAuthFactors(WithAccountId(), _))
       .WillOnce(ReplyWith(ListAuthFactorsReply()));
 
@@ -362,7 +390,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularNew) {
 }
 
 // Test the `CompleteLogin()` method in the existing regular user scenario.
-TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularExisting) {
+TEST_P(AuthSessionAuthenticatorTest, CompleteLoginRegularExisting) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
@@ -395,9 +423,10 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularExisting) {
 }
 // Test the `CompleteLogin()` method in the password change scenario for the
 // existing regular user.
-TEST_F(AuthSessionAuthenticatorTest,
+TEST_P(AuthSessionAuthenticatorTest,
        CompleteLoginRegularExistingPasswordChange) {
-  feature_list_.InitAndDisableFeature(ash::features::kCryptohomeRecovery);
+  disabled_features_.emplace_back(ash::features::kCryptohomeRecovery);
+  RefreshFeatureList();
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
@@ -432,9 +461,9 @@ TEST_F(AuthSessionAuthenticatorTest,
 
 // Test the `CompleteLogin()` method in the password change scenario for the
 // existing regular user.
-TEST_F(AuthSessionAuthenticatorTest,
+TEST_P(AuthSessionAuthenticatorTest,
        CompleteLoginRegularExistingPasswordChangeRecoveryEnabled) {
-  feature_list_.InitAndEnableFeature(ash::features::kCryptohomeRecovery);
+  enabled_features_.emplace_back(ash::features::kCryptohomeRecovery);
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
@@ -468,7 +497,7 @@ TEST_F(AuthSessionAuthenticatorTest,
 }
 
 // Test the `CompleteLogin()` method in the ephemeral user scenario.
-TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeral) {
+TEST_P(AuthSessionAuthenticatorTest, CompleteLoginEphemeral) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
@@ -485,12 +514,17 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeral) {
   EXPECT_CALL(userdataauth(),
               PrepareEphemeralVault(WithFirstAuthSessionId(), _))
       .WillOnce(ReplyWith(BuildPrepareEphemeralVaultReply()));
-  EXPECT_CALL(
-      userdataauth(),
-      AddAuthFactor(AllOf(WithFirstAuthSessionId(),
-                          WithPasswordFactorAdd(kCryptohomeGaiaKeyLabel)),
-                    _))
-      .WillOnce(ReplyWith(AddAuthFactorReply()));
+
+  if (!GetParam()) {
+    // We do not call `AddAuthFactor` during complete login if local passwords
+    // are enabled.
+    EXPECT_CALL(
+        userdataauth(),
+        AddAuthFactor(AllOf(WithFirstAuthSessionId(),
+                            WithPasswordFactorAdd(kCryptohomeGaiaKeyLabel)),
+                      _))
+        .WillOnce(ReplyWith(AddAuthFactorReply()));
+  }
   EXPECT_CALL(userdataauth(), ListAuthFactors(WithAccountId(), _))
       .WillOnce(ReplyWith(ListAuthFactorsReply()));
 
@@ -505,7 +539,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeral) {
 
 // Test the `CompleteLogin()` method in the scenario when an ephemeral login is
 // requested while having stale persistent data for the same user.
-TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
+TEST_P(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
@@ -535,12 +569,17 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
     EXPECT_CALL(userdataauth(),
                 PrepareEphemeralVault(WithSecondAuthSessionId(), _))
         .WillOnce(ReplyWith(BuildPrepareEphemeralVaultReply()));
-    EXPECT_CALL(
-        userdataauth(),
-        AddAuthFactor(AllOf(WithSecondAuthSessionId(),
-                            WithPasswordFactorAdd(kCryptohomeGaiaKeyLabel)),
-                      _))
-        .WillOnce(ReplyWith(AddAuthFactorReply()));
+
+    if (!GetParam()) {
+      // We do not call `AddAuthFactor` during complete login if local passwords
+      // are enabled.
+      EXPECT_CALL(
+          userdataauth(),
+          AddAuthFactor(AllOf(WithSecondAuthSessionId(),
+                              WithPasswordFactorAdd(kCryptohomeGaiaKeyLabel)),
+                        _))
+          .WillOnce(ReplyWith(AddAuthFactorReply()));
+    }
     EXPECT_CALL(userdataauth(), ListAuthFactors(WithAccountId(), _))
         .WillOnce(ReplyWith(ListAuthFactorsReply()));
   }
@@ -555,7 +594,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
 }
 
 // Test the `AuthenticateToLogin()` method in the successful scenario.
-TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLogin) {
+TEST_P(AuthSessionAuthenticatorTest, AuthenticateToLogin) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
@@ -591,7 +630,7 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLogin) {
 
 // Test the `AuthenticateToLogin()` method in the authentication failure
 // scenario.
-TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLoginAuthFailure) {
+TEST_P(AuthSessionAuthenticatorTest, AuthenticateToLoginAuthFailure) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
@@ -621,7 +660,7 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLoginAuthFailure) {
 }
 
 // Test the `LoginOffTheRecord()` method in the successful scenario.
-TEST_F(AuthSessionAuthenticatorTest, LoginOffTheRecord) {
+TEST_P(AuthSessionAuthenticatorTest, LoginOffTheRecord) {
   // Arrange.
   CreateAuthenticator();
   EXPECT_CALL(userdataauth(), PrepareGuestVault(_, _))
@@ -633,7 +672,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginOffTheRecord) {
 }
 
 // Test the `LoginAsPublicSession()` method in the successful scenario.
-TEST_F(AuthSessionAuthenticatorTest, LoginAsPublicSession) {
+TEST_P(AuthSessionAuthenticatorTest, LoginAsPublicSession) {
   // Arrange.
   CreateAuthenticator();
   UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT, kAccountId);
@@ -660,7 +699,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsPublicSession) {
 
 // Test the `LoginAsKioskAccount()` method in the scenario when the kiosk
 // homedir needs to be created.
-TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountNew) {
+TEST_P(AuthSessionAuthenticatorTest, LoginAsKioskAccountNew) {
   // Arrange.
   CreateAuthenticator();
   EXPECT_CALL(userdataauth(),
@@ -693,7 +732,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountNew) {
 
 // Test the `LoginAsKioskAccount()` method in the scenario when the kiosk
 // homedir already exists.
-TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountExisting) {
+TEST_P(AuthSessionAuthenticatorTest, LoginAsKioskAccountExisting) {
   // Arrange.
   CreateAuthenticator();
   KeyData key_data;
@@ -723,7 +762,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountExisting) {
 }
 
 // Test the `LoginAsKioskAccount()` method in the ephemeral kiosk scenario.
-TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeral) {
+TEST_P(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeral) {
   // Arrange.
   CreateAuthenticator();
   EXPECT_CALL(
@@ -749,7 +788,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeral) {
 
 // Test the `LoginAsKioskAccount()` method in the scenario when an ephemeral
 // kiosk is requested while having stale persistent data for the same user.
-TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeralStaleData) {
+TEST_P(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeralStaleData) {
   // Arrange.
   CreateAuthenticator();
   {
@@ -788,7 +827,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeralStaleData) {
 }
 
 // Test the `AuthenticateToUnlock()` method in the successful scenario.
-TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlock) {
+TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlock) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
@@ -821,7 +860,7 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlock) {
 
 // Test the `AuthenticateToUnlock()` method in the successful scenario for
 // ephemeral user with the configured password.
-TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockEphemeral) {
+TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlockEphemeral) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
@@ -855,7 +894,7 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockEphemeral) {
 
 // Test the `AuthenticateToUnlock()` method in the successful scenario for
 // Managed Guest Session with the configured password (e.g., Imprivata).
-TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockMgs) {
+TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlockMgs) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
@@ -888,7 +927,7 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockMgs) {
 
 // Test the `AuthenticateToUnlock()` method in the authentication failure
 // scenario.
-TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockinAuthFailure) {
+TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlockinAuthFailure) {
   // Arrange.
   CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
