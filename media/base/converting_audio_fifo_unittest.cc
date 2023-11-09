@@ -60,7 +60,9 @@ class ConvertingAudioFifoTest
   void PushFrames(int frames, int channels = kDefaultChannels) {
     DCHECK(frames);
     DCHECK(channels);
-    fifo_->Push(AudioBus::Create(channels, frames));
+    auto bus = AudioBus::Create(channels, frames);
+    bus->Zero();
+    fifo_->Push(std::move(bus));
   }
 
   void PushFramesWithValue(AudioParameters params, float value) {
