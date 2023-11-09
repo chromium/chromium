@@ -8213,6 +8213,9 @@
             ],
             "experiments": [
                 {
+                    "name": "Default"
+                },
+                {
                     "name": "Enabled",
                     "enable_features": [
                         "HitTestOpaqueness"
