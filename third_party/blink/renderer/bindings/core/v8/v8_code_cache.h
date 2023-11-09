@@ -55,6 +55,10 @@ class CORE_EXPORT V8CodeCache final {
 
   static uint64_t GetTimestamp();
 
+  // Returns true iff the CachedMetadataHandler contains a hot time stamp or a
+  // compile hints cache containing a hot timestamp.
+  static bool HasHotTimestamp(const CachedMetadataHandler* cache_handler);
+
   // Returns true iff the CachedMetadataHandler contains a code cache
   // that can be consumed by V8.
   static bool HasCodeCache(
