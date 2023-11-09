@@ -598,9 +598,8 @@ void DownloadBubbleSecurityView::AddPasswordPrompt(views::View* parent) {
                                /*adjust_height_for_width=*/false));
   password_prompt_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          views::DISTANCE_RELATED_CONTROL_VERTICAL),
-                      0));
+      gfx::Insets().set_top(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
   UpdatePasswordPrompt();
 }
 
