@@ -6,7 +6,6 @@
 
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -20,15 +19,12 @@ NonAccessibleView::NonAccessibleView(const std::string& name) : name_(name) {}
 
 NonAccessibleView::~NonAccessibleView() = default;
 
-std::string NonAccessibleView::GetObjectName() const {
-  return name_;
+const char* NonAccessibleView::GetClassName() const {
+  return name_.c_str();
 }
 
 void NonAccessibleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddState(ax::mojom::State::kInvisible);
 }
-
-BEGIN_METADATA(NonAccessibleView)
-END_METADATA
 
 }  // namespace ash

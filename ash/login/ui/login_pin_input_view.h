@@ -10,7 +10,6 @@
 #include "ash/login/ui/non_accessible_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
 
@@ -35,8 +34,6 @@ class LoginPinInput;
 //
 class ASH_EXPORT LoginPinInputView : public views::View,
                                      public ui::ImplicitAnimationObserver {
-  METADATA_HEADER(LoginPinInputView, views::View)
-
  public:
   using OnPinSubmit = base::RepeatingCallback<void(const std::u16string& pin)>;
   using OnPinChanged = base::RepeatingCallback<void(bool is_empty)>;

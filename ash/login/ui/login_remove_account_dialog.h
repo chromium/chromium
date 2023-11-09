@@ -12,7 +12,6 @@
 #include "ash/login/ui/login_button.h"
 #include "base/memory/raw_ptr.h"
 #include "components/user_manager/user_type.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/view.h"
@@ -24,8 +23,6 @@ class RemoveUserButton;
 
 class ASH_EXPORT LoginRemoveAccountDialog : public LoginBaseBubbleView,
                                             public views::FocusTraversable {
-  METADATA_HEADER(LoginRemoveAccountDialog, LoginBaseBubbleView)
-
  public:
   class TestApi {
    public:

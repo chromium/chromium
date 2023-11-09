@@ -10,7 +10,6 @@
 #include "ash/style/system_textfield.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -22,8 +21,6 @@ class Range;
 namespace ash {
 
 class AccessCodeInput : public views::View, public views::TextfieldController {
-  METADATA_HEADER(AccessCodeInput, views::View)
-
  public:
   static constexpr int kAccessCodeInputFieldUnderlineThicknessDp = 2;
   static constexpr int kAccessCodeInputFieldHeightDp =
@@ -57,8 +54,6 @@ class AccessCodeInput : public views::View, public views::TextfieldController {
 };
 
 class FlexCodeInput : public AccessCodeInput {
-  METADATA_HEADER(FlexCodeInput, AccessCodeInput)
-
  public:
   using OnInputChange = base::RepeatingCallback<void(bool enable_submit)>;
   using OnEnter = base::RepeatingClosure;
@@ -128,8 +123,6 @@ class FlexCodeInput : public AccessCodeInput {
 // Accessible input field for a single digit in fixed length codes.
 // Customizes field description and focus behavior.
 class AccessibleInputField : public SystemTextfield {
-  METADATA_HEADER(AccessibleInputField, SystemTextfield)
-
  public:
   AccessibleInputField();
 
@@ -148,8 +141,6 @@ class AccessibleInputField : public SystemTextfield {
 // Digital access code input view for variable length of input codes.
 // Displays a separate underscored field for every input code digit.
 class FixedLengthCodeInput : public AccessCodeInput {
-  METADATA_HEADER(FixedLengthCodeInput, AccessCodeInput)
-
  public:
   using OnInputChange =
       base::RepeatingCallback<void(bool last_field_active, bool complete)>;

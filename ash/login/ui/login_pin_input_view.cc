@@ -19,8 +19,6 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/size.h"
@@ -44,8 +42,6 @@ constexpr const char kLoginPinInputViewClassName[] = "LoginPinInputView";
 // A FixedLengthCodeInput that is always obscured and
 // has some special focus handling.
 class LoginPinInput : public FixedLengthCodeInput {
-  METADATA_HEADER(LoginPinInput, FixedLengthCodeInput)
-
  public:
   LoginPinInput(int length,
                 LoginPinInputView::OnPinSubmit on_submit,
@@ -149,9 +145,6 @@ void LoginPinInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(l10n_util::GetStringUTF8(
       IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME));
 }
-
-BEGIN_METADATA(LoginPinInput)
-END_METADATA
 
 const int LoginPinInputView::kDefaultLength = 6;
 
@@ -311,8 +304,5 @@ void LoginPinInputView::OnChanged(bool is_empty) {
     on_changed_.Run(is_empty);
   }
 }
-
-BEGIN_METADATA(LoginPinInputView)
-END_METADATA
 
 }  // namespace ash
