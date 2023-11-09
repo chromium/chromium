@@ -129,6 +129,10 @@ BASE_DECLARE_FEATURE(kPerformanceControlsSidePanel);
 
 #endif
 
+BASE_DECLARE_FEATURE(kPMProcessPriorityPolicy);
+
+extern const base::FeatureParam<bool> kDownvoteAdFrames;
+
 // Enables or disables the availability of the probabilistic proactive tab
 // discarding evaluator.
 BASE_DECLARE_FEATURE(kProbabilisticProactiveDiscarding);

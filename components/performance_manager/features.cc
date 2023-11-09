@@ -130,6 +130,13 @@ BASE_FEATURE(kAshUrgentDiscardingFromPerformanceManager,
 
 #endif
 
+BASE_FEATURE(kPMProcessPriorityPolicy,
+             "PMProcessPriorityPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kDownvoteAdFrames{&kPMProcessPriorityPolicy,
+                                                 "downvote_ad_frames", false};
+
 BASE_FEATURE(kProbabilisticProactiveDiscarding,
              "ProbabilisticProactiveDiscarding",
              base::FEATURE_DISABLED_BY_DEFAULT);
