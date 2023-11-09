@@ -62,8 +62,7 @@ class GraphInfoBuilder final {
   //   absl::optional<float> leaky_relu_alpha;
   // };
   template <typename Conv2dAttributes>
-  void BuildConv2d(mojom::Conv2d_Type type,
-                   uint64_t input_operand_id,
+  void BuildConv2d(uint64_t input_operand_id,
                    uint64_t filter_operand_id,
                    uint64_t output_operand_id,
                    const Conv2dAttributes& attributes,
@@ -74,7 +73,6 @@ class GraphInfoBuilder final {
     conv2d->output_operand_id = output_operand_id;
 
     // Configure the attributes of conv2d.
-    conv2d->type = type;
     CHECK_EQ(attributes.padding.size(), 4u);
     conv2d->padding = mojom::Padding2d::New(
         /*beginning padding*/ mojom::Size2d::New(attributes.padding[0],
@@ -218,10 +216,10 @@ class GraphInfoBuilder final {
         mojom::Size2d::New(window_dimensions[0], window_dimensions[1]);
     CHECK_EQ(attributes.padding.size(), 4u);
     pool2d->padding = mojom::Padding2d::New(
-        /*beginning padding*/ mojom::Size2d::New(attributes.padding[0],
-                                                 attributes.padding[2]),
-        /*ending padding*/ mojom::Size2d::New(attributes.padding[1],
-                                              attributes.padding[3]));
+        /* beginning padding*/ mojom::Size2d::New(attributes.padding[0],
+                                                  attributes.padding[2]),
+        /* ending padding*/ mojom::Size2d::New(attributes.padding[1],
+                                               attributes.padding[3]));
     CHECK_EQ(attributes.strides.size(), 2u);
     pool2d->strides =
         mojom::Size2d::New(attributes.strides[0], attributes.strides[1]);

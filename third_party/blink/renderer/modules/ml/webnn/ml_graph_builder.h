@@ -60,10 +60,39 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLContext* GetContext() const;
 
+  // Calculate the effective padding for convTranspose2d based on WebNN auto
+  // padding rules.
+  //
+  // TODO(crbug.com/1273291): Add the link to WebNN spec's algorithm once it is
+  // defined, tracked by: https://github.com/webmachinelearning/webnn/issues/326
+  static absl::optional<webnn::PaddingSizes> CalculateConvTransposed2dPadding(
+      V8MLAutoPad::Enum auto_pad,
+      const uint32_t input_size,
+      const uint32_t filter_size,
+      const uint32_t stride,
+      const uint32_t dilation,
+      const uint32_t output_padding);
+
   struct Size2D {
     uint32_t height;
     uint32_t width;
   };
+
+  // Validate and calculate the output spatial dimensions of convTranspose2d
+  // given input sizes, filter sizes, padding, strides, dilations and output
+  // padding. Return the calculated output sizes in double precision floating
+  // point number if no errors.
+  static base::expected<Size2D, String>
+  ValidateAndCalculateConvTranspose2dOutputSizes(
+      const uint32_t input_height,
+      const uint32_t input_width,
+      const uint32_t filter_height,
+      const uint32_t filter_width,
+      const Vector<uint32_t>& padding,
+      const Vector<uint32_t>& strides,
+      const Vector<uint32_t>& dilations,
+      const Vector<uint32_t>& output_padding,
+      const V8MLAutoPad auto_pad);
 
   // ml_graph_builder.idl
   MLOperand* input(String name,

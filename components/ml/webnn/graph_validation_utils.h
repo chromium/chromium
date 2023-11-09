@@ -73,25 +73,20 @@ std::string DataTypeConstraintToString(
 // Represents the `MLInputOperandLayout` that specifies the layout format of
 // the input tensor. N is the batch, C is input channels, H is height and W is
 // the width of the tensor.
-enum class InputOperandLayout { kNchw, kNhwc };
+enum InputOperandLayout { kNchw, kNhwc };
 
 // Represents the `MLConv2dFilterOperandLayout` that specifies the layout format
-// of the filter tensor. O is output channels, I is input channels / groups, H
-// is height and W is the width of filter.
-enum class Conv2dFilterOperandLayout { kOihw, kHwio, kOhwi, kIhwo };
-
-// Represents the `MLConvTranspose2dFilterOperandLayout` that specifies the
-// layout format of the filter tensor. I is input channels, O is output channels
-// / groups, H is height and W is the width of filter.
-enum class ConvTranspose2dFilterOperandLayout { kIohw, kHwoi, kOhwi };
+// of the filter tensor. O is output channels, I is input channels, H is height
+// and W is the width of filter.
+enum Conv2dFilterOperandLayout { kOihw, kHwio, kOhwi, kIhwo };
 
 // Represents the `MLAutoPad`. `Explicit` means that the values in the padding
 // array should be used for calculating input padding, the `SameUpper` and
 // `SameLower` options mean the padding values are automatically computed.
-enum class AutoPad { kExplicit, kSameUpper, kSameLower };
+enum AutoPad { kExplicit, kSameUpper, kSameLower };
 
 // Represents the `MLRoundingType` that is used to compute the output shape.
-enum class RoundingType { kFloor, kCeil };
+enum RoundingType { kFloor, kCeil };
 
 enum ReduceKind {
   kL1,
@@ -123,15 +118,15 @@ struct Padding2d {
 };
 
 // Contains the attributes of conv2d operator.
-struct Conv2dAttributesBase {
-  Conv2dAttributesBase();
-  ~Conv2dAttributesBase();
+struct Conv2dAttributes {
+  Conv2dAttributes();
+  ~Conv2dAttributes();
 
-  Conv2dAttributesBase(Conv2dAttributesBase&& other);
-  Conv2dAttributesBase& operator=(Conv2dAttributesBase&& other);
+  Conv2dAttributes(Conv2dAttributes&& other);
+  Conv2dAttributes& operator=(Conv2dAttributes&& other);
 
-  Conv2dAttributesBase(const Conv2dAttributesBase&) = delete;
-  Conv2dAttributesBase& operator=(const Conv2dAttributesBase&) = delete;
+  Conv2dAttributes(const Conv2dAttributes&) = delete;
+  Conv2dAttributes& operator=(const Conv2dAttributes&) = delete;
 
   // The additional rows and columns added to the beginning and ending of each
   // spatial dimension of input.
@@ -147,45 +142,11 @@ struct Conv2dAttributesBase {
   uint32_t groups = 1;
   // The layout format of the input.
   InputOperandLayout input_layout = InputOperandLayout::kNchw;
+  // The layout format of the filter.
+  Conv2dFilterOperandLayout filter_layout = Conv2dFilterOperandLayout::kOihw;
   // The additional 1-D tensor with the shape of [output_channels] whose values
   // are to be added to the convolution result.
   absl::optional<Operand> bias_operand;
-};
-
-// Contains the attributes of conv2d operator.
-struct Conv2dAttributes : Conv2dAttributesBase {
-  Conv2dAttributes();
-  ~Conv2dAttributes();
-
-  Conv2dAttributes(Conv2dAttributes&& other);
-  Conv2dAttributes& operator=(Conv2dAttributes&& other);
-
-  Conv2dAttributes(const Conv2dAttributes&) = delete;
-  Conv2dAttributes& operator=(const Conv2dAttributes&) = delete;
-
-  // The layout format of the conv2d filter.
-  Conv2dFilterOperandLayout filter_layout = Conv2dFilterOperandLayout::kOihw;
-};
-
-// Contains the attributes of convTranspose2d operator.
-struct ConvTranspose2dAttributes : Conv2dAttributesBase {
-  ConvTranspose2dAttributes();
-  ~ConvTranspose2dAttributes();
-
-  ConvTranspose2dAttributes(ConvTranspose2dAttributes&& other);
-  ConvTranspose2dAttributes& operator=(ConvTranspose2dAttributes&& other);
-
-  ConvTranspose2dAttributes(const ConvTranspose2dAttributes&) = delete;
-  ConvTranspose2dAttributes& operator=(const ConvTranspose2dAttributes&) =
-      delete;
-
-  // The padding values applied to each spatial dimension of the output tensor.
-  Size2d<uint32_t> output_padding;
-  // The sizes of the last two dimensions of the output tensor.
-  absl::optional<Size2d<uint32_t>> output_sizes;
-  // The layout format of the convTranspose2d filter.
-  ConvTranspose2dFilterOperandLayout filter_layout =
-      ConvTranspose2dFilterOperandLayout::kIohw;
 };
 
 // Contains the attributes of pool2d operator.
@@ -281,14 +242,6 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
     const Operand& input,
     const Operand& filter,
     const Conv2dAttributes& attributes);
-
-// Validate and infer output information of 2-D transposed convolution operator
-// defined in WebIDL here
-// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-convtranspose2d
-base::expected<Operand, std::string> ValidateConvTranspose2dAndInferOutput(
-    const Operand& input,
-    const Operand& filter,
-    const ConvTranspose2dAttributes& attributes);
 
 // Validate and infer output information of pad operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pad
@@ -394,31 +347,6 @@ absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
                                                     const uint32_t filter_size,
                                                     const uint32_t stride,
                                                     const uint32_t dilation);
-
-// Calculate the effective padding for convTranspose2d based on WebNN auto
-// padding rules.
-//
-// TODO(crbug.com/1273291): Add the link to WebNN spec's algorithm once it is
-// defined, tracked by: https://github.com/webmachinelearning/webnn/issues/326
-absl::optional<PaddingSizes> CalculateConvTranspose2dPadding(
-    AutoPad auto_pad,
-    const uint32_t input_size,
-    const uint32_t filter_size,
-    const uint32_t stride,
-    const uint32_t dilation,
-    const uint32_t output_padding);
-
-// Calculate the output size for convTranspose2d based on WebNN spec:
-// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-convtranspose2d
-// Return the calculated output size if no error.
-base::expected<uint32_t, std::string> CalculateConvTranspose2dOutputSize(
-    const uint32_t input_size,
-    const uint32_t filter_size,
-    const uint32_t beginning_padding,
-    const uint32_t ending_padding,
-    const uint32_t stride,
-    const uint32_t dilation,
-    const uint32_t output_padding);
 
 bool IsFloatingPointType(Operand::DataType data_type);
 
