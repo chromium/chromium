@@ -4360,27 +4360,6 @@
       },
     },
 
-    'live_companion_tests': {
-      'live_companion_tests': {
-        'test': 'browser_tests',
-        'args': [
-          '--gtest_filter=CompanionLiveTest.*',
-          '--run-live-tests',
-          '--run-manual',
-          '--sync-status-change-checker-timeout=600',
-          '--test-tiny-timeout=85000',
-          '--ui-test-action-timeout=90000',
-          '--ui-test-action-max-timeout=95000',
-          '--test-launcher-timeout=100000',
-          '--isolated-script-test-launcher-retry-limit=5',
-        ],
-        'swarming': {
-          'expiration': 3600,
-          'hard_timeout': 3600,
-        },
-      },
-    },
-
     'mac_lsan_fyi_gtests': {
       'absl_hardening_tests': {},
       'accessibility_unittests': {},

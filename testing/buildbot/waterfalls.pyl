@@ -6809,35 +6809,6 @@
       'chrome-tester-service-account',
     ],
     'machines': {
-      'companion-linux': {
-        'mixins': [
-          'chrome-intelligence-swarming-pool',
-          'chrome-tester-service-account',
-          'linux-jammy-or-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'live_companion_tests',
-        },
-        'args':[
-          '--browser=debug',
-          '--xvfb',
-        ],
-        'os_type': 'linux',
-      },
-      'companion-win64': {
-        'mixins': [
-          'chrome-intelligence-swarming-pool',
-          'chrome-tester-service-account',
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'live_companion_tests',
-        },
-        'args':[
-          '--browser=debug_x64',
-        ],
-        'os_type': 'win',
-      },
       'optimization_guide-android-arm64': {
         'mixins': [
           'android',

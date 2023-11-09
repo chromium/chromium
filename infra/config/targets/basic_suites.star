@@ -5146,31 +5146,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "live_companion_tests",
-    tests = {
-        "live_companion_tests": targets.legacy_test_config(
-            test = "browser_tests",
-            args = [
-                "--gtest_filter=CompanionLiveTest.*",
-                "--run-live-tests",
-                "--run-manual",
-                "--sync-status-change-checker-timeout=600",
-                # Timeout values below are in milliseconds.
-                "--test-tiny-timeout=85000",
-                "--ui-test-action-timeout=90000",
-                "--ui-test-action-max-timeout=95000",
-                "--test-launcher-timeout=100000",
-                "--isolated-script-test-launcher-retry-limit=5",
-            ],
-            swarming = targets.swarming(
-                expiration_sec = 3600,
-                hard_timeout_sec = 3600,
-            ),
-        ),
-    },
-)
-
 # TODO(crbug.com/1320449): Remove this set of test suites when LSan can be
 # enabled Mac ASan bots. This list will be gradually filled with more tests
 # until the bot has parity with ASan bots, and the ASan bot can then enable
