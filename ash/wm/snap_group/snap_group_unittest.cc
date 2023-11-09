@@ -15,7 +15,6 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
@@ -1675,9 +1674,7 @@ TEST_F(SnapGroupTest, ReflectSnapRatioInOverviewGroupItem) {
 
 // Tests that the overview group item will be closed when focused in overview
 // with `Ctrl + W`.
-// TODO(michelefan@): Re-purpose this test. Currently disabled due to product
-// decision change.
-TEST_F(SnapGroupTest, DISABLED_CtrlPlusWToCloseFocusedGroupInOverview) {
+TEST_F(SnapGroupTest, CtrlPlusWToCloseFocusedGroupInOverview) {
   // Explicitly enable immediate close so that we can directly close the
   // window(s) without waiting the delayed task to be completed in
   // `ScopedOverviewTransformWindow::Close()`.
@@ -1700,7 +1697,7 @@ TEST_F(SnapGroupTest, DISABLED_CtrlPlusWToCloseFocusedGroupInOverview) {
   // avoid double deletion.
   w0.release();
   w1.release();
-  SendKey(ui::VKEY_TAB, GetEventGenerator(), ui::EF_CONTROL_DOWN);
+  SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
 
   // Verify that both windows in the snap group will be deleted.
   EXPECT_FALSE(w0.get());
@@ -1889,14 +1886,14 @@ TEST_F(SnapGroupTest, OverviewGroupItemFocusCycling) {
   // Overview items to be cycled:
   // [window0, window1], window2
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
-  auto* event_generator = GetEventGenerator();
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/2);
-  SendKey(ui::VKEY_RETURN, event_generator);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_RETURN);
   EXPECT_FALSE(overview_controller->InOverviewSession());
   MruWindowTracker* mru_window_tracker = Shell::Get()->mru_window_tracker();
-  aura::Window* top_most_window = window_util::GetTopMostWindow(
-      mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
-  EXPECT_EQ(top_most_window, window2.get());
+  EXPECT_EQ(
+      window_util::GetTopMostWindow(
+          mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk)),
+      window2.get());
 
   overview_controller->StartOverview(OverviewStartAction::kTests,
                                      OverviewEnterExitType::kImmediateEnter);
@@ -1905,12 +1902,13 @@ TEST_F(SnapGroupTest, OverviewGroupItemFocusCycling) {
   // Overview items to be cycled:
   // window2, [window0, window1]
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/2);
-  SendKey(ui::VKEY_RETURN, event_generator);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_RETURN);
   EXPECT_FALSE(overview_controller->InOverviewSession());
-  top_most_window = window_util::GetTopMostWindow(
-      mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
-  EXPECT_EQ(top_most_window, window1.get());
+  EXPECT_EQ(
+      window_util::GetTopMostWindow(
+          mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk)),
+      window1.get());
 }
 
 // Tests the basic functionality of activating a group item in overview with

@@ -65,7 +65,6 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
 
   // OverviewFocusableView:
   views::View* GetView() override;
-  OverviewItemBase* GetOverviewItem() override;
   void MaybeActivateFocusedView() override;
   void MaybeCloseFocusedView(bool primary_action) override;
   void MaybeSwapFocusedView(bool right) override;

@@ -253,7 +253,19 @@ bool OverviewFocusCycler::MaybeActivateFocusedViewOnOverviewExit() {
 }
 
 OverviewItemBase* OverviewFocusCycler::GetFocusedItem() const {
-  return focused_view_ ? focused_view_->GetOverviewItem() : nullptr;
+  if (!focused_view_) {
+    return nullptr;
+  }
+
+  for (auto& grid : overview_session_->grid_list()) {
+    for (auto& item : grid->window_list()) {
+      if (focused_view_->GetView() == item->GetFocusableView()->GetView()) {
+        return item.get();
+      }
+    }
+  }
+
+  return nullptr;
 }
 
 void OverviewFocusCycler::ResetFocusedView() {
@@ -293,10 +305,8 @@ std::vector<OverviewFocusableView*> OverviewFocusCycler::GetTraversableViews()
         }
       }
     } else {
-      for (const auto& item : grid->window_list()) {
-        for (auto* focusable_view : item->GetFocusableViews()) {
-          traversable_views.push_back(focusable_view);
-        }
+      for (auto& item : grid->window_list()) {
+        traversable_views.push_back(item->GetFocusableView());
       }
     }
 

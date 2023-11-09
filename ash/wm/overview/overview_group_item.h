@@ -55,7 +55,7 @@ class OverviewGroupItem : public OverviewItemBase,
   float GetItemScale(int height) override;
   void ScaleUpSelectedItem(OverviewAnimationType animation_type) override;
   void EnsureVisible() override;
-  std::vector<OverviewFocusableView*> GetFocusableViews() const override;
+  OverviewFocusableView* GetFocusableView() const override;
   views::View* GetBackDropView() const override;
   void UpdateRoundedCornersAndShadow() override;
   void SetOpacity(float opacity) override;

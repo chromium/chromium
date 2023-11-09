@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
+#include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -254,7 +255,7 @@ TEST_P(OverviewFocusCyclerTest, MultiMonitorReversedOrder) {
 }
 
 // Tests three monitors where the grid becomes empty on one of the monitors.
-TEST_P(OverviewFocusCyclerTest, ThreeMonitors) {
+TEST_P(OverviewFocusCyclerTest, ThreeMonitor) {
   UpdateDisplay("500x400,500x400,500x400");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   std::unique_ptr<aura::Window> window3(

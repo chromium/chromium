@@ -8,7 +8,6 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_constants.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_group_container_view.h"
 #include "ash/wm/overview/overview_item.h"
@@ -232,15 +231,8 @@ void OverviewGroupItem::ScaleUpSelectedItem(
 
 void OverviewGroupItem::EnsureVisible() {}
 
-std::vector<OverviewFocusableView*> OverviewGroupItem::GetFocusableViews()
-    const {
-  std::vector<OverviewFocusableView*> focusable_views;
-  for (const auto& overview_item : overview_items_) {
-    if (auto* overview_item_view = overview_item->overview_item_view()) {
-      focusable_views.push_back(overview_item_view);
-    }
-  }
-  return focusable_views;
+OverviewFocusableView* OverviewGroupItem::GetFocusableView() const {
+  return overview_group_container_view_;
 }
 
 views::View* OverviewGroupItem::GetBackDropView() const {
@@ -346,7 +338,7 @@ OverviewGridWindowFillMode OverviewGroupItem::GetWindowDimensionsType() const {
 void OverviewGroupItem::UpdateWindowDimensionsType() {}
 
 gfx::Point OverviewGroupItem::GetMagnifierFocusPointInScreen() const {
-  return overview_group_container_view_->GetBoundsInScreen().CenterPoint();
+  return overview_group_container_view_->GetMagnifierFocusPointInScreen();
 }
 
 const gfx::RoundedCornersF OverviewGroupItem::GetRoundedCorners() const {

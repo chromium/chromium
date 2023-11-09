@@ -84,6 +84,12 @@ base::FilePath CreateCustomFolderInUserDownloadsPath(
 // created in the root folder with given `custom_folder_name`.
 base::FilePath CreateFolderOnDriveFS(const std::string& custom_folder_name);
 
+// Sends a press release key combo `count` times.
+void SendKey(ui::KeyboardCode key_code,
+             ui::test::EventGenerator* event_generator,
+             int flags = ui::EF_NONE,
+             int count = 1);
+
 // Wait for a specific `seconds`.
 void WaitForSeconds(int seconds);
 

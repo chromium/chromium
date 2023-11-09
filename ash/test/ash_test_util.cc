@@ -27,7 +27,6 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -273,15 +272,6 @@ chromeos::MultitaskMenu* ShowAndWaitMultitaskMenuForWindow(
   auto* multitask_menu =
       static_cast<chromeos::MultitaskMenu*>(delegate->AsDialogDelegate());
   return multitask_menu;
-}
-
-void SendKey(ui::KeyboardCode key_code,
-             ui::test::EventGenerator* event_generator,
-             int flags,
-             int count) {
-  for (int i = 0; i < count; ++i) {
-    event_generator->PressAndReleaseKey(key_code, flags);
-  }
 }
 
 }  // namespace ash

@@ -95,7 +95,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   gfx::RectF GetWindowsUnionScreenBounds() const override;
   gfx::RectF GetTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
-  std::vector<OverviewFocusableView*> GetFocusableViews() const override;
+  OverviewFocusableView* GetFocusableView() const override;
   views::View* GetBackDropView() const override;
   void UpdateRoundedCornersAndShadow() override;
   void SetOpacity(float opacity) override;
