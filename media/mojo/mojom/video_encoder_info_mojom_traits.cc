@@ -34,6 +34,7 @@ bool StructTraits<
   out->apply_alignment_to_all_simulcast_layers =
       data.apply_alignment_to_all_simulcast_layers();
   out->requested_resolution_alignment = data.requested_resolution_alignment();
+  out->supports_frame_size_change = data.supports_frame_size_change();
 
   if (!data.ReadImplementationName(&out->implementation_name))
     return false;
