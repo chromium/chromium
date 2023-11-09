@@ -125,6 +125,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/core/xml_names.h"
@@ -2099,7 +2100,12 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
 String Node::DebugName() const {
   StringBuilder name;
   name.Append(nodeName());
-  if (const auto* this_element = DynamicTo<Element>(this)) {
+  if (const auto* vt_pseudo =
+          DynamicTo<ViewTransitionPseudoElementBase>(this)) {
+    name.Append("(");
+    name.Append(vt_pseudo->view_transition_name());
+    name.Append(")");
+  } else if (const auto* this_element = DynamicTo<Element>(this)) {
     if (this_element->HasID()) {
       name.Append(" id=\'");
       name.Append(this_element->GetIdAttribute());
@@ -2164,6 +2170,11 @@ String Node::ToString() const {
     builder.Append(" ");
     builder.Append(nodeValue().EncodeForDebugging());
     return builder.ReleaseString();
+  } else if (const auto* vt_pseudo =
+                 DynamicTo<ViewTransitionPseudoElementBase>(this)) {
+    builder.Append("(");
+    builder.Append(vt_pseudo->view_transition_name());
+    builder.Append(")");
   } else if (const auto* element = DynamicTo<Element>(this)) {
     const AtomicString& pseudo = element->ShadowPseudoId();
     if (!pseudo.empty()) {
