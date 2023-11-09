@@ -20,7 +20,6 @@ mojom("mojom") {
   ]
 
   webui_module_path = "/"
-  use_typescript_sources = true
 
   # Blink requires legacy JS bindings.
   generate_legacy_js_bindings = true
