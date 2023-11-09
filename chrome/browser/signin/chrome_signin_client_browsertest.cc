@@ -15,11 +15,17 @@
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
+#endif
+
 class ChromeSigninClientBrowserTest : public InProcessBrowserTest {};
 
 // This test is intended to make sure the count of bookmarks is done accurately.
 IN_PROC_BROWSER_TEST_F(ChromeSigninClientBrowserTest,
-                       BookmarksMetricsRecordOnSignin) {
+                       BookmarksMetricsRecordOnSignin_Sync) {
   base::HistogramTester histogram_tester;
 
   bookmarks::BookmarkModel* bookmark_model =
@@ -136,3 +142,59 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientBrowserTest,
       histogram_tester_sync.GetTotalCountsForPrefix("Signin.Bookmarks.OnSign"),
       testing::ContainerEq(expected_signin_counts));
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+IN_PROC_BROWSER_TEST_F(ChromeSigninClientBrowserTest,
+                       ExtensionsMetricsRecordOnSignin_Sync) {
+  base::HistogramTester histogram_tester;
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+  // Create 3 fake extensions and enable them.
+  registry->AddEnabled(extensions::ExtensionBuilder("Extension1").Build());
+  registry->AddEnabled(extensions::ExtensionBuilder("Extension2").Build());
+  registry->AddEnabled(extensions::ExtensionBuilder("Extension3").Build());
+  // Pre installed extensions by default:
+  // - Web Store
+  // - Chromium/Chrome PDF Viewer
+  size_t default_extensions_count = 2;
+  size_t expected_extensions_count = default_extensions_count + 3;
+
+  // Sign in to Chrome.
+  const std::string email = "alice@example.com";
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::MakePrimaryAccountAvailable(identity_manager, email,
+                                      signin::ConsentLevel::kSignin);
+
+  histogram_tester.ExpectUniqueSample("Signin.Extensions.OnSignin",
+                                      expected_extensions_count, 1);
+  histogram_tester.ExpectUniqueSample("Signin.Extensions.OnSignin.Other",
+                                      expected_extensions_count, 1);
+  // No values expected for sync.
+  base::HistogramTester::CountsMap expected_sync_counts;
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Signin.Extensions.OnSync"),
+      testing::ContainerEq(expected_sync_counts));
+
+  // Add 1 more extension before syncing.
+  registry->AddEnabled(extensions::ExtensionBuilder("Extension4").Build());
+  size_t sync_expected_extensions_count = expected_extensions_count + 1;
+
+  // New histogram tester for easier new values check.
+  base::HistogramTester histogram_tester_sync;
+  // Enable Sync.
+  signin::MakePrimaryAccountAvailable(identity_manager, email,
+                                      signin::ConsentLevel::kSync);
+
+  histogram_tester_sync.ExpectUniqueSample("Signin.Extensions.OnSync",
+                                           sync_expected_extensions_count, 1);
+  histogram_tester_sync.ExpectUniqueSample("Signin.Extensions.OnSync.Other",
+                                           sync_expected_extensions_count, 1);
+  // No values expected for sync.
+  base::HistogramTester::CountsMap expected_signin_counts;
+  EXPECT_THAT(histogram_tester_sync.GetTotalCountsForPrefix(
+                  "Signin.Extensions.OnSignin"),
+              testing::ContainerEq(expected_signin_counts));
+}
+#endif
