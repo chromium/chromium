@@ -817,15 +817,23 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCardCheckTime) {
 
 TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
        ResultWhenChangingLeakedPassword) {
-  const PasswordStatusCheckResult& old_result = service()->GetCachedResult();
-  EXPECT_THAT(old_result.GetCompromisedOrigins(), testing::IsEmpty());
+  absl::optional<std::unique_ptr<SafetyHubService::Result>> opt_old_result =
+      service()->GetCachedResult();
+  EXPECT_TRUE(opt_old_result.has_value());
+  PasswordStatusCheckResult* old_result =
+      static_cast<PasswordStatusCheckResult*>(opt_old_result.value().get());
+  EXPECT_THAT(old_result->GetCompromisedOrigins(), testing::IsEmpty());
 
   // When a leaked password is found, the result should be updated.
   password_store().AddLogin(MakeForm(kUsername2, kPassword, kOrigin1, true));
   RunUntilIdle();
 
-  const PasswordStatusCheckResult& new_result = service()->GetCachedResult();
-  EXPECT_THAT(new_result.GetCompromisedOrigins(),
+  absl::optional<std::unique_ptr<SafetyHubService::Result>> opt_new_result =
+      service()->GetCachedResult();
+  EXPECT_TRUE(opt_new_result.has_value());
+  PasswordStatusCheckResult* new_result =
+      static_cast<PasswordStatusCheckResult*>(opt_new_result.value().get());
+  EXPECT_THAT(new_result->GetCompromisedOrigins(),
               testing::ElementsAre(kOrigin1));
 }
 

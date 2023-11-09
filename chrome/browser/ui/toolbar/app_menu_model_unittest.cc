@@ -16,6 +16,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -24,6 +25,8 @@
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
@@ -39,6 +42,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/signin/public/base/consent_level.h"
@@ -536,8 +540,14 @@ class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
     feature_list_.InitAndEnableFeature(features::kSafetyHub);
   }
 
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+    password_store_ = CreateAndUseTestPasswordStore(profile());
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<password_manager::TestPasswordStore> password_store_;
 };
 
 TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
@@ -546,6 +556,14 @@ TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
   AppMenuModel model(this, browser());
   model.Init();
   EXPECT_FALSE(model.GetIndexOfCommandId(IDC_OPEN_SAFETY_HUB).has_value());
+
+  // Let PasswordStatusCheckService to run till it fetches the latest data.
+  PasswordStatusCheckService* password_service =
+      PasswordStatusCheckServiceFactory::GetForProfile(profile());
+  // TODO(crbug.com/1443466): Replace this with password_service specific
+  // RunUntilIdle.
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
 
   // Creating and showing a notification for a site that has never been
   // interacted with, will be caught by the notification permission review
