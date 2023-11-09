@@ -7,12 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/files/file_path.h"
 #import "base/values.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 @protocol MiniMapCommands;
 @protocol UnitConversionCommands;
@@ -67,7 +68,7 @@ BOOL HandleIntentTypesForOneTap(
 // Returns a full set of intents of `handled_types`, located inside `text`. The
 // `model_path` for the give web state should be passed in if a detection by
 // model is required. (Note that some flags might still not allow it.)
-absl::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
+std::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
     const base::Value::Dict& metadata,
     const std::string& text,
     NSTextCheckingType handled_types,
