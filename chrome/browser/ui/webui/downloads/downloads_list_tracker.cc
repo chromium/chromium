@@ -76,6 +76,8 @@ downloads::mojom::DangerType GetDangerType(
       return downloads::mojom::DangerType::kPotentiallyUnwanted;
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
       return downloads::mojom::DangerType::kAsyncScanning;
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
+      return downloads::mojom::DangerType::kAsyncLocalPasswordScanning;
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
       return downloads::mojom::DangerType::kBlockedPasswordProtected;
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:

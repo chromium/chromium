@@ -1323,9 +1323,11 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
   if (!download_manager_)
     return;
   DownloadItem* item = download_manager_->GetDownload(download_id);
-  if (!item || (item->GetState() != DownloadItem::IN_PROGRESS &&
-                item->GetDangerType() !=
-                    download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING)) {
+  if (!item ||
+      (item->GetState() != DownloadItem::IN_PROGRESS &&
+       item->GetDangerType() != download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
+       item->GetDangerType() !=
+           download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING)) {
     return;
   }
 
@@ -1343,6 +1345,8 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
       item->GetDangerType() ==
           download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT ||
       item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING ||
+      item->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING ||
       item->GetDangerType() ==
           download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING ||
       item->GetDangerType() ==
@@ -1377,6 +1381,11 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
       case safe_browsing::DownloadCheckResult::ASYNC_SCANNING:
         is_pending_scanning = true;
         danger_type = download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING;
+        break;
+      case safe_browsing::DownloadCheckResult::ASYNC_LOCAL_PASSWORD_SCANNING:
+        is_pending_scanning = true;
+        danger_type =
+            download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING;
         break;
       case safe_browsing::DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
         danger_type = download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED;
@@ -1419,8 +1428,10 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
               download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT);
 
     if (item->GetState() == DownloadItem::COMPLETE &&
-        item->GetDangerType() ==
-            download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
+        (item->GetDangerType() ==
+             download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING ||
+         item->GetDangerType() ==
+             download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING)) {
       // If the file was opened during async scanning, we override the danger
       // type, since the user can no longer discard the download.
       if (danger_type != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {

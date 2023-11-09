@@ -227,6 +227,7 @@ std::u16string DownloadDangerPromptViews::GetMessageBody() const {
       case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
       case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
       case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+      case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
       case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
       case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
       case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:

@@ -90,6 +90,7 @@ void MaybeOverrideScanResult(DownloadCheckResultReason reason,
     // indicate the scan is not done, that the file is blocked for another
     // reason, or that the file is allowed by policy.
     case DownloadCheckResult::ASYNC_SCANNING:
+    case DownloadCheckResult::ASYNC_LOCAL_PASSWORD_SCANNING:
     case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
     case DownloadCheckResult::BLOCKED_TOO_LARGE:
     case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:

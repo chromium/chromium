@@ -113,6 +113,7 @@ bool IsDownloadAllowedBySafeBrowsing(
     // Safe Browsing should only return these results for client downloads, not
     // for PPAPI downloads.
     case Result::ASYNC_SCANNING:
+    case Result::ASYNC_LOCAL_PASSWORD_SCANNING:
     case Result::BLOCKED_PASSWORD_PROTECTED:
     case Result::BLOCKED_TOO_LARGE:
     case Result::SENSITIVE_CONTENT_BLOCK:

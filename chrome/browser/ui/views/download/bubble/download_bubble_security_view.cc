@@ -77,8 +77,9 @@ const char kSubpageActionHistogram[] = "Download.Bubble.SubpageAction";
 bool ShouldReturnToPrimaryDialog(download::DownloadDangerType danger_type,
                                  const DownloadUIModel::BubbleUIInfo& ui_info) {
   return danger_type == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED ||
-         // The only non-terminal danger type where the security subpage view
-         // shows is `DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING`. We should then
+         // The only non-terminal danger types where the security subpage view
+         // shows are `DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING` and
+         // `DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING`. We should then
          // return to the row view when the deep scan completes and is in a
          // state that doesn't have a security subpage. Specifically, that's
          // both safe and failed deep scans, but not scans that find malware.
@@ -626,12 +627,8 @@ bool DownloadBubbleSecurityView::ProcessButtonClick(
     }
   }
 
-  // TODO(crbug/1491184): Use a specific danger type for local decryption
-  // instead of sharing ASYNC_SCANNING with deep scanning.
-  if (danger_type_ ==
-          download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
-      (command == DownloadCommands::BYPASS_DEEP_SCANNING ||
-       command == DownloadCommands::CANCEL)) {
+  if (danger_type_ == download::DownloadDangerType::
+                          DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING) {
     delegate_->ProcessLocalPasswordInProgressClick(content_id_, command);
     return false;
   }

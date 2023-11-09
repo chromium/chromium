@@ -132,6 +132,7 @@ namespace downloads {
     accepted,
     allowlistedByPolicy,
     asyncScanning,
+    asyncLocalPasswordScanning,
     passwordProtected,
     blockedTooLarge,
     sensitiveContentWarning,

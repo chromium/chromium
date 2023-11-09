@@ -2937,6 +2937,9 @@ std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
     case DownloadCheckResult::ASYNC_SCANNING:
       url_and_result.Set("result", "ASYNC_SCANNING");
       break;
+    case DownloadCheckResult::ASYNC_LOCAL_PASSWORD_SCANNING:
+      url_and_result.Set("result", "ASYNC_LOCAL_PASSWORD_SCANNING");
+      break;
     case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
       url_and_result.Set("result", "BLOCKED_PASSWORD_PROTECTED");
       break;

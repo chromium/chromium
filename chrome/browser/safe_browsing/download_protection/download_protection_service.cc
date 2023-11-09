@@ -123,6 +123,7 @@ bool IsDownloadSecuritySensitive(safe_browsing::DownloadCheckResult result) {
     case Result::SAFE:
     case Result::ALLOWLISTED_BY_POLICY:
     case Result::ASYNC_SCANNING:
+    case Result::ASYNC_LOCAL_PASSWORD_SCANNING:
     case Result::BLOCKED_PASSWORD_PROTECTED:
     case Result::BLOCKED_TOO_LARGE:
     case Result::SENSITIVE_CONTENT_BLOCK:
@@ -882,7 +883,8 @@ void DownloadProtectionService::CheckDownloadWithLocalDecryption(
   DownloadItemWarningData::SetHasShownLocalDecryptionPrompt(item, true);
 
   delegate->CheckClientDownloadDone(
-      item->GetId(), safe_browsing::DownloadCheckResult::ASYNC_SCANNING);
+      item->GetId(),
+      safe_browsing::DownloadCheckResult::ASYNC_LOCAL_PASSWORD_SCANNING);
   protection_service->CheckClientDownload(
       item,
       base::BindRepeating(

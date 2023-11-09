@@ -40,6 +40,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="DownloadDangerTypeString">
   <variant name="AllowlistedByPolicy"/>
+  <variant name="AsyncLocalPasswordScanning"/>
   <variant name="AsyncScanning"/>
   <variant name="BlockedPasswordProtected"/>
   <variant name="BlockedTooLarge"/>
@@ -55,6 +56,7 @@ chromium-metrics-reviews@google.com.
   <variant name="MaybeDangerousContent"/>
   <variant name="NotDangerous"/>
   <variant name="PotentiallyUnwanted"/>
+  <variant name="PromptForLocalPasswordScanning"/>
   <variant name="PromptForScanning"/>
   <variant name="SensitiveContentBlock"/>
   <variant name="SensitiveContentWarning"/>

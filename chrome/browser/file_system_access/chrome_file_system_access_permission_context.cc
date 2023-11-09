@@ -476,6 +476,7 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
 
     // This shouldn't be returned for File System Access write checks.
     case Result::ASYNC_SCANNING:
+    case Result::ASYNC_LOCAL_PASSWORD_SCANNING:
     case Result::SENSITIVE_CONTENT_WARNING:
     case Result::SENSITIVE_CONTENT_BLOCK:
     case Result::DEEP_SCANNED_SAFE:

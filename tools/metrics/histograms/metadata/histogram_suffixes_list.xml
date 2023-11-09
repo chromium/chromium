@@ -1449,6 +1449,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="Proceed"
       label="The user clicked through and recovered the download."/>
   <suffix name="Shown" label="The user was shown the prompt."/>
+  <affected-histogram
+      name="Download.DownloadDangerPrompt.AsyncLocalPasswordScanning"/>
   <affected-histogram name="Download.DownloadDangerPrompt.AsyncScanning"/>
   <affected-histogram
       name="Download.DownloadDangerPrompt.BlockedPasswordProtected"/>
@@ -1465,6 +1467,8 @@ chromium-metrics-reviews@google.com.
       name="Download.DownloadDangerPrompt.DeepScannedOpenedDangerous"/>
   <affected-histogram name="Download.DownloadDangerPrompt.DeepScannedSafe"/>
   <affected-histogram name="Download.DownloadDangerPrompt.PotentiallyUnwanted"/>
+  <affected-histogram
+      name="Download.DownloadDangerPrompt.PromptForLocalPasswordScanning"/>
   <affected-histogram name="Download.DownloadDangerPrompt.PromptForScanning"/>
   <affected-histogram
       name="Download.DownloadDangerPrompt.SensitiveContentBlock"/>
@@ -1474,6 +1478,8 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="DownloadDangerPromptType" separator=".">
+  <suffix name="AsyncLocalPasswordScanning"
+      label="File marked ASYNC_LOCAL_PASSWORD_SCANNING"/>
   <suffix name="AsyncScanning" label="File marked ASYNC_SCANNING"/>
   <suffix name="BlockedPasswordProtected"
       label="File marked BLOCKED_PASSWORD_PROTECTED"/>
@@ -1491,6 +1497,8 @@ chromium-metrics-reviews@google.com.
       label="File marked DEEP_SCANNED_OPENED_DANGEROUS"/>
   <suffix name="DeepScannedSafe" label="File marked DEEP_SCANNED_SAFE"/>
   <suffix name="PotentiallyUnwanted" label="File marked POTENTIALLY_UNWANTED"/>
+  <suffix name="PromptForLocalPasswordScanning"
+      label="File marked PROMPT_FOR_LOCAL_PASSWORD_SCANNING"/>
   <suffix name="PromptForScanning" label="File marked PROMPT_FOR_SCANNING"/>
   <suffix name="SensitiveContentBlock"
       label="File marked SENSITIVE_CONTENT_BLOCK"/>

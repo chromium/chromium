@@ -190,6 +190,9 @@ extensions::api::downloads::DangerType ConvertDangerType(
       return extensions::api::downloads::DangerType::kAllowlistedByPolicy;
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
       return extensions::api::downloads::DangerType::kAsyncScanning;
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
+      return extensions::api::downloads::DangerType::
+          kAsyncLocalPasswordScanning;
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
       return extensions::api::downloads::DangerType::kPasswordProtected;
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
