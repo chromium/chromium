@@ -884,6 +884,7 @@ source_set("web_applications_browser_tests") {
     "commands/fetch_manifest_and_install_command_browsertest.cc",
     "commands/install_from_info_command_browsertest.cc",
     "commands/install_from_sync_command_browsertest.cc",
+    "commands/launch_web_app_command_browsertest.cc",
     "commands/navigate_and_trigger_install_dialog_command_browsertest.cc",
     "commands/update_protocol_handler_approval_command_browsertest.cc",
     "isolated_web_apps/garbage_collect_storage_partitions_command_browsertest.cc",

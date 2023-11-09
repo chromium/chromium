@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,6 +21,10 @@ class GURL;
 enum class WindowOpenDisposition;
 struct NavigateParams;
 
+namespace apps {
+struct AppLaunchParams;
+}
+
 namespace content {
 class WebContents;
 }
@@ -27,6 +32,7 @@ class WebContents;
 namespace web_app {
 
 class AppBrowserController;
+class AppLock;
 
 absl::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser);
 
@@ -103,6 +109,12 @@ void RecordLaunchMetrics(const webapps::AppId& app_id,
 void UpdateLaunchStats(content::WebContents* web_contents,
                        const webapps::AppId& app_id,
                        const GURL& launch_url);
+
+void LaunchWebApp(apps::AppLaunchParams params,
+                  LaunchWebAppWindowSetting launch_setting,
+                  Profile& profile,
+                  AppLock& lock,
+                  LaunchWebAppDebugValueCallback callback);
 
 }  // namespace web_app
 
