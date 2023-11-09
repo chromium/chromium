@@ -740,11 +740,6 @@
       base_feature: "none",
     },
     {
-      name: "ContentVisibilityAutoStateChangeEvent",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "ContextMenu",
       status: "experimental",
       base_feature: "none",

@@ -537,7 +537,6 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
 
 void DisplayLockContext::ScheduleStateChangeEventIfNeeded() {
   if (state_ == EContentVisibility::kAuto &&
-      RuntimeEnabledFeatures::ContentVisibilityAutoStateChangeEventEnabled() &&
       !state_change_task_pending_) {
     document_->GetExecutionContext()
         ->GetTaskRunner(TaskType::kMiscPlatformAPI)
