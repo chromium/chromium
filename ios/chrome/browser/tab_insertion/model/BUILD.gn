@@ -16,11 +16,9 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/url_loading/model:new_tab_animation_tab_helper",
-    "//ios/web/common:features",
     "//ios/web/common:user_agent",
     "//ios/web/public",
     "//ios/web/public/navigation",
-    "//ios/web/public/session",
     "//ios/web/public/session/proto",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -39,8 +37,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/url_loading/model:new_tab_animation_tab_helper",
+    "//ios/chrome/browser/web:feature_flags",
+    "//ios/chrome/browser/web/session_state",
     "//ios/web",
-    "//ios/web/common:features",
     "//ios/web/public/navigation",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
