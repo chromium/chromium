@@ -6715,6 +6715,11 @@
           'CROS_BRYA_RELEASE_ASH_LKGM',
         ],
       },
+      'chromeos_device_only_gtests': {
+        'variants': [
+          'CROS_BRYA_RELEASE_ASH_LKGM',
+        ],
+      },
       'chromeos_integration_tests': {
         'variants': [
           'CROS_BRYA_RELEASE_ASH_LKGM',
