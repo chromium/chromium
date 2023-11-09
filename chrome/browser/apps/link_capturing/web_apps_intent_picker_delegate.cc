@@ -164,7 +164,7 @@ void WebAppsIntentPickerDelegate::RecordOutputMetrics(
       break;
     case apps::IntentPickerCloseReason::STAY_IN_CHROME:
       base::RecordAction(
-          base::UserMetricsAction("IntentPickerViewClosedOpenInChrome"));
+          base::UserMetricsAction("IntentPickerViewClosedStayInChrome"));
       break;
     case apps::IntentPickerCloseReason::ERROR_BEFORE_PICKER:
     case apps::IntentPickerCloseReason::ERROR_AFTER_PICKER:

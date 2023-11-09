@@ -122,6 +122,10 @@ TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
   // Create empty app list which ensures the intent picker icon is hidden.
   helper()->MaybeShowIconForApps({});
 
+  histogram_tester.ExpectBucketCount("ChromeOS.Intents.IntentPickerIconEvent",
+                                     apps::IntentPickerIconEvent::kIconShown,
+                                     0);
+
   // None of the histograms should be incremented.
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
@@ -143,6 +147,9 @@ TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
     helper()->MaybeShowIconForApps(std::move(apps_list));
   }
 
+  histogram_tester.ExpectBucketCount("ChromeOS.Intents.IntentPickerIconEvent",
+                                     apps::IntentPickerIconEvent::kIconShown,
+                                     1);
   // All of the histograms should be incremented.
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
@@ -165,6 +172,9 @@ TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
     helper()->MaybeShowIconForApps(std::move(apps_list));
   }
 
+  histogram_tester.ExpectBucketCount("ChromeOS.Intents.IntentPickerIconEvent",
+                                     apps::IntentPickerIconEvent::kIconShown,
+                                     2);
   // Only the web app and general histograms should be incremented.
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
@@ -187,6 +197,9 @@ TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
     helper()->MaybeShowIconForApps(std::move(apps_list));
   }
 
+  histogram_tester.ExpectBucketCount("ChromeOS.Intents.IntentPickerIconEvent",
+                                     apps::IntentPickerIconEvent::kIconShown,
+                                     3);
   // Only the ARC app and general histograms should be incremented.
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
@@ -210,6 +223,9 @@ TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
     helper()->MaybeShowIconForApps(std::move(apps_list));
   }
 
+  histogram_tester.ExpectBucketCount("ChromeOS.Intents.IntentPickerIconEvent",
+                                     apps::IntentPickerIconEvent::kIconShown,
+                                     4);
   // Only the general histogram should be incremented.
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
@@ -220,5 +236,17 @@ TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Intents.LinkCapturingEvent2",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 4);
+}
+#else
+TEST_F(IntentPickerTabHelperTest, IconShownMetricsTriggered) {
+  base::HistogramTester histogram_tester;
+
+  NavigateAndCommit(GURL("https://www.google.com"));
+
+  // Create empty app list which ensures the intent picker icon is hidden.
+  helper()->MaybeShowIconForApps({});
+  histogram_tester.ExpectBucketCount(
+      "Webapp.Site.Intents.IntentPickerIconEvent",
+      apps::IntentPickerIconEvent::kIconShown, 0);
 }
 #endif  // #if BUILDFLAG(IS_CHROMEOS)

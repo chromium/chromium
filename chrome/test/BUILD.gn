@@ -3193,7 +3193,6 @@ if (!is_android) {
         "../browser/ui/test/test_browser_dialog_mac.mm",
         "../browser/ui/views/frame/browser_non_client_frame_view_mac_browsertest.mm",
         "../browser/ui/views/fullscreen_mac_browsertest.cc",
-        "../browser/ui/views/intent_picker_bubble_view_browsertest_mac.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac.cc",
         "../browser/webshare/mac/sharing_service_operation_browsertest.cc",
         "../common/mac/app_mode_chrome_locator_browsertest.mm",
@@ -3351,6 +3350,7 @@ if (!is_android) {
       sources += [
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
         "../browser/lifetime/application_lifetime_browsertest.cc",
+        "../browser/ui/views/default_intent_picker_browsertest.cc",
         "../browser/ui/views/enable_link_capturing_infobar_browsertest.cc",
       ]
       deps += [ "//chrome/browser/apps/link_capturing" ]
@@ -10181,6 +10181,8 @@ if (!is_android) {
       "../browser/ui/views/tabs/tab_hover_card_test_util.h",
       "../browser/ui/views/web_apps/web_app_integration_test_driver.cc",
       "../browser/ui/views/web_apps/web_app_integration_test_driver.h",
+      "../browser/ui/views/web_apps/web_app_link_capturing_test_utils.cc",
+      "../browser/ui/views/web_apps/web_app_link_capturing_test_utils.h",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
       "../browser/ui/webui/signin/login_ui_test_utils.cc",

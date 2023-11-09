@@ -4,7 +4,6 @@
 
 #include <tuple>
 
-#include "base/functional/callback_forward.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
@@ -20,7 +19,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
@@ -49,25 +48,6 @@ namespace {
 content::WebContents* GetActiveWebContents(Browser* browser) {
   return browser->tab_strip_model()->GetActiveWebContents();
 }
-
-class IntentChipVisibilityObserver : public OmniboxChipButton::Observer {
- public:
-  explicit IntentChipVisibilityObserver(IntentChipButton* intent_chip) {
-    observation_.Observe(intent_chip);
-  }
-
-  void WaitForChipToBeVisible() { run_loop.Run(); }
-  void OnChipVisibilityChanged(bool is_visible) override {
-    if (is_visible) {
-      run_loop.Quit();
-    }
-  }
-
- private:
-  base::ScopedObservation<IntentChipButton, OmniboxChipButton::Observer>
-      observation_{this};
-  base::RunLoop run_loop;
-};
 
 class EnableLinkCapturingInfobarBrowserTest
     : public WebAppNavigationBrowserTest,
@@ -167,7 +147,7 @@ class EnableLinkCapturingInfobarBrowserTest
     }
 
     if (!intent_picker_icon->GetVisible()) {
-      IntentChipVisibilityObserver intent_chip_visibility_observer(
+      web_app::IntentChipVisibilityObserver intent_chip_visibility_observer(
           intent_picker_icon);
       intent_chip_visibility_observer.WaitForChipToBeVisible();
       if (!intent_picker_icon->GetVisible()) {

@@ -105,6 +105,7 @@ int CountApps(const WebAppRegistrar::AppSet& app_set) {
 }  // namespace
 
 using ::testing::ElementsAre;
+using ::testing::Pair;
 
 class WebAppRegistrarTest : public WebAppTest {
  public:
@@ -1468,6 +1469,48 @@ TEST_F(WebAppRegistrarTest, VerifyPlaceholderFinderBehavior) {
   // This will fail if the fix for crbug.com/1427340 is reverted.
   EXPECT_TRUE(placeholder_id.has_value());
   EXPECT_EQ(placeholder_id.value(), app_id2);
+}
+
+TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
+  InitSyncBridge();
+  const GURL document_url("https://abc.com/inner/abc.html");
+
+  auto outer_web_app =
+      test::CreateWebApp(GURL("https://abc.com"), WebAppManagement::kPolicy);
+  outer_web_app->SetName("ABC_Outer");
+  outer_web_app->SetScope(GURL("https://abc.com/"));
+  const webapps::AppId outer_app_id = outer_web_app->app_id();
+  RegisterApp(std::move(outer_web_app));
+
+  auto inner_web_app = test::CreateWebApp(GURL("https://abc.com/inner"),
+                                          WebAppManagement::kDefault);
+  inner_web_app->SetName("ABC_Inner");
+  inner_web_app->SetScope(GURL("https://abc.com/inner"));
+  const webapps::AppId inner_app_id = inner_web_app->app_id();
+  RegisterApp(std::move(inner_web_app));
+
+  // This should not be considered since the scopes do not match the visited
+  // URL.
+  auto no_match_scope_app =
+      test::CreateWebApp(GURL("https://def.com/"), WebAppManagement::kSync);
+  no_match_scope_app->SetName("App_No_Match");
+  no_match_scope_app->SetScope(GURL("https://def.com/"));
+  const webapps::AppId no_match_scope_app_id = no_match_scope_app->app_id();
+  RegisterApp(std::move(no_match_scope_app));
+
+  // This should not be considered since this app is not set to open in a new
+  // window.
+  auto browser_mode_app = test::CreateWebApp(
+      GURL("https://abc.com/inner/outer"), WebAppManagement::kSync);
+  browser_mode_app->SetName("App_Browser");
+  browser_mode_app->SetScope(GURL("https://abc.com/inner/"));
+  browser_mode_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+  const webapps::AppId browser_mode_app_id = browser_mode_app->app_id();
+  RegisterApp(std::move(browser_mode_app));
+
+  EXPECT_THAT(registrar().GetAllAppsControllingUrl(document_url),
+              ElementsAre(Pair(inner_app_id, "ABC_Inner"),
+                          Pair(outer_app_id, "ABC_Outer")));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

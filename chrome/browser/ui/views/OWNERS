@@ -30,3 +30,5 @@ per-file intent_picker_*browsertest*=file://chrome/browser/apps/intent_helper/OW
 per-file select_file_dialog_extension*=file://ui/file_manager/OWNERS
 
 per-file incognito_clear_browsing_data_dialog*=file://chrome/browser/incognito/OWNERS
+
+per-file default_intent_picker_browsertest*=file://chrome/browser/web_applications/OWNERS

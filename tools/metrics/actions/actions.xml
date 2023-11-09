@@ -12306,6 +12306,17 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IntentPickerViewClosedOpenInChrome">
+  <obsolete>Deprecated as of 11/2023, needed a rename.</obsolete>
+  <owner>dibyapal@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    Recorded when the user manually closes the intent picker bubble view,
+    leading to the site not being launched in a PWA. This is currently measured
+    only on Windows, Mac and Linux platforms.
+  </description>
+</action>
+
+<action name="IntentPickerViewClosedStayInChrome">
   <owner>dibyapal@google.com</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <description>
