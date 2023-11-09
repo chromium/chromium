@@ -468,7 +468,7 @@ void AddSuggestionContentToView(
   }
 
   // Force a refresh to ensure all the labels'styles are correct.
-  content_view.RefreshStyle();
+  content_view.RefreshStyle(/*selected=*/false);
 }
 
 void FormatLabel(views::Label& label,

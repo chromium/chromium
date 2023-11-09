@@ -77,23 +77,21 @@ class PopupCellViewTest : public ChromeViewsTestBase {
   raw_ptr<PopupCellView> view_ = nullptr;
 };
 
-TEST_F(PopupCellViewTest, SetSelectedUpdatesBackground) {
+TEST_F(PopupCellViewTest, RefreshStyleUpdatesBackground) {
   ShowView(CreatePopupCellView());
 
   // The unselected background.
-  EXPECT_FALSE(view().GetSelected());
   views::Background* background = view().GetBackground();
   ASSERT_FALSE(background);
 
-  view().SetSelected(true);
-  EXPECT_TRUE(view().GetSelected());
+  view().RefreshStyle(/*selected=*/true);
   background = view().GetBackground();
   ASSERT_TRUE(background);
   EXPECT_EQ(background->get_color(), view().GetColorProvider()->GetColor(
                                          ui::kColorDropdownBackgroundSelected));
 }
 
-TEST_F(PopupCellViewTest, SetSelectedUpdatesTrackedLabels) {
+TEST_F(PopupCellViewTest, RefreshStyleUpdatesTrackedLabels) {
   std::unique_ptr<PopupCellView> cell = CreatePopupCellView();
   views::Label* tracked_label =
       cell->AddChildView(std::make_unique<views::Label>(
@@ -113,16 +111,14 @@ TEST_F(PopupCellViewTest, SetSelectedUpdatesTrackedLabels) {
   };
 
   // The unselected state.
-  EXPECT_FALSE(view().GetSelected());
   EXPECT_EQ(tracked_label->GetEnabledColor(),
             get_expected_color(*tracked_label, tracked_label->GetTextStyle()));
   EXPECT_EQ(
       untracked_label->GetEnabledColor(),
       get_expected_color(*untracked_label, untracked_label->GetTextStyle()));
 
-  // // On select updates only the tracked label's style.
-  view().SetSelected(true);
-  EXPECT_TRUE(view().GetSelected());
+  // On select updates only the tracked label's style.
+  view().RefreshStyle(/*selected=*/true);
   EXPECT_NE(
       tracked_label->GetEnabledColor(),
       get_expected_color(*tracked_label, untracked_label->GetTextStyle()));

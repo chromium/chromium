@@ -289,7 +289,7 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
   }
 
   // Force a refresh to ensure all the labels'styles are correct.
-  view->RefreshStyle();
+  view->RefreshStyle(/*selected=*/false);
 
   return view;
 }

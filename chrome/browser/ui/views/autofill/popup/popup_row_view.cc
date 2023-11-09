@@ -405,7 +405,7 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> new_cell) {
 
   // If the previous cell was content, set it as unselected.
   if (selected_cell_ == CellType::kContent) {
-    content_view_->SetSelected(false);
+    content_view_->RefreshStyle(/*selected=*/false);
     content_view_->GetViewAccessibility().OverrideIsSelected(false);
     if (controller_) {
       controller_->SelectSuggestion(absl::nullopt);
@@ -416,7 +416,7 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> new_cell) {
     if (controller_) {
       controller_->SelectSuggestion(line_number_);
     }
-    content_view_->SetSelected(true);
+    content_view_->RefreshStyle(/*selected=*/true);
     content_view_->GetViewAccessibility().OverrideIsSelected(true);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);

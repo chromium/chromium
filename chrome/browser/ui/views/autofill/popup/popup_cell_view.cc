@@ -30,26 +30,17 @@ namespace autofill {
 
 PopupCellView::PopupCellView() {
   SetNotifyEnterExitOnChild(true);
-  RefreshStyle();
+  RefreshStyle(/*selected=*/false);
 }
 
 PopupCellView::~PopupCellView() = default;
-
-void PopupCellView::SetSelected(bool selected) {
-  if (selected_ == selected) {
-    return;
-  }
-
-  selected_ = selected;
-  RefreshStyle();
-}
 
 void PopupCellView::TrackLabel(views::Label* label) {
   tracked_labels_.push_back(label);
 }
 
-void PopupCellView::RefreshStyle() {
-  if (GetSelected()) {
+void PopupCellView::RefreshStyle(bool selected) {
+  if (selected) {
     if (ShouldApplyNewAutofillPopupStyle()) {
       SetBackground(views::CreateThemedRoundedRectBackground(
           ui::kColorDropdownBackgroundSelected,
@@ -71,10 +62,9 @@ void PopupCellView::RefreshStyle() {
     // If the current suggestion is selected or the label is disabled,
     // override the style. Otherwise, use the color that corresponds to the
     // actual style of the label.
-    int style = label->GetEnabled()
-                    ? (GetSelected() ? views::style::STYLE_SELECTED
-                                     : label->GetTextStyle())
-                    : views::style::STYLE_DISABLED;
+    int style = label->GetEnabled() ? (selected ? views::style::STYLE_SELECTED
+                                                : label->GetTextStyle())
+                                    : views::style::STYLE_DISABLED;
     label->SetEnabledColorId(views::TypographyProvider::Get().GetColorId(
         label->GetTextContext(), style));
   }
@@ -83,7 +73,6 @@ void PopupCellView::RefreshStyle() {
 }
 
 BEGIN_METADATA(PopupCellView, views::View)
-ADD_PROPERTY_METADATA(bool, Selected)
 END_METADATA
 
 }  // namespace autofill
