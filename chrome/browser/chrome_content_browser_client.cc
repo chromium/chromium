@@ -2795,20 +2795,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(switches::kDisableScrollToTextFragment);
       }
 
-      // Override SendMouseEventsDisabledFormControls feature if its Enterprise
-      // Policy is specified.
-      if (prefs->HasPrefPath(policy::policy_prefs::
-                                 kSendMouseEventsDisabledFormControlsEnabled)) {
-        command_line->AppendSwitchASCII(
-            blink::switches::kSendMouseEventsDisabledFormControlsPolicy,
-            prefs->GetBoolean(policy::policy_prefs::
-                                  kSendMouseEventsDisabledFormControlsEnabled)
-                ? blink::switches::
-                      kSendMouseEventsDisabledFormControlsPolicy_ForceEnable
-                : blink::switches::
-                      kSendMouseEventsDisabledFormControlsPolicy_ForceDisable);
-      }
-
       if (!prefs->GetList(enterprise_reporting::kCloudLegacyTechReportAllowlist)
                .empty()) {
         command_line->AppendSwitch(

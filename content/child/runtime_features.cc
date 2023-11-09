@@ -496,22 +496,6 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
     }
   }
 
-  // Enable or disable SendMouseEventsDisabledFormControls for Enterprise
-  // Policy. This overrides any existing settings via base::Feature.
-  if (command_line.HasSwitch(
-          blink::switches::kSendMouseEventsDisabledFormControlsPolicy)) {
-    const std::string value = command_line.GetSwitchValueASCII(
-        blink::switches::kSendMouseEventsDisabledFormControlsPolicy);
-    if (value == blink::switches::
-                     kSendMouseEventsDisabledFormControlsPolicy_ForceEnable) {
-      WebRuntimeFeatures::EnableSendMouseEventsDisabledFormControls(true);
-    }
-    if (value == blink::switches::
-                     kSendMouseEventsDisabledFormControlsPolicy_ForceDisable) {
-      WebRuntimeFeatures::EnableSendMouseEventsDisabledFormControls(false);
-    }
-  }
-
   // Enable or disable BeforeunloadEventCancelByPreventDefault for Enterprise
   // Policy. This overrides any existing settings via base::Feature.
   if (command_line.HasSwitch(

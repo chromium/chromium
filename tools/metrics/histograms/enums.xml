@@ -21589,7 +21589,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1029" label="AllowWebAuthnWithBrokenTlsCerts"/>
   <int value="1030" label="ExtensionManifestV2Availability"/>
   <int value="1031" label="OffsetParentNewSpecBehaviorEnabled"/>
-  <int value="1032" label="SendMouseEventsDisabledFormControlsEnabled"/>
+  <int value="1032"
+      label="OBSOLETE_SendMouseEventsDisabledFormControlsEnabled"/>
   <int value="1033" label="BruschettaVMConfiguration"/>
   <int value="1034" label="DnsOverHttpsSalt"/>
   <int value="1035" label="DnsOverHttpsTemplatesWithIdentifiers"/>
@@ -28315,7 +28316,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2318" label="CSSSelectorWebkitTextfieldDecorationContainer"/>
   <int value="2319" label="CSSSelectorWebkitUnknownPseudo"/>
   <int value="2320" label="FilterAsContainingBlockMayChangeOutput"/>
-  <int value="2321" label="DispatchMouseUpDownEventOnDisabledFormControl"/>
+  <int value="2321"
+      label="OBSOLETE_DispatchMouseUpDownEventOnDisabledFormControl"/>
   <int value="2322" label="CSSSelectorPseudoIs"/>
   <int value="2323" label="V8RTCRtpSender_ReplaceTrack_Method"/>
   <int value="2324" label="InputTypeFileSecureOriginOpenChooser"/>

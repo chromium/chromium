@@ -2694,21 +2694,6 @@ void Node::HandleLocalEvents(Event& event) {
     return;
   }
 
-  if (IsDisabledFormControl(this) && IsA<MouseEvent>(event) &&
-      !RuntimeEnabledFeatures::SendMouseEventsDisabledFormControlsEnabled()) {
-    if (HasEventListeners(event.type())) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kDispatchMouseEventOnDisabledFormControl);
-      if (event.type() == event_type_names::kMousedown ||
-          event.type() == event_type_names::kMouseup) {
-        UseCounter::Count(
-            GetDocument(),
-            WebFeature::kDispatchMouseUpDownEventOnDisabledFormControl);
-      }
-    }
-    return;
-  }
-
   FireEventListeners(event);
 }
 

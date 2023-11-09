@@ -16490,33 +16490,6 @@
             ]
         }
     ],
-    "SendMouseEventsDisabledFormControls": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SendMouseEventsDisabledFormControls"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "SendMouseEventsDisabledFormControls"
-                    ]
-                }
-            ]
-        }
-    ],
     "SendTabToSelfV2": [
         {
             "platforms": [

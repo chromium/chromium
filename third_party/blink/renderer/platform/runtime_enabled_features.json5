@@ -3297,11 +3297,6 @@
       base_feature: "none",
     },
     {
-      name: "SendMouseEventsDisabledFormControls",
-      status: "stable",
-      public: true,
-    },
-    {
       name: "SensorExtraClasses",
       public: true,
       status: "experimental",
