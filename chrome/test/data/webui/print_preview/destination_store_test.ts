@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationErrorType, DestinationStore, DestinationStoreEventType, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
+import {Destination, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationStoreEventType, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
+// <if expr="is_chromeos">
+import {PrinterStatusReason, PrinterStatusSeverity} from 'chrome://print/print_preview.js';
+// </if>
 // <if expr="not is_chromeos">
 import {RecentDestination} from 'chrome://print/print_preview.js';
 // </if>
@@ -390,6 +393,37 @@ suite('DestinationStoreTest', function() {
             });
       });
 
+  /**
+   * Tests that the destination store will not allow the selected destination
+   * to be selected again unless explicitly requested.
+   */
+  test('DestinationAlreadySelected', function() {
+    return setInitialSettings(false).then(() => {
+      // The default destination is initialized which triggers the first
+      // selection.
+      assertEquals(1, numPrintersSelected);
+
+      // Selecting a new destination will trigger another selection.
+      const printer1 =
+          new Destination('Printer1', DestinationOrigin.LOCAL, 'Printer1');
+      destinationStore.selectDestination(printer1);
+      assertEquals(2, numPrintersSelected);
+
+      // Selecting that same destination again won't trigger another
+      // selection.
+      destinationStore.selectDestination(printer1);
+      assertEquals(2, numPrintersSelected);
+
+      // <if expr="is_chromeos">
+      // Selecting that same destination on CrOS with the `refreshDestination`
+      // parameter triggers a selection.
+      destinationStore.selectDestination(
+          printer1, /*refreshDestination=*/ true);
+      assertEquals(3, numPrintersSelected);
+      // </if>
+    });
+  });
+
   // <if expr="is_chromeos">
   /** Tests that the SAVE_TO_DRIVE_CROS destination is loaded on Chrome OS. */
   test(
@@ -503,7 +537,10 @@ suite('DestinationStoreTest', function() {
     };
     const expectedPrinterStatus = {
       printerId: 'localPrinter1',
-      statusReasons: [{reason: 6, severity: 2}],
+      statusReasons: [{
+        reason: PrinterStatusReason.OUT_OF_INK,
+        severity: PrinterStatusSeverity.WARNING,
+      }],
     };
 
     loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
@@ -533,6 +570,77 @@ suite('DestinationStoreTest', function() {
           assertEquals(
               expectedPrinterStatus.statusReasons[0]!.reason,
               destination.printerStatusReason);
+        });
+  });
+
+  // Tests that the destination store dispatches the correct event attributes
+  // when the printer's online status changes.
+  test('PrinterStatusOnlineChange', function() {
+    const printer1 = {
+      printerName: 'localPrinter1',
+      deviceName: 'localPrinter1',
+      printerStatus: {},
+    };
+
+    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
+    return setInitialSettings(/*expectPrinterFailure=*/ false)
+        .then(() => {
+          // Add an unreachable status then trigger the event to set the
+          // printer's initial status.
+          printer1.printerStatus = {
+            printerId: 'localPrinter1',
+            statusReasons: [{
+              reason: PrinterStatusReason.PRINTER_UNREACHABLE,
+              severity: PrinterStatusSeverity.ERROR,
+            }],
+          };
+
+          const onPrinterStatusUpdatePromise = eventToPromise(
+              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+              destinationStore);
+          webUIListenerCallback('local-printers-updated', [printer1]);
+          return onPrinterStatusUpdatePromise;
+        })
+        .then((e) => {
+          assertFalse(e.detail.nowOnline);
+
+          // Update the printer to an online error status and expect the online
+          // variable to be true in the event.
+          printer1.printerStatus = {
+            printerId: 'localPrinter1',
+            statusReasons: [{
+              reason: PrinterStatusReason.PAPER_JAM,
+              severity: PrinterStatusSeverity.ERROR,
+            }],
+          };
+
+          const onPrinterStatusUpdatePromise = eventToPromise(
+              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+              destinationStore);
+          webUIListenerCallback('local-printers-updated', [printer1]);
+          return onPrinterStatusUpdatePromise;
+        })
+        .then((e) => {
+          assertTrue(e.detail.nowOnline);
+
+          // Update the printer to a different online error status and expect
+          // the online to be false now since the printer was already online.
+          printer1.printerStatus = {
+            printerId: 'localPrinter1',
+            statusReasons: [{
+              reason: PrinterStatusReason.LOW_ON_INK,
+              severity: PrinterStatusSeverity.ERROR,
+            }],
+          };
+
+          const onPrinterStatusUpdatePromise = eventToPromise(
+              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+              destinationStore);
+          webUIListenerCallback('local-printers-updated', [printer1]);
+          return onPrinterStatusUpdatePromise;
+        })
+        .then((e) => {
+          assertFalse(e.detail.nowOnline);
         });
   });
   // </if>
