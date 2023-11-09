@@ -10,8 +10,6 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/window_properties.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -130,8 +128,9 @@ void OverviewDropTarget::ScaleUpSelectedItem(
 
 void OverviewDropTarget::EnsureVisible() {}
 
-OverviewFocusableView* OverviewDropTarget::GetFocusableView() const {
-  return nullptr;
+std::vector<OverviewFocusableView*> OverviewDropTarget::GetFocusableViews()
+    const {
+  return {};
 }
 
 views::View* OverviewDropTarget::GetBackDropView() const {

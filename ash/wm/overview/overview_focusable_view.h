@@ -6,21 +6,29 @@
 #define ASH_WM_OVERVIEW_OVERVIEW_FOCUSABLE_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ui/gfx/geometry/point.h"
+
+namespace gfx {
+class Point;
+}  // namespace gfx
 
 namespace views {
 class View;
-}
+}  // namespace views
 
 namespace ash {
+
+class OverviewItemBase;
 class OverviewSession;
 
 // An interface that must be implemented by classes that want to be
 // focused in overview.
 class ASH_EXPORT OverviewFocusableView {
  public:
-  // Get the view class associated with |this|.
+  // Returns the view class associated with `this`.
   virtual views::View* GetView() = 0;
+
+  // Returns nullptr, unless `this` is associated with an `OverviewItem`.
+  virtual OverviewItemBase* GetOverviewItem();
 
   // Attempts to activate or close this view. Overriders may do nothing. Closing
   // supports a primary action and a secondary action, as some overrides may

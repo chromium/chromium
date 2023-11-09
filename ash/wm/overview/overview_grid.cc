@@ -874,14 +874,14 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
   UpdateNumSavedDeskUnsupportedWindows(overview_item->GetWindows(),
                                        /*increment=*/false);
 
-  // This can also be called when shutting down |this|, at which the item will
-  // be cleaning up and its associated view may be nullptr. |overview_item|
-  // needs to still be in |window_list_| so we can compute what the deleted
-  // index is.
-  if (OverviewFocusableView* focusable_view = (*iter)->GetFocusableView();
-      overview_session_ && focusable_view) {
-    overview_session_->focus_cycler()->OnViewDestroyingOrDisabling(
-        focusable_view);
+  // This can also be called when shutting down `this`, at which point the item
+  // will be cleaned up and its associated view may be nullptr. `overview_item`
+  // still needs to be in `window_list_` to compute the corresponding index.
+  if (overview_session_) {
+    for (auto* focusable_view : overview_item->GetFocusableViews()) {
+      overview_session_->focus_cycler()->OnViewDestroyingOrDisabling(
+          focusable_view);
+    }
   }
 
   // Erase from the list first because deleting OverviewItem can lead to

@@ -148,14 +148,6 @@ base::FilePath CreateFolderOnDriveFS(const std::string& custom_folder_name) {
   return folder_on_drive_fs;
 }
 
-void SendKey(ui::KeyboardCode key_code,
-             ui::test::EventGenerator* event_generator,
-             int flags,
-             int count) {
-  for (int i = 0; i < count; ++i)
-    event_generator->PressAndReleaseKey(key_code, flags);
-}
-
 void WaitForSeconds(int seconds) {
   base::RunLoop loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

@@ -77,7 +77,7 @@ class ASH_EXPORT OverviewItemBase {
   void HandleGestureEvent(ui::GestureEvent* event);
 
   // If in tablet mode, maybe forward events to `OverviewGridEventHandler` as we
-  // might want to process scroll events on the item.
+  // might want to process scroll events on `this`.
   void HandleGestureEventForTabletModeLayout(ui::GestureEvent* event);
 
   void set_should_animate_when_entering(bool should_animate) {
@@ -197,16 +197,16 @@ class ASH_EXPORT OverviewItemBase {
   // Ensures that a possibly minimized window becomes visible after restore.
   virtual void EnsureVisible() = 0;
 
-  // Returns the focusable view of this.
-  virtual OverviewFocusableView* GetFocusableView() const = 0;
+  // Returns the focusable views contained in `this`.
+  virtual std::vector<OverviewFocusableView*> GetFocusableViews() const = 0;
 
-  // Returns the backdrop view of this.
+  // Returns the backdrop view of `this`.
   virtual views::View* GetBackDropView() const = 0;
 
-  // Updates the rounded corners and shadow on this.
+  // Updates the rounded corners and shadow on `this`.
   virtual void UpdateRoundedCornersAndShadow() = 0;
 
-  // Changes the opacity of all the window(s) the item owns.
+  // Updates the opacity of all the window(s) owned by `this`.
   virtual void SetOpacity(float opacity) = 0;
   virtual float GetOpacity() const = 0;
 
@@ -277,8 +277,8 @@ class ASH_EXPORT OverviewItemBase {
   // remove window(s) from `ScopedOverviewHideWindows`.
   virtual void Shutdown() = 0;
 
-  // Slides the item up or down and then closes the associated window(s). Used
-  // by overview swipe to close.
+  // Slides `this` up or down and then closes the associated window(s). Used in
+  // overview swipe to close.
   virtual void AnimateAndCloseItem(bool up) = 0;
 
   // Stops the current animation of `item_widget_`.

@@ -5,7 +5,6 @@
 #include "ash/wm/splitview/split_view_divider_handler_view.h"
 
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"

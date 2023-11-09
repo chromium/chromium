@@ -27,6 +27,10 @@ namespace gfx {
 class Size;
 }  // namespace gfx
 
+namespace ui::test {
+class EventGenerator;
+}  // namespace ui::test
+
 namespace views {
 class MenuItemView;
 }  // namespace views
@@ -80,6 +84,12 @@ chromeos::MultitaskMenu* ShowAndWaitMultitaskMenuForWindow(
         window_or_size_button,
     chromeos::MultitaskMenuEntryType entry_type =
         chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
+
+// Sends a press release key combo `count` times.
+void SendKey(ui::KeyboardCode key_code,
+             ui::test::EventGenerator* event_generator = nullptr,
+             int flags = ui::EF_NONE,
+             int count = 1);
 
 }  // namespace ash
 

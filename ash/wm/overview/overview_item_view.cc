@@ -195,6 +195,10 @@ views::View* OverviewItemView::GetView() {
   return this;
 }
 
+OverviewItemBase* OverviewItemView::GetOverviewItem() {
+  return overview_item_;
+}
+
 void OverviewItemView::MaybeActivateFocusedView() {
   if (overview_item_)
     overview_item_->OnFocusedViewActivated();
