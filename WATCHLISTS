@@ -1486,11 +1486,12 @@
       'filepath': 'tools/perf/core/minidump_unittest.py',
     },
     'multi_apps': {
-      'filepath': 'chrome/test/data/webapps_integration/has_sub_apps/'\
-                  '|third_party/blink/renderer/modules/subapps/'\
-                  '|chrome/browser/ui/web_applications/.*sub_app'\
-                  '|third_party/blink/public/mojom/subapps/'\
+      'filepath': 'chrome/browser/ui/web_applications/.*sub_app'\
                   '|chrome/browser/web_applications/commands/.*sub_app'\
+                  '|chrome/test/data/web_apps/subapps_isolated_app/'\
+                  '|chrome/test/data/webapps_integration/has_sub_apps/'\
+                  '|third_party/blink/public/mojom/subapps/'\
+                  '|third_party/blink/renderer/modules/subapps/'\
                   '|third_party/blink/web_tests/external/wpt/resources/chromium/mock-subapps.js'\
                   '|third_party/blink/web_tests/external/wpt/subapps/',
     },
@@ -2943,7 +2944,7 @@
     'midi': ['toyoshim+midi@chromium.org'],
     'minidump_tests': ['bsheedy@chromium.org'],
     'multi_apps': ['samicolon+watch@google.com',
-                   'isandrk+watch@chromium.org',
+                   'giovax+watch@chromium.org',
                    'phweiss+watch@chromium.org'],
     'multidevice': ['ajayramamurthy+watch-multidevice@google.com',
                     'hansberry+watch-multidevice@chromium.org',
