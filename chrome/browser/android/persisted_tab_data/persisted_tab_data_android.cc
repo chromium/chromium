@@ -38,15 +38,21 @@ PersistedTabDataAndroid::PersistedTabDataAndroid(TabAndroid* tab_android,
 
 PersistedTabDataAndroid::~PersistedTabDataAndroid() = default;
 
-void PersistedTabDataAndroid::From(TabAndroid* tab_android,
+void PersistedTabDataAndroid::From(base::WeakPtr<TabAndroid> tab_android,
                                    const void* user_data_key,
                                    SupplierCallback supplier_callback,
                                    FromCallback from_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!tab_android) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(from_callback), nullptr));
+    return;
+  }
+
   if (!deferred_startup_complete_) {
     std::unique_ptr<DeferredRequest> deferred_request =
         std::make_unique<DeferredRequest>();
-    deferred_request->tab_android = tab_android->GetWeakPtr();
+    deferred_request->tab_android = tab_android;
     deferred_request->user_data_key = user_data_key;
     deferred_request->supplier_callback = std::move(supplier_callback);
     deferred_request->from_callback = std::move(from_callback);
@@ -65,7 +71,7 @@ void PersistedTabDataAndroid::From(TabAndroid* tab_android,
         persisted_tab_data_config_android = PersistedTabDataConfigAndroid::Get(
             user_data_key, tab_android->profile());
     std::string cached_callback_key =
-        GetCachedCallbackKey(tab_android, user_data_key);
+        GetCachedCallbackKey(tab_android.get(), user_data_key);
     if (PersistedTabDataAndroid::GetCachedCallbackMap()->contains(
             cached_callback_key)) {
       std::vector<FromCallback>& callbacks =
@@ -182,7 +188,7 @@ void PersistedTabDataAndroid::OnDeferredStartup() {
   // Process deferred requests one at a time (to minimize risk of
   // resource over-utilization which could lead to jank).
   PersistedTabDataAndroid::From(
-      deferred_request->tab_android.get(), deferred_request->user_data_key,
+      deferred_request->tab_android, deferred_request->user_data_key,
       std::move(deferred_request->supplier_callback),
       base::BindOnce(
           [](FromCallback from_callback,
