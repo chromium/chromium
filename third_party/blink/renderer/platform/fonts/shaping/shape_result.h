@@ -459,8 +459,8 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
     USING_FAST_MALLOC(CharacterPositionData);
 
    public:
-    CharacterPositionData(unsigned num_characters, float width)
-        : data_(num_characters), width_(width) {}
+    explicit CharacterPositionData(unsigned num_characters)
+        : data_(num_characters) {}
 
     ShapeResultCharacterData& operator[](unsigned index) {
       return data_[index];
@@ -534,7 +534,10 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   const Vector<scoped_refptr<RunInfo>>& RunsOrParts() const { return runs_; }
   unsigned StartIndexOffsetForRun() const { return 0; }
 
-  float width_;
+  // The total width. This is the sum of `RunInfo::width_`.
+  // It's mutable because `RecalcCharacterPositions()` recalculates this.
+  // This should be in sync with `CharacterPositionData::width_`.
+  mutable float width_;
 
   // Only used by CachingWordShapeIterator and stored here for memory reduction
   // reasons. See https://crbug.com/955776
