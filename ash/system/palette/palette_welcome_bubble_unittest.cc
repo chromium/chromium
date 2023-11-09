@@ -147,6 +147,15 @@ TEST_F(PaletteWelcomeBubbleTest, BubbleNotShownInactiveSession) {
   EXPECT_FALSE(welcome_bubble_->GetBubbleViewForTesting());
 }
 
+TEST_F(PaletteWelcomeBubbleTest, BubbleNotShownKiosk) {
+  ClearLogin();
+  SimulateKioskMode(user_manager::USER_TYPE_WEB_KIOSK_APP);
+  SetCanLockScreen(false);
+
+  welcome_bubble_->ShowIfNeeded();
+  EXPECT_FALSE(welcome_bubble_->GetBubbleViewForTesting());
+}
+
 using PaletteWelcomeBubbleEmphemeralAccountTest = AshTestBase;
 
 TEST_F(PaletteWelcomeBubbleEmphemeralAccountTest, BubbleNotShownForGuest) {
