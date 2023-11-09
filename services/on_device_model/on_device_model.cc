@@ -17,9 +17,6 @@ class SessionImpl : public OnDeviceModel::Session {
   SessionImpl(const SessionImpl&) = delete;
   SessionImpl& operator=(const SessionImpl&) = delete;
 
-  void AddContext(mojom::InputOptionsPtr input) override {
-    context_.push_back(input->text);
-  }
   void AddContext(mojom::InputOptionsPtr input,
                   mojo::PendingRemote<mojom::ContextClient> client) override {
     std::string text = input->text;

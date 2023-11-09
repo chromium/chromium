@@ -22,7 +22,7 @@ std::unique_ptr<OnDeviceModel> OnDeviceModelService::CreateModel(
   }
 
   auto executor = ml::OnDeviceModelExecutor::Create(*GetChromeMLInstance(),
-                                                    std::move(params->assets));
+                                                    std::move(params));
   if (!executor) {
     return nullptr;
   }

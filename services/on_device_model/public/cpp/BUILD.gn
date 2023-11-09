@@ -7,7 +7,6 @@ component("cpp") {
   sources = [
     "features.cc",
     "features.h",
-    "on_device_model.cc",
     "on_device_model.h",
   ]
   public_deps = [

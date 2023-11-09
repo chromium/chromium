@@ -22,9 +22,9 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModel {
    public:
     virtual ~Session() = default;
 
-    virtual void AddContext(mojom::InputOptionsPtr input,
-                            mojo::PendingRemote<mojom::ContextClient> client);
-    virtual void AddContext(mojom::InputOptionsPtr input) = 0;
+    virtual void AddContext(
+        mojom::InputOptionsPtr input,
+        mojo::PendingRemote<mojom::ContextClient> client) = 0;
     virtual void Execute(
         mojom::InputOptionsPtr input,
         mojo::PendingRemote<mojom::StreamingResponder> response) = 0;
