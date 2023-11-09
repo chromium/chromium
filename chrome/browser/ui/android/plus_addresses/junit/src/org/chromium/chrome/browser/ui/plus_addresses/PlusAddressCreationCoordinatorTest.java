@@ -33,9 +33,11 @@ public class PlusAddressCreationCoordinatorTest {
     private static final String MODAL_TITLE = "lorem ipsum title";
     private static final String MODAL_PLUS_ADDRESS_DESCRIPTION =
             "lorem ipsum description <link>test link</link> <b>test bold</b>";
-    private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "plus+1@plus.plus";
+    private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "placeholder";
     private static final String MODAL_OK = "ok";
     private static final String MODAL_CANCEL = "cancel";
+    private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
+    private static final String MODAL_ERROR_MESSAGE = "error!";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
@@ -78,5 +80,26 @@ public class PlusAddressCreationCoordinatorTest {
     public void testDestroy_callsMediatorDestroy() {
         mCoordinator.destroy();
         verify(mMediator).destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateProposedPlusAddress_callsMediator() {
+        mCoordinator.updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+        verify(mMediator).updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowError_callsMediator() {
+        mCoordinator.showError(MODAL_ERROR_MESSAGE);
+        verify(mMediator).showError(MODAL_ERROR_MESSAGE);
+    }
+
+    @Test
+    @SmallTest
+    public void testFinishConfirm_callsMediator() {
+        mCoordinator.finishConfirm();
+        verify(mMediator).onConfirmFinished();
     }
 }

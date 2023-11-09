@@ -49,13 +49,13 @@ class PlusAddressCreationControllerAndroid
   friend class content::WebContentsUserData<
       PlusAddressCreationControllerAndroid>;
 
-  // Shows a dialog with `primary_email_address` and the plus_address on the
-  // `maybe_plus_profile` if it isn't an error.
-  void OnPlusAddressReserved(const std::string& primary_email_address,
-                             const PlusProfileOrError& maybe_plus_profile);
-  // Autofills the targeted field by running callback_ with the plus_address on
-  // the `maybe_plus_profile` if it isn't an error.
+  // Updates the dialog using `maybe_plus_profile` by either showing a plus
+  // address or an error message.
+  void OnPlusAddressReserved(const PlusProfileOrError& maybe_plus_profile);
+  // If `maybe_plus_profile` is the expected value, autofills the targeted field
+  // and closes the dialog. Otherwise shows an error message on the dialog.
   void OnPlusAddressConfirmed(const PlusProfileOrError& maybe_plus_profile);
+
   base::WeakPtr<PlusAddressCreationControllerAndroid> GetWeakPtr();
 
   std::unique_ptr<PlusAddressCreationViewAndroid> view_;

@@ -67,6 +67,14 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
     }
 
+    void updateProposedPlusAddress(String plusAddress) {
+        mBottomSheetContent.setProposedPlusAddress(plusAddress);
+    }
+
+    void showError(String message) {
+        mBottomSheetContent.showError(message);
+    }
+
     /** Hide the bottom sheet (if showing) and clean up observers. */
     void destroy() {
         mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ false);
@@ -77,10 +85,15 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
     // PlusAddressCreationDelegate implementation:
     @Override
-    public void onConfirmed() {
+    public void onConfirmRequested() {
+        // TODO(crbug.com/1467623): Show a loading icon here?
+        mBridge.onConfirmRequested();
+    }
+
+    @Override
+    public void onConfirmFinished() {
         mBottomSheetController.hideContent(
                 mBottomSheetContent, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
-        mBridge.onConfirmed();
     }
 
     @Override

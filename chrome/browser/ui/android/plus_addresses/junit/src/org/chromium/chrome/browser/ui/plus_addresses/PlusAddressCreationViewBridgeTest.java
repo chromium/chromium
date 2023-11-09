@@ -45,9 +45,11 @@ public class PlusAddressCreationViewBridgeTest {
             "lorem ipsum description <link>test link</link> <b>test bold</b>";
     private static final String MODAL_FORMATTED_PLUS_ADDRESS_DESCRIPTION =
             "lorem ipsum description test link test bold";
-    private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "plus+1@plus.plus";
+    private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "placeholder";
     private static final String MODAL_OK = "ok";
     private static final String MODAL_CANCEL = "cancel";
+    private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
+    private static final String MODAL_ERROR_MESSAGE = "error!";
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;
@@ -125,12 +127,6 @@ public class PlusAddressCreationViewBridgeTest {
         verify(mCoordinator, times(1)).destroy();
     }
 
-    @Test
-    @SmallTest
-    public void testDestroy_whenCoordinatorHasNotBeenCreated() {
-        mPlusAddressCreationViewBridge.destroy();
-        verifyNoInteractions(mCoordinator);
-    }
 
     @Test
     @SmallTest
@@ -146,16 +142,17 @@ public class PlusAddressCreationViewBridgeTest {
 
     @Test
     @SmallTest
-    public void testOnConfirmed_callsNativeOnConfirmed() {
-        mPlusAddressCreationViewBridge.onConfirmed();
-        verify(mBridgeNatives, times(1)).onConfirmed(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+    public void testOnConfirmRequested_callsNativeOnConfirmRequested() {
+        mPlusAddressCreationViewBridge.onConfirmRequested();
+        verify(mBridgeNatives, times(1))
+                .onConfirmRequested(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
     }
 
     @Test
     @SmallTest
-    public void testOnConfirmed_doesNotCallNative_afterDestroy() {
+    public void testOnConfirmRequested_doesNotCallNative_afterDestroy() {
         mPlusAddressCreationViewBridge.destroy();
-        mPlusAddressCreationViewBridge.onConfirmed();
+        mPlusAddressCreationViewBridge.onConfirmRequested();
         verifyNoInteractions(mBridgeNatives);
     }
 
@@ -188,5 +185,42 @@ public class PlusAddressCreationViewBridgeTest {
         mPlusAddressCreationViewBridge.destroy();
         mPlusAddressCreationViewBridge.onPromptDismissed();
         verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateProposedPlusAddress_withPlusAddress_callsCoordinator() {
+        setupCoordinatorFactory();
+        showBottomSheet();
+        mPlusAddressCreationViewBridge.updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+        verify(mCoordinator, times(1)).updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowError_callsCoordinator() {
+        setupCoordinatorFactory();
+        showBottomSheet();
+        mPlusAddressCreationViewBridge.showError(MODAL_ERROR_MESSAGE);
+        verify(mCoordinator, times(1)).showError(MODAL_ERROR_MESSAGE);
+    }
+
+    @Test
+    @SmallTest
+    public void testFinishConfirm_callsCoordinator() {
+        setupCoordinatorFactory();
+        showBottomSheet();
+        mPlusAddressCreationViewBridge.finishConfirm();
+        verify(mCoordinator, times(1)).finishConfirm();
+    }
+
+    @Test
+    @SmallTest
+    public void testwhenCoordinatorHasNotBeenCreated() {
+        mPlusAddressCreationViewBridge.updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+        mPlusAddressCreationViewBridge.showError(MODAL_ERROR_MESSAGE);
+        mPlusAddressCreationViewBridge.finishConfirm();
+        mPlusAddressCreationViewBridge.destroy();
+        verifyNoInteractions(mCoordinator);
     }
 }

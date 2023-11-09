@@ -16361,6 +16361,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_AND_COPY" desc="The plus address with some descriptive text around it." translateable="false">
       Use <ph name="PLUS_ADDRESS">$1<ex>plus@plus.plus</ex>?</ph>
     </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE" desc="The error message shown on the modal." translateable="false">
+      Lorem ipsum or whatever
+    </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER" desc="A placeholder for the plus address" translateable="false">
       Lorem Ipsum or whatever
     </message>

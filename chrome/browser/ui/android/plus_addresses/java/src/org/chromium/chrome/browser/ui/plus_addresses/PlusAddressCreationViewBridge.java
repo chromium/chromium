@@ -95,6 +95,27 @@ public class PlusAddressCreationViewBridge {
         }
     }
 
+    @CalledByNative
+    void updateProposedPlusAddress(String plusAddress) {
+        if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
+            mCoordinator.updateProposedPlusAddress(plusAddress);
+        }
+    }
+
+    @CalledByNative
+    void finishConfirm() {
+        if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
+            mCoordinator.finishConfirm();
+        }
+    }
+
+    @CalledByNative
+    void showError(String message) {
+        if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
+            mCoordinator.showError(message);
+        }
+    }
+
     // Hide the bottom sheet (if showing) and clean up observers.
     @CalledByNative
     void destroy() {
@@ -105,10 +126,10 @@ public class PlusAddressCreationViewBridge {
         mNativePlusAddressCreationPromptAndroid = 0;
     }
 
-    public void onConfirmed() {
+    public void onConfirmRequested() {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             PlusAddressCreationViewBridgeJni.get()
-                    .onConfirmed(
+                    .onConfirmRequested(
                             mNativePlusAddressCreationPromptAndroid,
                             PlusAddressCreationViewBridge.this);
         }
@@ -139,8 +160,9 @@ public class PlusAddressCreationViewBridge {
 
     @NativeMethods
     interface Natives {
-        void onConfirmed(
+        void onConfirmRequested(
                 long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
+
         void onCanceled(
                 long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
         void promptDismissed(

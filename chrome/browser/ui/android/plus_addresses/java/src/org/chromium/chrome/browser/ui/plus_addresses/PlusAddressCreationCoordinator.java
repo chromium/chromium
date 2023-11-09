@@ -46,6 +46,18 @@ public class PlusAddressCreationCoordinator {
         mMediator.requestShowContent();
     }
 
+    public void updateProposedPlusAddress(String plusAddress) {
+        mMediator.updateProposedPlusAddress(plusAddress);
+    }
+
+    public void showError(String message) {
+        mMediator.showError(message);
+    }
+
+    public void finishConfirm() {
+        mMediator.onConfirmFinished();
+    }
+
     public void destroy() {
         mMediator.destroy();
     }

@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -262,7 +263,7 @@ TEST_F(PlusAddressCreationControllerAndroidDisabledTest, ConfirmedNullService) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(url::Origin::Create(GURL("https://test.example")),
                             future.GetCallback());
-  controller->OnConfirmed();
+  EXPECT_CHECK_DEATH(controller->OnConfirmed());
   EXPECT_FALSE(future.IsReady());
 }
 
