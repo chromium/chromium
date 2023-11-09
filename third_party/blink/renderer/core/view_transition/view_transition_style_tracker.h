@@ -290,11 +290,6 @@ class ViewTransitionStyleTracker
   PhysicalRect ComputeVisualOverflowRect(
       LayoutBoxModelObject& box,
       const LayoutBoxModelObject* ancestor = nullptr) const;
-  // Same as above, but uses paint layers, which is less correct but performs
-  // better. This version is deprecated.
-  PhysicalRect ComputeVisualOverflowRectWithPaintLayers(
-      const LayoutBoxModelObject& box,
-      const LayoutBoxModelObject* ancestor = nullptr) const;
 
   bool SnapshotRootDidChangeSize() const;
 

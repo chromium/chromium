@@ -1241,11 +1241,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
       snapshot_matrix_in_css_space, border_box_size_in_css_space);
 
   if (auto* box = DynamicTo<LayoutBoxModelObject>(layout_object)) {
-    visual_overflow_rect_in_layout_space =
-        RuntimeEnabledFeatures::
-                ViewTransitionLayoutObjectVisualOverflowEnabled()
-            ? ComputeVisualOverflowRect(*box)
-            : ComputeVisualOverflowRectWithPaintLayers(*box);
+    visual_overflow_rect_in_layout_space = ComputeVisualOverflowRect(*box);
   }
 
   // This is intentionally computed in layout space to include scaling from
@@ -1884,83 +1880,6 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     // of a better way to fix this for all cases.
     result.Move(box.FirstFragment().PaintOffset());
     if (visible && box.StyleRef().BoxShadow()) {
-      result = PhysicalRect(ToEnclosingRect(result));
-    } else {
-      result = PhysicalRect(ToPixelSnappedRect(result));
-    }
-  }
-  return result;
-}
-
-PhysicalRect
-ViewTransitionStyleTracker::ComputeVisualOverflowRectWithPaintLayers(
-    const LayoutBoxModelObject& box,
-    const LayoutBoxModelObject* ancestor) const {
-  if (ancestor) {
-    if (auto* element = DynamicTo<Element>(box.GetNode());
-        element && IsTransitionElement(*element)) {
-      return {};
-    }
-  }
-
-  if (auto clip_path_bounds = ClipPathClipper::LocalClipPathBoundingBox(box)) {
-    // TODO(crbug.com/1326514): This is just the bounds of the clip-path, as
-    // opposed to the intersection between the clip-path and the border box
-    // bounds. This seems suboptimal, but that's the rect that we use further
-    // down the pipeline to generate the texture.
-    // TODO(khushalsagar): This doesn't account for CSS clip property.
-    auto bounds = PhysicalRect::EnclosingRect(*clip_path_bounds);
-    if (ancestor) {
-      box.MapToVisualRectInAncestorSpace(ancestor, bounds, kUseGeometryMapper);
-    }
-    return bounds;
-  }
-
-  PhysicalRect result;
-  auto* paint_layer = box.Layer();
-  if (!box.ChildPaintBlockedByDisplayLock() &&
-      paint_layer->HasSelfPaintingLayerDescendant() &&
-      !paint_layer->KnownToClipSubtreeToPaddingBox()) {
-    PaintLayerPaintOrderIterator iterator(paint_layer, kAllChildren);
-    while (PaintLayer* child_layer = iterator.Next()) {
-      if (!child_layer->IsSelfPaintingLayer()) {
-        continue;
-      }
-      LayoutBoxModelObject& child_box = child_layer->GetLayoutObject();
-
-      PhysicalRect mapped_overflow_rect =
-          ComputeVisualOverflowRectWithPaintLayers(child_box,
-                                                   ancestor ? ancestor : &box);
-      result.Unite(mapped_overflow_rect);
-    }
-  }
-
-  if (ancestor) {
-    // For any recursive call, we instead map our overflow rect into the
-    // ancestor space and combine that with the result. GeometryMapper should
-    // take care of any filters and clips that are necessary between this box
-    // and the ancestor.
-    auto overflow_rect = box.VisualOverflowRect();
-    box.MapToVisualRectInAncestorSpace(ancestor, overflow_rect,
-                                       kUseGeometryMapper);
-    result.Unite(overflow_rect);
-  } else {
-    // We're at the root of the recursion, so clip self painting descendant
-    // overflow by the overflow clip rect, then add in the visual overflow (with
-    // filters) from the own painting layer.
-    if (auto* layout_box = DynamicTo<LayoutBox>(&box);
-        layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
-      result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
-    }
-    result.Unite(box.VisualOverflowRectIncludingFilters());
-
-    // TODO(crbug.com/1432868): This captures a couple of common cases --
-    // box-shadow and no box shadow on the element. However, this isn't at all
-    // comprehensive. The paint system determines per element whether it
-    // should pixel snap or enclosing rect or something else. We need to think
-    // of a better way to fix this for all cases.
-    result.Move(box.FirstFragment().PaintOffset());
-    if (box.StyleRef().BoxShadow()) {
       result = PhysicalRect(ToEnclosingRect(result));
     } else {
       result = PhysicalRect(ToPixelSnappedRect(result));
