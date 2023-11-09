@@ -19,8 +19,6 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -28,7 +26,6 @@
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
-#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/tab_parenting_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/tab_pickup/tab_pickup_browser_agent.h"
@@ -45,10 +42,6 @@
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 void AttachBrowserAgents(Browser* browser) {
   if (breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState())) {
@@ -105,12 +98,6 @@ void AttachBrowserAgents(Browser* browser) {
 
   // UrlLoadingBrowserAgent requires UrlLoadingNotifierBrowserAgent.
   UrlLoadingBrowserAgent::CreateForBrowser(browser);
-
-  // SessionRestorartionAgent requires WebUsageEnablerBrowserAgent.
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    SessionRestorationBrowserAgent::CreateForBrowser(
-        browser, [SessionServiceIOS sharedService], IsPinnedTabsEnabled());
-  }
 
   // TabUsageRecorderBrowserAgent and WebStateListMetricsBrowserAgent observe
   // the SessionRestorationBrowserAgent, so they should be created after the the
