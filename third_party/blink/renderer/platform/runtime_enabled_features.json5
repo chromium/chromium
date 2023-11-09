@@ -1531,12 +1531,6 @@
       depends_on: ["DOMPartsAPI"],
     },
     {
-      name: "EarlyHintsPreloadForNavigationOptIn",
-      origin_trial_feature_name: "EarlyHintsPreloadForNavigation",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       // If enabled, allows web pages to use the experimental EditContext API to
       // better control text input. See crbug.com/999184.
       name: "EditContext",

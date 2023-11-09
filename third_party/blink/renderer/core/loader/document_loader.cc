@@ -3152,9 +3152,7 @@ void DocumentLoader::RecordUseCountersForCommit() {
       hints_context.CountClientHints(type);
   }
 
-  if (RuntimeEnabledFeatures::EarlyHintsPreloadForNavigationOptInEnabled(
-          frame_->DomWindow()) &&
-      !early_hints_preloaded_resources_.empty()) {
+  if (!early_hints_preloaded_resources_.empty()) {
     CountUse(WebFeature::kEarlyHintsPreload);
   }
 
