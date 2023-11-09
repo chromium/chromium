@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++ProgressBar textSize:16.00 style:0 bundle:[display="inline-block", htmlTag="meter", max="10", min="1", value="2"]
+++++++View textSize:16.00 style:0 bundle:[display="grid", htmlTag="div", pseudo="-webkit-meter-inner-element"]
+++++++++View textSize:16.00 style:0 bgColor:-1052689 bundle:[display="block", htmlTag="div", pseudo="-webkit-meter-bar"]

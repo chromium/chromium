@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++View textSize:16.00 style:0 bundle:[display="inline", height="300px", htmlTag="iframe", src="offscreen-iframe-content.html", width="200px"]
+++++++View textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++++++++View text:"iframe_onscreen" textSize:16.00 style:0 bgColor:-65536 bundle:[aria-label="iframe_onscreen", display="block", htmlTag="div", role="group", style="height:300px; background-color: red;"]
+++++++++View text:"iframe_offscreen" textSize:16.00 style:0 bgColor:-16744448 bundle:[aria-label="iframe_offscreen", display="block", htmlTag="div", role="group", style="height:200px; background-color: green"]

@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[class="not", display="block", htmlTag="div"]
+++++TextView text:"not scrollable" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View textSize:16.00 style:0 bundle:[class="x", display="block", htmlTag="div", style="width:100px; overflow:auto"]
+++View textSize:16.00 style:0 bundle:[class="y", display="block", htmlTag="div", style="height:100px; overflow:auto"]

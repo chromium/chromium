@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:32.00 style:1 bundle:[display="block", htmlTag="h1"]
+++++View textSize:32.00 style:5 fgColor:-16776978 bundle:[display="inline", href="#", htmlTag="a"]
+++++++TextView text:"Link In Heading" textSize:32.00 style:5 fgColor:-16776978 bundle:[display="", htmlTag=""]

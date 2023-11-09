@@ -1,0 +1,7 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++View textSize:16.00 style:0 bundle:[display="inline", htmlTag="span", id="s1"]
+++++++TextView text:"Some text" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:" " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++View textSize:16.00 style:0 bundle:[display="inline", htmlTag="span", id="s2"]
+++++++TextView text:"3.14159" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

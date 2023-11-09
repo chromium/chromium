@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++Image textSize:16.00 style:0 bundle:[display="inline", htmlTag="svg"]
+++++++View textSize:16.00 style:0 bundle:[display="inline", height="10", htmlTag="rect", id="clickable", width="10"]

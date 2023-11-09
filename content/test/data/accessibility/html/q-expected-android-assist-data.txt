@@ -1,0 +1,7 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p"]
+++++TextView text:"This is " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:"“" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:"Chromium Blink" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:"”" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:" based browser." textSize:16.00 style:0 bundle:[display="", htmlTag=""]

@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++Image text:"Has two simple children" textSize:16.00 style:0 bundle:[aria-label="Has two simple children", display="inline", htmlTag="svg"]
+++++Image text:"Has two focusable children" textSize:16.00 style:0 bundle:[aria-label="Has two focusable children", display="inline", htmlTag="svg"]
+++++++View textSize:16.00 style:0 bundle:[display="inline", htmlTag="svg", tabindex="0", x="10"]
+++++++View textSize:16.00 style:0 bundle:[display="inline", htmlTag="svg", tabindex="0", x="100"]
