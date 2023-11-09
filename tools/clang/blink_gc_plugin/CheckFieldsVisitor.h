@@ -28,6 +28,7 @@ class CheckFieldsVisitor : public RecursiveEdgeVisitor {
     kUniquePtrToGCManaged,
     kMemberToGCUnmanaged,
     kMemberInUnmanaged,
+    kPtrToMemberInUnmanaged,
     kPtrFromHeapToStack,
     kGCDerivedPartObject,
     kIteratorToGCManaged,

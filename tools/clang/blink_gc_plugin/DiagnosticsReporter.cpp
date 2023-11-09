@@ -100,6 +100,9 @@ const char kStackAllocatedFieldNote[] =
 const char kMemberInUnmanagedClassNote[] =
     "[blink-gc] Member field %0 in unmanaged class declared here:";
 
+const char kPtrToMemberInUnmanagedClassNote[] =
+    "[blink-gc] Pointer to Member field %0 in unmanaged class declared here:";
+
 const char kPartObjectToGCDerivedClassNote[] =
     "[blink-gc] Part-object field %0 to a GC derived class declared here:";
 
@@ -317,6 +320,8 @@ DiagnosticsReporter::DiagnosticsReporter(
       DiagnosticsEngine::Note, kStackAllocatedFieldNote);
   diag_member_in_unmanaged_class_note_ = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kMemberInUnmanagedClassNote);
+  diag_ptr_to_member_in_unmanaged_class_note_ = diagnostic_.getCustomDiagID(
+      DiagnosticsEngine::Note, kPtrToMemberInUnmanagedClassNote);
   diag_part_object_to_gc_derived_class_note_ = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kPartObjectToGCDerivedClassNote);
   diag_part_object_contains_gc_root_note_ = diagnostic_.getCustomDiagID(
@@ -430,6 +435,8 @@ void DiagnosticsReporter::ClassContainsInvalidFields(
       note = diag_member_to_gc_unmanaged_class_note_;
     } else if (error.second == CheckFieldsVisitor::kMemberInUnmanaged) {
       note = diag_member_in_unmanaged_class_note_;
+    } else if (error.second == CheckFieldsVisitor::kPtrToMemberInUnmanaged) {
+      note = diag_ptr_to_member_in_unmanaged_class_note_;
     } else if (error.second == CheckFieldsVisitor::kPtrFromHeapToStack) {
       note = diag_stack_allocated_field_note_;
     } else if (error.second == CheckFieldsVisitor::kGCDerivedPartObject) {

@@ -40,14 +40,12 @@ void CheckFieldsVisitor::AtMember(Member*) {
     if ((*it)->Kind() == Edge::kRoot)
       return;
   }
-  invalid_fields_.push_back(std::make_pair(current_, kMemberInUnmanaged));
+  bool is_ptr = Parent() && (Parent()->IsRawPtr() || Parent()->IsRefPtr());
+  invalid_fields_.push_back(std::make_pair(
+      current_, is_ptr ? kPtrToMemberInUnmanaged : kMemberInUnmanaged));
 }
 
 void CheckFieldsVisitor::AtWeakMember(WeakMember*) {
-  // TODO(sof): remove this once crbug.com/724418's change
-  // has safely been rolled out.
-  if (options_.enable_weak_members_in_unmanaged_classes)
-    return;
   AtMember(nullptr);
 }
 
@@ -89,7 +87,9 @@ void CheckFieldsVisitor::AtValue(Value* edge) {
   // heap collections with Members are okay.
   if (stack_allocated_host_ && Parent() &&
       (Parent()->IsMember() || Parent()->IsWeakMember())) {
-    if (!GrandParent() || !GrandParent()->IsCollection()) {
+    if (!GrandParent() ||
+        (!GrandParent()->IsCollection() && !GrandParent()->IsRawPtr() &&
+         !GrandParent()->IsRefPtr())) {
       invalid_fields_.push_back(
           std::make_pair(current_, kMemberInStackAllocated));
       return;
@@ -131,6 +131,12 @@ void CheckFieldsVisitor::AtValue(Value* edge) {
 }
 
 void CheckFieldsVisitor::AtCollection(Collection* edge) {
+  if (GrandParent() &&
+      (GrandParent()->IsRawPtr() || GrandParent()->IsRefPtr())) {
+    // Don't alert on pointers to unique_ptr. Alerting on the pointed unique_ptr
+    // should suffice.
+    return;
+  }
   if (edge->on_heap() && Parent() && Parent()->IsUniquePtr())
     invalid_fields_.push_back(std::make_pair(current_, kUniquePtrToGCManaged));
 }

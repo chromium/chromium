@@ -37,8 +37,6 @@ class BlinkGCPluginAction : public PluginASTAction {
     for (const auto& arg : args) {
       if (arg == "dump-graph") {
         options_.dump_graph = true;
-      } else if (arg == "enable-weak-members-in-unmanaged-classes") {
-        options_.enable_weak_members_in_unmanaged_classes = true;
       } else if (arg == "enable-persistent-in-unique-ptr-check") {
         options_.enable_persistent_in_unique_ptr_check = true;
       } else if (arg == "enable-members-on-stack-check") {
