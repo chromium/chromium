@@ -352,6 +352,8 @@ static_library("browser") {
     "component_updater/trust_token_key_commitments_component_installer.h",
     "consent_auditor/consent_auditor_factory.cc",
     "consent_auditor/consent_auditor_factory.h",
+    "content_extraction/inner_html.cc",
+    "content_extraction/inner_html.h",
     "content_extraction/inner_text.cc",
     "content_extraction/inner_text.h",
     "content_index/content_index_metrics.cc",

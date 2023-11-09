@@ -6,6 +6,10 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("content_extraction") {
   sources = [
+    "inner_html_agent.cc",
+    "inner_html_agent.h",
+    "inner_html_builder.cc",
+    "inner_html_builder.h",
     "inner_text_agent.cc",
     "inner_text_agent.h",
     "inner_text_builder.cc",

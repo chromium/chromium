@@ -29,6 +29,7 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -40,7 +41,7 @@ class Attribute;
 class Element;
 class Node;
 
-class MarkupAccumulator {
+class CORE_EXPORT MarkupAccumulator {
   STACK_ALLOCATED();
 
  public:
@@ -53,12 +54,13 @@ class MarkupAccumulator {
   virtual ~MarkupAccumulator();
 
   template <typename Strategy>
-  String SerializeNodes(const Node&, ChildrenOnly);
+  CORE_EXPORT String SerializeNodes(const Node&, ChildrenOnly);
 
  protected:
   // Returns serialized prefix. It should be passed to AppendEndTag().
   virtual AtomicString AppendElement(const Element&);
   virtual void AppendAttribute(const Element&, const Attribute&);
+  virtual bool ShouldIgnoreElement(const Element&) const;
 
   MarkupFormatter formatter_;
   StringBuilder markup_;
@@ -104,7 +106,6 @@ class MarkupAccumulator {
 
   virtual void AppendCustomAttributes(const Element&);
   virtual bool ShouldIgnoreAttribute(const Element&, const Attribute&) const;
-  virtual bool ShouldIgnoreElement(const Element&) const;
 
   // Returns an auxiliary DOM tree, i.e. shadow tree, that needs also to be
   // serialized. The root of auxiliary DOM tree is returned as an 1st element

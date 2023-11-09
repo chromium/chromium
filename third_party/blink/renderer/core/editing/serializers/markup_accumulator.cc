@@ -644,8 +644,9 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
 }
 
 template <typename Strategy>
-String MarkupAccumulator::SerializeNodes(const Node& target_node,
-                                         ChildrenOnly children_only) {
+CORE_EXPORT String
+MarkupAccumulator::SerializeNodes(const Node& target_node,
+                                  ChildrenOnly children_only) {
   if (!SerializeAsHTML()) {
     // https://w3c.github.io/DOM-Parsing/#dfn-xml-serialization
     DCHECK_EQ(namespace_stack_.size(), 0u);
