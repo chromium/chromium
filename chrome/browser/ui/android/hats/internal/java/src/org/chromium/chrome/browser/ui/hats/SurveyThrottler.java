@@ -165,7 +165,6 @@ public class SurveyThrottler {
      */
     @VisibleForTesting
     int getEncodedDate() {
-        ThreadUtils.assertOnBackgroundThread();
         return getEncodedDateImpl(CalendarFactory.get());
     }
 

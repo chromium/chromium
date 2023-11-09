@@ -9,11 +9,13 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -115,8 +117,8 @@ class SurveyClientImpl implements SurveyClient {
     }
 
     private void showSurveyIfEligible() {
-        if (sForceShowSurveyForTesting != null) {
-            startSurveyDownload(sForceShowSurveyForTesting);
+        if (forceShowSurvey()) {
+            startSurveyDownload(true);
             return;
         }
         AsyncTask<Boolean> throttlerTask = new AsyncTask<>() {
@@ -183,8 +185,9 @@ class SurveyClientImpl implements SurveyClient {
     private void onSurveyAccepted() {
         Log.d(TAG, "Survey accepted.");
         assert mActivityRef != null;
-        if (sForceShowSurveyForTesting == null
-                && (mActivityRef.get() == null || mActivityRef.get().isFinishing()
+        if (!forceShowSurvey()
+                && (mActivityRef.get() == null
+                        || mActivityRef.get().isFinishing()
                         || mActivityRef.get().isDestroyed())) {
             destroy(false);
             return;
@@ -250,6 +253,8 @@ class SurveyClientImpl implements SurveyClient {
      * @return a boolean indicating whether the user's configuration allows a survey to be shown.
      */
     private boolean configurationAllowsSurveys() {
+        if (forceShowSurvey()) return true;
+
         // Do not include any logging to avoid reveal the fact user has crash upload disabled.
         boolean isCrashUploadAllowed =
                 mCrashUploadPermissionSupplier.hasValue() && mCrashUploadPermissionSupplier.get();
@@ -264,6 +269,13 @@ class SurveyClientImpl implements SurveyClient {
 
     boolean isDestroyed() {
         return mIsDestroyed;
+    }
+
+    static boolean forceShowSurvey() {
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)) {
+            return true;
+        }
+        return sForceShowSurveyForTesting != null && sForceShowSurveyForTesting;
     }
 
     static void setForceShowSurveyForTesting(Boolean forcedResult) {
