@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:32.00 style:1 bundle:[class="generated", display="block", htmlTag="h1"]
+++++TextView text:"[ " textSize:32.00 style:1 bundle:[display="", htmlTag=""]
+++++TextView text:"Foo" textSize:32.00 style:1 bundle:[display="", htmlTag=""]
+++++TextView text:" ]" textSize:32.00 style:1 bundle:[display="", htmlTag=""]
