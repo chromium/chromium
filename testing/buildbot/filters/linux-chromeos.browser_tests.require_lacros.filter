@@ -12,6 +12,7 @@ ChromeVox*
 DemoAshRequiresLacrosTest*
 DesksTemplatesClientLacrosTest*
 Dictation*
+*DictationTest*
 ExtensionKeeplistAllowPerfettoTest*
 ExtensionKeeplistTest*
 NonKioskAcceleratorLacrosTest*
@@ -32,6 +33,10 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -ChromeVoxPortalsTest.ShouldFocusPortal
 # TODO(b/276914335): Flaky in Lacros.
 -ChromeVoxAutoScrollHandlerTest.RecyclerViewByCharacter
+# TODO(b/301475127): Remove browser() dependency for the following dictation
+# tests.
+-*DictationTest.Help*
+-*DictationTest.WorksWithSelectToSpeak*
 # TODO(b/301253962): Some Switch Access tests fail/flake on Lacros.
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
