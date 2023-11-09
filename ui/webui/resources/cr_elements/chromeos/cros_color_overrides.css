@@ -116,6 +116,7 @@
 
 :host-context([cros][chrome-refresh-2023]) {
   --cr-focus-outline-color: var(--cros-sys-focus_ring);
+  --cr-disabled-opacity: var(--cros-disabled-opacity);
 }
 
 /* Button */
@@ -240,6 +241,21 @@
   --cr-radio-button-unchecked-color: var(--cros-sys-on_surface);
   --cr-radio-button-unchecked-ripple-color:
       var(--cros-sys-ripple_neutral_on_subtle);
+}
+
+:host-context([cros][chrome-refresh-2023]),
+:host-context([cros][chrome-refresh-2023]) cr-radio-button {
+  --cr-radio-button-checked-color: var(--cros-sys-primary);
+  --cr-radio-button-checked-ripple-color: var(--cros-sys-ripple_primary);
+  --cr-radio-button-unchecked-color: var(--cros-sys-on_surface);
+  --cr-radio-button-unchecked-ripple-color:
+    var(--cros-sys-ripple_neutral_on_subtle);
+  --cr-radio-button-ink-size: 40px;
+}
+
+:host-context([cros][chrome-refresh-2023]) cr-radio-button[disabled] {
+  --cr-radio-button-checked-color: var(--cros-sys-disabled);
+  --cr-radio-button-unchecked-color: var(--cros-sys-disabled);
 }
 
 :host-context(body.jelly-enabled) cr-card-radio-button {
