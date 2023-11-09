@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/printing/web_printer.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
@@ -24,6 +25,12 @@ void WebPrinter::Trace(Visitor* visitor) const {
   visitor->Trace(printer_);
   visitor->Trace(attributes_);
   ScriptWrappable::Trace(visitor);
+}
+
+ScriptPromise WebPrinter::fetchAttributes(ScriptState* script_state,
+                                          ExceptionState& exception_state) {
+  // TODO(b/302505962): Implement this.
+  return ScriptPromise();
 }
 
 }  // namespace blink

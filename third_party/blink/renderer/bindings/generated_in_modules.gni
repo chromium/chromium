@@ -3080,8 +3080,26 @@ if (target_os != "android") {
 # we need to compile in the same way as would happen when current_os = "android".
 if (target_os != "android") {
   generated_dictionary_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_range.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_range.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h",
+  ]
+  generated_enumeration_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_mime_media_type.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_mime_media_type.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_multiple_document_handling.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_multiple_document_handling.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_orientation_requested.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_orientation_requested.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution_units.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution_units.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_sides.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_sides.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_print_quality.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_print_quality.h",
   ]
   generated_interface_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_manager.cc",

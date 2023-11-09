@@ -13,7 +13,9 @@
 
 namespace blink {
 
+class ExceptionState;
 class ExecutionContext;
+class ScriptPromise;
 class WebPrinterAttributes;
 
 class MODULES_EXPORT WebPrinter : public ScriptWrappable {
@@ -25,6 +27,8 @@ class MODULES_EXPORT WebPrinter : public ScriptWrappable {
   ~WebPrinter() override;
 
   WebPrinterAttributes* cachedAttributes() const { return attributes_; }
+  ScriptPromise fetchAttributes(ScriptState* script_state,
+                                ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const override;
 

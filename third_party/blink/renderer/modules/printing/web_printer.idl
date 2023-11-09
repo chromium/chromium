@@ -11,5 +11,8 @@
 interface WebPrinter {
   WebPrinterAttributes cachedAttributes();
 
+  [CallWith=ScriptState, RaisesException]
+  Promise<WebPrinterAttributes> fetchAttributes();
+
   // TODO(b/302505962): Add remaining methods.
 };
