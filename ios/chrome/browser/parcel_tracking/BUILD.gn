@@ -7,7 +7,14 @@ source_set("metrics") {
     "metrics.h",
     "metrics.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":tracking_source",
+    "//base",
+  ]
+}
+
+source_set("tracking_source") {
+  sources = [ "tracking_source.h" ]
 }
 
 source_set("infobar_delegate") {
@@ -16,7 +23,9 @@ source_set("infobar_delegate") {
     "parcel_tracking_infobar_delegate.mm",
   ]
   deps = [
+    ":metrics",
     ":parcel_tracking_step",
+    ":tracking_source",
     ":util",
     "//base",
     "//components/commerce/core:proto",
@@ -53,7 +62,9 @@ source_set("util") {
   ]
   deps = [
     ":features",
+    ":metrics",
     ":prefs",
+    ":tracking_source",
     "//base",
     "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",

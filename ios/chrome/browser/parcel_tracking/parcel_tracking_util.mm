@@ -15,6 +15,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
+#import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -57,25 +58,31 @@ void TrackParcels(
     NSArray<CustomTextCheckingResult*>* parcels,
     std::string domain,
     id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler,
-    bool display_infobar) {
+    bool display_infobar,
+    TrackingSource source) {
   shopping_service->StartTrackingParcels(
       ConvertCustomTextCheckingResult(parcels), domain,
       base::BindOnce(
           [](bool display_infobar,
              id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler,
-             NSArray<CustomTextCheckingResult*>* parcels, bool success,
+             NSArray<CustomTextCheckingResult*>* parcels, TrackingSource source,
+             bool success,
              std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>>
                  parcel_status) {
-            if (success && display_infobar) {
+            if (success) {
               RecordModuleFreshnessSignal(
                   ContentSuggestionsModuleType::kParcelTracking);
-              [parcel_tracking_commands_handler
-                  showParcelTrackingInfobarWithParcels:parcels
-                                               forStep:ParcelTrackingStep::
-                                                           kNewPackageTracked];
+              parcel_tracking::RecordParcelsTracked(source, parcels.count);
+              if (display_infobar) {
+                [parcel_tracking_commands_handler
+                    showParcelTrackingInfobarWithParcels:parcels
+                                                 forStep:
+                                                     ParcelTrackingStep::
+                                                         kNewPackageTracked];
+              }
             }
           },
-          display_infobar, parcel_tracking_commands_handler, parcels));
+          display_infobar, parcel_tracking_commands_handler, parcels, source));
 }
 
 void FilterParcelsAndShowParcelTrackingUI(

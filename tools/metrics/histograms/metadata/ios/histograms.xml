@@ -2048,6 +2048,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ParcelTracking.Tracked.{Source}" units="count"
+    expires_after="2024-03-07">
+  <owner>hiramahmood@google.com</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <summary>Logs number of packages tracked from {Source}.</summary>
+  <token key="Source">
+    <variant name="AutoTrack"
+        summary="Recorded when package(s) are tracked automatically."/>
+    <variant name="Infobar"
+        summary="Recorded when package(s) are tracked from an infobar."/>
+    <variant name="LongPress"
+        summary="Recorded when package(s) are tracked from long pressing on a
+                 package number."/>
+  </token>
+</histogram>
+
+<histogram name="IOS.ParcelTracking.Untracked.{Source}" units="count"
+    expires_after="2024-03-07">
+  <owner>hiramahmood@google.com</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <summary>Logs number of packages untracked from {Source}.</summary>
+  <token key="Source">
+    <variant name="Infobar"
+        summary="Recorded when package(s) are untracked from an infobar."/>
+    <variant name="MagicStack"
+        summary="Recorded when package is untracked from the Magic Stack."/>
+  </token>
+</histogram>
+
 <histogram name="IOS.PartialTranslate.Outcome" enum="PartialTranslateOutcome"
     expires_after="2024-04-28">
   <owner>olivierrobin@chromium.org</owner>

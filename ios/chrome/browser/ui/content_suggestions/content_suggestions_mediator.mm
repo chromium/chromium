@@ -53,8 +53,10 @@
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
+#import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/tracking_source.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
@@ -542,9 +544,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }
 
 - (void)untrackParcel:(NSString*)parcelID {
-  _shoppingService->StopTrackingParcel(base::SysNSStringToUTF8(parcelID),
-                                       base::BindOnce(^(bool){
-                                       }));
+  _shoppingService->StopTrackingParcel(
+      base::SysNSStringToUTF8(parcelID), base::BindOnce(^(bool) {
+        parcel_tracking::RecordParcelsUntracked(
+            TrackingSource::kMagicStackModule, 1);
+      }));
 }
 
 - (void)trackParcel:(NSString*)parcelID carrier:(ParcelType)carrier {

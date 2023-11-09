@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/tracking_source.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
@@ -2392,7 +2393,7 @@ enum class ToolbarKind {
       TrackParcels(
           shoppingService, parcels, std::string(),
           HandlerForProtocol(self.dispatcher, ParcelTrackingOptInCommands),
-          /*display_infobar=*/true);
+          /*display_infobar=*/true, TrackingSource::kAutoTrack);
       break;
     }
     case IOSParcelTrackingOptInStatus::kAskToTrack:

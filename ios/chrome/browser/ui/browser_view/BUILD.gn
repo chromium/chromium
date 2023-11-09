@@ -87,6 +87,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/parcel_tracking:infobar_delegate",
     "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
     "//ios/chrome/browser/parcel_tracking:prefs",
+    "//ios/chrome/browser/parcel_tracking:tracking_source",
     "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/policy:policy_util",
