@@ -563,7 +563,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   // Draw the promise ring for the first time before waiting for updates.
   if (is_promise_app_) {
-    ItemProgressUpdated();
+    UpdateProgressIndicatorState();
   }
 
   const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
@@ -2048,6 +2048,14 @@ void AppListItemView::ItemBeingDestroyed() {
 }
 
 void AppListItemView::ItemProgressUpdated() {
+  UpdateProgressIndicatorState();
+}
+
+void AppListItemView::ItemAppStatusUpdated() {
+  UpdateProgressIndicatorState();
+}
+
+void AppListItemView::UpdateProgressIndicatorState() {
   if (!is_promise_app_ || !features::ArePromiseIconsEnabled()) {
     return;
   }

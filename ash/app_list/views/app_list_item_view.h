@@ -425,6 +425,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void ItemIsNewInstallChanged() override;
   void ItemBeingDestroyed() override;
   void ItemProgressUpdated() override;
+  void ItemAppStatusUpdated() override;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
@@ -453,6 +454,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // Initialize the item drag operation if it is available at `location`.
   bool MaybeStartTouchDrag(const gfx::Point& location);
+
+  // Updates the active `progress_indicator_` to reflect the current state of
+  // the item associated to this view.
+  void UpdateProgressIndicatorState();
 
   // Updates the layer bounds for the `progress_indicator_` if any is currently
   // active.
