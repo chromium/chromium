@@ -64,6 +64,12 @@ export class SettingsSafetyHubModuleElement extends
         observer: 'onSitesChanged_',
       },
 
+      // If set to true, users of this class MUST call animateShow() after
+      // adding any items added to |sites|, otherwise these will not be
+      // properly rendered. Users SHOULD also call animateHide() on any item
+      // before removing it from |sites|, to apply the reverse animation.
+      animated: {type: Boolean, value: false},
+
       // The string for the header label.
       header: String,
 

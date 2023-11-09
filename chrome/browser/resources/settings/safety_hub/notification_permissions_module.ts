@@ -259,12 +259,6 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     assert(this.sites_);
     this.lastOrigins_ = this.sites_.map(site => site.origin);
 
-    // Pre-emptively set the header to the completion state, as that is the
-    // state we expect at the end of the animation. In the corner case that
-    // another site was added to the list at exactly the same time as the
-    // animation runs, the callback will still re-render the header correctly.
-    this.setHeaderToCompletionState_();
-
     this.$.module.animateHide(
         /* all origins */ null,
         this.browserProxy_.blockNotificationPermissionForOrigins.bind(
