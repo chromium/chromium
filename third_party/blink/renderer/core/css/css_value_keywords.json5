@@ -520,7 +520,6 @@
     "table-column",
     "table-cell",
     "table-caption",
-    "ruby-base",
     "ruby-text",
     // The order must match the order found in IsDisplayLegacy().
     "inline-block",

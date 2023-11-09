@@ -52,7 +52,7 @@
         "layout-custom", "inline-layout-custom", "math", "block math",
         "inline list-item", "flow-root list-item", "inline flow-root list-item",
         // Available only if CssDisplayRuby is enabled:
-        "ruby", "block ruby", "ruby-base", "ruby-text"
+        "ruby", "block ruby", "ruby-text"
       ],
       default_value: "inline",
     },

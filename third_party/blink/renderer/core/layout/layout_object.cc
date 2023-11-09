@@ -418,7 +418,6 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return MakeGarbageCollected<LayoutMathMLBlock>(element);
     case EDisplay::kRuby:
     case EDisplay::kBlockRuby:
-    case EDisplay::kRubyBase:
     case EDisplay::kRubyText:
       // TODO(crbug.com/880802): Returns a LayoutRuby* instance.
       NOTREACHED();

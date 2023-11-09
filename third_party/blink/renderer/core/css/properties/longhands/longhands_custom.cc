@@ -2849,7 +2849,7 @@ static bool IsDisplayInternal(CSSValueID id) {
   return (id >= CSSValueID::kTableRowGroup &&
           id <= CSSValueID::kTableCaption) ||
          (RuntimeEnabledFeatures::CssDisplayRubyEnabled() &&
-          (id == CSSValueID::kRubyBase || id == CSSValueID::kRubyText));
+          id == CSSValueID::kRubyText);
 }
 
 static bool IsDisplayLegacy(CSSValueID id) {
