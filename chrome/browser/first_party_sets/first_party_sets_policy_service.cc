@@ -52,12 +52,8 @@ const base::Value::Dict* GetOverridesPolicyForProfile(
   }
   // The value is declared as a dict, but we assume that the user may have
   // modified the prefs file or the file may be corrupt.
-  const base::Value& value =
-      prefs->GetValue(first_party_sets::kRelatedWebsiteSetsOverrides);
-  if (!value.is_dict()) {
-    return nullptr;
-  }
-  return &value.GetDict();
+  return prefs->GetValue(first_party_sets::kRelatedWebsiteSetsOverrides)
+      .GetIfDict();
 }
 
 bool GetEnabledStateForProfile(Profile* profile) {
@@ -112,7 +108,6 @@ void FirstPartySetsPolicyService::Init() {
   // non-null `context`.
   CHECK(profile);
 
-  PrefService* prefs = profile->GetPrefs();
   pref_enabled_ = GetEnabledStateForProfile(profile);
 
   if (profile->IsSystemProfile() || profile->IsGuestSession() ||
@@ -127,7 +122,7 @@ void FirstPartySetsPolicyService::Init() {
   // dynamically refresh, and all the delegates for `context` will have the same
   // policy and thus the same config.
   content::FirstPartySetsHandler::GetInstance()->GetContextConfigForPolicy(
-      GetOverridesPolicyForProfile(prefs),
+      GetOverridesPolicyForProfile(profile->GetPrefs()),
       base::BindOnce(&FirstPartySetsPolicyService::OnProfileConfigReady,
                      weak_factory_.GetWeakPtr(),
                      // We should only clear site data if First-Party Sets is
