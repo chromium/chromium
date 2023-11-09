@@ -101,6 +101,7 @@ namespace http://www.w3.org/1999/xhtml
     property dir
     property dispatchEvent
     property draggable
+    property editContext
     property elementTiming
     property enterKeyHint
     property firstChild

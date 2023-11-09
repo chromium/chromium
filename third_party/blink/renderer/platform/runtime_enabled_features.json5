@@ -1492,11 +1492,9 @@
       depends_on: ["DOMPartsAPI"],
     },
     {
-      // If enabled, allows web pages to use the experimental EditContext API to
-      // better control text input. See crbug.com/999184.
       name: "EditContext",
       origin_trial_feature_name: "EditContext",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ElementCapture",

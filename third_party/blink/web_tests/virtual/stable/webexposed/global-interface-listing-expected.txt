@@ -949,6 +949,11 @@ interface ChannelMergerNode : AudioNode
 interface ChannelSplitterNode : AudioNode
     attribute @@toStringTag
     method constructor
+interface CharacterBoundsUpdateEvent : Event
+    attribute @@toStringTag
+    getter rangeEnd
+    getter rangeStart
+    method constructor
 interface CharacterData : Node
     attribute @@toStringTag
     attribute @@unscopables
@@ -1858,6 +1863,30 @@ interface DynamicsCompressorNode : AudioNode
     getter release
     getter threshold
     method constructor
+interface EditContext : EventTarget
+    attribute @@toStringTag
+    getter characterBoundsRangeStart
+    getter oncharacterboundsupdate
+    getter oncompositionend
+    getter oncompositionstart
+    getter ontextformatupdate
+    getter ontextupdate
+    getter selectionEnd
+    getter selectionStart
+    getter text
+    method attachedElements
+    method characterBounds
+    method constructor
+    method updateCharacterBounds
+    method updateControlBounds
+    method updateSelection
+    method updateSelectionBounds
+    method updateText
+    setter oncharacterboundsupdate
+    setter oncompositionend
+    setter oncompositionstart
+    setter ontextformatupdate
+    setter ontextupdate
 interface Element : Node
     attribute @@toStringTag
     attribute @@unscopables
@@ -3106,6 +3135,7 @@ interface HTMLElement : Element
     getter dataset
     getter dir
     getter draggable
+    getter editContext
     getter enterKeyHint
     getter hidden
     getter inert
@@ -3243,6 +3273,7 @@ interface HTMLElement : Element
     setter contentEditable
     setter dir
     setter draggable
+    setter editContext
     setter enterKeyHint
     setter hidden
     setter inert
@@ -8528,6 +8559,17 @@ interface TextEvent : UIEvent
     getter data
     method constructor
     method initTextEvent
+interface TextFormat
+    attribute @@toStringTag
+    getter rangeEnd
+    getter rangeStart
+    getter underlineStyle
+    getter underlineThickness
+    method constructor
+interface TextFormatUpdateEvent : Event
+    attribute @@toStringTag
+    method constructor
+    method getTextFormats
 interface TextMetrics
     attribute @@toStringTag
     getter actualBoundingBoxAscent
@@ -8590,6 +8632,14 @@ interface TextTrackList : EventTarget
     setter onaddtrack
     setter onchange
     setter onremovetrack
+interface TextUpdateEvent : Event
+    attribute @@toStringTag
+    getter selectionEnd
+    getter selectionStart
+    getter text
+    getter updateRangeEnd
+    getter updateRangeStart
+    method constructor
 interface TimeRanges
     attribute @@toStringTag
     getter length
