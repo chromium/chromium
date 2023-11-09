@@ -122,6 +122,20 @@ each histogram.
 </histogram>
 
 <histogram
+    name="PerformanceManager.PerformanceInterventions.CPU.SystemCPUError.{Timing}"
+    units="BooleanError" expires_after="2024-01-01">
+  <owner>agale@chromium.org</owner>
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded {Timing} when an error occurs measuring the system CPU usage.
+    Successful measurements are recorded in
+    PerformanceManager.PerformanceInterventions.CPU.System.*.
+  </summary>
+  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
+</histogram>
+
+<histogram
     name="PerformanceManager.PerformanceInterventions.CPU.TopNBackgroundCPU.{N}.{Timing}"
     units="%" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
