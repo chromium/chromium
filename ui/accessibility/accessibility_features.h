@@ -198,6 +198,11 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPerformanceFiltering);
 // Returns true if AXMode filtering for performance is enabled.
 AX_BASE_EXPORT bool IsAccessibilityPerformanceFilteringEnabled();
 
+// When enabled, this setting will disable max node and timeout limits on the
+// AXTreeSnapshotter's Snapshot method, and track related histograms.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySnapshotStressTests);
+AX_BASE_EXPORT bool IsAccessibilitySnapshotStressTestsEnabled();
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -2206,6 +2206,8 @@ extern const char kAccessibilityPageZoomName[];
 extern const char kAccessibilityPageZoomDescription[];
 extern const char kAccessibilityPerformanceFilteringName[];
 extern const char kAccessibilityPerformanceFilteringDescription[];
+extern const char kAccessibilitySnapshotStressTestsName[];
+extern const char kAccessibilitySnapshotStressTestsDescription[];
 
 extern const char kAdaptiveButtonInTopToolbarName[];
 extern const char kAdaptiveButtonInTopToolbarDescription[];

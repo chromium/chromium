@@ -1985,6 +1985,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-accessibility-snapshot-stress-tests",
+    "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-android-gamepad-vibration",
     "owners": [ "deviceapi-team@google.com" ],
     "expiry_milestone": 130

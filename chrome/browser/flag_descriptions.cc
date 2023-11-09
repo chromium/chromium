@@ -3809,6 +3809,12 @@ const char kAccessibilityPerformanceFilteringDescription[] =
     " supporting different levels of the accessibility engine depending on what"
     " accessibility services and assistive technologies are running.";
 
+const char kAccessibilitySnapshotStressTestsName[] =
+    "Accessibility AXTree Snapshot Stress Tests";
+const char kAccessibilitySnapshotStressTestsDescription[] =
+    "Enable experiment that will disable max node and timeout limits for the "
+    "AXTreeSnapshotter, and track performance stats.";
+
 const char kAddToHomescreenIPHName[] = "Add to homescreen IPH";
 const char kAddToHomescreenIPHDescription[] =
     " Shows in-product-help messages educating users about add to homescreen "

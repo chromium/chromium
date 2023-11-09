@@ -62,6 +62,21 @@
             ]
         }
     ],
+    "AccessibilitySnapshotStressTests": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20231108",
+                    "enable_features": [
+                        "AccessibilitySnapshotStressTests"
+                    ]
+                }
+            ]
+        }
+    ],
     "AdaptiveCharging": [
         {
             "platforms": [

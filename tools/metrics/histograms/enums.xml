@@ -41542,6 +41542,7 @@ from previous Chrome versions.
   <int value="-1504305449" label="NTPPhysicalWebPageSuggestions:enabled"/>
   <int value="-1503851906" label="EnableSettingsShortcutSearch:enabled"/>
   <int value="-1503745396" label="UnifiedPasswordManagerReenrollment:disabled"/>
+  <int value="-1501764956" label="AccessibilitySnapshotStressTests:enabled"/>
   <int value="-1501658124" label="IsolatedWebAppAutomaticUpdates:enabled"/>
   <int value="-1500811568" label="MuteNotificationSnoozeAction:disabled"/>
   <int value="-1499989506" label="FedCmWithoutThirdPartyCookies:disabled"/>
@@ -45275,6 +45276,7 @@ from previous Chrome versions.
   <int value="291482671" label="ExperimentalFlingAnimation:disabled"/>
   <int value="291866104" label="WebAuthenticationPhoneSupport:enabled"/>
   <int value="291968978" label="HomepagePromoCard:enabled"/>
+  <int value="291998717" label="AccessibilitySnapshotStressTests:disabled"/>
   <int value="292560715" label="ViewsCastDialog:disabled"/>
   <int value="292731264" label="PasswordChangeInSettings:disabled"/>
   <int value="292842744"
