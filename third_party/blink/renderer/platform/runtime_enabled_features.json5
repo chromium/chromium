@@ -3224,6 +3224,7 @@
     {
       name: "SchedulerYield",
       origin_trial_feature_name: "SchedulerYield",
+      origin_trial_allows_third_party: true,
       depends_on: ["AbortSignalComposition"],
       status: "experimental",
     },
