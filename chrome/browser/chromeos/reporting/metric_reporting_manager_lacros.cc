@@ -102,10 +102,14 @@ MetricReportingManagerLacros::MetricReportingManagerLacros(
                 ::policy::key::kReportUploadFrequency,
                 GetDefaultReportUploadFrequency(),
                 /*rate_unit_to_ms=*/1, source_info);
-        instance->event_report_queue_ =
+        auto website_event_rate_limiter =
+            instance->delegate_->CreateSlidingWindowRateLimiter(
+                kWebsiteEventsTotalSize, kWebsiteEventsWindow,
+                kWebsiteEventsBucketCount);
+        instance->website_event_report_queue_ =
             instance->delegate_->CreateMetricReportQueue(
                 EventType::kUser, Destination::EVENT_METRIC,
-                Priority::SLOW_BATCH, /*rate_limiter=*/nullptr,
+                Priority::SLOW_BATCH, std::move(website_event_rate_limiter),
                 std::move(source_info));
 
         instance->delegate_->RegisterObserverWithCrosApiClient(instance.get());
@@ -146,7 +150,7 @@ void MetricReportingManagerLacros::Shutdown() {
   samplers_.clear();
   event_observer_managers_.clear();
   periodic_collectors_.clear();
-  event_report_queue_.reset();
+  website_event_report_queue_.reset();
   telemetry_report_queue_.reset();
 }
 
@@ -194,7 +198,7 @@ void MetricReportingManagerLacros::InitWebsiteMetricCollectors() {
       std::make_unique<WebsiteMetricsRetrieverLacros>(profile_weak_ptr),
       user_reporting_settings_.get());
   InitEventObserverManager(
-      std::move(website_events_observer), event_report_queue_.get(),
+      std::move(website_events_observer), website_event_report_queue_.get(),
       user_reporting_settings_.get(), kReportWebsiteActivityAllowlist,
       kReportWebsiteActivityEnabledDefaultValue,
       /*init_delay=*/base::TimeDelta());

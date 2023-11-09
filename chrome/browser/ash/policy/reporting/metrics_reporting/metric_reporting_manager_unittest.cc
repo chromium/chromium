@@ -40,6 +40,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/rate_limiter_interface.h"
+#include "components/reporting/util/rate_limiter_slide_window.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,18 +124,30 @@ class MockDelegate : public MetricReportingManager::Delegate {
 
   ~MockDelegate() override = default;
 
+  // Wraps around the `CreateMetricReportQueueMock` to simplify mocking
+  // `MetricReportQueue` creation for a specific rate limiter.
+  std::unique_ptr<MetricReportQueue> CreateMetricReportQueue(
+      EventType event_type,
+      Destination destination,
+      Priority priority,
+      std::unique_ptr<RateLimiterInterface> rate_limiter,
+      absl::optional<SourceInfo> source_info) override {
+    return CreateMetricReportQueueMock(event_type, destination, priority,
+                                       rate_limiter.get(), source_info);
+  }
+
   MOCK_METHOD(bool, IsUserAffiliated, (Profile & profile), (const, override));
 
   MOCK_METHOD(bool, IsDeprovisioned, (), (const, override));
 
   MOCK_METHOD(std::unique_ptr<MetricReportQueue>,
-              CreateMetricReportQueue,
+              CreateMetricReportQueueMock,
               (EventType event_type,
                Destination destination,
                Priority priority,
-               std::unique_ptr<RateLimiterInterface> rate_limiter,
+               RateLimiterInterface* rate_limiter,
                absl::optional<SourceInfo> source_info),
-              (override));
+              ());
 
   MOCK_METHOD(std::unique_ptr<MetricReportQueue>,
               CreatePeriodicUploadReportQueue,
@@ -189,6 +202,13 @@ class MockDelegate : public MetricReportingManager::Delegate {
                bool setting_enabled_default_value,
                EventDrivenTelemetryCollectorPool* collector_pool,
                base::TimeDelta init_delay),
+              (override));
+
+  MOCK_METHOD(std::unique_ptr<RateLimiterSlideWindow>,
+              CreateSlidingWindowRateLimiter,
+              (size_t total_size,
+               base::TimeDelta time_window,
+               size_t bucket_count),
               (override));
 
   MOCK_METHOD(std::unique_ptr<Sampler>,
@@ -277,8 +297,8 @@ test::FakeMetricReportQueue* CreateMockMetricReportQueueHelper(
   auto* metric_report_queue_ptr = metric_report_queue.get();
   // Only one report queue should be created with the given args: `event_type`,
   // `destination`, and `priority`.
-  ON_CALL(*mock_delegate, CreateMetricReportQueue(event_type, destination,
-                                                  priority, IsNull(), _))
+  ON_CALL(*mock_delegate, CreateMetricReportQueueMock(event_type, destination,
+                                                      priority, IsNull(), _))
       .WillByDefault(Return(ByMove(std::move(metric_report_queue))));
   return metric_report_queue_ptr;
 }
@@ -287,13 +307,22 @@ test::FakeMetricReportQueue* CreateMockRateLimitedMetricReportQueueHelper(
     ::testing::NiceMock<MockDelegate>* mock_delegate,
     EventType event_type,
     Destination destination,
-    Priority priority) {
+    Priority priority,
+    size_t total_size,
+    base::TimeDelta time_window,
+    size_t bucket_count) {
+  auto rate_limiter_slide_window = std::make_unique<RateLimiterSlideWindow>(
+      total_size, time_window, bucket_count);
+  auto* const rate_limiter_slide_window_ptr = rate_limiter_slide_window.get();
+  ON_CALL(*mock_delegate,
+          CreateSlidingWindowRateLimiter(total_size, time_window, bucket_count))
+      .WillByDefault(Return(ByMove(std::move(rate_limiter_slide_window))));
+
   auto metric_report_queue = std::make_unique<test::FakeMetricReportQueue>();
   auto* metric_report_queue_ptr = metric_report_queue.get();
-  // Only one report queue should be created with the given args: `event_type`,
-  // `destination`, `priority` and a rate limiter.
-  ON_CALL(*mock_delegate, CreateMetricReportQueue(event_type, destination,
-                                                  priority, NotNull(), _))
+  ON_CALL(*mock_delegate,
+          CreateMetricReportQueueMock(event_type, destination, priority,
+                                      rate_limiter_slide_window_ptr, _))
       .WillByDefault(Return(ByMove(std::move(metric_report_queue))));
   return metric_report_queue_ptr;
 }
@@ -335,7 +364,12 @@ class MetricReportingManagerTest
         Priority::SLOW_BATCH);
     app_event_queue_ptr_ = CreateMockRateLimitedMetricReportQueueHelper(
         mock_delegate_.get(), EventType::kUser, Destination::EVENT_METRIC,
-        Priority::SLOW_BATCH);
+        Priority::SLOW_BATCH, metrics::kAppEventsTotalSize,
+        metrics::kAppEventsWindow, metrics::kAppEventsBucketCount);
+    website_event_queue_ptr_ = CreateMockRateLimitedMetricReportQueueHelper(
+        mock_delegate_.get(), EventType::kUser, Destination::EVENT_METRIC,
+        Priority::SLOW_BATCH, metrics::kWebsiteEventsTotalSize,
+        metrics::kWebsiteEventsWindow, metrics::kWebsiteEventsBucketCount);
 
     auto telemetry_queue = std::make_unique<test::FakeMetricReportQueue>();
     telemetry_queue_ptr_ = telemetry_queue.get();
@@ -359,6 +393,8 @@ class MetricReportingManagerTest
       user_event_queue_ptr_;
   raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
       app_event_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
+      website_event_queue_ptr_;
 
   std::unique_ptr<::testing::NiceMock<MockDelegate>> mock_delegate_;
 };
@@ -536,6 +572,16 @@ TEST_P(MetricReportingManagerEventTest, Default) {
         return std::make_unique<FakeMetricEventObserverManager>(
             fake_reporting_settings.get(), &observer_manager_count);
       });
+  ON_CALL(
+      *mock_delegate_ptr,
+      CreateEventObserverManager(
+          _, website_event_queue_ptr_.get(), _,
+          test_case.setting_data.enable_setting_path,
+          test_case.setting_data.setting_enabled_default_value, _, init_delay))
+      .WillByDefault([&]() {
+        return std::make_unique<FakeMetricEventObserverManager>(
+            fake_reporting_settings.get(), &observer_manager_count);
+      });
 
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate_), nullptr);
@@ -586,6 +632,15 @@ TEST_F(MetricReportingManagerEventTest,
   ON_CALL(*mock_delegate_ptr,
           CreateEventObserverManager(
               _, app_event_queue_ptr_.get(), _,
+              app_event_settings.enable_setting_path,
+              app_event_settings.setting_enabled_default_value, _, _))
+      .WillByDefault([&]() {
+        return std::make_unique<FakeMetricEventObserverManager>(
+            fake_reporting_settings.get(), &observer_manager_count);
+      });
+  ON_CALL(*mock_delegate_ptr,
+          CreateEventObserverManager(
+              _, website_event_queue_ptr_.get(), _,
               app_event_settings.enable_setting_path,
               app_event_settings.setting_enabled_default_value, _, _))
       .WillByDefault([&]() {
@@ -1025,6 +1080,18 @@ class EventDrivenTelemetryCollectorPoolTest
     CreateMockMetricReportQueueHelper(mock_delegate_.get(), EventType::kUser,
                                       Destination::EVENT_METRIC,
                                       Priority::SLOW_BATCH);
+    // App event report queue.
+    CreateMockRateLimitedMetricReportQueueHelper(
+        mock_delegate_.get(), EventType::kUser, Destination::EVENT_METRIC,
+        Priority::SLOW_BATCH, metrics::kAppEventsTotalSize,
+        metrics::kAppEventsWindow, metrics::kAppEventsBucketCount);
+
+    // Website event report queue.
+    CreateMockRateLimitedMetricReportQueueHelper(
+        mock_delegate_.get(), EventType::kUser, Destination::EVENT_METRIC,
+        Priority::SLOW_BATCH, metrics::kWebsiteEventsTotalSize,
+        metrics::kWebsiteEventsWindow, metrics::kWebsiteEventsBucketCount);
+
     // Telemetry queue.
     ON_CALL(*mock_delegate_, CreatePeriodicUploadReportQueue)
         .WillByDefault(
