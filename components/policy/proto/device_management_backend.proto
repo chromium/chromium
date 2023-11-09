@@ -107,7 +107,7 @@ enum StartCrdSessionResultCode {
   // Failed because RemoteAccessHostAllowEnterpriseRemoteSupportConnections
   // policy is disabled.
   FAILURE_DISABLED_BY_POLICY = 8;
-};
+}
 
 // Data along with a cryptographic signature verifying their authenticity.
 message SignedData {
