@@ -1813,8 +1813,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
 
   // Navigates to the second page of the app.
-  std::ignore = ui_test_utils::NavigateToURL(
-      helper()->browser_view()->browser(), second_page_url());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
   content::WaitForLoadStop(web_contents);
   EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
 }
@@ -1831,8 +1831,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
 
   // Navigates to the second page of the app.
-  std::ignore = ui_test_utils::NavigateToURL(
-      helper()->browser_view()->browser(), second_page_url());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
   content::WaitForLoadStop(web_contents);
   EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
 
@@ -1877,8 +1877,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Another URL where resizability is not set resets the web API overridden
   // resizability.
-  std::ignore = ui_test_utils::NavigateToURL(
-      helper()->browser_view()->browser(), GURL("http://www.google.com/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(),
+                                           GURL("http://www.google.com/")));
   content::WaitForLoadStop(web_contents);
   EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(), absl::nullopt);
 
@@ -1893,6 +1893,48 @@ IN_PROC_BROWSER_TEST_F(
               absl::nullopt);
   }
 }
+
+// TODO(crbug.com/1466855): Disabled on non-Aura due to WaitForResizeComplete()
+// not being implemented.
+#if defined(USE_AURA)
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableBlocksResizeToAndResizeByApis) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+
+  auto* browser_view = helper()->browser_view();
+  browser_view->SetCanResize(true);
+  auto* web_contents = browser_view->GetActiveWebContents();
+
+  auto CheckAreSameSize = [](const gfx::Size& s1, const gfx::Size& s2) {
+    return s1 == s2;
+  };
+
+  // Set the initial window size to something != 1000x1000.
+  EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(800,800);"));
+  WaitForResizeComplete(web_contents);
+
+  gfx::Size client_view_size_before =
+      browser_view->frame()->client_view()->size();
+
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_FALSE(browser_view->GetCanResizeFromWebAPI().value());
+  EXPECT_FALSE(browser_view->CanResize());
+
+  // window.resizeTo API no longer takes action.
+  EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(1000,1000);"));
+  WaitForResizeComplete(web_contents);
+  EXPECT_TRUE(CheckAreSameSize(client_view_size_before,
+                               browser_view->frame()->client_view()->size()));
+
+  // window.resizeBy API no longer takes action.
+  EXPECT_TRUE(ExecJs(web_contents, "window.resizeBy(10,10);"));
+  WaitForResizeComplete(web_contents);
+  EXPECT_TRUE(CheckAreSameSize(client_view_size_before,
+                               browser_view->frame()->client_view()->size()));
+}
+#endif  // defined(USE_AURA)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class OriginTextVisibilityWaiter : public views::ViewObserver {

@@ -8083,9 +8083,25 @@ void WebContentsImpl::Close() {
   }
 }
 
+bool WebContentsImpl::BlockResizeIfNeeded() {
+  auto can_resize = GetPrimaryPage().GetResizable();
+  if (!can_resize.has_value()) {
+    return false;
+  }
+
+  if (!can_resize.value()) {
+    auto* rfh = GetPrimaryMainFrame();
+    rfh->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StrCat({"Resizing the window has been blocked with "
+                      "window.setResizable API."}));
+  }
+  return !can_resize.value();
+}
+
 void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetWindowRect");
-  if (!delegate_) {
+  if (!delegate_ || BlockResizeIfNeeded()) {
     return;
   }
 

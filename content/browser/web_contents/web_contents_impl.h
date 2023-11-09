@@ -1798,6 +1798,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Returns the size that the main frame should be sized to.
   gfx::Size GetSizeForMainFrame();
 
+  // `window.setResizable(bool)` API (part of Additional Windowing Controls)
+  // can block the use of APIs resizing the window, such as `resizeTo` and
+  // `resizeBy`.
+  bool BlockResizeIfNeeded();
+
   // Helper method that's called whenever |preferred_size_| or
   // |preferred_size_for_capture_| changes, to propagate the new value to the
   // |delegate_|.
