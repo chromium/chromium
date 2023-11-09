@@ -101,6 +101,7 @@ source_set("browser_tests") {
     sources += [
       "chromeos/ash_common/webui_resource_browsertest.cc",
       "chromeos/enterprise_reporting/enterprise_reporting_browsertest.cc",
+      "chromeos/firmware_update/firmware_update_browsertest.cc",
       "chromeos/personalization_app/personalization_app_browsertest.cc",
     ]
   } else {

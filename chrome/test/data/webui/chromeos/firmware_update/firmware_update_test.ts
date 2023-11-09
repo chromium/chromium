@@ -22,7 +22,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-export function firmwareUpdateAppTest() {
+suite('FirmwareUpdateAppTest', () => {
   let page: FirmwareUpdateAppElement|null = null;
 
   let provider: FakeUpdateProvider|null = null;
@@ -370,4 +370,4 @@ export function firmwareUpdateAppTest() {
     // Clean up.
     document.head.removeChild(linkEl);
   });
-}
+});

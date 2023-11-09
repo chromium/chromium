@@ -18,7 +18,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-export function firmwareUpdateDialogTest() {
+suite('FirmwareUpdateDialogTest', () => {
   let updateDialogElement: FirmwareUpdateDialogElement|null = null;
 
   setup(() => {
@@ -187,4 +187,4 @@ export function firmwareUpdateDialogTest() {
     assertFalse(isVisible(updateDialogElement.shadowRoot.querySelector(
         '#indeterminateProgressBar')));
   });
-}
+});
