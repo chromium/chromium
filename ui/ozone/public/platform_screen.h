@@ -15,10 +15,6 @@
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/linux/linux_ui.h"
-#endif
-
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -142,7 +138,7 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
 
   // Returns tablet state. If a platform does not support this, returns
   // display::TabletState::kInClamshellMode.
-  virtual display::TabletState GetTabletState() const;
+  virtual display::TabletState GetTabletState() const = 0;
 #endif
 
  protected:
