@@ -167,17 +167,17 @@ void ProcessNodeImpl::FireBackgroundTracingTrigger(
 
 content::ProcessType ProcessNodeImpl::GetProcessType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return process_type();
+  return process_type_;
 }
 
 base::ProcessId ProcessNodeImpl::GetProcessId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return process_id();
+  return process_id_;
 }
 
 const base::Process& ProcessNodeImpl::GetProcess() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return process();
+  return process_.value();
 }
 
 resource_attribution::ProcessContext ProcessNodeImpl::GetResourceContext()
@@ -188,12 +188,12 @@ resource_attribution::ProcessContext ProcessNodeImpl::GetResourceContext()
 
 base::TimeTicks ProcessNodeImpl::GetLaunchTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return launch_time();
+  return launch_time_;
 }
 
 absl::optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return exit_status();
+  return exit_status_;
 }
 
 const std::string& ProcessNodeImpl::GetMetricsName() const {

@@ -214,7 +214,7 @@ TEST_F(CPUMeasurementMonitorTest, CreateTiming) {
   // Renderer creation racing with StartMonitoring(). Its pid will not be
   // available until after monitoring starts.
   const TestNodeWrapper<ProcessNodeImpl> renderer2 = CreateMockCPURenderer();
-  ASSERT_EQ(renderer2->process_id(), base::kNullProcessId);
+  ASSERT_EQ(renderer2->GetProcessId(), base::kNullProcessId);
 
   // `renderer1` begins measurement as soon as StartMonitoring is called.
   // `renderer2` begins measurement when its pid is available.

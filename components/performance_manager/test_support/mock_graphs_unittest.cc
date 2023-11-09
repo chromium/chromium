@@ -26,20 +26,20 @@ using MockGraphsTest = GraphTestHarness;
 TEST_F(MockGraphsTest, ProcessNodes) {
   MockUtilityAndMultipleRenderProcessesGraph mock_graph(graph());
 
-  EXPECT_EQ(mock_graph.browser_process->process_type(),
+  EXPECT_EQ(mock_graph.browser_process->GetProcessType(),
             content::ProcessType::PROCESS_TYPE_BROWSER);
-  EXPECT_EQ(mock_graph.process->process_type(),
+  EXPECT_EQ(mock_graph.process->GetProcessType(),
             content::ProcessType::PROCESS_TYPE_RENDERER);
-  EXPECT_EQ(mock_graph.other_process->process_type(),
+  EXPECT_EQ(mock_graph.other_process->GetProcessType(),
             content::ProcessType::PROCESS_TYPE_RENDERER);
-  EXPECT_EQ(mock_graph.utility_process->process_type(),
+  EXPECT_EQ(mock_graph.utility_process->GetProcessType(),
             content::ProcessType::PROCESS_TYPE_UTILITY);
 
   // Make sure the ProcessNodes have the PID's documented in mock_graphs.h.
-  EXPECT_EQ(mock_graph.browser_process->process_id(), base::ProcessId(1));
-  EXPECT_EQ(mock_graph.process->process_id(), base::ProcessId(2));
-  EXPECT_EQ(mock_graph.other_process->process_id(), base::ProcessId(3));
-  EXPECT_EQ(mock_graph.utility_process->process_id(), base::ProcessId(4));
+  EXPECT_EQ(mock_graph.browser_process->GetProcessId(), base::ProcessId(1));
+  EXPECT_EQ(mock_graph.process->GetProcessId(), base::ProcessId(2));
+  EXPECT_EQ(mock_graph.other_process->GetProcessId(), base::ProcessId(3));
+  EXPECT_EQ(mock_graph.utility_process->GetProcessId(), base::ProcessId(4));
 
   // Make sure the ProcessNodes have valid RenderProcessHostId's or
   // BrowserChildProcessHostId's.

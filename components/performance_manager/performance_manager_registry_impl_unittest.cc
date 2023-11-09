@@ -261,7 +261,7 @@ TEST_F(PerformanceManagerRegistryImplDeathTest, BrowserProcessNode) {
   const ProcessNodeImpl* browser_node = registry->GetBrowserProcessNode();
   ASSERT_TRUE(browser_node);
   RunInGraph([&] {
-    EXPECT_EQ(browser_node->process_type(), content::PROCESS_TYPE_BROWSER);
+    EXPECT_EQ(browser_node->GetProcessType(), content::PROCESS_TYPE_BROWSER);
   });
 
   DeleteBrowserProcessNodeForTesting();
@@ -294,8 +294,8 @@ TEST_F(PerformanceManagerRegistryImplDeathTest, BrowserChildProcessNodes) {
   EXPECT_NE(utility_node, gpu_node);
 
   RunInGraph([&] {
-    EXPECT_EQ(utility_node->process_type(), content::PROCESS_TYPE_UTILITY);
-    EXPECT_EQ(gpu_node->process_type(), content::PROCESS_TYPE_GPU);
+    EXPECT_EQ(utility_node->GetProcessType(), content::PROCESS_TYPE_UTILITY);
+    EXPECT_EQ(gpu_node->GetProcessType(), content::PROCESS_TYPE_GPU);
   });
 
   utility_process.SimulateDisconnect();

@@ -70,7 +70,7 @@ class PerformanceManagerTabHelperTest : public PerformanceManagerTestHarness {
   static size_t CountAllRenderProcessNodes(GraphImpl* graph) {
     size_t num_hosts = 0;
     for (ProcessNodeImpl* process_node : graph->GetAllProcessNodeImpls()) {
-      if (process_node->process_type() == content::PROCESS_TYPE_RENDERER) {
+      if (process_node->GetProcessType() == content::PROCESS_TYPE_RENDERER) {
         ++num_hosts;
       }
     }

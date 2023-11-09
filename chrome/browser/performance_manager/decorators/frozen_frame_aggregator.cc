@@ -229,7 +229,7 @@ void FrozenFrameAggregator::UpdateFrameCounts(FrameNodeImpl* frame_node,
   auto* process_data = FrozenDataImpl::GetOrCreate(process_node);
 
   // We should only have frames attached to renderer processes.
-  DCHECK_EQ(content::PROCESS_TYPE_RENDERER, process_node->process_type());
+  DCHECK_EQ(content::PROCESS_TYPE_RENDERER, process_node->GetProcessType());
 
   // Set the page lifecycle state based on the state of the frame tree.
   if (page_data->ChangeFrameCounts(current_frame_delta, frozen_frame_delta)) {

@@ -136,11 +136,11 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
   // Returns a default GlobalMemoryDumpPtr suitable for most tests.
   GlobalMemoryDumpPtr DefaultMemoryDump() {
     return GenerateMemoryDump({
-        {mock_graph()->process->process_id(), kFakeResidentSetKb,
+        {mock_graph()->process->GetProcessId(), kFakeResidentSetKb,
          kFakePrivateFootprintKb},
-        {mock_graph()->other_process->process_id(), kFakeResidentSetKb,
+        {mock_graph()->other_process->GetProcessId(), kFakeResidentSetKb,
          kFakePrivateFootprintKb},
-        {mock_utility_process_->process_id(), kFakeResidentSetKb,
+        {mock_utility_process_->GetProcessId(), kFakeResidentSetKb,
          kFakePrivateFootprintKb},
     });
   }
@@ -285,7 +285,7 @@ TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
   // Only contains the data for one of the three processes.
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(GenerateMemoryDump(
-          {{mock_graph()->process->process_id(), kFakeResidentSetKb,
+          {{mock_graph()->process->GetProcessId(), kFakeResidentSetKb,
             kFakePrivateFootprintKb}}))));
 
   auto interest_token =
@@ -299,7 +299,7 @@ TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
   // data attached to |mock_graph()->process| shouldn't change.
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(GenerateMemoryDump(
-          {{mock_graph()->other_process->process_id(), kFakeResidentSetKb * 2,
+          {{mock_graph()->other_process->GetProcessId(), kFakeResidentSetKb * 2,
             kFakePrivateFootprintKb * 2}}))));
 
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
@@ -321,11 +321,11 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
   // A failure shouldn't stop the next refresh.
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(Return(ByMove(GenerateMemoryDump({
-          {mock_graph()->process->process_id(), kFakeResidentSetKb,
+          {mock_graph()->process->GetProcessId(), kFakeResidentSetKb,
            kFakePrivateFootprintKb},
-          {mock_graph()->other_process->process_id(), kFakeResidentSetKb,
+          {mock_graph()->other_process->GetProcessId(), kFakeResidentSetKb,
            kFakePrivateFootprintKb},
-          {mock_utility_process_->process_id(), kFakeResidentSetKb,
+          {mock_utility_process_->GetProcessId(), kFakeResidentSetKb,
            kFakePrivateFootprintKb},
       }))));
 

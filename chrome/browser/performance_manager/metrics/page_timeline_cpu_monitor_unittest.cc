@@ -246,7 +246,7 @@ TEST_P(PageTimelineCPUMonitorTest, CPUMeasurement) {
   // Renderer creation racing with StartMonitoring(). Its pid will not be
   // available until after monitoring starts .
   const SinglePageRendererNodes renderer2 = CreateSimpleCPUTrackingRenderer();
-  ASSERT_EQ(renderer2.process_node->process_id(), base::kNullProcessId);
+  ASSERT_EQ(renderer2.process_node->GetProcessId(), base::kNullProcessId);
 
   // `renderer1` begins measurement as soon as StartMonitoring is called.
   // `renderer2` begins measurement when its pid is available.

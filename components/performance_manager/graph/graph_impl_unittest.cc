@@ -36,22 +36,22 @@ TEST_F(GraphImplTest, GetSystemNodeImpl) {
 
 TEST_F(GraphImplTest, GetProcessNodeByPid) {
   TestNodeWrapper<ProcessNodeImpl> process = CreateNode<ProcessNodeImpl>();
-  EXPECT_EQ(base::kNullProcessId, process->process_id());
-  EXPECT_FALSE(process->process().IsValid());
+  EXPECT_EQ(base::kNullProcessId, process->GetProcessId());
+  EXPECT_FALSE(process->GetProcess().IsValid());
 
   const base::Process self = base::Process::Current();
 
   EXPECT_EQ(nullptr, graph()->GetProcessNodeByPid(self.Pid()));
   process->SetProcess(self.Duplicate(),
                       /* launch_time=*/base::TimeTicks::Now());
-  EXPECT_TRUE(process->process().IsValid());
-  EXPECT_EQ(self.Pid(), process->process_id());
+  EXPECT_TRUE(process->GetProcess().IsValid());
+  EXPECT_EQ(self.Pid(), process->GetProcessId());
   EXPECT_EQ(process.get(), graph()->GetProcessNodeByPid(self.Pid()));
 
   // Validate that an exited process isn't removed (yet).
   process->SetProcessExitStatus(0xCAFE);
-  EXPECT_FALSE(process->process().IsValid());
-  EXPECT_EQ(self.Pid(), process->process_id());
+  EXPECT_FALSE(process->GetProcess().IsValid());
+  EXPECT_EQ(self.Pid(), process->GetProcessId());
   EXPECT_EQ(process.get(), graph()->GetProcessNodeByPid(self.Pid()));
 
   process.reset();

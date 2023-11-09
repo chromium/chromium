@@ -98,11 +98,11 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScores) {
   const int kMiddleRendererOomScore =
       (content::kHighestRendererOomScore + content::kLowestRendererOomScore) /
       2;
-  ASSERT_EQ(policy()->GetCachedOomScore(process_node1->process_id()),
+  ASSERT_EQ(policy()->GetCachedOomScore(process_node1->GetProcessId()),
             content::kHighestRendererOomScore);
-  ASSERT_EQ(policy()->GetCachedOomScore(process_node2->process_id()),
+  ASSERT_EQ(policy()->GetCachedOomScore(process_node2->GetProcessId()),
             kMiddleRendererOomScore);
-  ASSERT_EQ(policy()->GetCachedOomScore(process_node3->process_id()),
+  ASSERT_EQ(policy()->GetCachedOomScore(process_node3->GetProcessId()),
             content::kLowestRendererOomScore);
   // GetCachedOomScore should return -1 for non-cached pid.
   ASSERT_EQ(policy()->GetCachedOomScore(0), -1);
@@ -160,11 +160,11 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresWithPriority) {
 
   // Because page node 1 is audible, the corresponding process should have
   // lowest oom score adj.
-  ASSERT_EQ(policy()->GetCachedOomScore(process_node2->process_id()),
+  ASSERT_EQ(policy()->GetCachedOomScore(process_node2->GetProcessId()),
             content::kHighestRendererOomScore);
-  ASSERT_EQ(policy()->GetCachedOomScore(process_node3->process_id()),
+  ASSERT_EQ(policy()->GetCachedOomScore(process_node3->GetProcessId()),
             kMiddleRendererOomScore);
-  ASSERT_EQ(policy()->GetCachedOomScore(process_node1->process_id()),
+  ASSERT_EQ(policy()->GetCachedOomScore(process_node1->GetProcessId()),
             content::kLowestRendererOomScore);
 }
 
@@ -242,11 +242,11 @@ TEST_F(OomScorePolicyChromeOSTest, DistributeOomScoresSharedPid) {
   const int kMiddleRendererOomScore =
       (content::kHighestRendererOomScore + content::kLowestRendererOomScore) /
       2;
-  ASSERT_EQ(policy()->GetCachedOomScore(process_node1->process_id()),
+  ASSERT_EQ(policy()->GetCachedOomScore(process_node1->GetProcessId()),
             content::kHighestRendererOomScore);
-  ASSERT_EQ(policy()->GetCachedOomScore(process_node3->process_id()),
+  ASSERT_EQ(policy()->GetCachedOomScore(process_node3->GetProcessId()),
             kMiddleRendererOomScore);
-  ASSERT_EQ(policy()->GetCachedOomScore(process_node2->process_id()),
+  ASSERT_EQ(policy()->GetCachedOomScore(process_node2->GetProcessId()),
             content::kLowestRendererOomScore);
 }
 

@@ -135,7 +135,7 @@ ProcessContext ProcessContext::FromProcessNode(const ProcessNode* node) {
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
   auto* node_impl = ProcessNodeImpl::FromNode(node);
   AnyProcessHostId id;
-  switch (node_impl->process_type()) {
+  switch (node_impl->GetProcessType()) {
     case content::PROCESS_TYPE_BROWSER:
       id = BrowserProcessTag{};
       break;

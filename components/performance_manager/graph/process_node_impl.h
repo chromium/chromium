@@ -144,29 +144,6 @@ class ProcessNodeImpl
   // Otherwise, returns nullptr.
   PageNodeImpl* GetPageNodeIfExclusive() const;
 
-  content::ProcessType process_type() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return process_type_;
-  }
-  // Use process_id() in preference to process().Pid(). It's always valid to
-  // access, but will return kNullProcessId when the process is not valid. It
-  // will also retain the process ID for a process that has exited.
-  base::ProcessId process_id() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return process_id_;
-  }
-  const base::Process& process() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return process_.value();
-  }
-  base::TimeTicks launch_time() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return launch_time_;
-  }
-  absl::optional<int32_t> exit_status() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return exit_status_;
-  }
   const std::string& metrics_name() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return metrics_name_;

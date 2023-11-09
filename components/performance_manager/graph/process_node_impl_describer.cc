@@ -154,16 +154,16 @@ base::Value::Dict ProcessNodeImplDescriber::DescribeProcessNodeData(
 
   base::Value::Dict ret;
 
-  ret.Set("pid", base::NumberToString(impl->process_id()));
+  ret.Set("pid", base::NumberToString(impl->GetProcessId()));
 
-  ret.Set("process", GetProcessValueDict(impl->process()));
+  ret.Set("process", GetProcessValueDict(impl->GetProcess()));
 
   ret.Set("launch_time", base::TimeFormatTimeOfDayWithMilliseconds(
-                             TicksToTime(impl->launch_time())));
+                             TicksToTime(impl->GetLaunchTime())));
   ret.Set("resource_context", impl->GetResourceContext().ToString());
 
-  if (impl->exit_status()) {
-    ret.Set("exit_status", impl->exit_status().value());
+  if (impl->GetExitStatus()) {
+    ret.Set("exit_status", impl->GetExitStatus().value());
   }
 
   if (!impl->metrics_name().empty()) {
@@ -185,13 +185,13 @@ base::Value::Dict ProcessNodeImplDescriber::DescribeProcessNodeData(
   // The content function returns "Tab" for renderers - whereas "Renderer" is
   // the common vernacular here.
   std::string process_type =
-      content::GetProcessTypeNameInEnglish(impl->process_type());
-  if (impl->process_type() == content::PROCESS_TYPE_RENDERER) {
+      content::GetProcessTypeNameInEnglish(impl->GetProcessType());
+  if (impl->GetProcessType() == content::PROCESS_TYPE_RENDERER) {
     process_type = "Renderer";
   }
   ret.Set("process_type", process_type);
 
-  if (impl->process_type() == content::PROCESS_TYPE_RENDERER) {
+  if (impl->GetProcessType() == content::PROCESS_TYPE_RENDERER) {
     // Renderer-only properties.
     ret.Set("render_process_id", impl->GetRenderProcessId().value());
 
@@ -200,7 +200,7 @@ base::Value::Dict ProcessNodeImplDescriber::DescribeProcessNodeData(
 
     ret.Set("hosted_content_types",
             HostedProcessTypesToString(impl->hosted_content_types()));
-  } else if (impl->process_type() != content::PROCESS_TYPE_BROWSER) {
+  } else if (impl->GetProcessType() != content::PROCESS_TYPE_BROWSER) {
     // Non-renderer child process properties.
     ret.Set("browser_child_process_host_id",
             impl->browser_child_process_host_proxy()
