@@ -26,3 +26,6 @@ enable_cdm_host_verification = false
 # third_party/widevine/cdm/widevine.gni
 enable_widevine = true
 bundle_widevine_cdm = true
+
+# v8/gni/v8.gni
+cppgc_enable_object_names = true
