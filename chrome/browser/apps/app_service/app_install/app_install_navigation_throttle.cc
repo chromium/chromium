@@ -103,7 +103,9 @@ ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
       Profile* profile = Profile::FromBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
       auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
-      proxy->AppInstallService().InstallApp(package_id.value());
+      proxy->AppInstallService().InstallApp(
+          AppInstallSurface::kAppInstallNavigationThrottle, package_id.value(),
+          base::DoNothing());
     }
 
     return content::NavigationThrottle::CANCEL_AND_IGNORE;

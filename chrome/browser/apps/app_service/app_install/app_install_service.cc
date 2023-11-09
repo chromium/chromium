@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 
+#include <ostream>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -67,29 +69,44 @@ AppInstallResult InstallWebApp(Profile& profile, const GURL& install_url) {
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& out, AppInstallSurface surface) {
+  switch (surface) {
+    case AppInstallSurface::kAppInstallNavigationThrottle:
+      return out << "AppInstallNavigationThrottle";
+  }
+}
+
 AppInstallService::AppInstallService(Profile& profile)
     : profile_(profile), device_info_manager_(&*profile_) {}
 AppInstallService::~AppInstallService() = default;
 
-void AppInstallService::InstallApp(PackageId package_id) {
+void AppInstallService::InstallApp(AppInstallSurface surface,
+                                   PackageId package_id,
+                                   base::OnceClosure callback) {
   // TODO(b/303350800): Generalize to work with all app types.
   CHECK_EQ(package_id.app_type(), AppType::kWeb);
 
   device_info_manager_.GetDeviceInfo(
       base::BindOnce(&AppInstallService::InstallAppWithDeviceInfo,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(package_id)));
+                     weak_ptr_factory_.GetWeakPtr(), surface,
+                     std::move(package_id), std::move(callback)));
 }
 
-void AppInstallService::InstallAppWithDeviceInfo(PackageId package_id,
+void AppInstallService::InstallAppWithDeviceInfo(AppInstallSurface surface,
+                                                 PackageId package_id,
+                                                 base::OnceClosure callback,
                                                  DeviceInfo device_info) {
   connector_.GetAppInstallInfo(
       package_id, std::move(device_info), *profile_->GetURLLoaderFactory(),
       base::BindOnce(&AppInstallService::InstallFromFetchedData,
-                     weak_ptr_factory_.GetWeakPtr(), package_id));
+                     weak_ptr_factory_.GetWeakPtr(), surface, package_id,
+                     std::move(callback)));
 }
 
 void AppInstallService::InstallFromFetchedData(
-    const PackageId& expected_package_id,
+    AppInstallSurface surface,
+    PackageId expected_package_id,
+    base::OnceClosure callback,
     absl::optional<AppInstallData> data) {
   AppInstallResult result = [&] {
     if (!data) {
@@ -131,12 +148,12 @@ void AppInstallService::InstallFromFetchedData(
 
   base::UmaHistogramEnumeration("Apps.AppInstallService.AppInstallResult",
                                 result);
-
-  // New uses must add an install surface parameter to be used as a variant of
-  // this histogram.
   base::UmaHistogramEnumeration(
-      "Apps.AppInstallService.AppInstallResult.AppInstallNavigationThrottle",
+      base::StrCat({"Apps.AppInstallService.AppInstallResult.",
+                    base::ToString(surface)}),
       result);
+
+  std::move(callback).Run();
 }
 
 }  // namespace apps

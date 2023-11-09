@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_APP_INSTALL_SERVICE_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_APP_INSTALL_SERVICE_H_
 
+#include <iosfwd>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +19,12 @@ struct AppInstallData;
 struct DeviceInfo;
 class PackageId;
 
+enum class AppInstallSurface {
+  kAppInstallNavigationThrottle,
+};
+
+std::ostream& operator<<(std::ostream& out, AppInstallSurface surface);
+
 class AppInstallService {
  public:
   explicit AppInstallService(Profile& profile);
@@ -24,14 +32,18 @@ class AppInstallService {
   AppInstallService& operator=(const AppInstallService&) = delete;
   ~AppInstallService();
 
-  // TODO(b/304680287): Add completion callback with error reporting.
-  // New uses must add an install surface parameter to be used as a variant of
-  // the Apps.AppInstallService.AppInstallResult histogram.
-  void InstallApp(PackageId package_id);
+  void InstallApp(AppInstallSurface surface,
+                  PackageId package_id,
+                  base::OnceClosure callback);
 
  private:
-  void InstallAppWithDeviceInfo(PackageId package_id, DeviceInfo device_info);
-  void InstallFromFetchedData(const PackageId& expected_package_id,
+  void InstallAppWithDeviceInfo(AppInstallSurface surface,
+                                PackageId package_id,
+                                base::OnceClosure callback,
+                                DeviceInfo device_info);
+  void InstallFromFetchedData(AppInstallSurface surface,
+                              PackageId expected_package_id,
+                              base::OnceClosure callback,
                               absl::optional<AppInstallData> data);
 
   raw_ref<Profile> profile_;
