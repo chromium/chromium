@@ -159,7 +159,8 @@ export function getRootTypeLabel(locationInfo: EntryLocation) {
       return str('TRASH_ROOT_LABEL');
     case VolumeManagerCommon.RootType.MEDIA_VIEW:
       const mediaViewRootType =
-          VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(volumeInfoLabel);
+          VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(
+              locationInfo.volumeInfo?.volumeId || '');
       switch (mediaViewRootType) {
         case VolumeManagerCommon.MediaViewRootType.IMAGES:
           return str('MEDIA_VIEW_IMAGES_ROOT_LABEL');
