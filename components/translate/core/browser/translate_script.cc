@@ -84,12 +84,14 @@ GURL TranslateScript::GetTranslateScriptURL() {
   if (command_line.HasSwitch(translate::switches::kTranslateScriptURL)) {
     translate_script_url = GURL(command_line.GetSwitchValueASCII(
         translate::switches::kTranslateScriptURL));
-    if (!translate_script_url.is_valid() ||
-        !translate_script_url.query().empty()) {
+    if (!translate_script_url.is_valid()) {
       LOG(WARNING) << "The following translate URL specified at the "
                    << "command-line is invalid: "
                    << translate_script_url.spec();
       translate_script_url = GURL();
+    } else {
+      LOG(WARNING) << "Using custom translate URL: "
+                   << translate_script_url.spec();
     }
   }
 
