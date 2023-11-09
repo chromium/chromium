@@ -56,6 +56,12 @@ class CONTENT_EXPORT PageImpl : public Page {
   base::WeakPtr<Page> GetWeakPtr() override;
   bool IsPageScaleFactorOne() override;
   const std::string& GetContentsMimeType() const override;
+  void SetResizableForTesting(absl::optional<bool> resizable) override;
+  absl::optional<bool> GetResizable() override;
+
+  // Setter for the `window.setResizable(bool)` API's value defining whether the
+  // window can be resized or not. `absl::nullopt` means the value is not set.
+  void SetResizable(absl::optional<bool> resizable);
 
   base::WeakPtr<PageImpl> GetWeakPtrImpl();
 
@@ -237,6 +243,10 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // Whether the first visually non-empty paint has occurred.
   bool did_first_visually_non_empty_paint_ = false;
+
+  // Stores the value set by `window.setResizable(bool)` API for whether the
+  // window can be resized or not. `absl::nullopt` means the value is not set.
+  absl::optional<bool> resizable_ = absl::nullopt;
 
   // The theme color for the underlying document as specified
   // by theme-color meta tag.

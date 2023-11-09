@@ -108,7 +108,7 @@ class TestBrowserWindow : public BrowserWindow {
   void Maximize() override {}
   void Minimize() override {}
   void Restore() override {}
-  void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) override {}
+  void OnCanResizeFromWebAPIChanged() override {}
   bool GetCanResize() override;
   ui::WindowShowState GetWindowShowState() const override;
   bool ShouldHideUIForFullscreen() const override;

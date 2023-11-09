@@ -1789,10 +1789,10 @@ IN_PROC_BROWSER_TEST_F(
   CheckCanResize(true, true);
 
   // `window.setResizable()` API can only alter the resizability of
-  // `BrowserView` which `can_resize` is true. If it's false, then
-  // `SetCanResizeFromWebAPI` cannot override it.
+  // `BrowserView` which `can_resize` is true. Otherwise it cannot be overridden
+  // by the web API.
   helper()->browser_view()->SetCanResize(false);
-  helper()->browser_view()->SetCanResizeFromWebAPI(absl::nullopt);
+  web_contents->GetPrimaryPage().SetResizableForTesting(absl::nullopt);
   CheckCanResize(false, absl::nullopt);
 
   SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);

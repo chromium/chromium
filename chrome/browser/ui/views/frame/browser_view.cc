@@ -2519,10 +2519,6 @@ void BrowserView::OnWidgetVisibilityChanged(views::Widget* widget,
   }
 }
 
-BrowserView::PageData::PageData(content::Page& page) : PageUserData(page) {}
-
-PAGE_USER_DATA_KEY_IMPL(BrowserView::PageData);
-
 absl::optional<bool> BrowserView::GetCanResizeFromWebAPI() const {
   // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
   if (browser()->tab_strip_model()->count() > 1) {
@@ -2537,11 +2533,7 @@ absl::optional<bool> BrowserView::GetCanResizeFromWebAPI() const {
     return absl::nullopt;
   }
 
-  if (auto* data = PageData::GetForPage(
-          web_contents->GetPrimaryMainFrame()->GetPage())) {
-    return data->can_resize();
-  }
-  return absl::nullopt;
+  return web_contents->GetPrimaryPage().GetResizable();
 }
 
 bool BrowserView::GetCanResize() {
@@ -2562,7 +2554,7 @@ ui::WindowShowState BrowserView::GetWindowShowState() const {
   }
 }
 
-void BrowserView::SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {
+void BrowserView::OnCanResizeFromWebAPIChanged() {
   // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
   // The value can only be set in web apps, where there currently can only be 1
   // WebContents, the return value can be determined only by looking at the
@@ -2572,6 +2564,7 @@ void BrowserView::SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {
     return;
   }
 
+  auto can_resize = web_contents->GetPrimaryPage().GetResizable();
   if (cached_can_resize_from_web_api_ == can_resize) {
     return;
   }
@@ -2588,9 +2581,6 @@ void BrowserView::SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {
   }
 
   cached_can_resize_from_web_api_ = can_resize;
-  PageData::GetOrCreateForPage(web_contents->GetPrimaryMainFrame()->GetPage())
-      ->set_can_resize(can_resize);
-
   GetWidget()->OnSizeConstraintsChanged();
 }
 

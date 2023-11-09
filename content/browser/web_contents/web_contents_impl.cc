@@ -10243,6 +10243,10 @@ void WebContentsImpl::CancelPreviewByMojoBinderPolicy(
   }
 }
 
+void WebContentsImpl::OnCanResizeFromWebAPIChanged() {
+  delegate_->OnCanResizeFromWebAPIChanged();
+}
+
 int WebContentsImpl::GetOuterDelegateFrameTreeNodeId() {
   return node_.outer_contents_frame_tree_node_id();
 }

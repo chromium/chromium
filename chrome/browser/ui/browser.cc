@@ -2050,8 +2050,8 @@ bool Browser::CanUseWindowingControls(
   return true;
 }
 
-void Browser::SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {
-  window_->SetCanResizeFromWebAPI(can_resize);
+void Browser::OnCanResizeFromWebAPIChanged() {
+  window_->OnCanResizeFromWebAPIChanged();
 }
 
 bool Browser::GetCanResize() {

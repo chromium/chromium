@@ -538,60 +538,6 @@ TEST_F(BrowserViewTest, CanFullscreenPolicyWatcher) {
   EXPECT_TRUE(browser_view()->CanFullscreen());
 }
 
-TEST_F(BrowserViewTest, SetCanResizeFromWebAPI) {
-  NavigateParams params(browser_view()->browser(), GURL("about:blank"),
-                        ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::CURRENT_TAB;
-  Navigate(&params);
-  CommitPendingLoad(&params.navigated_or_inserted_contents->GetController());
-
-  // Mark the underlying widget as resizable without Web API signals.
-  browser_view()->GetWidget()->widget_delegate()->SetCanResize(true);
-
-  auto CheckCanResize = [&](bool browser_view_can_resize_expected,
-                            absl::optional<bool> web_api_can_resize_expected) {
-    EXPECT_EQ(browser_view()->CanResize(), browser_view_can_resize_expected);
-    EXPECT_EQ(browser_view()->GetCanResizeFromWebAPI(),
-              web_api_can_resize_expected);
-
-#if defined(USE_AURA)
-    EXPECT_EQ(browser_view()->GetWidget()->GetNativeWindow()->GetProperty(
-                  aura::client::kResizeBehaviorKey) &
-                  aura::client::kResizeBehaviorCanResize,
-              browser_view_can_resize_expected);
-#endif
-  };
-
-  // Defaults to `absl::nullopt` -> Returns "fallback".
-  CheckCanResize(true, absl::nullopt);
-
-  // Explicitly set to `absl::nullopt` -> Returns "fallback".
-  browser_view()->SetCanResizeFromWebAPI(absl::nullopt);
-  CheckCanResize(true, absl::nullopt);
-
-  // Explicitly set to false -> Returns false.
-  browser_view()->SetCanResizeFromWebAPI(false);
-  CheckCanResize(false, false);
-
-  // Explicitly set to true -> Returns true.
-  browser_view()->SetCanResizeFromWebAPI(true);
-  CheckCanResize(true, true);
-
-  // `window.setResizable()` API can only alter the resizability of widget which
-  // `can_resize` is true. If it's false, then `SetCanResizeFromWebAPI`
-  // cannot override it.
-  browser_view()->SetCanResize(false);
-
-  browser_view()->SetCanResizeFromWebAPI(absl::nullopt);
-  CheckCanResize(false, absl::nullopt);
-
-  browser_view()->SetCanResizeFromWebAPI(false);
-  CheckCanResize(false, false);
-
-  browser_view()->SetCanResizeFromWebAPI(true);
-  CheckCanResize(false, true);
-}
-
 class BrowserViewPipTest : public TestWithBrowserView {
  public:
   BrowserViewPipTest()

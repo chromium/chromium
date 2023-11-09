@@ -503,7 +503,7 @@ class BrowserView : public BrowserWindow,
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
-  void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) override;
+  void OnCanResizeFromWebAPIChanged() override;
   bool GetCanResize() override;
   ui::WindowShowState GetWindowShowState() const override;
   void EnterFullscreen(const GURL& url,
@@ -836,26 +836,6 @@ class BrowserView : public BrowserWindow,
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, BrowserView);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
   class AccessibilityModeObserver;
-
-  // Data scoped to a single page. PageData has the same lifetime as the page's
-  // main document.
-  class PageData : public content::PageUserData<PageData> {
-   public:
-    explicit PageData(content::Page& page);
-    PageData(const PageData&) = delete;
-    PageData& operator=(const PageData&) = delete;
-
-    absl::optional<bool> can_resize() const { return can_resize_; }
-    void set_can_resize(absl::optional<bool> can_resize) {
-      can_resize_ = can_resize;
-    }
-
-    PAGE_USER_DATA_KEY_DECL();
-
-   private:
-    // Keeps track of the resizability set by `window.setResizable(bool)` API.
-    absl::optional<bool> can_resize_ = absl::nullopt;
-  };
 
   // If the browser is in immersive full screen mode, it will reveal the
   // tabstrip for a short duration. This is useful for shortcuts that perform

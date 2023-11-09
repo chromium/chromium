@@ -6810,11 +6810,8 @@ void RenderFrameHostImpl::SetResizable(bool resizable) {
   if (!CanUseWindowingControls("window.setResizable")) {
     return;
   }
-  if (WebContents* web_contents = WebContents::FromRenderFrameHost(this)) {
-    if (web_contents->GetDelegate()) {
-      web_contents->GetDelegate()->SetCanResizeFromWebAPI(resizable);
-    }
-  }
+
+  GetPage().SetResizable(resizable);
 }
 
 void RenderFrameHostImpl::RegisterProtocolHandler(const std::string& scheme,

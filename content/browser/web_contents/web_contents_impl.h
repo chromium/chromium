@@ -1059,6 +1059,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsInPreviewMode() const override;
   void CancelPreviewByMojoBinderPolicy(
       const std::string& interface_name) override;
+  void OnCanResizeFromWebAPIChanged() override;
 
   // blink::mojom::ColorChooserFactory ---------------------------------------
   void OnColorChooserFactoryReceiver(

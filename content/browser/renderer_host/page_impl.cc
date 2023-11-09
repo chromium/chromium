@@ -99,6 +99,19 @@ const std::string& PageImpl::GetContentsMimeType() const {
   return contents_mime_type_;
 }
 
+void PageImpl::SetResizableForTesting(absl::optional<bool> resizable) {
+  SetResizable(resizable);
+}
+
+void PageImpl::SetResizable(absl::optional<bool> resizable) {
+  resizable_ = resizable;
+  delegate_->OnCanResizeFromWebAPIChanged();
+}
+
+absl::optional<bool> PageImpl::GetResizable() {
+  return resizable_;
+}
+
 void PageImpl::OnFirstVisuallyNonEmptyPaint() {
   did_first_visually_non_empty_paint_ = true;
   delegate_->OnFirstVisuallyNonEmptyPaint(*this);
