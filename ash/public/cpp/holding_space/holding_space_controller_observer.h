@@ -16,6 +16,9 @@ class HoldingSpaceTray;
 class ASH_PUBLIC_EXPORT HoldingSpaceControllerObserver
     : public base::CheckedObserver {
  public:
+  // Called when `HoldingSpaceController` is being destroyed.
+  virtual void OnHoldingSpaceControllerDestroying() {}
+
   // Called when a model gets attached to the HoldingSpaceController.
   virtual void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {}
 
