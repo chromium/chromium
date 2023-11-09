@@ -12,7 +12,6 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -52,9 +51,7 @@
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/common/chrome_features.h"
 #include "components/crash/core/common/crash_key.h"
-#include "content/public/browser/network_service_instance.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -562,18 +559,6 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
   SYSLOG(ERROR) << "Kiosk launch failed, error=" << static_cast<int>(error);
 
-  // App Service launcher requires the web app to be installed. Temporary issues
-  // like URL redirection should not stop the app from being installed as
-  // placeholder. Force launching the app is not possible in case installation
-  // fails.
-  if (kiosk_app_id_.type == KioskAppType::kWebApp &&
-      error == KioskAppLaunchError::Error::kUnableToInstall &&
-      (!base::FeatureList::IsEnabled(features::kKioskEnableAppService) ||
-       crosapi::browser_util::IsLacrosEnabled())) {
-    HandleWebAppInstallFailed();
-    return;
-  }
-
   // Reboot on the recoverable cryptohome errors.
   if (error == KioskAppLaunchError::Error::kCryptohomedNotRunning ||
       error == KioskAppLaunchError::Error::kAlreadyMounted) {
@@ -594,29 +579,6 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   KioskAppLaunchError::Save(error);
   CleanUp();
   chrome::AttemptUserExit();
-}
-
-void KioskLaunchController::HandleWebAppInstallFailed() {
-  // We end up here when WebKioskAppLauncher was not able to obtain metadata
-  // for the app.
-  // This can happen in some temporary states -- we are under captive portal, or
-  // there is a third-party authorization which causes redirect to url that
-  // differs from the install url. We should proceed with launch in such cases,
-  // expecting this situation to not happen upon next launch.
-  app_state_ = AppState::kInstalled;
-
-  SYSLOG(WARNING) << "Failed to obtain app data, trying to launch anyway..";
-
-  if (!splash_screen_view_) {
-    return;
-  }
-  splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::AppLaunchState::
-          kWaitingAppWindowInstallFailed);
-  splash_screen_view_->Show(GetSplashScreenAppData());
-  if (launch_on_install_ || g_skip_splash_wait_for_testing) {
-    LaunchApp();
-  }
 }
 
 void KioskLaunchController::FinishForcedExtensionsInstall(

@@ -188,8 +188,6 @@ int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
       return IDS_APP_START_EXTENSION_WAIT_MESSAGE;
     case AppLaunchState::kWaitingAppWindow:
       return IDS_APP_START_WAIT_FOR_APP_WINDOW_MESSAGE;
-    case AppLaunchState::kWaitingAppWindowInstallFailed:
-      return IDS_APP_START_WAIT_FOR_APP_WINDOW_INSTALL_FAILED_MESSAGE;
     case AppLaunchState::kNetworkWaitTimeout:
       return IDS_APP_START_NETWORK_WAIT_TIMEOUT_MESSAGE;
     case AppLaunchState::kShowingNetworkConfigureUI:

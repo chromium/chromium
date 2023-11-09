@@ -182,8 +182,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   // Returns the `Data` struct used to populate the splash screen.
   AppLaunchSplashScreenView::Data GetSplashScreenAppData();
 
-  void HandleWebAppInstallFailed();
-
   // Continues launching after forced extensions are installed if required.
   // If it times out waiting for extensions to install, logs metrics via UMA.
   void FinishForcedExtensionsInstall(

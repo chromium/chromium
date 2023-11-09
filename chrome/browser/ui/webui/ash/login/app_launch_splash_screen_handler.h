@@ -57,7 +57,6 @@ class AppLaunchSplashScreenView {
     kInstallingApplication,
     kInstallingExtension,
     kWaitingAppWindow,
-    kWaitingAppWindowInstallFailed,
     kNetworkWaitTimeout,
     kShowingNetworkConfigureUI,
   };
